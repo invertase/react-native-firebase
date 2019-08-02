@@ -108,8 +108,12 @@ RCT_EXPORT_METHOD(getInitialLink:
     NSURL *url = (NSURL *) launchOptions[UIApplicationLaunchOptionsURLKey];
     FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
 
-    if (dynamicLink && dynamicLink.url) resolve(dynamicLink.url.absoluteString);
-    else resolve([NSNull null]);
+    if (dynamicLink && dynamicLink.url) {
+      resolve(@{
+          @"url": dynamicLink.url.absoluteString,
+          @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+      });
+    } else resolve([NSNull null]);
 
     return;
   }
@@ -120,7 +124,10 @@ RCT_EXPORT_METHOD(getInitialLink:
 
     id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
       if (!error && dynamicLink && dynamicLink.url) {
-        resolve(dynamicLink.url.absoluteString);
+        resolve(@{
+            @"url": dynamicLink.url.absoluteString,
+            @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+        });
       } else if (!error) {
         resolve([NSNull null]);
       } else {
@@ -136,8 +143,11 @@ RCT_EXPORT_METHOD(getInitialLink:
     return;
   }
 
-  if ([RNFBDynamicLinksAppDelegateInterceptor shared].initialLink) {
-    resolve([RNFBDynamicLinksAppDelegateInterceptor shared].initialLink);
+  if ([RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkUrl) {
+    resolve(@{
+        @"url": [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkUrl,
+        @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkMinimumAppVersion,
+    });
   } else {
     resolve([NSNull null]);
   }

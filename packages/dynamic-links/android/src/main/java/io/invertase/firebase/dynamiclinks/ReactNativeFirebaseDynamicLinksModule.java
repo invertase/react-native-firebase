@@ -38,8 +38,10 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private static final String TAG = "DynamicLinks";
   private static final String SHORT_LINK_TYPE_SHORT = "SHORT";
   private static final String SHORT_LINK_TYPE_UNGUESSABLE = "UNGUESSABLE";
-  private String initialLinkValue = null;
+
+  private String initialLinkUrl = null;
   private boolean gotInitialLink = false;
+  private int initialLinkMinimumVersion = 0;
 
   ReactNativeFirebaseDynamicLinksModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -105,7 +107,12 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   @ReactMethod
   public void getInitialLink(Promise promise) {
     if (gotInitialLink) {
-      promise.resolve(initialLinkValue);
+      if (initialLinkUrl != null) {
+        promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
+      } else {
+        promise.resolve(null);
+      }
+
       return;
     }
 
@@ -115,22 +122,40 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       return;
     }
 
-    FirebaseDynamicLinks.getInstance()
-      .getDynamicLink(currentActivity.getIntent())
+    FirebaseDynamicLinks.getInstance().getDynamicLink(currentActivity.getIntent())
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           gotInitialLink = true;
-
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
+
           if (pendingDynamicLinkData != null) {
-            initialLinkValue = pendingDynamicLinkData.getLink().toString();
+            initialLinkUrl = pendingDynamicLinkData.getLink().toString();
+            initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
           }
 
-          promise.resolve(initialLinkValue);
+          if (initialLinkUrl != null) {
+            promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
+          } else {
+            promise.resolve(null);
+          }
         } else {
           rejectPromiseWithCodeAndMessage(promise, "initial-link-error", task.getException().getMessage());
         }
       });
+  }
+
+  private WritableMap dynamicLinkToWritableMap(String url, int minVersion) {
+    WritableMap writableMap = Arguments.createMap();
+
+    writableMap.putString("url", url);
+
+    if (minVersion == 0) {
+      writableMap.putNull("minimumAppVersion");
+    } else {
+      writableMap.putInt("minimumAppVersion", minVersion);
+    }
+
+    return writableMap;
   }
 
   private DynamicLink.Builder createDynamicLinkBuilder(final ReadableMap dynamicLinkMap) {
@@ -299,24 +324,21 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @Override
   public void onHostDestroy() {
-    initialLinkValue = null;
+    initialLinkUrl = null;
     gotInitialLink = false;
+    initialLinkMinimumVersion = 0;
   }
 
   @Override
   public void onNewIntent(Intent intent) {
-    FirebaseDynamicLinks
-      .getInstance()
-      .getDynamicLink(intent)
+    FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
           if (pendingDynamicLinkData != null) {
-            WritableMap body = Arguments.createMap();
-            body.putString("url", pendingDynamicLinkData.getLink().toString());
             ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(new ReactNativeFirebaseEvent(
               "dynamic_links_link_received",
-              body
+              dynamicLinkToWritableMap(pendingDynamicLinkData.getLink().toString(), pendingDynamicLinkData.getMinimumAppVersion())
             ));
           }
         } else {

@@ -26,7 +26,8 @@
   static RNFBDynamicLinksAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
-    sharedInstance.initialLink = nil;
+    sharedInstance.initialLinkUrl = nil;
+    sharedInstance.initialLinkMinimumAppVersion = nil;
   });
   return sharedInstance;
 }
@@ -42,9 +43,13 @@
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:URL];
   if (!dynamicLink) return NO;
   if (dynamicLink.url) {
-    if (!_initialLink) _initialLink = dynamicLink.url.absoluteString;
+    if (!_initialLinkUrl) {
+      _initialLinkUrl = dynamicLink.url.absoluteString;
+      _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
+    }
     [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
         @"url": dynamicLink.url.absoluteString,
+        @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
     }];
   }
   return YES;
@@ -57,9 +62,13 @@
 
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
-      if (!_initialLink) _initialLink = dynamicLink.url.absoluteString;
+      if (!_initialLinkUrl) {
+        _initialLinkUrl = dynamicLink.url.absoluteString;
+        _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
+      }
       [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
           @"url": dynamicLink.url.absoluteString,
+          @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
       }];
     }
 
