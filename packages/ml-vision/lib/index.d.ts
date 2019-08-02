@@ -237,6 +237,21 @@ export namespace MLKitVision {
      * ```
      */
     confidenceThreshold?: number;
+
+    /**
+     * API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     *   apiKeyOverride: 'xyz123',
+     * });
+     * ```
+     *
+     * @ios
+     */
+    apiKeyOverride?: string;
   }
 
   /**
@@ -265,6 +280,13 @@ export namespace MLKitVision {
     modelType?:
       | VisionCloudLandmarkRecognizerModelType.STABLE_MODEL
       | VisionCloudLandmarkRecognizerModelType.LATEST_MODEL;
+
+    /**
+     * API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.
+     *
+     * @ios
+     */
+    apiKeyOverride?: string;
   }
 
   /**
@@ -345,6 +367,21 @@ export namespace MLKitVision {
      * ```
      */
     languageHints?: string[];
+
+    /**
+     * API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   apiKeyOverride: 'xyz123',
+     * });
+     * ```
+     *
+     * @ios
+     */
+    apiKeyOverride?: string;
   }
 
   /**
@@ -383,6 +420,21 @@ export namespace MLKitVision {
      * ```
      */
     languageHints?: string[];
+
+    /**
+     * API key to use for Cloud Vision API. If not set, the default API key from `firebase.app()` will be used.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     *   apiKeyOverride: 'xyz123',
+     * });
+     * ```
+     *
+     * @ios
+     */
+    apiKeyOverride?: string;
   }
 
   /**
