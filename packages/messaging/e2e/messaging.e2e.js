@@ -30,7 +30,7 @@ describe('messaging()', () => {
         firebase.messaging().setAutoInitEnabled(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'enabled' expected a boolean value`);
+        e.message.should.containEql("'enabled' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -42,7 +42,7 @@ describe('messaging()', () => {
         firebase.messaging().getToken(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'authorizedEntity' expected a string value`);
+        e.message.should.containEql("'authorizedEntity' expected a string value");
         return Promise.resolve();
       }
     });
@@ -52,7 +52,7 @@ describe('messaging()', () => {
         firebase.messaging().getToken('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'scope' expected a string value`);
+        e.message.should.containEql("'scope' expected a string value");
         return Promise.resolve();
       }
     });
@@ -64,7 +64,7 @@ describe('messaging()', () => {
         firebase.messaging().deleteToken(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'authorizedEntity' expected a string value`);
+        e.message.should.containEql("'authorizedEntity' expected a string value");
         return Promise.resolve();
       }
     });
@@ -74,7 +74,7 @@ describe('messaging()', () => {
         firebase.messaging().deleteToken('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'scope' expected a string value`);
+        e.message.should.containEql("'scope' expected a string value");
         return Promise.resolve();
       }
     });
@@ -86,7 +86,7 @@ describe('messaging()', () => {
         firebase.messaging().onMessage({});
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'listener' expected a function`);
+        e.message.should.containEql("'listener' expected a function");
         return Promise.resolve();
       }
     });
@@ -115,7 +115,7 @@ describe('messaging()', () => {
         firebase.messaging().onTokenRefresh({});
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'listener' expected a function`);
+        e.message.should.containEql("'listener' expected a function");
         return Promise.resolve();
       }
     });
@@ -127,7 +127,7 @@ describe('messaging()', () => {
         firebase.messaging().onDeletedMessages(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'listener' expected a function`);
+        e.message.should.containEql("'listener' expected a function");
         return Promise.resolve();
       }
     });
@@ -139,7 +139,7 @@ describe('messaging()', () => {
         firebase.messaging().onMessageSent(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'listener' expected a function`);
+        e.message.should.containEql("'listener' expected a function");
         return Promise.resolve();
       }
     });
@@ -151,7 +151,7 @@ describe('messaging()', () => {
         firebase.messaging().onSendError('123');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'listener' expected a function`);
+        e.message.should.containEql("'listener' expected a function");
         return Promise.resolve();
       }
     });
@@ -163,7 +163,7 @@ describe('messaging()', () => {
         firebase.messaging().setBackgroundMessageHandler('123');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'handler' expected a function`);
+        e.message.should.containEql("'handler' expected a function");
         return Promise.resolve();
       }
     });
@@ -197,7 +197,7 @@ describe('messaging()', () => {
         firebase.messaging().subscribeToTopic(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'topic' expected a string value`);
+        e.message.should.containEql("'topic' expected a string value");
         return Promise.resolve();
       }
     });
@@ -207,7 +207,7 @@ describe('messaging()', () => {
         firebase.messaging().subscribeToTopic('foo/bar');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'topic' must not include "/"`);
+        e.message.should.containEql('\'topic\' must not include "/"');
         return Promise.resolve();
       }
     });
@@ -219,7 +219,7 @@ describe('messaging()', () => {
         firebase.messaging().unsubscribeFromTopic(123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'topic' expected a string value`);
+        e.message.should.containEql("'topic' expected a string value");
         return Promise.resolve();
       }
     });
@@ -229,7 +229,7 @@ describe('messaging()', () => {
         firebase.messaging().unsubscribeFromTopic('foo/bar');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'topic' must not include "/"`);
+        e.message.should.containEql('\'topic\' must not include "/"');
         return Promise.resolve();
       }
     });

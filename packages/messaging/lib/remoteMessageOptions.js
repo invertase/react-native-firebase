@@ -29,13 +29,13 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   const out = {};
 
   if (isUndefined(remoteMessage) || !isObject(remoteMessage)) {
-    throw new Error(`'remoteMessage' expected an object value`);
+    throw new Error("'remoteMessage' expected an object value");
   }
 
   if (!remoteMessage.to) {
     out.to = `${messagingSenderId}@fcm.googleapis.com`;
   } else if (!isString(remoteMessage.to)) {
-    throw new Error(`'remoteMessage.to' expected a string value`);
+    throw new Error("'remoteMessage.to' expected a string value");
   } else {
     out.to = remoteMessage.to;
   }
@@ -43,7 +43,7 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   if (!remoteMessage.messageId) {
     out.messageId = generateFirestoreId();
   } else if (!isString(remoteMessage.messageId)) {
-    throw new Error(`'remoteMessage.messageId' expected a string value`);
+    throw new Error("'remoteMessage.messageId' expected a string value");
   } else {
     out.messageId = remoteMessage.messageId;
   }
@@ -52,10 +52,10 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
     out.ttl = 3600;
   } else {
     if (!isNumber(remoteMessage.ttl)) {
-      throw new Error(`'remoteMessage.ttl' expected a number value`);
+      throw new Error("'remoteMessage.ttl' expected a number value");
     }
     if (remoteMessage.ttl < 0 || !isInteger(remoteMessage.ttl)) {
-      throw new Error(`'remoteMessage.ttl' expected a positive integer value`);
+      throw new Error("'remoteMessage.ttl' expected a positive integer value");
     }
     out.ttl = remoteMessage.ttl;
   }
@@ -63,21 +63,21 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   if (!remoteMessage.data) {
     out.data = {};
   } else if (!isObject(remoteMessage.data)) {
-    throw new Error(`'remoteMessage.data' expected an object value`);
+    throw new Error("'remoteMessage.data' expected an object value");
   } else {
     out.data = remoteMessage.data;
   }
 
   if (remoteMessage.collapseKey) {
     if (!isString(remoteMessage.collapseKey)) {
-      throw new Error(`'remoteMessage.collapseKey' expected a string value`);
+      throw new Error("'remoteMessage.collapseKey' expected a string value");
     }
     out.collapseKey = remoteMessage.collapseKey;
   }
 
   if (remoteMessage.messageType) {
     if (!isString(remoteMessage.messageType)) {
-      throw new Error(`'remoteMessage.messageType' expected a string value`);
+      throw new Error("'remoteMessage.messageType' expected a string value");
     }
     out.messageType = remoteMessage.messageType;
   }
