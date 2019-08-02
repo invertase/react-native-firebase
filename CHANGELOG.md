@@ -401,7 +401,7 @@ console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
 
 ---
 
-## ML Kit Vision (mlKitVision) - **[NEW]**
+## ML Kit Vision (vision) - **[NEW]**
 
 - [NEW] Implemented support for [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text) Vision APIs;
   - [x] Cloud

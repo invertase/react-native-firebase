@@ -2,13 +2,13 @@ import firebase from '@react-native-firebase/app';
 import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/ml-vision';
 
 // checks module exists at root
-console.log(firebase.mlKitVision().app.name);
+console.log(firebase.vision().app.name);
 
 // checks module exists at app level
-console.log(firebase.app().mlKitVision().app.name);
+console.log(firebase.app().vision().app.name);
 
 // checks statics exist
-console.log(firebase.mlKitVision.SDK_VERSION);
+console.log(firebase.vision.SDK_VERSION);
 
 // checks statics exist on defaultExport
 console.log(defaultExport.SDK_VERSION);
@@ -20,7 +20,7 @@ console.log(firebase.SDK_VERSION);
 console.log(firebaseFromModule.SDK_VERSION);
 
 // checks multi-app support exists
-console.log(firebase.mlKitVision(firebase.app()).app.name);
+console.log(firebase.vision(firebase.app()).app.name);
 
 // checks default export supports app arg
 console.log(defaultExport(firebase.app()).app.name);

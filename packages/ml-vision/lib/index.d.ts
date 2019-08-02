@@ -27,7 +27,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * ```js
  * import { firebase } from '@react-native-firebase/ml-vision';
  *
- * // firebase.mlKitVision().X
+ * // firebase.vision().X
  * ```
  *
  * #### Example 2
@@ -35,9 +35,9 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * Using the default export from the `ml-vision` package:
  *
  * ```js
- * import mlKitVision from '@react-native-firebase/ml-vision';
+ * import vision from '@react-native-firebase/ml-vision';
  *
- * // mlKitVision().X
+ * // vision().X
  * ```
  *
  * #### Example 3
@@ -48,7 +48,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/ml-vision';
  *
- * // firebase.mlKitVision().X
+ * // firebase.vision().X
  * ```
  *
  * @firebase ml-vision
@@ -86,7 +86,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     * const faces = await firebase.vision().faceDetectorProcessImage(filePath, {
      *   classificationMode: VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
      * });
      * ```
@@ -105,7 +105,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     * const faces = await firebase.vision().faceDetectorProcessImage(filePath, {
      *   contourMode: VisionFaceDetectorContourMode.ALL_CONTOURS,
      * });
      * ```
@@ -124,7 +124,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     * const faces = await firebase.vision().faceDetectorProcessImage(filePath, {
      *   landmarkMode: VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
      * });
      * ```
@@ -149,7 +149,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     * const faces = await firebase.vision().faceDetectorProcessImage(filePath, {
      *   minFaceSize: 0.5,
      * });
      * ```
@@ -166,7 +166,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const faces = await firebase.mlKitVision().faceDetectorProcessImage(filePath, {
+     * const faces = await firebase.vision().faceDetectorProcessImage(filePath, {
      *   performanceMode: VisionFaceDetectorPerformanceMode.ACCURATE,
      * });
      * ```
@@ -192,7 +192,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, {
+     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, {
      *   confidenceThreshold: 0.8,
      * });
      * ```
@@ -216,7 +216,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     * await firebase.vision().cloudImageLabelerProcessImage(filePath, {
      *   enforceCertFingerprintMatch: true,
      * });
      * ```
@@ -231,7 +231,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     * await firebase.vision().cloudImageLabelerProcessImage(filePath, {
      *   confidenceThreshold: 0.8,
      * });
      * ```
@@ -244,7 +244,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     * await firebase.vision().cloudImageLabelerProcessImage(filePath, {
      *   apiKeyOverride: 'xyz123',
      * });
      * ```
@@ -316,7 +316,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   enforceCertFingerprintMatch: true,
      * });
      * ```
@@ -338,7 +338,7 @@ export namespace MLKitVision {
      *   VisionCloudTextRecognizerModelType,
      * } from '@react-native-firebase/ml-vision';
      *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   modelType: VisionCloudTextRecognizerModelType.DENSE_MODEL,
      * });
      * ```
@@ -361,7 +361,7 @@ export namespace MLKitVision {
      * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
      * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
      *
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   languageHints: ['fr', 'de'],
      * });
      * ```
@@ -374,7 +374,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   apiKeyOverride: 'xyz123',
      * });
      * ```
@@ -396,7 +396,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   enforceCertFingerprintMatch: true,
      * });
      * ```
@@ -414,7 +414,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   languageHints: ['fr', 'de'],
      * });
      * ```
@@ -427,7 +427,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * await firebase.mlKitVision().cloudTextRecognizerProcessImage(filePath, {
+     * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   apiKeyOverride: 'xyz123',
      * });
      * ```
@@ -1039,7 +1039,7 @@ export namespace MLKitVision {
    * Get the ML Kit service for the default app:
    *
    * ```js
-   * const defaultAppMLKit = firebase.mlKitVision();
+   * const defaultAppMLKit = firebase.vision();
    * ```
    */
   export class Module extends FirebaseModule {
@@ -1102,10 +1102,10 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const options = new firebase.mlKitVision.VisionImageLabelerOptions();
+     * const options = new firebase.vision.VisionImageLabelerOptions();
      * options.setConfidenceThreshold(0.8);
      *
-     * const labels = await firebase.mlKitVision().imageLabelerProcessImage(filePath, options);
+     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, options);
      * ```
      *
      * @param imageFilePath A local image file path.
@@ -1123,7 +1123,7 @@ export namespace MLKitVision {
      * #### Example
      *
      * ```js
-     * const labels = await firebase.mlKitVision().cloudImageLabelerProcessImage(filePath, {
+     * const labels = await firebase.vision().cloudImageLabelerProcessImage(filePath, {
      *   confidenceThreshold: 0.8,
      * });
      * ```
@@ -1233,11 +1233,11 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      mlKitVision: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
+      vision: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
     }
 
     interface FirebaseApp {
-      mlKitVision(): MLKitVision.Module;
+      vision(): MLKitVision.Module;
     }
   }
 }

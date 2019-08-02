@@ -29,7 +29,7 @@ android.describe('mlkit.vision.label', () => {
   describe('imageLabelerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().imageLabelerProcessImage(123);
+        firebase.vision().imageLabelerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -38,7 +38,7 @@ android.describe('mlkit.vision.label', () => {
     });
 
     it('should return a local label array', async () => {
-      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile);
+      const res = await firebase.vision().imageLabelerProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -54,7 +54,7 @@ android.describe('mlkit.vision.label', () => {
   describe('cloudImageLabelerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().cloudImageLabelerProcessImage(123);
+        firebase.vision().cloudImageLabelerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -63,7 +63,7 @@ android.describe('mlkit.vision.label', () => {
     });
 
     it('should return a cloud label array', async () => {
-      const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile);
+      const res = await firebase.vision().cloudImageLabelerProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -79,7 +79,7 @@ android.describe('mlkit.vision.label', () => {
   describe('VisionImageLabelerOptions', () => {
     it('throws if not an object', async () => {
       try {
-        await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, '123');
+        await firebase.vision().imageLabelerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'imageLabelerOptions' expected an object value");
@@ -90,7 +90,7 @@ android.describe('mlkit.vision.label', () => {
     describe('confidenceThreshold', () => {
       it('should throw if confidence threshold is not a number', async () => {
         try {
-          await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+          await firebase.vision().imageLabelerProcessImage(testImageFile, {
             confidenceThreshold: '0.5',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -105,7 +105,7 @@ android.describe('mlkit.vision.label', () => {
 
     it('should throw if confidence threshold is not between 0 & 1', async () => {
       try {
-        await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+        await firebase.vision().imageLabelerProcessImage(testImageFile, {
           confidenceThreshold: -0.2,
         });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -118,7 +118,7 @@ android.describe('mlkit.vision.label', () => {
     });
 
     it('should accept options and return local labels', async () => {
-      const res = await firebase.mlKitVision().imageLabelerProcessImage(testImageFile, {
+      const res = await firebase.vision().imageLabelerProcessImage(testImageFile, {
         confidenceThreshold: 0.8,
       });
 
@@ -136,7 +136,7 @@ android.describe('mlkit.vision.label', () => {
   describe('VisionCloudImageLabelerOptions', () => {
     it('throws if not an object', async () => {
       try {
-        await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, '123');
+        await firebase.vision().cloudImageLabelerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'cloudImageLabelerOptions' expected an object value");
@@ -147,7 +147,7 @@ android.describe('mlkit.vision.label', () => {
     describe('confidenceThreshold', () => {
       it('should throw if confidence threshold is not a number', async () => {
         try {
-          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+          await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
             confidenceThreshold: '0.2',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -161,7 +161,7 @@ android.describe('mlkit.vision.label', () => {
 
       it('should throw if confidence threshold is not between 0 & 1', async () => {
         try {
-          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+          await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
             confidenceThreshold: 1.1,
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -174,7 +174,7 @@ android.describe('mlkit.vision.label', () => {
       });
 
       it('should accept options and return cloud labels', async () => {
-        const res = await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+        const res = await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
           confidenceThreshold: 0.8,
         });
 
@@ -192,7 +192,7 @@ android.describe('mlkit.vision.label', () => {
     describe('enforceCertFingerprintMatch', () => {
       it('throws if not a boolean', async () => {
         try {
-          await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+          await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
             enforceCertFingerprintMatch: 'true',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -205,7 +205,7 @@ android.describe('mlkit.vision.label', () => {
       });
 
       it('sets enforceCertFingerprintMatch', async () => {
-        await firebase.mlKitVision().cloudImageLabelerProcessImage(testImageFile, {
+        await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
       });

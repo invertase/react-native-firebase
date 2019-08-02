@@ -70,7 +70,7 @@ const statics = {
   VisionBarcodeWifiEncryptionType,
 };
 
-const namespace = 'mlKitVision';
+const namespace = 'vision';
 const nativeModuleName = [
   'RNFBMLVisionFaceDetectorModule',
   'RNFBMLVisionImageLabelerModule',
@@ -90,7 +90,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().faceDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().faceDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -99,7 +99,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
       options = visionFaceDetectorOptions(faceDetectorOptions);
     } catch (e) {
       throw new Error(
-        `firebase.mlKitVision().faceDetectorProcessImage(_, *) 'faceDetectorOptions' ${e.message}.`,
+        `firebase.vision().faceDetectorProcessImage(_, *) 'faceDetectorOptions' ${e.message}.`,
       );
     }
 
@@ -109,7 +109,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   textRecognizerProcessImage(localImageFilePath) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().textRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().textRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -119,7 +119,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -127,7 +127,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     try {
       options = visionCloudTextRecognizerOptions(cloudTextRecognizerOptions);
     } catch (e) {
-      throw new Error(`firebase.mlKitVision().cloudTextRecognizerProcessImage(_, *) ${e.message}`);
+      throw new Error(`firebase.vision().cloudTextRecognizerProcessImage(_, *) ${e.message}`);
     }
 
     return this.native.cloudTextRecognizerProcessImage(toFilePath(localImageFilePath), options);
@@ -136,7 +136,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -145,7 +145,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
       options = visionCloudDocumentTextRecognizerOptions(cloudDocumentTextRecognizerOptions);
     } catch (e) {
       throw new Error(
-        `firebase.mlKitVision().cloudDocumentTextRecognizerProcessImage(_, *) ${e.message}.`,
+        `firebase.vision().cloudDocumentTextRecognizerProcessImage(_, *) ${e.message}.`,
       );
     }
 
@@ -158,7 +158,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -166,9 +166,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     try {
       options = visionCloudLandmarkRecognizerOptions(cloudLandmarkRecognizerOptions);
     } catch (e) {
-      throw new Error(
-        `firebase.mlKitVision().cloudLandmarkRecognizerProcessImage(_, *) ${e.message}.`,
-      );
+      throw new Error(`firebase.vision().cloudLandmarkRecognizerProcessImage(_, *) ${e.message}.`);
     }
 
     return this.native.cloudLandmarkRecognizerProcessImage(toFilePath(localImageFilePath), options);
@@ -183,7 +181,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().imageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -191,7 +189,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     try {
       options = visionImageLabelerOptions(imageLabelerOptions);
     } catch (e) {
-      throw new Error(`firebase.mlKitVision().imageLabelerProcessImage(_, *) ${e.message}.`);
+      throw new Error(`firebase.vision().imageLabelerProcessImage(_, *) ${e.message}.`);
     }
 
     return this.native.imageLabelerProcessImage(toFilePath(localImageFilePath), options);
@@ -206,7 +204,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -214,7 +212,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     try {
       options = visionCloudImageLabelerOptions(cloudImageLabelerOptions);
     } catch (e) {
-      throw new Error(`firebase.mlKitVision().cloudImageLabelerProcessImage(_, *) ${e.message}.`);
+      throw new Error(`firebase.vision().cloudImageLabelerProcessImage(_, *) ${e.message}.`);
     }
 
     return this.native.cloudImageLabelerProcessImage(toFilePath(localImageFilePath), options);
@@ -223,7 +221,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
   barcodeDetectorProcessImage(localImageFilePath, barcodeDetectorOptions) {
     if (!isString(localImageFilePath)) {
       throw new Error(
-        "firebase.mlKitVision().barcodeDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
+        "firebase.vision().barcodeDetectorProcessImage(*) 'localImageFilePath' expected a string local file path.",
       );
     }
 
@@ -231,7 +229,7 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
     try {
       options = visionBarcodeDetectorOptions(barcodeDetectorOptions);
     } catch (e) {
-      throw new Error(`firebase.mlKitVision().barcodeDetectorProcessImage(_, *) ${e.message}`);
+      throw new Error(`firebase.vision().barcodeDetectorProcessImage(_, *) ${e.message}`);
     }
 
     return this.native.barcodeDetectorProcessImage(toFilePath(localImageFilePath), options);
@@ -241,8 +239,8 @@ class FirebaseMlKitVisionModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/ml-vision';
 export const SDK_VERSION = version;
 
-// import mlKitVision from '@react-native-firebase/ml-vision';
-// mlKitVision().X(...);
+// import vision from '@react-native-firebase/ml-vision';
+// vision().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -254,9 +252,9 @@ export default createModuleNamespace({
   ModuleClass: FirebaseMlKitVisionModule,
 });
 
-// import mlKitVision, { firebase } from '@react-native-firebase/ml-vision';
-// mlKitVision().X(...);
-// firebase.mlKitVision().X(...);
+// import vision, { firebase } from '@react-native-firebase/ml-vision';
+// vision().X(...);
+// firebase.vision().X(...);
 export const firebase = getFirebaseRoot();
 
 // e.g.
