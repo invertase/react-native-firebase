@@ -57,7 +57,7 @@ export interface IdentifiedLanguage {
  * #### Example
  *
  * ```js
- * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+ * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
  * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
  *
  * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -74,7 +74,7 @@ export interface SuggestedReply {
  * #### Example
  *
  * ```js
- * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+ * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
  * ```
  *
  */
@@ -85,7 +85,7 @@ export interface SmartReplyConversation {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
    * conversation.addLocalUserMessage('That sounds great!');
    * conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
@@ -105,7 +105,7 @@ export interface SmartReplyConversation {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
    *
    * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -124,7 +124,7 @@ export interface SmartReplyConversation {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
    *
    * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -139,7 +139,7 @@ export interface SmartReplyConversation {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
    * // start over
    * conversation.clearMessages();
@@ -158,7 +158,7 @@ export interface SmartReplyConversation {
  * Get the ML Kit service for the default app:
  *
  * ```js
- * const defaultAppMLKit = firebase.mlKitLanguage();
+ * const defaultAppMLKit = firebase.naturalLanguage();
  * ```
  */
 export interface Module extends ReactNativeFirebaseModule {
@@ -172,10 +172,10 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+   * const language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');
    * console.warn(language); // en
    *
-   * const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+   * const unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
    * console.warn(language); // und
    * ```
    *
@@ -190,7 +190,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+   * const identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');
    * console.warn(identifiedLanguages[0].language); // en
    * ```
    *
@@ -208,7 +208,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * ```
    *
    * @param messageHistoryLimit Optional value to specify the number of messages to keep in history, messages in history are used with `SmartReplyConversation.getSuggestedReplies` and are sent natively every time this method is called. Defaults to 30.

@@ -22,22 +22,22 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * #### Example 1
  *
- * Access the firebase export from the `mlKitLanguage` package:
+ * Access the firebase export from the `naturalLanguage` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * #### Example 2
  *
- * Using the default export from the `mlKitLanguage` package:
+ * Using the default export from the `naturalLanguage` package:
  *
  * ```js
- * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
+ * import naturalLanguage from '@react-native-firebase/ml-natural-language';
  *
- * // mlKitLanguage().X
+ * // naturalLanguage().X
  * ```
  *
  * #### Example 3
@@ -48,7 +48,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * @firebase ml-natural-language
@@ -95,7 +95,7 @@ export namespace MLKitLanguage {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
    *
    * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -112,7 +112,7 @@ export namespace MLKitLanguage {
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
    * ```
    *
    */
@@ -123,7 +123,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
      * conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
      * conversation.addLocalUserMessage('That sounds great!');
      * conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
@@ -143,7 +143,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
      * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
      *
      * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -162,7 +162,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
      * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
      *
      * const suggestedReplies = await conversation.getSuggestedReplies();
@@ -177,7 +177,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
      * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
      * // start over
      * conversation.clearMessages();
@@ -196,7 +196,7 @@ export namespace MLKitLanguage {
    * Get the ML Kit service for the default app:
    *
    * ```js
-   * const defaultAppMLKit = firebase.mlKitLanguage();
+   * const defaultAppMLKit = firebase.naturalLanguage();
    * ```
    */
   export class Module extends FirebaseModule {
@@ -210,10 +210,10 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+     * const language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');
      * console.warn(language); // en
      *
-     * const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+     * const unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
      * console.warn(language); // und
      * ```
      *
@@ -228,7 +228,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+     * const identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');
      * console.warn(identifiedLanguages[0].language); // en
      * ```
      *
@@ -246,7 +246,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
      * ```
      *
      * @param messageHistoryLimit Optional value to specify the number of messages to keep in history, messages in history are used with `SmartReplyConversation.getSuggestedReplies` and are sent natively every time this method is called. Defaults to 30.
@@ -274,11 +274,11 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      mlKitLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
+      naturalLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
     }
 
     interface FirebaseApp {
-      mlKitLanguage(): MLKitLanguage.Module;
+      naturalLanguage(): MLKitLanguage.Module;
     }
   }
 }

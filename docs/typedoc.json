@@ -554,14 +554,14 @@
 								},
 								{
 									"id": 1544,
-									"name": "mlKitLanguage",
+									"name": "naturalLanguage",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
 											"id": 1545,
-											"name": "mlKitLanguage",
+											"name": "naturalLanguage",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
@@ -576,7 +576,7 @@
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
 											"line": 281,
-											"character": 19
+											"character": 21
 										}
 									]
 								},
@@ -1248,7 +1248,7 @@
 								},
 								{
 									"id": 1543,
-									"name": "mlKitLanguage",
+									"name": "naturalLanguage",
 									"kind": 1024,
 									"kindString": "Property",
 									"flags": {},
@@ -1256,7 +1256,7 @@
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
 											"line": 277,
-											"character": 19
+											"character": 21
 										}
 									],
 									"type": {
@@ -31338,7 +31338,7 @@
 			},
 			"comment": {
 				"shortText": "Firebase ML Kit package for React Native.",
-				"text": "#### Example 1\n\nAccess the firebase export from the `mlKitLanguage` package:\n\n```js\nimport { firebase } from '@react-native-firebase/ml-natural-language';\n\n// firebase.mlKitLanguage().X\n```\n\n#### Example 2\n\nUsing the default export from the `mlKitLanguage` package:\n\n```js\nimport mlKitLanguage from '@react-native-firebase/ml-natural-language';\n\n// mlKitLanguage().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/ml-natural-language';\n\n// firebase.mlKitLanguage().X\n```\n",
+				"text": "#### Example 1\n\nAccess the firebase export from the `naturalLanguage` package:\n\n```js\nimport { firebase } from '@react-native-firebase/ml-natural-language';\n\n// firebase.naturalLanguage().X\n```\n\n#### Example 2\n\nUsing the default export from the `naturalLanguage` package:\n\n```js\nimport naturalLanguage from '@react-native-firebase/ml-natural-language';\n\n// naturalLanguage().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/ml-natural-language';\n\n// firebase.naturalLanguage().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -31357,7 +31357,7 @@
 					},
 					"comment": {
 						"shortText": "The Firebase ML Kit service interface.",
-						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the ML Kit service for the default app:\n\n```js\nconst defaultAppMLKit = firebase.mlKitLanguage();\n```\n"
+						"text": "> This module is available for the default app only.\n\n#### Example\n\nGet the ML Kit service for the default app:\n\n```js\nconst defaultAppMLKit = firebase.naturalLanguage();\n```\n"
 					},
 					"children": [
 						{
@@ -31405,7 +31405,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Identifies the main language for the given text.",
-										"text": "Returns a promise that resolves with a [BCP-47 language code](https://en.wikipedia.org/wiki/IETF_language_tag) of the detected language.\n\nIf the language was undetected or unknown the code returned is `und`.\n\n#### Example\n\n```js\nconst language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');\nconsole.warn(language); // en\n\nconst unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });\nconsole.warn(language); // und\n```\n"
+										"text": "Returns a promise that resolves with a [BCP-47 language code](https://en.wikipedia.org/wiki/IETF_language_tag) of the detected language.\n\nIf the language was undetected or unknown the code returned is `und`.\n\n#### Example\n\n```js\nconst language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');\nconsole.warn(language); // en\n\nconst unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });\nconsole.warn(language); // und\n```\n"
 									},
 									"parameters": [
 										{
@@ -31477,7 +31477,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Identifies possible languages for the given text.",
-										"text": "#### Example\n\n```js\nconst identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');\nconsole.warn(identifiedLanguages[0].language); // en\n```\n"
+										"text": "#### Example\n\n```js\nconst identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');\nconsole.warn(identifiedLanguages[0].language); // en\n```\n"
 									},
 									"parameters": [
 										{
@@ -31553,7 +31553,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a new instance of SmartReplyConversation.",
-										"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\n```\n"
+										"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\n```\n"
 									},
 									"parameters": [
 										{
@@ -31641,7 +31641,7 @@
 					},
 					"comment": {
 						"shortText": "A class representing a Smart Reply conversation in your app.",
-						"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\n```\n\n"
+						"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\n```\n\n"
 					},
 					"children": [
 						{
@@ -31661,7 +31661,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Add a local message to this conversation, e.g. for the currently signed in user on this device.",
-										"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\nconversation.addLocalUserMessage('That sounds great!');\nconversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
+										"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\nconversation.addLocalUserMessage('That sounds great!');\nconversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
 									},
 									"parameters": [
 										{
@@ -31735,7 +31735,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Add a remote message to this conversation, e.g. for a user that's not on this device.",
-										"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
+										"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
 									},
 									"parameters": [
 										{
@@ -31812,7 +31812,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Removes all messages from this conversation, e.g. all messages added via `addLocalUserMessage` and `addRemoteUserMessage`.",
-										"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n// start over\nconversation.clearMessages();\n```\n"
+										"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n// start over\nconversation.clearMessages();\n```\n"
 									},
 									"type": {
 										"type": "intrinsic",
@@ -31845,7 +31845,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Get suggested replies for the current conversation.",
-										"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
+										"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -32059,7 +32059,7 @@
 					},
 					"comment": {
 						"shortText": "An interface representing a suggest reply, an array of these are returned from `SmartReplyConversation.getSuggestedReplies`",
-						"text": "#### Example\n\n```js\nconst conversation = firebase.mlKitLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
+						"text": "#### Example\n\n```js\nconst conversation = firebase.naturalLanguage().newSmartReplyConversation();\nconversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');\n\nconst suggestedReplies = await conversation.getSuggestedReplies();\nconsole.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]\n```\n"
 					},
 					"children": [
 						{

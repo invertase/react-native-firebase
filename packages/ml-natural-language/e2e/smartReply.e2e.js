@@ -19,10 +19,10 @@ const text = 'a message';
 const timestamp = Date.now();
 const remoteUserId = 'invertase';
 
-describe('mlKitLanguage() -> Smart Replies', () => {
+describe('naturalLanguage() -> Smart Replies', () => {
   describe('newSmartReplyConversation()', () => {
     it('returns a new instance of SmartReplyConversation', async () => {
-      const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+      const conversation = firebase.naturalLanguage().newSmartReplyConversation();
       conversation.should.be.instanceOf(
         jet.require('packages/ml-natural-language/lib/SmartReplyConversation'),
       );
@@ -30,7 +30,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
     it('throws an error if arg is not a number', async () => {
       try {
-        firebase.mlKitLanguage().newSmartReplyConversation(false);
+        firebase.naturalLanguage().newSmartReplyConversation(false);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a number or undefined');
@@ -39,7 +39,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     });
 
     it('correctly limits local message history', async () => {
-      const conversation = firebase.mlKitLanguage().newSmartReplyConversation(5);
+      const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
       for (let i = 0; i < 10; i++) {
         conversation.addLocalUserMessage(`${i}`, timestamp);
         conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
@@ -51,7 +51,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     });
 
     it('correctly limits remote message history', async () => {
-      const conversation = firebase.mlKitLanguage().newSmartReplyConversation(5);
+      const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
       for (let i = 0; i < 10; i++) {
         conversation.addRemoteUserMessage(`${i}`, timestamp, remoteUserId);
         conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
@@ -66,7 +66,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
   describe('SmartReplyConversation', () => {
     describe('clearMessages', () => {
       it('clears all messages', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation(5);
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
         for (let i = 0; i < 10; i++) {
           conversation.addRemoteUserMessage(`${i}`, timestamp, remoteUserId);
           conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
@@ -79,7 +79,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     });
     describe('addRemoteUserMessage', () => {
       it('adds a message for a remote user', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         conversation.addRemoteUserMessage(text, timestamp, remoteUserId);
 
         conversation.messages.length.should.equal(1);
@@ -89,7 +89,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       it('throws if message is invalid', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         try {
           conversation.addRemoteUserMessage(false, timestamp, remoteUserId);
           return Promise.reject(new Error('Did not throw'));
@@ -100,7 +100,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       it('throws if timestamp is invalid', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         try {
           conversation.addRemoteUserMessage(text, false, remoteUserId);
           return Promise.reject(new Error('Did not throw'));
@@ -111,7 +111,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       it('throws if remoteUserId is invalid', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         try {
           conversation.addRemoteUserMessage(text, timestamp, false);
           return Promise.reject(new Error('Did not throw'));
@@ -124,7 +124,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
     describe('addLocalUserMessage', () => {
       it('adds a message for a remote user', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         conversation.addLocalUserMessage(text, timestamp);
 
         conversation.messages.length.should.equal(1);
@@ -133,7 +133,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       it('throws if message is invalid', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         try {
           conversation.addLocalUserMessage(false, timestamp);
           return Promise.reject(new Error('Did not throw'));
@@ -144,7 +144,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       it('throws if timestamp is invalid', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         try {
           conversation.addLocalUserMessage(text, false);
           return Promise.reject(new Error('Did not throw'));
@@ -157,7 +157,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
     describe('getSuggestedReplies', () => {
       it('returns an array of suggested replies and their scores', async () => {
-        const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
         conversation.addLocalUserMessage('Hey, long time no speak!', timestamp);
         conversation.addRemoteUserMessage(
           'I know right, it has been a while..',
