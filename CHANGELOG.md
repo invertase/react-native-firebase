@@ -219,10 +219,11 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 ## Dynamic Links (dynamicLinks)
 
 - [BREAKING] the namespace for this module has changed, replace all usages of `firebase.links()` with `firebase.dynamicLinks()`
+- [BREAKING] `onLink` & `getInitialLink` now return a `DynamicLink` object with multiple properties, formally just provided just the url as a string
 - [NEW][ios][🔥] Manually adding `AppDelegate` methods to support receiving Dynamic Link open events is no longer required, we swizzle this at runtime and automatically intercept the required events.
 - [BUGFIX] Links should now always be accessible via `onLink` & `getInitialLink`
-  - This fix is a side-effect of the bugfix mentioned above in the `all modules` section ('`All native events are now queued natively`')
-- [BREAKING] Creating a Dynamic Link builder via `new firebase.links.DynamicLink(link, domainURIPrefix)` has been deprecated, use a plan object instead as an arg for `buildLink()` & `buildShortLink()`.
+  - This fix is a 'side-effect' of the bugfix mentioned above in the `all modules` section ('`All native events are now queued natively`')
+- [BREAKING] Creating a Dynamic Link builder via `new firebase.links.DynamicLink(link, domainURIPrefix)` has been deprecated, use a plain object instead as an arg for `buildLink()` & `buildShortLink()`.
 - [BREAKING] Some previously allowed parameter configurations will now throw an argument error, e.g. trying to set any `DynamicLinkIOSParameters` param without providing an iOS bundle id will now error.
   - these configurations were incorrect to begin with but were never flagged to user code so may have gone unnoticed
 

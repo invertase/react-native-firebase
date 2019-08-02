@@ -20,7 +20,6 @@ export const APP_NATIVE_MODULE = 'RNFBAppModule';
 export const DEFAULT_APP_NAME = '[DEFAULT]';
 
 export const KNOWN_NAMESPACES = [
-  // with APIs
   'admob',
   'auth',
   'analytics',
@@ -41,7 +40,4 @@ export const KNOWN_NAMESPACES = [
   'notifications',
   'perf',
   'utils',
-  // documentation only
-  // 'predictions',
-  // 'ab-testing'
 ];
