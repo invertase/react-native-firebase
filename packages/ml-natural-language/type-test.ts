@@ -4,13 +4,13 @@ import defaultExport, {
 } from '@react-native-firebase/ml-natural-language';
 
 // checks module exists at root
-console.log(firebase.mlKitLanguage().app.name);
+console.log(firebase.naturalLanguage().app.name);
 
 // checks module exists at app level
-console.log(firebase.app().mlKitLanguage().app.name);
+console.log(firebase.app().naturalLanguage().app.name);
 
 // checks statics exist
-console.log(firebase.mlKitLanguage.SDK_VERSION);
+console.log(firebase.naturalLanguage.SDK_VERSION);
 
 // checks statics exist on defaultExport
 console.log(defaultExport.SDK_VERSION);
@@ -22,7 +22,7 @@ console.log(firebase.SDK_VERSION);
 console.log(firebaseFromModule.SDK_VERSION);
 
 // checks multi-app support exists
-console.log(firebase.mlKitLanguage(firebase.app()).app.name);
+console.log(firebase.naturalLanguage(firebase.app()).app.name);
 
 // checks default export supports app arg
 console.log(defaultExport(firebase.app()).app.name);

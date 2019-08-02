@@ -361,41 +361,11 @@ The Remote Config API has had a significant API change as originally highlighted
 
 ---
 
-## ML Kit Natural Language (mlKitLanguage) - **[NEW]**
+## ML Kit Natural Language (naturalLanguage) - **[NEW]**
 
 - [NEW] Implemented support for language identification APIs
-
-**Identify a single language:**
-
-```js
-const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
-console.warn(language); // en
-
-const unknownLanguage = await firebase
-  .mlKitLanguage()
-  .identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
-console.warn(language); // und
-```
-
-**Identify a multiple languages:**
-
-```js
-const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
-console.warn(identifiedLanguages[0].language); // en
-```
-
 - [NEW] Implemented support for [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
-- [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
-
-```js
-const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-conversation.addLocalUserMessage('That sounds great!');
-conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
-
-const suggestedReplies = await conversation.getSuggestedReplies();
-console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-```
+  - [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
 
 > ML Kit Translate APIs to come in a later release.
 

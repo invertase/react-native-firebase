@@ -15,64 +15,64 @@
  *
  */
 
-describe('mlKitLanguage()', () => {
+describe('naturalLanguage()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.mlKitLanguage);
-      app.mlKitLanguage().app.should.equal(app);
+      should.exist(app.naturalLanguage);
+      app.naturalLanguage().app.should.equal(app);
     });
 
     it('supports multiple apps', async () => {
-      firebase.mlKitLanguage().app.name.should.equal('[DEFAULT]');
+      firebase.naturalLanguage().app.name.should.equal('[DEFAULT]');
       firebase
-        .mlKitLanguage(firebase.app('secondaryFromNative'))
+        .naturalLanguage(firebase.app('secondaryFromNative'))
         .app.name.should.equal('secondaryFromNative');
 
       firebase
         .app('secondaryFromNative')
-        .mlKitLanguage()
+        .naturalLanguage()
         .app.name.should.equal('secondaryFromNative');
     });
 
     it('throws an error if language id native module does not exist', async () => {
-      const method = firebase.mlKitLanguage().native.identifyLanguage;
-      firebase.mlKitLanguage()._nativeModule = Object.assign(
+      const method = firebase.naturalLanguage().native.identifyLanguage;
+      firebase.naturalLanguage()._nativeModule = Object.assign(
         {},
-        firebase.mlKitLanguage()._nativeModule,
+        firebase.naturalLanguage()._nativeModule,
       );
-      delete firebase.mlKitLanguage()._nativeModule.identifyLanguage;
+      delete firebase.naturalLanguage()._nativeModule.identifyLanguage;
       try {
-        firebase.mlKitLanguage().identifyLanguage();
+        firebase.naturalLanguage().identifyLanguage();
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql(
           "You attempted to use an optional API that's not enabled natively",
         );
         e.message.should.containEql('Language Identification');
-        firebase.mlKitLanguage()._nativeModule.identifyLanguage = method;
-        Object.freeze(firebase.mlKitLanguage()._nativeModule);
+        firebase.naturalLanguage()._nativeModule.identifyLanguage = method;
+        Object.freeze(firebase.naturalLanguage()._nativeModule);
         return Promise.resolve();
       }
     });
 
     it('throws an error if smart replies native module does not exist', async () => {
-      const method = firebase.mlKitLanguage().native.getSuggestedReplies;
-      firebase.mlKitLanguage()._nativeModule = Object.assign(
+      const method = firebase.naturalLanguage().native.getSuggestedReplies;
+      firebase.naturalLanguage()._nativeModule = Object.assign(
         {},
-        firebase.mlKitLanguage()._nativeModule,
+        firebase.naturalLanguage()._nativeModule,
       );
-      delete firebase.mlKitLanguage()._nativeModule.getSuggestedReplies;
+      delete firebase.naturalLanguage()._nativeModule.getSuggestedReplies;
       try {
-        firebase.mlKitLanguage().newSmartReplyConversation();
+        firebase.naturalLanguage().newSmartReplyConversation();
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql(
           "You attempted to use an optional API that's not enabled natively",
         );
         e.message.should.containEql('Smart Replies');
-        firebase.mlKitLanguage()._nativeModule.getSuggestedReplies = method;
-        Object.freeze(firebase.mlKitLanguage()._nativeModule);
+        firebase.naturalLanguage()._nativeModule.getSuggestedReplies = method;
+        Object.freeze(firebase.naturalLanguage()._nativeModule);
         return Promise.resolve();
       }
     });
