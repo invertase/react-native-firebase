@@ -41,7 +41,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       const replies = await firebase.mlKitLanguage().suggestReplies([
         { text: 'We should catchup some time!' },
         { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
-        { text: 'We should catchup some time!' },
+        { text: 'Lets meet up!' },
         {
           text: 'Definitely, how about we go for lunch this week?',
           userId: '123',

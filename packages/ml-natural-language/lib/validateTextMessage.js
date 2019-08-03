@@ -33,19 +33,15 @@ export default function validateTextMessage(textMessage) {
     isLocalUser: true,
   };
 
-  if (!hasOwnProperty(textMessage, 'text')) {
+  if (!isString(textMessage.text)) {
     throw new Error("'textMessage.text' expected a string value");
-  } else {
-    if (!isString(textMessage.text)) {
-      throw new Error("'textMessage.text' expected a string value");
-    }
-
-    if (textMessage.text.length === 0) {
-      throw new Error("'textMessage.text' expected string value to not be empty");
-    }
-
-    out.text = textMessage.text;
   }
+
+  if (textMessage.text.length === 0) {
+    throw new Error("'textMessage.text' expected string value to not be empty");
+  }
+
+  out.text = textMessage.text;
 
   if (hasOwnProperty(textMessage, 'timestamp')) {
     if (!isNumber(textMessage.timestamp)) {
