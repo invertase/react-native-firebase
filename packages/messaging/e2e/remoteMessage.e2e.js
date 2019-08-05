@@ -21,7 +21,7 @@ describe('messaging().sendMessage(*)', () => {
       firebase.messaging().sendMessage(123);
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql(`'remoteMessage' expected an object value`);
+      e.message.should.containEql("'remoteMessage' expected an object value");
       return Promise.resolve();
     }
   });
@@ -38,7 +38,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.to' expected a string value`);
+        e.message.should.containEql("'remoteMessage.to' expected a string value");
         return Promise.resolve();
       }
     });
@@ -58,7 +58,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.messageId' expected a string value`);
+        e.message.should.containEql("'remoteMessage.messageId' expected a string value");
         return Promise.resolve();
       }
     });
@@ -78,7 +78,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`remoteMessage.ttl' expected a number value`);
+        e.message.should.containEql("remoteMessage.ttl' expected a number value");
         return Promise.resolve();
       }
     });
@@ -90,7 +90,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.ttl' expected a positive integer value`);
+        e.message.should.containEql("'remoteMessage.ttl' expected a positive integer value");
         return Promise.resolve();
       }
     });
@@ -102,7 +102,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.ttl' expected a positive integer value`);
+        e.message.should.containEql("'remoteMessage.ttl' expected a positive integer value");
         return Promise.resolve();
       }
     });
@@ -122,7 +122,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.data' expected an object value`);
+        e.message.should.containEql("'remoteMessage.data' expected an object value");
         return Promise.resolve();
       }
     });
@@ -144,7 +144,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.collapseKey' expected a string value`);
+        e.message.should.containEql("'remoteMessage.collapseKey' expected a string value");
         return Promise.resolve();
       }
     });
@@ -164,7 +164,7 @@ describe('messaging().sendMessage(*)', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'remoteMessage.messageType' expected a string value`);
+        e.message.should.containEql("'remoteMessage.messageType' expected a string value");
         return Promise.resolve();
       }
     });

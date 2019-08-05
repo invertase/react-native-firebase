@@ -22,8 +22,7 @@ const baseParams = {
 
 module.exports.baseParams = baseParams;
 
-// eslint-disable-next-line jest/no-disabled-tests
-xdescribe('dynamicLinks()', () => {
+describe.only('dynamicLinks()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -76,7 +75,7 @@ xdescribe('dynamicLinks()', () => {
     });
   });
 
+  // TODO how can we test these?
   describe('getInitialLink()', () => {});
-
   describe('onLink()', () => {});
 });

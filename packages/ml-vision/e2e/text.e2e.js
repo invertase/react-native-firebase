@@ -82,7 +82,7 @@ android.describe('mlkit.vision.text', () => {
   describe('textRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().textRecognizerProcessImage(123);
+        firebase.vision().textRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -91,7 +91,7 @@ android.describe('mlkit.vision.text', () => {
     });
 
     it('should return a VisionText representation for an image', async () => {
-      const res = await firebase.mlKitVision().textRecognizerProcessImage(testImageFile);
+      const res = await firebase.vision().textRecognizerProcessImage(testImageFile);
       res.text.should.be.a.String();
       res.blocks.should.be.an.Array();
       res.blocks.length.should.be.greaterThan(0);
@@ -115,7 +115,7 @@ android.describe('mlkit.vision.text', () => {
   describe('VisionCloudTextRecognizerOptions', () => {
     it('throws if not an object', async () => {
       try {
-        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, '123');
+        await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'cloudTextRecognizerOptions' expected an object value");
@@ -126,7 +126,7 @@ android.describe('mlkit.vision.text', () => {
     describe('enforceCertFingerprintMatch', () => {
       it('throws if not a boolean', async () => {
         try {
-          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
             enforceCertFingerprintMatch: 'false',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -139,7 +139,7 @@ android.describe('mlkit.vision.text', () => {
       });
 
       it('sets a value', async () => {
-        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+        await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
       });
@@ -148,7 +148,7 @@ android.describe('mlkit.vision.text', () => {
     describe('languageHints', () => {
       it('throws if not array', async () => {
         try {
-          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: 'en',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -162,7 +162,7 @@ android.describe('mlkit.vision.text', () => {
 
       it('throws if empty array', async () => {
         try {
-          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: [],
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -176,7 +176,7 @@ android.describe('mlkit.vision.text', () => {
 
       it('throws if array contains non-string values', async () => {
         try {
-          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: [123],
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -189,7 +189,7 @@ android.describe('mlkit.vision.text', () => {
       });
 
       it('sets hintedLanguages', async () => {
-        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+        await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
           languageHints: ['fr'],
         });
       });
@@ -198,7 +198,7 @@ android.describe('mlkit.vision.text', () => {
     describe('modelType', () => {
       it('throws if invalid type', async () => {
         try {
-          await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
             modelType: 7,
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -209,12 +209,12 @@ android.describe('mlkit.vision.text', () => {
       });
 
       it('sets modelType', async () => {
-        await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile, {
-          modelType: firebase.mlKitVision.VisionCloudTextRecognizerModelType.SPARSE_MODEL,
+        await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
+          modelType: firebase.vision.VisionCloudTextRecognizerModelType.SPARSE_MODEL,
         });
 
-        await firebase.mlKitVision().textRecognizerProcessImage(testImageFile, {
-          modelType: firebase.mlKitVision.VisionCloudTextRecognizerModelType.DENSE_MODEL,
+        await firebase.vision().textRecognizerProcessImage(testImageFile, {
+          modelType: firebase.vision.VisionCloudTextRecognizerModelType.DENSE_MODEL,
         });
       });
     });
@@ -223,7 +223,7 @@ android.describe('mlkit.vision.text', () => {
   describe('cloudTextRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().cloudTextRecognizerProcessImage(123);
+        firebase.vision().cloudTextRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -232,7 +232,7 @@ android.describe('mlkit.vision.text', () => {
     });
 
     it('should return a VisionText representation for an image', async () => {
-      const res = await firebase.mlKitVision().cloudTextRecognizerProcessImage(testImageFile);
+      const res = await firebase.vision().cloudTextRecognizerProcessImage(testImageFile);
       res.text.should.be.a.String();
       res.blocks.should.be.an.Array();
       res.blocks.length.should.be.greaterThan(0);

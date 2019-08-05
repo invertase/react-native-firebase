@@ -20,7 +20,7 @@ yarn add @react-native-firebase/ml-natural-language
 Import the ML Kit package into your project:
 
 ```js
-import mlNaturalLanguage from '@react-native-firebase/ml-natural-language';
+import naturalLanguage from '@react-native-firebase/ml-natural-language';
 ```
 
 The package also provides access to the firebase instance:
