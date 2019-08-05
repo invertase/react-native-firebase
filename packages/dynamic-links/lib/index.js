@@ -59,8 +59,8 @@ class FirebaseLinksModule extends FirebaseModule {
     }
 
     if (
-      shortLinkType !== 'DEFAULT' ||
-      shortLinkType !== 'SHORT' ||
+      shortLinkType !== 'DEFAULT' &&
+      shortLinkType !== 'SHORT' &&
       shortLinkType !== 'UNGUESSABLE'
     ) {
       throw new Error(
