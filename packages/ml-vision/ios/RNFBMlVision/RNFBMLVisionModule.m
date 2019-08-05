@@ -15,10 +15,30 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+// TODO do this for optional vision deps
+#if __has_include(<FirebaseMLNLLanguageID/FIRLanguageIdentificationOptions.h>)
 
-#import <React/RCTBridgeModule.h>
+#import <React/RCTUtils.h>
+#import "RNFBSharedUtils.h"
+#import "RNFBMLVisionModule.h"
 
-@interface RNFBMlkitModule : NSObject <RCTBridgeModule>
+#define DEPENDENCY_EXISTS=1
+#endif
+
+
+@implementation RNFBMLVisionModule
+#pragma mark -
+#pragma mark Module Setup
+
+RCT_EXPORT_MODULE();
+
+#pragma mark -
+#pragma mark Firebase ML Kit Vision Methods
+
+#ifdef DEPENDENCY_EXISTS
+
+// TODO react methods here
+
+#endif
 
 @end

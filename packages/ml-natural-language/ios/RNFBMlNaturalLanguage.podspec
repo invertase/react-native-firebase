@@ -2,9 +2,6 @@ require 'json'
 require '../../app/firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-FirebaseJSON::Config.get_value_or_default('crashlytics_ndk_enabled', false)
-
-
 Pod::Spec.new do |s|
   s.name                = "RNFBMlNaturalLanguage"
   s.version             = package["version"]
