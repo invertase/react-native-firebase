@@ -36,7 +36,7 @@ import validateTextMessage from './validateTextMessage';
 // import TranslateModelManager from './TranslateModelManager';
 
 const statics = {};
-const namespace = 'mlKitLanguage';
+const namespace = 'naturalLanguage';
 const nativeModuleName = [
   'RNFBMLNaturalLanguageIdModule',
   'RNFBMLNaturalLanguageTranslateModule',
@@ -45,12 +45,14 @@ const nativeModuleName = [
 
 function validateIdentifyLanguageArgs(text, options, methodName) {
   if (!isString(text)) {
-    throw new Error(`firebase.mlKitLanguage().${methodName}(*, _) 'text' must be a string value.`);
+    throw new Error(
+      `firebase.naturalLanguage().${methodName}(*, _) 'text' must be a string value.`,
+    );
   }
 
   if (!isObject(options)) {
     throw new Error(
-      `firebase.mlKitLanguage().${methodName}(_, *) 'options' must be an object or undefined.`,
+      `firebase.naturalLanguage().${methodName}(_, *) 'options' must be an object or undefined.`,
     );
   }
 
@@ -61,7 +63,7 @@ function validateIdentifyLanguageArgs(text, options, methodName) {
       options.confidenceThreshold > 1)
   ) {
     throw new Error(
-      `firebase.mlKitLanguage().${methodName}(_, *) 'options.confidenceThreshold' must be a float value between 0 and 1.`,
+      `firebase.naturalLanguage().${methodName}(_, *) 'options.confidenceThreshold' must be a float value between 0 and 1.`,
     );
   }
 }
@@ -93,7 +95,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
   suggestReplies(messages) {
     if (!isArray(messages)) {
       throw new Error(
-        "firebase.mlKitLanguage().suggestReplies(*) 'messages' must be an array value.",
+        "firebase.naturalLanguage().suggestReplies(*) 'messages' must be an array value.",
       );
     }
 
@@ -108,7 +110,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
         validated.push(validateTextMessage(messages[i]));
       } catch (e) {
         throw new Error(
-          `firebase.mlKitLanguage().suggestReplies(*) 'messages' object at index ${i} threw an error. ${
+          `firebase.naturalLanguage().suggestReplies(*) 'messages' object at index ${i} threw an error. ${
             e.message
           }.`,
         );
@@ -122,8 +124,8 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/mlkit';
 export const SDK_VERSION = version;
 
-// import mlKitLanguage from '@react-native-firebase/mlkit';
-// mlKitLanguage().X(...);
+// import naturalLanguage from '@react-native-firebase/mlkit';
+// naturalLanguage().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -135,9 +137,9 @@ export default createModuleNamespace({
   ModuleClass: FirebaseMlKitLanguageModule,
 });
 
-// import mlKitLanguage, { firebase } from '@react-native-firebase/mlkit';
-// mlKitLanguage().X(...);
-// firebase.mlKitLanguage().X(...);
+// import naturalLanguage, { firebase } from '@react-native-firebase/mlkit';
+// naturalLanguage().X(...);
+// firebase.naturalLanguage().X(...);
 export const firebase = getFirebaseRoot();
 
 // TODO not available on Firebase iOS until SDK 6.0.0, add in RNFB >6.1

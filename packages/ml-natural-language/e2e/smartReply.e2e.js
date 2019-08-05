@@ -15,15 +15,11 @@
  *
  */
 
-const text = 'a message';
-const timestamp = Date.now();
-const remoteUserId = 'invertase';
-
-describe('mlKitLanguage() -> Smart Replies', () => {
+describe('naturalLanguage() -> Smart Replies', () => {
   describe('suggestReplies()', () => {
     it('throws if messages is not an array', () => {
       try {
-        firebase.mlKitLanguage().suggestReplies({});
+        firebase.naturalLanguage().suggestReplies({});
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql("'messages' must be an array value");
@@ -32,19 +28,19 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     });
 
     it('resolves an empty array if empty array if provided', async () => {
-      const replies = await firebase.mlKitLanguage().suggestReplies([]);
+      const replies = await firebase.naturalLanguage().suggestReplies([]);
       replies.should.be.Array();
       replies.length.should.eql(0);
     });
 
     it('returns suggested replies', async () => {
-      const replies = await firebase.mlKitLanguage().suggestReplies([
+      const replies = await firebase.naturalLanguage().suggestReplies([
         { text: 'We should catchup some time!' },
-        { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
+        { text: 'I know right, it has been a while..', userId: 'invertase', isLocalUser: false },
         { text: 'Lets meet up!' },
         {
           text: 'Definitely, how about we go for lunch this week?',
-          userId: '123',
+          userId: 'invertase',
           isLocalUser: false,
         },
       ]);
@@ -58,10 +54,10 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       });
 
       const replies2 = await firebase
-        .mlKitLanguage()
+        .naturalLanguage()
         .suggestReplies([
           { text: replies[0].text },
-          { text: 'Great, does Friday work for you?', userId: '123', isLocalUser: false },
+          { text: 'Great, does Friday work for you?', userId: 'invertase', isLocalUser: false },
         ]);
 
       replies2[0].text.should.be.String();
@@ -71,7 +67,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
     describe('TextMessage', () => {
       it('throws if message is not an object', () => {
         try {
-          firebase.mlKitLanguage().suggestReplies([123]);
+          firebase.naturalLanguage().suggestReplies([123]);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
           e.message.should.containEql("'textMessage' expected an object value");
@@ -82,7 +78,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       describe('.text', () => {
         it('throws if text option not provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{}]);
+            firebase.naturalLanguage().suggestReplies([{}]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected a string value");
@@ -92,7 +88,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if text option is not a string', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{ text: 123 }]);
+            firebase.naturalLanguage().suggestReplies([{ text: 123 }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected a string value");
@@ -102,7 +98,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if text length is zero', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{ text: '' }]);
+            firebase.naturalLanguage().suggestReplies([{ text: '' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.text' expected string value to not be empty");
@@ -114,7 +110,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       describe('.userId', () => {
         it('throws if local user true and id provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', userId: 'bar' }]);
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', userId: 'bar' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql(
@@ -126,7 +122,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('throws if text userId not provided', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', isLocalUser: false }]);
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', isLocalUser: false }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.userId' expected a string value");
@@ -137,7 +133,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         it('throws if userId option is not a string', () => {
           try {
             firebase
-              .mlKitLanguage()
+              .naturalLanguage()
               .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 123 }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
@@ -149,7 +145,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         it('throws if userId length is zero', () => {
           try {
             firebase
-              .mlKitLanguage()
+              .naturalLanguage()
               .suggestReplies([{ text: 'foo', isLocalUser: false, userId: '' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
@@ -162,7 +158,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
 
         it('sets a user id', () => {
           firebase
-            .mlKitLanguage()
+            .naturalLanguage()
             .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 'bar' }]);
         });
       });
@@ -170,7 +166,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
       describe('.timestamp', () => {
         it('throws if timestamp is not a number', () => {
           try {
-            firebase.mlKitLanguage().suggestReplies([{ text: 'foo', timestamp: 'baz' }]);
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', timestamp: 'baz' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {
             e.message.should.containEql("'textMessage.timestamp' expected number value");
@@ -179,7 +175,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         });
 
         it('sets a timestamp', () => {
-          firebase.mlKitLanguage().suggestReplies([{ text: 'foo', timestamp: Date.now() + 123 }]);
+          firebase.naturalLanguage().suggestReplies([{ text: 'foo', timestamp: Date.now() + 123 }]);
         });
       });
 
@@ -187,7 +183,7 @@ describe('mlKitLanguage() -> Smart Replies', () => {
         it('throws if isLocalUser is not a boolean', () => {
           try {
             firebase
-              .mlKitLanguage()
+              .naturalLanguage()
               .suggestReplies([{ text: 'foo', userId: 'bar', isLocalUser: 'baz' }]);
             return Promise.reject(new Error('Did not throw'));
           } catch (e) {

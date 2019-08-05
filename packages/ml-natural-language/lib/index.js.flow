@@ -17,7 +17,6 @@
  */
 
 import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types/index.js.flow';
-import { TextMessage } from './index';
 
 export interface Statics {}
 
@@ -53,17 +52,7 @@ export interface IdentifiedLanguage {
 }
 
 /**
- * An interface representing a suggest reply, an array of these are returned from `SmartReplyConversation.getSuggestedReplies`
- *
- * #### Example
- *
- * ```js
- * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
- * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
- *
- * const suggestedReplies = await conversation.getSuggestedReplies();
- * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
- * ```
+ * An interface representing a suggest reply, an array of these are returned from `suggestReplies`
  */
 export interface SuggestedReply {
   /**
@@ -115,7 +104,7 @@ export interface TextMessage {
  * Get the ML Kit service for the default app:
  *
  * ```js
- * const defaultAppMLKit = firebase.mlKitLanguage();
+ * const defaultAppMLKit = firebase.naturalLanguage();
  * ```
  */
 export interface Module extends ReactNativeFirebaseModule {
@@ -129,10 +118,10 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+   * const language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');
    * console.warn(language); // en
    *
-   * const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+   * const unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
    * console.warn(language); // und
    * ```
    *
@@ -147,7 +136,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+   * const identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');
    * console.warn(identifiedLanguages[0].language); // en
    * ```
    *
@@ -165,10 +154,10 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const replies = await firebase.mlKitLanguage().suggestReplies([
+   * const replies = await firebase.naturalLanguage().suggestReplies([
    *   { text: "Hey, long time no speak!", },
    *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
-   *   { text: 'Hey, long time no speak!' },
+   *   { text: 'We should catch up sometime' },
    *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
    * ]);
    * ```
@@ -178,7 +167,7 @@ export interface Module extends ReactNativeFirebaseModule {
   suggestReplies(messages: TextMessage[]): Promise<SuggestedReply[]>;
 }
 
-declare module '@react-native-firebase/mlkit' {
+declare module '@react-native-firebase/ml-natural-language' {
   import type {
     ReactNativeFirebaseNamespace,
     ReactNativeFirebaseModuleAndStatics,
@@ -186,8 +175,8 @@ declare module '@react-native-firebase/mlkit' {
   /**
    * @example
    * ```js
-   * import { firebase } from '@react-native-firebase/mlkit';
-   * firebase.mlkit().X(...);
+   * import { firebase } from '@react-native-firebase/ml-natural-language';
+   * firebase.naturalLanguage().X(...);
    * ```
    */
   declare export var firebase: {} & ReactNativeFirebaseNamespace;
@@ -195,8 +184,8 @@ declare module '@react-native-firebase/mlkit' {
   /**
    * @example
    * ```js
-   * import mlkit from '@react-native-firebase/mlkit';
-   * mlkit().X(...);
+   * import naturalLanguage from '@react-native-firebase/ml-natural-language';
+   * naturalLanguage().X(...);
    * ```
    */
   declare export default ReactNativeFirebaseModuleAndStatics<Module, Statics>;
@@ -210,15 +199,15 @@ declare module '@react-native-firebase/app-types' {
 
   declare interface ReactNativeFirebaseNamespace {
     /**
-     * Mlkit
+     * ML Kit Natural Language
      */
-    mlkit: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+    naturalLanguage: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
   }
 
   declare interface FirebaseApp {
     /**
-     * Mlkit
+     * ML Kit Natural Language
      */
-    mlkit(): Module;
+    naturalLanguage(): Module;
   }
 }

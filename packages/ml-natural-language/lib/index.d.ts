@@ -22,22 +22,22 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * #### Example 1
  *
- * Access the firebase export from the `mlKitLanguage` package:
+ * Access the firebase export from the `naturalLanguage` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * #### Example 2
  *
- * Using the default export from the `mlKitLanguage` package:
+ * Using the default export from the `naturalLanguage` package:
  *
  * ```js
- * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
+ * import naturalLanguage from '@react-native-firebase/ml-natural-language';
  *
- * // mlKitLanguage().X
+ * // naturalLanguage().X
  * ```
  *
  * #### Example 3
@@ -48,7 +48,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * @firebase ml-natural-language
@@ -90,17 +90,8 @@ export namespace MLKitLanguage {
   }
 
   /**
-   * An interface representing a suggest reply, an array of these are returned from `SmartReplyConversation.getSuggestedReplies`
+   * An interface representing a suggest reply, an array of these are returned from `suggestReplies`
    *
-   * #### Example
-   *
-   * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-   * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-   *
-   * const suggestedReplies = await conversation.getSuggestedReplies();
-   * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-   * ```
    */
   export interface SuggestedReply {
     /**
@@ -119,7 +110,7 @@ export namespace MLKitLanguage {
    * Get the ML Kit service for the default app:
    *
    * ```js
-   * const defaultAppMLKit = firebase.mlKitLanguage();
+   * const defaultAppMLKit = firebase.naturalLanguage();
    * ```
    */
   export class Module extends FirebaseModule {
@@ -133,10 +124,10 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+     * const language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');
      * console.warn(language); // en
      *
-     * const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+     * const unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
      * console.warn(language); // und
      * ```
      *
@@ -151,7 +142,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+     * const identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');
      * console.warn(identifiedLanguages[0].language); // en
      * ```
      *
@@ -169,7 +160,7 @@ export namespace MLKitLanguage {
      * #### Example
      *
      * ```js
-     * const replies = await firebase.mlKitLanguage().suggestReplies([
+     * const replies = await firebase.naturalLanguage().suggestReplies([
      *   { text: "Hey, long time no speak!", },
      *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
      *   { text: 'We should catchup some time!', },
@@ -235,11 +226,11 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      mlKitLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
+      naturalLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
     }
 
     interface FirebaseApp {
-      mlKitLanguage(): MLKitLanguage.Module;
+      naturalLanguage(): MLKitLanguage.Module;
     }
   }
 }
