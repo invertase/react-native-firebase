@@ -197,7 +197,6 @@ describe('auth().currentUser', () => {
           /* do nothing */
         }
 
-        console.error(error);
         return Promise.reject(new Error('sendEmailVerification(actionCodeSettings) caused an error'));
       }
 
