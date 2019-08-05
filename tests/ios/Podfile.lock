@@ -367,12 +367,16 @@ PODS:
     - Firebase/Messaging (~> 6.5.0)
     - React
     - RNFBApp
-  - RNFBMlNaturalLanguage (0.1.2):
+  - RNFBMLNaturalLanguage (0.1.2):
     - Firebase/Core (~> 6.5.0)
     - Firebase/MLCommon (~> 6.5.0)
     - Firebase/MLNaturalLanguage (~> 6.5.0)
     - Firebase/MLNLLanguageID (~> 6.5.0)
     - Firebase/MLNLSmartReply (~> 6.5.0)
+    - React
+    - RNFBApp
+  - RNFBMLVision (0.1.2):
+    - Firebase/Core (~> 6.5.0)
     - React
     - RNFBApp
   - RNFBPerf (0.1.2):
@@ -426,7 +430,8 @@ DEPENDENCIES:
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging/ios`)"
-  - "RNFBMlNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
+  - "RNFBMLNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
+  - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision/ios`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
   - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
@@ -539,8 +544,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging/ios"
-  RNFBMlNaturalLanguage:
+  RNFBMLNaturalLanguage:
     :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
+  RNFBMLVision:
+    :path: "../node_modules/@react-native-firebase/ml-vision/ios"
   RNFBPerf:
     :path: "../node_modules/@react-native-firebase/perf/ios"
   RNFBStorage:
@@ -620,7 +627,8 @@ SPEC CHECKSUMS:
   RNFBFunctions: 4c7933433cde69d84640efa03611b5ec08608679
   RNFBIid: 5ba438aef0182e356f6b6b8635db7cfe5369a2b2
   RNFBMessaging: 75d723aff569e937aca3c509e29f792f9745a6ef
-  RNFBMlNaturalLanguage: 80d48e234b6a2b8b1aa09bb3da81af6feebdb63f
+  RNFBMLNaturalLanguage: bd834ec1000a116898639dc196fedfa13628c659
+  RNFBMLVision: 2ba0465f8bb3f6cd12b801ff8e1df12a25986a59
   RNFBPerf: 1405472bfa527f1e90e269851e88493ef0346e16
   RNFBStorage: cdb7b64abfd052b6b97c92a8e20010b7bdd04dcc
   RNFBUtils: a300811ae9a27227c1eb5e770cd976d15f940b2e

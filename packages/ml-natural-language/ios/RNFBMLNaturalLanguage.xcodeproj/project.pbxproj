@@ -29,14 +29,14 @@
 /* Begin PBXFileReference section */
 		27038A8122A16C31001E082B /* RCTConvert+FIRLanguageIdentificationOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+FIRLanguageIdentificationOptions.h"; sourceTree = "<group>"; };
 		27038A8222A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIRLanguageIdentificationOptions.m"; sourceTree = "<group>"; };
-		2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMlNaturalLanguage.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLNaturalLanguageIdModule.h; path = RNFBMlNaturalLanguage/RNFBMLNaturalLanguageIdModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLNaturalLanguageIdModule.m; path = RNFBMlNaturalLanguage/RNFBMLNaturalLanguageIdModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98221F45429004F8E3F /* libRNFBMLNaturalLanguage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMLNaturalLanguage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2744B98421F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLNaturalLanguageIdModule.h; path = RNFBMLNaturalLanguage/RNFBMLNaturalLanguageIdModule.h; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLNaturalLanguageIdModule.m; path = RNFBMLNaturalLanguage/RNFBMLNaturalLanguageIdModule.m; sourceTree = SOURCE_ROOT; };
 		27760E9F229ED5B400F5F127 /* RNFBMLNaturalLanguageTranslateModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLNaturalLanguageTranslateModule.h; sourceTree = "<group>"; };
 		27760EA0229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLNaturalLanguageTranslateModule.m; sourceTree = "<group>"; };
 		27760EA2229ED5F600F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLNaturalLanguageSmartReplyModule.h; sourceTree = "<group>"; };
 		27760EA3229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLNaturalLanguageSmartReplyModule.m; sourceTree = "<group>"; };
-		27760EA522A0064100F5F127 /* RCTConvert+FIRTextMessageArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRTextMessageArray.h"; path = "RNFBMlNaturalLanguage/RCTConvert+FIRTextMessageArray.h"; sourceTree = SOURCE_ROOT; };
+		27760EA522A0064100F5F127 /* RCTConvert+FIRTextMessageArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRTextMessageArray.h"; path = "RNFBMLNaturalLanguage/RCTConvert+FIRTextMessageArray.h"; sourceTree = SOURCE_ROOT; };
 		27760EA622A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIRTextMessageArray.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -54,12 +54,12 @@
 		2744B97521F452B8004F8E3F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */,
+				2744B98221F45429004F8E3F /* libRNFBMLNaturalLanguage.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2744B98321F45429004F8E3F /* RNFBMlNaturalLanguage */ = {
+		2744B98321F45429004F8E3F /* RNFBMLNaturalLanguage */ = {
 			isa = PBXGroup;
 			children = (
 				27760EA522A0064100F5F127 /* RCTConvert+FIRTextMessageArray.h */,
@@ -73,13 +73,13 @@
 				27038A8122A16C31001E082B /* RCTConvert+FIRLanguageIdentificationOptions.h */,
 				27038A8222A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m */,
 			);
-			path = RNFBMlNaturalLanguage;
+			path = RNFBMLNaturalLanguage;
 			sourceTree = "<group>";
 		};
 		3323F52AAFE26B7384BE4DE3 = {
 			isa = PBXGroup;
 			children = (
-				2744B98321F45429004F8E3F /* RNFBMlNaturalLanguage */,
+				2744B98321F45429004F8E3F /* RNFBMLNaturalLanguage */,
 				2744B97521F452B8004F8E3F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,9 +87,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2744B98121F45429004F8E3F /* RNFBMlNaturalLanguage */ = {
+		2744B98121F45429004F8E3F /* RNFBMLNaturalLanguage */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlNaturalLanguage" */;
+			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLNaturalLanguage" */;
 			buildPhases = (
 				2744B97E21F45429004F8E3F /* Sources */,
 				2744B97F21F45429004F8E3F /* Frameworks */,
@@ -99,9 +99,9 @@
 			);
 			dependencies = (
 			);
-			name = RNFBMlNaturalLanguage;
-			productName = RNFBMlNaturalLanguage;
-			productReference = 2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */;
+			name = RNFBMLNaturalLanguage;
+			productName = RNFBMLNaturalLanguage;
+			productReference = 2744B98221F45429004F8E3F /* libRNFBMLNaturalLanguage.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -110,7 +110,7 @@
 		3323F95273A95DB34F55C6D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = RNFBMlNaturalLanguage;
+				CLASSPREFIX = RNFBMLNaturalLanguage;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = Invertase;
 				TargetAttributes = {
@@ -120,7 +120,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlNaturalLanguage" */;
+			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLNaturalLanguage" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -132,7 +132,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2744B98121F45429004F8E3F /* RNFBMlNaturalLanguage */,
+				2744B98121F45429004F8E3F /* RNFBMLNaturalLanguage */,
 			);
 		};
 /* End PBXProject section */
@@ -347,7 +347,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlNaturalLanguage" */ = {
+		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLNaturalLanguage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2744B98921F45429004F8E3F /* Debug */,
@@ -356,7 +356,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlNaturalLanguage" */ = {
+		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLNaturalLanguage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3323F7E33E1559A2B9826720 /* Debug */,

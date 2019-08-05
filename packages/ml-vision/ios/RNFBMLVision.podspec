@@ -3,7 +3,7 @@ require '../../app/firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name                = "RNFBMlVision"
+  s.name                = "RNFBMLVision"
   s.version             = package["version"]
   s.description         = package["description"]
   s.summary             = <<-DESC
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = "9.0"
-  s.source_files        = 'RNFBMlVision/**/*.{h,m}'
+  s.source_files        = 'RNFBMLVision/**/*.{h,m}'
   s.dependency          'RNFBApp'
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 6.5.0'

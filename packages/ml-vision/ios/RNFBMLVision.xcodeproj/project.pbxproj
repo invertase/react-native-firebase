@@ -23,9 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2744B98221F45429004F8E3F /* libRNFBMlVision.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMlVision.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBMLVisionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLVisionModule.h; path = RNFBMlVision/RNFBMLVisionModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLVisionModule.m; path = RNFBMlVision/RNFBMLVisionModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98221F45429004F8E3F /* libRNFBMLVision.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMLVision.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2744B98421F45429004F8E3F /* RNFBMLVisionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLVisionModule.h; path = RNFBMLVision/RNFBMLVisionModule.h; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLVisionModule.m; path = RNFBMLVision/RNFBMLVisionModule.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,24 +42,24 @@
 		2744B97521F452B8004F8E3F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98221F45429004F8E3F /* libRNFBMlVision.a */,
+				2744B98221F45429004F8E3F /* libRNFBMLVision.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2744B98321F45429004F8E3F /* RNFBMlVision */ = {
+		2744B98321F45429004F8E3F /* RNFBMLVision */ = {
 			isa = PBXGroup;
 			children = (
 				2744B98421F45429004F8E3F /* RNFBMLVisionModule.h */,
 				2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */,
 			);
-			path = RNFBMlVision;
+			path = RNFBMLVision;
 			sourceTree = "<group>";
 		};
 		3323F52AAFE26B7384BE4DE3 = {
 			isa = PBXGroup;
 			children = (
-				2744B98321F45429004F8E3F /* RNFBMlVision */,
+				2744B98321F45429004F8E3F /* RNFBMLVision */,
 				2744B97521F452B8004F8E3F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,9 +67,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2744B98121F45429004F8E3F /* RNFBMlVision */ = {
+		2744B98121F45429004F8E3F /* RNFBMLVision */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlVision" */;
+			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLVision" */;
 			buildPhases = (
 				2744B97E21F45429004F8E3F /* Sources */,
 				2744B97F21F45429004F8E3F /* Frameworks */,
@@ -79,9 +79,9 @@
 			);
 			dependencies = (
 			);
-			name = RNFBMlVision;
-			productName = RNFBMlVision;
-			productReference = 2744B98221F45429004F8E3F /* libRNFBMlVision.a */;
+			name = RNFBMLVision;
+			productName = RNFBMLVision;
+			productReference = 2744B98221F45429004F8E3F /* libRNFBMLVision.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -90,7 +90,7 @@
 		3323F95273A95DB34F55C6D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = RNFBMlVision;
+				CLASSPREFIX = RNFBMLVision;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = Invertase;
 				TargetAttributes = {
@@ -100,7 +100,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlVision" */;
+			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLVision" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -113,7 +113,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2744B98121F45429004F8E3F /* RNFBMlVision */,
+				2744B98121F45429004F8E3F /* RNFBMLVision */,
 			);
 		};
 /* End PBXProject section */
@@ -324,7 +324,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlVision" */ = {
+		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2744B98921F45429004F8E3F /* Debug */,
@@ -333,7 +333,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlVision" */ = {
+		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3323F7E33E1559A2B9826720 /* Debug */,
