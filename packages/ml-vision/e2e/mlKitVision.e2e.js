@@ -15,24 +15,24 @@
  *
  */
 
-android.describe('mlKitVision()', () => {
+android.describe('vision()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.mlKitVision);
-      app.mlKitVision().app.should.equal(app);
+      should.exist(app.vision);
+      app.vision().app.should.equal(app);
     });
 
     it('supports multiple apps', async () => {
-      firebase.mlKitVision().app.name.should.equal('[DEFAULT]');
+      firebase.vision().app.name.should.equal('[DEFAULT]');
 
       firebase
-        .mlKitVision(firebase.app('secondaryFromNative'))
+        .vision(firebase.app('secondaryFromNative'))
         .app.name.should.equal('secondaryFromNative');
 
       firebase
         .app('secondaryFromNative')
-        .mlKitVision()
+        .vision()
         .app.name.should.equal('secondaryFromNative');
     });
   });

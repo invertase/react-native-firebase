@@ -64,7 +64,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   setAutoInitEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.messaging().setAutoInitEnabled(*) 'enabled' expected a boolean value.`,
+        "firebase.messaging().setAutoInitEnabled(*) 'enabled' expected a boolean value.",
       );
     }
 
@@ -75,12 +75,12 @@ class FirebaseMessagingModule extends FirebaseModule {
   getToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
       throw new Error(
-        `firebase.messaging().getToken(*) 'authorizedEntity' expected a string value.`,
+        "firebase.messaging().getToken(*) 'authorizedEntity' expected a string value.",
       );
     }
 
     if (!isUndefined(scope) && !isString(scope)) {
-      throw new Error(`firebase.messaging().getToken(_, *) 'scope' expected a string value.`);
+      throw new Error("firebase.messaging().getToken(_, *) 'scope' expected a string value.");
     }
 
     return this.native.getToken(
@@ -92,12 +92,12 @@ class FirebaseMessagingModule extends FirebaseModule {
   deleteToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
       throw new Error(
-        `firebase.messaging().deleteToken(*) 'authorizedEntity' expected a string value.`,
+        "firebase.messaging().deleteToken(*) 'authorizedEntity' expected a string value.",
       );
     }
 
     if (!isUndefined(scope) && !isString(scope)) {
-      throw new Error(`firebase.messaging().deleteToken(_, *) 'scope' expected a string value.`);
+      throw new Error("firebase.messaging().deleteToken(_, *) 'scope' expected a string value.");
     }
 
     return this.native.deleteToken(
@@ -108,7 +108,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   onMessage(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.messaging().onMessage(*) 'listener' expected a function.`);
+      throw new Error("firebase.messaging().onMessage(*) 'listener' expected a function.");
     }
 
     const subscription = this.emitter.addListener('messaging_message_received', listener);
@@ -117,7 +117,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   onTokenRefresh(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.messaging().onTokenRefresh(*) 'listener' expected a function.`);
+      throw new Error("firebase.messaging().onTokenRefresh(*) 'listener' expected a function.");
     }
 
     const subscription = this.emitter.addListener('messaging_token_refresh', listener);
@@ -173,7 +173,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#public-void-ondeletedmessages-
   onDeletedMessages(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.messaging().onDeletedMessages(*) 'listener' expected a function.`);
+      throw new Error("firebase.messaging().onDeletedMessages(*) 'listener' expected a function.");
     }
 
     const subscription = this.emitter.addListener('messaging_message_deleted', listener);
@@ -183,7 +183,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onMessageSent(java.lang.String)
   onMessageSent(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.messaging().onMessageSent(*) 'listener' expected a function.`);
+      throw new Error("firebase.messaging().onMessageSent(*) 'listener' expected a function.");
     }
 
     const subscription = this.emitter.addListener('messaging_message_sent', listener);
@@ -195,7 +195,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   // https://firebase.google.com/docs/reference/android/com/google/firebase/messaging/FirebaseMessagingService.html#onSendError(java.lang.String,%20java.lang.Exception)
   onSendError(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.messaging().onSendError(*) 'listener' expected a function.`);
+      throw new Error("firebase.messaging().onSendError(*) 'listener' expected a function.");
     }
 
     const subscription = this.emitter.addListener('messaging_message_send_error', listener);
@@ -208,7 +208,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   setBackgroundMessageHandler(handler) {
     if (!isFunction(handler)) {
       throw new Error(
-        `firebase.messaging().setBackgroundMessageHandler(*) 'handler' expected a function.`,
+        "firebase.messaging().setBackgroundMessageHandler(*) 'handler' expected a function.",
       );
     }
 
@@ -232,11 +232,11 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   subscribeToTopic(topic) {
     if (!isString(topic)) {
-      throw new Error(`firebase.messaging().subscribeToTopic(*) 'topic' expected a string value.`);
+      throw new Error("firebase.messaging().subscribeToTopic(*) 'topic' expected a string value.");
     }
 
     if (topic.indexOf('/') > -1) {
-      throw new Error(`firebase.messaging().subscribeToTopic(*) 'topic' must not include "/".`);
+      throw new Error('firebase.messaging().subscribeToTopic(*) \'topic\' must not include "/".');
     }
 
     return this.native.subscribeToTopic(topic);
@@ -245,12 +245,14 @@ class FirebaseMessagingModule extends FirebaseModule {
   unsubscribeFromTopic(topic) {
     if (!isString(topic)) {
       throw new Error(
-        `firebase.messaging().unsubscribeFromTopic(*) 'topic' expected a string value.`,
+        "firebase.messaging().unsubscribeFromTopic(*) 'topic' expected a string value.",
       );
     }
 
     if (topic.indexOf('/') > -1) {
-      throw new Error(`firebase.messaging().unsubscribeFromTopic(*) 'topic' must not include "/".`);
+      throw new Error(
+        'firebase.messaging().unsubscribeFromTopic(*) \'topic\' must not include "/".',
+      );
     }
 
     return this.native.unsubscribeFromTopic(topic);
@@ -261,12 +263,14 @@ class FirebaseMessagingModule extends FirebaseModule {
    */
 
   useServiceWorker() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.messaging().useServiceWorker() is not supported on react-native-firebase.',
     );
   }
 
   usePublicVapidKey() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.messaging().usePublicVapidKey() is not supported on react-native-firebase.',
     );

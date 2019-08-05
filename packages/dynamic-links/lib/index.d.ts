@@ -15,7 +15,7 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import {ReactNativeFirebase} from '@react-native-firebase/app';
 
 /**
  * Dynamic Links
@@ -365,6 +365,32 @@ export namespace DynamicLinks {
   }
 
   /**
+   * A received Dynamic Link from either `onLink` or `getInitialLink`.
+   */
+  export interface DynamicLink {
+    /**
+     * The url of the dynamic link.
+     */
+    url: string;
+
+    /**
+     * The minimum app version requested to process the dynamic link.
+     *
+     * Returns `null` if not specified.
+     *
+     * #### Android
+     *
+     * On Android this returns a number value representing the apps [versionCode](https://developer.android.com/reference/android/content/pm/PackageInfo.html#versionCode).
+     *
+     * #### iOS
+     *
+     * On iOS this returns a string value representing the minimum app version (not the iOS system version). If the app version of the opening app is less than the value of this property, then the app is expected to open AppStore to allow user to download most recent version. App can notify or ask the user before opening AppStore.
+     *
+     */
+    minimumAppVersion: number | string | null;
+  }
+
+  /**
    * Firebase Dynamic DynamicLinks Statics
    *
    * ```js
@@ -376,7 +402,6 @@ export namespace DynamicLinks {
      * Returns the {@link links.ShortLinkType} interface.
      */
     ShortLinkType: ShortLinkType;
-    // TODO deprecate DynamicLink
   }
 
   /**
@@ -456,7 +481,7 @@ export namespace DynamicLinks {
     ): Promise<string>;
 
     /**
-     * Returns the URL that the app has been launched from. If the app was not launched from a URL the return value will be null.
+     * Returns the Dynamic Link that the app has been launched from. If the app was not launched from a Dynamic Link the value will be null.
      *
      * > Use {@link auth#isSignInWithEmailLink} to check if an inbound dynamic link is an email sign-in link.
      *
@@ -468,18 +493,18 @@ export namespace DynamicLinks {
      *
      *    if (initialLink) {
      *      // Handle dynamic link inside your own application
-     *      if (initialLink === 'https://invertase.io/offer') return navigateTo('/offers')
+     *      if (initialLink.url === 'https://invertase.io/offer') return navigateTo('/offers')
      *    }
      * }
      * ```
      */
-    getInitialLink(): Promise<string | null>;
+    getInitialLink(): Promise<DynamicLink | null>;
 
     /**
-     * Subscribe to URL open events while the app is still running.
+     * Subscribe to Dynamic Link open events while the app is still running.
      *
-     * The listener is called from URL open events whilst the app is still running, use
-     * {@link links#getInitialLink} for URLs which cause the app to open from a previously closed / not running state.
+     * The listener is called from Dynamic Link open events whilst the app is still running, use
+     * {@link links#getInitialLink} for Dynamic Links which cause the app to open from a previously closed / not running state.
      *
      * #### Example
      *
@@ -487,7 +512,7 @@ export namespace DynamicLinks {
      * function App() {
      *   const handleDynamicLink = (link) => {
      *     // Handle dynamic link inside your own application
-     *     if (link === 'https://invertase.io/offer') return navigateTo('/offers')
+     *     if (link.url === 'https://invertase.io/offer') return navigateTo('/offers')
      *   };
      *
      *   useEffect(() => {
@@ -501,9 +526,9 @@ export namespace DynamicLinks {
      * ```
      *
      * @returns Unsubscribe function, call the returned function to unsubscribe from all future events.
-     * @param listener The listener callback, called URL open events.
+     * @param listener The listener callback, called with Dynamic Link instances.
      */
-    onLink(listener: Function<string>): Function;
+    onLink(listener: Function<DynamicLink>): Function;
   }
 }
 
@@ -524,9 +549,11 @@ declare module '@react-native-firebase/dynamic-links' {
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+
     interface Module {
       links: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
     }
+
     interface FirebaseApp {
       links(): DynamicLinks.Module;
     }

@@ -29,7 +29,7 @@ android.describe('mlkit.vision.face', () => {
   describe('faceDetectorProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().faceDetectorProcessImage(123);
+        firebase.vision().faceDetectorProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -38,7 +38,7 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns basic face object with no options enabled', async () => {
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile);
+      const res = await firebase.vision().faceDetectorProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -62,7 +62,7 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns classifications if enabled', async () => {
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+      const res = await firebase.vision().faceDetectorProcessImage(testImageFile, {
         classificationMode: 2,
       });
 
@@ -77,7 +77,7 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns landmarks if enabled', async () => {
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+      const res = await firebase.vision().faceDetectorProcessImage(testImageFile, {
         landmarkMode: 2,
       });
       res.should.be.Array();
@@ -95,7 +95,7 @@ android.describe('mlkit.vision.face', () => {
     });
 
     it('returns contours if enabled', async () => {
-      const res = await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+      const res = await firebase.vision().faceDetectorProcessImage(testImageFile, {
         contourMode: 2,
       });
       res.should.be.Array();
@@ -119,7 +119,7 @@ android.describe('mlkit.vision.face', () => {
   describe('VisionFaceDetectorOptions', () => {
     it('throws if not an object', async () => {
       try {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, '123');
+        await firebase.vision().faceDetectorProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'faceDetectorOptions' expected an object value");
@@ -130,7 +130,7 @@ android.describe('mlkit.vision.face', () => {
     describe('classificationMode', () => {
       it('throws if mode is incorrect', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             classificationMode: 'foo',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -143,14 +143,14 @@ android.describe('mlkit.vision.face', () => {
       });
 
       it('sets classificationMode', async () => {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
           classificationMode:
-            firebase.mlKitVision.VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS,
+            firebase.vision.VisionFaceDetectorClassificationMode.NO_CLASSIFICATIONS,
         });
 
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
           classificationMode:
-            firebase.mlKitVision.VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
+            firebase.vision.VisionFaceDetectorClassificationMode.ALL_CLASSIFICATIONS,
         });
       });
     });
@@ -158,7 +158,7 @@ android.describe('mlkit.vision.face', () => {
     describe('contourMode', () => {
       it('throws if mode is incorrect', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             contourMode: 'foo',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -169,12 +169,12 @@ android.describe('mlkit.vision.face', () => {
       });
 
       it('sets contourMode', async () => {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          contourMode: firebase.mlKitVision.VisionFaceDetectorContourMode.NO_CONTOURS,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          contourMode: firebase.vision.VisionFaceDetectorContourMode.NO_CONTOURS,
         });
 
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          contourMode: firebase.mlKitVision.VisionFaceDetectorContourMode.ALL_CONTOURS,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          contourMode: firebase.vision.VisionFaceDetectorContourMode.ALL_CONTOURS,
         });
       });
     });
@@ -182,7 +182,7 @@ android.describe('mlkit.vision.face', () => {
     describe('performanceMode', () => {
       it('throws if mode is incorrect', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             performanceMode: 'foo',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -195,12 +195,12 @@ android.describe('mlkit.vision.face', () => {
       });
 
       it('sets performanceMode', async () => {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          performanceMode: firebase.mlKitVision.VisionFaceDetectorPerformanceMode.FAST,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          performanceMode: firebase.vision.VisionFaceDetectorPerformanceMode.FAST,
         });
 
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          performanceMode: firebase.mlKitVision.VisionFaceDetectorPerformanceMode.ACCURATE,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          performanceMode: firebase.vision.VisionFaceDetectorPerformanceMode.ACCURATE,
         });
       });
     });
@@ -208,7 +208,7 @@ android.describe('mlkit.vision.face', () => {
     describe('landmarkMode', () => {
       it('throws if mode is incorrect', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             landmarkMode: 'foo',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -221,12 +221,12 @@ android.describe('mlkit.vision.face', () => {
       });
 
       it('sets landmarkMode', async () => {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          landmarkMode: firebase.mlKitVision.VisionFaceDetectorLandmarkMode.NO_LANDMARKS,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          landmarkMode: firebase.vision.VisionFaceDetectorLandmarkMode.NO_LANDMARKS,
         });
 
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
-          landmarkMode: firebase.mlKitVision.VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
+          landmarkMode: firebase.vision.VisionFaceDetectorLandmarkMode.ALL_LANDMARKS,
         });
       });
     });
@@ -234,7 +234,7 @@ android.describe('mlkit.vision.face', () => {
     describe('minFaceSize', () => {
       it('throws if size is not a number', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             minFaceSize: '0.1',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -248,7 +248,7 @@ android.describe('mlkit.vision.face', () => {
 
       it('throws if size is not valid', async () => {
         try {
-          await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+          await firebase.vision().faceDetectorProcessImage(testImageFile, {
             minFaceSize: -1,
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -261,7 +261,7 @@ android.describe('mlkit.vision.face', () => {
       });
 
       it('sets minFaceSize', async () => {
-        await firebase.mlKitVision().faceDetectorProcessImage(testImageFile, {
+        await firebase.vision().faceDetectorProcessImage(testImageFile, {
           minFaceSize: 0.3,
         });
       });

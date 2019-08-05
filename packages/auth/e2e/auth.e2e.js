@@ -192,6 +192,55 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
     });
+
+    it('returns the same user with multiple subscribers #1815', async () => {
+      const callback = sinon.spy();
+
+      let unsubscribe1;
+      let unsubscribe2;
+      let unsubscribe3;
+
+      await new Promise(resolve => {
+        unsubscribe1 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      await new Promise(resolve => {
+        unsubscribe2 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      await new Promise(resolve => {
+        unsubscribe3 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledThrice();
+      callback.should.be.calledWith(null);
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(800);
+
+      unsubscribe1();
+      unsubscribe2();
+      unsubscribe3();
+
+      callback.should.be.callCount(6);
+
+      const uid = callback.getCall(3).args[0].uid;
+
+      callback.getCall(4).args[0].uid.should.eql(uid);
+      callback.getCall(5).args[0].uid.should.eql(uid);
+
+      await firebase.auth().signOut();
+      await Utils.sleep(50);
+    });
   });
 
   describe('onIdTokenChanged()', () => {

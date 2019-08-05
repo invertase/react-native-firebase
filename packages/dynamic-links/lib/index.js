@@ -85,7 +85,7 @@ class FirebaseLinksModule extends FirebaseModule {
 
   onLink(listener) {
     const subscription = this.emitter.subscribe('dynamic_links_link_received', event =>
-      listener(event.url),
+      listener(event),
     );
     return () => {
       subscription.remove();

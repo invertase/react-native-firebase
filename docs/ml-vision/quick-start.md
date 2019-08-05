@@ -20,7 +20,7 @@ yarn add @react-native-firebase/ml-vision
 Import the ML Kit package into your project:
 
 ```js
-import mlKitVision from '@react-native-firebase/ml-vision';
+import vision from '@react-native-firebase/ml-vision';
 ```
 
 The package also provides access to the firebase instance:

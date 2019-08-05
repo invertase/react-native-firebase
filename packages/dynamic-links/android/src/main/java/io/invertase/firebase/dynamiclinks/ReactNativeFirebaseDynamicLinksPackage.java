@@ -28,7 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class reactNativeFirebaseDynamicLinksPackage implements ReactPackage {
+public class ReactNativeFirebaseDynamicLinksPackage implements ReactPackage {
   @Nonnull
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {

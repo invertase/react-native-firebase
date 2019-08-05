@@ -51,7 +51,7 @@ android.describe('mlkit.vision.barcode', () => {
   describe('barcodeDetectorProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
-        firebase.mlKitVision().barcodeDetectorProcessImage(123);
+        firebase.vision().barcodeDetectorProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'localImageFilePath' expected a string local file path");
@@ -60,7 +60,7 @@ android.describe('mlkit.vision.barcode', () => {
     });
 
     it('should return a valid response', async () => {
-      const res = await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile);
+      const res = await firebase.vision().barcodeDetectorProcessImage(testImageFile);
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
@@ -71,7 +71,7 @@ android.describe('mlkit.vision.barcode', () => {
   describe('VisionBarcodeDetectorOptions', () => {
     it('throws if not an object', async () => {
       try {
-        await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile, '123');
+        await firebase.vision().barcodeDetectorProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'barcodeDetectorOptions' expected an object value");
@@ -82,7 +82,7 @@ android.describe('mlkit.vision.barcode', () => {
     describe('barcodeFormats', () => {
       it('should throw if not an array', async () => {
         try {
-          await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile, {
+          await firebase.vision().barcodeDetectorProcessImage(testImageFile, {
             barcodeFormats: 'foo',
           });
           return Promise.reject(new Error('Did not throw an Error.'));
@@ -96,8 +96,8 @@ android.describe('mlkit.vision.barcode', () => {
 
       it('should throw if array item is invalid type', async () => {
         try {
-          await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile, {
-            barcodeFormats: [firebase.mlKitVision.VisionBarcodeFormat.AZTEC, 'foobar'],
+          await firebase.vision().barcodeDetectorProcessImage(testImageFile, {
+            barcodeFormats: [firebase.vision.VisionBarcodeFormat.AZTEC, 'foobar'],
           });
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
@@ -109,10 +109,10 @@ android.describe('mlkit.vision.barcode', () => {
       });
 
       it('sets formats', async () => {
-        await firebase.mlKitVision().barcodeDetectorProcessImage(testImageFile, {
+        await firebase.vision().barcodeDetectorProcessImage(testImageFile, {
           barcodeFormats: [
-            firebase.mlKitVision.VisionBarcodeFormat.AZTEC,
-            firebase.mlKitVision.VisionBarcodeFormat.DATA_MATRIX,
+            firebase.vision.VisionBarcodeFormat.AZTEC,
+            firebase.vision.VisionBarcodeFormat.DATA_MATRIX,
           ],
         });
       });

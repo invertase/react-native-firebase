@@ -25,7 +25,7 @@ import '@react-native-firebase/ml-natural-language';
 let id = 0;
 
 class Root extends Component {
-  smartReplyConversation = firebase.mlKitLanguage().newSmartReplyConversation();
+  smartReplyConversation = firebase.naturalLanguage().newSmartReplyConversation();
   state = {
     messages: [
       {
