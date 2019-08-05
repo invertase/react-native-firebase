@@ -15,21 +15,10 @@
  *
  */
 
+#import <Foundation/Foundation.h>
+#import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
-#import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
-#import "RNFBMLVisionModule.h"
-
-
-@implementation RNFBMLVisionModule
-#pragma mark -
-#pragma mark Module Setup
-
-RCT_EXPORT_MODULE();
-
-#pragma mark -
-#pragma mark Firebase ML Kit Vision Methods
-
-// TODO react methods here
+@interface RNFBMLVisionFaceDetectorModule : NSObject <RCTBridgeModule>
 
 @end

@@ -15,21 +15,22 @@
  *
  */
 
+#import "RCTConvert+UIImage.h"
 
-#import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
-#import "RNFBMLVisionModule.h"
+// TODO Needs to be run on UI Thread
+//@implementation RCTConvert (UIImage)
+//+ (nullable UIImage *)uiImageFromPath:(NSString *)filePath {
+//  UIImage * image = nil;
+//
+//  @try {
+//    image = [UIImage imageWithContentsOfFile:filePath];
+//  } @catch(NSException * _) {
+//     do nothing
+//  }
+//
+//  return image;
+//}
 
-
-@implementation RNFBMLVisionModule
-#pragma mark -
-#pragma mark Module Setup
-
-RCT_EXPORT_MODULE();
-
-#pragma mark -
-#pragma mark Firebase ML Kit Vision Methods
-
-// TODO react methods here
-
-@end
+//RCT_CUSTOM_CONVERTER(nullable UIImage *, UIImage, [self uiImageFromPath:[self NSString:json]]);
+//@end
+//

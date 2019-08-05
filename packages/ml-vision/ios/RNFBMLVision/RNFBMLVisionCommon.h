@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,21 +16,15 @@
  *
  */
 
+@interface RNFBMLVisionCommon : NSObject
 
-#import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
-#import "RNFBMLVisionModule.h"
++ (NSArray *)rectToIntArray:(CGRect)rect;
 
++ (NSDictionary *)contourToDict:(FIRVisionFaceContour *)visionFaceContour;
 
-@implementation RNFBMLVisionModule
-#pragma mark -
-#pragma mark Module Setup
-
-RCT_EXPORT_MODULE();
-
-#pragma mark -
-#pragma mark Firebase ML Kit Vision Methods
-
-// TODO react methods here
++ (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    UIImage *image
+))completion;
 
 @end

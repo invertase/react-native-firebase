@@ -15,21 +15,8 @@
  *
  */
 
+#import <React/RCTConvert.h>
 
-#import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
-#import "RNFBMLVisionModule.h"
-
-
-@implementation RNFBMLVisionModule
-#pragma mark -
-#pragma mark Module Setup
-
-RCT_EXPORT_MODULE();
-
-#pragma mark -
-#pragma mark Firebase ML Kit Vision Methods
-
-// TODO react methods here
-
-@end
+//@interface RCTConvert (UIImage)
+//+ (nullable UIImage *)uiImageFromPath:(NSString *)filePath;
+//@end
