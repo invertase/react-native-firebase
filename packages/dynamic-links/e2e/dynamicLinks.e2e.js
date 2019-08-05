@@ -22,7 +22,7 @@ const baseParams = {
 
 module.exports.baseParams = baseParams;
 
-describe.only('dynamicLinks()', () => {
+describe('dynamicLinks()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
