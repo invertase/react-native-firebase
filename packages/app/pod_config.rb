@@ -30,7 +30,7 @@ def react_native_firebase!(config = {})
 
   discovered_firebase_modules.each do |module_dir|
     module_name = File.basename(module_dir)
-    module_podspec_name = "RNFB_#{module_name.gsub('-', '_')}".camelize
+    module_podspec_name = "RNFB_#{module_name.gsub('-', '_')}".camelize.gsub('RNFBMl', 'RNFBML')
     next if %w[private-tests-helpers app-types template invites common].include? module_name
 
     module_podspec_path = File.join(module_dir, "ios", "#{module_podspec_name}.podspec")
@@ -57,7 +57,7 @@ def react_native_firebase!(config = {})
       Pod::UI.puts "    ✓ Discovered '#{module_name}' (+ build script)"
       script_phase :name => "RNFB #{module_name} Build Script", :script => File.read(module_build_script), :execution_position => :after_compile, :input_files => ['$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)']
     else
-      Pod::UI.puts "    ✓ Discovered '#{module_name}'"
+      Pod::UI.puts "    ✓ Discovered '#{module_name}' #{module_podspec_name}"
     end
   end
 end
