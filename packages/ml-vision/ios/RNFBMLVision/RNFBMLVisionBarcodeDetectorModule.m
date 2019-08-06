@@ -164,8 +164,12 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
   NSMutableDictionary *contactInfoFormatted = [@{
       @"title": contactInfo.jobTitle,
       @"organisation": contactInfo.organization,
-      @"name": [self getPersonNameMap:contactInfo.name],
   } mutableCopy];
+
+  // Name
+  if (contactInfo.name != nil) {
+    contactInfoFormatted[@"name"] = [self getPersonNameMap:contactInfo.name];
+  }
 
   // URLs
   NSMutableArray *urls = [@[] mutableCopy];
