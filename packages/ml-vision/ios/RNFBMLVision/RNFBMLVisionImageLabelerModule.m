@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,7 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionImageLabelerModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -47,7 +46,7 @@ RCT_EXPORT_METHOD(imageLabelerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionOnDeviceImageLabelerOptions *options = [[FIRVisionOnDeviceImageLabelerOptions alloc] init];
 
@@ -55,7 +54,7 @@ RCT_EXPORT_METHOD(imageLabelerProcessImage:
       options.confidenceThreshold = [imageLabelerOptions[@"confidenceThreshold"] floatValue];
     }
 
-    FIRVisionImageLabeler *labeler = [[FIRVision vision] onDeviceImageLabelerWithOptions:options];
+    FIRVisionImageLabeler *labeler = [vision onDeviceImageLabelerWithOptions:options];
     [labeler processImage:visionImage completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *error) {
       if (error != nil) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -92,7 +91,7 @@ RCT_EXPORT_METHOD(cloudImageLabelerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionCloudImageLabelerOptions *options = [[FIRVisionCloudImageLabelerOptions alloc] init];
 
@@ -100,7 +99,7 @@ RCT_EXPORT_METHOD(cloudImageLabelerProcessImage:
       options.confidenceThreshold = [cloudImageLabelerOptions[@"confidenceThreshold"] floatValue];
     }
 
-    FIRVisionImageLabeler *labeler = [[FIRVision vision] cloudImageLabelerWithOptions:options];
+    FIRVisionImageLabeler *labeler = [vision cloudImageLabelerWithOptions:options];
     [labeler processImage:visionImage completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *error) {
       if (error != nil) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{

@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -38,7 +37,7 @@
 
   NSMutableArray *pointsFormatted = [[NSMutableArray alloc] init];
   for (FIRVisionPoint *point in visionFaceContour.points) {
-    [pointsFormatted addObject:[self visionPointArray:point]];
+    [pointsFormatted addObject:[self arrayForFIRVisionPoint:point]];
   }
 
   visionFaceContourDict[@"type"] = [self contourTypeToInt:visionFaceContour.type];
@@ -101,7 +100,7 @@
   }
 
   visionFaceLandmarkDict[@"type"] = [self landmarkTypeToInt:visionFaceLandmark.type];
-  visionFaceLandmarkDict[@"position"] = [self visionPointArray:visionFaceLandmark.position];
+  visionFaceLandmarkDict[@"position"] = [self arrayForFIRVisionPoint:visionFaceLandmark.position];
   return visionFaceLandmarkDict;
 }
 
@@ -139,49 +138,6 @@
   return @-1;
 }
 
-+ (NSNumber *)barcodeValueTypeToInt:(NSString *)valueType {
-  if ([@"Unknown" isEqualToString:valueType]) {
-    return @0;
-  }
-  if ([@"ContactInfo" isEqualToString:valueType]) {
-    return @1;
-  }
-  if ([@"Email" isEqualToString:valueType]) {
-    return @2;
-  }
-  if ([@"ISBN" isEqualToString:valueType]) {
-    return @3;
-  }
-  if ([@"Phone" isEqualToString:valueType]) {
-    return @4;
-  }
-  if ([@"Product" isEqualToString:valueType]) {
-    return @5;
-  }
-  if ([@"SMS" isEqualToString:valueType]) {
-    return @6;
-  }
-  if ([@"Text" isEqualToString:valueType]) {
-    return @7;
-  }
-  if ([@"URL" isEqualToString:valueType]) {
-    return @8;
-  }
-  if ([@"WiFi" isEqualToString:valueType]) {
-    return @9;
-  }
-  if ([@"GeographicCoordinates" isEqualToString:valueType]) {
-    return @10;
-  }
-  if ([@"CalendarEvent" isEqualToString:valueType]) {
-    return @11;
-  }
-  if ([@"DriversLicense" isEqualToString:valueType]) {
-    return @12;
-  }
-  return @-1;
-}
-
 + (NSArray *)visionPointsToArray:(NSArray <NSValue *> *_Nullable)points {
   if (points == nil) {
     return @[];
@@ -189,13 +145,17 @@
 
   NSMutableArray *pointsArray = [[NSMutableArray alloc] init];
   for (NSValue *point in points) {
-    [pointsArray addObject:[self visionPointArray:(id) point]];
+    [pointsArray addObject:[self arrayForCGPoint:point.CGPointValue]];
   }
 
   return pointsArray;
 }
 
-+ (NSArray *)visionPointArray:(FIRVisionPoint *)point {
++ (NSArray *)arrayForCGPoint:(CGPoint)point {
+  return @[@(point.x), @(point.y)];
+}
+
++ (NSArray *)arrayForFIRVisionPoint:(FIRVisionPoint *)point {
   return @[point.x, point.y];
 }
 
@@ -211,6 +171,5 @@
     });
   }
 }
-
 
 @end

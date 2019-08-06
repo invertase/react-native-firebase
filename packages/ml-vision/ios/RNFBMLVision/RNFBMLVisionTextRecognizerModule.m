@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,7 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionTextRecognizerModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -46,7 +45,7 @@ RCT_EXPORT_METHOD(textRecognizerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionTextRecognizer *textRecognizer = [vision onDeviceTextRecognizer];
 
@@ -81,7 +80,7 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionCloudTextRecognizerOptions *options = [[FIRVisionCloudTextRecognizerOptions alloc] init];
 
@@ -129,9 +128,9 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
 
     textBlockFormatted[@"text"] = block.text;
     textBlockFormatted[@"confidence"] = block.confidence;
+    textBlockFormatted[@"boundingBox"] = [RNFBMLVisionCommon rectToIntArray:block.frame];
     textBlockFormatted[@"recognizedLanguages"] = [self getLanguageCodesList:block.recognizedLanguages];
-//    textBlockFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:block.cornerPoints];
-    textBlockFormatted[@"cornerPoints"] = @[];
+    textBlockFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:block.cornerPoints];
     textBlockFormatted[@"lines"] = [self getLinesList:block.lines];
 
     [blockListFormatted addObject:textBlockFormatted];
@@ -150,8 +149,7 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
     lineFormatted[@"text"] = line.text;
     lineFormatted[@"confidence"] = line.confidence;
     lineFormatted[@"recognizedLanguages"] = [self getLanguageCodesList:line.recognizedLanguages];
-//    lineFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:line.cornerPoints];
-    lineFormatted[@"cornerPoints"] = @[];
+    lineFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:line.cornerPoints];
     lineFormatted[@"elements"] = [self getElementsList:line.elements];
 
     [lineListFormatted addObject:lineFormatted];
@@ -170,8 +168,7 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
     elementFormatted[@"text"] = element.text;
     elementFormatted[@"confidence"] = element.confidence;
     elementFormatted[@"recognizedLanguages"] = [self getLanguageCodesList:element.recognizedLanguages];
-//    elementFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:element.cornerPoints];
-    elementFormatted[@"cornerPoints"] = @[];
+    elementFormatted[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:element.cornerPoints];
 
     [elementsListFormatted addObject:elementFormatted];
   }

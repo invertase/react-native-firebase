@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,7 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionFaceDetectorModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -47,9 +46,9 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
-    FIRVisionFaceDetectorOptions  *options = [[FIRVisionFaceDetectorOptions  alloc] init];
+    FIRVisionFaceDetectorOptions *options = [[FIRVisionFaceDetectorOptions alloc] init];
 
     NSInteger *classificationMode = [faceDetectorOptions[@"classificationMode"] pointerValue];
     if (classificationMode == (NSInteger *) 1) {

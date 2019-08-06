@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBMLVisionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */; };
 		8B06D3F322F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */; };
-		8B06D3F822F853FA00A5B542 /* RCTConvert+UIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3F722F853FA00A5B542 /* RCTConvert+UIImage.m */; };
 		8B06D3FC22F863AE00A5B542 /* RNFBMLVisionCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */; };
 		8B06D40022F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3FF22F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m */; };
 		8B06D40622F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D40522F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m */; };
@@ -32,12 +30,8 @@
 
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBMLVision.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMLVision.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBMLVisionModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLVisionModule.h; path = RNFBMLVision/RNFBMLVisionModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLVisionModule.m; path = RNFBMLVision/RNFBMLVisionModule.m; sourceTree = SOURCE_ROOT; };
 		8B06D3F122F84F6500A5B542 /* RNFBMLVisionLandmarkRecognizerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionLandmarkRecognizerModule.h; sourceTree = "<group>"; };
 		8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionLandmarkRecognizerModule.m; sourceTree = "<group>"; };
-		8B06D3F622F853E900A5B542 /* RCTConvert+UIImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+UIImage.h"; sourceTree = "<group>"; };
-		8B06D3F722F853FA00A5B542 /* RCTConvert+UIImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+UIImage.m"; sourceTree = "<group>"; };
 		8B06D3FA22F863A400A5B542 /* RNFBMLVisionCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionCommon.h; sourceTree = "<group>"; };
 		8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionCommon.m; sourceTree = "<group>"; };
 		8B06D3FE22F8747F00A5B542 /* RNFBMLVisionFaceDetectorModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionFaceDetectorModule.h; sourceTree = "<group>"; };
@@ -74,12 +68,8 @@
 		2744B98321F45429004F8E3F /* RNFBMLVision */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98421F45429004F8E3F /* RNFBMLVisionModule.h */,
-				2744B98521F45429004F8E3F /* RNFBMLVisionModule.m */,
 				8B06D3F122F84F6500A5B542 /* RNFBMLVisionLandmarkRecognizerModule.h */,
 				8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */,
-				8B06D3F622F853E900A5B542 /* RCTConvert+UIImage.h */,
-				8B06D3F722F853FA00A5B542 /* RCTConvert+UIImage.m */,
 				8B06D3FA22F863A400A5B542 /* RNFBMLVisionCommon.h */,
 				8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */,
 				8B06D3FE22F8747F00A5B542 /* RNFBMLVisionFaceDetectorModule.h */,
@@ -169,8 +159,6 @@
 				8B06D3F322F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m in Sources */,
 				8B06D3FC22F863AE00A5B542 /* RNFBMLVisionCommon.m in Sources */,
 				8B06D40022F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m in Sources */,
-				8B06D3F822F853FA00A5B542 /* RCTConvert+UIImage.m in Sources */,
-				2744B98621F45429004F8E3F /* RNFBMLVisionModule.m in Sources */,
 				8B06D41222F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

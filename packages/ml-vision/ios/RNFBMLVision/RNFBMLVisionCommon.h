@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -25,8 +24,6 @@
 + (NSDictionary *)landmarkToDict:(FIRVisionFaceLandmark *)visionFaceLandmark;
 
 + (NSArray *)visionPointsToArray:(NSArray <FIRVisionPoint *> *_Nullable)points;
-
-+ (NSNumber *)barcodeValueTypeToInt:(NSString *)valueType;
 
 + (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
     NSArray *errorCodeMessageArray,

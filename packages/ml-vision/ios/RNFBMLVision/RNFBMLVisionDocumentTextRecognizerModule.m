@@ -17,7 +17,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionDocumentTextRecognizerModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -47,9 +47,9 @@ RCT_EXPORT_METHOD(cloudDocumentTextRecognizerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
-    FIRVisionCloudDocumentTextRecognizerOptions  *options = [[FIRVisionCloudDocumentTextRecognizerOptions alloc] init];
+    FIRVisionCloudDocumentTextRecognizerOptions *options = [[FIRVisionCloudDocumentTextRecognizerOptions alloc] init];
 
     if (cloudDocumentTextRecognizerOptions[@"hintedLanguages"]) {
       options.languageHints = cloudDocumentTextRecognizerOptions[@"hintedLanguages"];
@@ -67,15 +67,15 @@ RCT_EXPORT_METHOD(cloudDocumentTextRecognizerProcessImage:
 
       if (result == nil) {
         resolve(@{
-           @"text": @"",
-           @"blocks": @[],
+            @"text": @"",
+            @"blocks": @[],
         });
         return;
       }
 
       resolve(@{
-         @"text": result.text,
-         @"blocks": [self getVisionDocumentTextBlocksList:result.blocks],
+          @"text": result.text,
+          @"blocks": [self getVisionDocumentTextBlocksList:result.blocks],
       });
     }];
   }];

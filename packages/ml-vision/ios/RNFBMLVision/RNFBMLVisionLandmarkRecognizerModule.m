@@ -16,7 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionLandmarkRecognizerModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(cloudLandmarkRecognizerProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionCloudDetectorOptions *options = [[FIRVisionCloudDetectorOptions alloc] init];
     options.maxResults = [cloudLandmarkRecognizerOptions[@"maxResults"] unsignedIntegerValue];

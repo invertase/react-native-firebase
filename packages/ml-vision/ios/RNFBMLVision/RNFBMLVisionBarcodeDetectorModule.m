@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,7 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
-#import "RNFBSharedUtils.h"
+#import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBMLVisionBarcodeDetectorModule.h"
 #import "RNFBMLVisionCommon.h"
 
@@ -47,9 +46,9 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
     }
 
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
-    FIRVision *vision = [FIRVision vision];
+    FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
-    FIRVisionBarcodeDetectorOptions *options = [[FIRVisionBarcodeDetectorOptions alloc] initWithFormats: FIRVisionBarcodeFormatQRCode | FIRVisionBarcodeFormatAztec];
+    FIRVisionBarcodeDetectorOptions *options = [[FIRVisionBarcodeDetectorOptions alloc] initWithFormats:FIRVisionBarcodeFormatQRCode | FIRVisionBarcodeFormatAztec];
 
     FIRVisionBarcodeDetector *barcodeDetector = [vision barcodeDetectorWithOptions:options];
     [barcodeDetector detectInImage:visionImage completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {
@@ -78,9 +77,9 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
     NSMutableDictionary *formattedBarcode = [[NSMutableDictionary alloc] init];
 
     formattedBarcode[@"boundingBox"] = [RNFBMLVisionCommon rectToIntArray:barcode.frame];
-    formattedBarcode[@"cornerPoints"] = @[]; // TODO NSValue to Point
+    formattedBarcode[@"cornerPoints"] = [RNFBMLVisionCommon visionPointsToArray:barcode.cornerPoints];
     formattedBarcode[@"format"] = @(barcode.format);
-    formattedBarcode[@"valueType"] = @(barcode.valueType); // TODO correct?
+    formattedBarcode[@"valueType"] = @(barcode.valueType);
     formattedBarcode[@"displayValue"] = barcode.displayValue;
     formattedBarcode[@"rawValue"] = barcode.rawValue;
 
@@ -102,38 +101,38 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
 
 - (NSDictionary *)getEmailMap:(FIRVisionBarcodeEmail *)email {
   return @{
-    @"address": email.address,
-    @"body": email.body,
-    @"subject": email.subject,
+      @"address": email.address,
+      @"body": email.body,
+      @"subject": email.subject,
   };
 }
 
 - (NSDictionary *)getPhoneMap:(FIRVisionBarcodePhone *)phone {
   return @{
-    @"number": phone.number,
-    @"type": @(phone.type), // TODO working?
+      @"number": phone.number,
+      @"type": @(phone.type),
   };
 }
 
 - (NSDictionary *)getSMSMap:(FIRVisionBarcodeSMS *)sms {
   return @{
-    @"message": sms.message,
-    @"phoneNumber": sms.phoneNumber,
+      @"message": sms.message,
+      @"phoneNumber": sms.phoneNumber,
   };
 }
 
 - (NSDictionary *)getURLMap:(FIRVisionBarcodeURLBookmark *)url {
   return @{
-    @"title": url.title,
-    @"url": url.url,
+      @"title": url.title,
+      @"url": url.url,
   };
 }
 
 - (NSDictionary *)getWiFiMap:(FIRVisionBarcodeWiFi *)wifi {
   return @{
-    @"encryptionType": @(wifi.type), // TODO working?
-    @"password": wifi.password,
-    @"ssid": wifi.ssid,
+      @"encryptionType": @(wifi.type),
+      @"password": wifi.password,
+      @"ssid": wifi.ssid,
   };
 }
 
@@ -143,20 +142,20 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
 
 - (NSDictionary *)getPersonNameMap:(FIRVisionBarcodePersonName *)name {
   return @{
-    @"first": name.first,
-    @"formatted": name.formattedName,
-    @"last": name.last,
-    @"middle": name.middle,
-    @"prefix": name.prefix,
-    @"pronunciation": name.pronounciation,
-    @"suffix": name.suffix,
+      @"first": name.first,
+      @"formatted": name.formattedName,
+      @"last": name.last,
+      @"middle": name.middle,
+      @"prefix": name.prefix,
+      @"pronunciation": name.pronounciation,
+      @"suffix": name.suffix,
   };
 }
 
 - (NSDictionary *)getAddressMap:(FIRVisionBarcodeAddress *)address {
   return @{
-    @"lines": address.addressLines,
-    @"type": @(address.type),
+      @"lines": address.addressLines,
+      @"type": @(address.type),
   };
 }
 
@@ -212,31 +211,31 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
 
 - (NSDictionary *)getCalendarEventMap:(FIRVisionBarcodeCalendarEvent *)event {
   return @{
-    @"description": event.description,
-    @"end": event.end, // TODO convert to string?
-    @"location": event.location,
-    @"organizer": event.organizer,
-    @"start": event.start, // TODO convert to string?
-    @"status": event.status,
-    @"summary": event.summary,
+      @"description": event.description,
+      @"end": [RNFBSharedUtils getISO8601String:event.end],
+      @"location": event.location,
+      @"organizer": event.organizer,
+      @"start": [RNFBSharedUtils getISO8601String:event.start],
+      @"status": event.status,
+      @"summary": event.summary,
   };
 }
 
 - (NSDictionary *)getDriverLicenseMap:(FIRVisionBarcodeDriverLicense *)license {
   return @{
-    @"addressCity": license.addressCity,
-    @"addressState": license.addressState,
-    @"addressZip": license.addressZip,
-    @"birthDate": license.birthDate,
-    @"documentType": license.documentType,
-    @"expiryDate": license.expiryDate,
-    @"firstName": license.firstName,
-    @"gender": license.gender,
-    @"issueDate": license.issuingDate,
-    @"issuingCountry": license.issuingCountry,
-    @"lastName": license.lastName,
-    @"licenseNumber": license.licenseNumber,
-    @"middleName": license.middleName,
+      @"addressCity": license.addressCity,
+      @"addressState": license.addressState,
+      @"addressZip": license.addressZip,
+      @"birthDate": license.birthDate,
+      @"documentType": license.documentType,
+      @"expiryDate": license.expiryDate,
+      @"firstName": license.firstName,
+      @"gender": license.gender,
+      @"issueDate": license.issuingDate,
+      @"issuingCountry": license.issuingCountry,
+      @"lastName": license.lastName,
+      @"licenseNumber": license.licenseNumber,
+      @"middleName": license.middleName,
   };
 }
 

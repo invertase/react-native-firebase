@@ -15,7 +15,7 @@
  *
  */
 
-android.describe('vision()', () => {
+describe('vision()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();

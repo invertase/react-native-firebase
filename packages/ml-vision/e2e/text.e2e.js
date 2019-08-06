@@ -62,10 +62,8 @@ function textBaseElementValidate(textBase, cloud = false) {
 
   // recognizedLanguages
   textBase.recognizedLanguages.should.be.an.Array();
-  if (cloud) {
-    textBase.recognizedLanguages.length.should.be.greaterThan(0);
-  } else {
-    textBase.recognizedLanguages.length.should.equal(0);
+  if (textBase.recognizedLanguages.length) {
+    textBase.recognizedLanguages[0].should.be.a.String();
   }
 }
 
@@ -79,6 +77,7 @@ describe('mlkit.vision.text', () => {
       .ref('vision/text.png')
       .writeToFile(testImageFile);
   });
+
   describe('textRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
