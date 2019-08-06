@@ -15,24 +15,10 @@
  *
  */
 
-#import <React/RCTUtils.h>
+#import <Foundation/Foundation.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
-#import "RNFBMlkitModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
-
-
-@implementation RNFBMlkitModule
-#pragma mark -
-#pragma mark Module Setup
-
-  RCT_EXPORT_MODULE();
-
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
-
-#pragma mark -
-#pragma mark Firebase Mlkit Methods
+@interface RNFBMLVisionDocumentTextRecognizerModule : NSObject <RCTBridgeModule>
 
 @end

@@ -48,6 +48,21 @@ PODS:
   - Firebase/MLNLSmartReply (6.5.0):
     - Firebase/CoreOnly
     - FirebaseMLNLSmartReply (~> 0.16.3)
+  - Firebase/MLVision (6.5.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVision (~> 0.17.0)
+  - Firebase/MLVisionBarcodeModel (6.5.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionBarcodeModel (~> 0.17.0)
+  - Firebase/MLVisionFaceModel (6.5.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionFaceModel (~> 0.17.0)
+  - Firebase/MLVisionLabelModel (6.5.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionLabelModel (~> 0.17.0)
+  - Firebase/MLVisionTextModel (6.5.0):
+    - Firebase/CoreOnly
+    - FirebaseMLVisionTextModel (~> 0.17.0)
   - Firebase/Performance (6.5.0):
     - Firebase/CoreOnly
     - FirebasePerformance (~> 3.1.1)
@@ -147,6 +162,20 @@ PODS:
     - FirebaseMLNaturalLanguage (~> 0.16)
     - FirebaseMLNLLanguageID (~> 0.16)
     - FirebaseRemoteConfig (~> 4.2)
+  - FirebaseMLVision (0.17.0):
+    - FirebaseCore (~> 6.0)
+    - FirebaseMLCommon (~> 0.17)
+    - GoogleAPIClientForREST/Core (~> 1.3)
+    - GoogleAPIClientForREST/Vision (~> 1.3)
+    - GoogleMobileVision/Detector (~> 1.4)
+  - FirebaseMLVisionBarcodeModel (0.17.0):
+    - GoogleMobileVision/BarcodeDetector (~> 1.4)
+  - FirebaseMLVisionFaceModel (0.17.0):
+    - GoogleMobileVision/FaceDetector (~> 1.4)
+  - FirebaseMLVisionLabelModel (0.17.0):
+    - GoogleMobileVision/LabelDetector (~> 1.4)
+  - FirebaseMLVisionTextModel (0.17.0):
+    - GoogleMobileVision/TextDetector (~> 1.4)
   - FirebasePerformance (3.1.1):
     - FirebaseCore (~> 6.0)
     - FirebaseInstanceID (~> 4.2)
@@ -179,12 +208,30 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - GoogleAPIClientForREST/Core (1.3.9):
+    - GTMSessionFetcher (>= 1.1.7)
+  - GoogleAPIClientForREST/Vision (1.3.9):
+    - GoogleAPIClientForREST/Core
+    - GTMSessionFetcher (>= 1.1.7)
   - GoogleAppMeasurement (6.0.4):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
+  - GoogleMobileVision/BarcodeDetector (1.6.0):
+    - GoogleMobileVision/Detector (~> 1.6)
+  - GoogleMobileVision/Detector (1.6.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.1)
+  - GoogleMobileVision/FaceDetector (1.6.0):
+    - GoogleMobileVision/Detector (~> 1.6)
+  - GoogleMobileVision/LabelDetector (1.6.0):
+    - GoogleMobileVision/Detector (~> 1.6)
+  - GoogleMobileVision/TextDetector (1.6.0):
+    - GoogleMobileVision/Detector (~> 1.6)
   - GoogleToolboxForMac/DebugUtils (2.2.1):
     - GoogleToolboxForMac/Defines (= 2.2.1)
   - GoogleToolboxForMac/Defines (2.2.1)
@@ -232,7 +279,11 @@ PODS:
     - gRPC-Core/Interface (= 1.21.0)
     - nanopb (~> 0.3)
   - gRPC-Core/Interface (1.21.0)
+  - GTMSessionFetcher (1.2.2):
+    - GTMSessionFetcher/Full (= 1.2.2)
   - GTMSessionFetcher/Core (1.2.2)
+  - GTMSessionFetcher/Full (1.2.2):
+    - GTMSessionFetcher/Core (= 1.2.2)
   - Jet (0.4.4):
     - React
   - leveldb-library (1.20)
@@ -367,12 +418,21 @@ PODS:
     - Firebase/Messaging (~> 6.5.0)
     - React
     - RNFBApp
-  - RNFBMlNaturalLanguage (0.1.2):
+  - RNFBMLNaturalLanguage (0.1.2):
     - Firebase/Core (~> 6.5.0)
     - Firebase/MLCommon (~> 6.5.0)
     - Firebase/MLNaturalLanguage (~> 6.5.0)
     - Firebase/MLNLLanguageID (~> 6.5.0)
     - Firebase/MLNLSmartReply (~> 6.5.0)
+    - React
+    - RNFBApp
+  - RNFBMLVision (0.1.2):
+    - Firebase/Core (~> 6.5.0)
+    - Firebase/MLVision (~> 6.5.0)
+    - Firebase/MLVisionBarcodeModel (~> 6.5.0)
+    - Firebase/MLVisionFaceModel (~> 6.5.0)
+    - Firebase/MLVisionLabelModel (~> 6.5.0)
+    - Firebase/MLVisionTextModel (~> 6.5.0)
     - React
     - RNFBApp
   - RNFBPerf (0.1.2):
@@ -426,7 +486,8 @@ DEPENDENCIES:
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging/ios`)"
-  - "RNFBMlNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
+  - "RNFBMLNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
+  - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision/ios`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
   - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
@@ -457,10 +518,17 @@ SPEC REPOS:
     - FirebaseMLNaturalLanguage
     - FirebaseMLNLLanguageID
     - FirebaseMLNLSmartReply
+    - FirebaseMLVision
+    - FirebaseMLVisionBarcodeModel
+    - FirebaseMLVisionFaceModel
+    - FirebaseMLVisionLabelModel
+    - FirebaseMLVisionTextModel
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseStorage
+    - GoogleAPIClientForREST
     - GoogleAppMeasurement
+    - GoogleMobileVision
     - GoogleToolboxForMac
     - GoogleUtilities
     - "gRPC-C++"
@@ -539,8 +607,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/iid/ios"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging/ios"
-  RNFBMlNaturalLanguage:
+  RNFBMLNaturalLanguage:
     :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
+  RNFBMLVision:
+    :path: "../node_modules/@react-native-firebase/ml-vision/ios"
   RNFBPerf:
     :path: "../node_modules/@react-native-firebase/perf/ios"
   RNFBStorage:
@@ -575,12 +645,19 @@ SPEC CHECKSUMS:
   FirebaseMLNaturalLanguage: a8b1308281ba28950a9a82e084ac998800abd506
   FirebaseMLNLLanguageID: bb78d1a81a610c6e99f756724c0326c732c70cb3
   FirebaseMLNLSmartReply: 94d6270f9ec11591b8988e027aa11e1c3a0f3a55
+  FirebaseMLVision: ff6a597d10017c5dfe1cc6d24293b77f84808060
+  FirebaseMLVisionBarcodeModel: 4ac90a8ed5a92e1ed8d9278b92d794230a01dd16
+  FirebaseMLVisionFaceModel: 14dc2ae87fac3108b993739e4bfafab7316019e5
+  FirebaseMLVisionLabelModel: 284a87850732244733cbabcb5f1f730ff367d7fb
+  FirebaseMLVisionTextModel: 2a660797599db1be13a9f453df88b7f7c96bba74
   FirebasePerformance: bd3666700af4d43caf2a13b93718f3b532b8a5ff
   FirebaseRemoteConfig: ed74d16d7e5b19e77a4c3e3eee4fe363039b0834
   FirebaseStorage: 618dd8fd886b30adf6e5d1915b1f5c18cb5c3944
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  GoogleAPIClientForREST: 44c7b678cbab11d26a47eab7309d6179b1a61f0c
   GoogleAppMeasurement: 183bd916af7f80deb67c01888368f1108d641832
+  GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
   GoogleToolboxForMac: b3553629623a3b1bff17f555e736cd5a6d95ad55
   GoogleUtilities: d2b0e277a95962e09bb27f5cd42f5f0b6a506c7d
   "gRPC-C++": 9dfe7b44821e7b3e44aacad2af29d2c21f7cde83
@@ -620,7 +697,8 @@ SPEC CHECKSUMS:
   RNFBFunctions: 4c7933433cde69d84640efa03611b5ec08608679
   RNFBIid: 5ba438aef0182e356f6b6b8635db7cfe5369a2b2
   RNFBMessaging: 75d723aff569e937aca3c509e29f792f9745a6ef
-  RNFBMlNaturalLanguage: 80d48e234b6a2b8b1aa09bb3da81af6feebdb63f
+  RNFBMLNaturalLanguage: bd834ec1000a116898639dc196fedfa13628c659
+  RNFBMLVision: 983cc449e029f340b52af7113c4778bef4766dd7
   RNFBPerf: 1405472bfa527f1e90e269851e88493ef0346e16
   RNFBStorage: cdb7b64abfd052b6b97c92a8e20010b7bdd04dcc
   RNFBUtils: a300811ae9a27227c1eb5e770cd976d15f940b2e

@@ -30,8 +30,8 @@ public class RNFirebaseMLVisionImageLabelerModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void imageLabelerProcessImage(String appName, String stringUri, ReadableMap imageLablerOptions, Promise promise) {
-    this.module.imageLabelerProcessImage(appName, stringUri, Arguments.toBundle(imageLablerOptions))
+  public void imageLabelerProcessImage(String appName, String stringUri, ReadableMap imageLabelerOptions, Promise promise) {
+    this.module.imageLabelerProcessImage(appName, stringUri, Arguments.toBundle(imageLabelerOptions))
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(

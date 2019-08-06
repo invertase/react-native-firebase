@@ -42,7 +42,7 @@ function documentTextBaseElementValidate(documentTextBase) {
 
 let testImageFile;
 
-android.describe('mlkit.vision.document.text', () => {
+describe('mlkit.vision.document.text', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
