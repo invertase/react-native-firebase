@@ -90,100 +90,14 @@ export namespace MLKitLanguage {
   }
 
   /**
-   * An interface representing a suggest reply, an array of these are returned from `SmartReplyConversation.getSuggestedReplies`
+   * An interface representing a suggest reply, an array of these are returned from `suggestReplies`
    *
-   * #### Example
-   *
-   * ```js
-   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-   * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-   *
-   * const suggestedReplies = await conversation.getSuggestedReplies();
-   * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-   * ```
    */
   export interface SuggestedReply {
+    /**
+     * The smart reply text.
+     */
     text: string;
-  }
-
-  /**
-   * A class representing a Smart Reply conversation in your app.
-   *
-   * #### Example
-   *
-   * ```js
-   * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-   * ```
-   *
-   */
-  export class SmartReplyConversation {
-    /**
-     * Add a local message to this conversation, e.g. for the currently signed in user on this device.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     * conversation.addLocalUserMessage('That sounds great!');
-     * conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     *
-     * @param text The local users message text.
-     * @param timestamp The timestamp of when the message was created.
-     */
-    addLocalUserMessage(text: string, timestamp?: number): void;
-
-    /**
-     * Add a remote message to this conversation, e.g. for a user that's not on this device.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     *
-     * @param text The remote users message text.
-     * @param timestamp The timestamp of when the message was received.
-     * @param remoteUserId The remote users identifier in your app.
-     */
-    addRemoteUserMessage(text: string, timestamp: number, remoteUserId: string): void;
-
-    /**
-     * Get suggested replies for the current conversation.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     */
-    getSuggestedReplies(): Promise<SuggestedReply[]>;
-
-    /**
-     * Removes all messages from this conversation, e.g. all messages added via `addLocalUserMessage` and `addRemoteUserMessage`.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     * // start over
-     * conversation.clearMessages();
-     * ```
-     */
-    clearMessages(): void;
   }
 
   /**
@@ -241,17 +155,55 @@ export namespace MLKitLanguage {
     ): Promise<IdentifiedLanguage[]>;
 
     /**
-     * Returns a new instance of SmartReplyConversation.
+     * Returns suggested replies for a conversation.
      *
      * #### Example
      *
      * ```js
-     * const conversation = firebase.naturalLanguage().newSmartReplyConversation();
+     * const replies = await firebase.naturalLanguage().suggestReplies([
+     *   { text: "Hey, long time no speak!", },
+     *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
+     *   { text: 'We should catchup some time!', },
+     *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
+     * ]);
      * ```
      *
-     * @param messageHistoryLimit Optional value to specify the number of messages to keep in history, messages in history are used with `SmartReplyConversation.getSuggestedReplies` and are sent natively every time this method is called. Defaults to 30.
+     * @param messages An array of `TextMessage` interfaces.
      */
-    newSmartReplyConversation(messageHistoryLimit?: number): SmartReplyConversation;
+    suggestReplies(messages: TextMessage[]): Promise<SuggestedReply[]>;
+  }
+
+  /**
+   * A `TextMessage` interface provided to `suggestReplies()`.
+   */
+  export interface TextMessage {
+    /**
+     * The message text.
+     *
+     * This is required and must not be an empty string.
+     */
+    text: string;
+
+    /**
+     * Whether the message is a local user. If false, a `userId` must be provided for the message.
+     *
+     * Defaults to true.
+     */
+    isLocalUser?: boolean;
+
+    /**
+     * A user ID of a remote user.
+     *
+     * Used to help better identify users to provide more accurate replies.
+     */
+    userId?: string;
+
+    /**
+     * The timestamp of the message in milliseconds.
+     *
+     * Defaults to now (`Date.now()`).
+     */
+    timestamp?: number;
   }
 }
 

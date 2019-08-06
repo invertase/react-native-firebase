@@ -15,180 +15,182 @@
  *
  */
 
-const text = 'a message';
-const timestamp = Date.now();
-const remoteUserId = 'invertase';
-
 describe('naturalLanguage() -> Smart Replies', () => {
-  describe('newSmartReplyConversation()', () => {
-    it('returns a new instance of SmartReplyConversation', async () => {
-      const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-      conversation.should.be.instanceOf(
-        jet.require('packages/ml-natural-language/lib/SmartReplyConversation'),
-      );
-    });
-
-    it('throws an error if arg is not a number', async () => {
+  describe('suggestReplies()', () => {
+    it('throws if messages is not an array', () => {
       try {
-        firebase.naturalLanguage().newSmartReplyConversation(false);
+        firebase.naturalLanguage().suggestReplies({});
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
-        e.message.should.containEql('must be a number or undefined');
+        e.message.should.containEql("'messages' must be an array value");
         return Promise.resolve();
       }
     });
 
-    it('correctly limits local message history', async () => {
-      const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
-      for (let i = 0; i < 10; i++) {
-        conversation.addLocalUserMessage(`${i}`, timestamp);
-        conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
-        if (i >= 5) {
-          // checking of older first gets sliced off
-          conversation.messages[0].text.should.equal(`${i + 1 - 5}`);
-        }
-      }
+    it('resolves an empty array if empty array if provided', async () => {
+      const replies = await firebase.naturalLanguage().suggestReplies([]);
+      replies.should.be.Array();
+      replies.length.should.eql(0);
     });
 
-    it('correctly limits remote message history', async () => {
-      const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
-      for (let i = 0; i < 10; i++) {
-        conversation.addRemoteUserMessage(`${i}`, timestamp, remoteUserId);
-        conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
-        if (i >= 5) {
-          // checking of older first gets sliced off
-          conversation.messages[0].text.should.equal(`${i + 1 - 5}`);
-        }
-      }
-    });
-  });
+    it('returns suggested replies', async () => {
+      const replies = await firebase.naturalLanguage().suggestReplies([
+        { text: 'We should catchup some time!' },
+        { text: 'I know right, it has been a while..', userId: 'invertase', isLocalUser: false },
+        { text: 'Lets meet up!' },
+        {
+          text: 'Definitely, how about we go for lunch this week?',
+          userId: 'invertase',
+          isLocalUser: false,
+        },
+      ]);
 
-  describe('SmartReplyConversation', () => {
-    describe('clearMessages', () => {
-      it('clears all messages', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation(5);
-        for (let i = 0; i < 10; i++) {
-          conversation.addRemoteUserMessage(`${i}`, timestamp, remoteUserId);
-          conversation.messages.length.should.equal(i >= 5 ? 5 : i + 1);
-        }
+      replies.should.be.Array();
+      replies.length.should.equal(3);
 
-        conversation.messages.length.should.equal(5);
-        conversation.clearMessages();
-        conversation.messages.length.should.equal(0);
-      });
-    });
-    describe('addRemoteUserMessage', () => {
-      it('adds a message for a remote user', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        conversation.addRemoteUserMessage(text, timestamp, remoteUserId);
-
-        conversation.messages.length.should.equal(1);
-        conversation.messages[0].text.should.equal(text);
-        conversation.messages[0].timestamp.should.equal(timestamp);
-        conversation.messages[0].remoteUserId.should.equal(remoteUserId);
+      replies.forEach($ => {
+        $.text.should.be.String();
+        $.text.length.should.be.greaterThan(0);
       });
 
-      it('throws if message is invalid', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
+      const replies2 = await firebase
+        .naturalLanguage()
+        .suggestReplies([
+          { text: replies[0].text },
+          { text: 'Great, does Friday work for you?', userId: 'invertase', isLocalUser: false },
+        ]);
+
+      replies2[0].text.should.be.String();
+      replies2[0].text.length.should.be.greaterThan(0);
+    });
+
+    describe('TextMessage', () => {
+      it('throws if message is not an object', () => {
         try {
-          conversation.addRemoteUserMessage(false, timestamp, remoteUserId);
+          firebase.naturalLanguage().suggestReplies([123]);
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
-          e.message.should.containEql("'text' must be a string value");
+          e.message.should.containEql("'textMessage' expected an object value");
           return Promise.resolve();
         }
       });
 
-      it('throws if timestamp is invalid', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        try {
-          conversation.addRemoteUserMessage(text, false, remoteUserId);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql("'timestamp' must be a number value");
-          return Promise.resolve();
-        }
+      describe('.text', () => {
+        it('throws if text option not provided', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{}]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.text' expected a string value");
+            return Promise.resolve();
+          }
+        });
+
+        it('throws if text option is not a string', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{ text: 123 }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.text' expected a string value");
+            return Promise.resolve();
+          }
+        });
+
+        it('throws if text length is zero', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{ text: '' }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.text' expected string value to not be empty");
+            return Promise.resolve();
+          }
+        });
       });
 
-      it('throws if remoteUserId is invalid', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        try {
-          conversation.addRemoteUserMessage(text, timestamp, false);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql("'remoteUserId' must be a string value");
-          return Promise.resolve();
-        }
+      describe('.userId', () => {
+        it('throws if local user true and id provided', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', userId: 'bar' }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql(
+              "'textMessage.userId' expected 'textMessage.isLocalUser' to be false when setting a user ID",
+            );
+            return Promise.resolve();
+          }
+        });
+
+        it('throws if text userId not provided', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', isLocalUser: false }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.userId' expected a string value");
+            return Promise.resolve();
+          }
+        });
+
+        it('throws if userId option is not a string', () => {
+          try {
+            firebase
+              .naturalLanguage()
+              .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 123 }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.userId' expected a string value");
+            return Promise.resolve();
+          }
+        });
+
+        it('throws if userId length is zero', () => {
+          try {
+            firebase
+              .naturalLanguage()
+              .suggestReplies([{ text: 'foo', isLocalUser: false, userId: '' }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql(
+              "'textMessage.userId' expected string value to not be empty",
+            );
+            return Promise.resolve();
+          }
+        });
+
+        it('sets a user id', () => {
+          firebase
+            .naturalLanguage()
+            .suggestReplies([{ text: 'foo', isLocalUser: false, userId: 'bar' }]);
+        });
       });
-    });
 
-    describe('addLocalUserMessage', () => {
-      it('adds a message for a remote user', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        conversation.addLocalUserMessage(text, timestamp);
+      describe('.timestamp', () => {
+        it('throws if timestamp is not a number', () => {
+          try {
+            firebase.naturalLanguage().suggestReplies([{ text: 'foo', timestamp: 'baz' }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.timestamp' expected number value");
+            return Promise.resolve();
+          }
+        });
 
-        conversation.messages.length.should.equal(1);
-        conversation.messages[0].text.should.equal(text);
-        conversation.messages[0].timestamp.should.equal(timestamp);
+        it('sets a timestamp', () => {
+          firebase.naturalLanguage().suggestReplies([{ text: 'foo', timestamp: Date.now() + 123 }]);
+        });
       });
 
-      it('throws if message is invalid', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        try {
-          conversation.addLocalUserMessage(false, timestamp);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql("'text' must be a string value");
-          return Promise.resolve();
-        }
-      });
-
-      it('throws if timestamp is invalid', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        try {
-          conversation.addLocalUserMessage(text, false);
-          return Promise.reject(new Error('Did not throw'));
-        } catch (e) {
-          e.message.should.containEql("'timestamp' must be a number value");
-          return Promise.resolve();
-        }
-      });
-    });
-
-    describe('getSuggestedReplies', () => {
-      it('returns an array of suggested replies and their scores', async () => {
-        const conversation = firebase.naturalLanguage().newSmartReplyConversation();
-        conversation.addLocalUserMessage('Hey, long time no speak!', timestamp);
-        conversation.addRemoteUserMessage(
-          'I know right, it has been a while..',
-          timestamp,
-          remoteUserId,
-        );
-        conversation.addLocalUserMessage('We should catchup some time!', timestamp);
-        conversation.addRemoteUserMessage(
-          'Definitely, how about we go for lunch this week?',
-          timestamp,
-          remoteUserId,
-        );
-
-        const replies = await conversation.getSuggestedReplies();
-
-        replies.should.be.an.Array();
-        replies.length.should.equal(3);
-        replies[0].text.should.equal('Sounds good!');
-        // TODO not supported on ios SDK
-        // replies[0].confidence.should.be.a.Number();
-        // replies[0].confidence.should.be.greaterThan(0.04);
-
-        conversation.addLocalUserMessage(replies[0].text, timestamp);
-        conversation.addRemoteUserMessage(
-          'Great, does Friday work for you?',
-          timestamp,
-          remoteUserId,
-        );
-
-        const replies2 = await conversation.getSuggestedReplies();
-        replies2[0].text.should.equal('Yep!');
+      describe('.isLocalUser', () => {
+        it('throws if isLocalUser is not a boolean', () => {
+          try {
+            firebase
+              .naturalLanguage()
+              .suggestReplies([{ text: 'foo', userId: 'bar', isLocalUser: 'baz' }]);
+            return Promise.reject(new Error('Did not throw'));
+          } catch (e) {
+            e.message.should.containEql("'textMessage.isLocalUser' expected boolean value");
+            return Promise.resolve();
+          }
+        });
       });
     });
   });

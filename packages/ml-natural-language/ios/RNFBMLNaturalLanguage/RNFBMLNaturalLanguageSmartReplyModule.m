@@ -33,7 +33,7 @@ RCT_EXPORT_MODULE();
 #pragma mark Firebase Mlkit Smart Reply Methods
 
 #ifdef DEPENDENCY_EXISTS
-RCT_EXPORT_METHOD(getSuggestedReplies:
+RCT_EXPORT_METHOD(suggestReplies:
   (FIRApp *) firebaseApp
     : (NSArray<FIRTextMessage *> *)messages
     : (RCTPromiseResolveBlock)resolve

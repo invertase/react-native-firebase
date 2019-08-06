@@ -365,6 +365,8 @@ The Remote Config API has had a significant API change as originally highlighted
 ## ML Kit Natural Language (naturalLanguage) - **[NEW]**
 
 - [NEW] Implemented support for language identification APIs
+  - Single Languages: `identifyLanguage()`.
+  - Multiple Languages: `identifyPossibleLanguages()`
 - [NEW] Implemented support for [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
   - [Example Video](https://twitter.com/mikediarmid/status/1128837402481635331)
 
