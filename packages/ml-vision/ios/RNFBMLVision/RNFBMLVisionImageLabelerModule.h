@@ -15,22 +15,11 @@
  * limitations under the License.
  *
  */
+ 
+#import <Foundation/Foundation.h>
+#import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
-@interface RNFBMLVisionCommon : NSObject
-
-+ (NSArray *)rectToIntArray:(CGRect)rect;
-
-+ (NSDictionary *)contourToDict:(FIRVisionFaceContour *)visionFaceContour;
-
-+ (NSDictionary *)landmarkToDict:(FIRVisionFaceLandmark *)visionFaceLandmark;
-
-+ (NSArray *)visionPointsToArray:(NSArray <FIRVisionPoint *> *_Nullable)points;
-
-+ (NSNumber *)barcodeValueTypeToInt:(NSString *)valueType;
-
-+ (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
-    NSArray *errorCodeMessageArray,
-    UIImage *image
-))completion;
+@interface RNFBMLVisionImageLabelerModule : NSObject <RCTBridgeModule>
 
 @end

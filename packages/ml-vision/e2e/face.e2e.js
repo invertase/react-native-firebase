@@ -17,7 +17,7 @@
 
 let testImageFile;
 
-android.describe('mlkit.vision.face', () => {
+describe('mlkit.vision.face', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/faces.jpg`;
     await firebase
@@ -88,6 +88,7 @@ android.describe('mlkit.vision.face', () => {
 
         i.landmarks.forEach(l => {
           l.type.should.be.Number();
+          l.type.should.be.greaterThan(-1);
           l.position.length.should.be.eql(2);
           l.position.forEach(p => p.should.be.Number());
         });
@@ -106,6 +107,7 @@ android.describe('mlkit.vision.face', () => {
 
         i.faceContours.forEach(l => {
           l.type.should.be.Number();
+          l.type.should.be.greaterThan(-1);
           l.points.length.should.be.greaterThan(1);
           l.points.forEach(p => {
             p.should.be.Array();

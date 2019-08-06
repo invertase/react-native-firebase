@@ -19,15 +19,22 @@ Pod::Spec.new do |s|
   s.dependency          'RNFBApp'
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 6.5.0'
+  s.dependency          'Firebase/MLVision', '~> 6.5.0'
 
-  # TODO
-  if FirebaseJSON::Config.get_value_or_default('TODO_vision', false)
-    s.dependency          'Firebase/MLVision', '~> 6.5.0'
+  if FirebaseJSON::Config.get_value_or_default('ml_vision_face_model', false)
+    s.dependency          'Firebase/MLVisionFaceModel', '~> 6.5.0'
   end
 
-  # TODO
-  if FirebaseJSON::Config.get_value_or_default('TODO_vision', false)
-    s.dependency          'Firebase/MLCommon', '~> 6.5.0'
+  if FirebaseJSON::Config.get_value_or_default('ml_vision_ocr_model', false)
+    s.dependency          'Firebase/MLVisionTextModel', '~> 6.5.0'
+  end
+
+  if FirebaseJSON::Config.get_value_or_default('ml_vision_barcode_model', false)
+    s.dependency          'Firebase/MLVisionBarcodeModel', '~> 6.5.0'
+  end
+
+  if FirebaseJSON::Config.get_value_or_default('ml_vision_image_label_model', false)
+    s.dependency          'Firebase/MLVisionLabelModel', '~> 6.5.0'
   end
 
   s.static_framework    = false

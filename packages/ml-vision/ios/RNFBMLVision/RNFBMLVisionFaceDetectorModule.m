@@ -82,7 +82,7 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
     options.minFaceSize = (CGFloat) [faceDetectorOptions[@"minFaceSize"] doubleValue];
 
     FIRVisionFaceDetector *faceDetector = [vision faceDetectorWithOptions:options];
-    [faceDetector detectInImage:visionImage completion:^(NSArray<FIRVisionFace *> *faces, NSError *error) {
+    [faceDetector processImage:visionImage completion:^(NSArray<FIRVisionFace *> *faces, NSError *error) {
       if (error != nil) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
             @"code": @"unknown",
@@ -107,9 +107,7 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
 
         // Contours
         NSMutableArray *faceContours = [[NSMutableArray alloc] init];
-        if (contourMode == (NSInteger *) 1) {
-          visionFace[@"faceContours"] = faceContours;
-        } else if (contourMode == (NSInteger *) 2) {
+        if (contourMode == (NSInteger *) 2) {
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeAll]]];
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeFace]]];
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeLeftEyebrowTop]]];
@@ -124,28 +122,27 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeLowerLipBottom]]];
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeNoseBridge]]];
           [faceContours addObject:[RNFBMLVisionCommon contourToDict:[face contourOfType:FIRFaceContourTypeNoseBottom]]];
-          visionFace[@"faceContours"] = faceContours;
         }
+        visionFace[@"faceContours"] = faceContours;
 
-//        visionLandmark[@"confidence"] = landmark.confidence;
-//        visionLandmark[@"entityId"] = landmark.entityId;
-//        visionLandmark[@"landmark"] = landmark.landmark;
-//        visionLandmark[@"boundingBox"] = [RNFBMLVisionCommon rectToIntArray:landmark.frame];
-//
-//        NSMutableArray *locations = [[NSMutableArray alloc] init];
-//        for (FIRVisionLatitudeLongitude *location in landmark.locations) {
-//          NSMutableArray *loc = [[NSMutableArray alloc] init];
-//          [loc addObject:@([location.latitude doubleValue])];
-//          [loc addObject:@([location.longitude doubleValue])];
-//          [locations addObject:loc];
-//        }
-//
-//        visionLandmark[@"locations"] = locations;
-//
-//        [landmarksFormatted addObject:visionLandmark];
+        // Face Landmarks
+        NSMutableArray *faceLandmarks = [[NSMutableArray alloc] init];
+        if (landmarkMode == (NSInteger *) 2) {
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeMouthBottom]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeMouthRight]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeMouthLeft]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeRightEye]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeLeftEye]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeRightCheek]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeLeftCheek]]];
+          [faceLandmarks addObject:[RNFBMLVisionCommon landmarkToDict:[face landmarkOfType:FIRFaceLandmarkTypeNoseBase]]];
+        }
+        visionFace[@"landmarks"] = faceLandmarks;
+
+        [facesFormatted addObject:visionFace];
       }
 
-      resolve(landmarksFormatted);
+      resolve(facesFormatted);
     }];
   }];
 }

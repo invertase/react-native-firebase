@@ -16,7 +16,7 @@
  */
 let testImageFile;
 
-describe.only('mlkit.vision.landmark', () => {
+describe('mlkit.vision.landmark', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/landmark.jpg`;
     await firebase

@@ -32,16 +32,167 @@
 + (NSDictionary *)contourToDict:(FIRVisionFaceContour *)visionFaceContour {
   NSMutableDictionary *visionFaceContourDict = [[NSMutableDictionary alloc] init];
 
-  visionFaceContourDict[@"type"] = visionFaceContour.type;
+  if (visionFaceContour == nil) {
+    return visionFaceContourDict;
+  }
 
   NSMutableArray *pointsFormatted = [[NSMutableArray alloc] init];
   for (FIRVisionPoint *point in visionFaceContour.points) {
     [pointsFormatted addObject:[self visionPointArray:point]];
   }
 
+  visionFaceContourDict[@"type"] = [self contourTypeToInt:visionFaceContour.type];
   visionFaceContourDict[@"points"] = pointsFormatted;
 
   return visionFaceContourDict;
+}
+
++ (NSNumber *)contourTypeToInt:(NSString *)faceContourType {
+  if ([@"All" isEqualToString:faceContourType]) {
+    return @1;
+  }
+  if ([@"Face" isEqualToString:faceContourType]) {
+    return @2;
+  }
+  if ([@"LeftEyebrowTop" isEqualToString:faceContourType]) {
+    return @3;
+  }
+  if ([@"LeftEyebrowBottom" isEqualToString:faceContourType]) {
+    return @4;
+  }
+  if ([@"RightEyebrowTop" isEqualToString:faceContourType]) {
+    return @5;
+  }
+  if ([@"RightEyebrowBottom" isEqualToString:faceContourType]) {
+    return @6;
+  }
+  if ([@"LeftEye" isEqualToString:faceContourType]) {
+    return @7;
+  }
+  if ([@"RightEye" isEqualToString:faceContourType]) {
+    return @8;
+  }
+  if ([@"UpperLipTop" isEqualToString:faceContourType]) {
+    return @9;
+  }
+  if ([@"UpperLipBottom" isEqualToString:faceContourType]) {
+    return @10;
+  }
+  if ([@"LowerLipTop" isEqualToString:faceContourType]) {
+    return @11;
+  }
+  if ([@"LowerLipBottom" isEqualToString:faceContourType]) {
+    return @12;
+  }
+  if ([@"NoseBridge" isEqualToString:faceContourType]) {
+    return @13;
+  }
+  if ([@"NoseBottom" isEqualToString:faceContourType]) {
+    return @14;
+  }
+  return @-1;
+}
+
++ (NSDictionary *)landmarkToDict:(FIRVisionFaceLandmark *)visionFaceLandmark {
+  NSMutableDictionary *visionFaceLandmarkDict = [[NSMutableDictionary alloc] init];
+
+  if (visionFaceLandmark == nil) {
+    return visionFaceLandmarkDict;
+  }
+
+  visionFaceLandmarkDict[@"type"] = [self landmarkTypeToInt:visionFaceLandmark.type];
+  visionFaceLandmarkDict[@"position"] = [self visionPointArray:visionFaceLandmark.position];
+  return visionFaceLandmarkDict;
+}
+
++ (NSNumber *)landmarkTypeToInt:(NSString *)faceLandmarkType {
+  if ([@"MouthBottom" isEqualToString:faceLandmarkType]) {
+    return @0;
+  }
+  if ([@"MouthRight" isEqualToString:faceLandmarkType]) {
+    return @11;
+  }
+  if ([@"MouthLeft" isEqualToString:faceLandmarkType]) {
+    return @5;
+  }
+  if ([@"LeftEar" isEqualToString:faceLandmarkType]) {
+    return @3;
+  }
+  if ([@"RightEar" isEqualToString:faceLandmarkType]) {
+    return @9;
+  }
+  if ([@"LeftEye" isEqualToString:faceLandmarkType]) {
+    return @4;
+  }
+  if ([@"RightEye" isEqualToString:faceLandmarkType]) {
+    return @10;
+  }
+  if ([@"LeftCheek" isEqualToString:faceLandmarkType]) {
+    return @1;
+  }
+  if ([@"RightCheek" isEqualToString:faceLandmarkType]) {
+    return @7;
+  }
+  if ([@"NoseBase" isEqualToString:faceLandmarkType]) {
+    return @6;
+  }
+  return @-1;
+}
+
++ (NSNumber *)barcodeValueTypeToInt:(NSString *)valueType {
+  if ([@"Unknown" isEqualToString:valueType]) {
+    return @0;
+  }
+  if ([@"ContactInfo" isEqualToString:valueType]) {
+    return @1;
+  }
+  if ([@"Email" isEqualToString:valueType]) {
+    return @2;
+  }
+  if ([@"ISBN" isEqualToString:valueType]) {
+    return @3;
+  }
+  if ([@"Phone" isEqualToString:valueType]) {
+    return @4;
+  }
+  if ([@"Product" isEqualToString:valueType]) {
+    return @5;
+  }
+  if ([@"SMS" isEqualToString:valueType]) {
+    return @6;
+  }
+  if ([@"Text" isEqualToString:valueType]) {
+    return @7;
+  }
+  if ([@"URL" isEqualToString:valueType]) {
+    return @8;
+  }
+  if ([@"WiFi" isEqualToString:valueType]) {
+    return @9;
+  }
+  if ([@"GeographicCoordinates" isEqualToString:valueType]) {
+    return @10;
+  }
+  if ([@"CalendarEvent" isEqualToString:valueType]) {
+    return @11;
+  }
+  if ([@"DriversLicense" isEqualToString:valueType]) {
+    return @12;
+  }
+  return @-1;
+}
+
++ (NSArray *)visionPointsToArray:(NSArray <NSValue *> *_Nullable)points {
+  if (points == nil) {
+    return @[];
+  }
+
+  NSMutableArray *pointsArray = [[NSMutableArray alloc] init];
+  for (NSValue *point in points) {
+    [pointsArray addObject:[self visionPointArray:(id) point]];
+  }
+
+  return pointsArray;
 }
 
 + (NSArray *)visionPointArray:(FIRVisionPoint *)point {
