@@ -85,12 +85,12 @@ React Native Firebase also publishes other packages.
 ## Contributing
 
 - [Overview](https://invertase.io/oss/react-native-firebase/contributing)
-- [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs)
+- [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs-pm)
 - [Documentation](https://invertase.io/oss/react-native-firebase/contributing/documentation)
-- [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing)
+- [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing-review)
 - [Marketing & Content](https://invertase.io/oss/react-native-firebase/contributing/marketing-content)
 - [Community](https://invertase.io/oss/react-native-firebase/contributing/community)
-- [Donating](https://invertase.io/oss/react-native-firebase/contributing/donating)
+- [Donating](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
