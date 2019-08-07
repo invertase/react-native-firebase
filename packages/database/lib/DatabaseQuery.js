@@ -289,7 +289,7 @@ export default class DatabaseQuery extends ReferenceBase {
     // Add a new SyncTree registration
     DatabaseSyncTree.addRegistration({
       eventType,
-      ref: this, // Not this.ref?
+      ref: this.ref,
       path: this.path,
       key: queryKey,
       appName: this._database.app.name,
@@ -304,7 +304,7 @@ export default class DatabaseQuery extends ReferenceBase {
       // to occur either, only happens on failure to register on native
 
       DatabaseSyncTree.addRegistration({
-        ref: this,
+        ref: this.ref,
         once: true,
         path: this.path,
         key: queryKey,
@@ -316,8 +316,6 @@ export default class DatabaseQuery extends ReferenceBase {
       });
     }
 
-    // TODO appName, DB already passed along?
-    // TODO what needs going into the object?
     this._database.native.on({
       eventType,
       path: this.path,
