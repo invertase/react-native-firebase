@@ -60,7 +60,6 @@
     return NO;
   }
 
-
   if (dynamicLink.url) {
     if (_initialLinkUrl == nil) {
       _initialLinkUrl = dynamicLink.url.absoluteString;
@@ -80,7 +79,7 @@
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
   __block BOOL retried = NO;
-  NSLog(@"RNFBDynamicLinks: continueUserActivity proxy called");
+
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
       if (_initialLinkUrl == nil) {
