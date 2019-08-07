@@ -50,7 +50,6 @@ const PACKAGES = [
   'auth',
   'database',
   'storage',
-  'indexing',
   'messaging',
   'firestore',
 ];
