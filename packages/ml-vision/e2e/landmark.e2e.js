@@ -92,6 +92,20 @@ describe('mlkit.vision.landmark', () => {
           enforceCertFingerprintMatch: false,
         });
       });
+
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudLandmarkRecognizerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
     });
 
     describe('maxResults', () => {

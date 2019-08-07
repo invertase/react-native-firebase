@@ -99,6 +99,10 @@ RCT_EXPORT_METHOD(cloudImageLabelerProcessImage:
       options.confidenceThreshold = [cloudImageLabelerOptions[@"confidenceThreshold"] floatValue];
     }
 
+    if (cloudImageLabelerOptions[@"apiKeyOverride"]) {
+      options.APIKeyOverride = cloudImageLabelerOptions[@"apiKeyOverride"];
+    }
+
     FIRVisionImageLabeler *labeler = [vision cloudImageLabelerWithOptions:options];
     [labeler processImage:visionImage completion:^(NSArray<FIRVisionImageLabel *> *_Nullable labels, NSError *error) {
       if (error != nil) {

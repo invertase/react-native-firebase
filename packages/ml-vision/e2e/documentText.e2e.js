@@ -84,6 +84,20 @@ describe('mlkit.vision.document.text', () => {
       });
     });
 
+    it('throws if apiKeyOverride is not a string', async () => {
+      try {
+        await firebase.vision().cloudDocumentTextRecognizerProcessImage(testImageFile, {
+          apiKeyOverride: true,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'cloudDocumentTextRecognizerOptions.apiKeyOverride' expected a string value",
+        );
+        return Promise.resolve();
+      }
+    });
+
     it('throws if languageHints is not an array', async () => {
       try {
         await firebase.vision().cloudDocumentTextRecognizerProcessImage(testImageFile, {
