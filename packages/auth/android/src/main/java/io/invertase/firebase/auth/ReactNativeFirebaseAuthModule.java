@@ -1911,7 +1911,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
 
-    // TODO in JS land, flatten keys before sending to the bridge?
     
     // Required
     String url = actionCodeSettings.getString("url");
