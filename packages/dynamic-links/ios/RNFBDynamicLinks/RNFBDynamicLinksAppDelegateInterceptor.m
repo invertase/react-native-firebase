@@ -21,29 +21,47 @@
 
 @implementation RNFBDynamicLinksAppDelegateInterceptor
 
-+ (instancetype)shared {
++ (instancetype)sharedInstance {
   static dispatch_once_t once;
   static RNFBDynamicLinksAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
     sharedInstance.initialLinkUrl = nil;
     sharedInstance.initialLinkMinimumAppVersion = nil;
+    [GULAppDelegateSwizzler proxyOriginalDelegate];
+    [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
   });
   return sharedInstance;
 }
 
-+ (void)load {
-  [GULAppDelegateSwizzler proxyOriginalDelegate];
-  [GULAppDelegateSwizzler registerAppDelegateInterceptor:[self shared]];
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<NSString *, id> *)options {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  return [self application:app
+                   openURL:url
+         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+#pragma clang diagnostic pop
 }
 
 - (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-            options:(NSDictionary<NSString *, id> *)options {
-  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:URL];
-  if (!dynamicLink) return NO;
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+
+  if (!dynamicLink) {
+    dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromUniversalLinkURL:url];
+  }
+
+  if (!dynamicLink) {
+    return NO;
+  }
+
   if (dynamicLink.url) {
-    if (!_initialLinkUrl) {
+    if (_initialLinkUrl == nil) {
       _initialLinkUrl = dynamicLink.url.absoluteString;
       _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
     }
@@ -52,7 +70,9 @@
         @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
     }];
   }
-  return YES;
+
+  // results of this are ORed and NO doesn't affect other delegate interceptors' result
+  return NO;
 }
 
 #pragma mark - User Activities overridden handler methods
@@ -62,7 +82,7 @@
 
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
-      if (!_initialLinkUrl) {
+      if (_initialLinkUrl == nil) {
         _initialLinkUrl = dynamicLink.url.absoluteString;
         _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
       }
@@ -86,7 +106,10 @@
     if (error) NSLog(@"RNFBDynamicLinks: Unknown error occurred when attempting to handle a universal link: %@", error);
   };
 
-  return [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+
+  // results of this are ORed and NO doesn't affect other delegate interceptors' result
+  return NO;
 }
 
 @end

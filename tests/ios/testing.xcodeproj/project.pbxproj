@@ -383,7 +383,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				WARNING_CFLAGS = "-Wno-nullability-completeness";
@@ -413,7 +413,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
+				PRODUCT_BUNDLE_IDENTIFIER = com.invertase.testing;
 				PRODUCT_NAME = testing;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				WARNING_CFLAGS = "-Wno-nullability-completeness";

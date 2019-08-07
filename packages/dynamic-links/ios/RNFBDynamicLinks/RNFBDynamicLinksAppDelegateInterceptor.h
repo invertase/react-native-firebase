@@ -25,10 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString *const LINK_RECEIVED_EVENT = @"dynamic_links_link_received";
 
 @interface RNFBDynamicLinksAppDelegateInterceptor : NSObject <UIApplicationDelegate>
-@property NSString *_Nullable initialLinkUrl;
-@property NSString *_Nullable initialLinkMinimumAppVersion;
+@property (strong, readwrite) NSString *_Nullable initialLinkUrl;
+@property (strong, readwrite) NSString *_Nullable initialLinkMinimumAppVersion;
 
-+ (instancetype)shared;
++ (instancetype)sharedInstance;
+
 
 @end
 
