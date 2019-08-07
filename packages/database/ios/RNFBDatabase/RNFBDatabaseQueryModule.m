@@ -49,7 +49,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSString *key in queryDictionary) {
+  NSArray *queryKeys = [queryDictionary allKeys];
+  for (NSString *key in queryKeys) {
     RNFBDatabaseQuery *query = queryDictionary[key];
     [query removeAllEventListeners];
     [queryDictionary removeObjectForKey:key];
