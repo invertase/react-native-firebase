@@ -21,7 +21,11 @@
 
 @interface RNFBFirestoreCommon : NSObject
 
++ (dispatch_queue_t)getFirestoreQueue;
+
 + (FIRFirestore *)getFirestoreForApp:(FIRApp *)firebaseApp;
+
++ (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName;
 
 + (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
 
@@ -32,3 +36,8 @@
 + (NSArray *)getCodeAndMessage:(NSError *)error;
 
 @end
+
+extern NSString *const FIRESTORE_CACHE_SIZE;
+extern NSString *const FIRESTORE_HOST;
+extern NSString *const FIRESTORE_PERSISTENCE;
+extern NSString *const FIRESTORE_SSL;

@@ -67,16 +67,17 @@ public class UniversalFirebaseFirestoreCommon {
       firebaseFirestore.getFirestoreSettings().isSslEnabled()
     );
 
-    firestoreSettings.setCacheSizeBytes(cacheSizeBytes);
+    if (cacheSizeBytes == -1) {
+      firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
+    } else {
+      firestoreSettings.setCacheSizeBytes((long) cacheSizeBytes);
+    }
+
     firestoreSettings.setHost(host);
     firestoreSettings.setPersistenceEnabled(persistence);
     firestoreSettings.setSslEnabled(ssl);
 
-    try {
-      firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
-    } catch (Exception exception) {
-      throw exception;
-    }
+    firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
 
     settingsLock.put(appName, true);
   }
