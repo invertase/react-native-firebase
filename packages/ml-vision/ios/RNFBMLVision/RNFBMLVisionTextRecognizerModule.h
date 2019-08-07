@@ -16,9 +16,9 @@
  */
 
 #import <Foundation/Foundation.h>
-
+#import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
-@interface RNFBMlkitModule : NSObject <RCTBridgeModule>
+@interface RNFBMLVisionTextRecognizerModule : NSObject <RCTBridgeModule>
 
 @end

@@ -15,7 +15,7 @@
  *
  */
 
-import {ReactNativeFirebase} from '@react-native-firebase/app';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Dynamic Links

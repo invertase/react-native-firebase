@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27038A8322A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 27038A8222A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m */; };
-		2744B98621F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m */; };
-		27760EA1229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 27760EA0229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m */; };
-		27760EA4229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 27760EA3229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m */; };
-		27760EA722A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m in Sources */ = {isa = PBXBuildFile; fileRef = 27760EA622A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m */; };
+		8B06D3F322F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */; };
+		8B06D3FC22F863AE00A5B542 /* RNFBMLVisionCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */; };
+		8B06D40022F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D3FF22F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m */; };
+		8B06D40622F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D40522F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m */; };
+		8B06D40A22F989EF00A5B542 /* RNFBMLVisionTextRecognizerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D40922F989EF00A5B542 /* RNFBMLVisionTextRecognizerModule.m */; };
+		8B06D40E22F99DF900A5B542 /* RNFBMLVisionImageLabelerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D40D22F99DF900A5B542 /* RNFBMLVisionImageLabelerModule.m */; };
+		8B06D41222F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D41122F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,17 +29,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		27038A8122A16C31001E082B /* RCTConvert+FIRLanguageIdentificationOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RCTConvert+FIRLanguageIdentificationOptions.h"; sourceTree = "<group>"; };
-		27038A8222A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIRLanguageIdentificationOptions.m"; sourceTree = "<group>"; };
-		2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMlNaturalLanguage.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMLNaturalLanguageIdModule.h; path = RNFBMlNaturalLanguage/RNFBMLNaturalLanguageIdModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMLNaturalLanguageIdModule.m; path = RNFBMlNaturalLanguage/RNFBMLNaturalLanguageIdModule.m; sourceTree = SOURCE_ROOT; };
-		27760E9F229ED5B400F5F127 /* RNFBMLNaturalLanguageTranslateModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLNaturalLanguageTranslateModule.h; sourceTree = "<group>"; };
-		27760EA0229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLNaturalLanguageTranslateModule.m; sourceTree = "<group>"; };
-		27760EA2229ED5F600F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLNaturalLanguageSmartReplyModule.h; sourceTree = "<group>"; };
-		27760EA3229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLNaturalLanguageSmartReplyModule.m; sourceTree = "<group>"; };
-		27760EA522A0064100F5F127 /* RCTConvert+FIRTextMessageArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RCTConvert+FIRTextMessageArray.h"; path = "RNFBMlNaturalLanguage/RCTConvert+FIRTextMessageArray.h"; sourceTree = SOURCE_ROOT; };
-		27760EA622A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+FIRTextMessageArray.m"; sourceTree = "<group>"; };
+		2744B98221F45429004F8E3F /* libRNFBMLVision.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMLVision.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B06D3F122F84F6500A5B542 /* RNFBMLVisionLandmarkRecognizerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionLandmarkRecognizerModule.h; sourceTree = "<group>"; };
+		8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionLandmarkRecognizerModule.m; sourceTree = "<group>"; };
+		8B06D3FA22F863A400A5B542 /* RNFBMLVisionCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionCommon.h; sourceTree = "<group>"; };
+		8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionCommon.m; sourceTree = "<group>"; };
+		8B06D3FE22F8747F00A5B542 /* RNFBMLVisionFaceDetectorModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionFaceDetectorModule.h; sourceTree = "<group>"; };
+		8B06D3FF22F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionFaceDetectorModule.m; sourceTree = "<group>"; };
+		8B06D40422F97B3600A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionDocumentTextRecognizerModule.h; sourceTree = "<group>"; };
+		8B06D40522F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionDocumentTextRecognizerModule.m; sourceTree = "<group>"; };
+		8B06D40822F989E400A5B542 /* RNFBMLVisionTextRecognizerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionTextRecognizerModule.h; sourceTree = "<group>"; };
+		8B06D40922F989EF00A5B542 /* RNFBMLVisionTextRecognizerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionTextRecognizerModule.m; sourceTree = "<group>"; };
+		8B06D40C22F99DEF00A5B542 /* RNFBMLVisionImageLabelerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionImageLabelerModule.h; sourceTree = "<group>"; };
+		8B06D40D22F99DF900A5B542 /* RNFBMLVisionImageLabelerModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionImageLabelerModule.m; sourceTree = "<group>"; };
+		8B06D41022F9A14B00A5B542 /* RNFBMLVisionBarcodeDetectorModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMLVisionBarcodeDetectorModule.h; sourceTree = "<group>"; };
+		8B06D41122F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMLVisionBarcodeDetectorModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,32 +60,36 @@
 		2744B97521F452B8004F8E3F /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */,
+				2744B98221F45429004F8E3F /* libRNFBMLVision.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2744B98321F45429004F8E3F /* RNFBMlNaturalLanguage */ = {
+		2744B98321F45429004F8E3F /* RNFBMLVision */ = {
 			isa = PBXGroup;
 			children = (
-				27760EA522A0064100F5F127 /* RCTConvert+FIRTextMessageArray.h */,
-				27760EA622A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m */,
-				2744B98421F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.h */,
-				2744B98521F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m */,
-				27760E9F229ED5B400F5F127 /* RNFBMLNaturalLanguageTranslateModule.h */,
-				27760EA0229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m */,
-				27760EA2229ED5F600F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.h */,
-				27760EA3229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m */,
-				27038A8122A16C31001E082B /* RCTConvert+FIRLanguageIdentificationOptions.h */,
-				27038A8222A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m */,
+				8B06D3F122F84F6500A5B542 /* RNFBMLVisionLandmarkRecognizerModule.h */,
+				8B06D3F222F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m */,
+				8B06D3FA22F863A400A5B542 /* RNFBMLVisionCommon.h */,
+				8B06D3FB22F863AE00A5B542 /* RNFBMLVisionCommon.m */,
+				8B06D3FE22F8747F00A5B542 /* RNFBMLVisionFaceDetectorModule.h */,
+				8B06D3FF22F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m */,
+				8B06D40422F97B3600A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.h */,
+				8B06D40522F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m */,
+				8B06D40822F989E400A5B542 /* RNFBMLVisionTextRecognizerModule.h */,
+				8B06D40922F989EF00A5B542 /* RNFBMLVisionTextRecognizerModule.m */,
+				8B06D40C22F99DEF00A5B542 /* RNFBMLVisionImageLabelerModule.h */,
+				8B06D40D22F99DF900A5B542 /* RNFBMLVisionImageLabelerModule.m */,
+				8B06D41022F9A14B00A5B542 /* RNFBMLVisionBarcodeDetectorModule.h */,
+				8B06D41122F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m */,
 			);
-			path = RNFBMlNaturalLanguage;
+			path = RNFBMLVision;
 			sourceTree = "<group>";
 		};
 		3323F52AAFE26B7384BE4DE3 = {
 			isa = PBXGroup;
 			children = (
-				2744B98321F45429004F8E3F /* RNFBMlNaturalLanguage */,
+				2744B98321F45429004F8E3F /* RNFBMLVision */,
 				2744B97521F452B8004F8E3F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,9 +97,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2744B98121F45429004F8E3F /* RNFBMlNaturalLanguage */ = {
+		2744B98121F45429004F8E3F /* RNFBMLVision */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlNaturalLanguage" */;
+			buildConfigurationList = 2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLVision" */;
 			buildPhases = (
 				2744B97E21F45429004F8E3F /* Sources */,
 				2744B97F21F45429004F8E3F /* Frameworks */,
@@ -99,9 +109,9 @@
 			);
 			dependencies = (
 			);
-			name = RNFBMlNaturalLanguage;
-			productName = RNFBMlNaturalLanguage;
-			productReference = 2744B98221F45429004F8E3F /* libRNFBMlNaturalLanguage.a */;
+			name = RNFBMLVision;
+			productName = RNFBMLVision;
+			productReference = 2744B98221F45429004F8E3F /* libRNFBMLVision.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -110,7 +120,7 @@
 		3323F95273A95DB34F55C6D7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				CLASSPREFIX = RNFBMlNaturalLanguage;
+				CLASSPREFIX = RNFBMLVision;
 				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = Invertase;
 				TargetAttributes = {
@@ -120,11 +130,12 @@
 					};
 				};
 			};
-			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlNaturalLanguage" */;
+			buildConfigurationList = 3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLVision" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 3323F52AAFE26B7384BE4DE3;
@@ -132,7 +143,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2744B98121F45429004F8E3F /* RNFBMlNaturalLanguage */,
+				2744B98121F45429004F8E3F /* RNFBMLVision */,
 			);
 		};
 /* End PBXProject section */
@@ -142,11 +153,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27760EA4229ED74E00F5F127 /* RNFBMLNaturalLanguageSmartReplyModule.m in Sources */,
-				2744B98621F45429004F8E3F /* RNFBMLNaturalLanguageIdModule.m in Sources */,
-				27038A8322A16C43001E082B /* RCTConvert+FIRLanguageIdentificationOptions.m in Sources */,
-				27760EA722A0064100F5F127 /* RCTConvert+FIRTextMessageArray.m in Sources */,
-				27760EA1229ED5D000F5F127 /* RNFBMLNaturalLanguageTranslateModule.m in Sources */,
+				8B06D40E22F99DF900A5B542 /* RNFBMLVisionImageLabelerModule.m in Sources */,
+				8B06D40622F97B4900A5B542 /* RNFBMLVisionDocumentTextRecognizerModule.m in Sources */,
+				8B06D40A22F989EF00A5B542 /* RNFBMLVisionTextRecognizerModule.m in Sources */,
+				8B06D3F322F84F7200A5B542 /* RNFBMLVisionLandmarkRecognizerModule.m in Sources */,
+				8B06D3FC22F863AE00A5B542 /* RNFBMLVisionCommon.m in Sources */,
+				8B06D40022F8748C00A5B542 /* RNFBMLVisionFaceDetectorModule.m in Sources */,
+				8B06D41222F9A15A00A5B542 /* RNFBMLVisionBarcodeDetectorModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,7 +360,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMlNaturalLanguage" */ = {
+		2744B98821F45429004F8E3F /* Build configuration list for PBXNativeTarget "RNFBMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2744B98921F45429004F8E3F /* Debug */,
@@ -356,7 +369,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMlNaturalLanguage" */ = {
+		3323F1C5716BA966BBBB95A4 /* Build configuration list for PBXProject "RNFBMLVision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3323F7E33E1559A2B9826720 /* Debug */,

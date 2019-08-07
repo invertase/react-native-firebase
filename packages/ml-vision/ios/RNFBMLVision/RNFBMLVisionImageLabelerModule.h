@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,10 @@
  *
  */
 
-describe('vision()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.vision);
-      app.vision().app.should.equal(app);
-    });
+#import <Foundation/Foundation.h>
+#import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
-    it('supports multiple apps', async () => {
-      firebase.vision().app.name.should.equal('[DEFAULT]');
+@interface RNFBMLVisionImageLabelerModule : NSObject <RCTBridgeModule>
 
-      firebase
-        .vision(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
-
-      firebase
-        .app('secondaryFromNative')
-        .vision()
-        .app.name.should.equal('secondaryFromNative');
-    });
-  });
-});
+@end
