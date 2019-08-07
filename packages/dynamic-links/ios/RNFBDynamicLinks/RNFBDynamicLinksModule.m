@@ -30,6 +30,7 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Links Methods
 
+// required to init app delegate interceptor as early as possible
 + (BOOL)requiresMainQueueSetup {
   return YES;
 }
@@ -38,7 +39,7 @@ RCT_EXPORT_MODULE();
   self = [super init];
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    // access shared instance to initialize app delegate proxy
+    // access shared instance to initialize app delegate interceptor
     [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
   });
   return self;
@@ -113,6 +114,7 @@ RCT_EXPORT_METHOD(buildShortLink:
   }];
 }
 
+// TODO refactor to reduce duplication
 RCT_EXPORT_METHOD(getInitialLink:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock)reject) {
@@ -169,9 +171,9 @@ RCT_EXPORT_METHOD(getInitialLink:
     return;
   }
 
-  if ([[RNFBDynamicLinksAppDelegateInterceptor sharedInstance] initialLinkUrl] != nil) {
+  if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
     resolve(@{
-        @"url": [[RNFBDynamicLinksAppDelegateInterceptor sharedInstance] initialLinkUrl],
+        @"url": [[RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
         @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
     });
   } else {
@@ -325,5 +327,9 @@ RCT_EXPORT_METHOD(getInitialLink:
 - (NSArray<NSString *> *)supportedEvents {
   return @[];
 }
+
+// TODO document or add a method to call this:
+//     [FIRDynamicLinks performDiagnosticsWithCompletion:nil];
+//     ref: https://firebase.google.com/docs/dynamic-links/debug#ios_self-diagnostic_tool
 
 @end

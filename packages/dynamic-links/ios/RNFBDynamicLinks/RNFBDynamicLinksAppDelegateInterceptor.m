@@ -25,20 +25,14 @@
   static dispatch_once_t once;
   static RNFBDynamicLinksAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
-    [FIRDynamicLinks performDiagnosticsWithCompletion:nil];
     sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
     sharedInstance.initialLinkUrl = nil;
     sharedInstance.initialLinkMinimumAppVersion = nil;
-    NSLog(@"RNFBDynamicLinks:registerAppDelegateInterceptor");
+    [GULAppDelegateSwizzler proxyOriginalDelegate];
     [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
   });
   return sharedInstance;
 }
-
-- (NSString *)initialLinkUrl {
-  return _initialLinkUrl;
-}
-
 
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
@@ -56,7 +50,6 @@
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
-  NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: %@", url.absoluteString);
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
 
   if (!dynamicLink) {
@@ -64,16 +57,12 @@
   }
 
   if (!dynamicLink) {
-    NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: Not a valid dynamic link url");
     return NO;
   }
 
-  NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: found dynamic link %@", dynamicLink);
 
   if (dynamicLink.url) {
-    NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: Valid url detected");
     if (_initialLinkUrl == nil) {
-      NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: setting _initialLinkUrl %@", dynamicLink.url.absoluteString);
       _initialLinkUrl = dynamicLink.url.absoluteString;
       _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
     }
