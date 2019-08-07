@@ -191,6 +191,7 @@ describe('auth()', () => {
       // Tear down
 
       await firebase.auth().signOut();
+      await Utils.sleep(50);
     });
 
     it('returns the same user with multiple subscribers #1815', async () => {
@@ -318,6 +319,8 @@ describe('auth()', () => {
       // Tear down
 
       await firebase.auth().signOut();
+      await Utils.sleep(50);
+
     });
   });
 

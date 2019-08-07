@@ -55,6 +55,10 @@ RCT_EXPORT_METHOD(cloudDocumentTextRecognizerProcessImage:
       options.languageHints = cloudDocumentTextRecognizerOptions[@"hintedLanguages"];
     }
 
+    if (cloudDocumentTextRecognizerOptions[@"apiKeyOverride"]) {
+      options.APIKeyOverride = cloudDocumentTextRecognizerOptions[@"apiKeyOverride"];
+    }
+
     FIRVisionDocumentTextRecognizer *textRecognizer = [vision cloudDocumentTextRecognizerWithOptions:options];
     [textRecognizer processImage:visionImage completion:^(FIRVisionDocumentText *_Nullable result, NSError *error) {
       if (error != nil) {

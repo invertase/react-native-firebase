@@ -58,6 +58,7 @@ export default class DatabaseDataSnapshot {
     if (value === undefined) {
       value = null;
     }
+
     const childRef = this._ref.child(path);
 
     return new DatabaseDataSnapshot(childRef, {

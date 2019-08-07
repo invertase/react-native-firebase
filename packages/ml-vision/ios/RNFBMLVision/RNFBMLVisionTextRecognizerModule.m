@@ -88,6 +88,10 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
       options.languageHints = cloudTextRecognizerOptions[@"hintedLanguages"];
     }
 
+    if (cloudTextRecognizerOptions[@"apiKeyOverride"]) {
+      options.APIKeyOverride = cloudTextRecognizerOptions[@"apiKeyOverride"];
+    }
+
     NSInteger *modelType = [cloudTextRecognizerOptions[@"modelType"] pointerValue];
     if (modelType == (NSInteger *) 1) {
       options.modelType = FIRVisionCloudTextModelTypeSparse;

@@ -210,5 +210,21 @@ describe('mlkit.vision.label', () => {
         });
       });
     });
+
+    describe('apiKeyOverride', () => {
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudImageLabelerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+    });
   });
 });

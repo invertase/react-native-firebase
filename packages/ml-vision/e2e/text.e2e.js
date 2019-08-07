@@ -144,6 +144,22 @@ describe('mlkit.vision.text', () => {
       });
     });
 
+    describe('apiKeyOverride', () => {
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudTextRecognizerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('languageHints', () => {
       it('throws if not array', async () => {
         try {
