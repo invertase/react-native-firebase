@@ -56,7 +56,6 @@ class Root extends Component {
   }
 
   render() {
-    return null;
     const { currentTest } = this.state;
 
     if (!currentTest) {
