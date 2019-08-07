@@ -320,7 +320,6 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
       await Utils.sleep(50);
-
     });
   });
 
