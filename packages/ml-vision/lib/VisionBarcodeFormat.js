@@ -23,17 +23,14 @@ export default {
   /**
    * Barcode format constant for AZTEC.
    */
-
   AZTEC: 4096,
   /**
    * Barcode format constant for Codabar.
    */
-
   CODABAR: 8,
   /**
    * Barcode format constant for Code 128.
    */
-
   CODE_128: 1,
   /**
    * Barcode format constant for Code 39.
