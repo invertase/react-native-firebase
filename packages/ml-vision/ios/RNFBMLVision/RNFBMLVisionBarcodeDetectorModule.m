@@ -48,7 +48,22 @@ RCT_EXPORT_METHOD(barcodeDetectorProcessImage:
     FIRVisionImage *visionImage = [[FIRVisionImage alloc] initWithImage:image];
     FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
-    FIRVisionBarcodeDetectorOptions *options = [[FIRVisionBarcodeDetectorOptions alloc] initWithFormats:FIRVisionBarcodeFormatQRCode | FIRVisionBarcodeFormatAztec];
+    FIRVisionBarcodeFormat barcodeFormat = nil;
+
+    if (barcodeDetectorOptions[@"barcodeFormats"]) {
+      NSArray *formats = barcodeDetectorOptions[@"barcodeFormats"];
+      for (id format in formats) {
+        if (barcodeFormat == nil) {
+          barcodeFormat = [format integerValue];
+        } else {
+          barcodeFormat |= [format integerValue];
+        }
+      }
+    } else {
+      barcodeFormat = FIRVisionBarcodeFormatAll;
+    }
+
+    FIRVisionBarcodeDetectorOptions *options = [[FIRVisionBarcodeDetectorOptions alloc] initWithFormats:barcodeFormat];
 
     FIRVisionBarcodeDetector *barcodeDetector = [vision barcodeDetectorWithOptions:options];
     [barcodeDetector detectInImage:visionImage completion:^(NSArray<FIRVisionBarcode *> *barcodes, NSError *error) {

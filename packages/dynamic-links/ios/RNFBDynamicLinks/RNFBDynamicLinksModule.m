@@ -173,7 +173,7 @@ RCT_EXPORT_METHOD(getInitialLink:
 
   if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
     resolve(@{
-        @"url": [[RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+        @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
         @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
     });
   } else {
