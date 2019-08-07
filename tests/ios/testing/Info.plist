@@ -36,7 +36,7 @@
 			<string>com.invertase.testing</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.invertase.testing</string>
+				<string>invertase</string>
 			</array>
 		</dict>
 		<dict/>

@@ -52,7 +52,6 @@ NSString *const RNFBRCTEventBodyKey = @"body";
 }
 
 - (void)notifyJsReady:(BOOL)jsReady {
-  NSLog(@"RNFBDynamicLinks: JS Ready");
   @synchronized (self.jsListeners) {
     self.jsReady = jsReady;
     if (jsReady) {
@@ -67,7 +66,6 @@ NSString *const RNFBRCTEventBodyKey = @"body";
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body {
-  NSLog(@"RNFBDynamicLinks: sending an event %@", eventName);
   @synchronized (self.jsListeners) {
     if (self.bridge && self.isObserving && self.jsListeners[eventName] != nil) {
       NSString *prefixedEventName = [@"rnfb_" stringByAppendingString:eventName];
@@ -84,7 +82,6 @@ NSString *const RNFBRCTEventBodyKey = @"body";
 }
 
 - (void)addListener:(NSString *)eventName {
-  NSLog(@"RNFBDynamicLinks: js listener added for %@", eventName);
   @synchronized (self.jsListeners) {
     self.jsListenerCount++;
 

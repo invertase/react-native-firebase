@@ -21,7 +21,7 @@ const baseParams = {
 };
 
 const TEST_LINK =
-  'com.invertase.testing:https://reactnativefirebase.page.link/?link=https://invertase.io&apn=com.invertase.testing&isi=123456789&ibi=com.invertase.testing';
+  'https://reactnativefirebase.page.link/?link=https://invertase.io/oss/react-native-firebase&apn=com.invertase.testing';
 const TEST_LINK2 =
   'https://reactnativefirebase.page.link/?link=https://invertase.io/hire-us&apn=com.invertase.testing';
 
@@ -80,44 +80,35 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  // TODO how can we test these?
   describe.only('getInitialLink()', () => {
     it('should return the dynamic link instance that launched the app', async () => {
-      await device.relaunchApp({
-        url: TEST_LINK2,
-        newInstance: false,
+      await device.openURL({
+        url: TEST_LINK,
       });
 
       const dynamicLink = await firebase.dynamicLinks().getInitialLink();
 
       dynamicLink.should.be.an.Object();
-      dynamicLink.url.should.equal('https://invertase.io');
+      dynamicLink.url.should.equal('https://invertase.io/oss/react-native-firebase');
     });
   });
 
   describe.only('onLink()', () => {
     it('should emit dynamic links', async () => {
       const spy = sinon.spy();
+
+      // TODO rework internals as without this native module will never be ready (therefore never subscribes)
       firebase.dynamicLinks().native;
       firebase.dynamicLinks().onLink(spy);
-      await Utils.sleep(3000);
+
       await device.openURL({
         url: TEST_LINK2,
       });
-      await Utils.spyToBeCalledOnceAsync(spy, 6000);
 
-      // dynamicLink.should.be.an.Object();
-      // dynamicLink.url.should.equal('https://invertase.io');
-      // await Utils.sleep(1000);
-      // await device.openURL({
-      //   url: TEST_LINK,
-      // });
-      // const result = await firebase.dynamicLinks().getInitialLink();
-      // console.dir(result);
-      // await device.relaunchApp({
-      //   url: TEST_LINK,
-      //   newInstance: false,
-      // });
+      await Utils.spyToBeCalledOnceAsync(spy);
+
+      spy.getCall(0).args[0].should.be.an.Object();
+      spy.getCall(0).args[0].url.should.equal('https://invertase.io/hire-us');
     });
   });
 });
