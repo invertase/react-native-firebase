@@ -16,7 +16,7 @@
  */
 let testImageFile;
 
-android.describe('mlkit.vision.landmark', () => {
+describe('mlkit.vision.landmark', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/landmark.jpg`;
     await firebase
@@ -91,6 +91,20 @@ android.describe('mlkit.vision.landmark', () => {
         await firebase.vision().cloudLandmarkRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
+      });
+
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudLandmarkRecognizerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudLandmarkRecognizerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
       });
     });
 

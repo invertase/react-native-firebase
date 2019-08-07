@@ -62,16 +62,14 @@ function textBaseElementValidate(textBase, cloud = false) {
 
   // recognizedLanguages
   textBase.recognizedLanguages.should.be.an.Array();
-  if (cloud) {
-    textBase.recognizedLanguages.length.should.be.greaterThan(0);
-  } else {
-    textBase.recognizedLanguages.length.should.equal(0);
+  if (textBase.recognizedLanguages.length) {
+    textBase.recognizedLanguages[0].should.be.a.String();
   }
 }
 
 let testImageFile;
 
-android.describe('mlkit.vision.text', () => {
+describe('mlkit.vision.text', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
@@ -79,6 +77,7 @@ android.describe('mlkit.vision.text', () => {
       .ref('vision/text.png')
       .writeToFile(testImageFile);
   });
+
   describe('textRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
@@ -142,6 +141,22 @@ android.describe('mlkit.vision.text', () => {
         await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
+      });
+    });
+
+    describe('apiKeyOverride', () => {
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudTextRecognizerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudTextRecognizerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
       });
     });
 

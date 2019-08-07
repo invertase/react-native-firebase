@@ -42,7 +42,7 @@ function documentTextBaseElementValidate(documentTextBase) {
 
 let testImageFile;
 
-android.describe('mlkit.vision.document.text', () => {
+describe('mlkit.vision.document.text', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
@@ -82,6 +82,20 @@ android.describe('mlkit.vision.document.text', () => {
       await firebase.vision().cloudDocumentTextRecognizerProcessImage(testImageFile, {
         enforceCertFingerprintMatch: false,
       });
+    });
+
+    it('throws if apiKeyOverride is not a string', async () => {
+      try {
+        await firebase.vision().cloudDocumentTextRecognizerProcessImage(testImageFile, {
+          apiKeyOverride: true,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'cloudDocumentTextRecognizerOptions.apiKeyOverride' expected a string value",
+        );
+        return Promise.resolve();
+      }
     });
 
     it('throws if languageHints is not an array', async () => {

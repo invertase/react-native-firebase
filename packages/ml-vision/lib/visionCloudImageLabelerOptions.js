@@ -20,6 +20,7 @@ import {
   isBoolean,
   isNumber,
   isObject,
+  isString,
   isUndefined,
 } from '@react-native-firebase/common';
 
@@ -45,6 +46,14 @@ export default function visionCloudImageLabelerOptions(cloudImageLabelerOptions)
     }
 
     out.enforceCertFingerprintMatch = cloudImageLabelerOptions.enforceCertFingerprintMatch;
+  }
+
+  if (hasOwnProperty(cloudImageLabelerOptions, 'apiKeyOverride')) {
+    if (!isString(cloudImageLabelerOptions.apiKeyOverride)) {
+      throw new Error("'cloudImageLabelerOptions.apiKeyOverride' expected a string value.");
+    }
+
+    out.apiKeyOverride = cloudImageLabelerOptions.apiKeyOverride;
   }
 
   if (cloudImageLabelerOptions.confidenceThreshold) {

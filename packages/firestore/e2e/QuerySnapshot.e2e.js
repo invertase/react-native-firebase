@@ -72,7 +72,6 @@ describe('firestore.QuerySnapshot', () => {
   it('returns a Query instance', async () => {
     const colRef = firebase.firestore().collection('v6');
     const snapshot = await colRef.get();
-    // TODO is this correct? CollectionReference extends Query?
     snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
   });
 

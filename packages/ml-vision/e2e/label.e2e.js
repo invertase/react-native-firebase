@@ -17,7 +17,7 @@
 
 let testImageFile;
 
-android.describe('mlkit.vision.label', () => {
+describe('mlkit.vision.label', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/crab.jpg`;
     await firebase
@@ -208,6 +208,22 @@ android.describe('mlkit.vision.label', () => {
         await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
+      });
+    });
+
+    describe('apiKeyOverride', () => {
+      it('throws if apiKeyOverride is not a string', async () => {
+        try {
+          await firebase.vision().cloudImageLabelerProcessImage(testImageFile, {
+            apiKeyOverride: true,
+          });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'cloudImageLabelerOptions.apiKeyOverride' expected a string value",
+          );
+          return Promise.resolve();
+        }
       });
     });
   });

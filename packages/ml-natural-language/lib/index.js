@@ -21,6 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import {
+  isArray,
   isNumber,
   isObject,
   isString,
@@ -29,7 +30,7 @@ import {
 } from '@react-native-firebase/common';
 
 import version from './version';
-import SmartReplyConversation from './SmartReplyConversation';
+import validateTextMessage from './validateTextMessage';
 
 // TODO not available on iOS until SDK 6.0.0
 // import TranslateModelManager from './TranslateModelManager';
@@ -91,19 +92,32 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
     );
   }
 
-  newSmartReplyConversation(messageHistoryLimit) {
-    validateOptionalNativeDependencyExists(
-      'ml_natural_language_smart_reply_model',
-      'ML Kit Smart Replies',
-      !!this.native.getSuggestedReplies,
-    );
-    if (!isUndefined(messageHistoryLimit) && !isNumber(messageHistoryLimit)) {
+  suggestReplies(messages) {
+    if (!isArray(messages)) {
       throw new Error(
-        "firebase.naturalLanguage().newSmartReplyConversation(*) 'messageHistoryLimit' must be a number or undefined.",
+        "firebase.naturalLanguage().suggestReplies(*) 'messages' must be an array value.",
       );
     }
 
-    return new SmartReplyConversation(this.native, messageHistoryLimit);
+    if (messages.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    const validated = [];
+
+    for (let i = 0; i < messages.length; i++) {
+      try {
+        validated.push(validateTextMessage(messages[i]));
+      } catch (e) {
+        throw new Error(
+          `firebase.naturalLanguage().suggestReplies(*) 'messages' object at index ${i} threw an error. ${
+            e.message
+          }.`,
+        );
+      }
+    }
+
+    return this.native.suggestReplies(validated);
   }
 }
 

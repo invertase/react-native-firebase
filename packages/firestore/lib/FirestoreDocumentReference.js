@@ -137,9 +137,9 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().onSnapshot(*) ${e.message}`);
     }
 
-    function handleSuccess(querySnapshot) {
-      callback(querySnapshot, null);
-      onNext(querySnapshot);
+    function handleSuccess(documentSnapshot) {
+      callback(documentSnapshot, null);
+      onNext(documentSnapshot);
     }
 
     function handleError(error) {
@@ -157,7 +157,6 @@ export default class FirestoreDocumentReference {
         } else {
           const documentSnapshot = new FirestoreDocumentSnapshot(
             this._firestore,
-            this,
             event.body.snapshot,
           );
           handleSuccess(documentSnapshot);

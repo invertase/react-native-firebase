@@ -20,6 +20,7 @@ import {
   isBoolean,
   isNumber,
   isObject,
+  isString,
   isUndefined,
 } from '@react-native-firebase/common';
 
@@ -48,6 +49,14 @@ export default function visionCloudLandmarkRecognizerOptions(cloudLandmarkRecogn
     }
 
     out.enforceCertFingerprintMatch = cloudLandmarkRecognizerOptions.enforceCertFingerprintMatch;
+  }
+
+  if (hasOwnProperty(cloudLandmarkRecognizerOptions, 'apiKeyOverride')) {
+    if (!isString(cloudLandmarkRecognizerOptions.apiKeyOverride)) {
+      throw new Error("'cloudLandmarkRecognizerOptions.apiKeyOverride' expected a string value.");
+    }
+
+    out.apiKeyOverride = cloudLandmarkRecognizerOptions.apiKeyOverride;
   }
 
   if (hasOwnProperty(cloudLandmarkRecognizerOptions, 'maxResults')) {

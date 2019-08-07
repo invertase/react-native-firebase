@@ -319,6 +319,8 @@ describe('auth()', () => {
       // Tear down
 
       await firebase.auth().signOut();
+      await Utils.sleep(50);
+
     });
   });
 
