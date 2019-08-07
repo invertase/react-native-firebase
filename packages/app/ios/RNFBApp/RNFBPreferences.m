@@ -46,7 +46,7 @@ static RNFBPreferences *sharedInstance;
 }
 
 - (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  if ([_userDefaults objectForKey:key] == nil) return defaultValue;
   return [_userDefaults boolForKey:key];
 }
 
@@ -61,12 +61,12 @@ static RNFBPreferences *sharedInstance;
 }
 
 - (NSInteger *)getIntegerValue:(NSString *)key defaultValue:(NSInteger *)defaultValue {
-  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  if ([_userDefaults objectForKey:key] == nil) return defaultValue;
   return (NSInteger *) [_userDefaults integerForKey:key];
 }
 
 - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-  if ([_userDefaults objectForKey:key] != nil) return defaultValue;
+  if ([_userDefaults objectForKey:key] == nil) return defaultValue;
   return [_userDefaults stringForKey:key];
 }
 

@@ -20,13 +20,66 @@ package io.invertase.firebase.firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
+import java.util.HashMap;
+
+import io.invertase.firebase.common.UniversalFirebasePreferences;
+
 public class UniversalFirebaseFirestoreCommon {
+  private static HashMap<String, Boolean> settingsLock = new HashMap<>();
 
   static FirebaseFirestore getFirestoreForApp(String appName) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    return FirebaseFirestore.getInstance(firebaseApp);
+
+    FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp);
+    setFirestoreSettings(instance, appName);
+
+    return instance;
+  }
+
+  private static void setFirestoreSettings(FirebaseFirestore firebaseFirestore, String appName) {
+    // Ensure not already been set
+    if (settingsLock.containsKey(appName)) return;
+
+    UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
+    FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
+
+    int cacheSizeBytes = preferences.getIntValue(
+      UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+      (int) firebaseFirestore.getFirestoreSettings().getCacheSizeBytes()
+    );
+
+    String host = preferences.getStringValue(
+      UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
+      firebaseFirestore.getFirestoreSettings().getHost()
+    );
+
+    boolean persistence = preferences.getBooleanValue(
+      UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+      firebaseFirestore.getFirestoreSettings().isPersistenceEnabled()
+    );
+
+    boolean ssl = preferences.getBooleanValue(
+      UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
+      firebaseFirestore.getFirestoreSettings().isSslEnabled()
+    );
+
+    if (cacheSizeBytes == -1) {
+      firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
+    } else {
+      firestoreSettings.setCacheSizeBytes((long) cacheSizeBytes);
+    }
+
+    firestoreSettings.setHost(host);
+    firestoreSettings.setPersistenceEnabled(persistence);
+    firestoreSettings.setSslEnabled(ssl);
+
+    firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
+
+    settingsLock.put(appName, true);
   }
 
   static Query getQueryForFirestore(

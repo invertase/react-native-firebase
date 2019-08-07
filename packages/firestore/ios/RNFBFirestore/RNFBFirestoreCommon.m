@@ -17,13 +17,69 @@
  */
 
 #import "RNFBFirestoreCommon.h"
+#import "RNFBPreferences.h"
 #import <RNFBApp/RNFBSharedUtils.h>
+
+NSString *const FIRESTORE_CACHE_SIZE = @"firebase_firestore_cache_size";
+NSString *const FIRESTORE_HOST = @"firebase_firestore_host";
+NSString *const FIRESTORE_PERSISTENCE = @"firebase_firestore_persistence";
+NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
+
+static __strong NSMutableDictionary *settingsLock;
 
 @implementation RNFBFirestoreCommon
 
 + (FIRFirestore *)getFirestoreForApp
     :(FIRApp *)app {
-  return [FIRFirestore firestoreForApp:app];
+  FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
+  [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
+
+  return instance;
+}
+
++ (dispatch_queue_t)getFirestoreQueue {
+  static dispatch_queue_t firestoreQueue;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    firestoreQueue = dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+  });
+  return firestoreQueue;
+}
+
++ (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName {
+  // Prevent setting if already set
+  if (settingsLock[appName]) {
+    return;
+  }
+
+  FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+  RNFBPreferences *preferences = [RNFBPreferences shared];
+
+  firestoreSettings.dispatchQueue = [self getFirestoreQueue];
+
+  NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+  NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
+
+  if (size == (NSInteger *) -1) {
+    firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
+  } else if (size == 0) {
+    firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
+  } else {
+    firestoreSettings.cacheSizeBytes = (int64_t) size;
+  }
+
+  NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+  firestoreSettings.host = [preferences getStringValue:hostKey defaultValue:firestore.settings.host];
+
+  NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+  firestoreSettings.persistenceEnabled = (BOOL) [preferences getBooleanValue:persistenceKey defaultValue:firestore.settings.persistenceEnabled];
+
+  NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+  firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
+
+  settingsLock[appName] = @(YES);
+
+  return;
 }
 
 + (FIRDocumentReference *)getDocumentForFirestore

@@ -44,7 +44,7 @@ RCT_EXPORT_MODULE();
 }
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+  return [RNFBFirestoreCommon getFirestoreQueue];
 }
 
 - (void)dealloc {

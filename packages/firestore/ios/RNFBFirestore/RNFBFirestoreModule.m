@@ -18,26 +18,17 @@
 #import <React/RCTUtils.h>
 #import "RNFBFirestoreModule.h"
 #import "RNFBFirestoreCommon.h"
+#import "RNFBPreferences.h"
 
 @implementation RNFBFirestoreModule
 #pragma mark -
 #pragma mark Module Setup
 
-static dispatch_queue_t firestoreQueue;
-
-- (id)init {
-  self = [super init];
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    firestoreQueue = dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
-  });
-  return self;
-}
 
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return firestoreQueue;
+  return [RNFBFirestoreCommon getFirestoreQueue];
 }
 
 + (BOOL)requiresMainQueueSetup {
@@ -87,44 +78,29 @@ RCT_EXPORT_METHOD(settings:
     :(RCTPromiseResolveBlock)resolve
     :(RCTPromiseRejectBlock)reject
 ) {
-  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
-  FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+  NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
 
-  firestoreSettings.dispatchQueue = firestoreQueue;
+  if (settings[@"cacheSizeBytes"]) {
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+    [[RNFBPreferences shared] setIntegerValue:cacheKey integerValue:[settings[@"cacheSizeBytes"] integerValue]];
+  }
 
   if (settings[@"host"]) {
-    firestoreSettings.host = settings[@"host"];
-  } else {
-    firestoreSettings.host = firestore.settings.host;
+    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+    [[RNFBPreferences shared] setStringValue:hostKey stringValue:settings[@"host"]];
   }
 
   if (settings[@"persistence"]) {
-    firestoreSettings.persistenceEnabled = [settings[@"persistence"] boolValue];
-  } else {
-    firestoreSettings.persistenceEnabled = firestore.settings.persistenceEnabled;
+    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+    [[RNFBPreferences shared] setBooleanValue:persistenceKey boolValue:[settings[@"persistence"] boolValue]];
   }
 
   if (settings[@"ssl"]) {
-    firestoreSettings.sslEnabled = [settings[@"ssl"] boolValue];
-  } else {
-    firestoreSettings.sslEnabled = firestore.settings.sslEnabled;
+    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+    [[RNFBPreferences shared] setBooleanValue:sslKey boolValue:[settings[@"ssl"] boolValue]];
   }
 
-  if (settings[@"cacheSizeBytes"]) {
-    NSInteger cacheSizeBytes = [settings[@"cacheSizeBytes"] integerValue];
-
-    if (cacheSizeBytes == -1) {
-      firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
-    } else {
-      // TODO Test this
-      firestoreSettings.cacheSizeBytes = (int) cacheSizeBytes;
-    }
-
-  } else {
-    firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
-  }
-
-  firestore.settings = firestoreSettings;
+  resolve([NSNull null]);
 }
 
 @end
