@@ -26,6 +26,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
   }
 
   addListener(eventType, listener, context) {
+    console.log('adding listener for' + eventType)
     if (!this.ready) {
       RNFBAppModule.eventsNotifyReady(true);
       this.ready = true;

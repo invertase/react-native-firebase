@@ -21,29 +21,59 @@
 
 @implementation RNFBDynamicLinksAppDelegateInterceptor
 
-+ (instancetype)shared {
++ (instancetype)sharedInstance {
   static dispatch_once_t once;
   static RNFBDynamicLinksAppDelegateInterceptor *sharedInstance;
   dispatch_once(&once, ^{
+    [FIRDynamicLinks performDiagnosticsWithCompletion:nil];
     sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
     sharedInstance.initialLinkUrl = nil;
     sharedInstance.initialLinkMinimumAppVersion = nil;
+    NSLog(@"RNFBDynamicLinks:registerAppDelegateInterceptor");
+    [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
   });
   return sharedInstance;
 }
 
-+ (void)load {
-  [GULAppDelegateSwizzler proxyOriginalDelegate];
-  [GULAppDelegateSwizzler registerAppDelegateInterceptor:[self shared]];
+- (NSString *)initialLinkUrl {
+  return _initialLinkUrl;
+}
+
+
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<NSString *, id> *)options {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  return [self application:app
+                   openURL:url
+         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
+                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+#pragma clang diagnostic pop
 }
 
 - (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-            options:(NSDictionary<NSString *, id> *)options {
-  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:URL];
-  if (!dynamicLink) return NO;
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+  NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: %@", url.absoluteString);
+  FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+
+  if (!dynamicLink) {
+    dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromUniversalLinkURL:url];
+  }
+
+  if (!dynamicLink) {
+    NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: Not a valid dynamic link url");
+    return NO;
+  }
+
+  NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: found dynamic link %@", dynamicLink);
+
   if (dynamicLink.url) {
-    if (!_initialLinkUrl) {
+    NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: Valid url detected");
+    if (_initialLinkUrl == nil) {
+      NSLog(@"RNFBDynamicLinks: openURL:sourceApplication: setting _initialLinkUrl %@", dynamicLink.url.absoluteString);
       _initialLinkUrl = dynamicLink.url.absoluteString;
       _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
     }
@@ -52,17 +82,19 @@
         @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
     }];
   }
-  return YES;
+
+  // results of this are ORed and NO doesn't affect other delegate interceptors' result
+  return NO;
 }
 
 #pragma mark - User Activities overridden handler methods
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
   __block BOOL retried = NO;
-
+  NSLog(@"RNFBDynamicLinks: continueUserActivity proxy called");
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
-      if (!_initialLinkUrl) {
+      if (_initialLinkUrl == nil) {
         _initialLinkUrl = dynamicLink.url.absoluteString;
         _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
       }
@@ -86,7 +118,10 @@
     if (error) NSLog(@"RNFBDynamicLinks: Unknown error occurred when attempting to handle a universal link: %@", error);
   };
 
-  return [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+
+  // results of this are ORed and NO doesn't affect other delegate interceptors' result
+  return NO;
 }
 
 @end

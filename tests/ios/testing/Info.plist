@@ -36,15 +36,16 @@
 			<string>com.invertase.testing</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>invertase</string>
+				<string>com.invertase.testing</string>
 			</array>
 		</dict>
+		<dict/>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
-		<string>https://invertase.io/links-test</string>
+		<string>https://invertase.io/hire-us</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
