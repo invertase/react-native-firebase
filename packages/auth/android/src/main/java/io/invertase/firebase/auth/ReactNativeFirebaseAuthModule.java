@@ -1910,7 +1910,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
-
     
     // Required
     String url = actionCodeSettings.getString("url");
