@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,19 @@
  *
  */
 
-describe('vision()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.vision);
-      app.vision().app.should.equal(app);
-    });
+@interface RNFBMLVisionCommon : NSObject
 
-    it('supports multiple apps', async () => {
-      firebase.vision().app.name.should.equal('[DEFAULT]');
++ (NSArray *)rectToIntArray:(CGRect)rect;
 
-      firebase
-        .vision(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
++ (NSDictionary *)contourToDict:(FIRVisionFaceContour *)visionFaceContour;
 
-      firebase
-        .app('secondaryFromNative')
-        .vision()
-        .app.name.should.equal('secondaryFromNative');
-    });
-  });
-});
++ (NSDictionary *)landmarkToDict:(FIRVisionFaceLandmark *)visionFaceLandmark;
+
++ (NSArray *)visionPointsToArray:(NSArray <FIRVisionPoint *> *_Nullable)points;
+
++ (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
+    NSArray *errorCodeMessageArray,
+    UIImage *image
+))completion;
+
+@end

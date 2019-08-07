@@ -184,12 +184,13 @@ class UniversalFirebaseMLVisionFaceDetectorModule extends UniversalFirebaseModul
 
   private Map<String, Object> getContourMap(FirebaseVisionFaceContour visionFaceContour) {
     Map<String, Object> visionFaceContourMap = new HashMap<>();
-    visionFaceContourMap.put(KEY_TYPE, visionFaceContour.getFaceContourType());
+
     List<FirebaseVisionPoint> pointsListRaw = visionFaceContour.getPoints();
     List<float[]> pointsListFormatted = new ArrayList<>(pointsListRaw.size());
     for (FirebaseVisionPoint pointRaw : pointsListRaw) {
       pointsListFormatted.add(getVisionPointMap(pointRaw));
     }
+
     visionFaceContourMap.put(KEY_TYPE, visionFaceContour.getFaceContourType());
     visionFaceContourMap.put(KEY_POINTS, pointsListFormatted);
 

@@ -25,8 +25,8 @@
       [FIRTextMessage alloc]
       initWithText:messageDict[@"text"]
          timestamp:[[messageDict valueForKey:@"timestamp"] doubleValue]
-            userID:messageDict[@"remoteUserId"] ? messageDict[@"remoteUserId"] : @"__rnfb_local_user"
-       isLocalUser:messageDict[@"remoteUserId"] ? NO : YES
+            userID:messageDict[@"userId"] ? messageDict[@"userId"] : @""
+       isLocalUser:messageDict[@"isLocalUser"] ? YES : NO
   ];
   return firTextMessage;
 }
