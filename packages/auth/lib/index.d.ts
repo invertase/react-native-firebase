@@ -576,15 +576,23 @@ export namespace Auth {
     /**
      * Android specific settings.
      */
-    android: ActionCodeSettingsAndroid;
+    android?: ActionCodeSettingsAndroid;
+
     /**
      * Whether the code should be handled by the app.
      */
     handleCodeInApp?: boolean;
+
     /**
      * iOS specific settings.
      */
-    iOS: ActionCodeSettingsIos;
+    iOS?: ActionCodeSettingsIos;
+
+    /**
+     * Sets the Dynamic Links domain
+     */
+    dynamicLinkDomain?: string;
+
     /**
      * Sets the URL for the action.
      */

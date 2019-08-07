@@ -19,8 +19,8 @@
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTBridgeModule.h>
-#import <RNFBFirestoreCommon.h>
-#import <RNFBFirestoreSerialize.h>
+#import "RNFBFirestoreCommon.h"
+#import "RNFBFirestoreSerialize.h"
 
 @interface RNFBFirestoreDocumentModule : NSObject <RCTBridgeModule>
 

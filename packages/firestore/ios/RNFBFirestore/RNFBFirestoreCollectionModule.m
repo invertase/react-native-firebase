@@ -30,7 +30,7 @@ static NSString *const RNFB_FIRESTORE_COLLECTION_SYNC = @"firestore_collection_s
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+  return [RNFBFirestoreCommon getFirestoreQueue];
 }
 
 + (BOOL)requiresMainQueueSetup {
