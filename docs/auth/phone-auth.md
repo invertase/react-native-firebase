@@ -25,7 +25,7 @@ automatically.
 
 **Step 1**: Trigger phone auth
 
-Whitelist testing, make sure you have [whitelisted your device](https://firebase.google.com/docs/auth/ios/phone-auth#test-with-whitelisted-phone-numbers).
+> Whilst testing, make sure you have [whitelisted your device](https://firebase.google.com/docs/auth/ios/phone-auth#test-with-whitelisted-phone-numbers).
 
 ```js
 import auth from '@react-native-firebase/auth';
