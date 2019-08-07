@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import io.invertase.firebase.common.UniversalFirebaseModule;
+import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,45 +46,40 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
   Task<Void> settings(String appName, Map<String, Object> settings) {
     return Tasks.call(getExecutor(), () -> {
-      FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-      FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
-
       // settings.cacheSizeBytes
       if (settings.containsKey("cacheSizeBytes")) {
         Double cacheSizeBytesDouble = (Double) settings.get("cacheSizeBytes");
-        int cacheSizeBytes = cacheSizeBytesDouble.intValue();
 
-        if (cacheSizeBytes == -1) {
-          firestoreSettings.setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED);
-        } else {
-          firestoreSettings.setCacheSizeBytes(cacheSizeBytes);
-        }
-      } else {
-        firestoreSettings.setCacheSizeBytes(firebaseFirestore.getFirestoreSettings().getCacheSizeBytes());
+        UniversalFirebasePreferences.getSharedInstance().setIntValue(
+          UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+          Objects.requireNonNull(cacheSizeBytesDouble).intValue()
+        );
       }
 
       // settings.host
       if (settings.containsKey("host")) {
-        firestoreSettings.setHost((String) Objects.requireNonNull(settings.get("host")));
-      } else {
-        firestoreSettings.setHost(firebaseFirestore.getFirestoreSettings().getHost());
+        UniversalFirebasePreferences.getSharedInstance().setStringValue(
+          UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
+          (String) settings.get("host")
+        );
       }
 
       // settings.persistence
       if (settings.containsKey("persistence")) {
-        firestoreSettings.setPersistenceEnabled((boolean) settings.get("persistence"));
-      } else {
-        firestoreSettings.setPersistenceEnabled(firebaseFirestore.getFirestoreSettings().isPersistenceEnabled());
+        UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
+          UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+          (boolean) settings.get("persistence")
+        );
       }
 
       // settings.ssl
       if (settings.containsKey("ssl")) {
-        firestoreSettings.setSslEnabled((boolean) settings.get("ssl"));
-      } else {
-        firestoreSettings.setSslEnabled(firebaseFirestore.getFirestoreSettings().isSslEnabled());
+        UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
+          UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
+          (boolean) settings.get("ssl")
+        );
       }
 
-      firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
       return null;
     });
   }

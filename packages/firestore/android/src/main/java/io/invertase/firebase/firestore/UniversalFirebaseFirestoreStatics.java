@@ -1,4 +1,6 @@
-/**
+package io.invertase.firebase.firestore;
+
+/*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +17,9 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <Firebase/Firebase.h>
-#import <RNFBApp/RNFBSharedUtils.h>
-#import <React/RCTBridgeModule.h>
-#import <RNFBFirestoreQuery.h>
-#import "RNFBFirestoreCommon.h"
-#import "RNFBFirestoreSerialize.h"
-
-static NSString *const KEY_INCLUDE_METADATA_CHANGES = @"includeMetadataChanges";
-
-@interface RNFBFirestoreCollectionModule : NSObject <RCTBridgeModule>
-
-@end
+public class UniversalFirebaseFirestoreStatics {
+  public static String FIRESTORE_CACHE_SIZE = "firebase_firestore_cache_size";
+  public static String FIRESTORE_HOST = "firebase_firestore_host";
+  public static String FIRESTORE_PERSISTENCE = "firebase_firestore_persistence";
+  public static String FIRESTORE_SSL = "firebase_firestore_ssl";
+}
