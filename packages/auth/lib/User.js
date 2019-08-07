@@ -15,6 +15,8 @@
  *
  */
 
+import { isObject, isString } from '@react-native-firebase/common';
+
 export default class User {
   constructor(auth, user) {
     this._auth = auth;
@@ -94,6 +96,14 @@ export default class User {
   }
 
   sendEmailVerification(actionCodeSettings) {
+    if (isObject(actionCodeSettings)) {
+      if (!isString(actionCodeSettings.url)) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.url' expected a string value.",
+        );
+      }
+    }
+
     return this._auth.native.sendEmailVerification(actionCodeSettings).then(user => {
       this._auth._setUser(user);
     });
