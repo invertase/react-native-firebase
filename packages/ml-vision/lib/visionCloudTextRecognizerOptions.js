@@ -50,6 +50,14 @@ export default function visionCloudTextRecognizerOptions(cloudTextRecognizerOpti
     out.enforceCertFingerprintMatch = cloudTextRecognizerOptions.enforceCertFingerprintMatch;
   }
 
+  if (hasOwnProperty(cloudTextRecognizerOptions, 'apiKeyOverride')) {
+    if (!isString(cloudTextRecognizerOptions.apiKeyOverride)) {
+      throw new Error("'cloudTextRecognizerOptions.apiKeyOverride' expected a string value.");
+    }
+
+    out.apiKeyOverride = cloudTextRecognizerOptions.apiKeyOverride;
+  }
+
   if (cloudTextRecognizerOptions.modelType) {
     if (
       cloudTextRecognizerOptions.modelType !== VisionCloudTextRecognizerModelType.DENSE_MODEL &&

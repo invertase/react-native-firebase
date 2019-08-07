@@ -51,6 +51,10 @@ RCT_EXPORT_METHOD(cloudLandmarkRecognizerProcessImage:
     FIRVisionCloudDetectorOptions *options = [[FIRVisionCloudDetectorOptions alloc] init];
     options.maxResults = [cloudLandmarkRecognizerOptions[@"maxResults"] unsignedIntegerValue];
 
+    if (cloudLandmarkRecognizerOptions[@"apiKeyOverride"]) {
+      options.APIKeyOverride = cloudLandmarkRecognizerOptions[@"apiKeyOverride"];
+    }
+
     NSInteger *model = [cloudLandmarkRecognizerOptions[@"model"] pointerValue];
 
     if (model == (NSInteger *) 1) {

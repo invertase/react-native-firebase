@@ -50,6 +50,16 @@ export default function visionCloudDocumentTextRecognizerOptions(
       cloudDocumentTextRecognizerOptions.enforceCertFingerprintMatch;
   }
 
+  if (hasOwnProperty(cloudDocumentTextRecognizerOptions, 'apiKeyOverride')) {
+    if (!isString(cloudDocumentTextRecognizerOptions.apiKeyOverride)) {
+      throw new Error(
+        "'cloudDocumentTextRecognizerOptions.apiKeyOverride' expected a string value.",
+      );
+    }
+
+    out.apiKeyOverride = cloudDocumentTextRecognizerOptions.apiKeyOverride;
+  }
+
   if (cloudDocumentTextRecognizerOptions.languageHints) {
     if (
       !isArray(cloudDocumentTextRecognizerOptions.languageHints) ||
