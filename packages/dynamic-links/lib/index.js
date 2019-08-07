@@ -84,6 +84,9 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 
   onLink(listener) {
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
+
     const subscription = this.emitter.addListener('dynamic_links_link_received', event =>
       listener(event),
     );

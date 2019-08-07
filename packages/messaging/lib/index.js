@@ -111,6 +111,9 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error("firebase.messaging().onMessage(*) 'listener' expected a function.");
     }
 
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
+
     const subscription = this.emitter.addListener('messaging_message_received', listener);
     return () => subscription.remove();
   }
@@ -119,6 +122,9 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onTokenRefresh(*) 'listener' expected a function.");
     }
+
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
 
     const subscription = this.emitter.addListener('messaging_token_refresh', listener);
     return () => subscription.remove();
@@ -176,6 +182,9 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error("firebase.messaging().onDeletedMessages(*) 'listener' expected a function.");
     }
 
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
+
     const subscription = this.emitter.addListener('messaging_message_deleted', listener);
     return () => subscription.remove();
   }
@@ -185,6 +194,9 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onMessageSent(*) 'listener' expected a function.");
     }
+
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
 
     const subscription = this.emitter.addListener('messaging_message_sent', listener);
     return () => {
@@ -197,6 +209,9 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onSendError(*) 'listener' expected a function.");
     }
+
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
 
     const subscription = this.emitter.addListener('messaging_message_send_error', listener);
     return () => subscription.remove();

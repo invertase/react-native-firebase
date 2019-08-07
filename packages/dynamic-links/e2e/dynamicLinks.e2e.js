@@ -80,7 +80,7 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  describe.only('getInitialLink()', () => {
+  ios.describe('getInitialLink()', () => {
     it('should return the dynamic link instance that launched the app', async () => {
       await device.openURL({
         url: TEST_LINK,
@@ -93,12 +93,10 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  describe.only('onLink()', () => {
+  ios.describe('onLink()', () => {
     it('should emit dynamic links', async () => {
       const spy = sinon.spy();
 
-      // TODO rework internals as without this native module will never be ready (therefore never subscribes)
-      firebase.dynamicLinks().native;
       firebase.dynamicLinks().onLink(spy);
 
       await device.openURL({
