@@ -20,6 +20,11 @@ const baseParams = {
   domainUriPrefix: 'https://reactnativefirebase.page.link',
 };
 
+const TEST_LINK =
+  'https://reactnativefirebase.page.link/?link=https://invertase.io/oss/react-native-firebase&apn=com.invertase.testing';
+const TEST_LINK2 =
+  'https://reactnativefirebase.page.link/?link=https://invertase.io/hire-us&apn=com.invertase.testing';
+
 module.exports.baseParams = baseParams;
 
 describe('dynamicLinks()', () => {
@@ -75,7 +80,33 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  // TODO how can we test these?
-  describe('getInitialLink()', () => {});
-  describe('onLink()', () => {});
+  ios.describe('getInitialLink()', () => {
+    it('should return the dynamic link instance that launched the app', async () => {
+      await device.openURL({
+        url: TEST_LINK,
+      });
+
+      const dynamicLink = await firebase.dynamicLinks().getInitialLink();
+
+      dynamicLink.should.be.an.Object();
+      dynamicLink.url.should.equal('https://invertase.io/oss/react-native-firebase');
+    });
+  });
+
+  ios.describe('onLink()', () => {
+    it('should emit dynamic links', async () => {
+      const spy = sinon.spy();
+
+      firebase.dynamicLinks().onLink(spy);
+
+      await device.openURL({
+        url: TEST_LINK2,
+      });
+
+      await Utils.spyToBeCalledOnceAsync(spy);
+
+      spy.getCall(0).args[0].should.be.an.Object();
+      spy.getCall(0).args[0].url.should.equal('https://invertase.io/hire-us');
+    });
+  });
 });

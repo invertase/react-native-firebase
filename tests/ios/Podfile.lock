@@ -394,6 +394,7 @@ PODS:
   - RNFBDynamicLinks (0.1.2):
     - Firebase/Core (~> 6.5.0)
     - Firebase/DynamicLinks (~> 6.5.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 6.2.3)
     - React
     - RNFBApp
   - RNFBFiam (0.1.2):
@@ -691,7 +692,7 @@ SPEC CHECKSUMS:
   RNFBConfig: 52cf33195402af1cb3143839effeda028f100d3a
   RNFBCrashlytics: 2693942c16429eae92be1b6caa6fd09aabd98ef8
   RNFBDatabase: ac0861301b2282cd4e227f68d87a9ff216f36530
-  RNFBDynamicLinks: 6a1b957a5f189ae13166f9d6f87893900ba6cce2
+  RNFBDynamicLinks: 29a6e5ad3b291170bb4a4bc9930ec9e207fee58d
   RNFBFiam: 2ee565b708b6e9cfd3724400c1562fb2b37a7812
   RNFBFirestore: ee6508ef20d59730b6b39b35ea1495d90946e778
   RNFBFunctions: 4c7933433cde69d84640efa03611b5ec08608679

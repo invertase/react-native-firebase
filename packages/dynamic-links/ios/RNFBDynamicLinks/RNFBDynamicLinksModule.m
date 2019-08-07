@@ -30,6 +30,21 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Links Methods
 
+// required to init app delegate interceptor as early as possible
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+- (id)init {
+  self = [super init];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // access shared instance to initialize app delegate interceptor
+    [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
+  });
+  return self;
+}
+
 RCT_EXPORT_METHOD(buildLink:
   (NSDictionary *) dynamicLinkDict
     :(RCTPromiseResolveBlock)resolve
@@ -99,6 +114,7 @@ RCT_EXPORT_METHOD(buildShortLink:
   }];
 }
 
+// TODO refactor to reduce duplication
 RCT_EXPORT_METHOD(getInitialLink:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock)reject) {
@@ -113,7 +129,14 @@ RCT_EXPORT_METHOD(getInitialLink:
           @"url": dynamicLink.url.absoluteString,
           @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
       });
-    } else resolve([NSNull null]);
+    } else if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
+      resolve(@{
+          @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+          @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+      });
+    } else {
+      resolve([NSNull null]);
+    }
 
     return;
   }
@@ -128,13 +151,18 @@ RCT_EXPORT_METHOD(getInitialLink:
             @"url": dynamicLink.url.absoluteString,
             @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
         });
-      } else if (!error) {
-        resolve([NSNull null]);
-      } else {
+      } else if (!error && [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
+        resolve(@{
+            @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+            @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+        });
+      } else if (error) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
             @"code": @"initial-link-error",
             @"message": [error localizedDescription],
         }];
+      } else {
+        resolve([NSNull null]);
       }
     };
 
@@ -143,10 +171,10 @@ RCT_EXPORT_METHOD(getInitialLink:
     return;
   }
 
-  if ([RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkUrl) {
+  if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
     resolve(@{
-        @"url": [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkUrl,
-        @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor shared].initialLinkMinimumAppVersion,
+        @"url": [[RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+        @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
     });
   } else {
     resolve([NSNull null]);
@@ -299,5 +327,9 @@ RCT_EXPORT_METHOD(getInitialLink:
 - (NSArray<NSString *> *)supportedEvents {
   return @[];
 }
+
+// TODO document or add a method to call this:
+//     [FIRDynamicLinks performDiagnosticsWithCompletion:nil];
+//     ref: https://firebase.google.com/docs/dynamic-links/debug#ios_self-diagnostic_tool
 
 @end

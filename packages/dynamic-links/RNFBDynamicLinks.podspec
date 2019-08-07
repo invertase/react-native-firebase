@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 6.5.0'
   s.dependency          'Firebase/DynamicLinks', '~> 6.5.0'
+  s.dependency          'GoogleUtilities/AppDelegateSwizzler', '~> 6.2.3'
   s.dependency          'RNFBApp'
   s.static_framework    = false
 end
