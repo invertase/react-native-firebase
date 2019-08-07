@@ -174,6 +174,34 @@ describe('auth().currentUser', () => {
 
       return Promise.resolve();
     });
+
+    it('should work with actionCodeSettings', async () => {
+      const actionCodeSettings = {
+        handleCodeInApp: true,
+        url: 'https://react-native-firebase-testing.firebaseapp.com/foo',
+      };
+      await Utils.sleep(3000);
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+
+      try {
+        await firebase.auth().currentUser.sendEmailVerification(actionCodeSettings);
+        await firebase.auth().currentUser.delete();
+      } catch (error) {
+        console.log(error);
+        // Reject
+        try {
+          await firebase.auth().currentUser.delete();
+        } catch (_) {
+          /* do nothing */
+        }
+
+        return Promise.reject(new Error('sendEmailVerification(actionCodeSettings) caused an error'));
+      }
+
+      return Promise.resolve();
+    });
   });
 
   describe('unlink()', () => {
