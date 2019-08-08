@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ml-vision",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - ML Kit Vision",
   "main": "lib/index.js",
@@ -35,8 +35,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.1.3",
-    "@react-native-firebase/common": "0.1.3"
+    "@react-native-firebase/app-types": "0.1.4",
+    "@react-native-firebase/common": "0.1.4"
   },
   "gitHead": "3c95a488849d7b39ed869e1a0ff59b5f17498b1a",
   "publishConfig": {
