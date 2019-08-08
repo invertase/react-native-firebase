@@ -22,15 +22,15 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import version from './version';
+import { isArray, isObject, isString, isUndefined } from '@react-native-firebase/common';
 
 const statics = {};
 
 const namespace = 'admob';
 
-const nativeModuleName = 'RNFBAdmobModule';
+const nativeModuleName = ['RNFBAdmobModule'];
 
 class FirebaseAdmobModule extends FirebaseModule {
-
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/admob';
@@ -53,3 +53,9 @@ export default createModuleNamespace({
 // admob().X(...);
 // firebase.admob().X(...);
 export const firebase = getFirebaseRoot();
+
+
+export AdsConsent from './AdsConsent';
+export const RewardedVideoAd = {};
+export const InterstitialAd = {};
+export const BannerAd = {};

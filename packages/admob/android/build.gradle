@@ -27,13 +27,35 @@ project.ext {
       firebase          : [
         bom: "21.1.0"
       ],
+
+      ads          : [
+        consent: "1.0.6"
+      ],
     ],
   ])
+}
+
+apply from: file("./../../app/android/firebase-json.gradle")
+
+def firebaseJSONAdmobAppIDString = ""
+def firebaseJSONAdmobDelayAppMeasurementInitBool = false
+
+if (rootProject.ext.firebaseJson) {
+  firebaseJSONAdmobAppIDString = rootProject.ext.firebaseJson.getStringValue("admob_app_id", "")
+  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init")
+}
+
+if (!firebaseJSONAdmobAppIDString) {
+  // todo throw a build error?
 }
 
 android {
   defaultConfig {
     multiDexEnabled true
+    manifestPlaceholders = [
+      firebaseJSONAdmobAppID: firebaseJSONAdmobAppIDString,
+      firebaseJSONAdmobDelayAppMeasurementInit: firebaseJSONAdmobDelayAppMeasurementInitBool
+    ]
   }
   lintOptions {
     disable 'GradleCompatible'
@@ -53,7 +75,8 @@ repositories {
 dependencies {
   api project(':@react-native-firebase_app')
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-admob"
+  implementation "com.google.firebase:firebase-ads"
+  implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
 }
 
 ReactNative.shared.applyPackageVersion()
