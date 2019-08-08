@@ -7,7 +7,7 @@ def mlModels = [
 ]
 
 dependencies {
-  if (rootProject.ext.firebaseJson) {
+  if (rootProject.ext && rootProject.ext.firebaseJson) {
     mlModels.each { modelFlag ->
       if (rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
         rootProject.logger.info ":${project.name} model enabled: '${modelFlag}'"
@@ -32,7 +32,7 @@ def manifestModels = [
 def manifestModelsString = ""
 
 manifestModels.each { modelFlag ->
-  if (rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
+  if (rootProject.ext && rootProject.ext.firebaseJson && rootProject.ext.firebaseJson.isFlagEnabled(modelFlag) == true) {
     def modelIdentifier = modelFlag.replace("ml_vision_", "").replace("_model", "")
     if (manifestModelsString.length() > 0) {
       manifestModelsString += "," + modelIdentifier
