@@ -60,6 +60,57 @@ export namespace Admob {
     // firebase.admob.* static props go here
   }
 
+  export interface AdsConsent {
+    requestInfoUpdate(publisherIds: string[]): Promise<AdsConsentInfo>;
+    showForm(options?: AdsConsentFormOptions): Promise<AdsConsentFormResult>;
+    getAdProviders(): Promise<AdProvider[]>;
+    setDebugGeography(geography: AdsConsentDebugGeography): Promise<void>;
+    setStatus(status: AdsConsentStatus): Promise<void>;
+    setTagForUnderAgeOfConsent(tag: boolean): Promise<void>;
+    addTestDevice(deviceId: string): Promise<void>;
+  }
+
+  export interface AdsConsentFormOptions {
+    privacyPolicy: string;
+    withPersonalizedAds?: boolean;
+    withNonPersonalizedAds?: boolean;
+    withAdFree?: boolean;
+  }
+
+  export interface AdsConsentFormResult {
+    status:
+      | AdsConsentStatus.UNKNOWN
+      | AdsConsentStatus.PERSONALIZED
+      | AdsConsentStatus.UNPERSONALIZED;
+    userPrefersAdFree: boolean;
+  }
+
+  export interface AdsConsentInfo {
+    status:
+      | AdsConsentStatus.UNKNOWN
+      | AdsConsentStatus.PERSONALIZED
+      | AdsConsentStatus.UNPERSONALIZED;
+    isRequestLocationInEeaOrUnknown: boolean;
+  }
+
+  export interface AdProvider {
+    companyId: string;
+    companyName: string;
+    privacyPolicyUrl: string;
+  }
+
+  export interface AdsConsentDebugGeography {
+    DISABLED: 0;
+    EEA: 1;
+    NOT_EEA: 2;
+  }
+
+  export interface AdsConsentStatus {
+    UNKNOWN: 0;
+    PERSONALIZED: 1;
+    UNPERSONALIZED: 2;
+  }
+
   /**
    * // TODO CHOOSE THIS ---------------------------------------
    *
