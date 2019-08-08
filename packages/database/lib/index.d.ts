@@ -348,7 +348,6 @@ export namespace Database {
      * @param onComplete A callback function that will be called when the transaction completes. The callback is passed three arguments: a possibly-null Error, a boolean indicating whether the transaction was committed, and a DataSnapshot indicating the final result. If the transaction failed abnormally, the first argument will be an Error object indicating the failure cause. If the transaction finished normally, but no data was committed because no data was returned from transactionUpdate, then second argument will be false. If the transaction completed and committed data to Firebase, the second argument will be true. Regardless, the third argument will be a DataSnapshot containing the resulting data in this location.
      * @param applyLocally By default, events are raised each time the transaction update function runs. So if it is run multiple times, you may see intermediate states. You can set this to false to suppress these intermediate states and instead wait until the transaction has completed before events are raised.
      */
-    // TODO better types for update & complete fns with typed args
     transaction(
       transactionUpdate: Function,
       onComplete?: Function,
@@ -370,7 +369,14 @@ export namespace Database {
      *
      * #### Example
      *
-     * // TODO
+     * ```js
+     * const newUserRef = firebase.database().ref('users');
+     * console.log('New record key:', newUserRef.key);
+     * await newUserRef.set({
+     *   first: 'Ada',
+     *   last: 'Lovelace',
+     * });
+     * ```
      *
      * @param value Optional value to be written at the generated location.
      * @param onComplete Callback called when write to server is complete.
@@ -383,7 +389,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const userDisconnectRef = firebase.database().ref('users/ada/isOnline).onDisconnect();
+     * const userDisconnectRef = firebase.database().ref('users/ada/isOnline').onDisconnect();
      * // When going offline
      * await userDisconnectRef.update(false);
      * ```
@@ -425,7 +431,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const ref = firebase.database().ref("users");
+     * const ref = firebase.database().ref('users');
      * const snapshot = await ref.orderByKey().endAt('Ada Lovelace').once('value');
      * ```
      *
@@ -449,7 +455,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const ref = firebase.database().ref("users");
+     * const ref = firebase.database().ref('users');
      * const snapshot = await ref.orderByChild('age').equalTo(30).once('value');
      * ```
      *
