@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/common",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase internal common utilities & helpers.",
   "main": "lib/index.js",
