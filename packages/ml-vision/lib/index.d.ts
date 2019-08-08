@@ -77,7 +77,7 @@ export namespace MLKitVision {
   /**
    * Options for vision face detector.
    */
-  export class VisionFaceDetectorOptions {
+  export interface VisionFaceDetectorOptions {
     /**
      * Indicates whether to run additional classifiers for characterizing attributes such as "smiling" and "eyes open".
      *
