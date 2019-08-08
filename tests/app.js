@@ -21,6 +21,7 @@ import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react
 import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
+import '@react-native-firebase/admob';
 import '@react-native-firebase/firestore';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/database';
