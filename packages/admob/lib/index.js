@@ -32,9 +32,9 @@ const statics = {
 
 const namespace = 'admob';
 
-const nativeModuleName = ['RNFBAdmobModule'];
+const nativeModuleName = ['RNFBAdMobModule', 'RNFBAdMobInterstitialModule'];
 
-class FirebaseAdmobModule extends FirebaseModule {
+class FirebaseAdMobModule extends FirebaseModule {
   initialize() {
     return this.native.initialize();
   }
@@ -53,7 +53,7 @@ export default createModuleNamespace({
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
-  ModuleClass: FirebaseAdmobModule,
+  ModuleClass: FirebaseAdMobModule,
 });
 
 // import admob, { firebase } from '@react-native-firebase/admob';

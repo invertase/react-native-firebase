@@ -17,24 +17,45 @@ package io.invertase.firebase.admob;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.google.android.gms.ads.MobileAds;
 
 import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-public class ReactNativeFirebaseAdmobModule extends ReactNativeFirebaseModule {
+public class ReactNativeFirebaseAdMobModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Admob";
+  private boolean initilized = false;
 
-  ReactNativeFirebaseAdmobModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseAdMobModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+
+    // TODO how to do this
+//    if (admob_delay_app_measurement_init == false) {
+//      setInitialized(null);
+//    }
+  }
+
+  private void setInitialized(@Nullable Promise promise) {
+    MobileAds.initialize(getReactApplicationContext(), initializationStatus -> {
+      initilized = true;
+      if (promise != null) {
+        promise.resolve(null);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void initialize(Promise promise) {
+    if (initilized) {
+      promise.resolve(null);
+      return;
+    }
+
+    setInitialized(promise);
   }
 
 }
