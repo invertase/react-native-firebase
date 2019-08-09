@@ -20,42 +20,77 @@ package io.invertase.firebase.admob;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 
-import javax.annotation.Nullable;
+import java.util.Objects;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseAdMobModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Admob";
-  private boolean initilized = false;
+  private static final String SERVICE = "AdMob";
 
   ReactNativeFirebaseAdMobModule(ReactApplicationContext reactContext) {
-    super(reactContext, TAG);
-
-    // TODO how to do this
-//    if (admob_delay_app_measurement_init == false) {
-//      setInitialized(null);
-//    }
+    super(reactContext, SERVICE);
   }
 
-  private void setInitialized(@Nullable Promise promise) {
-    MobileAds.initialize(getReactApplicationContext(), initializationStatus -> {
-      initilized = true;
-      if (promise != null) {
-        promise.resolve(null);
+  private RequestConfiguration buildRequestConfiguration(ReadableMap requestConfiguration) {
+    RequestConfiguration.Builder builder = new RequestConfiguration.Builder();
+
+    if (requestConfiguration.hasKey("maxAdContentRating")) {
+      String rating = requestConfiguration.getString("maxAdContentRating");
+
+      switch (Objects.requireNonNull(rating)) {
+        case "G":
+          builder.setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G);
+          break;
+        case "PG":
+          builder.setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_PG);
+          break;
+        case "T":
+          builder.setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_T);
+          break;
+        case "MA":
+          builder.setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_MA);
+          break;
       }
-    });
+    }
+
+    if (requestConfiguration.hasKey("tagForChildDirectedTreatment")) {
+      boolean tagForChildDirectedTreatment = requestConfiguration.getBoolean("tagForChildDirectedTreatment");
+      if (tagForChildDirectedTreatment) {
+        builder.setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE);
+      } else {
+        builder.setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE);
+      }
+    } else {
+      builder.setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_UNSPECIFIED);
+    }
+
+    if (requestConfiguration.hasKey("tagForUnderAgeOfConsent")) {
+      boolean tagForUnderAgeOfConsent = requestConfiguration.getBoolean("tagForUnderAgeOfConsent");
+      if (tagForUnderAgeOfConsent) {
+        builder.setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE);
+      } else {
+        builder.setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE);
+      }
+    } else {
+      builder.setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_UNSPECIFIED);
+    }
+
+    return builder.build();
   }
 
   @ReactMethod
-  public void initialize(Promise promise) {
-    if (initilized) {
-      promise.resolve(null);
-      return;
-    }
-
-    setInitialized(promise);
+  public void setRequestConfiguration(ReadableMap requestConfiguration, Promise promise) {
+    MobileAds.setRequestConfiguration(buildRequestConfiguration(requestConfiguration));
+    promise.resolve(null);
   }
 
+  @ReactMethod
+  public void openDebugMenu(String adUnitId, Promise promise) {
+    MobileAds.openDebugMenu(getCurrentActivity(), adUnitId);
+    promise.resolve(null);
+  }
 }

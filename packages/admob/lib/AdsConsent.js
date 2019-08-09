@@ -21,7 +21,7 @@ import { hasOwnProperty, isArray, isBoolean, isObject, isString, isUndefined } f
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 
-const native = NativeModules.RNFBAdmobConsentModule;
+const native = NativeModules.RNFBAdMobConsentModule;
 
 export default {
   /**

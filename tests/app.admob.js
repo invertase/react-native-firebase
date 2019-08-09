@@ -19,23 +19,46 @@
 import React, { useEffect, Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View, Text } from 'react-native';
 
-import { AdsConsent } from '@react-native-firebase/admob';
+import { AdsConsent, InterstitialAd } from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
 function Root() {
 
   async function init() {
-    await AdsConsent.setDebugGeography(1);
-    // const p = await AdsConsent.getAdProviders();
-    // console.warn(p);
-    await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
-    const r = await AdsConsent.showForm({
-      privacyPolicy: 'https://invertase.io/privacy-policy',
-      withPersonalizedAds: true,
-      withNonPersonalizedAds: true,
-      withAdFree: true,
+    // await AdsConsent.setDebugGeography(1);
+    // // const p = await AdsConsent.getAdProviders();
+    // // console.warn(p);
+    // await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
+    // const r = await AdsConsent.showForm({
+    //   privacyPolicy: 'https://invertase.io/privacy-policy',
+    //   withPersonalizedAds: true,
+    //   withNonPersonalizedAds: true,
+    //   withAdFree: true,
+    // });
+    // console.log(Interstitial)
+    // await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+    //   listener(event, error) {
+    //     console.warn(event, error);
+    //   },
+    // });
+
+// testing ssh - not sure the name
+    const interstitialAd = InterstitialAd.createForAdRequest('ca-app-pub-3940256099942544/1033173712', {
+      //
     });
-    console.warn(r);
+
+
+    interstitialAd.onAdEvent((type, error) => {
+      console.log('>>>', type, error);
+      if (type === 'loaded') {
+        console.log('!!!!! show')
+        interstitialAd.show();
+      }
+    });
+
+    setTimeout(() => {
+      interstitialAd.load();
+    }, 1);
   }
 
   useEffect(() => {
