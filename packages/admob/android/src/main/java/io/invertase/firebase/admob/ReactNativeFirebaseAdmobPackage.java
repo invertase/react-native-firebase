@@ -31,8 +31,9 @@ public class ReactNativeFirebaseAdmobPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseAdmobModule(reactContext));
-    modules.add(new ReactNativeFirebaseAdmobConsentModule(reactContext));
+    modules.add(new ReactNativeFirebaseAdMobModule(reactContext));
+    modules.add(new ReactNativeFirebaseAdMobConsentModule(reactContext));
+    modules.add(new ReactNativeFirebaseAdMobInterstitialModule(reactContext));
     return modules;
   }
 
