@@ -21,13 +21,13 @@ import validateAdRequestOptions from '../validateAdRequestOptions';
 
 import MobileAd from './MobileAd';
 
-let _interstitialRequest = 0;
+let _rewardedRequest = 0;
 
-export default class InterstitialAd extends MobileAd {
+export default class RewardedAd extends MobileAd {
   static createForAdRequest(adUnitId, requestOptions) {
     if (!isString(adUnitId)) {
       throw new Error(
-        `firebase.admob() InterstitialAd.createForAdRequest(*) 'adUnitId' expected an string value.`,
+        `firebase.admob() RewardedAd.createForAdRequest(*) 'adUnitId' expected an string value.`,
       );
     }
 
@@ -35,12 +35,12 @@ export default class InterstitialAd extends MobileAd {
     try {
       options = validateAdRequestOptions(requestOptions);
     } catch (e) {
-      throw new Error(`firebase.admob() InterstitialAd.createForAdRequest(_, *) ${e.message}.`);
+      throw new Error(`firebase.admob() RewardedAd.createForAdRequest(_, *) ${e.message}.`);
     }
 
-    const requestId = _interstitialRequest++;
+    const requestId = _rewardedRequest++;
     const admob = getFirebaseRoot().admob();
-    return new InterstitialAd('interstitial', admob, requestId, adUnitId, options);
+    return new RewardedAd('rewarded', admob, requestId, adUnitId, options);
   }
 
   load() {
@@ -50,13 +50,13 @@ export default class InterstitialAd extends MobileAd {
     }
 
     this._loading = true;
-    this._admob.native.interstitialLoad(this._requestId, this._adUnitId, this._requestOptions);
+    this._admob.native.rewardedLoad(this._requestId, this._adUnitId, this._requestOptions);
   }
 
   onAdEvent(handler) {
     if (!isFunction(handler)) {
       throw new Error(
-        'firebase.admob() InterstitialAd.onAdEvent(*) \'handler\' expected a function.',
+        'firebase.admob() RewardedAd.onAdEvent(*) \'handler\' expected a function.',
       );
     }
 
@@ -66,7 +66,7 @@ export default class InterstitialAd extends MobileAd {
   show(showOptions) {
     if (!this.loaded) {
       throw new Error(
-        'firebase.admob() InterstitialAd.show() The requested InterstitialAd has not loaded and could not be shown.',
+        'firebase.admob() RewardedAd.show() The requested RewardedAd has not loaded and could not be shown.',
       );
     }
 
@@ -75,6 +75,6 @@ export default class InterstitialAd extends MobileAd {
     };
     // todo validate options? common validator or local?
 
-    return this._admob.native.interstitialShow(this._requestId, options);
+    return this._admob.native.rewardedShow(this._requestId, this._adUnitId, options);
   }
 }
