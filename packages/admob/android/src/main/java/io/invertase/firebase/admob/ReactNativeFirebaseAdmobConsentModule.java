@@ -69,51 +69,53 @@ public class ReactNativeFirebaseAdmobConsentModule extends ReactNativeFirebaseMo
 
   @ReactMethod
   public void showForm(ReadableMap options, Promise promise) {
-    URL privacyUrl = null;
+    getCurrentActivity().runOnUiThread(() -> {
+      URL privacyUrl = null;
 
-    try {
-      privacyUrl = new URL(options.getString("privacyPolicy"));
-    } catch (MalformedURLException e) {
-      // Validated in JS land
-    }
-
-    ConsentFormListener listener = new ConsentFormListener() {
-      @Override
-      public void onConsentFormLoaded() {
-        consentForm.show();
+      try {
+        privacyUrl = new URL(options.getString("privacyPolicy"));
+      } catch (MalformedURLException e) {
+        // Validated in JS land
       }
 
-      @Override
-      public void onConsentFormClosed(ConsentStatus consentStatus, Boolean userPrefersAdFree) {
-        WritableMap consentFormMap = Arguments.createMap();
-        consentFormMap.putInt("status", getConsentStatusInt(consentStatus));
-        consentFormMap.putBoolean("userPrefersAdFree", userPrefersAdFree);
-        promise.resolve(consentFormMap);
+      ConsentFormListener listener = new ConsentFormListener() {
+        @Override
+        public void onConsentFormLoaded() {
+          consentForm.show();
+        }
+
+        @Override
+        public void onConsentFormClosed(ConsentStatus consentStatus, Boolean userPrefersAdFree) {
+          WritableMap consentFormMap = Arguments.createMap();
+          consentFormMap.putInt("status", getConsentStatusInt(consentStatus));
+          consentFormMap.putBoolean("userPrefersAdFree", userPrefersAdFree);
+          promise.resolve(consentFormMap);
+        }
+
+        @Override
+        public void onConsentFormError(String reason) {
+          rejectPromiseWithCodeAndMessage(promise, "consent-form-error", reason);
+        }
+      };
+
+      ConsentForm.Builder builder = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
+        .withListener(listener);
+
+      if (options.hasKey("withPersonalizedAds") && options.getBoolean("withPersonalizedAds")) {
+        builder = builder.withPersonalizedAdsOption();
       }
 
-      @Override
-      public void onConsentFormError(String reason) {
-        rejectPromiseWithCodeAndMessage(promise, "consent-form-error", reason);
+      if (options.hasKey("withNonPersonalizedAds") && options.getBoolean("withNonPersonalizedAds")) {
+        builder = builder.withNonPersonalizedAdsOption();
       }
-    };
 
-    ConsentForm.Builder builder = new ConsentForm.Builder(getCurrentActivity(), privacyUrl)
-      .withListener(listener);
+      if (options.hasKey("withAdFree") && options.getBoolean("withAdFree")) {
+        builder = builder.withAdFreeOption();
+      }
 
-    if (options.hasKey("withPersonalizedAds") && options.getBoolean("withPersonalizedAds")) {
-      builder = builder.withPersonalizedAdsOption();
-    }
-
-    if (options.hasKey("withNonPersonalizedAds") && options.getBoolean("withNonPersonalizedAds")) {
-      builder = builder.withNonPersonalizedAdsOption();
-    }
-
-    if (options.hasKey("withAdFree") && options.getBoolean("withAdFree")) {
-      builder = builder.withAdFreeOption();
-    }
-
-    consentForm = builder.build();
-    consentForm.load();
+      consentForm = builder.build();
+      consentForm.load();
+    });
   }
 
   @ReactMethod
@@ -130,7 +132,7 @@ public class ReactNativeFirebaseAdmobConsentModule extends ReactNativeFirebaseMo
       formattedAdProviders.pushMap(formattedProvider);
     }
 
-    promise.resolve(providers);
+    promise.resolve(formattedAdProviders);
   }
 
   @ReactMethod
