@@ -24,10 +24,22 @@ import {
 import version from './version';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
+import MaxAdContentRating from './MaxAdContentRating';
+import AdEventType from './AdEventType';
+
+import validateAdRequestConfiguration from './validateAdRequestConfiguration';
+import { isObject } from '@react-native-firebase/common';
 
 const statics = {
   AdsConsentDebugGeography,
   AdsConsentStatus,
+  AdEventType,
+  MaxAdContentRating,
+  TestIds: {
+    BANNER: 'ca-app-pub-3940256099942544/6300978111',
+    INTERSTITIAL: 'ca-app-pub-3940256099942544/1033173712',
+    REWARDED: 'ca-app-pub-3940256099942544/5224354917',
+  },
 };
 
 const namespace = 'admob';
@@ -35,8 +47,39 @@ const namespace = 'admob';
 const nativeModuleName = ['RNFBAdMobModule', 'RNFBAdMobInterstitialModule'];
 
 class FirebaseAdMobModule extends FirebaseModule {
-  initialize() {
-    return this.native.initialize();
+
+  constructor(...args) {
+    super(...args);
+
+    this.emitter.addListener('admob_interstitial_event', (event) => {
+      this.emitter.emit(
+        `admob_interstitial_event:${event.adUnitId}:${event.requestId}`,
+        event,
+      );
+    });
+  }
+
+  setRequestConfiguration(requestConfiguration) {
+    if (!isObject(requestConfiguration)) {
+      throw new Error(
+        `firebase.admob().setRequestConfiguration(*) 'requestConfiguration' expected an object value.`
+      );
+    }
+
+    let config;
+    try {
+      config = validateAdRequestConfiguration(requestConfiguration);
+    } catch (e) {
+      throw new Error(
+        `firebase.admob().setRequestConfiguration(*) ${e.message}`
+      );
+    }
+
+    return this.native.setRequestConfiguration(config);
+  }
+
+  openDebugMenu(adUnitId) {
+    return this.native.openDebugMenu(adUnitId);
   }
 }
 
@@ -50,7 +93,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents: ['admob_interstitial_event'],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAdMobModule,
@@ -63,8 +106,10 @@ export const firebase = getFirebaseRoot();
 
 export AdsConsentDebugGeography from './AdsConsentDebugGeography';
 export AdsConsentStatus from './AdsConsentStatus';
+export MaxAdContentRating from './MaxAdContentRating';
+export AdEventType from './AdEventType';
 
 export AdsConsent from './AdsConsent';
-export const RewardedVideoAd = {};
-export const InterstitialAd = {};
-export const BannerAd = {};
+
+export InterstitialAd from './ads/InterstitialAd';
+

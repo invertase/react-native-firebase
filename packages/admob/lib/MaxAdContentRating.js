@@ -15,10 +15,9 @@
  *
  */
 
-export default class Interstitial {
-  constructor(adUnitId) {
-    this._adUnitId = adUnitId;
-  }
-
-
+export default {
+  G: 'G',
+  PG: 'PG',
+  T: 'T',
+  MA: 'MA',
 }

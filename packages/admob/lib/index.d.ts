@@ -61,14 +61,52 @@ export namespace Admob {
    */
   export interface Statics {
     /**
+     * AdsConsentStatus interface.
+     */
+    AdsConsentStatus: AdsConsentStatus;
+
+    /**
      * AdsConsentDebugGeography interface.
      */
     AdsConsentDebugGeography: AdsConsentDebugGeography;
 
     /**
-     * AdsConsentStatus interface.
+     * AdsConsentDebugGeography interface.
      */
-    AdsConsentStatus: AdsConsentStatus;
+    MaxAdContentRating: MaxAdContentRating;
+
+    /**
+     * AdEventType enum.
+     */
+    AdEventType: AdEventType;
+
+    /**
+     * TestIds interface
+     */
+    TestIds: TestIds;
+  }
+
+  export enum AdEventType {
+    LOADED = 'loaded',
+
+    ERROR = 'error',
+
+    OPENED = 'opened',
+
+    CLICKED = 'clicked',
+
+    LEFT_APPLICATION = 'left_application',
+
+    CLOSED = 'closed',
+  }
+
+  /**
+   * Ad Unit IDs used for testing purposes. These should not be used in production apps.
+   */
+  export interface TestIds {
+    BANNER: string;
+    INTERSTITIAL: string;
+    REWARDED: string;
   }
 
   /**
@@ -413,6 +451,67 @@ export namespace Admob {
   }
 
   /**
+   *
+   */
+  export interface RequestConfiguration {
+    /**
+     * The maximum ad content rating for all ads.  AdMob ads returns ads at or below the specified level.
+     *
+     * Ratings are based on the [digital content label classifications](https://support.google.com/admob/answer/7562142).
+     */
+    maxAdContentRating?:
+      | MaxAdContentRating.G
+      | MaxAdContentRating.PG
+      | MaxAdContentRating.T
+      | MaxAdContentRating.MA;
+
+    /**
+     * If `true`, indicates that you want your content treated as child-directed for purposes of COPPA.
+     *
+     * For purposes of the [Children's Online Privacy Protection Act (COPPA)](http://business.ftc.gov/privacy-and-security/children%27s-privacy),
+     * there is a setting called "tag for child-directed treatment". By setting this tag, you certify that this notification
+     * is accurate and you are authorized to act on behalf of the owner of the app. You understand that abuse of this
+     * setting may result in termination of your Google account.
+     */
+    tagForChildDirectedTreatment?: boolean;
+
+    /**
+     * If `true`, indicates that you want the ad request to be handled in a manner suitable for users under the age of consent.
+     *
+     * You can mark your ad requests to receive treatment for users in the European Economic Area (EEA) under the age of consent.
+     * This feature is designed to help facilitate compliance with the [General Data Protection Regulation (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679).
+     *
+     * See the [Google Mobile SDK docs](https://developers.google.com/admob/android/targeting#ad_content_filtering) for more information.
+     */
+    tagForUnderAgeOfConsent?: boolean;
+  }
+
+  /**
+   * The MaxAdContentRating interface used when setting global advert request options.
+   */
+  export interface MaxAdContentRating {
+    /**
+     * "General audiences." Content suitable for all audiences, including families and children.
+     */
+    G: 'G';
+
+    /**
+     * "Parental guidance." Content suitable for most audiences with parental guidance, including topics like non-realistic, cartoonish violence.
+     */
+    PG: 'PG';
+
+    /**
+     * T: "Teen." Content suitable for teen and older audiences, including topics such as general health, social networks, scary imagery, and fight sports.
+     */
+    T: 'T';
+
+    /**
+     * "Mature audiences." Content suitable only for mature audiences; includes topics such as alcohol, gambling, sexual content, and weapons.
+     */
+    MA: 'MA';
+  }
+
+  /**
    * The Firebase Admob service interface.
    *
    * > This module is available for the default app only.
@@ -433,8 +532,39 @@ export namespace Admob {
      * must be called before performing any AdMob related requests.
      *
      * Calling the initialize method if the SDK has already been initialized will resolve the promise.
+     *
+     * #### Example
+     *
+     * ```js
+     * import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
+     *
+     * await admob.initialize({
+     *   // Set all requests suitable for general audiences
+     *   maxAdContentRating: MaxAdContentRating.G,
+     * });
+     * ```
+     *
+     * @param requestConfiguration An optional RequestConfiguration interface. If not provided, AdMob will initialize with default settings.
      */
-    initialize(): Promise<void>;
+    initialize(requestConfiguration?: RequestConfiguration): Promise<void>;
+
+    /**
+     * Sets request options for all future ad requests.
+     *
+     * #### Example
+     *
+     * ```js
+     * import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
+     *
+     * await admob.setRequestConfiguration({
+     *   // Update all future requests suitable for parental guidance
+     *   maxAdContentRating: MaxAdContentRating.PG,
+     * });
+     * ```
+     *
+     * @param requestConfiguration An RequestConfiguration interface used on all future AdMob ad requests.
+     */
+    setRequestConfiguration(requestConfiguration: RequestConfiguration): Promise<void>;
   }
 }
 

@@ -17,113 +17,112 @@ package io.invertase.firebase.admob;
  *
  */
 
+import android.util.SparseArray;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
-import java.util.HashMap;
+import javax.annotation.Nullable;
 
-import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
+
+import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.buildAdRequest;
+import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.getCodeAndMessageFromAdErrorCode;
+import static io.invertase.firebase.admob.ReactNativeFirebaseAdMobCommon.sendAdEvent;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_CLICKED;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_CLOSED;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_ERROR;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_LEFT_APPLICATION;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_LOADED;
+import static io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent.AD_OPENED;
 
 public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFirebaseModule {
-  private static HashMap<String, InterstitialAd> interstitialAdHashMap = new HashMap<>();
-
-  private static final String SERVICE = "AdmobInterstitial";
+  private static final String SERVICE = "AdMobInterstitial";
+  private static SparseArray<InterstitialAd> interstitialAdArray = new SparseArray<>();
 
   public ReactNativeFirebaseAdMobInterstitialModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE);
   }
 
-  private InterstitialAd getInterstitialAd(String adUnitId) {
-    if (interstitialAdHashMap.containsKey(adUnitId)) {
-      return interstitialAdHashMap.get(adUnitId);
-    }
-
-    InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
-    interstitialAd.setAdUnitId(adUnitId);
-
-    interstitialAdHashMap.put(adUnitId, interstitialAd);
-    return interstitialAd;
-  }
-
-  // todo make common
-  private void sendAdEvent(String type, String adUnitId, String event) {
-    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-
-    // { type: "interstital", adUnitId, event: clicked, opened etc }
-
-//    emitter.sendEvent(new ReactNativeFirebaseTransactionEvent(
-//      ReactNativeFirebaseTransactionEvent.EVENT_TRANSACTION,
-//      updatesMap,
-//      app,
-//      transactionId
-//    ));
+  private void sendInterstitialEvent(String type, int requestId, String adUnitId, @Nullable WritableMap error) {
+    sendAdEvent(
+      ReactNativeFirebaseAdMobEvent.EVENT_INTERSTITIAL,
+      requestId,
+      type,
+      adUnitId,
+      error
+    );
   }
 
   @ReactMethod
-  public void interstitialRequestAd(String appName, String adUnitId, ReadableMap adRequestOptions, Promise promise) {
-    InterstitialAd interstitialAd = getInterstitialAd(adUnitId);
-    // TODO adRequest options
-    interstitialAd.loadAd(new AdRequest.Builder().build());
+  public void interstitialLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
+    getCurrentActivity().runOnUiThread(() -> {
+      InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
+      interstitialAd.setAdUnitId(adUnitId);
 
-    interstitialAd.setAdListener(new AdListener() {
-      @Override
-      public void onAdLoaded() {
-        promise.resolve(null);
-      }
+      // Apply AdRequest builder
+      interstitialAd.loadAd(buildAdRequest(adRequestOptions));
 
-      @Override
-      public void onAdFailedToLoad(int errorCode) {
-        // TODO
-        rejectPromiseWithCodeAndMessage(promise, "request-failed", "doop");
-        // Code to be executed when an ad request fails.
-      }
+      interstitialAd.setAdListener(new AdListener() {
+        @Override
+        public void onAdLoaded() {
+          sendInterstitialEvent(AD_LOADED, requestId, adUnitId, null);
+        }
 
-      @Override
-      public void onAdOpened() {
-        // Code to be executed when the ad is displayed.
-      }
+        @Override
+        public void onAdFailedToLoad(int errorCode) {
+          WritableMap error = Arguments.createMap();
+          String[] codeAndMessage = getCodeAndMessageFromAdErrorCode(errorCode);
+          error.putString("code", codeAndMessage[0]);
+          error.putString("message", codeAndMessage[1]);
+          sendInterstitialEvent(AD_ERROR, requestId, adUnitId, error);
+        }
 
-      @Override
-      public void onAdClicked() {
-        // Code to be executed when the user clicks on an ad.
-      }
+        @Override
+        public void onAdOpened() {
+          sendInterstitialEvent(AD_OPENED, requestId, adUnitId, null);
+        }
 
-      @Override
-      public void onAdLeftApplication() {
-        // Code to be executed when the user has left the app.
-      }
+        @Override
+        public void onAdClicked() {
+          sendInterstitialEvent(AD_CLICKED, requestId, adUnitId, null);
+        }
 
-      @Override
-      public void onAdClosed() {
-        // Code to be executed when the interstitial ad is closed.
-      }
+        @Override
+        public void onAdLeftApplication() {
+          sendInterstitialEvent(AD_LEFT_APPLICATION, requestId, adUnitId, null);
+        }
+
+        @Override
+        public void onAdClosed() {
+          sendInterstitialEvent(AD_CLOSED, requestId, adUnitId, null);
+        }
+      });
+
+      interstitialAdArray.put(requestId, interstitialAd);
     });
   }
 
   @ReactMethod
-  public void interstitialShow(String appName, String adUnitId, Promise promise) {
-    if (!interstitialAdHashMap.containsKey(adUnitId)) {
-      // todo
-      rejectPromiseWithCodeAndMessage(promise, "show-ad-failed", "Ad has not been requested for this id");
-      return;
-    }
+  public void interstitialShow(int requestId, ReadableMap showOptions, Promise promise) {
+    getCurrentActivity().runOnUiThread(() -> {
+      InterstitialAd interstitialAd = interstitialAdArray.get(requestId);
 
-    InterstitialAd interstitialAd = getInterstitialAd(adUnitId);
+      if (showOptions.hasKey("immersiveModeEnabled")) {
+        interstitialAd.setImmersiveMode(showOptions.getBoolean("immersiveModeEnabled"));
+      } else {
+        interstitialAd.setImmersiveMode(false);
+      }
 
-    if (!interstitialAd.isLoaded()) {
-      // todo
-      rejectPromiseWithCodeAndMessage(promise, "show-ad-failed", "Ad has not been loaded yet");
-      return;
-    }
-
-    interstitialAd.show();
-    promise.resolve(null);
+      interstitialAd.show();
+      promise.resolve(null);
+    });
   }
 }

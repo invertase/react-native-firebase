@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "AdmobConsent";
+  private static final String TAG = "AdMobConsent";
   private ConsentInformation consentInformation;
   private ConsentForm consentForm;
 
