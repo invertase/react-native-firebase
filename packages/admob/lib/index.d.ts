@@ -56,64 +56,363 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace Admob {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
+  /**
+   * firebase.admob.X
+   */
   export interface Statics {
-    // firebase.admob.* static props go here
+    /**
+     * AdsConsentDebugGeography interface.
+     */
+    AdsConsentDebugGeography: AdsConsentDebugGeography;
+
+    /**
+     * AdsConsentStatus interface.
+     */
+    AdsConsentStatus: AdsConsentStatus;
   }
 
+  /**
+   * Under the Google [EU User Consent Policy](https://www.google.com/about/company/consentstaging.html), you must make certain disclosures to your users in the European Economic Area (EEA)
+   * and obtain their consent to use cookies or other local storage, where legally required, and to use personal data
+   * (such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the
+   * General Data Protection Regulation (GDPR).
+   *
+   * It is recommended that you determine the status of a user's consent ay every app launch. The user consent status is held
+   * on the device until a condition changes which requires the user to consent again, such as a change in publishers.
+   *
+   * For more information, see [here](https://developers.google.com/admob/android/eu-consent#delay_app_measurement_optional).
+   */
   export interface AdsConsent {
+    /**
+     * Requests user consent for a given list of publisher IDs.
+     *
+     * The list of publisher IDs can be obtained from the settings panel on the Google AdMob console. If the list of
+     * publisher IDs has changed since the last time a user provided consent, their consent status will be reset to
+     * 'UNKNOWN' and they must provide consent again.
+     *
+     * If the request fails with the error "Could not parse Event FE preflight response", this means the state of your
+     * Google AdMob account is not complete. Ensure you have validated your account and have setup valid payment
+     * information. This error is also thrown when a Publisher ID is invalid.
+     *
+     * The response from this method provides request location and consent status properties.
+     *
+     * If request location is within the EEA or unknown, and the consent status is also unknown, you
+     * must request consent via the `showForm()` method or your own means.
+     *
+     * If the consent status is not unknown, the user has already previously provided consent for the current publisher
+     * scope.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent } from '@react-native-firebase/admob';
+     *
+     * const consent = await AdsConsent.requestInfoUpdate(['pub-6189033257628554']);
+     * console.log('User location within EEA or Unknown:', consent.isRequestLocationInEeaOrUnknown);
+     * console.log('User consent status:', consent.status);
+     * ```
+     *
+     * @param publisherIds A list of publisher IDs found on your Google AdMob dashboard.
+     */
     requestInfoUpdate(publisherIds: string[]): Promise<AdsConsentInfo>;
+
+    /**
+     * Shows a Google-rendered user consent form.
+     *
+     * The Google-rendered consent form is a full-screen configurable form that displays over your app content. The form
+     * allows the following configuration options:
+     *
+     * 1. Consent to view personalized ads (via `withPersonalizedAds`).
+     * 2. Consent to view non-personalized ads (via `withNonPersonalizedAds`).
+     * 3. Use a paid version of the app instead of viewing ads (via `withAdFree`).
+     *
+     * Every consent form requires a privacy policy URL which outlines the usage of your application.
+     *
+     * You should review the consent text carefully: what appears by default is a message that might be appropriate if
+     * you use Google to monetize your app.
+     *
+     * If providing an ad-free version of your app, ensure you handle this once the form has been handled by the user
+     * via the `userPrefersAdFree` property. The users preference on consent is automatically forwarded onto the Google
+     * Mobile SDKs and saved.
+     *
+     * If the user is outside of the EEA, the request form will error.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
+     *
+     * async function requestConsent() {
+     *   const consent = await AdsConsent.requestInfoUpdate(['pub-6189033257628554']);
+     *
+     *   // Check if user requires consent
+     *   if (consent.isRequestLocationInEeaOrUnknown && consent.status === AdsConsentStatus.UNKNOWN) {
+     *     // Show a Google-rendered form
+     *     const result = await AdsConsent.showForm({
+     *       privacyPolicy: 'https://invertase.io/privacy-policy',
+     *       withPersonalizedAds: true,
+     *       withNonPersonalizedAds: true,
+     *       withAdFree: true,
+     *     });
+     *
+     *     console.log('User accepted personalized: ', result.status === AdsConsentStatus.PERSONALIZED);
+     *     console.log('User accepted non-personalized: ', result.status === AdsConsentStatus.NONPERSONALIZED);
+     *     console.log('User prefers Ad Free version of app: ', result.userPrefersAdFree);
+     *   }
+     * }
+     *
+     * ```
+     *
+     * @param options An AdsConsentFormOptions interface to control the Google-rendered form.
+     */
     showForm(options?: AdsConsentFormOptions): Promise<AdsConsentFormResult>;
+
+    /**
+     * Returns a list of ad providers currently in use for the given AdMob App ID.
+     *
+     * If requesting consent from the user via your own method, this list of ad providers must be shown to the user
+     * for them to accept consent.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent } from '@react-native-firebase/admob';
+     *
+     * const providers = await AdsConsent.getAdProviders();
+     * ```
+     */
     getAdProviders(): Promise<AdProvider[]>;
-    setDebugGeography(geography: AdsConsentDebugGeography): Promise<void>;
-    setStatus(status: AdsConsentStatus): Promise<void>;
+
+    /**
+     * Sets the debug geography to locally test consent.
+     *
+     * If debugging on an emulator (where location cannot be determined) or outside of the EEA,
+     * it is possible set your own location to test how your app handles different scenarios.
+     *
+     * If using a real device, ensure you have set it as a test device via `addTestDevice()` otherwise this method will have
+     * no effect.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent, AdsConsentDebugGeography } from '@react-native-firebase/admob';
+     *
+     * // Set disabled
+     * await AdsConsentDebugGeography.setDebugGeography(AdsConsentDebugGeography.DISABLED);
+     *
+     * // Set within EEA
+     * await AdsConsentDebugGeography.setDebugGeography(AdsConsentDebugGeography.EEA);
+     *
+     * // Set outside EEA
+     * await AdsConsentDebugGeography.setDebugGeography(AdsConsentDebugGeography.NOT_EEA);
+     * ```
+     *
+     * @param geography The debug geography location.
+     */
+    setDebugGeography(
+      geography:
+        | AdsConsentDebugGeography.DISABLED
+        | AdsConsentDebugGeography.EEA
+        | AdsConsentDebugGeography.NOT_EEA,
+    ): Promise<void>;
+
+    /**
+     * Manually update the consent status of the user.
+     *
+     * This method is used when providing your own means of user consent. If using the Google-rendered form via `showForm()`,
+     * the consent status is automatically set and calling this method is not required.
+     *
+     * This method can also be used to reset the consent status (via UNKNOWN) which may be useful in certain circumstances.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
+     *
+     * // User accepted personalized ads
+     * await AdsConsent.setStatus(AdsConsentStatus.PERSONALIZED);
+     * ```
+     *
+     * @param status The user consent status.
+     */
+    setStatus(
+      status:
+        | AdsConsentStatus.UNKNOWN
+        | AdsConsentStatus.PERSONALIZED
+        | AdsConsentStatus.UNPERSONALIZED,
+    ): Promise<void>;
+
+    /**
+     * If a publisher is aware that the user is under the age of consent, all ad requests must set TFUA (Tag For Users
+     * under the Age of Consent in Europe). This setting takes effect for all future ad requests.
+     *
+     * Once the TFUA setting is enabled, the Google-rendered consent form will fail to load. All ad requests that include
+     * TFUA will be made ineligible for personalized advertising and remarketing. TFUA disables requests to third-party
+     * ad technology providers, such as ad measurement pixels and third-party ad servers.
+     *
+     * To remove TFUA from ad requests, set the value to `false`.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent } from '@react-native-firebase/admob';
+     *
+     * // User is under age of consent
+     * await AdsConsent.setTagForUnderAgeOfConsent(true);
+     * ```
+     *
+     * @param tag The boolean value to tag for under age consent.
+     */
     setTagForUnderAgeOfConsent(tag: boolean): Promise<void>;
+
+    /**
+     * If using a real device to test, ensure the device ID is provided to the Google AdMob SDK so any mock debug locations
+     * can take effect.
+     *
+     * Emulators are automatically whitelisted and require no action.
+     *
+     * If you are unsure of how to obtain your device ID, see [react-native-device-info](https://github.com/react-native-community/react-native-device-info).
+     *
+     * @param deviceId The testing device ID.
+     */
     addTestDevice(deviceId: string): Promise<void>;
   }
 
+  /**
+   * The options used to show on the Google-rendered consent form.
+   */
   export interface AdsConsentFormOptions {
+    /**
+     * A fully formed HTTP or HTTPS privacy policy URL for your application.
+     *
+     * Users will have the option to visit this webpage before consenting to ads.
+     */
     privacyPolicy: string;
+
+    /**
+     * Set to `true` to provide the option for the user to accept being shown personalized ads.
+     */
     withPersonalizedAds?: boolean;
+
+    /**
+     * Set to `true` to provide the option for the user to accept being shown non-personalized ads.
+     */
     withNonPersonalizedAds?: boolean;
+
+    /**
+     * Set to `true` to provide the option for the user to choose an ad-free version of your app.
+     *
+     * If the user chooses this option, you must handle it as required (e.g. navigating to a paid version of the app,
+     * or registering).
+     */
     withAdFree?: boolean;
   }
 
+  /**
+   * The result of a Google-rendered consent form.
+   */
   export interface AdsConsentFormResult {
+    /**
+     * The consent status of the user after closing the consent form.
+     *
+     * - UNKNOWN: The form was unable to determine the users consent status.
+     * - PERSONALIZED: The user has accepted personalized ads.
+     * - UNPERSONALIZED: The user has accepted unpersonalized ads.
+     */
     status:
       | AdsConsentStatus.UNKNOWN
       | AdsConsentStatus.PERSONALIZED
       | AdsConsentStatus.UNPERSONALIZED;
+
+    /**
+     * If `true`, the user requested an ad-free version of your application.
+     */
     userPrefersAdFree: boolean;
   }
 
+  /**
+   * The result of requesting info about a users consent status.
+   */
   export interface AdsConsentInfo {
+    /**
+     * The consent status of the user.
+     *
+     * - UNKNOWN: The consent status is unknown and the user must provide consent to show ads if they are within the EEA or location is also unknown.
+     * - PERSONALIZED: The user has accepted personalized ads.
+     * - UNPERSONALIZED: The user has accepted unpersonalized ads.
+     */
     status:
       | AdsConsentStatus.UNKNOWN
       | AdsConsentStatus.PERSONALIZED
       | AdsConsentStatus.UNPERSONALIZED;
+
+    /**
+     * If `true` the user is within the EEA or their location could not be determined.
+     */
     isRequestLocationInEeaOrUnknown: boolean;
   }
 
+  /**
+   * A AdProvider interface.
+   */
   export interface AdProvider {
+    /**
+     * A provider company ID.
+     */
     companyId: string;
+
+    /**
+     * A provider company name.
+     */
     companyName: string;
+
+    /**
+     * A fully formed URL for the privacy policy of the provider.
+     */
     privacyPolicyUrl: string;
   }
 
+  /**
+   * AdsConsentDebugGeography interface.
+   */
   export interface AdsConsentDebugGeography {
+    /**
+     * Disable any debug geography.
+     */
     DISABLED: 0;
+
+    /**
+     * Sets the location to within the EEA.
+     */
     EEA: 1;
+
+    /**
+     * Sets the location to outside of the EEA.
+     */
     NOT_EEA: 2;
   }
 
+  /**
+   * AdsConsentStatus interface.
+   */
   export interface AdsConsentStatus {
+    /**
+     * The consent status is unknown and the user must provide consent to show ads if they are within the EEA or location is also unknown.
+     */
     UNKNOWN: 0;
+
+    /**
+     * The user has accepted personalized ads.
+     */
     PERSONALIZED: 1;
+
+    /**
+     * The user has accepted unpersonalized ads.
+     */
     UNPERSONALIZED: 2;
   }
 
   /**
-   * // TODO CHOOSE THIS ---------------------------------------
-   *
    * The Firebase Admob service interface.
    *
    * > This module is available for the default app only.
@@ -125,31 +424,17 @@ export namespace Admob {
    * ```js
    * const defaultAppAdmob = firebase.admob();
    * ```
-   *
-   * // TODO OR THIS -------------------------------------------
-   *
-   * The Firebase Admob service is available for the default app or a given app.
-   *
-   * #### Example 1
-   *
-   * Get the admob instance for the **default app**:
-   *
-   * ```js
-   * const admobForDefaultApp = firebase.admob();
-   * ```
-   *
-   * #### Example 2
-   *
-   * Get the admob instance for a **secondary app**:
-   *˚
-   * ```js
-   * const otherApp = firebase.app('otherApp');
-   * const admobForOtherApp = firebase.admob(otherApp);
-   * ```
-   *
    */
   export class Module extends FirebaseModule {
-    // firebase.admob().* methods & props go here
+    /**
+     * Initializes the Google Mobile Ads SDK with the App ID provided to your firebase.json 'admob_app_id'.
+     *
+     * If your firebase.json `admob_delay_app_measurement_init` value is set to `true`, this method
+     * must be called before performing any AdMob related requests.
+     *
+     * Calling the initialize method if the SDK has already been initialized will resolve the promise.
+     */
+    initialize(): Promise<void>;
   }
 }
 
@@ -170,11 +455,36 @@ declare module '@react-native-firebase/admob' {
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
     interface Module {
       admob: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
     }
+
     interface FirebaseApp {
       admob(): Admob.Module;
     }
+  }
+}
+
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
+    /**
+     * The Google AdMob application App ID.
+     *
+     * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
+     *
+     * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
+     */
+    admob_app_id: string;
+
+    /**
+     * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
+     * Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metrics
+     * without making additional code changes.
+     *
+     * If you require your app users to provide consent before collecting data, setting the value to `true` will prevent
+     * data being sent until the `firebase.admob().initialize()` method has been called.
+     */
+    admob_delay_app_measurement_init: boolean;
   }
 }

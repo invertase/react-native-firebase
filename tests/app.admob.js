@@ -19,23 +19,32 @@
 import React, { useEffect, Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View, Text } from 'react-native';
 
-import '@react-native-firebase/admob';
+import { AdsConsent } from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
 function Root() {
+
+  async function init() {
+    await AdsConsent.setDebugGeography(1);
+    // const p = await AdsConsent.getAdProviders();
+    // console.warn(p);
+    await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
+    const r = await AdsConsent.showForm({
+      privacyPolicy: 'https://invertase.io/privacy-policy',
+      withPersonalizedAds: true,
+      withNonPersonalizedAds: true,
+      withAdFree: true,
+    });
+    console.warn(r);
+  }
+
   useEffect(() => {
-    firebase
-      .admob()
-      .requestConsentInfoUpdate(['pub-6189033257628751'])
-      .then(() => {
-        firebase.admob().showConsentForm();
-      })
-      .catch(console.error);
+    init().catch(console.error);
   }, []);
 
   return (
     <View style={[styles.container, styles.horizontal]}>
-      <Text>HELLLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO</Text>
+      <Text>Admob</Text>
     </View>
   );
 }

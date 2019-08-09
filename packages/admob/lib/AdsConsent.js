@@ -16,7 +16,10 @@
  */
 
 import { NativeModules } from 'react-native';
-import { isArray, isBoolean, isObject, isString, isUndefined } from '@react-native-firebase/common';
+import { hasOwnProperty, isArray, isBoolean, isObject, isString, isUndefined } from '@react-native-firebase/common';
+
+import AdsConsentDebugGeography from './AdsConsentDebugGeography';
+import AdsConsentStatus from './AdsConsentStatus';
 
 const native = NativeModules.RNFBAdmobConsentModule;
 
@@ -28,16 +31,19 @@ export default {
    */
   requestInfoUpdate(publisherIds) {
     if (!isArray(publisherIds)) {
-      // todo throw
+      throw new Error(
+        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' expected an array of string values."
+      );
     }
 
     for (let i = 0; i < publisherIds.length; i++) {
       if (!isString(publisherIds[i])) {
-        // todo throw
+        throw new Error(
+          `firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds[${i}]' expected a string value.`
+        );
       }
     }
 
-    // { status: UNKNOWN, isRequestLocationInEeaOrUnknown: bool }
     return native.requestInfoUpdate(publisherIds);
   },
 
@@ -48,16 +54,36 @@ export default {
    */
   showForm(options) {
     if (!isUndefined(options) && !isObject(options)) {
-      // todo throw
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options' expected an object value."
+      );
     }
 
-    // todo validate options
-    // privacy policy required URL
-    // withPersonalizedAds
-    // withNonPersonalizedAds
-    // withAdFree
+    // TODO
+    // if (!isValidUrl(options.privacyPolicy)) {
+    //   throw new Error(
+    //     "firebase.admob.AdsConsent.showForm(*) 'options.privacyPolicy' expected a valid HTTP or HTTPS URL."
+    //   );
+    // }
 
-    // { status, userPrefersAdFree }
+    if (hasOwnProperty(options, 'withPersonalizedAds') && !isBoolean(options.withPersonalizedAds)) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options.withPersonalizedAds' expected a boolean value."
+      );
+    }
+
+    if (hasOwnProperty(options, 'withNonPersonalizedAds') && !isBoolean(options.withNonPersonalizedAds)) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options.withNonPersonalizedAds' expected a boolean value."
+      );
+    }
+
+    if (hasOwnProperty(options, 'withAdFree') && !isBoolean(options.withAdFree)) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options.withAdFree' expected a boolean value."
+      );
+    }
+
     return native.showForm(options);
   },
 
@@ -74,8 +100,15 @@ export default {
    * @param geography
    */
   setDebugGeography(geography) {
-    // todo validate
-    // outside/inside of eu
+    if (
+      geography !== AdsConsentDebugGeography.DISABLED &&
+      geography !== AdsConsentDebugGeography.EEA &&
+      geography !== AdsConsentDebugGeography.NOT_EEA
+    ) {
+      throw new Error(
+        "firebase.admob.AdsConsent.setDebugGeography(*) 'geography' expected one of AdsConsentDebugGeography.DISABLED, AdsConsentDebugGeography.EEA or AdsConsentDebugGeography.NOT_EEA."
+      );
+    }
 
     return native.setDebugGeography(geography);
   },
@@ -85,20 +118,31 @@ export default {
    * @param status
    */
   setStatus(status) {
-    // status: personalized, unpersonlized, unknown
+    if (
+      status !== AdsConsentStatus.UNKNOWN &&
+      status !== AdsConsentStatus.PERSONALIZED &&
+      status !== AdsConsentStatus.UNPERSONALIZED
+    ) {
+      throw new Error(
+        "firebase.admob.AdsConsent.setStatus(*) 'status' expected one of AdsConsentStatus.UNKNOWN, AdsConsentStatus.PERSONALIZED or AdsConsentStatus.UNPERSONALIZED."
+      );
+    }
+
     return native.setStatus(status);
   },
 
   /**
    *
-   * @param boolean
+   * @param tag
    */
-  setTagForUnderAgeOfConsent(boolean) {
-    if (!isBoolean(boolean)) {
-      // todo throw
+  setTagForUnderAgeOfConsent(tag) {
+    if (!isBoolean(tag)) {
+      throw new Error(
+        "firebase.admob.AdsConsent.setTagForUnderAgeOfConsent(*) 'tag' expected a boolean value."
+      );
     }
 
-    return native.setTagForUnderAgeOfConsent(boolean);
+    return native.setTagForUnderAgeOfConsent(tag);
   },
 
   /**
@@ -107,7 +151,9 @@ export default {
    */
   addTestDevice(deviceId) {
     if (!isString(deviceId)) {
-      // todo throw
+      throw new Error(
+        "firebase.admob.AdsConsent.addTestDevice(*) 'deviceId' expected a string value."
+      );
     }
 
     return native.addTestDevice(deviceId);
