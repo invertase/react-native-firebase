@@ -24,8 +24,10 @@ import {
 import version from './version';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
-import MaxAdContentRating from './MaxAdContentRating';
+import MaxAdContentRating from './MaxAdContentRating'
+
 import AdEventType from './AdEventType';
+import RewardedAdEventType from './RewardedAdEventType';
 
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
 import { isObject } from '@react-native-firebase/common';
@@ -44,7 +46,7 @@ const statics = {
 
 const namespace = 'admob';
 
-const nativeModuleName = ['RNFBAdMobModule', 'RNFBAdMobInterstitialModule'];
+const nativeModuleName = ['RNFBAdMobModule', 'RNFBAdMobInterstitialModule', 'RNFBAdMobRewardedModule'];
 
 class FirebaseAdMobModule extends FirebaseModule {
 
@@ -54,6 +56,13 @@ class FirebaseAdMobModule extends FirebaseModule {
     this.emitter.addListener('admob_interstitial_event', (event) => {
       this.emitter.emit(
         `admob_interstitial_event:${event.adUnitId}:${event.requestId}`,
+        event,
+      );
+    });
+
+    this.emitter.addListener('admob_rewarded_event', (event) => {
+      this.emitter.emit(
+        `admob_rewarded_event:${event.adUnitId}:${event.requestId}`,
         event,
       );
     });
@@ -93,7 +102,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: ['admob_interstitial_event'],
+  nativeEvents: ['admob_interstitial_event', 'admob_rewarded_event'],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAdMobModule,
@@ -108,8 +117,10 @@ export AdsConsentDebugGeography from './AdsConsentDebugGeography';
 export AdsConsentStatus from './AdsConsentStatus';
 export MaxAdContentRating from './MaxAdContentRating';
 export AdEventType from './AdEventType';
+export RewardedAdEventType from './RewardedAdEventType';
 
 export AdsConsent from './AdsConsent';
 
 export InterstitialAd from './ads/InterstitialAd';
+export RewardedAd from './ads/RewardedAd';
 

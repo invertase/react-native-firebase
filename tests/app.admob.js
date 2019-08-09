@@ -19,7 +19,7 @@
 import React, { useEffect, Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View, Text } from 'react-native';
 
-import { AdsConsent, InterstitialAd } from '@react-native-firebase/admob';
+import { AdsConsent, InterstitialAd, RewardedAd } from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
 function Root() {
@@ -42,23 +42,35 @@ function Root() {
     //   },
     // });
 
-// testing ssh - not sure the name
-    const interstitialAd = InterstitialAd.createForAdRequest('ca-app-pub-3940256099942544/1033173712', {
-      //
-    });
 
+    const rewardedAd = RewardedAd.createForAdRequest('ca-app-pub-3940256099942544/5224354917');
 
-    interstitialAd.onAdEvent((type, error) => {
-      console.log('>>>', type, error);
-      if (type === 'loaded') {
-        console.log('!!!!! show')
-        interstitialAd.show();
+    rewardedAd.onAdEvent(async (type, error, data) => {
+      console.log('>>>', type, error, data);
+
+      if (type === 'rewarded_loaded') {
+        rewardedAd.show();
       }
     });
 
-    setTimeout(() => {
-      interstitialAd.load();
-    }, 1);
+    rewardedAd.load();
+
+// testing ssh - not sure the name
+//     const interstitialAd = InterstitialAd.createForAdRequest('ca-app-pub-3940256099942544/1033173712', {
+//       //
+//     });
+
+    // interstitialAd.onAdEvent(async (type, error) => {
+    //   console.log('>>>', type, error);
+    //   if (type === 'loaded') {
+    //     console.log('!!!!! show')
+    //     await interstitialAd.show();
+    //   }
+    // });
+    //
+    // setTimeout(() => {
+    //   interstitialAd.load();
+    // }, 1);
   }
 
   useEffect(() => {

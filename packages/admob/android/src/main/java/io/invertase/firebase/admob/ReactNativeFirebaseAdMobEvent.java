@@ -24,6 +24,7 @@ import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseAdMobEvent implements NativeEvent {
   public static final String EVENT_INTERSTITIAL = "admob_interstitial_event";
+  public static final String EVENT_REWARDED = "admob_rewarded_event";
 
   public static final String AD_LOADED = "loaded";
   public static final String AD_ERROR= "error";
@@ -31,6 +32,9 @@ public class ReactNativeFirebaseAdMobEvent implements NativeEvent {
   public static final String AD_CLICKED= "clicked";
   public static final String AD_LEFT_APPLICATION = "left_application";
   public static final String AD_CLOSED = "closed";
+
+  public static final String AD_REWARDED_LOADED = "rewarded_loaded";
+  public static final String AD_REWARDED_EARNED_REWARD = "rewarded_earned_reward";
 
   private static final String KEY_BODY = "body";
   private static final String KEY_REQUEST_ID = "requestId";

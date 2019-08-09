@@ -512,6 +512,65 @@ export namespace Admob {
   }
 
   /**
+   * Base call for InterstitialAd, RewardedAd and NativeAd.
+   */
+  export class MobileAd {
+    /**
+     * The Ad Unit ID for this AdMob ad.
+     */
+    adUnitId: string;
+
+    /**
+     * Whether the advert is loaded and can be shown.
+     */
+    loaded: boolean;
+
+    /**
+     * Start loading the advert with the provided RequestOptions.
+     *
+     * It is recommended you setup ad event handlers before calling this method.
+     *
+     * #### Example
+     *
+     * ```js
+     *
+     * ```
+     */
+    load(): void;
+
+    /**
+     * Listen to ad events. See AdEventTypes for more information.
+     *
+     * @param listener
+     */
+    onAdEvent(listener: AdEventListener): Function;
+  }
+
+  /**
+   *
+   */
+  export class InterstitialAd extends MobileAd {
+    /**
+     * Creates a new InterstitialAd instance.
+     *
+     * @param adUnitId The Ad Unit ID for the Interstitial. You can find this on your Google AdMob dashboard.
+     * @param requestOptions Optional RequestOptions used to load the ad.
+     */
+    static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): InterstitialAd;
+
+    /**
+     * Once loaded, call this method to show the advert on your app.
+     *
+     * #### Example
+     *
+     * ```js
+     *
+     * ```
+     */
+    show(): Promise<void>;
+  }
+
+  /**
    * The Firebase Admob service interface.
    *
    * > This module is available for the default app only.
@@ -525,29 +584,6 @@ export namespace Admob {
    * ```
    */
   export class Module extends FirebaseModule {
-    /**
-     * Initializes the Google Mobile Ads SDK with the App ID provided to your firebase.json 'admob_app_id'.
-     *
-     * If your firebase.json `admob_delay_app_measurement_init` value is set to `true`, this method
-     * must be called before performing any AdMob related requests.
-     *
-     * Calling the initialize method if the SDK has already been initialized will resolve the promise.
-     *
-     * #### Example
-     *
-     * ```js
-     * import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
-     *
-     * await admob.initialize({
-     *   // Set all requests suitable for general audiences
-     *   maxAdContentRating: MaxAdContentRating.G,
-     * });
-     * ```
-     *
-     * @param requestConfiguration An optional RequestConfiguration interface. If not provided, AdMob will initialize with default settings.
-     */
-    initialize(requestConfiguration?: RequestConfiguration): Promise<void>;
-
     /**
      * Sets request options for all future ad requests.
      *

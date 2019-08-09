@@ -98,6 +98,28 @@ public class ReactNativeFirebaseAdMobCommon {
     ));
   }
 
+  static public void sendAdEvent(String event, int requestId, String type, String adUnitId, @Nullable WritableMap error, @Nullable WritableMap data) {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+    WritableMap eventBody = Arguments.createMap();
+    eventBody.putString("type", type);
+
+    if (error != null) {
+      eventBody.putMap("error", error);
+    }
+
+    if (data != null) {
+      eventBody.putMap("data", data);
+    }
+
+    emitter.sendEvent(new ReactNativeFirebaseAdMobEvent(
+      event,
+      requestId,
+      adUnitId,
+      eventBody
+    ));
+  }
+
   static public String[] getCodeAndMessageFromAdErrorCode(int errorCode) {
     String code = "unknown";
     String message = "An unknown error occurred";

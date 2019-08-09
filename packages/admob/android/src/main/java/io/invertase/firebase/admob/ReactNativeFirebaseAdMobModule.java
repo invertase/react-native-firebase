@@ -90,7 +90,7 @@ public class ReactNativeFirebaseAdMobModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void openDebugMenu(String adUnitId, Promise promise) {
-    MobileAds.openDebugMenu(getCurrentActivity(), adUnitId);
+    MobileAds.openDebugMenu(getReactApplicationContext(), adUnitId);
     promise.resolve(null);
   }
 }
