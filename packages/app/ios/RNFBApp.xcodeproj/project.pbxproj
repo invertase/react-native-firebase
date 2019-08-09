@@ -15,6 +15,7 @@
 		2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */; };
 		2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */; };
 		2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81F2237018600FC8DC8 /* RNFBMeta.m */; };
+		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -47,6 +48,8 @@
 		2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferences.m; sourceTree = "<group>"; };
 		2748D81E2237012B00FC8DC8 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMeta.h; sourceTree = "<group>"; };
 		2748D81F2237018600FC8DC8 /* RNFBMeta.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMeta.m; sourceTree = "<group>"; };
+		DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBVersion.m; sourceTree = "<group>"; };
+		DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBVersion.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +90,8 @@
 				2748D8142236426300FC8DC8 /* RNFBJSON.m */,
 				2748D81A223674B600FC8DC8 /* RNFBPreferences.h */,
 				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
+				DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */,
+				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -162,6 +167,7 @@
 				2744B9A721F57C2F004F8E3F /* RCTConvert+FIRApp.m in Sources */,
 				2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */,
 				2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */,
+				DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */,
 				2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
