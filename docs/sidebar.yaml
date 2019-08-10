@@ -9,6 +9,8 @@
       to: '/android'
     - text: iOS Initialization
       to: '/ios'
+    - text: European User Consent
+      to: '/european-user-consent'
 
 - module: analytics
   group: Analytics
