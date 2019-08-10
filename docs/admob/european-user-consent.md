@@ -121,20 +121,19 @@ You must provide a privacy policy URL.
 ```js
 import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
 
-AdsConsent.requestInfoUpdate(['pub-6189033257628123'])
-  .then(async (consentInfo) => {
-    if (
-      consentInfo.isRequestLocationInEeaOrUnknown && 
-      consentInfo.status === AdsConsentStatus.UNKNOWN
-    ) {
-      const formResult = await AdsConsent.showForm({
-        privacyPolicy: 'https://invertase.io/privacy-policy',
-        withPersonalizedAds: true,
-        withNonPersonalizedAds: true,
-        withAdFree: true,
-      });
-    }
+const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
+
+if (
+  consentInfo.isRequestLocationInEeaOrUnknown && 
+  consentInfo.status === AdsConsentStatus.UNKNOWN
+) {
+  const formResult = await AdsConsent.showForm({
+    privacyPolicy: 'https://invertase.io/privacy-policy',
+    withPersonalizedAds: true,
+    withNonPersonalizedAds: true,
+    withAdFree: true,
   });
+}
 ```
 
 Once the user has selected their preference, the `formResult` contains their status and whether or not they prefer an 
