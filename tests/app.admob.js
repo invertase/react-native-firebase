@@ -27,14 +27,14 @@ function Root() {
   async function init() {
     // await AdsConsent.setDebugGeography(1);
     // const p = await AdsConsent.getAdProviders();
-    // // console.warn(p);
-    // await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
-    // const r = await AdsConsent.showForm({
-    //   privacyPolicy: 'https://invertase.io/privacy-policy',
-    //   withPersonalizedAds: false,
-    //   withNonPersonalizedAds: false,
-    //   withAdFree: false,
-    // });
+    // console.warn(p);
+    await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
+    const r = await AdsConsent.showForm({
+      privacyPolicy: 'https://invertase.io/privacy-policy',
+      withPersonalizedAds: false,
+      withNonPersonalizedAds: false,
+      withAdFree: false,
+    });
     // console.log(Interstitial)
     // await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
     //   listener(event, error) {
