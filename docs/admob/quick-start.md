@@ -56,7 +56,8 @@ Ensure you **rebuild** your application for the changes to take effect.
 
 Out of the box, AdMob does not handle any related regulations which you may need to enforce on your application. It is up to the developer to implement and handle this on a user-by-user basis. For example, you must consent to EEA users being served both personalized and non-personalized adverts before showing them. For more information, see [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the `European User Consent` page for more information. TODO Link
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the
+<Anchor version group href="/european-user-consent">European User Consent</Anchor> page.
 
 ### Example: Displaying an Interstitial
 
