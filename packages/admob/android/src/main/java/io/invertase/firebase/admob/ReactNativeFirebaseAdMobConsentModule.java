@@ -38,8 +38,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseModule {
@@ -137,6 +135,12 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
   }
 
   @ReactMethod
+  public void getStatus(Promise promise) {
+    ConsentStatus status = consentInformation.getConsentStatus();
+    promise.resolve(getConsentStatusInt(status));
+  }
+
+  @ReactMethod
   public void setStatus(int status, Promise promise) {
     ConsentStatus consentStatus = ConsentStatus.UNKNOWN;
 
@@ -171,6 +175,12 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
     }
 
     promise.resolve(formattedAdProviders);
+  }
+
+  @ReactMethod
+  public void setTagForUnderAgeOfConsent(boolean tag, Promise promise) {
+    consentInformation.setTagForUnderAgeOfConsent(tag);
+    promise.resolve(null);
   }
 
   @ReactMethod

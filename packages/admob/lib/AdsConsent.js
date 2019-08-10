@@ -115,6 +115,15 @@ export default {
 
   /**
    *
+   */
+  getStatus() {
+    return native.getStatus();
+  },
+
+  // TODO getStatus
+
+  /**
+   *
    * @param status
    */
   setStatus(status) {

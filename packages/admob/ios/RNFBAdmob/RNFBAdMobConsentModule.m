@@ -96,6 +96,14 @@ RCT_EXPORT_METHOD(showForm:
   }];
 }
 
+RCT_EXPORT_METHOD(getStatus
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  PACConsentInformation *consentInformation = [PACConsentInformation sharedInstance];
+  resolve(@(consentInformation.consentStatus));
+}
+
 RCT_EXPORT_METHOD(setStatus
   :(nonnull NSNumber *)status
   :(RCTPromiseResolveBlock) resolve
@@ -131,6 +139,16 @@ RCT_EXPORT_METHOD(getAdProviders
   }
 
   resolve(formattedProviders);
+}
+
+RCT_EXPORT_METHOD(setTagForUnderAgeOfConsent
+  :(BOOL)tag
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  PACConsentInformation *consentInformation = [PACConsentInformation sharedInstance];
+  consentInformation.tagForUnderAgeOfConsent = tag;
+  resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(setDebugGeography

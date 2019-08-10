@@ -81,6 +81,11 @@ export namespace Admob {
     AdEventType: AdEventType;
 
     /**
+     * RewardedAdEventType enum.
+     */
+    RewardedAdEventType: RewardedAdEventType;
+
+    /**
      * TestIds interface
      */
     TestIds: TestIds;
@@ -98,6 +103,26 @@ export namespace Admob {
     LEFT_APPLICATION = 'left_application',
 
     CLOSED = 'closed',
+  }
+
+  /**
+   * Ad event types specially for `RewardedAd`.
+   */
+  export enum RewardedAdEventType {
+    /**
+     * When a rewarded ad has loaded.
+     *
+     * This type differs from `AdEventType.LOADED` as when a rewarded ad is loaded,
+     * an additional data payload is provided to the event handler containing the ad reward
+     * (assuming the user earned the reward).
+     */
+    LOADED = 'rewarded_loaded',
+
+    /**
+     * An event fired when the user earned the reward for the video. If the user does not earn a reward,
+     * the AdEventType.CLOSED` event will be fired with no rewarded event.
+     */
+    EARNED_REWARD = 'rewarded_earned_reward',
   }
 
   /**
@@ -194,7 +219,7 @@ export namespace Admob {
      *     });
      *
      *     console.log('User accepted personalized: ', result.status === AdsConsentStatus.PERSONALIZED);
-     *     console.log('User accepted non-personalized: ', result.status === AdsConsentStatus.NONPERSONALIZED);
+     *     console.log('User accepted non-personalized: ', result.status === AdsConsentStatus.NON_PERSONALIZED);
      *     console.log('User prefers Ad Free version of app: ', result.userPrefersAdFree);
      *   }
      * }
@@ -281,6 +306,22 @@ export namespace Admob {
     ): Promise<void>;
 
     /**
+     * Returns the current consent status of the user.
+     *
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdsConsent } from '@react-native-firebase/admob';
+     *
+     * const status = await AdsConsent.getStatus();
+     * ```
+     */
+    getStatus(): Promise<
+      AdsConsentStatus.UNKNOWN | AdsConsentStatus.NON_PERSONALIZED | AdsConsentStatus.PERSONALIZED
+    >;
+
+    /**
      * If a publisher is aware that the user is under the age of consent, all ad requests must set TFUA (Tag For Users
      * under the Age of Consent in Europe). This setting takes effect for all future ad requests.
      *
@@ -344,6 +385,19 @@ export namespace Admob {
      * or registering).
      */
     withAdFree?: boolean;
+  }
+
+  /**
+   * A `AdShowOptions` interface used when showing an ad.
+   */
+  export interface AdShowOptions {
+    /**
+     * - On Android, enables [immersive mode](https://developer.android.com/training/system-ui/immersive).
+     * - On iOS, this has no effect on how the ad is shown.
+     *
+     * @android
+     */
+    immersiveModeEnabled?: boolean;
   }
 
   /**
@@ -450,23 +504,77 @@ export namespace Admob {
     PERSONALIZED: 2;
   }
 
+  /**
+   * The `RequestOptions` interface. Used when passing additional request options before an advert is loaded.
+   */
   export interface RequestOptions {
+    /**
+     * If `true` only non-personalized ads will be loaded.
+     *
+     * Google serves personalized ads by default. This option must be `true` if users who are within the EEA have only
+     * given consent to non-personalized ads.
+     */
     requestNonPersonalizedAdsOnly?: boolean;
+
+    /**
+     * An array of keywords to be sent when loading the ad.
+     *
+     * Setting keywords helps deliver more specific ads to a user based on the keywords.
+     *
+     * #### Example
+     *
+     * ```js
+     * await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   keywords: ['fashion', 'clothing'],
+     * });
+     * ```
+     */
     keywords?: string[];
+
+    /**
+     * An array of test device IDs to whitelist.
+     *
+     * If using an emulator, set the device ID to `EMULATOR`.
+     *
+     * ```js
+     * await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   testDevices: ['EMULATOR'],
+     * });
+     * ```
+     */
     testDevices?: string[];
 
     /**
-     * max length 512
+     * Sets a content URL for targeting purposes.
+     *
+     * Max length of 512.
      */
     contentUrl?: string;
 
+    /**
+     * TODO
+     */
     location?: string[];
 
+    /**
+     * Sets the request agent string to identify the ad request's origin. Third party libraries that reference the Mobile
+     * Ads SDK should call this method to denote the platform from which the ad request originated. For example, if a
+     * third party ad network called "CoolAds network" mediates requests to the Mobile Ads SDK, it should call this
+     * method with "CoolAds".
+     *
+     * #### Example
+     *
+     * ```js
+     * await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   requestAgent: 'CoolAds',
+     * });
+     * ```
+     */
     requestAgent?: string;
   }
 
   /**
-   *
+   * The `RequestConfiguration` used when setting global ad settings via `setRequestConfiguration`.
    */
   export interface RequestConfiguration {
     /**
@@ -560,21 +668,37 @@ export namespace Admob {
      */
     onAdEvent(listener: AdEventListener): Function;
 
+    /**
+     * TODO
+     */
     show(): Promise<void>;
   }
 
   /**
-   *
+   * A class for interacting and showing Interstitial Ads.
    */
   export class InterstitialAd extends MobileAd {
     /**
      * Creates a new InterstitialAd instance.
      *
+     * #### Example
+     *
+     * ```js
+     * const interstitialAd = await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   requestAgent: 'CoolAds',
+     * });
+     *
+     * interstitialAd.onAdEvent((type, error) => {
+     *   console.log('Got event: ', type, error);
+     * });
+     *
+     * interstitialAd.load();
+     * ```
+     *
      * @param adUnitId The Ad Unit ID for the Interstitial. You can find this on your Google AdMob dashboard.
      * @param requestOptions Optional RequestOptions used to load the ad.
      */
     static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): InterstitialAd;
-
   }
 
   /**
