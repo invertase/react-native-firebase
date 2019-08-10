@@ -18,11 +18,14 @@ package io.invertase.firebase.admob;
  */
 
 
+import android.os.Bundle;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 
 import java.util.ArrayList;
@@ -39,6 +42,13 @@ public class ReactNativeFirebaseAdMobCommon {
 
   static public AdRequest buildAdRequest(ReadableMap adRequestOptions) {
     AdRequest.Builder builder = new AdRequest.Builder();
+
+    if (adRequestOptions.hasKey("requestNonPersonalizedAdsOnly") && adRequestOptions.getBoolean("requestNonPersonalizedAdsOnly")) {
+      Bundle extras = new Bundle();
+      extras.putString("npa", "1");
+
+      builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
+    }
 
     if (adRequestOptions.hasKey("keywords")) {
       ArrayList<Object> keywords = Objects.requireNonNull(adRequestOptions.getArray("keywords"))

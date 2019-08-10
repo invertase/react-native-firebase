@@ -26,14 +26,14 @@ function Root() {
 
   async function init() {
     // await AdsConsent.setDebugGeography(1);
-    // // const p = await AdsConsent.getAdProviders();
+    // const p = await AdsConsent.getAdProviders();
     // // console.warn(p);
     // await AdsConsent.requestInfoUpdate(['pub-6189033257628751']);
     // const r = await AdsConsent.showForm({
     //   privacyPolicy: 'https://invertase.io/privacy-policy',
-    //   withPersonalizedAds: true,
-    //   withNonPersonalizedAds: true,
-    //   withAdFree: true,
+    //   withPersonalizedAds: false,
+    //   withNonPersonalizedAds: false,
+    //   withAdFree: false,
     // });
     // console.log(Interstitial)
     // await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
@@ -43,17 +43,22 @@ function Root() {
     // });
 
 
-    const rewardedAd = RewardedAd.createForAdRequest('ca-app-pub-3940256099942544/5224354917');
-
-    rewardedAd.onAdEvent(async (type, error, data) => {
-      console.log('>>>', type, error, data);
-
-      if (type === 'rewarded_loaded') {
-        rewardedAd.show();
-      }
-    });
-
-    rewardedAd.load();
+    // const rewardedAd = RewardedAd.createForAdRequest('ca-app-pub-3940256099942544/5224354917', {
+    //   requestNonPersonalizedAdsOnly: true,
+    //   keywords: ['foo'],
+    //   testDevices: ['EMULATOR'],
+    //
+    // });
+    //
+    // rewardedAd.onAdEvent(async (type, error, data) => {
+    //   console.log('>>>', type, error, data);
+    //
+    //   if (type === 'rewarded_loaded') {
+    //     rewardedAd.show();
+    //   }
+    // });
+    //
+    // rewardedAd.load();
 
 // testing ssh - not sure the name
 //     const interstitialAd = InterstitialAd.createForAdRequest('ca-app-pub-3940256099942544/1033173712', {

@@ -28,6 +28,8 @@ export default function validateAdRequestOptions(options) {
     throw new Error("'options' expected an object value");
   }
 
+  // todo gdpr config
+
   if (options.keywords) {
     if (!isArray(options.keywords)) {
       throw new Error("'options.keywords' expected an array containing string values");

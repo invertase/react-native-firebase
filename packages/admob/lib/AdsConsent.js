@@ -21,7 +21,7 @@ import { hasOwnProperty, isArray, isBoolean, isObject, isString, isUndefined } f
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 
-const native = NativeModules.RNFBAdMobConsentModule;
+const native = NativeModules.RNFBAdmobConsentModule;
 
 export default {
   /**
@@ -120,11 +120,11 @@ export default {
   setStatus(status) {
     if (
       status !== AdsConsentStatus.UNKNOWN &&
-      status !== AdsConsentStatus.PERSONALIZED &&
-      status !== AdsConsentStatus.UNPERSONALIZED
+      status !== AdsConsentStatus.NON_PERSONALIZED &&
+      status !== AdsConsentStatus.PERSONALIZED
     ) {
       throw new Error(
-        "firebase.admob.AdsConsent.setStatus(*) 'status' expected one of AdsConsentStatus.UNKNOWN, AdsConsentStatus.PERSONALIZED or AdsConsentStatus.UNPERSONALIZED."
+        "firebase.admob.AdsConsent.setStatus(*) 'status' expected one of AdsConsentStatus.UNKNOWN, AdsConsentStatus.NON_PERSONALIZED or AdsConsentStatus.PERSONALIZED."
       );
     }
 
