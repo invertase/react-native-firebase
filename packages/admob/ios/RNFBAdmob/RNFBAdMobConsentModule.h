@@ -1,4 +1,5 @@
-/*
+//
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +16,11 @@
  *
  */
 
-export default {
-  UNKNOWN: 0,
-  NON_PERSONALIZED: 1,
-  PERSONALIZED: 2,
-};
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+#import <PersonalizedAdConsent/PersonalizedAdConsent.h>
+
+@interface RNFBAdMobConsentModule : NSObject <RCTBridgeModule>
+
+@end

@@ -276,8 +276,8 @@ export namespace Admob {
     setStatus(
       status:
         | AdsConsentStatus.UNKNOWN
-        | AdsConsentStatus.PERSONALIZED
-        | AdsConsentStatus.UNPERSONALIZED,
+        | AdsConsentStatus.NON_PERSONALIZED
+        | AdsConsentStatus.PERSONALIZED,
     ): Promise<void>;
 
     /**
@@ -354,13 +354,13 @@ export namespace Admob {
      * The consent status of the user after closing the consent form.
      *
      * - UNKNOWN: The form was unable to determine the users consent status.
+     * - NON_PERSONALIZED: The user has accepted non-personalized ads.
      * - PERSONALIZED: The user has accepted personalized ads.
-     * - UNPERSONALIZED: The user has accepted unpersonalized ads.
      */
     status:
       | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.PERSONALIZED
-      | AdsConsentStatus.UNPERSONALIZED;
+      | AdsConsentStatus.NON_PERSONALIZED
+      | AdsConsentStatus.PERSONALIZED;
 
     /**
      * If `true`, the user requested an ad-free version of your application.
@@ -376,13 +376,13 @@ export namespace Admob {
      * The consent status of the user.
      *
      * - UNKNOWN: The consent status is unknown and the user must provide consent to show ads if they are within the EEA or location is also unknown.
+     * - NON_PERSONALIZED: The user has accepted non-personalized ads.
      * - PERSONALIZED: The user has accepted personalized ads.
-     * - UNPERSONALIZED: The user has accepted unpersonalized ads.
      */
     status:
       | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.PERSONALIZED
-      | AdsConsentStatus.UNPERSONALIZED;
+      | AdsConsentStatus.NON_PERSONALIZED
+      | AdsConsentStatus.PERSONALIZED;
 
     /**
      * If `true` the user is within the EEA or their location could not be determined.
@@ -440,14 +440,29 @@ export namespace Admob {
     UNKNOWN: 0;
 
     /**
-     * The user has accepted personalized ads.
+     * The user has accepted non-personalized ads.
      */
-    PERSONALIZED: 1;
+    NON_PERSONALIZED: 1;
 
     /**
-     * The user has accepted unpersonalized ads.
+     * The user has accepted personalized ads.
      */
-    UNPERSONALIZED: 2;
+    PERSONALIZED: 2;
+  }
+
+  export interface RequestOptions {
+    requestNonPersonalizedAdsOnly?: boolean;
+    keywords?: string[];
+    testDevices?: string[];
+
+    /**
+     * max length 512
+     */
+    contentUrl?: string;
+
+    location?: string[];
+
+    requestAgent?: string;
   }
 
   /**
@@ -544,6 +559,8 @@ export namespace Admob {
      * @param listener
      */
     onAdEvent(listener: AdEventListener): Function;
+
+    show(): Promise<void>;
   }
 
   /**
@@ -558,16 +575,6 @@ export namespace Admob {
      */
     static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): InterstitialAd;
 
-    /**
-     * Once loaded, call this method to show the advert on your app.
-     *
-     * #### Example
-     *
-     * ```js
-     *
-     * ```
-     */
-    show(): Promise<void>;
   }
 
   /**

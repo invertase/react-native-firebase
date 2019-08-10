@@ -137,6 +137,26 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
   }
 
   @ReactMethod
+  public void setStatus(int status, Promise promise) {
+    ConsentStatus consentStatus = ConsentStatus.UNKNOWN;
+
+    switch (status) {
+      case 0:
+        consentStatus = ConsentStatus.UNKNOWN;
+        break;
+      case 1:
+        consentStatus = ConsentStatus.NON_PERSONALIZED;
+        break;
+      case 2:
+        consentStatus = ConsentStatus.PERSONALIZED;
+        break;
+    }
+
+    consentInformation.setConsentStatus(consentStatus);
+    promise.resolve(null);
+  }
+
+  @ReactMethod
   public void getAdProviders(Promise promise) {
     List<AdProvider> providers = consentInformation.getAdProviders();
 
@@ -154,7 +174,7 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
   }
 
   @ReactMethod
-  public void setDebugGeography(@Nullable int geography, Promise promise) {
+  public void setDebugGeography(int geography, Promise promise) {
     if (geography == 0) {
       consentInformation.setDebugGeography(DebugGeography.DEBUG_GEOGRAPHY_DISABLED);
     } else if (geography == 1) {
