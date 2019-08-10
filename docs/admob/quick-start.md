@@ -45,7 +45,7 @@ Add the ID to your root level `firebase.json` file under the `react-native` obje
 ```json
 {
   "react-native": {
-    "admob_app_id": "YOUR_ADMOB_APP_ID",
+    "admob_app_id": "YOUR_ADMOB_APP_ID"
   }
 }
 ```
@@ -60,7 +60,7 @@ The AdMob module provides a `AdConsent` helper to help developers quickly implem
 
 ### Example: Displaying an Interstitial
 
-An interstitial is a full screen advert which is overlayed on-top of your currently application. They are perfect for showing periodically between game levels or after the user completes an action.
+An interstitial is a full screen advert which is overlaid on-top of your currently application. They are perfect for showing periodically between game levels or after the user completes an action.
 
 #### Testing
 
