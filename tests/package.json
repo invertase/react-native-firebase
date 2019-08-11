@@ -8,7 +8,7 @@
     "packager-jet-reset-cache": "REACT_DEBUGGER='echo nope' react-native start --reset-cache",
     "build-ios": "detox build --configuration ios.sim.debug",
     "build-ios-release": "detox build --configuration ios.sim.release",
-    "build-android": "npx jetify && detox build --configuration android.emu.debug",
+    "build-android": "detox build --configuration android.emu.debug",
     "test-android": "detox test --configuration android.emu.debug",
     "test-android-reuse": "detox test --configuration android.emu.debug --reuse",
     "test-android-cover": "nyc detox test --configuration android.emu.debug",
@@ -18,7 +18,7 @@
     "test-ios-cover": "nyc detox test --configuration ios.sim.debug",
     "test-ios-cover-reuse": "nyc detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package && npx jetify"
   },
   "dependencies": {
     "@invertase/tests-firebase-functions": "^0.0.1",
@@ -54,6 +54,7 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "flow-bin": "^0.101.1",
+    "jetifier": "^1.6.3",
     "nyc": "^14.1.1",
     "rimraf": "^2.6.2"
   },
