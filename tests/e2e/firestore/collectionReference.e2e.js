@@ -40,7 +40,7 @@ describe('firestore()', () => {
     before(() => resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1()));
 
     it('get id()', () => {
-      // const Path = getPathClass();
+      const Path = getPathClass();
       const firestore = firebase.firestore();
       const CollectionReference = getCollectionReferenceClass();
 
