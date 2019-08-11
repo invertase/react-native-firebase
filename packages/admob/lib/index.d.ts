@@ -517,6 +517,25 @@ export namespace Admob {
     requestNonPersonalizedAdsOnly?: boolean;
 
     /**
+     * Attaches additional properties to an ad request for direct campaign delivery.
+     *
+     * Takes an array of string key/value pairs.
+     *
+     * #### Example
+     *
+     * Attaches `?campaign=abc&user=123` to the ad request:
+     *
+     * ```js
+     * await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   networkExtras: {
+     *     campaign: 'abc',
+     *     user: '123',
+     *   },
+     * });
+     */
+    networkExtras?: { [key: string]: string };
+
+    /**
      * An array of keywords to be sent when loading the ad.
      *
      * Setting keywords helps deliver more specific ads to a user based on the keywords.
