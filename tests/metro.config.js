@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,27 +16,14 @@
  */
 
 const { resolve, join } = require('path');
+const { readdirSync, statSync } = require('fs');
 
 const { createBlacklist } = require('metro');
-// const { mergeConfig } = require('metro-config');
-const findPlugins = require('@react-native-community/cli/build/core/findPlugins')
-  .default;
 
-const reactNativePath = resolve(__dirname, './node_modules/react-native');
-
-const plugins = findPlugins(__dirname);
-
-const config = {
+module.exports = {
   projectRoot: __dirname,
   resolver: {
     useWatchman: !process.env.TEAMCITY_VERSION,
-    platforms: ['ios', 'android', 'native'],
-    resolverMainFields: ['react-native', 'browser', 'main'],
-    providesModuleNodeModules: [
-      'react-native',
-      ...plugins.haste.providesModuleNodeModules,
-    ],
-    hasteImplModulePath: join(reactNativePath, 'jest/hasteImpl'),
     blackListRE: createBlacklist([
       new RegExp(`^${escape(resolve(__dirname, '..', 'node_modules'))}\\/.*$`),
     ]),
@@ -53,28 +39,5 @@ const config = {
       }
     ),
   },
-  serializer: {
-    getModulesRunBeforeMainModule: () => [
-      require.resolve(join(reactNativePath, 'Libraries/Core/InitializeCore')),
-    ],
-    getPolyfills: () => require(join(reactNativePath, 'rn-get-polyfills'))(),
-  },
-  server: {
-    port: process.env.RCT_METRO_PORT || 8081,
-  },
-  transformer: {
-    getTransformOptions: async () => ({
-      transform: {
-        experimentalImportSupport: true,
-        inlineRequires: true,
-      },
-    }),
-    babelTransformerPath: require.resolve(
-      'metro-react-native-babel-transformer'
-    ),
-    assetRegistryPath: join(reactNativePath, 'Libraries/Image/AssetRegistry'),
-  },
   watchFolders: [resolve(__dirname, '../src')],
 };
-// module.exports = mergeConfig(DEFAULT, config);
-module.exports = config;
