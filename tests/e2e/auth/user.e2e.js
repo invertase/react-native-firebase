@@ -73,7 +73,7 @@ describe('auth().currentUser', () => {
       const pass = random;
 
       await firebase.auth().signInAnonymously();
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
 
       // Test
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -104,7 +104,7 @@ describe('auth().currentUser', () => {
       const pass = 'test1234';
 
       await firebase.auth().signInAnonymously();
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
 
       // Test
       try {
@@ -139,7 +139,7 @@ describe('auth().currentUser', () => {
       const pass = random;
 
       await firebase.auth().signInAnonymously();
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
 
       // Test
       const credential = firebase.auth.EmailAuthProvider.credential(
@@ -170,7 +170,7 @@ describe('auth().currentUser', () => {
       const pass = 'test1234';
 
       await firebase.auth().signInAnonymously();
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
 
       // Test
       try {
@@ -217,7 +217,7 @@ describe('auth().currentUser', () => {
         .currentUser.reauthenticateWithCredential(credential);
 
       // Assertions
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
       currentUser.email.should.equal(email.toLowerCase());
 
       // Clean up
@@ -246,7 +246,7 @@ describe('auth().currentUser', () => {
         .currentUser.reauthenticateAndRetrieveDataWithCredential(credential);
 
       // Assertions
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
       currentUser.email.should.equal(email.toLowerCase());
 
       // Clean up
@@ -299,7 +299,7 @@ describe('auth().currentUser', () => {
       const pass = random;
 
       await firebase.auth().signInAnonymouslyAndRetrieveData();
-      const currentUser = firebase.auth().currentUser;
+      const { currentUser } = firebase.auth();
 
       const credential = firebase.auth.EmailAuthProvider.credential(
         email,

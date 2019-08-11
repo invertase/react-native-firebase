@@ -44,7 +44,9 @@ describe('auth() => Phone', () => {
 
       const user = await confirmResult.confirm(TEST_CODE_A);
 
-      // user.should.be.instanceOf(user);
+      user.should.be.instanceOf(
+        jet.require('node_modules/react-native-firebase/dist/modules/auth/User')
+      );
 
       user.phoneNumber.should.equal(TEST_PHONE_A);
     });

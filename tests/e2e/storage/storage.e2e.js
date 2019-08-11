@@ -140,9 +140,7 @@ xdescribe('storage()', () => {
 
       it('listens to upload state', () => {
         const { resolve, reject, promise } = Promise.defer();
-        const path = `${
-          firebase.storage.Native.DOCUMENT_DIRECTORY_PATH
-        }/ok.jpeg`;
+        const path = `${firebase.storage.Native.DOCUMENT_DIRECTORY_PATH}/ok.jpeg`;
         const ref = firebase.storage().ref('/uploadOk.jpeg');
 
         const unsubscribe = ref.putFile(path).on(

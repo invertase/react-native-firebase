@@ -11,21 +11,29 @@ const {
   resetTestCollectionDoc,
 } = TestHelpers.firestore;
 
-// function getCollectionReferenceClass() {
-//   return jet.require('src/modules/firestore/CollectionReference');
-// }
+function getCollectionReferenceClass() {
+  return jet.require(
+    'node_modules/react-native-firebase/dist/modules/firestore/CollectionReference'
+  );
+}
 
-// function getDocumentReferenceClass() {
-//   return jet.require('src/modules/firestore/DocumentReference');
-// }
+function getDocumentReferenceClass() {
+  return jet.require(
+    'node_modules/react-native-firebase/dist/modules/firestore/DocumentReference'
+  );
+}
 
-// function getDocumentSnapshotClass() {
-//   return jet.require('src/modules/firestore/DocumentSnapshot');
-// }
+function getDocumentSnapshotClass() {
+  return jet.require(
+    'node_modules/react-native-firebase/dist/modules/firestore/DocumentSnapshot'
+  );
+}
 
-// function getPathClass() {
-//   return jet.require('src/modules/firestore/Path');
-// }
+function getPathClass() {
+  return jet.require(
+    'node_modules/react-native-firebase/dist/modules/firestore/Path'
+  );
+}
 
 describe('firestore()', () => {
   describe('CollectionReference', () => {
@@ -34,40 +42,40 @@ describe('firestore()', () => {
     it('get id()', () => {
       // const Path = getPathClass();
       const firestore = firebase.firestore();
-      // const CollectionReference = getCollectionReferenceClass();
+      const CollectionReference = getCollectionReferenceClass();
 
-      // const reference = new CollectionReference(firestore, new Path(['tests']));
-      // reference.should.be.instanceOf(CollectionReference);
-      // reference.id.should.equal('tests');
+      const reference = new CollectionReference(firestore, new Path(['tests']));
+      reference.should.be.instanceOf(CollectionReference);
+      reference.id.should.equal('tests');
     });
 
     it('get firestore()', () => {
-      // const Path = getPathClass();
+      const Path = getPathClass();
       const firestore = firebase.firestore();
-      // const CollectionReference = getCollectionReferenceClass();
+      const CollectionReference = getCollectionReferenceClass();
 
-      // const reference = new CollectionReference(firestore, new Path(['tests']));
-      // reference.should.be.instanceOf(CollectionReference);
-      // reference.firestore.should.equal(firestore);
+      const reference = new CollectionReference(firestore, new Path(['tests']));
+      reference.should.be.instanceOf(CollectionReference);
+      reference.firestore.should.equal(firestore);
     });
 
     it('get parent()', () => {
-      // const Path = getPathClass();
+      const Path = getPathClass();
       const firestore = firebase.firestore();
-      // const CollectionReference = getCollectionReferenceClass();
-      // const DocumentReference = getDocumentReferenceClass();
+      const CollectionReference = getCollectionReferenceClass();
+      const DocumentReference = getDocumentReferenceClass();
 
-      // const reference = new CollectionReference(firestore, new Path(['tests']));
-      // reference.should.be.instanceOf(CollectionReference);
-      // should.equal(reference.parent, null);
+      const reference = new CollectionReference(firestore, new Path(['tests']));
+      reference.should.be.instanceOf(CollectionReference);
+      should.equal(reference.parent, null);
 
-      // const reference2 = new CollectionReference(
-      //   firestore,
-      //   new Path(['tests', 'someDoc', 'someChildCollection'])
-      // );
-      // reference2.should.be.instanceOf(CollectionReference);
-      // should.notEqual(reference2.parent, null);
-      // reference2.parent.should.be.an.instanceOf(DocumentReference);
+      const reference2 = new CollectionReference(
+        firestore,
+        new Path(['tests', 'someDoc', 'someChildCollection'])
+      );
+      reference2.should.be.instanceOf(CollectionReference);
+      should.notEqual(reference2.parent, null);
+      reference2.parent.should.be.an.instanceOf(DocumentReference);
     });
 
     describe('add()', () => {
@@ -140,16 +148,16 @@ describe('firestore()', () => {
 
     describe('get()', () => {
       it('should retrieve all documents on a collection', async () => {
-        // const collection = testCollection(TEST_COLLECTION_NAME);
-        // const DocumentSnapshot = getDocumentSnapshotClass();
+        const collection = testCollection(TEST_COLLECTION_NAME);
+        const DocumentSnapshot = getDocumentSnapshotClass();
 
-        // const querySnapshot = await collection.get();
+        const querySnapshot = await collection.get();
 
-        // should.equal(querySnapshot.size >= 1, true);
+        should.equal(querySnapshot.size >= 1, true);
 
-        // querySnapshot.forEach(documentSnapshot => {
-        //   documentSnapshot.should.be.instanceOf(DocumentSnapshot);
-        // });
+        querySnapshot.forEach(documentSnapshot => {
+          documentSnapshot.should.be.instanceOf(DocumentSnapshot);
+        });
       });
 
       it('should support GetOptions source=`default`', async () => {
@@ -195,7 +203,7 @@ describe('firestore()', () => {
         } catch (e) {
           // do nothing
         }
-        
+
         return Promise.resolve();
       });
     });

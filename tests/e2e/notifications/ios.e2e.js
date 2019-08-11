@@ -30,9 +30,11 @@ describe('notifications() - iOS Only', () => {
           'com.apple.UNNotificationDefaultActionIdentifier'
         );
 
-        // initialNotification.notification.should.be.an.instanceOf(
-        //   jet.require('src/modules/notifications/Notification')
-        // );
+        initialNotification.notification.should.be.an.instanceOf(
+          jet.require(
+            'node_modules/react-native-firebase/dist/modules/notifications/Notification'
+          )
+        );
 
         initialNotification.notification.title.should.equal(notification.title);
 
