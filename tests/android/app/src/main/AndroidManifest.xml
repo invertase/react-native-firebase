@@ -1,13 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  package="com.invertase.testing">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.invertase.testing">
 
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
   <application
     android:name="com.invertase.testing.MainApplication"
@@ -18,9 +18,13 @@
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true"
     tools:targetApi="m">
-    <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
-    <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
-    <meta-data android:name="rnfirebase_meta_testing_boolean_true" android:value="true" />
+    <!-- Add this line as part of new AdMob library process. Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+    <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-3940256099942544~3347511713"/>
+    <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc"/>
+    <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false"/>
+    <meta-data android:name="rnfirebase_meta_testing_boolean_true" android:value="true"/>
     <!--<provider-->
     <!--android:name="com.google.firebase.provider.FirebaseInitProvider"-->
     <!--android:authorities="${applicationId}.firebaseinitprovider"-->
@@ -69,72 +73,72 @@
       android:launchMode="singleTop"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
       <!-- App DynamicLinks -->
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.VIEW"/>
 
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="je786.app.goo.gl"
-          android:scheme="http" />
+          android:scheme="http"/>
       </intent-filter>
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.VIEW"/>
 
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="je786.app.goo.gl"
-          android:scheme="http" />
+          android:scheme="http"/>
       </intent-filter>
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.VIEW"/>
 
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="je786.app.goo.gl"
-          android:scheme="https" />
+          android:scheme="https"/>
       </intent-filter>
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.VIEW"/>
 
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="je786.app.goo.gl"
-          android:scheme="https" />
+          android:scheme="https"/>
       </intent-filter>
       <!-- App Indexing Test -->
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
+        <action android:name="android.intent.action.VIEW"/>
 
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="foo.bar"
-          android:scheme="invertase" />
+          android:scheme="invertase"/>
       </intent-filter>
       <!-- Dynamic DynamicLinks Test -->
       <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
         <data
           android:host="invertase.io"
-          android:scheme="https" />
+          android:scheme="https"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
   </application>
 </manifest>
