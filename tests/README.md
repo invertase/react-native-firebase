@@ -28,20 +28,8 @@ Also install tests project iOS Pods.
 
 ```bash
 yarn
-cd tests/ && yarn  # see note below for XCode 10.2
-cd ios && pod install --repo-update
-```
-
-Note: the `cd tests/ && yarn` will fail the first time with XCode 10.2. You must edit `node_modules/detox/ios_src/Detox.xcodeproj/project.pbxproj` and alter the 4 `SWIFT_VERSION = 3.0` entries to be `SWIFT_VERSION = 4.0` So for XCode 10.2 you need this:
-
-```bash
-yarn
-cd tests/ && yarn  # this will fail with partial install of detox
-patch -p1 < manual-patches/detox+9.1.2.patch  # alter SWIFT_VERSION to 4.0
-patch -p1 < manual-patches/detox+9.1.2-no-extract.patch # do not re-extract iOS source
-./node_modules/detox/scripts/build_framework.ios.sh # build the patched iOS framework
-yarn # Now re-run and the build works
-cd ios && pod install --repo-update
+cd tests/ && yarn
+cd tests/ios && pod install --repo-update
 ```
 
 ---
@@ -127,3 +115,19 @@ Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e
 > 💡 Don't forget to remove these before committing your code and submitting a pull request
 
 For more Mocha options see https://mochajs.org/#usage
+
+---
+
+<p>
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
+  <p align="left">  
+    Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
+  </p>
+  <p align="left">  
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+  </p>
+</p>
+
+---

@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@invertase/tests-firebase-functions": "^0.0.1",
-    "detox": "^9.0.4",
+    "detox": "^12.5.0",
     "fbjs": "^1.0.0",
     "firebase-admin": "^8.2.0",
     "jet": "^0.4.4",
@@ -31,8 +31,9 @@
     "patch-package": "^6.1.2",
     "postinstall-postinstall": "^2.0.0",
     "prop-types": "^15.6.1",
-    "react": "16.8.3",
-    "react-native": "^0.59.9",
+    "react": "16.9.0",
+    "react-native": "^0.60.4",
+    "react-native-firebase": "^5.5.6",
     "react-native-port-patcher": "^1.0.3",
     "should": "^13.2.1",
     "should-sinon": "0.0.6",
@@ -42,7 +43,7 @@
     "@babel/plugin-transform-runtime": "^7.0.0",
     "@babel/runtime": "^7.0.0",
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1",
-    "@react-native-firebase/private-tests-helpers": "^0.0.9",
+    "@react-native-firebase/private-tests-helpers": "^0.0.13",
     "babel-eslint": "^10.0.2",
     "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-module-resolver": "^3.1.1",
@@ -81,6 +82,7 @@
     "instrument": false,
     "reporter": [
       "lcov",
+      "html",
       "text-summary"
     ]
   },
@@ -91,14 +93,13 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X",
-        "logLevel": "error"
+        "name": "iPhone X"
       },
       "ios.ci": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -parallelizeTargets -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X"
       },
@@ -110,7 +111,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=NO -quiet",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "name": "iPhone X"
       },

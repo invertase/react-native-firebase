@@ -1,0 +1,226 @@
+diff --git a/node_modules/jest-haste-map/build/index.d.ts.map b/node_modules/jest-haste-map/build/index.d.ts.map
+index 079a06f..db7828a 100644
+--- a/node_modules/jest-haste-map/build/index.d.ts.map
++++ b/node_modules/jest-haste-map/build/index.d.ts.map
+@@ -1 +1 @@
+-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
++{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"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"}
+\ No newline at end of file
+diff --git a/node_modules/jest-haste-map/build/index.js b/node_modules/jest-haste-map/build/index.js
+index b9ef98e..7943a9b 100644
+--- a/node_modules/jest-haste-map/build/index.js
++++ b/node_modules/jest-haste-map/build/index.js
+@@ -810,123 +810,120 @@ class HasteMap extends _events().default {
+   }
+ 
+   _buildHasteMap(data) {
+-    var _this3 = this;
+-
+-    return _asyncToGenerator(function*() {
+-      const removedFiles = data.removedFiles,
+-        changedFiles = data.changedFiles,
+-        hasteMap = data.hasteMap; // If any files were removed or we did not track what files changed, process
+-      // every file looking for changes. Otherwise, process only changed files.
+-
+-      let map;
+-      let mocks;
+-      let filesToProcess;
+-
+-      if (changedFiles === undefined || removedFiles.size) {
+-        map = new Map();
+-        mocks = new Map();
+-        filesToProcess = hasteMap.files;
+-      } else {
+-        map = hasteMap.map;
+-        mocks = hasteMap.mocks;
+-        filesToProcess = changedFiles;
+-      }
++    const removedFiles = data.removedFiles,
++      changedFiles = data.changedFiles,
++      hasteMap = data.hasteMap; // If any files were removed or we did not track what files changed, process
++    // every file looking for changes. Otherwise, process only changed files.
++
++    let map;
++    let mocks;
++    let filesToProcess;
++
++    if (changedFiles === undefined || removedFiles.size) {
++      map = new Map();
++      mocks = new Map();
++      filesToProcess = hasteMap.files;
++    } else {
++      map = hasteMap.map;
++      mocks = hasteMap.mocks;
++      filesToProcess = changedFiles;
++    }
+ 
+-      var _iteratorNormalCompletion = true;
+-      var _didIteratorError = false;
+-      var _iteratorError = undefined;
++    var _iteratorNormalCompletion = true;
++    var _didIteratorError = false;
++    var _iteratorError = undefined;
+ 
++    try {
++      for (
++        var _iterator = removedFiles[Symbol.iterator](), _step;
++        !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
++        _iteratorNormalCompletion = true
++      ) {
++        const _step$value = _slicedToArray(_step.value, 2),
++          relativeFilePath = _step$value[0],
++          fileMetadata = _step$value[1];
++
++        this._recoverDuplicates(
++          hasteMap,
++          relativeFilePath,
++          fileMetadata[_constants.default.ID]
++        );
++      }
++    } catch (err) {
++      _didIteratorError = true;
++      _iteratorError = err;
++    } finally {
+       try {
+-        for (
+-          var _iterator = removedFiles[Symbol.iterator](), _step;
+-          !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+-          _iteratorNormalCompletion = true
+-        ) {
+-          const _step$value = _slicedToArray(_step.value, 2),
+-            relativeFilePath = _step$value[0],
+-            fileMetadata = _step$value[1];
+-
+-          _this3._recoverDuplicates(
+-            hasteMap,
+-            relativeFilePath,
+-            fileMetadata[_constants.default.ID]
+-          );
++        if (!_iteratorNormalCompletion && _iterator.return != null) {
++          _iterator.return();
+         }
+-      } catch (err) {
+-        _didIteratorError = true;
+-        _iteratorError = err;
+       } finally {
+-        try {
+-          if (!_iteratorNormalCompletion && _iterator.return != null) {
+-            _iterator.return();
+-          }
+-        } finally {
+-          if (_didIteratorError) {
+-            throw _iteratorError;
+-          }
++        if (_didIteratorError) {
++          throw _iteratorError;
+         }
+       }
++    }
+ 
+-      const promises = [];
+-      var _iteratorNormalCompletion2 = true;
+-      var _didIteratorError2 = false;
+-      var _iteratorError2 = undefined;
++    const promises = [];
++    var _iteratorNormalCompletion2 = true;
++    var _didIteratorError2 = false;
++    var _iteratorError2 = undefined;
+ 
+-      try {
+-        for (
+-          var _iterator2 = filesToProcess.keys()[Symbol.iterator](), _step2;
+-          !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
+-          _iteratorNormalCompletion2 = true
+-        ) {
+-          const relativeFilePath = _step2.value;
++    try {
++      for (
++        var _iterator2 = filesToProcess.keys()[Symbol.iterator](), _step2;
++        !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
++        _iteratorNormalCompletion2 = true
++      ) {
++        const relativeFilePath = _step2.value;
+ 
+-          if (
+-            _this3._options.skipPackageJson &&
+-            relativeFilePath.endsWith(PACKAGE_JSON)
+-          ) {
+-            continue;
+-          } // SHA-1, if requested, should already be present thanks to the crawler.
++        if (
++          this._options.skipPackageJson &&
++          relativeFilePath.endsWith(PACKAGE_JSON)
++        ) {
++          continue;
++        } // SHA-1, if requested, should already be present thanks to the crawler.
+ 
+-          const filePath = fastPath.resolve(
+-            _this3._options.rootDir,
+-            relativeFilePath
+-          );
++        const filePath = fastPath.resolve(
++          this._options.rootDir,
++          relativeFilePath
++        );
+ 
+-          const promise = _this3._processFile(hasteMap, map, mocks, filePath);
++        const promise = this._processFile(hasteMap, map, mocks, filePath);
+ 
+-          if (promise) {
+-            promises.push(promise);
+-          }
++        if (promise) {
++          promises.push(promise);
++        }
++      }
++    } catch (err) {
++      _didIteratorError2 = true;
++      _iteratorError2 = err;
++    } finally {
++      try {
++        if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
++          _iterator2.return();
+         }
+-      } catch (err) {
+-        _didIteratorError2 = true;
+-        _iteratorError2 = err;
+       } finally {
+-        try {
+-          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+-            _iterator2.return();
+-          }
+-        } finally {
+-          if (_didIteratorError2) {
+-            throw _iteratorError2;
+-          }
++        if (_didIteratorError2) {
++          throw _iteratorError2;
+         }
+       }
++    }
+ 
+-      try {
+-        yield Promise.all(promises);
+-
+-        _this3._cleanup();
++    return Promise.all(promises).then(
++      () => {
++        this._cleanup();
+ 
+         hasteMap.map = map;
+         hasteMap.mocks = mocks;
+         return hasteMap;
+-      } catch (error) {
+-        _this3._cleanup();
++      },
++      error => {
++        this._cleanup();
+ 
+         throw error;
+       }
+-    })();
++    );
+   }
+ 
+   _cleanup() {

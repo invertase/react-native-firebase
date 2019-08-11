@@ -1,21 +1,35 @@
 buildscript {
-    ext {
-        buildToolsVersion = "28.0.3"
-        compileSdkVersion = 28
-    }
-
+  ext {
+    kotlinVersion = '1.3.31'
+    buildToolsVersion = "28.0.3"
+    minSdkVersion = 18
+    compileSdkVersion = 28
+    targetSdkVersion = 28
+    supportLibVersion = "1.0.2"
+    appCompatVersion = "1.0.2"
+    supportVersion = "1.0.2"
+    googlePlayServicesLocationVersion = "17.0.0"
+    googlePlayServicesVersion = "17.0.0"
+    googlePlayServicesAuthVersion = "17.0.0"
+    googlePlayServicesVisionVersion = "18.0.0"
+    mediaCompatVersion = "1.0.1"
+    supportV4Version = "1.0.0"
+    reactNativeVersion = "+"
+  }
   repositories {
     google()
+    jcenter()
+    mavenCentral()
     maven {
       url 'https://maven.fabric.io/public'
     }
-    jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.1'
-    classpath 'com.google.gms:google-services:4.2.0'
-    classpath 'com.google.firebase:perf-plugin:1.2.1'
-    classpath 'io.fabric.tools:gradle:1.25.4'
+    classpath 'com.android.tools.build:gradle:3.4.2'
+    classpath 'com.google.gms:google-services:4.3.0'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath 'com.google.firebase:perf-plugin:1.3.1'
+    classpath 'io.fabric.tools:gradle:1.28.1'
   }
 }
 
@@ -33,28 +47,53 @@ allprojects {
     }
   }
 
+  println "${project.name} ${projectDir} ${rootDir}"
+
   repositories {
-    mavenLocal()
     google()
+    mavenLocal()
     maven {
-      url "$rootDir/../node_modules/react-native/android"
+      // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+      url("$rootDir/../node_modules/react-native/android")
     }
     maven {
-      url 'https://maven.google.com/'
-      name 'Google'
+      // Android JSC is installed from npm
+      url("$rootDir/../node_modules/jsc-android/dist")
+    }
+    maven {
+      url "$rootDir/../node_modules/detox/Detox-android"
     }
     jcenter()
   }
-}
 
-ext {
-  buildToolsVersion = "28.0.3"
-  minSdkVersion = 18
-  compileSdkVersion = 28
-  targetSdkVersion = 27
-  supportLibVersion = "28.0.0"
 }
 
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
+  ext {
+    compileSdk = 28
+    buildTools = "28.0.3"
+    minSdk = 16
+    targetSdk = 28
+  }
+
+  afterEvaluate { project ->
+    if (!project.name.equalsIgnoreCase("app")
+      && project.hasProperty("android")) {
+      android {
+        compileSdkVersion compileSdk
+        buildToolsVersion buildTools
+        defaultConfig {
+          minSdkVersion minSdk
+          targetSdkVersion targetSdk
+        }
+        variantFilter { variant ->
+          def names = variant.flavors*.name
+          if (names.contains("minReactNative44")) {
+            setIgnore(true)
+          }
+        }
+      }
+    }
+  }
 }
