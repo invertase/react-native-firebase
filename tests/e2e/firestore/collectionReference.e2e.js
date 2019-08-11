@@ -1,12 +1,9 @@
 const {
   COL_DOC_1,
-  DOC_2_PATH,
-  COL_DOC_1_ID,
   COL_DOC_1_PATH,
   TEST_COLLECTION_NAME,
   TEST_COLLECTION_NAME_DYNAMIC,
   testCollection,
-  cleanCollection,
   testCollectionDoc,
   resetTestCollectionDoc,
 } = TestHelpers.firestore;
@@ -147,12 +144,13 @@ describe('firestore()', () => {
     });
 
     describe('get()', () => {
+      before(() => resetTestCollectionDoc(COL_DOC_1_PATH, COL_DOC_1()));
+
       it('should retrieve all documents on a collection', async () => {
-        const collection = testCollection(TEST_COLLECTION_NAME);
+        const collection = testCollection(TEST_COLLECTION_NAME_DYNAMIC);
         const DocumentSnapshot = getDocumentSnapshotClass();
 
         const querySnapshot = await collection.get();
-
         should.equal(querySnapshot.size >= 1, true);
 
         querySnapshot.forEach(documentSnapshot => {
@@ -161,32 +159,32 @@ describe('firestore()', () => {
       });
 
       it('should support GetOptions source=`default`', async () => {
-        const collection = testCollection(TEST_COLLECTION_NAME);
+        const collection = testCollection(TEST_COLLECTION_NAME_DYNAMIC);
         const querySnapshot = await collection.get({ source: 'default' });
-        // should.equal(querySnapshot.size >= 1, true);
+        should.equal(querySnapshot.size >= 1, true);
         querySnapshot.metadata.should.be.an.Object();
         should.equal(querySnapshot.metadata.fromCache, false);
       });
 
       it('should support GetOptions source=`server`', async () => {
-        const collection = testCollection(TEST_COLLECTION_NAME);
+        const collection = testCollection(TEST_COLLECTION_NAME_DYNAMIC);
         const querySnapshot = await collection.get({ source: 'server' });
-        // should.equal(querySnapshot.size >= 1, true);
+        should.equal(querySnapshot.size >= 1, true);
         querySnapshot.metadata.should.be.an.Object();
         should.equal(querySnapshot.metadata.fromCache, false);
       });
 
       // TODO: Investigate why this isn't returning `fromCache=true`
       xit('should support GetOptions source=`cache`', async () => {
-        const collection = testCollection(TEST_COLLECTION_NAME);
+        const collection = testCollection(TEST_COLLECTION_NAME_DYNAMIC);
         const querySnapshot = await collection.get({ source: 'cache' });
-        // should.equal(querySnapshot.size >= 1, true);
+        should.equal(querySnapshot.size >= 1, true);
         querySnapshot.metadata.should.be.an.Object();
         should.equal(querySnapshot.metadata.fromCache, true);
       });
 
       it('should error with invalid GetOptions source option', async () => {
-        const collectionRef = testCollection(TEST_COLLECTION_NAME);
+        const collectionRef = testCollection(TEST_COLLECTION_NAME_DYNAMIC);
         try {
           await collectionRef.get(() => {});
           return Promise.reject(
