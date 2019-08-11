@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@invertase/tests-firebase-functions": "^0.0.1",
-    "detox": "^12.5.0",
+    "detox": "12.5.0",
     "fbjs": "^1.0.0",
     "firebase-admin": "^8.2.0",
     "jet": "^0.4.4",
