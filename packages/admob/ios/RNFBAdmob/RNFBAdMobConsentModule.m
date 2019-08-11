@@ -90,8 +90,7 @@ RCT_EXPORT_METHOD(showForm:
     if (error != nil) {
       // todo error
     } else {
-      // todo whats the view controller
-      [form presentFromViewController:self dismissCompletion:dismissCompletionBlock];
+      [form presentFromViewController:[UIApplication sharedApplication].delegate.window.rootViewController dismissCompletion:dismissCompletionBlock];
     }
   }];
 }

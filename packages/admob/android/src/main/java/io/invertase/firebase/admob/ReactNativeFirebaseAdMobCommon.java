@@ -29,6 +29,7 @@ import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
@@ -42,13 +43,23 @@ public class ReactNativeFirebaseAdMobCommon {
 
   static public AdRequest buildAdRequest(ReadableMap adRequestOptions) {
     AdRequest.Builder builder = new AdRequest.Builder();
+    Bundle extras = new Bundle();
 
     if (adRequestOptions.hasKey("requestNonPersonalizedAdsOnly") && adRequestOptions.getBoolean("requestNonPersonalizedAdsOnly")) {
-      Bundle extras = new Bundle();
       extras.putString("npa", "1");
-
-      builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
     }
+
+    if (adRequestOptions.hasKey("networkExtras")) {
+      Map<String, Object> networkExtras = adRequestOptions.getMap("networkExtras").toHashMap();
+
+      for (Map.Entry<String, Object> entry : networkExtras.entrySet()) {
+        String key = entry.getKey();
+        String value = (String) entry.getValue();
+        extras.putString(key, value);
+      }
+    }
+
+    builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
 
     if (adRequestOptions.hasKey("keywords")) {
       ArrayList<Object> keywords = Objects.requireNonNull(adRequestOptions.getArray("keywords"))

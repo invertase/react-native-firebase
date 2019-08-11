@@ -15,7 +15,14 @@
  *
  */
 
-import { isArray, isObject, isString, isUndefined } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isArray,
+  isBoolean,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/common';
 
 export default function validateAdRequestOptions(options) {
   const out = {};
@@ -28,7 +35,27 @@ export default function validateAdRequestOptions(options) {
     throw new Error("'options' expected an object value");
   }
 
-  // todo gdpr config
+  if (hasOwnProperty(options, 'requestNonPersonalizedAdsOnly')) {
+    if (!isBoolean(options.requestNonPersonalizedAdsOnly)) {
+      throw new Error("'options.requestNonPersonalizedAdsOnly' expected a boolean value");
+    }
+
+    out.requestNonPersonalizedAdsOnly = options.requestNonPersonalizedAdsOnly;
+  }
+
+  if (options.networkExtras) {
+    if (!isObject(options.networkExtras)) {
+      throw new Error("'options.networkExtras' expected an object of key/value pairs");
+    }
+
+    Object.entries(options.networkExtras).forEach(([key, value]) => {
+      if (!isString(value)) {
+        throw new Error(`'options.networkExtras' expected a string value for object key "${key}"`);
+      }
+    });
+
+    out.networkExtras = options.networkExtras;
+  }
 
   if (options.keywords) {
     if (!isArray(options.keywords)) {
