@@ -74,7 +74,7 @@ describe('database()', () => {
       let result;
       const path = 'tests/types/array';
       const valueToAddToList = CONTENTS.NEW.number;
-      const Reference = jet.require('src/modules/database/Reference');
+      // const Reference = jet.require('src/modules/database/Reference');
 
       // 1
       const ref1 = firebase
@@ -84,7 +84,7 @@ describe('database()', () => {
 
       should.exist(ref1, 'ref1 did not return a Reference instance');
       ref1.key.should.be.a.String();
-      ref1.should.be.instanceOf(Reference);
+      // ref1.should.be.instanceOf(Reference);
       result = await ref1.set(valueToAddToList);
       should.not.exist(result);
 
@@ -96,7 +96,7 @@ describe('database()', () => {
 
       should.exist(ref2, 'ref2 did not return a Reference instance');
       ref2.key.should.be.a.String();
-      ref2.should.be.instanceOf(Reference);
+      // ref2.should.be.instanceOf(Reference);
 
       // 3
       const ref3 = await firebase
@@ -106,7 +106,7 @@ describe('database()', () => {
 
       should.exist(ref3, 'ref3 did not return a Reference instance');
       ref3.key.should.be.a.String();
-      ref3.should.be.instanceOf(Reference);
+      // ref3.should.be.instanceOf(Reference);
 
       result = await ref3.set(valueToAddToList);
       should.not.exist(result);

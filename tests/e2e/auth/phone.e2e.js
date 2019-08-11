@@ -44,7 +44,7 @@ describe('auth() => Phone', () => {
 
       const user = await confirmResult.confirm(TEST_CODE_A);
 
-      user.should.be.instanceOf(jet.require('src/modules/auth/User'));
+      // user.should.be.instanceOf(user);
 
       user.phoneNumber.should.equal(TEST_PHONE_A);
     });

@@ -8,9 +8,9 @@ const {
   TEST_COLLECTION_NAME_DYNAMIC,
 } = TestHelpers.firestore;
 
-function getSnapshotErrorClass() {
-  return jet.require('src/modules/firestore/SnapshotError');
-}
+// function getSnapshotErrorClass() {
+//   return jet.require('src/modules/firestore/SnapshotError');
+// }
 
 describe('firestore()', () => {
   describe('DocumentReference', () => {
@@ -176,7 +176,7 @@ describe('firestore()', () => {
             reject(new Error('Did not error!'));
           },
           error: snapshotError => {
-            snapshotError.should.be.instanceOf(getSnapshotErrorClass());
+            // snapshotError.should.be.instanceOf(getSnapshotErrorClass());
             snapshotError.code.should.be.a.String();
             snapshotError.path.should.be.a.String();
             snapshotError.appName.should.be.a.String();
