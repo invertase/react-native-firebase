@@ -226,8 +226,8 @@
     - text: iOS Setup
       to: '/ios'
 
-- module: config
-  group: Remote Config
+- module: remote-config
+  group: Remote RemoteConfig
   children:
     - text: Overview
       to: '/'

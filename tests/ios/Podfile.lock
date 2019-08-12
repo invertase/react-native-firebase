@@ -478,7 +478,7 @@ DEPENDENCIES:
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics/ios`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app/ios`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth/ios`)"
-  - "RNFBConfig (from `../node_modules/@react-native-firebase/config/ios`)"
+  - "RNFBConfig (from `../node_modules/@react-native-firebase/remote-config/ios`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database/ios`)"
   - "RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links/ios`)"
@@ -591,7 +591,7 @@ EXTERNAL SOURCES:
   RNFBAuth:
     :path: "../node_modules/@react-native-firebase/auth/ios"
   RNFBConfig:
-    :path: "../node_modules/@react-native-firebase/config/ios"
+    :path: "../node_modules/@react-native-firebase/remote-config/ios"
   RNFBCrashlytics:
     :path: "../node_modules/@react-native-firebase/crashlytics/ios"
   RNFBDatabase:

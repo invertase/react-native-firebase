@@ -41,7 +41,7 @@ const PACKAGES = [
   'fiam',
   'functions',
   'analytics',
-  'config',
+  'remote-config',
   'crashlytics',
   'utils',
   'ml-natural-language',

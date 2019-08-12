@@ -26,7 +26,7 @@ The following modules are completed and published to NPM and ready to be consume
 | [ML Kit Vision ](/packages/ml-vision)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-vision)           |           [![badge](https://api.rnfirebase.io/coverage/ml-vision/badge)](https://api.rnfirebase.io/coverage/ml-vision/detail)           |
 | [Performance Monitoring](/packages/perf)                 |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
 | [Realtime Database](/packages/database)                  |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |            [![badge](https://api.rnfirebase.io/coverage/database/badge)](https://api.rnfirebase.io/coverage/database/detail)            |
-| [Remote Config](/packages/config)                        |              [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)              |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
+| [Remote Config](/packages/remote-config)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/remote-config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/remote-config)       |       [![badge](https://api.rnfirebase.io/coverage/remote-config/badge)](https://api.rnfirebase.io/coverage/remote-config/detail)       |
 | [Utils](/packages/utils)                                 |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)               |               [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)               |
 
 ---
@@ -313,11 +313,12 @@ The Realtime Database module has had a large re-write, fixing various inconsiste
 
 ---
 
-## Remote Config (config)
+## Remote Config (remoteConfig)
 
 The Remote Config API has had a significant API change as originally highlighted would happen in the v5.x.x docs:
 ![image](https://user-images.githubusercontent.com/5347038/58876587-7c62b100-86c6-11e9-81f9-95c26e1485a1.png)
 
+- [BREAKING] Module namespace has been renamed to `.remoteConfig()`, replace all usages of `firebase.config` with the new name.
 - [BREAKING] All Remote Config values can now be accessed synchronously in JS, see `getValue(key: string): ConfigValue` & `getAll(): ConfigValues` below
   - [BREAKING] These replace all the original async methods: `getValue`, `getValues`, `getKeysByPrefix`
 - [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
@@ -326,7 +327,7 @@ The Remote Config API has had a significant API change as originally highlighted
 - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
 - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
 - [NEW] Added a new `fetchAndActivate` method - this fetches the config and activates it without the need to call `activate()` separately
-- [NEW] Added the following properties to `firebase.config()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
+- [NEW] Added the following properties to `firebase.remoteConfig()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
 - [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
   - This is a generic settings function to pre-emotively account for an upcoming future change to the native sdks - more settings to be added.
 - [NEW] All previous `get*` methods have been removed and replaced with 2 synchronous methods:
