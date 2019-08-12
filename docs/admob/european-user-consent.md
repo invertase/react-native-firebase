@@ -236,4 +236,15 @@ non-personalized ad.
 
 ### Troubleshooting
 
-- TODO 
+#### "Could not parse Event FE preflight response."
+
+This is a common error which occurrs on both Android & iOS when making a request to display a Google-rendered consent form. Unfortunatly the reasoning for this error is generic, making it hard to debug. There are a number of steps to check which are usually the cause for this error:
+
+- The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the React Native config, called `occurs`.
+- A publisher ID is incorrect: Ensure your entered publisher IDs are correct.
+- The user is outside of the EEA: If a user does not need to provide consent, the form request will error. Ensure you have checked the users status via `requestInfoUpdate`. If using an emulator, ensure you set a debug location via `setDebugGeography`.
+- Your AdMob account is not valid:
+  - Your account is not disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
+  - You have setup valid payment information: If your account has no payment information setup, this seems to cause this error to trigger.
+
+If you are still struggling to present the consent form, reach out to AdMob support to investigate your account status.
