@@ -245,6 +245,7 @@ This is a common error which occurrs on both Android & iOS when making a request
 
 - The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the React Native config, called `occurs`.
 - A publisher ID is incorrect: Ensure your entered publisher IDs are correct.
+  - The publisher ID needs to be available on the same account as your AdMob App ID.
 - The user is outside of the EEA: If a user does not need to provide consent, the form request will error. Ensure you have checked the users status via `requestInfoUpdate`. If using an emulator, ensure you set a debug location via `setDebugGeography`.
 - Your AdMob account is not valid:
   - Your account is not disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
