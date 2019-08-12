@@ -148,6 +148,9 @@ const formResult = await AdsConsent.showForm({
 if (formResult.userPrefersAdFree) {
   // Handle the users request, e.g. redirect to a paid for version of the app
 }
+
+// The user requested non-personalized or personalized ads
+const status = formResult.status;
 ```
 
 The `formResult.status` provides feedback on whether the user consented to personalized ads, or non-personalized ads.
