@@ -45,7 +45,9 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.requestNonPersonalizedAdsOnly' expected a boolean value");
+        e.message.should.containEql(
+          "'options.requestNonPersonalizedAdsOnly' expected a boolean value",
+        );
         return Promise.resolve();
       }
     });
@@ -66,7 +68,9 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.networkExtras' expected an object of key/value pairs");
+        e.message.should.containEql(
+          "'options.networkExtras' expected an object of key/value pairs",
+        );
         return Promise.resolve();
       }
     });
@@ -81,7 +85,9 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.networkExtras' expected a string value for object key "bar"`);
+        e.message.should.containEql(
+          `'options.networkExtras' expected a string value for object key "bar"`,
+        );
         return Promise.resolve();
       }
     });
@@ -90,7 +96,7 @@ describe('admob() requestOptions', () => {
       const v = validator({
         networkExtras: {
           foo: 'bar',
-          bar: 'baz'
+          bar: 'baz',
         },
       });
 
@@ -103,11 +109,13 @@ describe('admob() requestOptions', () => {
     it('throws if keywords is not an array', () => {
       try {
         validator({
-          keywords: { foo: 'bar' }
+          keywords: { foo: 'bar' },
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.keywords' expected an array containing string values");
+        e.message.should.containEql(
+          "'options.keywords' expected an array containing string values",
+        );
         return Promise.resolve();
       }
     });
@@ -115,18 +123,20 @@ describe('admob() requestOptions', () => {
     it('throws if a keyword is not a string', () => {
       try {
         validator({
-          keywords: ['foo', 123]
+          keywords: ['foo', 123],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.keywords' expected an array containing string values");
+        e.message.should.containEql(
+          "'options.keywords' expected an array containing string values",
+        );
         return Promise.resolve();
       }
     });
 
     it('accepts keywords array', () => {
       const v = validator({
-        keywords: ['foo', 'bar']
+        keywords: ['foo', 'bar'],
       });
 
       v.keywords.should.be.Array();
@@ -139,11 +149,13 @@ describe('admob() requestOptions', () => {
     it('throws if testDevices is not an array', () => {
       try {
         validator({
-          testDevices: { foo: 'bar' }
+          testDevices: { foo: 'bar' },
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.testDevices' expected an array containing string values");
+        e.message.should.containEql(
+          "'options.testDevices' expected an array containing string values",
+        );
         return Promise.resolve();
       }
     });
@@ -151,18 +163,20 @@ describe('admob() requestOptions', () => {
     it('throws if a testDevices is not a string', () => {
       try {
         validator({
-          testDevices: ['foo', 123]
+          testDevices: ['foo', 123],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("'options.testDevices' expected an array containing string values");
+        e.message.should.containEql(
+          "'options.testDevices' expected an array containing string values",
+        );
         return Promise.resolve();
       }
     });
 
     it('accepts testDevices array', () => {
       const v = validator({
-        testDevices: ['foo', 'bar']
+        testDevices: ['foo', 'bar'],
       });
 
       v.testDevices.should.be.Array();
@@ -208,14 +222,16 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.contentUrl' maximum length of a content URL is 512 characters`);
+        e.message.should.containEql(
+          `'options.contentUrl' maximum length of a content URL is 512 characters`,
+        );
         return Promise.resolve();
       }
     });
 
     it('accepts a contentUrl', () => {
       const v = validator({
-        contentUrl: 'http://invertase.io/privacy-policy'
+        contentUrl: 'http://invertase.io/privacy-policy',
       });
 
       v.contentUrl.should.be.eql('http://invertase.io/privacy-policy');
@@ -230,7 +246,9 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.location' expected an array value containing a latitude & longitude number value`);
+        e.message.should.containEql(
+          `'options.location' expected an array value containing a latitude & longitude number value`,
+        );
         return Promise.resolve();
       }
     });
@@ -238,11 +256,13 @@ describe('admob() requestOptions', () => {
     it('throws if latitude not a number', () => {
       try {
         validator({
-          location: ['123', 123]
+          location: ['123', 123],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.location' expected an array value containing a latitude & longitude number value`);
+        e.message.should.containEql(
+          `'options.location' expected an array value containing a latitude & longitude number value`,
+        );
         return Promise.resolve();
       }
     });
@@ -250,11 +270,13 @@ describe('admob() requestOptions', () => {
     it('throws if latitude is invalid', () => {
       try {
         validator({
-          location: [-100, 100]
+          location: [-100, 100],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.location' latitude value must be a number between -90 and 90`);
+        e.message.should.containEql(
+          `'options.location' latitude value must be a number between -90 and 90`,
+        );
         return Promise.resolve();
       }
     });
@@ -262,11 +284,13 @@ describe('admob() requestOptions', () => {
     it('throws if longitude not a number', () => {
       try {
         validator({
-          location: [10, '123']
+          location: [10, '123'],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.location' expected an array value containing a latitude & longitude number value`);
+        e.message.should.containEql(
+          `'options.location' expected an array value containing a latitude & longitude number value`,
+        );
         return Promise.resolve();
       }
     });
@@ -274,18 +298,20 @@ describe('admob() requestOptions', () => {
     it('throws if longitude is invalid', () => {
       try {
         validator({
-          location: [50, 200]
+          location: [50, 200],
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.location' longitude value must be a number between -180 and 180`);
+        e.message.should.containEql(
+          `'options.location' longitude value must be a number between -180 and 180`,
+        );
         return Promise.resolve();
       }
     });
 
     it('accepts a latitude and longitude', () => {
       const v = validator({
-        location: [10, 20]
+        location: [10, 20],
       });
 
       v.location.should.be.Array();
@@ -321,7 +347,7 @@ describe('admob() requestOptions', () => {
 
     it('accepts locationAccuracy', () => {
       const v = validator({
-        locationAccuracy: 10.5
+        locationAccuracy: 10.5,
       });
       v.locationAccuracy.should.eql(10.5);
     });

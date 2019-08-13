@@ -23,9 +23,7 @@ export default function validateAdRequestConfiguration(requestConfiguration) {
   const out = {};
 
   if (!isObject(requestConfiguration)) {
-    throw new Error(
-      "'requestConfiguration' expected an object value"
-    );
+    throw new Error("'requestConfiguration' expected an object value");
   }
 
   if (requestConfiguration.maxAdContentRating) {
@@ -36,7 +34,7 @@ export default function validateAdRequestConfiguration(requestConfiguration) {
       requestConfiguration.maxAdContentRating !== MaxAdContentRating.MA
     ) {
       throw new Error(
-        "'requestConfiguration.maxAdContentRating' expected on of MaxAdContentRating.G, MaxAdContentRating.PG, MaxAdContentRating.T or MaxAdContentRating.MA"
+        "'requestConfiguration.maxAdContentRating' expected on of MaxAdContentRating.G, MaxAdContentRating.PG, MaxAdContentRating.T or MaxAdContentRating.MA",
       );
     }
 
@@ -46,7 +44,7 @@ export default function validateAdRequestConfiguration(requestConfiguration) {
   if (hasOwnProperty(requestConfiguration, 'tagForChildDirectedTreatment')) {
     if (!isBoolean(requestConfiguration.tagForChildDirectedTreatment)) {
       throw new Error(
-        "'requestConfiguration.tagForChildDirectedTreatment' expected a boolean value"
+        "'requestConfiguration.tagForChildDirectedTreatment' expected a boolean value",
       );
     }
 
@@ -55,9 +53,7 @@ export default function validateAdRequestConfiguration(requestConfiguration) {
 
   if (hasOwnProperty(requestConfiguration, 'tagForUnderAgeOfConsent')) {
     if (!isBoolean(requestConfiguration.tagForUnderAgeOfConsent)) {
-      throw new Error(
-        "'requestConfiguration.tagForUnderAgeOfConsent' expected a boolean value"
-      );
+      throw new Error("'requestConfiguration.tagForUnderAgeOfConsent' expected a boolean value");
     }
 
     out.tagForUnderAgeOfConsent = requestConfiguration.tagForUnderAgeOfConsent;

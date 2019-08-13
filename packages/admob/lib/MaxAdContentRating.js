@@ -20,4 +20,4 @@ export default {
   PG: 'PG',
   T: 'T',
   MA: 'MA',
-}
+};

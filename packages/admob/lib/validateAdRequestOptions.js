@@ -18,11 +18,12 @@
 import {
   hasOwnProperty,
   isArray,
-  isBoolean, isNumber,
+  isBoolean,
+  isNumber,
   isObject,
   isString,
-  isUndefined, isValidUrl,
-  isFinite,
+  isUndefined,
+  isValidUrl,
 } from '@react-native-firebase/common';
 
 export default function validateAdRequestOptions(options) {
@@ -107,7 +108,9 @@ export default function validateAdRequestOptions(options) {
   }
 
   if (options.location) {
-    const error = new Error("'options.location' expected an array value containing a latitude & longitude number value.");
+    const error = new Error(
+      "'options.location' expected an array value containing a latitude & longitude number value.",
+    );
 
     if (!isArray(options.location)) {
       throw error;
@@ -121,13 +124,13 @@ export default function validateAdRequestOptions(options) {
 
     if (latitude < -90 || latitude > 90) {
       throw new Error(
-        `'options.location' latitude value must be a number between -90 and 90, but was: ${latitude}`
+        `'options.location' latitude value must be a number between -90 and 90, but was: ${latitude}`,
       );
     }
 
     if (longitude < -180 || longitude > 180) {
       throw new Error(
-        `'options.location' longitude value must be a number between -180 and 180, but was: ${latitude}`
+        `'options.location' longitude value must be a number between -180 and 180, but was: ${latitude}`,
       );
     }
 

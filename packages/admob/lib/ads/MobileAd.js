@@ -40,10 +40,7 @@ export default class MobileAd {
   _handleAdEvent(event) {
     const { type, error, data } = event.body;
 
-    if (
-      type === AdEventType.LOADED ||
-      type === RewardedAdEventType.LOADED
-    ) {
+    if (type === AdEventType.LOADED || type === RewardedAdEventType.LOADED) {
       this._loaded = true;
     }
 

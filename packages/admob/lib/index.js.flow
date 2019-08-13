@@ -20,9 +20,7 @@ import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types
 
 export interface Statics {}
 
-export interface Module extends ReactNativeFirebaseModule {
-
-}
+export interface Module extends ReactNativeFirebaseModule {}
 
 declare module '@react-native-firebase/admob' {
   import type {
