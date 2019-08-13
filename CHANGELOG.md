@@ -132,6 +132,22 @@ await analytics().setUserId('12345678');
 
 ---
 
+### AdMob (WIP)
+
+AdMob has undergone a full rewrite to keep up-to-date with the latest changes and APIs. The JavaScript API interface has been modified from v5 to provider a simpler, cleaner way to manage ads.
+
+- [NEW] A new `AdsConsent` helper has been added to handle user ads consent, required under GDPR regulations. See the [documentation](https://invertase.io/oss/react-native-firebase/v6/admob/european-user-consent) for more information.
+- [NEW] Global settings can be applied to AdMob via `setRequestConfiguration`.
+  - `maxAdContentRating`, `tagForChildDirectedTreatment` & `tagForUnderAgeOfConsent` are now set a global configuration settings.
+- [NEW] `RewardedAd` interface used the new Google Mobile Ads SDK beta API. Rewarded ads can now be controlled from the user dashboard, supporting both video and interactive ads.
+- [NEW] Added support for requesting only non-personalized ads via the `requestNonPersonalizedAdsOnly` request options.
+- [NEW] Added support for custom network extras on ad requests via `networkExtras`.
+  - The user reward is now pre-fetched when the ad is loaded.
+- [BREAKING] The API interface for interacting with AdMob has undergone a full re-write.
+- [BUGFIX] Ads can now work during React Native debugging. 
+
+---
+
 ## App Indexing (indexing) - **[NEW]**
 
 Support for handling an incoming app index URL has been added to React Native Firebase.
