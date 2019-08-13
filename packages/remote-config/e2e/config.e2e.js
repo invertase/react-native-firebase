@@ -15,11 +15,11 @@
  *
  */
 
-describe('config()', () => {
+describe('remoteConfig()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.config);
+      should.exist(app.remoteConfig);
       app.remoteConfig().app.should.equal(app);
     });
   });
