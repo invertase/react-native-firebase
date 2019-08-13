@@ -29,7 +29,7 @@ import '@react-native-firebase/remote-config';
 import '@react-native-firebase/utils';
 import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/fiam';
+import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml-natural-language';

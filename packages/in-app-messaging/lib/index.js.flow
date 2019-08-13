@@ -27,7 +27,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const isSuppressed = firebase.fiam().isMessagesDisplaySuppressed;
+   * const isSuppressed = firebase.inAppMessaging().isMessagesDisplaySuppressed;
    * ```
    */
   isMessagesDisplaySuppressed: boolean;
@@ -42,7 +42,7 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Suppress messages
-   * await firebase.fiam().setMessagesDisplaySuppressed(true);
+   * await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
    * ```
    *
    * @param enabled Whether messages should be suppressed.
@@ -55,7 +55,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const isDataCollectionEnabled = firebase.fiam().isAutomaticDataCollectionEnabled;
+   * const isDataCollectionEnabled = firebase.inAppMessaging().isAutomaticDataCollectionEnabled;
    * ```
    */
   isAutomaticDataCollectionEnabled: boolean;
@@ -72,7 +72,7 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Disable data collection
-   * firebase.fiam().setAutomaticDataCollectionEnabled(false);
+   * firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
    * ```
    *
    * @param enabled Whether automatic data collection is enabled.
@@ -80,7 +80,7 @@ export interface Module extends ReactNativeFirebaseModule {
   setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;
 }
 
-declare module '@react-native-firebase/fiam' {
+declare module '@react-native-firebase/in-app-messaging' {
   import type {
     ReactNativeFirebaseNamespace,
     ReactNativeFirebaseModuleAndStatics,
@@ -88,8 +88,8 @@ declare module '@react-native-firebase/fiam' {
   /**
    * @example
    * ```js
-   * import { firebase } from '@react-native-firebase/fiam';
-   * firebase.fiam().X(...);
+   * import { firebase } from '@react-native-firebase/in-app-messaging';
+   * firebase.inAppMessaging().X(...);
    * ```
    */
   declare export var firebase: {} & ReactNativeFirebaseNamespace;
@@ -97,8 +97,8 @@ declare module '@react-native-firebase/fiam' {
   /**
    * @example
    * ```js
-   * import fiam from '@react-native-firebase/fiam';
-   * fiam().X(...);
+   * import inAppMessaging from '@react-native-firebase/in-app-messaging';
+   * inAppMessaging().X(...);
    * ```
    */
   declare export default ReactNativeFirebaseModuleAndStatics<Module, Statics>;
@@ -116,7 +116,7 @@ declare module '@react-native-firebase/app-types' {
      * them targeted and contextual messages that nudge them to complete key in-app actions - like
      * beating a game level, buying an item, or subscribing to content.
      */
-    fiam: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+    inAppMessaging: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
   }
 
   declare interface FirebaseApp {
@@ -125,6 +125,6 @@ declare module '@react-native-firebase/app-types' {
      * them targeted and contextual messages that nudge them to complete key in-app actions - like
      * beating a game level, buying an item, or subscribing to content.
      */
-    fiam(): Module;
+    inAppMessaging(): Module;
   }
 }

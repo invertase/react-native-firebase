@@ -22,22 +22,22 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * #### Example 1
  *
- * Access the firebase export from the `fiam` package:
+ * Access the firebase export from the `inAppMessaging` package:
  *
  * ```js
- * import { firebase } from '@react-native-firebase/fiam';
+ * import { firebase } from '@react-native-firebase/in-app-messaging';
  *
- * // firebase.fiam().X
+ * // firebase.inAppMessaging().X
  * ```
  *
  * #### Example 2
  *
- * Using the default export from the `fiam` package:
+ * Using the default export from the `in-app-messaging` package:
  *
  * ```js
- * import fiam from '@react-native-firebase/fiam';
+ * import inAppMessaging from '@react-native-firebase/in-app-messaging';
  *
- * // fiam().X
+ * // inAppMessaging().X
  * ```
  *
  * #### Example 3
@@ -46,14 +46,14 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
- * import '@react-native-firebase/fiam';
+ * import '@react-native-firebase/in-app-messaging';
  *
- * // firebase.fiam().X
+ * // firebase.inAppMessaging().X
  * ```
  *
- * @firebase fiam
+ * @firebase in-app-messaging
  */
-export namespace Fiam {
+export namespace InAppMessaging {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -68,7 +68,7 @@ export namespace Fiam {
    * Get the  In-App Messaging service for the default app:
    *
    * ```js
-   * const defaultAppFiam = firebase.fiam();
+   * const defaultAppInAppMessaging = firebase.inAppMessaging();
    * ```
    */
   export class Module extends FirebaseModule {
@@ -78,7 +78,7 @@ export namespace Fiam {
      * #### Example
      *
      * ```js
-     * const isSuppressed = firebase.fiam().isMessagesDisplaySuppressed;
+     * const isSuppressed = firebase.inAppMessaging().isMessagesDisplaySuppressed;
      * ```
      */
     isMessagesDisplaySuppressed: boolean;
@@ -93,7 +93,7 @@ export namespace Fiam {
      *
      * ```js
      * // Suppress messages
-     * await firebase.fiam().setMessagesDisplaySuppressed(true);
+     * await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
      * ```
      *
      * @param enabled Whether messages should be suppressed.
@@ -106,7 +106,7 @@ export namespace Fiam {
      * #### Example
      *
      * ```js
-     * const isDataCollectionEnabled = firebase.fiam().isAutomaticDataCollectionEnabled;
+     * const isDataCollectionEnabled = firebase.inAppMessaging().isAutomaticDataCollectionEnabled;
      * ```
      */
     isAutomaticDataCollectionEnabled: boolean;
@@ -123,7 +123,7 @@ export namespace Fiam {
      *
      * ```js
      * // Disable data collection
-     * firebase.fiam().setAutomaticDataCollectionEnabled(false);
+     * firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
      * ```
      *
      * @param enabled Whether automatic data collection is enabled.
@@ -132,14 +132,14 @@ export namespace Fiam {
   }
 }
 
-declare module '@react-native-firebase/fiam' {
+declare module '@react-native-firebase/in-app-messaging' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Fiam.Module, Fiam.Statics>;
+  const module: FirebaseModuleWithStatics<InAppMessaging.Module, InAppMessaging.Statics>;
   export default module;
 }
 
@@ -150,11 +150,11 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      fiam: FirebaseModuleWithStatics<Fiam.Module, Fiam.Statics>;
+      inAppMessaging: FirebaseModuleWithStatics<InAppMessaging.Module, InAppMessaging.Statics>;
     }
 
     interface FirebaseApp {
-      fiam(): Fiam.Module;
+      inAppMessaging(): InAppMessaging.Module;
     }
   }
 }
@@ -173,16 +173,16 @@ namespace ReactNativeFirebase {
      * // <project-root>/firebase.json
      * {
      *   "react-native": {
-     *     "fiam_auto_collection_enabled": false
+     *     "in_app_messaging_auto_collection_enabled": false
      *   }
      * }
      * ```
      *
      * ```js
      * // Re-enable in-app messaging, e.g. once user has granted permission:
-     * await firebase.perf().setAutomaticDataCollectionEnabled(true);
+     * await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
      * ```
      */
-    fiam_auto_collection_enabled: boolean;
+    in_app_messaging_auto_collection_enabled: boolean;
   }
 }

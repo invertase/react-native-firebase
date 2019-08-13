@@ -38,6 +38,6 @@ messages that encourage them to use key app features. React Native Firebase prov
 Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-fiam)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-inAppMessaging)
 - [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Afiam+)
 - [Firebase Documentation](https://firebase.google.com/docs/in-app-messaging?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=fiam)

@@ -15,7 +15,7 @@
     "@react-native-firebase/crashlytics": "0.1.5",
     "@react-native-firebase/database": "0.1.5",
     "@react-native-firebase/dynamic-links": "0.1.5",
-    "@react-native-firebase/fiam": "0.1.5",
+    "@react-native-firebase/in-app-messaging": "0.1.5",
     "@react-native-firebase/firestore": "0.1.5",
     "@react-native-firebase/functions": "0.1.5",
     "@react-native-firebase/iid": "0.1.5",
