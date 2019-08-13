@@ -39,7 +39,6 @@ describe('admob() RewardedAd', () => {
         RewardedAd.createForAdRequest('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        console.log(e);
         return Promise.resolve();
       }
     });
@@ -154,7 +153,7 @@ describe('admob() RewardedAd', () => {
 
       spy.getCall(0).args[0].should.eql('error');
       const e = spy.getCall(0).args[1];
-      e.code.should.containEql('invalid-request');
+      e.code.should.containEql('admob/'); // android/ios different errors
     });
   });
 });

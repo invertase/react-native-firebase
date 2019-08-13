@@ -52,9 +52,9 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
 
   private int getConsentStatusInt(ConsentStatus consentStatus) {
     switch (consentStatus) {
-      case PERSONALIZED:
-        return 1;
       case NON_PERSONALIZED:
+        return 1;
+      case PERSONALIZED:
         return 2;
       case UNKNOWN:
       default:
