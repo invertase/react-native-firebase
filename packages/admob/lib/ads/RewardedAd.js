@@ -75,6 +75,6 @@ export default class RewardedAd extends MobileAd {
     };
     // todo validate options? common validator or local?
 
-    return this._admob.native.rewardedShow(this._requestId, this._adUnitId, options);
+    return this._admob.native.rewardedShow(this._requestId, options);
   }
 }

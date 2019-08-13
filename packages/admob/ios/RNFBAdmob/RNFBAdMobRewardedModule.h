@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,11 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
-
-+ (_Nonnull instancetype) sharedInstance;
+@interface RNFBAdMobRewardedModule : NSObject <RCTBridgeModule>
 
 @end

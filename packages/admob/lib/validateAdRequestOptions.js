@@ -18,7 +18,7 @@
 import {
   hasOwnProperty,
   isArray,
-  isBoolean,
+  isBoolean, isNumber,
   isObject,
   isString,
   isUndefined,
@@ -106,16 +106,18 @@ export default function validateAdRequestOptions(options) {
   }
 
   if (options.location) {
+    const error = new Error("'options.location' expected an array value containing a latitude & longitude number value.");
+
     if (!isArray(options.location)) {
-      // todo
+      throw error;
     }
 
-    if (!isString(options.location[0])) {
-      // todo
+    if (!isNumber(options.location[0])) {
+      throw error;
     }
 
-    if (!isString(options.location[1])) {
-      // todo
+    if (!isNumber(options.location[1])) {
+      throw error;
     }
 
     out.location = [options[0], options[1]];

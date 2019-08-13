@@ -1,3 +1,4 @@
+//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,32 +16,21 @@
  *
  */
 
-#import <React/RCTUtils.h>
+#import <Foundation/Foundation.h>
 
-#import "RNFBAdmobModule.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
+#import "RNFBAdMobCommon.h"
 
-@implementation RNFBAdmobModule
-#pragma mark -
-#pragma mark Module Setup
+@interface RNFBAdMobRewardedDelegate : NSObject <GADRewardedAdDelegate>
 
-RCT_EXPORT_MODULE();
++ (_Nonnull instancetype)sharedInstance;
 
-- (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
-}
-
-#pragma mark -
-#pragma mark Firebase Admob Methods
-
-
-RCT_EXPORT_METHOD(setRequestConfiguration:
-  (NSDictionary *) requestConfiguration
-    :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject
-) {
-
-}
++ (void)sendRewardedEvent:(NSString *)type
+                requestId:(NSNumber *)requestId
+                 adUnitId:(NSString *)adUnitId
+                    error:(nullable NSDictionary *)error
+                     data:(nullable NSDictionary *)data;
 
 @end

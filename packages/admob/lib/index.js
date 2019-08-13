@@ -24,7 +24,8 @@ import {
 import version from './version';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
-import MaxAdContentRating from './MaxAdContentRating'
+import MaxAdContentRating from './MaxAdContentRating';
+import TestIds from './TestIds';
 
 import AdEventType from './AdEventType';
 import RewardedAdEventType from './RewardedAdEventType';
@@ -36,12 +37,9 @@ const statics = {
   AdsConsentDebugGeography,
   AdsConsentStatus,
   AdEventType,
+  RewardedAdEventType,
   MaxAdContentRating,
-  TestIds: {
-    BANNER: 'ca-app-pub-3940256099942544/6300978111',
-    INTERSTITIAL: 'ca-app-pub-3940256099942544/1033173712',
-    REWARDED: 'ca-app-pub-3940256099942544/5224354917',
-  },
+  TestIds,
 };
 
 const namespace = 'admob';
@@ -54,6 +52,7 @@ class FirebaseAdMobModule extends FirebaseModule {
     super(...args);
 
     this.emitter.addListener('admob_interstitial_event', (event) => {
+      console.log(event)
       this.emitter.emit(
         `admob_interstitial_event:${event.adUnitId}:${event.requestId}`,
         event,
@@ -116,6 +115,7 @@ export const firebase = getFirebaseRoot();
 export AdsConsentDebugGeography from './AdsConsentDebugGeography';
 export AdsConsentStatus from './AdsConsentStatus';
 export MaxAdContentRating from './MaxAdContentRating';
+export TestIds from './TestIds';
 export AdEventType from './AdEventType';
 export RewardedAdEventType from './RewardedAdEventType';
 
@@ -123,4 +123,5 @@ export AdsConsent from './AdsConsent';
 
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
+export BannerAd from './ads/BannerAd';
 

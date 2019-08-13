@@ -17,11 +17,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
-
-+ (_Nonnull instancetype) sharedInstance;
+@interface RNFBAdMobModule : NSObject <RCTBridgeModule>
 
 @end

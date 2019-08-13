@@ -18,10 +18,10 @@ package io.invertase.firebase.admob;
  */
 
 
+import android.location.Location;
 import android.os.Bundle;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -36,8 +36,6 @@ import javax.annotation.Nullable;
 
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
-
-import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 
 public class ReactNativeFirebaseAdMobCommon {
 
@@ -90,8 +88,12 @@ public class ReactNativeFirebaseAdMobCommon {
     }
 
     if (adRequestOptions.hasKey("location")) {
-      ReadableArray location = adRequestOptions.getArray("location");
-      // todo how? https://developer.android.com/reference/android/location/Location.html
+      ReadableArray locationArray = adRequestOptions.getArray("location");
+      Location location = new Location("");
+      location.setLatitude(Objects.requireNonNull(locationArray).getDouble(0));
+      location.setLongitude(Objects.requireNonNull(locationArray).getDouble(1));
+
+      builder.setLocation(location);
     }
 
     if (adRequestOptions.hasKey("requestAgent")) {
@@ -143,7 +145,7 @@ public class ReactNativeFirebaseAdMobCommon {
 
   static public String[] getCodeAndMessageFromAdErrorCode(int errorCode) {
     String code = "unknown";
-    String message = "An unknown error occurred";
+    String message = "An unknown error occurred.";
 
     switch (errorCode) {
       case AdRequest.ERROR_CODE_INTERNAL_ERROR:
