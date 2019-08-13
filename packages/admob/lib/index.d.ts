@@ -98,7 +98,6 @@ export namespace Admob {
 
     OPENED = 'opened',
 
-    // android only
     CLICKED = 'clicked',
 
     LEFT_APPLICATION = 'left_application',

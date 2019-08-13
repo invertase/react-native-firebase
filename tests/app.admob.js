@@ -61,7 +61,7 @@ function Root() {
     };
 
 
-    const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED);
+    const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED, options);
     //
     // rewardedAd.onAdEvent(console.log);
     //
