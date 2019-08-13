@@ -197,4 +197,12 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void addTestDevices(ReadableArray deviceIds, Promise promise) {
+    List<Object> devices = deviceIds.toArrayList();
+    for (Object device : devices) {
+      consentInformation.addTestDevice((String) device);
+    }
+    promise.resolve(null);
+  }
 }

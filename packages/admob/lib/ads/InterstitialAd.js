@@ -18,6 +18,7 @@
 import { isFunction, isString } from '@react-native-firebase/common';
 import { getFirebaseRoot } from '@react-native-firebase/app/lib/internal';
 import validateAdRequestOptions from '../validateAdRequestOptions';
+import validateAdShowOptions from '../validateAdShowOptions';
 
 import MobileAd from './MobileAd';
 
@@ -56,7 +57,7 @@ export default class InterstitialAd extends MobileAd {
   onAdEvent(handler) {
     if (!isFunction(handler)) {
       throw new Error(
-        'firebase.admob() InterstitialAd.onAdEvent(*) \'handler\' expected a function.',
+        `firebase.admob() InterstitialAd.onAdEvent(*) 'handler' expected a function.`,
       );
     }
 
@@ -70,10 +71,14 @@ export default class InterstitialAd extends MobileAd {
       );
     }
 
-    let options = {
-      immersiveModeEnabled: false,
-    };
-    // todo validate options? common validator or local?
+    let options;
+    try {
+      options = validateAdShowOptions(showOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.admob() InterstitialAd.show(*) ${e.message}.`,
+      );
+    }
 
     return this._admob.native.interstitialShow(this._requestId, options);
   }

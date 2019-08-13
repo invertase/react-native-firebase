@@ -21,7 +21,8 @@ import {
   isBoolean, isNumber,
   isObject,
   isString,
-  isUndefined,
+  isUndefined, isValidUrl,
+  isFinite,
 } from '@react-native-firebase/common';
 
 export default function validateAdRequestOptions(options) {
@@ -94,13 +95,13 @@ export default function validateAdRequestOptions(options) {
       throw new Error("'options.contentUrl' expected a string value");
     }
 
+    if (!isValidUrl(options.contentUrl)) {
+      throw new Error("'options.contentUrl' expected a valid HTTP or HTTPS url.");
+    }
+
     if (options.contentUrl.length > 512) {
       throw new Error("'options.contentUrl' maximum length of a content URL is 512 characters.");
     }
-
-    // if (isValidUrl(options.contentUrl)) {
-    //   // todo
-    // }
 
     out.contentUrl = options.contentUrl;
   }
@@ -112,15 +113,39 @@ export default function validateAdRequestOptions(options) {
       throw error;
     }
 
-    if (!isNumber(options.location[0])) {
+    const [latitude, longitude] = options.location;
+
+    if (!isNumber(latitude) || !isNumber(longitude)) {
       throw error;
     }
 
-    if (!isNumber(options.location[1])) {
-      throw error;
+    if (latitude < -90 || latitude > 90) {
+      throw new Error(
+        `'options.location' latitude value must be a number between -90 and 90, but was: ${latitude}`
+      );
     }
 
-    out.location = [options[0], options[1]];
+    if (longitude < -180 || longitude > 180) {
+      throw new Error(
+        `'options.location' longitude value must be a number between -180 and 180, but was: ${latitude}`
+      );
+    }
+
+    out.location = [latitude, longitude];
+  }
+
+  if (hasOwnProperty(options, 'locationAccuracy')) {
+    if (!isNumber(options.locationAccuracy)) {
+      throw new Error("'options.locationAccuracy' expected a number value.");
+    }
+
+    if (options.locationAccuracy < 0) {
+      throw new Error("'options.locationAccuracy' expected a number greater than 0.");
+    }
+
+    out.locationAccuracy = options.locationAccuracy;
+  } else {
+    out.locationAccuracy = 5;
   }
 
   if (options.requestAgent) {
@@ -128,12 +153,8 @@ export default function validateAdRequestOptions(options) {
       throw new Error("'options.requestAgent' expected a string value");
     }
 
-    // if (isValidUrl(options.contentUrl)) {
-    //   // todo
-    // }
-
     out.requestAgent = options.requestAgent;
   }
 
-  return options;
+  return out;
 }

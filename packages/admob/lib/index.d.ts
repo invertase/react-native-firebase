@@ -415,11 +415,11 @@ export namespace Admob {
      *
      * Emulators are automatically whitelisted and require no action.
      *
-     * If you are unsure of how to obtain your device ID, see [react-native-device-info](https://github.com/react-native-community/react-native-device-info).
+     * If you are unsure of how to obtain a device ID, see [react-native-device-info](https://github.com/react-native-community/react-native-device-info).
      *
-     * @param deviceId The testing device ID.
+     * @param deviceIds An array of testing device ID.
      */
-    addTestDevice(deviceId: string): Promise<void>;
+    addTestDevices(deviceIds: string[]): Promise<void>;
   }
 
   /**
@@ -651,6 +651,15 @@ export namespace Admob {
      * ```
      */
     location?: string[];
+
+    /**
+     * Sets the location accuracy if the location is set, in meters.
+     *
+     * This option is only applied to iOS devices. On Android, this option has no effect.
+     *
+     * @ios
+     */
+    locationAccuracy?: number;
 
     /**
      * Sets the request agent string to identify the ad request's origin. Third party libraries that reference the Mobile

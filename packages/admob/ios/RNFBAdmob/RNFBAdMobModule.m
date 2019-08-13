@@ -16,6 +16,7 @@
  */
 
 #import <React/RCTUtils.h>
+#import <GoogleMobileAds/GoogleMobileAds.h>
 
 #import "RNFBAdMobModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
@@ -40,7 +41,33 @@ RCT_EXPORT_METHOD(setRequestConfiguration:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
+  [self setRequestConfiguration:requestConfiguration];
+  resolve([NSNull null]);
+}
 
+- (void)setRequestConfiguration:(NSDictionary *)requestConfiguration {
+  if (requestConfiguration[@"maxAdContentRating"]) {
+    NSString *rating = requestConfiguration[@"maxAdContentRating"];
+    if ([rating isEqualToString:@"G"]) {
+      GADMobileAds.sharedInstance.requestConfiguration.maxAdContentRating = GADMaxAdContentRatingGeneral;
+    } else if ([rating isEqualToString:@"PG"]) {
+      GADMobileAds.sharedInstance.requestConfiguration.maxAdContentRating = GADMaxAdContentRatingParentalGuidance;
+    } else if ([rating isEqualToString:@"T"]) {
+      GADMobileAds.sharedInstance.requestConfiguration.maxAdContentRating = GADMaxAdContentRatingTeen;
+    } else if ([rating isEqualToString:@"MA"]) {
+      GADMobileAds.sharedInstance.requestConfiguration.maxAdContentRating = GADMaxAdContentRatingMatureAudience;
+    }
+  }
+
+  if (requestConfiguration[@"tagForChildDirectedTreatment"]) {
+    BOOL tag = (BOOL) requestConfiguration[@"tagForChildDirectedTreatment"];
+    [GADMobileAds.sharedInstance.requestConfiguration tagForChildDirectedTreatment:tag];
+  }
+
+  if (requestConfiguration[@"tagForUnderAgeOfConsent"]) {
+    BOOL tag = (BOOL) requestConfiguration[@"tagForUnderAgeOfConsent"];
+    [GADMobileAds.sharedInstance.requestConfiguration tagForUnderAgeOfConsent:tag];
+  }
 }
 
 @end
