@@ -24,7 +24,7 @@ import type { ReactNativeFirebaseModule } from '@react-native-firebase/app-types
  * #### Example
  *
  * ```js
- * firebase.config.LastFetchStatus;
+ * firebase.remoteConfig.LastFetchStatus;
  * ```
  */
 export interface LastFetchStatus {
@@ -32,7 +32,7 @@ export interface LastFetchStatus {
    * A value indicating that the last fetch was successful.
    *
    * ```js
-   * firebase.config.LastFetchStatus.SUCCESS;
+   * firebase.remoteConfig.LastFetchStatus.SUCCESS;
    * ```
    */
   SUCCESS: 'success';
@@ -41,7 +41,7 @@ export interface LastFetchStatus {
    * A value indicating that the last fetch failed.
    *
    * ```js
-   * firebase.config.LastFetchStatus.FAILURE;
+   * firebase.remoteConfig.LastFetchStatus.FAILURE;
    * ```
    */
   FAILURE: 'failure';
@@ -52,7 +52,7 @@ export interface LastFetchStatus {
    * This usually occurs when calling fetch often with a low expiration duration.
    *
    * ```js
-   * firebase.config.LastFetchStatus.THROTTLED;
+   * firebase.remoteConfig.LastFetchStatus.THROTTLED;
    * ```
    */
   THROTTLED: 'throttled';
@@ -63,7 +63,7 @@ export interface LastFetchStatus {
    * This usually means you've not called fetch yet.
    *
    * ```js
-   * firebase.config.LastFetchStatus.NO_FETCH_YET;
+   * firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET;
    * ```
    */
   NO_FETCH_YET: 'no_fetch_yet';
@@ -75,7 +75,7 @@ export interface LastFetchStatus {
  * #### Example
  *
  * ```js
- * firebase.config.ValueSource;
+ * firebase.remoteConfig.ValueSource;
  * ```
  */
 export interface ValueSource {
@@ -83,7 +83,7 @@ export interface ValueSource {
    * If the value was retrieved from the server.
    *
    * ```js
-   * firebase.config.ValueSource.REMOTE;
+   * firebase.remoteConfig.ValueSource.REMOTE;
    * ```
    */
   REMOTE: 'remote';
@@ -91,7 +91,7 @@ export interface ValueSource {
    * If the value was set as a default value.
    *
    * ```js
-   * firebase.config.ValueSource.DEFAULT;
+   * firebase.remoteConfig.ValueSource.DEFAULT;
    * ```
    */
   DEFAULT: 'default';
@@ -99,17 +99,17 @@ export interface ValueSource {
    * If no value was found and a static default value was returned instead.
    *
    * ```js
-   * firebase.config.ValueSource.STATIC;
+   * firebase.remoteConfig.ValueSource.STATIC;
    * ```
    */
   STATIC: 'static';
 }
 
 /**
- * Firebase Remote Config statics.
+ * Firebase Remote RemoteConfig statics.
  *
  * ```js
- * firebase.config;
+ * firebase.remoteConfig;
  * ```
  */
 export interface Statics {
@@ -119,25 +119,25 @@ export interface Statics {
    * #### Example
    *
    * ```js
-   * firebase.config.ValueSource;
+   * firebase.remoteConfig.ValueSource;
    * ```
    */
   ValueSource: ValueSource;
 
   /**
-   * A pseudo-enum for usage with `firebase.config().lastFetchStatus` to determine the last fetch status.
+   * A pseudo-enum for usage with `firebase.remoteConfig().lastFetchStatus` to determine the last fetch status.
    *
    * #### Example
    *
    * ```js
-   * firebase.config.LastFetchStatus;
+   * firebase.remoteConfig.LastFetchStatus;
    * ```
    */
   LastFetchStatus: LastFetchStatus;
 }
 
 /**
- * An Interface representing a Remote Config value.
+ * An Interface representing a Remote RemoteConfig value.
  */
 export interface ConfigValue {
   /**
@@ -152,7 +152,7 @@ export interface ConfigValue {
    * #### Example
    *
    * ```js
-   * const configValue = firebase.config().getValue('beta_enabled');
+   * const configValue = firebase.remoteConfig().getValue('beta_enabled');
    * console.log('Value source: ', configValue.source);
    * ```
    */
@@ -164,7 +164,7 @@ export interface ConfigValue {
    * #### Example
    *
    * ```js
-   * const configValue = firebase.config().getValue('beta_enabled');
+   * const configValue = firebase.remoteConfig().getValue('beta_enabled');
    * console.log('Value: ', configValue.value);
    * ```
    */
@@ -172,12 +172,12 @@ export interface ConfigValue {
 }
 
 /**
- * An Interface representing multiple Config Values.
+ * An Interface representing multiple RemoteConfig Values.
  *
  * #### Example
  *
  * ```js
- * const values = firebase.config().getAll();
+ * const values = firebase.remoteConfig().getAll();
  * ```
  */
 export interface ConfigValues {
@@ -193,7 +193,7 @@ export interface ConfigValues {
  * is exposed.
  *
  * ```js
- * await firebase.config().setConfigSettings({
+ * await firebase.remoteConfig().setConfigSettings({
  *   isDeveloperModeEnabled: __DEV__,
  * });
  * ```
@@ -207,12 +207,12 @@ export interface ConfigSettings {
 }
 
 /**
- * An Interface representing a Config Defaults object.
+ * An Interface representing a RemoteConfig Defaults object.
  *
  * #### Example
  *
  * ```js
- * await firebase.config().setDefaults({
+ * await firebase.remoteConfig().setDefaults({
  *   experiment_enabled: false,
  * });
  * ```
@@ -222,21 +222,21 @@ export interface ConfigDefaults {
 }
 
 /**
- * The Firebase Remote Config service interface.
+ * The Firebase Remote RemoteConfig service interface.
  *
  * > This module is available for the default app only.
  *
  * #### Example
  *
- * Get the Remote Config service for the default app:
+ * Get the Remote RemoteConfig service for the default app:
  *
  * ```js
- * const defaultAppRemoteConfig = firebase.config();
+ * const defaultAppRemoteConfig = firebase.remoteConfig();
  * ```
  */
 export interface Module extends ReactNativeFirebaseModule {
   /**
-   * The number of milliseconds since the last Remote Config fetch was performed.
+   * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
    */
   lastFetchTime: number;
   /**
@@ -244,7 +244,7 @@ export interface Module extends ReactNativeFirebaseModule {
    */
   isDeveloperModeEnabled: boolean;
   /**
-   * The status of the latest Remote Config fetch action.
+   * The status of the latest Remote RemoteConfig fetch action.
    *
    * See the `LastFetchStatus` statics definition.
    */
@@ -258,8 +258,8 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Fetch values
-   * await firebase.config().fetch();
-   * const activated = await firebase.config().activate();
+   * await firebase.remoteConfig().fetch();
+   * const activated = await firebase.remoteConfig().activate();
    *
    * if (activated) {
    *  console.log('Fetched values successfully activated.');
@@ -277,7 +277,7 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Fetch and cache for 5 minutes
-   * await firebase.config().fetch(300);
+   * await firebase.remoteConfig().fetch(300);
    * ```
    *
    * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
@@ -293,7 +293,7 @@ export interface Module extends ReactNativeFirebaseModule {
    *
    * ```js
    * // Fetch, cache for 5 minutes and activate
-   * const activated = await firebase.config().fetchAndActivate(300);
+   * const activated = await firebase.remoteConfig().fetchAndActivate(300);
    *
    * if (activated) {
    *  console.log('Fetched values successfully activated.');
@@ -312,7 +312,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const values = firebase.config().getAll();
+   * const values = firebase.remoteConfig().getAll();
    *
    * Object.entries(values).forEach(($) => {
    *   const [key, entry] = $;
@@ -331,7 +331,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * const configValue = firebase.config().getValue('experiment');
+   * const configValue = firebase.remoteConfig().getValue('experiment');
    * console.log('Source: ', configValue.source);
    * console.log('Value: ', configValue.value);
    * ```
@@ -341,17 +341,17 @@ export interface Module extends ReactNativeFirebaseModule {
   getValue(key: string): ConfigValue;
 
   /**
-   * Set the Remote Config settings, specifically the `isDeveloperModeEnabled` flag.
+   * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
    *
    * #### Example
    *
    * ```js
-   * await firebase.config().setConfigSettings({
+   * await firebase.remoteConfig().setConfigSettings({
    *   isDeveloperModeEnabled: __DEV__,
    * });
    * ```
    *
-   * @param configSettings A ConfigSettingsWrite instance used to set Remote Config settings.
+   * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
    */
   setConfigSettings(configSettings: ConfigSettings): Promise<void>;
 
@@ -362,7 +362,7 @@ export interface Module extends ReactNativeFirebaseModule {
    * #### Example
    *
    * ```js
-   * await firebase.config().setDefaults({
+   * await firebase.remoteConfig().setDefaults({
    *   experiment_enabled: false,
    * });
    * ```
@@ -384,7 +384,7 @@ export interface Module extends ReactNativeFirebaseModule {
   setDefaultsFromResource(resourceName: string): Promise<null>;
 }
 
-declare module '@react-native-firebase/config' {
+declare module '@react-native-firebase/remote-config' {
   import type {
     ReactNativeFirebaseNamespace,
     ReactNativeFirebaseModuleAndStatics,
@@ -392,8 +392,8 @@ declare module '@react-native-firebase/config' {
   /**
    * @example
    * ```js
-   * import { firebase } from '@react-native-firebase/config';
-   * firebase.config().X(...);
+   * import { firebase } from '@react-native-firebase/remote-config';
+   * firebase.remoteConfig().X(...);
    * ```
    */
   declare export var firebase: {} & ReactNativeFirebaseNamespace;
@@ -401,8 +401,8 @@ declare module '@react-native-firebase/config' {
   /**
    * @example
    * ```js
-   * import config from '@react-native-firebase/config';
-   * config().X(...);
+   * import remoteConfig from '@react-native-firebase/remote-config';
+   * remoteConfig().X(...);
    * ```
    */
   declare export default ReactNativeFirebaseModuleAndStatics<Module, Statics>;
@@ -416,15 +416,15 @@ declare module '@react-native-firebase/app-types' {
 
   declare interface ReactNativeFirebaseNamespace {
     /**
-     * Config
+     * RemoteConfig
      */
-    config: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
+    remoteConfig: ReactNativeFirebaseModuleAndStatics<Module, Statics>;
   }
 
   declare interface FirebaseApp {
     /**
-     * Config
+     * RemoteConfig
      */
-    config(): Module;
+    remoteConfig(): Module;
   }
 }

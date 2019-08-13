@@ -25,7 +25,7 @@ import '@react-native-firebase/firestore';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/database';
 import '@react-native-firebase/analytics';
-import '@react-native-firebase/config';
+import '@react-native-firebase/remote-config';
 import '@react-native-firebase/utils';
 import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/crashlytics';

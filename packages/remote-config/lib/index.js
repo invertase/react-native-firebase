@@ -45,7 +45,7 @@ const statics = {
   },
 };
 
-const namespace = 'config';
+const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
 function convertNativeConfigValues(configValues) {
@@ -90,7 +90,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   getValue(key) {
     if (!isString(key)) {
-      throw new Error("firebase.config().getValue(): 'key' must be a string value.");
+      throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");
     }
 
     if (!hasOwnProperty(this._values, key)) {
@@ -123,13 +123,13 @@ class FirebaseConfigModule extends FirebaseModule {
   setConfigSettings(settings = {}) {
     if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
       throw new Error(
-        "firebase.config().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.",
+        "firebase.remoteConfig().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.",
       );
     }
 
     if (!isBoolean(settings.isDeveloperModeEnabled)) {
       throw new Error(
-        "firebase.config().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
+        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
       );
     }
 
@@ -137,7 +137,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
-   * Activates the Fetched Config, so that the fetched key-values take effect.
+   * Activates the Fetched RemoteConfig, so that the fetched key-values take effect.
    * @returns {Promise<boolean>}
    */
   activate() {
@@ -153,7 +153,7 @@ class FirebaseConfigModule extends FirebaseModule {
   fetch(expirationDurationSeconds) {
     if (!isUndefined(expirationDurationSeconds) && !isNumber(expirationDurationSeconds)) {
       throw new Error(
-        "firebase.config().fetch(): 'expirationDurationSeconds' must be a number value.",
+        "firebase.remoteConfig().fetch(): 'expirationDurationSeconds' must be a number value.",
       );
     }
 
@@ -173,7 +173,7 @@ class FirebaseConfigModule extends FirebaseModule {
    */
   setDefaults(defaults) {
     if (!isObject(defaults)) {
-      throw new Error("firebase.config().setDefaults(): 'defaults' must be an object.");
+      throw new Error("firebase.remoteConfig().setDefaults(): 'defaults' must be an object.");
     }
 
     return this._promiseWithConstants(this.native.setDefaults(defaults));
@@ -186,7 +186,7 @@ class FirebaseConfigModule extends FirebaseModule {
   setDefaultsFromResource(resourceName) {
     if (!isString(resourceName)) {
       throw new Error(
-        "firebase.config().setDefaultsFromResource(): 'resourceName' must be a string value.",
+        "firebase.remoteConfig().setDefaultsFromResource(): 'resourceName' must be a string value.",
       );
     }
 
@@ -208,10 +208,10 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/config';
+// import { SDK_VERSION } from '@react-native-firebase/remote-config';
 export const SDK_VERSION = version;
 
-// import config from '@react-native-firebase/config';
+// import config from '@react-native-firebase/remote-config';
 // config().X(...);
 export default createModuleNamespace({
   statics,
@@ -224,7 +224,7 @@ export default createModuleNamespace({
   ModuleClass: FirebaseConfigModule,
 });
 
-// import config, { firebase } from '@react-native-firebase/config';
+// import config, { firebase } from '@react-native-firebase/remote-config';
 // config().X(...);
-// firebase.config().X(...);
+// firebase.remoteConfig().X(...);
 export const firebase = getFirebaseRoot();

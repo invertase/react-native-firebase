@@ -1,14 +1,14 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/config';
+import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/remote-config';
 
 // checks module exists at root
-console.log(firebase.config().app.name);
+console.log(firebase.remoteConfig().app.name);
 
 // checks module exists at app level
-console.log(firebase.app().config().app.name);
+console.log(firebase.app().remoteConfig().app.name);
 
 // checks statics exist
-console.log(firebase.config.SDK_VERSION);
+console.log(firebase.remoteConfig.SDK_VERSION);
 
 // checks statics exist on defaultExport
 console.log(defaultExport.SDK_VERSION);
