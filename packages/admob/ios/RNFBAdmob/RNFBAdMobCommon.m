@@ -81,15 +81,16 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
   }
 
   if (adRequestOptions[@"location"]) {
-// TODO
-    //    NSArray *location = adRequestOptions[@"location"];
-//    CGFloat *latitude =
-//
-//    [request setLocationWithLatitude:location[0] longitude:<#(CGFloat)longitude#> accuracy:<#(CGFloat)accuracyInMeters#>];
+    // TODO
+    //    [request setLocationWithLatitude:location[0] longitude:<#(CGFloat)longitude#> accuracy:<#(CGFloat)accuracyInMeters#>];
+  }
+
+  if (adRequestOptions[@"contentUrl"]) {
+    request.contentURL = adRequestOptions[@"contentUrl"];
   }
 
   if (adRequestOptions[@"requestAgent"]) {
-    request.keywords = adRequestOptions[@"requestAgent"];
+    request.requestAgent = adRequestOptions[@"requestAgent"];
   }
 
   return request;
