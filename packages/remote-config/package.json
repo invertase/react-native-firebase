@@ -1,5 +1,5 @@
 {
-  "name": "@react-native-firebase/config",
+  "name": "@react-native-firebase/remote-config",
   "version": "0.1.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Remote Config",

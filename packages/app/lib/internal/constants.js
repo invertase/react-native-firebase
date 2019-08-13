@@ -23,7 +23,7 @@ export const KNOWN_NAMESPACES = [
   'admob',
   'auth',
   'analytics',
-  'config',
+  'remoteConfig',
   'crashlytics',
   'database',
   'fiam',

@@ -14,7 +14,7 @@ description: Manually integrate Remote Config into your Android application.
 
 ```groovy
 include ':@react-native-firebase_config'
-project(':@react-native-firebase_config').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/config/android')
+project(':@react-native-firebase_config').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/remote-config/android')
 ```
 
 #### Add Remote Config to App Gradle Dependencies

@@ -11,7 +11,7 @@
     "@react-native-firebase/app": "0.1.5",
     "@react-native-firebase/app-types": "0.1.5",
     "@react-native-firebase/auth": "0.1.5",
-    "@react-native-firebase/config": "0.1.5",
+    "@react-native-firebase/remote-config": "0.1.5",
     "@react-native-firebase/crashlytics": "0.1.5",
     "@react-native-firebase/database": "0.1.5",
     "@react-native-firebase/dynamic-links": "0.1.5",
