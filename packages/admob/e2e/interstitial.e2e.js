@@ -149,7 +149,7 @@ describe('admob() InterstitialAd', () => {
 
       spy.getCall(0).args[0].should.eql('error');
       const e = spy.getCall(0).args[1];
-      e.code.should.containEql('invalid-request');
+      e.code.should.containEql('admob/'); // android/ios different errors
     });
   });
 });
