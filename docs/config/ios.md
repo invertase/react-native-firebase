@@ -18,7 +18,7 @@ description: Manually integrate Remote Config into your iOS application.
 // ..
 target 'app' do
   // ..
-  pod 'RNFBConfig', :path => '../node_modules/@react-native-firebase/config/ios'
+  pod 'RNFBConfig', :path => '../node_modules/@react-native-firebase/remote-config/ios'
 end
 ```
 

@@ -10,7 +10,7 @@ description: Getting started with Remote Config in React Native Firebase
 Install this module with Yarn:
 
 ```bash
-yarn add @react-native-firebase/config
+yarn add @react-native-firebase/remote-config
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
@@ -20,13 +20,13 @@ yarn add @react-native-firebase/config
 Import the Performance Monitoring package into your project:
 
 ```js
-import config from '@react-native-firebase/config';
+import remoteConfig from '@react-native-firebase/remote-config';
 ```
 
 The package also provides access to the firebase instance:
 
 ```js
-import { firebase } from '@react-native-firebase/config';
+import { firebase } from '@react-native-firebase/remote-config';
 ```
 
 ### Fetching, activating and getting values
@@ -35,7 +35,7 @@ Before the values from the Firebase console can be used, they need to be fetched
 the `fetchAndActivate` method:
 
 ```js
-import config from '@react-native-firebase/config';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 async function getValues() {
   try {
@@ -59,7 +59,7 @@ your application. To prevent any race conditions where values are being requeste
 have been fetched and activated, it is recommended you set default values using `setDefaults`:
 
 ```js
-import config from '@react-native-firebase/config';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 async function bootstrap() {
   await config().setDefaults({
@@ -74,7 +74,7 @@ Whilst developing, setting the developer mode to `true` allows config to bypass 
 which are applied in a production application. This can be done with the `setConfigSettings` method:
 
 ```js
-import config from '@react-native-firebase/config';
+import remoteConfig from '@react-native-firebase/remote-config';
 
 async function bootstrap() {
   await config().setConfigSettings({
