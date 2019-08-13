@@ -85,10 +85,6 @@ class FirebaseAdMobModule extends FirebaseModule {
 
     return this.native.setRequestConfiguration(config);
   }
-
-  openDebugMenu(adUnitId) {
-    return this.native.openDebugMenu(adUnitId);
-  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/admob';
