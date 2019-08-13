@@ -27,7 +27,7 @@ import version from './version';
 
 const statics = {};
 
-const namespace = 'fiam';
+const namespace = 'inAppMessaging';
 
 const nativeModuleName = 'RNFBFiamModule';
 
@@ -49,7 +49,7 @@ class FirebaseFiamModule extends FirebaseModule {
   setMessagesDisplaySuppressed(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        "firebase.fiam().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.",
+        "firebase.inAppMessaging().setMessagesDisplaySuppressed(*) 'enabled' must be a boolean.",
       );
     }
 
@@ -60,7 +60,7 @@ class FirebaseFiamModule extends FirebaseModule {
   setAutomaticDataCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        "firebase.fiam().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.",
+        "firebase.inAppMessaging().setAutomaticDataCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 
@@ -69,11 +69,11 @@ class FirebaseFiamModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/fiam';
+// import { SDK_VERSION } from '@react-native-firebase/in-app-messaging';
 export const SDK_VERSION = version;
 
-// import fiam from '@react-native-firebase/fiam';
-// fiam().X(...);
+// import inAppMessaging from '@react-native-firebase/in-app-messaging';
+// inAppMessaging().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -85,7 +85,7 @@ export default createModuleNamespace({
   ModuleClass: FirebaseFiamModule,
 });
 
-// import fiam, { firebase } from '@react-native-firebase/fiam';
-// fiam().X(...);
-// firebase.fiam().X(...);
+// import inAppMessaging, { firebase } from '@react-native-firebase/in-app-messaging';
+// inAppMessaging().X(...);
+// firebase.inAppMessaging().X(...);
 export const firebase = getFirebaseRoot();

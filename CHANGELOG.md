@@ -20,7 +20,7 @@ The following modules are completed and published to NPM and ready to be consume
 | [Cloud Messaging](/packages/messaging)                   |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/messaging.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/messaging)           |           [![badge](https://api.rnfirebase.io/coverage/messaging/badge)](https://api.rnfirebase.io/coverage/messaging/detail)           |
 | [Crashlytics](/packages/crashlytics)                     |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics)         |         [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail)         |
 | [Dynamic Links](/packages/dynamic-links)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/dynamic-links.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/dynamic-links)       |       [![badge](https://api.rnfirebase.io/coverage/dynamic-links/badge)](https://api.rnfirebase.io/coverage/dynamic-links/detail)       |
-| [In-app Messaging](/packages/fiam)                       |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)                |                [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)                |
+| [In-app Messaging](/packages/in-app-messaging)           |    [![badge](https://img.shields.io/npm/dm/@react-native-firebase/in-app-messaging.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/in-app-messaging)    |    [![badge](https://api.rnfirebase.io/coverage/in-app-messaging/badge)](https://api.rnfirebase.io/coverage/in-app-messaging/detail)    |
 | [Instance ID](/packages/iid)                             |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
 | [ML Kit Vision ](/packages/ml-vision)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-vision)           |           [![badge](https://api.rnfirebase.io/coverage/ml-vision/badge)](https://api.rnfirebase.io/coverage/ml-vision/detail)           |
@@ -235,12 +235,12 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 
 ---
 
-## In-App Messaging (fiam) - **[NEW]**
+## In-App Messaging (inAppMessaging) - **[NEW]**
 
-- [NEW] Added support for `firebase.fiam().isMessagesDisplaySuppressed: boolean;`
-- [NEW] Added support for `firebase.fiam().setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;`
-- [NEW] Added support for `firebase.fiam().isAutomaticDataCollectionEnabled: boolean;`
-- [NEW] Added support for `firebase.fiam().setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;`
+- [NEW] Added support for `firebase.inAppMessaging().isMessagesDisplaySuppressed: boolean;`
+- [NEW] Added support for `firebase.inAppMessaging().setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;`
+- [NEW] Added support for `firebase.inAppMessaging().isAutomaticDataCollectionEnabled: boolean;`
+- [NEW] Added support for `firebase.inAppMessaging().setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;`
 
 ---
 
