@@ -69,7 +69,7 @@
     to: "/v6/iid"
     asset: "//static.invertase.io/assets/social/firebase-logo.png"
   - text: In-App Messaging
-    to: "/v6/fiam"
+    to: "/v6/in-app-messaging"
     asset: "//static.invertase.io/assets/firebase/in-app-messaging.svg"
   - text: Invites
     to: "/v6/invites"
@@ -84,7 +84,7 @@
     to: "/v6/notifications"
     asset: "//static.invertase.io/assets/social/firebase-logo.png"
   - text: Remote Config
-    to: "/v6/config"
+    to: "/v6/remote-config"
     asset: "//static.invertase.io/assets/firebase/remote-config.svg"
   - text: Performance Monitoring
     to: "/v6/perf"
