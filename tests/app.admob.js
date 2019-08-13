@@ -19,22 +19,27 @@
 import React, { useEffect, Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View, Text } from 'react-native';
 
-import { AdsConsent, InterstitialAd, RewardedAd, BannerAd, TestIds } from '@react-native-firebase/admob';
+import {
+  AdsConsent,
+  InterstitialAd,
+  RewardedAd,
+  BannerAd,
+  TestIds,
+} from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
 function Root() {
-
   async function init() {
-    // await AdsConsent.setDebugGeography(1);
-    //
-    // const foo = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
-    // console.warn(foo);
-    // const r = await AdsConsent.showForm({
-    //   privacyPolicy: 'https://invertase.io/privacy-policy',
-    //   withPersonalizedAds: true,
-    //   withNonPersonalizedAds: false,
-    //   withAdFree: false,
-    // });
+    await AdsConsent.setDebugGeography(1);
+
+    const foo = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
+    console.warn(foo);
+    const r = await AdsConsent.showForm({
+      privacyPolicy: 'https://invertase.io/privacy-policy',
+      // withPersonalizedAds: true,
+      // withNonPersonalizedAds: false,
+      // withAdFree: false,
+    });
     // console.log(r);
     //
     // const p = await AdsConsent.getAdProviders();
@@ -47,52 +52,52 @@ function Root() {
     //   },
     // });
 
-    const options = {
-      requestNonPersonalizedAdsOnly: true,
-      networkExtras: {
-        user: '123',
-        foo: 'bar',
-        npa: '1',
-      },
-      keywords: ['foo'],
-      testDevices: ['EMULATOR'],
-      location: [53.481073, -2.237074],
-      requestAgent: 'CoolAds',
-    };
-
-
-    const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED, options);
+    // const options = {
+    //   requestNonPersonalizedAdsOnly: true,
+    //   networkExtras: {
+    //     user: '123',
+    //     foo: 'bar',
+    //     npa: '1',
+    //   },
+    //   keywords: ['foo'],
+    //   testDevices: ['EMULATOR'],
+    //   location: [53.481073, -2.237074],
+    //   requestAgent: 'CoolAds',
+    // };
     //
-    // rewardedAd.onAdEvent(console.log);
     //
+    // const rewardedAd = RewardedAd.createForAdRequest(TestIds.REWARDED, options);
+    // //
+    // // rewardedAd.onAdEvent(console.log);
+    // //
+    // // rewardedAd.load();
+    //
+    // rewardedAd.onAdEvent(async (type, error, data) => {
+    //   console.log('>>>', type, error, data);
+    //
+    //   if (type === 'rewarded_loaded') {
+    //     await rewardedAd.show();
+    //   }
+    // });
+    // //
     // rewardedAd.load();
-
-    rewardedAd.onAdEvent(async (type, error, data) => {
-      console.log('>>>', type, error, data);
-
-      if (type === 'rewarded_loaded') {
-        await rewardedAd.show();
-      }
-    });
-    //
-    rewardedAd.load();
   }
 
-// testing ssh - not sure the name
-//     const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
-//       //
-//     });
-//     await interstitialAd.show();
-//
-//     interstitialAd.onAdEvent(async (type, error) => {
-//       console.log('>>>', type, error);
-//       if (type === 'loaded') {
-//         console.log('!!!!! show')
-//       }
-//     });
-//
-//     interstitialAd.load();
-//   }
+  // testing ssh - not sure the name
+  //     const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+  //       //
+  //     });
+  //     await interstitialAd.show();
+  //
+  //     interstitialAd.onAdEvent(async (type, error) => {
+  //       console.log('>>>', type, error);
+  //       if (type === 'loaded') {
+  //         console.log('!!!!! show')
+  //       }
+  //     });
+  //
+  //     interstitialAd.load();
+  //   }
 
   useEffect(() => {
     init().catch(console.error);

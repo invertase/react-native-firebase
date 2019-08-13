@@ -151,7 +151,6 @@ export function isAlphaNumericUnderscore(value) {
   return AlphaNumericUnderscore.test(value);
 }
 
-
 /**
  * URL test
  * @param url
