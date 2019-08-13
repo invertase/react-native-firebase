@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "genversion --semi lib/version.js",
+    "build": "genversion --semi lib/version.js && node ./scripts/genversion-ios",
     "build:clean": "rimraf android/build && rimraf ios/build",
     "prepare": "npm run build"
   },

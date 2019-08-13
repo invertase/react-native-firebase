@@ -20,13 +20,13 @@ The following modules are completed and published to NPM and ready to be consume
 | [Cloud Messaging](/packages/messaging)                   |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/messaging.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/messaging)           |           [![badge](https://api.rnfirebase.io/coverage/messaging/badge)](https://api.rnfirebase.io/coverage/messaging/detail)           |
 | [Crashlytics](/packages/crashlytics)                     |         [![badge](https://img.shields.io/npm/dm/@react-native-firebase/crashlytics.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/crashlytics)         |         [![badge](https://api.rnfirebase.io/coverage/crashlytics/badge)](https://api.rnfirebase.io/coverage/crashlytics/detail)         |
 | [Dynamic Links](/packages/dynamic-links)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/dynamic-links.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/dynamic-links)       |       [![badge](https://api.rnfirebase.io/coverage/dynamic-links/badge)](https://api.rnfirebase.io/coverage/dynamic-links/detail)       |
-| [In-app Messaging](/packages/fiam)                       |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/fiam)                |                [![badge](https://api.rnfirebase.io/coverage/fiam/badge)](https://api.rnfirebase.io/coverage/fiam/detail)                |
+| [In-app Messaging](/packages/in-app-messaging)           |    [![badge](https://img.shields.io/npm/dm/@react-native-firebase/in-app-messaging.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/in-app-messaging)    |    [![badge](https://api.rnfirebase.io/coverage/in-app-messaging/badge)](https://api.rnfirebase.io/coverage/in-app-messaging/detail)    |
 | [Instance ID](/packages/iid)                             |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
 | [ML Kit Vision ](/packages/ml-vision)                    |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-vision)           |           [![badge](https://api.rnfirebase.io/coverage/ml-vision/badge)](https://api.rnfirebase.io/coverage/ml-vision/detail)           |
 | [Performance Monitoring](/packages/perf)                 |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
 | [Realtime Database](/packages/database)                  |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |            [![badge](https://api.rnfirebase.io/coverage/database/badge)](https://api.rnfirebase.io/coverage/database/detail)            |
-| [Remote Config](/packages/config)                        |              [![badge](https://img.shields.io/npm/dm/@react-native-firebase/config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/config)              |           [![badge](https://api.rnfirebase.io/coverage/functions/badge)](https://api.rnfirebase.io/coverage/functions/detail)           |
+| [Remote Config](/packages/remote-config)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/remote-config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/remote-config)       |       [![badge](https://api.rnfirebase.io/coverage/remote-config/badge)](https://api.rnfirebase.io/coverage/remote-config/detail)       |
 | [Utils](/packages/utils)                                 |               [![badge](https://img.shields.io/npm/dm/@react-native-firebase/utils.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/utils)               |               [![badge](https://api.rnfirebase.io/coverage/utils/badge)](https://api.rnfirebase.io/coverage/utils/detail)               |
 
 ---
@@ -129,6 +129,22 @@ await analytics().setUserId('12345678');
   - Firebase services such as Performance Monitoring & Remote Config require the default app to be initialised through the plist/json file.
 - [BREAKING] Waiting for apps to init via `.onReady()` has been removed. `initializeApp()` now returns a promise to the same effect
 - [BREAKING] Trying to initialise the `[DEFAULT]` Firebase app in JS when it was already initialised natively will now throw an error (formerly warned)
+
+---
+
+### AdMob (WIP)
+
+AdMob has undergone a full rewrite to keep up-to-date with the latest changes and APIs. The JavaScript API interface has been modified from v5 to provider a simpler, cleaner way to manage ads.
+
+- [NEW] A new `AdsConsent` helper has been added to handle user ads consent, required under GDPR regulations. See the [documentation](https://invertase.io/oss/react-native-firebase/v6/admob/european-user-consent) for more information.
+- [NEW] Global settings can be applied to AdMob via `setRequestConfiguration`.
+  - `maxAdContentRating`, `tagForChildDirectedTreatment` & `tagForUnderAgeOfConsent` are now set a global configuration settings.
+- [NEW] `RewardedAd` interface used the new Google Mobile Ads SDK beta API. Rewarded ads can now be controlled from the user dashboard, supporting both video and interactive ads.
+- [NEW] Added support for requesting only non-personalized ads via the `requestNonPersonalizedAdsOnly` request options.
+- [NEW] Added support for custom network extras on ad requests via `networkExtras`.
+  - The user reward is now pre-fetched when the ad is loaded.
+- [BREAKING] The API interface for interacting with AdMob has undergone a full re-write.
+- [BUGFIX] Ads can now work during React Native debugging. 
 
 ---
 
@@ -235,12 +251,12 @@ Cloud Firestore has undergone a complete overhaul of both JavaScript & native co
 
 ---
 
-## In-App Messaging (fiam) - **[NEW]**
+## In-App Messaging (inAppMessaging) - **[NEW]**
 
-- [NEW] Added support for `firebase.fiam().isMessagesDisplaySuppressed: boolean;`
-- [NEW] Added support for `firebase.fiam().setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;`
-- [NEW] Added support for `firebase.fiam().isAutomaticDataCollectionEnabled: boolean;`
-- [NEW] Added support for `firebase.fiam().setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;`
+- [NEW] Added support for `firebase.inAppMessaging().isMessagesDisplaySuppressed: boolean;`
+- [NEW] Added support for `firebase.inAppMessaging().setMessagesDisplaySuppressed(enabled: boolean): Promise<null>;`
+- [NEW] Added support for `firebase.inAppMessaging().isAutomaticDataCollectionEnabled: boolean;`
+- [NEW] Added support for `firebase.inAppMessaging().setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;`
 
 ---
 
@@ -313,11 +329,12 @@ The Realtime Database module has had a large re-write, fixing various inconsiste
 
 ---
 
-## Remote Config (config)
+## Remote Config (remoteConfig)
 
 The Remote Config API has had a significant API change as originally highlighted would happen in the v5.x.x docs:
 ![image](https://user-images.githubusercontent.com/5347038/58876587-7c62b100-86c6-11e9-81f9-95c26e1485a1.png)
 
+- [BREAKING] Module namespace has been renamed to `.remoteConfig()`, replace all usages of `firebase.config` with the new name.
 - [BREAKING] All Remote Config values can now be accessed synchronously in JS, see `getValue(key: string): ConfigValue` & `getAll(): ConfigValues` below
   - [BREAKING] These replace all the original async methods: `getValue`, `getValues`, `getKeysByPrefix`
 - [BREAKING] `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found
@@ -326,7 +343,7 @@ The Remote Config API has had a significant API change as originally highlighted
 - [BREAKING] `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead
 - [BREAKING] `setDefaults` now returns a Promise that resolves when completed
 - [NEW] Added a new `fetchAndActivate` method - this fetches the config and activates it without the need to call `activate()` separately
-- [NEW] Added the following properties to `firebase.config()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
+- [NEW] Added the following properties to `firebase.remoteConfig()`; `lastFetchTime`, `lastFetchStatus` & `isDeveloperModeEnabled`
 - [NEW] Added a new `setConfigSettings` method - this allows setting `isDeveloperModeEnabled`, replaces the `enableDeveloperMode` method
   - This is a generic settings function to pre-emotively account for an upcoming future change to the native sdks - more settings to be added.
 - [NEW] All previous `get*` methods have been removed and replaced with 2 synchronous methods:

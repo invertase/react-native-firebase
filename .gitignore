@@ -551,3 +551,6 @@ tests/ios/Firebase
 
 google-services.json
 GoogleService-Info.plist
+
+# generated file
+RNFBVersion.m

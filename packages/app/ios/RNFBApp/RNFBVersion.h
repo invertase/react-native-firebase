@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,29 +15,6 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+#import <Foundation/Foundation.h>
 
-export const DEFAULT_APP_NAME = '[DEFAULT]';
-
-export const KNOWN_NAMESPACES = [
-  'admob',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'inAppMessaging',
-  'firestore',
-  'functions',
-  'iid',
-  'invites',
-  'indexing',
-  'storage',
-  'dynamicLinks',
-  'messaging',
-  'naturalLanguage',
-  'vision',
-  'notifications',
-  'perf',
-  'utils',
-];
+extern const NSString * RNFBVersionString;
