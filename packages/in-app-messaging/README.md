@@ -6,9 +6,9 @@
 </p>
 
 <p align="center">
-  <a href="https://api.rnfirebase.io/coverage/fiam/detail"><img src="https://api.rnfirebase.io/coverage/fiam/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/fiam"><img src="https://img.shields.io/npm/dm/@react-native-firebase/fiam.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/fiam"><img src="https://img.shields.io/npm/v/@react-native-firebase/fiam.svg?style=flat-square" alt="NPM version"></a>
+  <a href="https://api.rnfirebase.io/coverage/in-app-messaging/detail"><img src="https://api.rnfirebase.io/coverage/in-app-messaging/badge?style=flat-square" alt="Coverage"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/in-app-messaging"><img src="https://img.shields.io/npm/dm/@react-native-firebase/in-app-messaging.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/in-app-messaging"><img src="https://img.shields.io/npm/v/@react-native-firebase/in-app-messaging.svg?style=flat-square" alt="NPM version"></a>
   <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
   <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
 </p>
@@ -31,15 +31,15 @@ Firebase In-App Messaging helps you engage users who are actively using your app
 Requires `@react-native-firebase/app` to be installed.
 
 ```bash
-yarn add @react-native-firebase/fiam
-react-native link @react-native-firebase/fiam
+yarn add @react-native-firebase/in-app-messaging
+react-native link @react-native-firebase/in-app-messaging
 ```
 
 ## Documentation
 
-- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=fiam)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/fiam)
-- [Reference](https://invertase.io/oss/react-native-firebase/v6/fiam/reference)
+- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=in-app-messaging)
+- [Installation](https://invertase.io/oss/react-native-firebase/v6/in-app-messaging)
+- [Reference](https://invertase.io/oss/react-native-firebase/v6/in-app-messaging/reference)
 
 ## License
 

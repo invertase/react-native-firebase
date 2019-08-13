@@ -26,7 +26,7 @@ export const KNOWN_NAMESPACES = [
   'remoteConfig',
   'crashlytics',
   'database',
-  'fiam',
+  'inAppMessaging',
   'firestore',
   'functions',
   'iid',

@@ -15,12 +15,12 @@
  *
  */
 
-describe('fiam()', () => {
+describe('inAppMessaging()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
-      should.exist(app.fiam);
-      app.fiam().app.should.equal(app);
+      should.exist(app.inAppMessaging);
+      app.inAppMessaging().app.should.equal(app);
     });
   });
 
@@ -28,26 +28,26 @@ describe('fiam()', () => {
     it('true', async () => {
       if (Platform.ios) {
         // android has this as false when Perf tests run prior - internally all share the same flag on the native SDK
-        should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+        should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
       }
-      await firebase.fiam().setAutomaticDataCollectionEnabled(true);
-      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
+      should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
       await Utils.sleep(2000);
     });
 
     it('false', async () => {
       await device.launchApp();
-      await firebase.fiam().setAutomaticDataCollectionEnabled(false);
-      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, false);
+      await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
+      should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
       await Utils.sleep(1500);
-      await firebase.fiam().setAutomaticDataCollectionEnabled(true);
-      should.equal(firebase.fiam().isAutomaticDataCollectionEnabled, true);
+      await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
+      should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
       await Utils.sleep(1500);
     });
 
     it('errors if not boolean', async () => {
       try {
-        firebase.fiam().setAutomaticDataCollectionEnabled();
+        firebase.inAppMessaging().setAutomaticDataCollectionEnabled();
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a boolean');
@@ -58,25 +58,25 @@ describe('fiam()', () => {
 
   describe('setMessagesDisplaySuppressed()', () => {
     it('false', async () => {
-      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
-      await firebase.fiam().setMessagesDisplaySuppressed(false);
-      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
+      should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
+      await firebase.inAppMessaging().setMessagesDisplaySuppressed(false);
+      should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
       await Utils.sleep(2000);
     });
 
     it('true', async () => {
       await device.launchApp();
-      await firebase.fiam().setMessagesDisplaySuppressed(true);
-      should.equal(firebase.fiam().isMessagesDisplaySuppressed, true);
+      await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
+      should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, true);
       await Utils.sleep(1500);
-      await firebase.fiam().setMessagesDisplaySuppressed(false);
-      should.equal(firebase.fiam().isMessagesDisplaySuppressed, false);
+      await firebase.inAppMessaging().setMessagesDisplaySuppressed(false);
+      should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
       await Utils.sleep(1500);
     });
 
     it('errors if not boolean', async () => {
       try {
-        firebase.fiam().setMessagesDisplaySuppressed();
+        firebase.inAppMessaging().setMessagesDisplaySuppressed();
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a boolean');

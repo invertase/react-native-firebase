@@ -387,11 +387,6 @@ PODS:
     - GoogleUtilities/AppDelegateSwizzler (~> 6.2.3)
     - React
     - RNFBApp
-  - RNFBFiam (0.1.5):
-    - Firebase/Core (~> 6.5.0)
-    - Firebase/InAppMessagingDisplay (~> 6.5.0)
-    - React
-    - RNFBApp
   - RNFBFirestore (0.1.5):
     - Firebase/Core (~> 6.5.0)
     - Firebase/Firestore (~> 6.5.0)
@@ -403,6 +398,11 @@ PODS:
     - RNFBApp
   - RNFBIid (0.1.5):
     - Firebase/Core (~> 6.5.0)
+    - React
+    - RNFBApp
+  - RNFBInAppMessaging (0.1.5):
+    - Firebase/Core (~> 6.5.0)
+    - Firebase/InAppMessagingDisplay (~> 6.5.0)
     - React
     - RNFBApp
   - RNFBMessaging (0.1.5):
@@ -476,10 +476,10 @@ DEPENDENCIES:
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics/ios`)"
   - "RNFBDatabase (from `../node_modules/@react-native-firebase/database/ios`)"
   - "RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links/ios`)"
-  - "RNFBFiam (from `../node_modules/@react-native-firebase/fiam/ios`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore/ios`)"
   - "RNFBFunctions (from `../node_modules/@react-native-firebase/functions/ios`)"
   - "RNFBIid (from `../node_modules/@react-native-firebase/iid/ios`)"
+  - "RNFBInAppMessaging (from `../node_modules/@react-native-firebase/in-app-messaging/ios`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging/ios`)"
   - "RNFBMLNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
   - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision/ios`)"
@@ -591,14 +591,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/database/ios"
   RNFBDynamicLinks:
     :path: "../node_modules/@react-native-firebase/dynamic-links/ios"
-  RNFBFiam:
-    :path: "../node_modules/@react-native-firebase/fiam/ios"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore/ios"
   RNFBFunctions:
     :path: "../node_modules/@react-native-firebase/functions/ios"
   RNFBIid:
     :path: "../node_modules/@react-native-firebase/iid/ios"
+  RNFBInAppMessaging:
+    :path: "../node_modules/@react-native-firebase/in-app-messaging/ios"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging/ios"
   RNFBMLNaturalLanguage:
@@ -687,10 +687,10 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: 54ec6180ce596def52f5fcdba682e3e99717c366
   RNFBDatabase: ad60ae224dfdd0d4b317bb383748e9e8a174cc2f
   RNFBDynamicLinks: 4a84167b6f4950b98e8aa8ac3dae6ad9a7828807
-  RNFBFiam: 5c4e3163f7e846acbe8627adf5194fccdfb6c9a8
   RNFBFirestore: 6d1b9faf7588829833088f814581e28dafaccd50
   RNFBFunctions: 59ec6369801e09f978690005f4d5838e5741cc21
   RNFBIid: 5bc47cee031d44ccb1344789c9ca1144b14b250f
+  RNFBInAppMessaging: 0fa3f6ef554a2ddf94ecbf4be775570c64f27dd8
   RNFBMessaging: 902ffc83ba1ceb205bee1c1ab5cfd39926d82913
   RNFBMLNaturalLanguage: a0c9cd14a7424bd42030625731c8ab7ee7fab318
   RNFBMLVision: 8a85dfe317f680da54069f42fedf29da9294752d

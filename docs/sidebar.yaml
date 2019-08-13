@@ -140,7 +140,7 @@
     - text: iOS Setup
       to: '/ios'
 
-- module: fiam
+- module: in-app-messaging
   group: In-App Messaging
   children:
     - text: Overview
