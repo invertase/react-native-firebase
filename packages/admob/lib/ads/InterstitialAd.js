@@ -75,9 +75,7 @@ export default class InterstitialAd extends MobileAd {
     try {
       options = validateAdShowOptions(showOptions);
     } catch (e) {
-      throw new Error(
-        `firebase.admob() InterstitialAd.show(*) ${e.message}.`,
-      );
+      throw new Error(`firebase.admob() InterstitialAd.show(*) ${e.message}.`);
     }
 
     return this._admob.native.interstitialShow(this._requestId, options);

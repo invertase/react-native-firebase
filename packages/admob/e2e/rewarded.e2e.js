@@ -56,7 +56,7 @@ describe('admob() RewardedAd', () => {
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED, {
         requestNonPersonalizedAdsOnly: true,
         networkExtras: {
-          foo: 'bar'
+          foo: 'bar',
         },
         keywords: ['foo', 'bar'],
         testDevices: ['abc', 'EMULATOR'],
@@ -83,7 +83,9 @@ describe('admob() RewardedAd', () => {
         i.show();
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("The requested RewardedAd has not loaded and could not be shown");
+        e.message.should.containEql(
+          'The requested RewardedAd has not loaded and could not be shown',
+        );
         return Promise.resolve();
       }
     });
@@ -122,9 +124,7 @@ describe('admob() RewardedAd', () => {
     it('loads with a valid ad unit id', async () => {
       const spy = sinon.spy();
 
-      const i = RewardedAd.createForAdRequest(
-        firebase.admob.TestIds.REWARDED
-      );
+      const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED);
 
       i.onAdEvent(spy);
       i.load();
@@ -143,9 +143,7 @@ describe('admob() RewardedAd', () => {
     it('errors with an invalid ad unit id', async () => {
       const spy = sinon.spy();
 
-      const i = RewardedAd.createForAdRequest(
-        '123'
-      );
+      const i = RewardedAd.createForAdRequest('123');
 
       i.onAdEvent(spy);
       i.load();

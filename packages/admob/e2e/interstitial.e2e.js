@@ -51,14 +51,13 @@ describe('admob() InterstitialAd', () => {
       i.loaded.should.eql(false);
     });
 
-
     it('loads with requestOptions', async () => {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL, {
         requestNonPersonalizedAdsOnly: true,
         networkExtras: {
-          foo: 'bar'
+          foo: 'bar',
         },
         keywords: ['foo', 'bar'],
         testDevices: ['abc', 'EMULATOR'],
@@ -85,7 +84,9 @@ describe('admob() InterstitialAd', () => {
         i.show();
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql("The requested InterstitialAd has not loaded and could not be shown");
+        e.message.should.containEql(
+          'The requested InterstitialAd has not loaded and could not be shown',
+        );
         return Promise.resolve();
       }
     });
@@ -124,9 +125,7 @@ describe('admob() InterstitialAd', () => {
     it('loads with a valid ad unit id', async () => {
       const spy = sinon.spy();
 
-      const i = InterstitialAd.createForAdRequest(
-        firebase.admob.TestIds.INTERSTITIAL
-      );
+      const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL);
 
       i.onAdEvent(spy);
       i.load();
@@ -139,9 +138,7 @@ describe('admob() InterstitialAd', () => {
     it('errors with an invalid ad unit id', async () => {
       const spy = sinon.spy();
 
-      const i = InterstitialAd.createForAdRequest(
-        '123'
-      );
+      const i = InterstitialAd.createForAdRequest('123');
 
       i.onAdEvent(spy);
       i.load();

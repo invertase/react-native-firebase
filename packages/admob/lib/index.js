@@ -43,25 +43,22 @@ const statics = {
 
 const namespace = 'admob';
 
-const nativeModuleName = ['RNFBAdMobModule', 'RNFBAdMobInterstitialModule', 'RNFBAdMobRewardedModule'];
+const nativeModuleName = [
+  'RNFBAdMobModule',
+  'RNFBAdMobInterstitialModule',
+  'RNFBAdMobRewardedModule',
+];
 
 class FirebaseAdMobModule extends FirebaseModule {
-
   constructor(...args) {
     super(...args);
 
-    this.emitter.addListener('admob_interstitial_event', (event) => {
-      this.emitter.emit(
-        `admob_interstitial_event:${event.adUnitId}:${event.requestId}`,
-        event,
-      );
+    this.emitter.addListener('admob_interstitial_event', event => {
+      this.emitter.emit(`admob_interstitial_event:${event.adUnitId}:${event.requestId}`, event);
     });
 
-    this.emitter.addListener('admob_rewarded_event', (event) => {
-      this.emitter.emit(
-        `admob_rewarded_event:${event.adUnitId}:${event.requestId}`,
-        event,
-      );
+    this.emitter.addListener('admob_rewarded_event', event => {
+      this.emitter.emit(`admob_rewarded_event:${event.adUnitId}:${event.requestId}`, event);
     });
   }
 
@@ -70,9 +67,7 @@ class FirebaseAdMobModule extends FirebaseModule {
     try {
       config = validateAdRequestConfiguration(requestConfiguration);
     } catch (e) {
-      throw new Error(
-        `firebase.admob().setRequestConfiguration(*) ${e.message}`
-      );
+      throw new Error(`firebase.admob().setRequestConfiguration(*) ${e.message}`);
     }
 
     return this.native.setRequestConfiguration(config);
@@ -112,4 +107,3 @@ export AdsConsent from './AdsConsent';
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
 export BannerAd from './ads/BannerAd';
-

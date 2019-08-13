@@ -56,9 +56,7 @@ export default class RewardedAd extends MobileAd {
 
   onAdEvent(handler) {
     if (!isFunction(handler)) {
-      throw new Error(
-        'firebase.admob() RewardedAd.onAdEvent(*) \'handler\' expected a function.',
-      );
+      throw new Error("firebase.admob() RewardedAd.onAdEvent(*) 'handler' expected a function.");
     }
 
     return this._setAdEventHandler(handler);
@@ -75,9 +73,7 @@ export default class RewardedAd extends MobileAd {
     try {
       options = validateAdShowOptions(showOptions);
     } catch (e) {
-      throw new Error(
-        `firebase.admob() RewardedAd.show(*) ${e.message}.`,
-      );
+      throw new Error(`firebase.admob() RewardedAd.show(*) ${e.message}.`);
     }
     return this._admob.native.rewardedShow(this._requestId, options);
   }

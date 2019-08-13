@@ -140,7 +140,6 @@ describe('admob() AdsConsent', () => {
     });
   });
 
-
   describe('setDebugGeography', () => {
     it('throws if geography is invalid', () => {
       try {

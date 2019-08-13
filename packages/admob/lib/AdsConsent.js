@@ -40,20 +40,20 @@ export default {
   requestInfoUpdate(publisherIds) {
     if (!isArray(publisherIds)) {
       throw new Error(
-        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' expected an array of string values."
+        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' expected an array of string values.",
       );
     }
 
     if (publisherIds.length === 0) {
       throw new Error(
-        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' list of publisher IDs cannot be empty."
+        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' list of publisher IDs cannot be empty.",
       );
     }
 
     for (let i = 0; i < publisherIds.length; i++) {
       if (!isString(publisherIds[i])) {
         throw new Error(
-          `firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds[${i}]' expected a string value.`
+          `firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds[${i}]' expected a string value.`,
         );
       }
     }
@@ -68,38 +68,38 @@ export default {
    */
   showForm(options) {
     if (!isUndefined(options) && !isObject(options)) {
-      throw new Error(
-        "firebase.admob.AdsConsent.showForm(*) 'options' expected an object value."
-      );
+      throw new Error("firebase.admob.AdsConsent.showForm(*) 'options' expected an object value.");
     }
 
     if (!isValidUrl(options.privacyPolicy)) {
       throw new Error(
-        "firebase.admob.AdsConsent.showForm(*) 'options.privacyPolicy' expected a valid HTTP or HTTPS URL."
+        "firebase.admob.AdsConsent.showForm(*) 'options.privacyPolicy' expected a valid HTTP or HTTPS URL.",
       );
     }
 
     if (hasOwnProperty(options, 'withPersonalizedAds') && !isBoolean(options.withPersonalizedAds)) {
       throw new Error(
-        "firebase.admob.AdsConsent.showForm(*) 'options.withPersonalizedAds' expected a boolean value."
+        "firebase.admob.AdsConsent.showForm(*) 'options.withPersonalizedAds' expected a boolean value.",
       );
     }
 
-    if (hasOwnProperty(options, 'withNonPersonalizedAds') && !isBoolean(options.withNonPersonalizedAds)) {
+    if (
+      hasOwnProperty(options, 'withNonPersonalizedAds') &&
+      !isBoolean(options.withNonPersonalizedAds)
+    ) {
       throw new Error(
-        "firebase.admob.AdsConsent.showForm(*) 'options.withNonPersonalizedAds' expected a boolean value."
+        "firebase.admob.AdsConsent.showForm(*) 'options.withNonPersonalizedAds' expected a boolean value.",
       );
     }
 
     if (hasOwnProperty(options, 'withAdFree') && !isBoolean(options.withAdFree)) {
       throw new Error(
-        "firebase.admob.AdsConsent.showForm(*) 'options.withAdFree' expected a boolean value."
+        "firebase.admob.AdsConsent.showForm(*) 'options.withAdFree' expected a boolean value.",
       );
     }
 
     return native.showForm(options);
   },
-
 
   /**
    *
@@ -119,7 +119,7 @@ export default {
       geography !== AdsConsentDebugGeography.NOT_EEA
     ) {
       throw new Error(
-        "firebase.admob.AdsConsent.setDebugGeography(*) 'geography' expected one of AdsConsentDebugGeography.DISABLED, AdsConsentDebugGeography.EEA or AdsConsentDebugGeography.NOT_EEA."
+        "firebase.admob.AdsConsent.setDebugGeography(*) 'geography' expected one of AdsConsentDebugGeography.DISABLED, AdsConsentDebugGeography.EEA or AdsConsentDebugGeography.NOT_EEA.",
       );
     }
 
@@ -146,7 +146,7 @@ export default {
       status !== AdsConsentStatus.PERSONALIZED
     ) {
       throw new Error(
-        "firebase.admob.AdsConsent.setStatus(*) 'status' expected one of AdsConsentStatus.UNKNOWN, AdsConsentStatus.NON_PERSONALIZED or AdsConsentStatus.PERSONALIZED."
+        "firebase.admob.AdsConsent.setStatus(*) 'status' expected one of AdsConsentStatus.UNKNOWN, AdsConsentStatus.NON_PERSONALIZED or AdsConsentStatus.PERSONALIZED.",
       );
     }
 
@@ -160,7 +160,7 @@ export default {
   setTagForUnderAgeOfConsent(tag) {
     if (!isBoolean(tag)) {
       throw new Error(
-        "firebase.admob.AdsConsent.setTagForUnderAgeOfConsent(*) 'tag' expected a boolean value."
+        "firebase.admob.AdsConsent.setTagForUnderAgeOfConsent(*) 'tag' expected a boolean value.",
       );
     }
 
@@ -174,18 +174,18 @@ export default {
   addTestDevices(deviceIds) {
     if (!isArray(deviceIds)) {
       throw new Error(
-        "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values."
+        "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values.",
       );
     }
 
     for (let i = 0; i < deviceIds.length; i++) {
       if (!isString(deviceIds[i])) {
         throw new Error(
-          "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values."
+          "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values.",
         );
       }
     }
 
     return native.addTestDevices(deviceIds);
-  }
-}
+  },
+};

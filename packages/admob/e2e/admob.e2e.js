@@ -63,7 +63,9 @@ describe('admob()', () => {
           });
           return Promise.reject(new Error('Did not throw Error.'));
         } catch (e) {
-          e.message.should.containEql("'requestConfiguration.tagForChildDirectedTreatment' expected a boolean value");
+          e.message.should.containEql(
+            "'requestConfiguration.tagForChildDirectedTreatment' expected a boolean value",
+          );
           return Promise.resolve();
         }
       });
@@ -83,7 +85,9 @@ describe('admob()', () => {
           });
           return Promise.reject(new Error('Did not throw Error.'));
         } catch (e) {
-          e.message.should.containEql("'requestConfiguration.tagForUnderAgeOfConsent' expected a boolean value");
+          e.message.should.containEql(
+            "'requestConfiguration.tagForUnderAgeOfConsent' expected a boolean value",
+          );
           return Promise.resolve();
         }
       });
