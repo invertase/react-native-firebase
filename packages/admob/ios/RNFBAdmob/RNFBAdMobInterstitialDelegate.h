@@ -20,8 +20,15 @@
 #import <Firebase/Firebase.h>
 #import <React/RCTBridgeModule.h>
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
+#import "RNFBAdMobCommon.h"
 
-+ (_Nonnull instancetype) sharedInstance;
+@interface RNFBAdMobInterstitialDelegate : NSObject <GADInterstitialDelegate>
+
++ (_Nonnull instancetype)sharedInstance;
+
++ (void)sendInterstitialEvent:(NSString *)type
+                    requestId:(NSNumber *)requestId
+                     adUnitId:(NSString *)adUnitId
+                        error:(nullable NSDictionary *)error;
 
 @end

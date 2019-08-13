@@ -15,13 +15,32 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <React/RCTUtils.h>
 
-#import <Firebase/Firebase.h>
-#import <React/RCTBridgeModule.h>
+#import "RNFBAdMobModule.h"
+#import "RNFBApp/RNFBSharedUtils.h"
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 
-+ (_Nonnull instancetype) sharedInstance;
+@implementation RNFBAdMobModule
+#pragma mark -
+#pragma mark Module Setup
+
+RCT_EXPORT_MODULE();
+
+- (dispatch_queue_t)methodQueue {
+  return dispatch_get_main_queue();
+}
+
+#pragma mark -
+#pragma mark Firebase Admob Methods
+
+
+RCT_EXPORT_METHOD(setRequestConfiguration:
+  (NSDictionary *) requestConfiguration
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+
+}
 
 @end

@@ -17,6 +17,9 @@ Pod::Spec.new do |s|
   s.source_files        = 'RNFBAdmob/**/*.{h,m}'
   s.dependency          'React'
   s.dependency          'Firebase/Core', '~> 6.5.0'
+  s.dependency          'Firebase/Core', '~> 6.5.0'
+  s.dependency          'Firebase/Analytics', '~> 6.5.0'
+  s.dependency          'Firebase/AdMob', '~> 6.5.0'
   s.dependency          'PersonalizedAdConsent'
   s.dependency          'RNFBApp'
   s.static_framework    = true

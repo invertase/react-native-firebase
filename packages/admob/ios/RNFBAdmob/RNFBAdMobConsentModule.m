@@ -41,9 +41,12 @@ RCT_EXPORT_METHOD(requestInfoUpdate:
 ) {
   PACConsentInformation *consentInformation = [PACConsentInformation sharedInstance];
 
-  id completionHandler = ^(NSError *error) {
+  id completionHandler = ^(NSError *_Nullable error) {
     if (error != nil) {
-      // todo error
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+          @"code": @"consent-update-failed",
+          @"message": error.localizedDescription,
+      } mutableCopy]];
     } else {
       resolve(@{
           @"status": @(consentInformation.consentStatus),
@@ -77,7 +80,10 @@ RCT_EXPORT_METHOD(showForm:
 
   id dismissCompletionBlock = ^(NSError *error, BOOL userPrefersAdFree) {
     if (error != nil) {
-      // todo error
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+          @"code": @"consent-form-error",
+          @"message": error.localizedDescription,
+      } mutableCopy]];
     } else {
       resolve(@{
           @"status": @(PACConsentInformation.sharedInstance.consentStatus),
@@ -88,7 +94,10 @@ RCT_EXPORT_METHOD(showForm:
 
   [form loadWithCompletionHandler:^(NSError *error) {
     if (error != nil) {
-      // todo error
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+          @"code": @"consent-form-error",
+          @"message": error.localizedDescription,
+      } mutableCopy]];
     } else {
       [form presentFromViewController:[UIApplication sharedApplication].delegate.window.rootViewController dismissCompletion:dismissCompletionBlock];
     }
@@ -110,11 +119,11 @@ RCT_EXPORT_METHOD(setStatus
 ) {
   PACConsentStatus consentStatus = PACConsentStatusUnknown;
 
-  if (status == @0) {
+  if ([status integerValue] == [@0 integerValue]) {
     consentStatus = PACConsentStatusUnknown;
-  } else if (status == @1) {
+  } else if ([status integerValue] == [@1 integerValue]) {
     consentStatus = PACConsentStatusNonPersonalized;
-  } else if (status == @2) {
+  } else if ([status integerValue] == [@2 integerValue]) {
     consentStatus = PACConsentStatusPersonalized;
   }
 
@@ -157,11 +166,11 @@ RCT_EXPORT_METHOD(setDebugGeography
 ) {
   PACDebugGeography debugGeography = PACDebugGeographyDisabled;
 
-  if (geography == @0) {
+  if ([geography integerValue] == [@0 integerValue]) {
     debugGeography = PACDebugGeographyDisabled;
-  } else if (geography == @1) {
+  } else if ([geography integerValue] == [@1 integerValue]) {
     debugGeography = PACDebugGeographyEEA;
-  } else if (geography == @2) {
+  } else if ([geography integerValue] == [@2 integerValue]) {
     debugGeography = PACDebugGeographyNotEEA;
   }
 

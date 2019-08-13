@@ -82,5 +82,9 @@
 	<true/>
 	<key>rnfirebase_meta_testing_string</key>
 	<string>abc</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-4406399463942824~1625911479</string>
+	<key>GADDelayAppMeasurementInit</key>
+	<true/>
 </dict>
 </plist>

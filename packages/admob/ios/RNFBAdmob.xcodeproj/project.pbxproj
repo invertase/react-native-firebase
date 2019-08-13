@@ -7,8 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2744B98621F45429004F8E3F /* RNFBAdmobModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAdmobModule.m */; };
+		2744B98621F45429004F8E3F /* RNFBAdMobModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBAdMobModule.m */; };
 		8B06D41B22FEC8B800A5B542 /* RNFBAdMobConsentModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D41A22FEC8B800A5B542 /* RNFBAdMobConsentModule.m */; };
+		8B06D41F230063ED00A5B542 /* RNFBAdMobCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B06D41E230063ED00A5B542 /* RNFBAdMobCommon.m */; };
+		8B4E497523017EB400587275 /* RNFBAdMobInterstitialModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E497423017EB400587275 /* RNFBAdMobInterstitialModule.m */; };
+		8B4E497823017ED300587275 /* RNFBAdMobRewardedModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E497723017ED300587275 /* RNFBAdMobRewardedModule.m */; };
+		8B4E497E2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */; };
+		8BC10E6223029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,10 +30,20 @@
 
 /* Begin PBXFileReference section */
 		2744B98221F45429004F8E3F /* libRNFBAdmob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBAdmob.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		2744B98421F45429004F8E3F /* RNFBAdmobModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAdmobModule.h; path = RNFBAdmob/RNFBAdmobModule.h; sourceTree = SOURCE_ROOT; };
-		2744B98521F45429004F8E3F /* RNFBAdmobModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAdmobModule.m; path = RNFBAdmob/RNFBAdmobModule.m; sourceTree = SOURCE_ROOT; };
+		2744B98421F45429004F8E3F /* RNFBAdMobModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBAdMobModule.h; path = RNFBAdmob/RNFBAdMobModule.h; sourceTree = SOURCE_ROOT; };
+		2744B98521F45429004F8E3F /* RNFBAdMobModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBAdMobModule.m; path = RNFBAdmob/RNFBAdMobModule.m; sourceTree = SOURCE_ROOT; };
 		8B06D41922FEC8AE00A5B542 /* RNFBAdMobConsentModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobConsentModule.h; sourceTree = "<group>"; };
 		8B06D41A22FEC8B800A5B542 /* RNFBAdMobConsentModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobConsentModule.m; sourceTree = "<group>"; };
+		8B06D41D230063E200A5B542 /* RNFBAdMobCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobCommon.h; sourceTree = "<group>"; };
+		8B06D41E230063ED00A5B542 /* RNFBAdMobCommon.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobCommon.m; sourceTree = "<group>"; };
+		8B4E497323017EA600587275 /* RNFBAdMobInterstitialModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobInterstitialModule.h; sourceTree = "<group>"; };
+		8B4E497423017EB400587275 /* RNFBAdMobInterstitialModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobInterstitialModule.m; sourceTree = "<group>"; };
+		8B4E497623017ECA00587275 /* RNFBAdMobRewardedModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobRewardedModule.h; sourceTree = "<group>"; };
+		8B4E497723017ED300587275 /* RNFBAdMobRewardedModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobRewardedModule.m; sourceTree = "<group>"; };
+		8B4E497C2301BE1500587275 /* RNFBAdMobInterstitialDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobInterstitialDelegate.h; sourceTree = "<group>"; };
+		8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobInterstitialDelegate.m; sourceTree = "<group>"; };
+		8BC10E6023029CA500209FF9 /* RNFBAdMobRewardedDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobRewardedDelegate.h; sourceTree = "<group>"; };
+		8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobRewardedDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,10 +68,20 @@
 		2744B98321F45429004F8E3F /* RNFBAdmob */ = {
 			isa = PBXGroup;
 			children = (
-				2744B98421F45429004F8E3F /* RNFBAdmobModule.h */,
-				2744B98521F45429004F8E3F /* RNFBAdmobModule.m */,
+				2744B98421F45429004F8E3F /* RNFBAdMobModule.h */,
+				2744B98521F45429004F8E3F /* RNFBAdMobModule.m */,
 				8B06D41922FEC8AE00A5B542 /* RNFBAdMobConsentModule.h */,
 				8B06D41A22FEC8B800A5B542 /* RNFBAdMobConsentModule.m */,
+				8B06D41D230063E200A5B542 /* RNFBAdMobCommon.h */,
+				8B06D41E230063ED00A5B542 /* RNFBAdMobCommon.m */,
+				8B4E497323017EA600587275 /* RNFBAdMobInterstitialModule.h */,
+				8B4E497423017EB400587275 /* RNFBAdMobInterstitialModule.m */,
+				8B4E497623017ECA00587275 /* RNFBAdMobRewardedModule.h */,
+				8B4E497723017ED300587275 /* RNFBAdMobRewardedModule.m */,
+				8B4E497C2301BE1500587275 /* RNFBAdMobInterstitialDelegate.h */,
+				8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */,
+				8BC10E6023029CA500209FF9 /* RNFBAdMobRewardedDelegate.h */,
+				8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */,
 			);
 			path = RNFBAdmob;
 			sourceTree = "<group>";
@@ -128,8 +153,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B4E497E2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m in Sources */,
+				8B4E497823017ED300587275 /* RNFBAdMobRewardedModule.m in Sources */,
 				8B06D41B22FEC8B800A5B542 /* RNFBAdMobConsentModule.m in Sources */,
-				2744B98621F45429004F8E3F /* RNFBAdmobModule.m in Sources */,
+				8B4E497523017EB400587275 /* RNFBAdMobInterstitialModule.m in Sources */,
+				8B06D41F230063ED00A5B542 /* RNFBAdMobCommon.m in Sources */,
+				2744B98621F45429004F8E3F /* RNFBAdMobModule.m in Sources */,
+				8BC10E6223029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

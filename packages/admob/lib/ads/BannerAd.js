@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,15 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+import React from 'react';
+import { requireNativeComponent } from 'react-native';
 
-#import <Firebase/Firebase.h>
-#import <React/RCTBridgeModule.h>
+class BannerAd extends React.Component {
+  render() {
+    return <RNFBBannerAd {...this.props} />;
+  }
+}
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
+const RNFBBannerAd = requireNativeComponent('RNFBBannerAd', BannerAd);
 
-+ (_Nonnull instancetype) sharedInstance;
-
-@end
+export default BannerAd;

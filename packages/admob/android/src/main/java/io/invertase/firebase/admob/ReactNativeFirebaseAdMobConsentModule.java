@@ -65,6 +65,7 @@ public class ReactNativeFirebaseAdMobConsentModule extends ReactNativeFirebaseMo
   @ReactMethod
   public void requestInfoUpdate(ReadableArray publisherIds, Promise promise) {
     @SuppressWarnings("SuspiciousToArrayCall")
+
     String[] publisherIdsArray = publisherIds.toArrayList().toArray(new String[0]);
 
     consentInformation.requestConsentInfoUpdate(publisherIdsArray, new ConsentInfoUpdateListener() {

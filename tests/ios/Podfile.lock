@@ -10,6 +10,11 @@ PODS:
     - Fabric (~> 1.9.0)
   - DoubleConversion (1.1.6)
   - Fabric (1.9.0)
+  - Firebase/AdMob (6.5.0):
+    - Firebase/CoreOnly
+    - Google-Mobile-Ads-SDK (~> 7.47)
+  - Firebase/Analytics (6.5.0):
+    - Firebase/Core
   - Firebase/Auth (6.5.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.2.1)
@@ -208,6 +213,8 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - Google-Mobile-Ads-SDK (7.47.0):
+    - GoogleAppMeasurement (~> 6.0)
   - GoogleAPIClientForREST/Core (1.3.9):
     - GTMSessionFetcher (>= 1.1.7)
   - GoogleAPIClientForREST/Vision (1.3.9):
@@ -365,6 +372,8 @@ PODS:
     - React-Core (= 0.60.4)
     - React-fishhook (= 0.60.4)
   - RNFBAdmob (0.1.5):
+    - Firebase/AdMob (~> 6.5.0)
+    - Firebase/Analytics (~> 6.5.0)
     - Firebase/Core (~> 6.5.0)
     - PersonalizedAdConsent
     - React
@@ -534,6 +543,7 @@ SPEC REPOS:
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseStorage
+    - Google-Mobile-Ads-SDK
     - GoogleAPIClientForREST
     - GoogleAppMeasurement
     - GoogleMobileVision
@@ -666,6 +676,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 618dd8fd886b30adf6e5d1915b1f5c18cb5c3944
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  Google-Mobile-Ads-SDK: a10b30f4a51a3283df7df3c9ea7e84553b508e4b
   GoogleAPIClientForREST: 44c7b678cbab11d26a47eab7309d6179b1a61f0c
   GoogleAppMeasurement: 183bd916af7f80deb67c01888368f1108d641832
   GoogleMobileVision: 31cfb4319fd0c03d80105680abd9eae9da5e3b47
@@ -697,7 +708,7 @@ SPEC CHECKSUMS:
   React-RCTText: e0f224898b13af9aa036ea7cb3d438daa68c1044
   React-RCTVibration: 0bea40cd51bd089bd591a8f74c86e91fdf2666c5
   React-RCTWebSocket: 163873f4cdd5f1058a9483443404fc3801581cb6
-  RNFBAdmob: d15e6ed11ded6a9521a4fbbd9178efd36c1fd6ce
+  RNFBAdmob: 138be145a3a80bd7cd3ebc0bda2cd12da9108b44
   RNFBAnalytics: a878332b39d9794094173783c679dce0b2642c89
   RNFBApp: 11a392342b99b20903922714462a8019cd230b56
   RNFBAuth: 33c1a022fd8584d742f2763a80f5d02f65cc27ba
