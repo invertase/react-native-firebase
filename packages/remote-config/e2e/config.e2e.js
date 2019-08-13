@@ -219,7 +219,8 @@ describe('remoteConfig()', () => {
       if (!error) {
         throw new Error('Did not reject');
       }
-      error.code.should.equal('config/resource_not_found');
+      // TODO dasherize error namespace
+      error.code.should.equal('remoteConfig/resource_not_found');
       error.message.should.containEql('was not found');
     });
 
