@@ -91,17 +91,53 @@ export namespace Admob {
     TestIds: TestIds;
   }
 
+  /**
+   * Common event types for ads.
+   */
   export enum AdEventType {
+    /**
+     * When a ad has loaded. At this point, the ad is ready to be shown to the user.
+     */
     LOADED = 'loaded',
 
+    /**
+     * The ad errored. See the error parameter the listener callback for more information.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { AdEventType } from '@react-native-firebase/admob';
+     *
+     * advert.onAdEvent((type, error, data) => {
+     *   if (type === AdEventType.ERROR) {
+     *     console.log('Ad error:', error);
+     *   }
+     * });
+     * ```
+     */
     ERROR = 'error',
 
+    /**
+     * The ad opened and is currently visible to the user. This event is received after the `show()`
+     * method has been called.
+     */
     OPENED = 'opened',
 
+    /**
+     * The user clicked the advert.
+     */
     CLICKED = 'clicked',
 
+    /**
+     * The user has left your application (e.g. following the ad).
+     *
+     * Be sure to pause any tasks on this event (such as music or memory intensive tasks).
+     */
     LEFT_APPLICATION = 'left_application',
 
+    /**
+     * The user closed the ad and has returned back to your application.
+     */
     CLOSED = 'closed',
   }
 
@@ -114,13 +150,41 @@ export namespace Admob {
      *
      * This type differs from `AdEventType.LOADED` as when a rewarded ad is loaded,
      * an additional data payload is provided to the event handler containing the ad reward
-     * (assuming the user earned the reward).
+     * (assuming the user earns the reward).
+     *
+     * The reward contains a `type` and `amount`.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { RewardedAdEventType } from '@react-native-firebase/admob';
+     *
+     * rewardedAd.onAdEvent((type, error, data) => {
+     *   if (type === RewardedAdEventType.LOADED) {
+     *     console.log('Rewarded Ad loaded with reward:', data);
+     *   }
+     * });
+     * ```
      */
     LOADED = 'rewarded_loaded',
 
     /**
      * An event fired when the user earned the reward for the video. If the user does not earn a reward,
      * the AdEventType.CLOSED` event will be fired with no rewarded event.
+     *
+     * The reward contains a `type` and `amount`.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { RewardedAdEventType } from '@react-native-firebase/admob';
+     *
+     * rewardedAd.onAdEvent((type, error, data) => {
+     *   if (type === RewardedAdEventType.EARNED_REWARD) {
+     *     console.log('User earned the reward:', data);
+     *   }
+     * });
+     * ```
      */
     EARNED_REWARD = 'rewarded_earned_reward',
   }
@@ -308,6 +372,7 @@ export namespace Admob {
     /**
      * Returns the current consent status of the user.
      *
+     * > Do not persist the user consent status locally.
      *
      * #### Example
      *
@@ -382,7 +447,7 @@ export namespace Admob {
      * Set to `true` to provide the option for the user to choose an ad-free version of your app.
      *
      * If the user chooses this option, you must handle it as required (e.g. navigating to a paid version of the app,
-     * or registering).
+     * or a subscribe view).
      */
     withAdFree?: boolean;
   }
@@ -445,7 +510,7 @@ export namespace Admob {
   }
 
   /**
-   * A AdProvider interface.
+   * A AdProvider interface returned from `AdsConsent.getProviders`.
    */
   export interface AdProvider {
     /**
@@ -466,6 +531,8 @@ export namespace Admob {
 
   /**
    * AdsConsentDebugGeography interface.
+   *
+   * Used to set a mock location when testing the `AdsConsent` helper.
    */
   export interface AdsConsentDebugGeography {
     /**
@@ -571,7 +638,17 @@ export namespace Admob {
     contentUrl?: string;
 
     /**
-     * TODO
+     * The latitude and longitude location of the user.
+     *
+     * Ensure your app requests location permissions from the user.
+     *
+     * #### Example
+     *
+     * ```js
+     * await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     *   location: [53.481073, -2.237074],
+     * });
+     * ```
      */
     location?: string[];
 
@@ -654,6 +731,33 @@ export namespace Admob {
   }
 
   /**
+   * A `RewardedAdReward` returned from rewarded ads.
+   */
+  export interface RewardedAdReward {
+    /**
+     * The reward type, e.g. 'coins', 'diamonds'.
+     */
+    type: string;
+
+    /**
+     * The number value of the reward, e.g. 10
+     */
+    amount: number;
+  }
+
+  /**
+   * A callback interface for all ad events.
+   */
+  export interface AdEventListener {
+    /**
+     * @param type The event type, e.g. `AdEventType.LOADED`.
+     * @param error An optional JavaScript Error containing the error code and message.
+     * @param data Optional data for the event, e.g. rewarded
+     */
+    (type: AdEventType | RewardedAdEventType, error?: Error, data?: any | RewardedAdReward): void;
+  }
+
+  /**
    * Base call for InterstitialAd, RewardedAd and NativeAd.
    */
   export class MobileAd {
@@ -671,26 +775,53 @@ export namespace Admob {
      * Start loading the advert with the provided RequestOptions.
      *
      * It is recommended you setup ad event handlers before calling this method.
-     *
-     * #### Example
-     *
-     * ```js
-     *
-     * ```
      */
     load(): void;
 
     /**
      * Listen to ad events. See AdEventTypes for more information.
      *
-     * @param listener
+     * Returns an unsubscriber function to stop listening to further events.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Create InterstitialAd/RewardedAd
+     * const advert = InterstitialAd.createForAdRequest('...');
+     *
+     * const unsubscribe = advert.onAdEvent((type) => {
+     *
+     * });
+     *
+     * // Sometime later...
+     * unsubscribe();
+     * ```
+     *
+     * @param listener A listener callback containing a event type, error and data.
      */
     onAdEvent(listener: AdEventListener): Function;
 
     /**
-     * TODO
+     * Show the loaded advert to the user.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Create InterstitialAd/RewardedAd
+     * const advert = InterstitialAd.createForAdRequest('...');
+     *
+     * advert.onAdEvent((type) => {
+     *   if (type === AdEventType.LOADED) {
+     *     advert.show({
+     *       immersiveModeEnabled: true,
+     *     });
+     *   }
+     * });
+     * ```
+     *
+     * @param showOptions An optional `AdShowOptions` interface.
      */
-    show(): Promise<void>;
+    show(showOptions?: AdShowOptions): Promise<void>;
   }
 
   /**
@@ -703,12 +834,18 @@ export namespace Admob {
      * #### Example
      *
      * ```js
-     * const interstitialAd = await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
+     * import { InterstitialAd, AdEventType, TestIds } from '@react-native-firebase/admob';
+     *
+     * const interstitialAd = await InterstitialAd.request(TestIds.INTERSTITIAL, {
      *   requestAgent: 'CoolAds',
      * });
      *
      * interstitialAd.onAdEvent((type, error) => {
-     *   console.log('Got event: ', type, error);
+     *   console.log('New event: ', type, error);
+     *
+     *   if (type === AdEventType.LOADED) {
+     *     interstitialAd.show();
+     *   }
      * });
      *
      * interstitialAd.load();
@@ -718,6 +855,39 @@ export namespace Admob {
      * @param requestOptions Optional RequestOptions used to load the ad.
      */
     static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): InterstitialAd;
+  }
+
+  /**
+   * A class for interacting and showing Rewarded Ads.
+   */
+  export class RewardedAd extends MobileAd {
+    /**
+     * Creates a new RewardedAd instance.
+     *
+     * #### Example
+     *
+     * ```js
+     * import { RewardedAd, RewardedAdEventType, TestIds } from '@react-native-firebase/admob';
+     *
+     * const rewardedAd = await RewardedAd.request(TestIds.REWARDED, {
+     *   requestAgent: 'CoolAds',
+     * });
+     *
+     * rewardedAd.onAdEvent((type, error, data) => {
+     *   console.log('New event: ', type, error);
+     *
+     *   if (type === RewardedAdEventType.LOADED) {
+     *     rewardedAd.show();
+     *   }
+     * });
+     *
+     * rewardedAd.load();
+     * ```
+     *
+     * @param adUnitId The Ad Unit ID for the Rewarded Ad. You can find this on your Google AdMob dashboard.
+     * @param requestOptions Optional RequestOptions used to load the ad.
+     */
+    static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): RewardedAd;
   }
 
   /**

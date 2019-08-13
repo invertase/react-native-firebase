@@ -68,14 +68,20 @@ RCT_EXPORT_METHOD(showForm:
 
   if (options[@"withPersonalizedAds"]) {
     form.shouldOfferPersonalizedAds = YES;
+  } else {
+    form.shouldOfferNonPersonalizedAds = NO;
   }
 
   if (options[@"withNonPersonalizedAds"]) {
     form.shouldOfferNonPersonalizedAds = YES;
+  } else {
+    form.shouldOfferNonPersonalizedAds = NO;
   }
 
   if (options[@"withAdFree"]) {
     form.shouldOfferAdFree = YES;
+  } else {
+    form.shouldOfferAdFree = NO;
   }
 
   id dismissCompletionBlock = ^(NSError *error, BOOL userPrefersAdFree) {
