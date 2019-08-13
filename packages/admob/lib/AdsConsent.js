@@ -16,7 +16,15 @@
  */
 
 import { NativeModules } from 'react-native';
-import { hasOwnProperty, isArray, isBoolean, isObject, isString, isUndefined } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isArray,
+  isBoolean,
+  isObject,
+  isString,
+  isUndefined,
+  isValidUrl,
+} from '@react-native-firebase/common';
 
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
@@ -33,6 +41,12 @@ export default {
     if (!isArray(publisherIds)) {
       throw new Error(
         "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' expected an array of string values."
+      );
+    }
+
+    if (publisherIds.length === 0) {
+      throw new Error(
+        "firebase.admob.AdsConsent.requestInfoUpdate(*) 'publisherIds' list of publisher IDs cannot be empty."
       );
     }
 
@@ -59,12 +73,11 @@ export default {
       );
     }
 
-    // TODO
-    // if (!isValidUrl(options.privacyPolicy)) {
-    //   throw new Error(
-    //     "firebase.admob.AdsConsent.showForm(*) 'options.privacyPolicy' expected a valid HTTP or HTTPS URL."
-    //   );
-    // }
+    if (!isValidUrl(options.privacyPolicy)) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options.privacyPolicy' expected a valid HTTP or HTTPS URL."
+      );
+    }
 
     if (hasOwnProperty(options, 'withPersonalizedAds') && !isBoolean(options.withPersonalizedAds)) {
       throw new Error(
@@ -156,15 +169,23 @@ export default {
 
   /**
    *
-   * @param deviceId
+   * @param deviceIds
    */
-  addTestDevice(deviceId) {
-    if (!isString(deviceId)) {
+  addTestDevices(deviceIds) {
+    if (!isArray(deviceIds)) {
       throw new Error(
-        "firebase.admob.AdsConsent.addTestDevice(*) 'deviceId' expected a string value."
+        "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values."
       );
     }
 
-    return native.addTestDevice(deviceId);
+    for (let i = 0; i < deviceIds.length; i++) {
+      if (!isString(deviceIds[i])) {
+        throw new Error(
+          "firebase.admob.AdsConsent.addTestDevices(*) 'deviceIds' expected an array of string values."
+        );
+      }
+    }
+
+    return native.addTestDevices(deviceIds);
   }
 }

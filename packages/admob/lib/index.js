@@ -31,7 +31,6 @@ import AdEventType from './AdEventType';
 import RewardedAdEventType from './RewardedAdEventType';
 
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
-import { isObject } from '@react-native-firebase/common';
 
 const statics = {
   AdsConsentDebugGeography,
@@ -52,7 +51,6 @@ class FirebaseAdMobModule extends FirebaseModule {
     super(...args);
 
     this.emitter.addListener('admob_interstitial_event', (event) => {
-      console.log(event)
       this.emitter.emit(
         `admob_interstitial_event:${event.adUnitId}:${event.requestId}`,
         event,
@@ -68,12 +66,6 @@ class FirebaseAdMobModule extends FirebaseModule {
   }
 
   setRequestConfiguration(requestConfiguration) {
-    if (!isObject(requestConfiguration)) {
-      throw new Error(
-        `firebase.admob().setRequestConfiguration(*) 'requestConfiguration' expected an object value.`
-      );
-    }
-
     let config;
     try {
       config = validateAdRequestConfiguration(requestConfiguration);

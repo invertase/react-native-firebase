@@ -15,6 +15,26 @@
  *
  */
 
-require('./app');
-// require('./app.admob');
-// require('./app.smartreply');
+import { hasOwnProperty, isBoolean, isObject, isUndefined } from '@react-native-firebase/common';
+
+export default function validateAdShowOptions(options) {
+  const out = {};
+
+  if (isUndefined(options)) {
+    return out;
+  }
+
+  if (!isObject(options)) {
+    throw new Error("'options' expected an object value");
+  }
+
+  if (hasOwnProperty(options, 'immersiveModeEnabled')) {
+    if (!isBoolean(options.immersiveModeEnabled)) {
+      throw new Error("'options.immersiveModeEnabled' expected a boolean value");
+    }
+
+    out.immersiveModeEnabled = options.immersiveModeEnabled;
+  }
+
+  return out;
+}

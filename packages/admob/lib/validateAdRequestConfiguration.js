@@ -22,10 +22,6 @@ import MaxAdContentRating from './MaxAdContentRating';
 export default function validateAdRequestConfiguration(requestConfiguration) {
   const out = {};
 
-  if (isUndefined(requestConfiguration)) {
-    return out;
-  }
-
   if (!isObject(requestConfiguration)) {
     throw new Error(
       "'requestConfiguration' expected an object value"

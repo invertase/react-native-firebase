@@ -20,6 +20,7 @@ import { getFirebaseRoot } from '@react-native-firebase/app/lib/internal';
 import validateAdRequestOptions from '../validateAdRequestOptions';
 
 import MobileAd from './MobileAd';
+import validateAdShowOptions from '../validateAdShowOptions';
 
 let _rewardedRequest = 0;
 
@@ -70,11 +71,14 @@ export default class RewardedAd extends MobileAd {
       );
     }
 
-    let options = {
-      immersiveModeEnabled: false,
-    };
-    // todo validate options? common validator or local?
-
+    let options;
+    try {
+      options = validateAdShowOptions(showOptions);
+    } catch (e) {
+      throw new Error(
+        `firebase.admob() RewardedAd.show(*) ${e.message}.`,
+      );
+    }
     return this._admob.native.rewardedShow(this._requestId, options);
   }
 }

@@ -74,15 +74,15 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
       if ([key isEqualToString:@"EMULATOR"]) {
         [devices addObject:kGADSimulatorID];
       } else {
-        [devices addObject:adRequestOptions[@"testDevices"][key]];
+        [devices addObject:key];
       }
     }
     request.testDevices = devices;
   }
 
   if (adRequestOptions[@"location"]) {
-    // TODO
-    //    [request setLocationWithLatitude:location[0] longitude:<#(CGFloat)longitude#> accuracy:<#(CGFloat)accuracyInMeters#>];
+    NSArray<NSNumber *> *latLong = adRequestOptions[@"location"];
+    [request setLocationWithLatitude:[latLong[0] doubleValue] longitude:[latLong[1] doubleValue] accuracy:[adRequestOptions[@"locationAccuracy"] doubleValue]];
   }
 
   if (adRequestOptions[@"contentUrl"]) {
@@ -127,7 +127,7 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
               error:(nullable NSDictionary *)error
                data:(nullable NSDictionary *)data {
   NSMutableDictionary *body = [@{
-    @"type": type,
+      @"type": type,
   } mutableCopy];
 
   if (error != nil) {
@@ -139,10 +139,10 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
   }
 
   NSMutableDictionary *payload = [@{
-    @"eventName": type,
-    @"requestId": requestId,
-    @"adUnitId": adUnitId,
-    @"body": body,
+      @"eventName": type,
+      @"requestId": requestId,
+      @"adUnitId": adUnitId,
+      @"body": body,
   } mutableCopy];
 
   [[RNFBRCTEventEmitter shared] sendEventWithName:event body:payload];

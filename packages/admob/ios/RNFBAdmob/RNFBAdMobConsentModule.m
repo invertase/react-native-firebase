@@ -184,4 +184,13 @@ RCT_EXPORT_METHOD(setDebugGeography
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(addTestDevices
+  :(NSArray *)deviceIds
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  PACConsentInformation.sharedInstance.debugIdentifiers = deviceIds;
+  resolve([NSNull null]);
+}
+
 @end
