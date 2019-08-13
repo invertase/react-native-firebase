@@ -25,7 +25,7 @@ Reading data from Firestore can be accomplished using the `get()` method. If rea
 import firestore from '@react-native-firebase/firestore';
 
 // Read the document for user 'Ada Lovelace':
-const documentSnapshot = await firebase.firestore()
+const documentSnapshot = await firestore()
   .collection('users')
   .doc('alovelace')
   .get();
@@ -39,7 +39,7 @@ If reading a *Collection* of data  a `QuerySnapshot` class will be returned:
 import firestore from '@react-native-firebase/firestore';
 
 // Read the users documents
-const querySnapshot = await firebase.firestore()
+const querySnapshot = await firestore()
   .collection('users')
   .get();
   
@@ -53,7 +53,7 @@ It is also possible to subscribe to real time updates, whenever a Collection or 
 import firestore from '@react-native-firebase/firestore';
 
 // Subscribe to user updates:
-const unsubscribe = firebase.firestore()
+const unsubscribe = firestore()
   .collection('users')
   .onSnapshot((querySnapshot) => {
     console.log('Total users', querySnapshot.size);
@@ -87,7 +87,7 @@ import firestore from '@react-native-firebase/firestore';
 
 function bootstrap() {
   await firestore().settings({
-    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED, // unlimited cache size
+    cacheSizeBytes: firestore.CACHE_SIZE_UNLIMITED, // unlimited cache size
   });
 }
 ```
