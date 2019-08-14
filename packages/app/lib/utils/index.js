@@ -26,7 +26,6 @@ import UtilsStatics from './UtilsStatics';
 
 const namespace = 'utils';
 const statics = UtilsStatics;
-
 const nativeModuleName = 'RNFBUtilsModule';
 
 class FirebaseUtilsModule extends FirebaseModule {
