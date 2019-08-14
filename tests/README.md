@@ -82,7 +82,7 @@ yarn tests:ios:build
 To run android tests you will need to create a new emulator and name it `TestingAVD` (You can't rename existing one).
 This emulator will need to be up and running before you start your android tests from Step 5.
 
-With iOS Detox will start simulator for you by default or run tests in open one.
+With iOS Detox will start a simulator for you by default or run tests in an open one.
 
 ---
 
