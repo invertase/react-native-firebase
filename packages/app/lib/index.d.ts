@@ -387,7 +387,7 @@ export namespace Utils {
   }
 }
 
-declare module '@react-native-firebase/app/utils' {
+declare module '@react-native-firebase/app/lib/utils' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
