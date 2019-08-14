@@ -20,7 +20,7 @@ import {
   isBoolean,
   isObject,
   isUndefined,
-} from '@react-native-firebase/app/common';
+} from '@react-native-firebase/app/lib/common';
 
 export default function validateAdShowOptions(options) {
   const out = {};

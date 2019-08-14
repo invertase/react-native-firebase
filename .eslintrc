@@ -1,6 +1,5 @@
 {
   "root": true,
-  "parser": "babel-eslint",
   "extends": "@react-native-community",
   "env": {
     "es6": true,

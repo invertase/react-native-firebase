@@ -16,7 +16,6 @@
  */
 
 import { NativeModules } from 'react-native';
-
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';

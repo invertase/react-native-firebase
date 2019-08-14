@@ -16,7 +16,6 @@
  */
 
 import { ReactNativeFirebase } from '@react-native-firebase/app';
-import { Invites } from '@react-native-firebase/invites';
 
 /**
  * Firebase Analytics package for React Native.

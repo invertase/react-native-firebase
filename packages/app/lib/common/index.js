@@ -22,6 +22,7 @@ export * from './id';
 export * from './path';
 export * from './promise';
 export * from './validate';
+
 export Base64 from './Base64';
 export ReferenceBase from './ReferenceBase';
 

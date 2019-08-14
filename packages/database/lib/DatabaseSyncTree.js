@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '@react-native-firebase/app/common';
+import { isString } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import SharedEventEmitter from '@react-native-firebase/app/lib/internal/SharedEventEmitter';
 import { NativeModules } from 'react-native';

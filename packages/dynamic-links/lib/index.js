@@ -20,7 +20,6 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
 import builder from './builder';
 import version from './version';
 

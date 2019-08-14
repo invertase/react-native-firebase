@@ -15,7 +15,7 @@
  *
  */
 
-import { getNativeModule, getAppModule } from './registry/nativeModule';
+import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 
 let firebaseJson = null;

@@ -19,7 +19,7 @@ import {
   isString,
   toFilePath,
   validateOptionalNativeDependencyExists,
-} from '@react-native-firebase/app/common';
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
