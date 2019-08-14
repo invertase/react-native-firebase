@@ -152,6 +152,16 @@ export function isAlphaNumericUnderscore(value) {
 }
 
 /**
+ * URL test
+ * @param url
+ * @returns {boolean}
+ */
+const IS_VALID_URL_REGEX = /^(http|https):\/\/[^ "]+$/;
+export function isValidUrl(url) {
+  return IS_VALID_URL_REGEX.test(url);
+}
+
+/**
  * Array includes
  *
  * @param value

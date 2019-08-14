@@ -1,0 +1,85 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.4.2'
+  }
+}
+
+plugins {
+  id "io.invertase.gradle.build" version "1.3"
+}
+
+project.ext {
+  set('react-native', [
+    versions: [
+      android           : [
+        minSdk    : 16,
+        targetSdk : 28,
+        compileSdk: 28,
+        // optional as gradle.buildTools comes with one by default
+        // overriding here though to match the version RN uses
+        buildTools: "28.0.3"
+      ],
+
+      firebase          : [
+        bom: "21.1.0"
+      ],
+
+      ads          : [
+        consent: "1.0.6"
+      ],
+    ],
+  ])
+}
+
+apply from: file("./../../app/android/firebase-json.gradle")
+
+def firebaseJSONAdmobAppIDString = ""
+def firebaseJSONAdmobDelayAppMeasurementInitBool = false
+
+if (rootProject.ext.firebaseJson) {
+  firebaseJSONAdmobAppIDString = rootProject.ext.firebaseJson.getStringValue("admob_app_id", "")
+  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init")
+}
+
+if (!firebaseJSONAdmobAppIDString) {
+  // todo throw a build error?
+}
+
+android {
+  defaultConfig {
+    multiDexEnabled true
+    manifestPlaceholders = [
+      firebaseJSONAdmobAppID: firebaseJSONAdmobAppIDString,
+      firebaseJSONAdmobDelayAppMeasurementInit: firebaseJSONAdmobDelayAppMeasurementInitBool
+    ]
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+}
+
+dependencies {
+  api project(':@react-native-firebase_app')
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-ads"
+  implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
+}
+
+ReactNative.shared.applyPackageVersion()
+ReactNative.shared.applyDefaultExcludes()
+ReactNative.module.applyAndroidVersions()
+ReactNative.module.applyReactNativeDependency("api")
