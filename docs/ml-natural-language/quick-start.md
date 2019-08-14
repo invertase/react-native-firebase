@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of ML Kit in React Native Firebase
+description: Getting started with ML Kit Natural Language APIs in React Native Firebase
 ---
 
 # ML Kit Quick Start
@@ -20,7 +20,7 @@ yarn add @react-native-firebase/ml-natural-language
 Import the ML Kit package into your project:
 
 ```js
-import mlNaturalLanguage from '@react-native-firebase/ml-natural-language';
+import naturalLanguage from '@react-native-firebase/ml-natural-language';
 ```
 
 The package also provides access to the firebase instance:
@@ -39,12 +39,12 @@ Add any of the keys indicated below to your JSON file and set them to `true` to 
 
 ```json5
 {
-  "react-native": {
+  'react-native': {
     // Language Identification
-    "ml_natural_language_language_id_model": false,
+    ml_natural_language_language_id_model: false,
     // Smart Replies
-    "ml_natural_language_smart_reply_model": false
-  }
+    ml_natural_language_smart_reply_model: false,
+  },
 }
 ```
 

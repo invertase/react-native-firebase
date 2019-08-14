@@ -154,6 +154,59 @@ RCT_EXPORT_METHOD(updateMetadata:
 }
 
 /**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
+ */
+RCT_EXPORT_METHOD(list:
+  (FIRApp *) firebaseApp
+    : (NSString *) url
+    : (NSDictionary *) listOptions
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+  FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  long *maxResults = [listOptions[@"maxResults"] pointerValue];
+
+  id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
+    if (error != nil) {
+      [self promiseRejectStorageException:reject error:error];
+    } else {
+      NSDictionary * dick = [RNFBStorageCommon listResultToDict:result];
+      // so we can see the result
+      resolve(dick);
+    }
+  };
+
+  if (listOptions[@"pageToken"]) {
+    NSString *pageToken = listOptions[@"pageToken"];
+    [storageReference listWithMaxResults:(int64_t) maxResults pageToken:pageToken completion:completionBlock];
+  } else {
+    [storageReference listWithMaxResults:(int64_t) maxResults completion:completionBlock];
+  }
+}
+
+/**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
+ */
+RCT_EXPORT_METHOD(listAll:
+  (FIRApp *) firebaseApp
+    : (NSString *) url
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject
+) {
+  FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+
+  id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
+    if (error != nil) {
+      [self promiseRejectStorageException:reject error:error];
+    } else {
+      resolve([RNFBStorageCommon listResultToDict:result]);
+    }
+  };
+
+  [storageReference listAllWithCompletion:completionBlock];
+}
+
+/**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  */
 RCT_EXPORT_METHOD(setMaxDownloadRetryTime:
@@ -196,7 +249,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
  */
-RCT_EXPORT_METHOD(getFile:
+RCT_EXPORT_METHOD(writeToFile:
   (FIRApp *) firebaseApp
     : (NSString *) url
     : (NSString *) localFilePath
@@ -484,13 +537,13 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [@{
-      @"MainBundle": [[NSBundle mainBundle] bundlePath],
-      @"CachesDirectory": [self getPathForDirectory:NSCachesDirectory],
-      @"DocumentDirectory": [self getPathForDirectory:NSDocumentDirectory],
-      @"PicturesDirectory": [self getPathForDirectory:NSPicturesDirectory],
-      @"MoviesDirectory": [self getPathForDirectory:NSMoviesDirectory],
-      @"TempDirectory": NSTemporaryDirectory(),
-      @"LibraryDirectory": [self getPathForDirectory:NSLibraryDirectory],
+      @"MAIN_BUNDLE": [[NSBundle mainBundle] bundlePath],
+      @"CACHES_DIRECTORY": [self getPathForDirectory:NSCachesDirectory],
+      @"DOCUMENT_DIRECTORY": [self getPathForDirectory:NSDocumentDirectory],
+      @"PICTURES_DIRECTORY": [self getPathForDirectory:NSPicturesDirectory],
+      @"MOVIES_DIRECTORY": [self getPathForDirectory:NSMoviesDirectory],
+      @"TEMP_DIRECTORY": NSTemporaryDirectory(),
+      @"LIBRARY_DIRECTORY": [self getPathForDirectory:NSLibraryDirectory],
   } mutableCopy];
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {

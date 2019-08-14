@@ -49,19 +49,24 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
 
     for (Object message : messages) {
       Map<String, Object> messageMap = (Map<String, Object>) message;
-      if (messageMap.containsKey("remoteUserId")) {
+
+      Boolean isLocalUser = (Boolean) messageMap.get("isLocalUser");
+      long timestamp = (long) ((double) messageMap.get("timestamp"));
+      String text = (String) messageMap.get("text");
+
+      if (isLocalUser) {
         firebaseTextMessages.add(
-          FirebaseTextMessage.createForRemoteUser(
-            (String) messageMap.get("text"),
-            (long) ((double) messageMap.get("timestamp")),
-            (String) messageMap.get("remoteUserId")
+          FirebaseTextMessage.createForLocalUser(
+            text,
+            timestamp
           )
         );
       } else {
         firebaseTextMessages.add(
-          FirebaseTextMessage.createForLocalUser(
-            (String) messageMap.get("text"),
-            (long) ((double) messageMap.get("timestamp"))
+          FirebaseTextMessage.createForRemoteUser(
+            text,
+            timestamp,
+            (String) messageMap.get("userId")
           )
         );
       }
@@ -73,7 +78,7 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
   /**
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
-  public Task<List<Bundle>> getSuggestedReplies(String appName, List<Object> messages) {
+  public Task<List<Bundle>> suggestReplies(String appName, List<Object> messages) {
     return Tasks.call(getExecutor(), () -> {
       List<FirebaseTextMessage> firebaseTextMessages = buildFirebaseTextMessagesList(messages);
       FirebaseNaturalLanguage instance = FirebaseNaturalLanguage.getInstance(FirebaseApp.getInstance(appName));
@@ -92,7 +97,8 @@ class UniversalFirebaseMLNaturalLanguageSmartReplyModule extends UniversalFireba
       for (SmartReplySuggestion suggestedReplyRaw : suggestedRepliesListRaw) {
         Bundle suggestReplyFormatted = new Bundle(2);
         suggestReplyFormatted.putString("text", suggestedReplyRaw.getText());
-        suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
+        // TODO no longer exists - undocumented breaking change
+        // suggestReplyFormatted.putFloat("confidence", suggestedReplyRaw.getConfidence());
         suggestedRepliesListFormatted.add(suggestReplyFormatted);
       }
 

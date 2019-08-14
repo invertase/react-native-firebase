@@ -4,7 +4,7 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.0'
+    classpath 'com.android.tools.build:gradle:3.4.2'
   }
 }
 
@@ -15,7 +15,7 @@ plugins {
 project.ext {
   set('react-native', [
     versions: [
-      android           : [
+      android : [
         minSdk    : 16,
         targetSdk : 28,
         compileSdk: 28,
@@ -24,13 +24,9 @@ project.ext {
         buildTools: "28.0.3"
       ],
 
-      googlePlayServices: [
-        base: "16.1.0",
-      ],
-
-      fabric            : [
+      firebase: [
         crashlytics   : "2.10.0",
-        crashlyticsNdk: "2.0.5"
+        crashlyticsNdk: "2.1.0" // not in BoM
       ],
     ],
   ])
@@ -57,9 +53,10 @@ repositories {
 
 dependencies {
   api project(':@react-native-firebase_app')
-  implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("fabric", "crashlytics")}"
-  implementation "com.crashlytics.sdk.android:crashlytics-ndk:${ReactNative.ext.getVersion("fabric", "crashlyticsNdk")}"
-  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
+  // don't use firebase bom here as crashlytics-ndk is not included in the bom, trying to partially use bom here fails
+  implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("firebase", "crashlytics")}"
+  // ndk not in Firebase BoM
+  implementation "com.crashlytics.sdk.android:crashlytics-ndk:${ReactNative.ext.getVersion("firebase", "crashlyticsNdk")}"
 }
 
 ReactNative.shared.applyPackageVersion()

@@ -107,7 +107,7 @@ describe('database()...snapshot', () => {
     try {
       snapshot.forEach('foo');
     } catch (error) {
-      error.message.should.containEql(`'action' must be a function`);
+      error.message.should.containEql("'action' must be a function");
     }
   });
 
@@ -248,7 +248,7 @@ describe('database()...snapshot', () => {
     try {
       snapshot.hasChild({ foo: 'bar' });
     } catch (error) {
-      error.message.should.containEql(`'path' must be a string value`);
+      error.message.should.containEql("'path' must be a string value");
     }
   });
 

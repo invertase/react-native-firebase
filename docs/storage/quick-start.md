@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Cloud Storage in React Native Firebase
+description: Getting started with Cloud Storage in React Native Firebase
 ---
 
 # Cloud Storage Quick Start

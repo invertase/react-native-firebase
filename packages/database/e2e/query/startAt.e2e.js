@@ -31,7 +31,7 @@ describe('database().ref().startAt()', () => {
         .startAt();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' must be a number, string, boolean or null value`);
+      error.message.should.containEql("'value' must be a number, string, boolean or null value");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().startAt()', () => {
         .startAt('foo', 1234);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'key' must be a string value if defined`);
+      error.message.should.containEql("'key' must be a string value if defined");
       return Promise.resolve();
     }
   });
@@ -59,7 +59,7 @@ describe('database().ref().startAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `Starting point was already set (by another call to startAt or equalTo)`,
+        'Starting point was already set (by another call to startAt or equalTo)',
       );
       return Promise.resolve();
     }
@@ -75,7 +75,7 @@ describe('database().ref().startAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `When ordering by key, you may only pass a value argument to startAt(), endAt(), or equalTo()`,
+        'When ordering by key, you may only pass a value argument to startAt(), endAt(), or equalTo()',
       );
       return Promise.resolve();
     }
@@ -91,7 +91,7 @@ describe('database().ref().startAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `When ordering by key, the value of startAt(), endAt(), or equalTo() must be a string`,
+        'When ordering by key, the value of startAt(), endAt(), or equalTo() must be a string',
       );
       return Promise.resolve();
     }
@@ -107,7 +107,7 @@ describe('database().ref().startAt()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `When ordering by priority, the first value of startAt(), endAt(), or equalTo() must be a valid priority value (null, a number, or a string)`,
+        'When ordering by priority, the first value of startAt(), endAt(), or equalTo() must be a valid priority value (null, a number, or a string)',
       );
       return Promise.resolve();
     }

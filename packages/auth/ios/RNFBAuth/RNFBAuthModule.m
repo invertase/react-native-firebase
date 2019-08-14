@@ -42,6 +42,7 @@ static NSString *const keyMinVersion = @"minimumVersion";
 static NSString *const constAppLanguage = @"APP_LANGUAGE";
 static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
+static NSString *const keyDynamicLinkDomain = @"dynamicLinkDomain";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
@@ -1132,31 +1133,32 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
 }
 
 - (FIRActionCodeSettings *)buildActionCodeSettings:(NSDictionary *)actionCodeSettings {
-  NSString *url = actionCodeSettings[keyUrl];
-  NSDictionary *ios = actionCodeSettings[keyIOS];
-  NSDictionary *android = actionCodeSettings[keyAndroid];
-  BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
-
   FIRActionCodeSettings *settings = [[FIRActionCodeSettings alloc] init];
 
-  if (android) {
-    NSString *packageName = android[keyPackageName];
-    NSString *minimumVersion = android[keyMinVersion];
-    BOOL installApp = [android[keyInstallApp] boolValue];
+  NSString *url = actionCodeSettings[keyUrl];
+  [settings setURL:[NSURL URLWithString:url]];
 
-    [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
-  }
-
-  if (handleCodeInApp) {
+  if (actionCodeSettings[keyHandleCodeInApp]) {
+    BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
     [settings setHandleCodeInApp:handleCodeInApp];
   }
 
-  if (ios && ios[keyBundleId]) {
-    [settings setIOSBundleID:ios[keyBundleId]];
+  if (actionCodeSettings[keyDynamicLinkDomain]) {
+    NSString *dynamicLinkDomain = [actionCodeSettings[keyDynamicLinkDomain] stringValue];
+    [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 
-  if (url) {
-    [settings setURL:[NSURL URLWithString:url]];
+  if (actionCodeSettings[keyAndroid]) {
+    NSDictionary *android = actionCodeSettings[keyAndroid];
+    NSString *packageName = android[keyPackageName];
+    NSString *minimumVersion = android[keyMinVersion];
+    BOOL installApp = [android[keyInstallApp] boolValue];
+    [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
+  }
+
+  if (actionCodeSettings[keyIOS]) {
+    NSDictionary *ios = actionCodeSettings[keyIOS];
+    [settings setIOSBundleID:ios[keyBundleId]];
   }
 
   return settings;

@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -148,7 +147,7 @@ describe('crashlytics()', () => {
     });
 
     it('accepts Error values', async () => {
-      firebase.crashlytics().recordError(new Error(`I'm a teapot!`));
+      firebase.crashlytics().recordError(new Error("I'm a teapot!"));
       // TODO verify stack obj
     });
   });

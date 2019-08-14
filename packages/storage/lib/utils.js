@@ -15,8 +15,8 @@
  *
  */
 
+import { isNull, isObject, isString } from '@react-native-firebase/app/lib/common';
 import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
-import { isNull, isString, isObject } from '@react-native-firebase/common';
 
 const SETTABLE_FIELDS = [
   'cacheControl',
@@ -38,7 +38,20 @@ export function handleStorageEvent(storageInstance, event) {
   storageInstance.emitter.emit(storageInstance.eventNameForApp(taskId, eventName), body);
 }
 
-export function getUrlParts(url) {
+// https://regex101.com/r/99E00o/2/
+export function getHttpUrlParts(url) {
+  const parts = url.match(
+    /\/b\/(?<bucket>.*)\.appspot.com\/o\/(?<path>[a-zA-Z0-9./\-_]+)(?<params>.*)/,
+  );
+
+  if (!parts || parts.length < 3) {
+    return null;
+  }
+
+  return { bucket: `gs://${parts[1]}`, path: parts[2] };
+}
+
+export function getGsUrlParts(url) {
   const bucket = url.substring(0, url.indexOf('/', 5)) || url;
   const path =
     (url.indexOf('/', 5) > -1 ? url.substring(url.indexOf('/', 5) + 1, url.length) : '/') || '/';
@@ -48,7 +61,7 @@ export function getUrlParts(url) {
 
 export function validateMetadata(metadata) {
   if (!isObject(metadata)) {
-    throw new Error(`firebase.storage.SettableMetadata must be an object value if provided.`);
+    throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
 
   const metadataEntries = Object.entries(metadata);
@@ -71,7 +84,7 @@ export function validateMetadata(metadata) {
       }
     } else if (!isObject(value)) {
       throw new Error(
-        `firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.`,
+        'firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.',
       );
     }
   }

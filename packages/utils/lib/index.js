@@ -15,25 +15,25 @@
  *
  */
 
+import { isIOS } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isIOS } from '@react-native-firebase/common';
-
+import UtilsStatics from './UtilsStatics';
 import version from './version';
 
-const statics = {};
-
 const namespace = 'utils';
+const statics = UtilsStatics;
 
 const nativeModuleName = 'RNFBUtilsModule';
 
 class FirebaseUtilsModule extends FirebaseModule {
   get isRunningInTestLab() {
-    if (isIOS) return false;
+    if (isIOS) {
+      return false;
+    }
     return this.native.isRunningInTestLab;
   }
 }

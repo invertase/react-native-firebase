@@ -1,12 +1,12 @@
 ---
 title: Cloud Storage
-description: Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service built for Google scale 
+description: Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service built for Google scale
 ---
 
 # Cloud Storage
 
 React Native Firebase provides native integration with Cloud Storage, providing support to upload and download files
-directly from your device and from your Firebase Cloud Storage bucket. 
+directly from your device and from your Firebase Cloud Storage bucket.
 
 <Youtube id="_tyjqozrEPY" />
 
@@ -42,7 +42,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-storage)

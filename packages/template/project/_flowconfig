@@ -1,3 +1,25 @@
+Skip to content
+
+Search or jump to…
+
+Pull requests
+Issues
+Trending
+Explore
+
+@Salakar
+247,864
+79,433 facebook/react-native
+forked to Salakar/react-native
+forked to invertase/react-native
+forked to react-native-firebase/react-native
+ Code  Issues 671  Pull requests 28  Wiki  Releases 322
+react-native/template/_flowconfig
+@ide ide Migrate "Libraries" from Haste to standard path-based requires (sans …
+0ee5f68 on 8 May
+@gabelevi @nmote @samwgoldman @dsainati1 @panagosg7 @charpeni @mroch @jbrown215 @kassens @ide @hramos @gkz @pakoito @cpojer @avikchaudhuri
+100 lines (79 sloc)  3.16 KB
+
 [ignore]
 ; We fork some components by platform
 .*/*[.]android.js
@@ -37,6 +59,10 @@ emoji=true
 
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
+
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
 
 module.system=haste
 module.system.haste.use_name_reducers=true
@@ -92,4 +118,15 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.97.0
+^0.98.0
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About

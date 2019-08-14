@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Database package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase database
  */
 export namespace Database {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * The ServerValue interface provides access to Firebase server values.
    */
@@ -97,6 +95,11 @@ export namespace Database {
      * ```
      */
     ServerValue: ServerValue;
+  }
+
+  export interface TransactionResult {
+    committed: boolean;
+    snapshot: DataSnapshot;
   }
 
   /**
@@ -199,7 +202,7 @@ export namespace Database {
      * @param value The value to be written (string, number, boolean, object, array, or null).
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    set(value: any, onComplete?: Function): Promise<any>;
+    set(value: any, onComplete?: Function): Promise<void>;
 
     /**
      * Writes multiple values to the Database at once.
@@ -239,7 +242,7 @@ export namespace Database {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key]: value }, onComplete?: Function): Promise<any>;
+    update(values: { [key]: value }, onComplete?: Function): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -257,7 +260,7 @@ export namespace Database {
      * @param priority The priority value.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    setPriority(priority: string | number | null, onComplete?: Function): Promise<any>;
+    setPriority(priority: string | number | null, onComplete?: Function): Promise<void>;
 
     /**
      * Writes data the Database location. Like `set()` but also specifies the priority for that data.
@@ -282,7 +285,30 @@ export namespace Database {
       newVal: any,
       newPriority: string | number | null,
       onComplete?: Function,
-    ): Promise<any>;
+    ): Promise<void>;
+
+    /**
+     * Removes the data at this Database location.
+     *
+     * Any data at child locations will also be deleted.
+     *
+     * The effect of the remove will be visible immediately and the corresponding event 'value' will be triggered.
+     * Synchronization of the remove to the Firebase servers will also be started, and the returned Promise will
+     * resolve when complete. If provided, the onComplete callback will be called asynchronously after synchronization
+     * has finished.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.database().ref('users/ada/name')
+     *  .remove(() => {
+     *    console.log('Operation Complete');
+     *  });
+     * ```
+     *
+     * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
+     */
+    remove(onComplete?: Function): Promise<void>;
 
     /**
      * Atomically modifies the data at this location.
@@ -326,7 +352,7 @@ export namespace Database {
       transactionUpdate: Function,
       onComplete?: Function,
       applyLocally?: boolean,
-    ): Promise<any>;
+    ): Promise<TransactionResult>;
 
     /**
      * Generates a new child location using a unique key and returns its `Reference`.
@@ -343,7 +369,14 @@ export namespace Database {
      *
      * #### Example
      *
-     * // TODO
+     * ```js
+     * const newUserRef = firebase.database().ref('users');
+     * console.log('New record key:', newUserRef.key);
+     * await newUserRef.set({
+     *   first: 'Ada',
+     *   last: 'Lovelace',
+     * });
+     * ```
      *
      * @param value Optional value to be written at the generated location.
      * @param onComplete Callback called when write to server is complete.
@@ -356,7 +389,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const userDisconnectRef = firebase.database().ref('users/ada/isOnline).onDisconnect();
+     * const userDisconnectRef = firebase.database().ref('users/ada/isOnline').onDisconnect();
      * // When going offline
      * await userDisconnectRef.update(false);
      * ```
@@ -398,7 +431,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const ref = firebase.database().ref("users");
+     * const ref = firebase.database().ref('users');
      * const snapshot = await ref.orderByKey().endAt('Ada Lovelace').once('value');
      * ```
      *
@@ -422,7 +455,7 @@ export namespace Database {
      * #### Example
      *
      * ```js
-     * const ref = firebase.database().ref("users");
+     * const ref = firebase.database().ref('users');
      * const snapshot = await ref.orderByChild('age').equalTo(30).once('value');
      * ```
      *
@@ -783,14 +816,14 @@ export namespace Database {
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    cancel(onComplete?: Function): Promise<any>;
+    cancel(onComplete?: Function): Promise<void>;
 
     /**
      * Ensures the data at this location is deleted when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    remove(onComplete?: Function): Promise<any>;
+    remove(onComplete?: Function): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value when the client is disconnected
@@ -812,7 +845,7 @@ export namespace Database {
      * @param value The value to be written to this location on disconnect (can be an object, array, string, number, boolean, or null).
      * @param onComplete An optional callback function that will be called when synchronization to the Database server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    set(value: any, onComplete?: Function): Promise<any>;
+    set(value: any, onComplete?: Function): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value and priority when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
@@ -825,7 +858,7 @@ export namespace Database {
       value: any,
       priority: string | number | null,
       onComplete?: Function,
-    ): Promise<any>;
+    ): Promise<void>;
 
     /**
      * Writes multiple values at this location when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
@@ -854,7 +887,7 @@ export namespace Database {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key]: value }, onComplete?: Function): Promise<any>;
+    update(values: { [key]: value }, onComplete?: Function): Promise<void>;
   }
 
   export type EventType =
@@ -1038,7 +1071,7 @@ export namespace Database {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Returns the current Firebase Database server time as a JavaScript Date object.
      */
@@ -1119,8 +1152,8 @@ export namespace Database {
     goOffline(): Promise<void>;
 
     /**
-     * Sets whether persistence is enabled for all database calls across all app
-     * instances.
+     * Sets whether persistence is enabled for all database calls for the current app
+     * instance.
      *
      * > Ensure this is called before any database calls are performed, otherwise
      * persistence will only come into effect when the app is next started.
@@ -1138,7 +1171,7 @@ export namespace Database {
      *
      * @param enabled Whether persistence is enabled for the Database service.
      */
-    setPersistenceEnabled(enabled: boolean): void;
+    setPersistenceEnabled(enabled: boolean): Promise<void>;
 
     /**
      * Sets the native logging level for the database module. By default,
@@ -1158,7 +1191,7 @@ export namespace Database {
      *
      * @param enabled Whether debug logging is enabled.
      */
-    setLoggingEnabled(enabled: boolean): void;
+    setLoggingEnabled(enabled: boolean): Promise<void>;
 
     /**
      * By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
@@ -1183,27 +1216,60 @@ export namespace Database {
      *
      * @param bytes The new size of the cache in bytes.
      */
-    setPersistenceCacheSizeBytes(bytes: number): void;
+    setPersistenceCacheSizeBytes(bytes: number): Promise<void>;
   }
 }
 
 declare module '@react-native-firebase/database' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-  export const firebase = FirebaseNamespaceExport;
-  const DatabaseDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Database.Module,
-    Database.Statics
-  >;
-  export default DatabaseDefaultExport;
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
+
+  const module: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+  export default module;
 }
 
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    database: ReactNativeFirebaseModuleAndStatics<Database.Module, Database.Statics>;
-  }
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      database: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+    }
 
-  interface FirebaseApp {
-    database(): Database.Module;
+    interface FirebaseApp {
+      database(databaseUrl?: string): Database.Module;
+    }
+  }
+}
+
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
+    /**
+     * Set whether database persistence is enabled or disabled.
+     *
+     * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
+     *
+     * #### Example
+     *
+     * ```json
+     * // <project-root>/firebase.json
+     * {
+     *   "react-native": {
+     *     "database_persistence_enabled": false
+     *   }
+     * }
+     * ```
+     *
+     * ```js
+     * // Re-enable database persistence
+     * await firebase.database().setPersistenceEnabled(true);
+     * ```
+     */
+    database_persistence_enabled: boolean;
   }
 }

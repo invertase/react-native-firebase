@@ -22,13 +22,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
@@ -41,21 +45,22 @@ import java.util.Objects;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getListResultAsMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.isExternalStorageWritable;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.promiseRejectStorageException;
 
 public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Storage";
-  private static final String KEY_MAIN_BUNDLE = "MainBundle";
-  private static final String KEY_DOCUMENT_DIRECTORY = "DocumentDirectory";
-  private static final String KEY_LIBRARY_DIRECTORY = "LibraryDirectory";
-  private static final String KEY_EXTERNAL_DIRECTORY = "ExternalDirectory";
-  private static final String KEY_EXT_STORAGE_DIRECTORY = "ExternalStorageDirectory";
-  private static final String KEY_PICS_DIRECTORY = "PicturesDirectory";
-  private static final String KEY_MOVIES_DIRECTORY = "MoviesDirectory";
-  private static final String KEY_TEMP_DIRECTORY = "TempDirectory";
-  private static final String KEY_CACHE_DIRECTORY = "CachesDirectory";
+  private static final String KEY_MAIN_BUNDLE = "MAIN_BUNDLE";
+  private static final String KEY_DOCUMENT_DIRECTORY = "DOCUMENT_DIRECTORY";
+  private static final String KEY_LIBRARY_DIRECTORY = "LIBRARY_DIRECTORY";
+  private static final String KEY_EXTERNAL_DIRECTORY = "EXTERNAL_DIRECTORY";
+  private static final String KEY_EXT_STORAGE_DIRECTORY = "EXTERNAL_STORAGE_DIRECTORY";
+  private static final String KEY_PICS_DIRECTORY = "PICTURES_DIRECTORY";
+  private static final String KEY_MOVIES_DIRECTORY = "MOVIES_DIRECTORY";
+  private static final String KEY_TEMP_DIRECTORY = "TEMP_DIRECTORY";
+  private static final String KEY_CACHE_DIRECTORY = "CACHES_DIRECTORY";
 
   ReactNativeFirebaseStorageModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -107,6 +112,41 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     reference.getMetadata().addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
         promise.resolve(getMetadataAsMap(task.getResult()));
+      } else {
+        promiseRejectStorageException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
+    Task<ListResult> list;
+
+    int maxResults = listOptions.getInt("maxResults");
+
+    if (listOptions.hasKey("pageToken")) {
+      String pageToken = listOptions.getString("pageToken");
+      list = reference.list(maxResults, Objects.requireNonNull(pageToken));
+    } else {
+      list = reference.list(maxResults);
+    }
+
+    list.addOnCompleteListener(getExecutor(), task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(getListResultAsMap(task.getResult()));
+      } else {
+        promiseRejectStorageException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void listAll(String appName, String url, Promise promise) {
+    StorageReference reference = getReferenceFromUrl(url, appName);
+    reference.listAll().addOnCompleteListener(getExecutor(), task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(getListResultAsMap(task.getResult()));
       } else {
         promiseRejectStorageException(promise, task.getException());
       }
@@ -169,10 +209,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getFile
+   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
    */
   @ReactMethod
-  public void getFile(
+  public void writeToFile(
     String appName,
     String url,
     String localFilePath,

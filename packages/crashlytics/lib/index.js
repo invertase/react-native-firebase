@@ -16,21 +16,19 @@
  *
  */
 
+import { isBoolean, isError, isObject, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
 import StackTrace from 'stacktrace-js';
-import { isBoolean, isError, isObject, isString } from '@react-native-firebase/common';
-
-import version from './version';
 import {
   createNativeErrorObj,
   setGlobalErrorHandler,
   setOnUnhandledPromiseRejectionHandler,
 } from './handlers';
+import version from './version';
 
 const statics = {};
 
@@ -129,7 +127,7 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   setCrashlyticsCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.`,
+        "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 

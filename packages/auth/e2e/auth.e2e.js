@@ -81,7 +81,7 @@ describe('auth()', () => {
   describe('signInWithCustomToken()', () => {
     // TODO(salakar) use new testing api to create a custom token
     xit('signs in with a admin sdk created custom auth token', async () => {
-      const customUID = `zdwHCjbpzraRoNK7d64FYWv5AH02`;
+      const customUID = 'zdwHCjbpzraRoNK7d64FYWv5AH02';
       const token = await firebaseAdmin.auth().createCustomToken(customUID, {
         test: null,
         roles: [
@@ -191,6 +191,56 @@ describe('auth()', () => {
       // Tear down
 
       await firebase.auth().signOut();
+      await Utils.sleep(50);
+    });
+
+    it('returns the same user with multiple subscribers #1815', async () => {
+      const callback = sinon.spy();
+
+      let unsubscribe1;
+      let unsubscribe2;
+      let unsubscribe3;
+
+      await new Promise(resolve => {
+        unsubscribe1 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      await new Promise(resolve => {
+        unsubscribe2 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      await new Promise(resolve => {
+        unsubscribe3 = firebase.auth().onAuthStateChanged(user => {
+          callback(user);
+          resolve();
+        });
+      });
+
+      callback.should.be.calledThrice();
+      callback.should.be.calledWith(null);
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(800);
+
+      unsubscribe1();
+      unsubscribe2();
+      unsubscribe3();
+
+      callback.should.be.callCount(6);
+
+      const uid = callback.getCall(3).args[0].uid;
+
+      callback.getCall(4).args[0].uid.should.eql(uid);
+      callback.getCall(5).args[0].uid.should.eql(uid);
+
+      await firebase.auth().signOut();
+      await Utils.sleep(50);
     });
   });
 
@@ -269,6 +319,7 @@ describe('auth()', () => {
       // Tear down
 
       await firebase.auth().signOut();
+      await Utils.sleep(50);
     });
   });
 
@@ -762,17 +813,14 @@ describe('auth()', () => {
 
   describe('languageCode', () => {
     it('it should change the language code', () => {
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'en';
       if (firebase.auth().languageCode !== 'en') {
         throw new Error('Expected language code to be "en".');
       }
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'fr';
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-      // eslint-disable-next-line no-param-reassign
       firebase.auth().languageCode = 'en';
     });
   });
@@ -811,9 +859,7 @@ describe('auth()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
-      const pass = random;
-
-      await firebase.auth().createUserWithEmailAndPassword(email, pass);
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
 
       try {
         await firebase.auth().sendPasswordResetEmail(email);

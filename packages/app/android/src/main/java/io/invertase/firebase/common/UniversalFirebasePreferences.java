@@ -36,6 +36,7 @@ public class UniversalFirebasePreferences {
     return getPreferences().contains(key);
   }
 
+  // Boolean
   public void setBooleanValue(String key, boolean value) {
     getPreferences().edit().putBoolean(key, value).apply();
   }
@@ -44,6 +45,16 @@ public class UniversalFirebasePreferences {
     return getPreferences().getBoolean(key, defaultValue);
   }
 
+  // Int
+  public void setIntValue(String key, int value) {
+    getPreferences().edit().putInt(key, value).apply();
+  }
+
+  public int getIntValue(String key, int defaultValue) {
+    return getPreferences().getInt(key, defaultValue);
+  }
+
+  // Long
   public void setLongValue(String key, long value) {
     getPreferences().edit().putLong(key, value).apply();
   }
@@ -52,6 +63,7 @@ public class UniversalFirebasePreferences {
     return getPreferences().getLong(key, defaultValue);
   }
 
+  // String
   public void setStringValue(String key, String value) {
     getPreferences().edit().putString(key, value).apply();
   }

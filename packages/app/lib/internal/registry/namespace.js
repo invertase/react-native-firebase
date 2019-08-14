@@ -15,13 +15,12 @@
  *
  */
 
-import { isString } from '@react-native-firebase/common';
-
-import SDK_VERSION from '../../version';
+import { isString } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
+import SDK_VERSION from '../../version';
+import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
-import { KNOWN_NAMESPACES, DEFAULT_APP_NAME } from '../constants';
 
 // firebase.X
 let FIREBASE_ROOT = null;
@@ -68,7 +67,9 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     return MODULE_GETTER_FOR_APP[app.name][moduleNamespace];
   }
 
-  if (!MODULE_GETTER_FOR_APP[app.name]) MODULE_GETTER_FOR_APP[app.name] = {};
+  if (!MODULE_GETTER_FOR_APP[app.name]) {
+    MODULE_GETTER_FOR_APP[app.name] = {};
+  }
 
   const { hasCustomUrlOrRegionSupport, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[
     moduleNamespace
@@ -126,7 +127,9 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
  * @returns {*}
  */
 function getOrCreateModuleForRoot(moduleNamespace) {
-  if (MODULE_GETTER_FOR_ROOT[moduleNamespace]) return MODULE_GETTER_FOR_ROOT[moduleNamespace];
+  if (MODULE_GETTER_FOR_ROOT[moduleNamespace]) {
+    return MODULE_GETTER_FOR_ROOT[moduleNamespace];
+  }
 
   const { statics, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[moduleNamespace];
 
@@ -139,7 +142,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
         [
           `"firebase.${moduleNamespace}(app)" arg expects a FirebaseApp instance or undefined.`,
           '',
-          `Ensure the arg provided is a Firebase app instance; or no args to use the default Firebase app.`,
+          'Ensure the arg provided is a Firebase app instance; or no args to use the default Firebase app.',
         ].join('\r\n'),
       );
     }
@@ -253,7 +256,9 @@ export function createFirebaseRoot() {
  * @returns {*}
  */
 export function getFirebaseRoot() {
-  if (FIREBASE_ROOT) return FIREBASE_ROOT;
+  if (FIREBASE_ROOT) {
+    return FIREBASE_ROOT;
+  }
   return createFirebaseRoot();
 }
 
@@ -278,8 +283,8 @@ export function createModuleNamespace(options = {}) {
           `You've attempted to require '@react-native-firebase/${namespace}' version '${version}', ` +
             `however, the '@react-native-firebase/app' module is of a different version (${SDK_VERSION}).`,
           '',
-          `All React Native Firebase modules must be of the same version. Please ensure they match up ` +
-            `in your package.json file and re-run yarn/npm install.`,
+          'All React Native Firebase modules must be of the same version. Please ensure they match up ' +
+            'in your package.json file and re-run yarn/npm install.',
         ].join('\n'),
       );
     }

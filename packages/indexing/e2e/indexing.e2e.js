@@ -15,7 +15,7 @@
  *
  */
 
-describe('indexing()', () => {
+xdescribe('indexing()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -49,7 +49,7 @@ describe('indexing()', () => {
         firebase.indexing().onOpenURL('foo');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (error) {
-        error.message.should.containEql(`'listener' must be a function`);
+        error.message.should.containEql("'listener' must be a function");
         return Promise.resolve();
       }
     });

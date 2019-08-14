@@ -15,10 +15,9 @@
  *
  */
 
-import StackTrace from 'stacktrace-js';
+import { isError, once } from '@react-native-firebase/app/lib/common';
 import tracking from 'promise/setimmediate/rejection-tracking';
-
-import { isError, once } from '@react-native-firebase/common';
+import StackTrace from 'stacktrace-js';
 
 export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   const nativeObj = {};
@@ -50,7 +49,9 @@ export const setGlobalErrorHandler = once(nativeModule => {
   const originalHandler = ErrorUtils.getGlobalHandler();
 
   async function handler(error, fatal) {
-    if (__DEV__) return originalHandler(error, fatal);
+    if (__DEV__) {
+      return originalHandler(error, fatal);
+    }
 
     if (!isError(error)) {
       await nativeModule.logPromise(`Unknown Error: ${error}`);

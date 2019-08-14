@@ -15,14 +15,13 @@
  *
  */
 
-import { Linking } from 'react-native';
+import { isFunction } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isFunction } from '@react-native-firebase/common';
+import { Linking } from 'react-native';
 import version from './version';
 
 const statics = {};
@@ -46,7 +45,7 @@ class FirebaseIndexingModule extends FirebaseModule {
    */
   onOpenURL(listener) {
     if (!isFunction(listener)) {
-      throw new Error(`firebase.indexing().onOpenURL(*) 'listener' must be a function.`);
+      throw new Error("firebase.indexing().onOpenURL(*) 'listener' must be a function.");
     }
 
     Linking.addEventListener('url', ({ url }) => listener(url));

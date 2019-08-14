@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Notifications in React Native Firebase
+description: Getting started with Notifications in React Native Firebase
 ---
 
 # Notifications Quick Start

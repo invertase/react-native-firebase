@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStaticsWithApp,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Cloud Functions package for React Native.
@@ -97,6 +93,7 @@ export namespace Functions {
    * - `unauthenticated`: The request does not have valid authentication
    *   credentials for the operation.
    */
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   export type FunctionsErrorCode =
     | 'ok'
     | 'cancelled'
@@ -292,7 +289,7 @@ export namespace Functions {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Gets an `HttpsCallable` instance that refers to the function with the given
      * name.
@@ -338,57 +335,30 @@ export namespace Functions {
 }
 
 declare module '@react-native-firebase/functions' {
-  import { FirebaseApp, ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  // export statics
+  // tslint:disable-next-line:variable-name
   export const HttpsErrorCode: {} & Functions.HttpsErrorCode;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/functions';
-   * firebase.functions().httpsCallable(...);
-   * ```
-   */
-  export const firebase: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  const FunctionsDefaultExport: ReactNativeFirebaseModuleAndStaticsWithApp<
-    Functions.Module,
-    Functions.Statics
-  >;
-  /**
-   * @example
-   * ```js
-   * import functions from '@react-native-firebase/functions';
-   * functions().httpsCallable(...);
-   * ```
-   */
-  export default FunctionsDefaultExport;
+  const module: FirebaseModuleWithStaticsAndApp<Functions.Module, Functions.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * The Cloud Functions for Firebase client SDKs let you call functions
-     * directly from a Firebase app. To call a function from your app in this way,
-     * write and deploy an HTTPS Callable function in Cloud Functions,
-     * and then add client logic to call the function from your app.
-     */
-    functions: ReactNativeFirebaseModuleAndStaticsWithApp<Functions.Module, Functions.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * The Cloud Functions for Firebase client SDKs let you call functions
-     * directly from a Firebase app. To call a function from your app in this way,
-     * write and deploy an HTTPS Callable function in Cloud Functions,
-     * and then add client logic to call the function from your app.
-     *
-     * @param region The region you deployed your functions to. Defaults to 'us-central1'.
-     */
-    functions?(region?: string): Functions.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      functions: FirebaseModuleWithStaticsAndApp<Functions.Module, Functions.Statics>;
+    }
+    interface FirebaseApp {
+      functions(region?: string): Functions.Module;
+    }
   }
 }
