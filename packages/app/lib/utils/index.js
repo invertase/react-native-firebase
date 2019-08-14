@@ -21,8 +21,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import version from '../version';
 import UtilsStatics from './UtilsStatics';
-import version from './version';
 
 const namespace = 'utils';
 const statics = UtilsStatics;

@@ -15,6 +15,7 @@
 		2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D8102236417700FC8DC8 /* RNFBSharedUtils.m */; };
 		2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */; };
 		2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D81F2237018600FC8DC8 /* RNFBMeta.m */; };
+		4D97BAD423042F2700077358 /* RNFBUtilsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D97BAD323042F2700077358 /* RNFBUtilsModule.m */; };
 		DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */; };
 /* End PBXBuildFile section */
 
@@ -48,6 +49,8 @@
 		2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBPreferences.m; sourceTree = "<group>"; };
 		2748D81E2237012B00FC8DC8 /* RNFBMeta.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMeta.h; sourceTree = "<group>"; };
 		2748D81F2237018600FC8DC8 /* RNFBMeta.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMeta.m; sourceTree = "<group>"; };
+		4D97BAD223042F0800077358 /* RNFBUtilsModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBUtilsModule.h; sourceTree = "<group>"; };
+		4D97BAD323042F2700077358 /* RNFBUtilsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBUtilsModule.m; sourceTree = "<group>"; };
 		DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBVersion.m; sourceTree = "<group>"; };
 		DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBVersion.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +95,8 @@
 				2748D81B223674CD00FC8DC8 /* RNFBPreferences.m */,
 				DAA1F28422FCF6AD00F4DEC1 /* RNFBVersion.m */,
 				DAA1F28622FCF6C200F4DEC1 /* RNFBVersion.h */,
+				4D97BAD223042F0800077358 /* RNFBUtilsModule.h */,
+				4D97BAD323042F2700077358 /* RNFBUtilsModule.m */,
 			);
 			path = RNFBApp;
 			sourceTree = "<group>";
@@ -168,6 +173,7 @@
 				2748D8172236429D00FC8DC8 /* RNFBSharedUtils.m in Sources */,
 				2748D81C223674CD00FC8DC8 /* RNFBPreferences.m in Sources */,
 				DAA1F28522FCF6AD00F4DEC1 /* RNFBVersion.m in Sources */,
+				4D97BAD423042F2700077358 /* RNFBUtilsModule.m in Sources */,
 				2748D8202237018600FC8DC8 /* RNFBMeta.m in Sources */,
 				2744B99121F46140004F8E3F /* RNFBRCTEventEmitter.m in Sources */,
 				2744B9A421F48A4F004F8E3F /* RCTConvert+FIROptions.m in Sources */,
