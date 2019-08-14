@@ -33,6 +33,10 @@ if (jsonFile != null && jsonFile.exists()) {
       raw: json[jsonRoot],
       isFlagEnabled: { key ->
         return json[jsonRoot] != null && json[jsonRoot][key] == true
+      },
+      getStringValue: { key, defaultValue ->
+        if (json[jsonRoot] == null) return defaultValue
+        return json[jsonRoot][key] ? json[jsonRoot][key] : defaultValue
       }
     ]
 
