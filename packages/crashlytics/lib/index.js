@@ -23,7 +23,7 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import StackTrace from 'stacktrace-js';
-import { isBoolean, isError, isObject, isString } from '@react-native-firebase/common';
+import { isBoolean, isError, isObject, isString } from '@react-native-firebase/app/common';
 
 import version from './version';
 import {

@@ -27,7 +27,7 @@ import {
   isString,
   isUndefined,
   validateOptionalNativeDependencyExists,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 import version from './version';
 import validateTextMessage from './validateTextMessage';

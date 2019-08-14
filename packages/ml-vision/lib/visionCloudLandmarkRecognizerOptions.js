@@ -22,7 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 

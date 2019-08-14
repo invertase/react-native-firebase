@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isString } from '@react-native-firebase/common';
+import { isString } from '@react-native-firebase/app/common';
 
 import Invite from './Invite';
 import version from './version';

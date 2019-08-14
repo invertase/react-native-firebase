@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isAndroid, isBoolean } from '@react-native-firebase/common';
+import { isAndroid, isBoolean } from '@react-native-firebase/app/common';
 
 import EmailAuthProvider from './providers/EmailAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';

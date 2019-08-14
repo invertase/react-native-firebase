@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isString, isBoolean, isOneOf } from '@react-native-firebase/common';
+import { isString, isBoolean, isOneOf } from '@react-native-firebase/app/common';
 
 import Trace from './Trace';
 import version from './version';

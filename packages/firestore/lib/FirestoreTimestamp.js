@@ -15,7 +15,7 @@
  *
  */
 
-import { isNumber, isDate } from '@react-native-firebase/common';
+import { isNumber, isDate } from '@react-native-firebase/app/common';
 
 export default class FirestoreTimestamp {
   static now() {

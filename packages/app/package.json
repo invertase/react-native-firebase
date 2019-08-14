@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "@react-native-firebase/app-types": "0.1.5",
-    "@react-native-firebase/common": "0.1.5",
+    "@react-native-firebase/app": "0.1.5",
     "opencollective-postinstall": "^2.0.1"
   },
   "collective": {

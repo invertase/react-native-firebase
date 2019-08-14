@@ -15,7 +15,12 @@
  *
  */
 
-import { hasOwnProperty, isBoolean, isObject, isUndefined } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isBoolean,
+  isObject,
+  isUndefined,
+} from '@react-native-firebase/app/common';
 
 export default function validateAdShowOptions(options) {
   const out = {};

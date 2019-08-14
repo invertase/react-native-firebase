@@ -20,7 +20,7 @@ import {
   getFirebaseRoot,
   createModuleNamespace,
 } from '@react-native-firebase/app/lib/internal';
-import { isNumber, isString } from '@react-native-firebase/common';
+import { isNumber, isString } from '@react-native-firebase/app/common';
 
 import version from './version';
 import StorageStatics from './StorageStatics';

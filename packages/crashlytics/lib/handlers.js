@@ -18,7 +18,7 @@
 import StackTrace from 'stacktrace-js';
 import tracking from 'promise/setimmediate/rejection-tracking';
 
-import { isError, once } from '@react-native-firebase/common';
+import { isError, once } from '@react-native-firebase/app/common';
 
 export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   const nativeObj = {};

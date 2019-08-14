@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isString, isBoolean, isNumber } from '@react-native-firebase/common';
+import { isString, isBoolean, isNumber } from '@react-native-firebase/app/common';
 
 import version from './version';
 import DatabaseStatics from './DatabaseStatics';

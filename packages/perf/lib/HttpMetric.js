@@ -15,7 +15,7 @@
  *
  */
 
-import { isString, isNumber, isNull } from '@react-native-firebase/common';
+import { isString, isNumber, isNull } from '@react-native-firebase/app/common';
 import MetricWithAttributes from './MetricWithAttributes';
 
 export default class HttpMetric extends MetricWithAttributes {

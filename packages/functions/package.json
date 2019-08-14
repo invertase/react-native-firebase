@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@react-native-firebase/app-types": "0.1.5",
-    "@react-native-firebase/common": "0.1.5"
+    "@react-native-firebase/app": "0.1.5"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"

@@ -15,7 +15,7 @@
  *
  */
 
-import { Base64, isString } from '@react-native-firebase/common';
+import { Base64, isString } from '@react-native-firebase/app/common';
 
 export default class FirestoreBlob {
   constructor(internal = false, binaryString) {

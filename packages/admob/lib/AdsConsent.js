@@ -24,7 +24,7 @@ import {
   isString,
   isUndefined,
   isValidUrl,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';

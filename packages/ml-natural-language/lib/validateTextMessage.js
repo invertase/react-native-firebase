@@ -21,7 +21,7 @@ import {
   isNumber,
   isObject,
   isString,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 export default function validateTextMessage(textMessage) {
   if (!isObject(textMessage)) {

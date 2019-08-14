@@ -15,7 +15,7 @@
  *
  */
 
-import { isBoolean, isFunction, isObject, isUndefined } from '@react-native-firebase/common';
+import { isBoolean, isFunction, isObject, isUndefined } from '@react-native-firebase/app/common';
 import FirestoreDocumentChange from './FirestoreDocumentChange';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';

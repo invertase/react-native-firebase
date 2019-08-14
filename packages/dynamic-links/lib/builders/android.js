@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, isString } from '@react-native-firebase/common';
+import { isObject, isString } from '@react-native-firebase/app/common';
 
 export default function buildAndroid(androidParams) {
   if (!isObject(androidParams)) {

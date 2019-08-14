@@ -28,7 +28,7 @@ import {
   promiseWithOptionalCallback,
   isObject,
   isBoolean,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseOnDisconnect from './DatabaseOnDisconnect';

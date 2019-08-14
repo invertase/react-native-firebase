@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject } from '@react-native-firebase/common';
+import { isObject } from '@react-native-firebase/app/common';
 
 import { buildNativeMap } from './utils/serialize';
 import FirestoreDocumentReference from './FirestoreDocumentReference';

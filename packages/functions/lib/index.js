@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isAndroid } from '@react-native-firebase/common';
+import { isAndroid } from '@react-native-firebase/app/common';
 
 import version from './version';
 import HttpsError from './HttpsError';

@@ -20,7 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isIOS } from '@react-native-firebase/common';
+import { isIOS } from '@react-native-firebase/app/common';
 import UtilsStatics from './UtilsStatics';
 import version from './version';
 

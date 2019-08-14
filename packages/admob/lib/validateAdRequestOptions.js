@@ -24,7 +24,7 @@ import {
   isString,
   isUndefined,
   isValidUrl,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 
 export default function validateAdRequestOptions(options) {
   const out = {};

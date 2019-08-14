@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/common';
+import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/app/common';
 
 import FirebaseApp from '../../FirebaseApp';
 import { getAppModule } from './nativeModule';

@@ -22,7 +22,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isFunction } from '@react-native-firebase/common';
+import { isFunction } from '@react-native-firebase/app/common';
 import version from './version';
 
 const statics = {};

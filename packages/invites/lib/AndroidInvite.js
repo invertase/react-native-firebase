@@ -15,7 +15,7 @@
  *
  */
 
-import { isString, objectKeyValuesAreStrings } from '@react-native-firebase/common';
+import { isString, objectKeyValuesAreStrings } from '@react-native-firebase/app/common';
 
 export default class AndroidInvitation {
   constructor(invite) {

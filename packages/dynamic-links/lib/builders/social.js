@@ -15,7 +15,7 @@
  *
  */
 
-import { isString, isObject } from '@react-native-firebase/common';
+import { isString, isObject } from '@react-native-firebase/app/common';
 
 export default function buildSocial(socialParameters) {
   if (!isObject(socialParameters)) {

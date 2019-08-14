@@ -21,7 +21,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 
-import { isBoolean } from '@react-native-firebase/common';
+import { isBoolean } from '@react-native-firebase/app/common';
 
 import version from './version';
 

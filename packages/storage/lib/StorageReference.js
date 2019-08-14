@@ -28,7 +28,7 @@ import {
   isObject,
   hasOwnProperty,
   isNumber,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/common';
 import { validateMetadata } from './utils';
 import StorageStatics from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';

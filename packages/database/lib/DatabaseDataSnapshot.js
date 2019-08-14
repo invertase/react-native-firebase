@@ -15,8 +15,8 @@
  *
  */
 
-import { isString, isArray, isFunction, isObject } from '@react-native-firebase/common';
-import { deepGet } from '@react-native-firebase/common/lib/deeps';
+import { isString, isArray, isFunction, isObject } from '@react-native-firebase/app/common';
+import { deepGet } from '@react-native-firebase/app/common/lib/deeps';
 
 export default class DatabaseDataSnapshot {
   constructor(reference, snapshot) {
