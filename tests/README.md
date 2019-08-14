@@ -23,7 +23,7 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 
 ## Cleaning dependencies
 
-You might find yourself in situation where you want to start from a clean slate. Following will delete node_modules and project build folders.
+You might find yourself in a situation where you want to start from a clean slate. The following will delete all `node_modules` and project `build` folders.
 
 ```bash
 yarn lerna:clean
