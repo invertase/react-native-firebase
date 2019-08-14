@@ -22,8 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
 import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
 
 export default function visionCloudTextRecognizerOptions(cloudTextRecognizerOptions) {

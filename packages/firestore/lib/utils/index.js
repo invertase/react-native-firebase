@@ -23,7 +23,7 @@ import {
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/lib/common';
 import FirestoreFieldPath, { fromDotSeparatedString } from '../FirestoreFieldPath';
 
 export function extractFieldPathData(data, segmenets) {

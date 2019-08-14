@@ -15,7 +15,7 @@
  *
  */
 
-import { isNumber, isString } from '@react-native-firebase/common';
+import { isNumber, isString } from '@react-native-firebase/app/lib/common';
 import AndroidInvitation from './AndroidInvite';
 
 export default class Invitation {

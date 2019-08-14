@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
 const { RNFBAppModule } = NativeModules;
 

@@ -16,8 +16,8 @@
  *
  */
 
+import { stripTrailingSlash } from '@react-native-firebase/app/lib/common';
 import { NativeModules } from 'react-native';
-import { stripTrailingSlash } from '@react-native-firebase/common';
 
 // TODO(salakar) refactor once deprecations have been removed
 const PATH_NAMES = {

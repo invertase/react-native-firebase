@@ -16,28 +16,27 @@
  */
 
 import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import {
   isBoolean,
   isFunction,
   isNumber,
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
-import version from './version';
-import FirestoreStatics from './FirestoreStatics';
-import FirestorePath from './FirestorePath';
+} from '@react-native-firebase/app/lib/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/lib/internal';
 import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
+import FirestorePath from './FirestorePath';
 import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
-import FirestoreWriteBatch from './FirestoreWriteBatch';
+import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';
+import FirestoreWriteBatch from './FirestoreWriteBatch';
+import version from './version';
 
 const namespace = 'firestore';
 

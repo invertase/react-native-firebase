@@ -16,23 +16,21 @@
  */
 
 import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import {
   isAndroid,
   isBoolean,
   isFunction,
   isIOS,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/lib/internal';
 import { AppRegistry } from 'react-native';
-
-import version from './version';
 import remoteMessageOptions from './remoteMessageOptions';
+import version from './version';
 
 const statics = {};
 

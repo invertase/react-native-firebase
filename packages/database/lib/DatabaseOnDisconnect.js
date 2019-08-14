@@ -21,10 +21,10 @@ import {
   isNumber,
   isObject,
   isString,
-  isValidPath,
   isUndefined,
+  isValidPath,
   promiseWithOptionalCallback,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/lib/common';
 
 export default class DatabaseOnDisconnect {
   constructor(reference) {

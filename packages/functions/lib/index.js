@@ -15,15 +15,14 @@
  *
  */
 
+import { isAndroid } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isAndroid } from '@react-native-firebase/common';
-
-import version from './version';
 import HttpsError from './HttpsError';
+import version from './version';
 
 const namespace = 'functions';
 const nativeModuleName = 'RNFBFunctionsModule';

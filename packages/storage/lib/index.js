@@ -15,17 +15,16 @@
  *
  */
 
+import { isNumber, isString } from '@react-native-firebase/app/lib/common';
 import {
+  createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-  createModuleNamespace,
 } from '@react-native-firebase/app/lib/internal';
-import { isNumber, isString } from '@react-native-firebase/common';
-
-import version from './version';
-import StorageStatics from './StorageStatics';
 import StorageReference from './StorageReference';
+import StorageStatics from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
+import version from './version';
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];

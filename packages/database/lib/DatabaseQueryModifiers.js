@@ -15,7 +15,7 @@
  *
  */
 
-import { isNull, isNumber, isString } from '@react-native-firebase/common';
+import { isNull, isNumber, isString } from '@react-native-firebase/app/lib/common';
 
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',

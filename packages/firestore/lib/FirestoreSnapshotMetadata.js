@@ -15,7 +15,7 @@
  *
  */
 
-import { isUndefined } from '@react-native-firebase/common';
+import { isUndefined } from '@react-native-firebase/app/lib/common';
 
 export default class FirestoreSnapshotMetadata {
   constructor(metadata) {

@@ -15,7 +15,7 @@
  *
  */
 
-import { hasOwnProperty, isBoolean, isObject } from '@react-native-firebase/common';
+import { hasOwnProperty, isBoolean, isObject } from '@react-native-firebase/app/lib/common';
 
 export default function buildNavigation(navigationParams) {
   if (!isObject(navigationParams)) {

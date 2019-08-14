@@ -24,7 +24,7 @@ const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=
 /**
  * window.btoa
  */
-function btoa(input): string {
+function btoa(input) {
   let map;
   let i = 0;
   let block = 0;
@@ -52,7 +52,7 @@ function btoa(input): string {
 /**
  * window.atob
  */
-function atob(input): string {
+function atob(input) {
   let i = 0;
   let bc = 0;
   let bs = 0;

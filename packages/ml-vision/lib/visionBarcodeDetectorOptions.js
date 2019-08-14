@@ -15,7 +15,7 @@
  *
  */
 
-import { isArray, isObject, isUndefined } from '@react-native-firebase/common';
+import { isArray, isObject, isUndefined } from '@react-native-firebase/app/lib/common';
 import VisionBarcodeFormat from './VisionBarcodeFormat';
 
 export default function visionBarcodeDetectorOptions(barcodeDetectorOptions) {

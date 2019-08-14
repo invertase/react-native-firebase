@@ -15,11 +15,10 @@
  *
  */
 
-import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/common';
-
+import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
-import { getAppModule } from './nativeModule';
 import { DEFAULT_APP_NAME } from '../constants';
+import { getAppModule } from './nativeModule';
 
 const APP_REGISTRY = {};
 let onAppCreateFn = null;

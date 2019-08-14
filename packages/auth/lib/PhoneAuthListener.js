@@ -15,7 +15,7 @@
  *
  */
 
-import { promiseDefer, isFunction, isAndroid, isIOS } from '@react-native-firebase/common';
+import { isAndroid, isFunction, isIOS, promiseDefer } from '@react-native-firebase/app/lib/common';
 
 let REQUEST_ID = 0;
 

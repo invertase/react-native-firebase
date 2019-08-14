@@ -18,12 +18,12 @@
 import {
   generateFirestoreId,
   hasOwnProperty,
+  isInteger,
   isNumber,
   isObject,
   isString,
-  isInteger,
   isUndefined,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/lib/common';
 
 export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   const out = {};
