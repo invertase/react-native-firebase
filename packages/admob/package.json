@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/admob",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Admob",
   "main": "lib/index.js",
@@ -25,8 +25,8 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.1.5",
-    "@react-native-firebase/common": "0.1.5"
+    "@react-native-firebase/app-types": "0.2.0",
+    "@react-native-firebase/common": "0.2.0"
   },
   "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
   "publishConfig": {
