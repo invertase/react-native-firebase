@@ -15,13 +15,13 @@
  *
  */
 
-import { isString } from '@react-native-firebase/common';
+import { isString } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentReference, {
   provideDocumentSnapshotClass,
 } from './FirestoreDocumentReference';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
-import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import FirestorePath from './FirestorePath';
+import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
 

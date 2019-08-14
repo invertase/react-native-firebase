@@ -30,8 +30,7 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.2.3",
-    "@react-native-firebase/common": "0.2.3"
+    "@react-native-firebase/app-types": "0.2.3"
   },
   "gitHead": "889bf5379c8ce5257b33fb3ad1ac9c905fe26fff",
   "publishConfig": {

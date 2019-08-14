@@ -16,19 +16,18 @@
  */
 
 import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import {
   hasOwnProperty,
   isBoolean,
   isNumber,
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/lib/internal';
 import version from './version';
 
 const statics = {

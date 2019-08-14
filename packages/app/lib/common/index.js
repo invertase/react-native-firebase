@@ -15,13 +15,14 @@
  *
  */
 import { Platform } from 'react-native';
-import { isString } from './validate';
 import Base64 from './Base64';
+import { isString } from './validate';
 
 export * from './id';
 export * from './path';
-export * from './validate';
 export * from './promise';
+export * from './validate';
+
 export Base64 from './Base64';
 export ReferenceBase from './ReferenceBase';
 

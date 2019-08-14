@@ -18,22 +18,22 @@
 
 import {
   Base64,
-  isString,
-  pathChild,
-  pathParent,
-  isUndefined,
   getDataUrlParts,
-  pathLastComponent,
-  ReferenceBase,
-  isObject,
   hasOwnProperty,
   isNumber,
-} from '@react-native-firebase/common';
-import { validateMetadata } from './utils';
-import StorageStatics from './StorageStatics';
-import StorageUploadTask from './StorageUploadTask';
+  isObject,
+  isString,
+  isUndefined,
+  pathChild,
+  pathLastComponent,
+  pathParent,
+  ReferenceBase,
+} from '@react-native-firebase/app/lib/common';
 import StorageDownloadTask from './StorageDownloadTask';
 import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
+import StorageStatics from './StorageStatics';
+import StorageUploadTask from './StorageUploadTask';
+import { validateMetadata } from './utils';
 
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {

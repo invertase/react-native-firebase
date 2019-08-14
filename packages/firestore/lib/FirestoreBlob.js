@@ -15,7 +15,7 @@
  *
  */
 
-import { Base64, isString } from '@react-native-firebase/common';
+import { Base64, isString } from '@react-native-firebase/app/lib/common';
 
 export default class FirestoreBlob {
   constructor(internal = false, binaryString) {
@@ -67,7 +67,7 @@ export default class FirestoreBlob {
    * @param {*} blob Blob The Blob to compare against. Value must not be null.
    * @returns boolean 'true' if this Blob is equal to the provided one.
    */
-  isEqual(blob): boolean {
+  isEqual(blob) {
     if (!(blob instanceof FirestoreBlob)) {
       throw new Error('firestore.Blob.isEqual expects an instance of Blob');
     }
@@ -101,7 +101,7 @@ export default class FirestoreBlob {
    * @returns {string}
    * @memberof Blob
    */
-  toString(): string {
+  toString() {
     return `firestore.Blob(base64: ${this.toBase64()})`;
   }
 }

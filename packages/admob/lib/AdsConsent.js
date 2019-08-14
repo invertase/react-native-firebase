@@ -15,7 +15,6 @@
  *
  */
 
-import { NativeModules } from 'react-native';
 import {
   hasOwnProperty,
   isArray,
@@ -24,8 +23,8 @@ import {
   isString,
   isUndefined,
   isValidUrl,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
+import { NativeModules } from 'react-native';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 

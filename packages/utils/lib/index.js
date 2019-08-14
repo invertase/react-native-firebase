@@ -15,12 +15,12 @@
  *
  */
 
+import { isIOS } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isIOS } from '@react-native-firebase/common';
 import UtilsStatics from './UtilsStatics';
 import version from './version';
 

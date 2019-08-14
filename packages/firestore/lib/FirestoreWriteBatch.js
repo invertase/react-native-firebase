@@ -15,11 +15,10 @@
  *
  */
 
-import { isObject } from '@react-native-firebase/common';
-
-import { buildNativeMap } from './utils/serialize';
+import { isObject } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import { parseSetOptions, parseUpdateArgs } from './utils';
+import { buildNativeMap } from './utils/serialize';
 
 export default class FirestoreWriteBatch {
   constructor(firestore) {

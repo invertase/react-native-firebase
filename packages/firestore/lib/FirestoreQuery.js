@@ -15,12 +15,11 @@
  *
  */
 
+import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/common';
-
-import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
+import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs } from './utils';
 
 let _id = 0;

@@ -15,17 +15,15 @@
  *
  */
 
+import { isBoolean, isOneOf, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isString, isBoolean, isOneOf } from '@react-native-firebase/common';
-
+import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 import version from './version';
-import HttpMetric from './HttpMetric';
 
 const statics = {};
 

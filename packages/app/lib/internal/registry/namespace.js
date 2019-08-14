@@ -15,13 +15,12 @@
  *
  */
 
-import { isString } from '@react-native-firebase/common';
-
-import SDK_VERSION from '../../version';
+import { isString } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
+import SDK_VERSION from '../../version';
+import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
-import { KNOWN_NAMESPACES, DEFAULT_APP_NAME } from '../constants';
 
 // firebase.X
 let FIREBASE_ROOT = null;

@@ -15,8 +15,7 @@
  *
  */
 
-import { hasOwnProperty, isBoolean, isObject, isUndefined } from '@react-native-firebase/common';
-
+import { hasOwnProperty, isBoolean, isObject } from '@react-native-firebase/app/lib/common';
 import MaxAdContentRating from './MaxAdContentRating';
 
 export default function validateAdRequestConfiguration(requestConfiguration) {

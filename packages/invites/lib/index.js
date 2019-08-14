@@ -15,14 +15,12 @@
  *
  */
 
+import { isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isString } from '@react-native-firebase/common';
-
 import Invite from './Invite';
 import version from './version';
 

@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, isString } from '@react-native-firebase/common';
+import { isObject, isString } from '@react-native-firebase/app/lib/common';
 
 export default function buildiTunes(itunesParams) {
   if (!isObject(itunesParams)) {

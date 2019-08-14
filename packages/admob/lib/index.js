@@ -20,17 +20,14 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import version from './version';
+import AdEventType from './AdEventType';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 import MaxAdContentRating from './MaxAdContentRating';
-import TestIds from './TestIds';
-
-import AdEventType from './AdEventType';
 import RewardedAdEventType from './RewardedAdEventType';
-
+import TestIds from './TestIds';
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
+import version from './version';
 
 const statics = {
   AdsConsentDebugGeography,
@@ -101,9 +98,7 @@ export MaxAdContentRating from './MaxAdContentRating';
 export TestIds from './TestIds';
 export AdEventType from './AdEventType';
 export RewardedAdEventType from './RewardedAdEventType';
-
 export AdsConsent from './AdsConsent';
-
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
 export BannerAd from './ads/BannerAd';

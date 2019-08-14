@@ -16,41 +16,38 @@
  */
 
 import {
+  isString,
+  toFilePath,
+  validateOptionalNativeDependencyExists,
+} from '@react-native-firebase/app/lib/common';
+import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import {
-  isString,
-  toFilePath,
-  validateOptionalNativeDependencyExists,
-} from '@react-native-firebase/common';
-
 import version from './version';
-
-import VisionBarcodeFormat from './VisionBarcodeFormat';
-import VisionFaceContourType from './VisionFaceContourType';
-import VisionBarcodeValueType from './VisionBarcodeValueType';
-import VisionFaceLandmarkType from './VisionFaceLandmarkType';
-import VisionBarcodeEmailType from './VisionBarcodeEmailType';
-import VisionBarcodePhoneType from './VisionBarcodePhoneType';
 import VisionBarcodeAddressType from './VisionBarcodeAddressType';
+import visionBarcodeDetectorOptions from './visionBarcodeDetectorOptions';
+import VisionBarcodeEmailType from './VisionBarcodeEmailType';
+import VisionBarcodeFormat from './VisionBarcodeFormat';
+import VisionBarcodePhoneType from './VisionBarcodePhoneType';
+import VisionBarcodeValueType from './VisionBarcodeValueType';
+import VisionBarcodeWifiEncryptionType from './VisionBarcodeWifiEncryptionType';
+import visionCloudDocumentTextRecognizerOptions from './visionCloudDocumentTextRecognizerOptions';
+import visionCloudImageLabelerOptions from './visionCloudImageLabelerOptions';
+import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
+import visionCloudLandmarkRecognizerOptions from './visionCloudLandmarkRecognizerOptions';
+import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
+import visionCloudTextRecognizerOptions from './visionCloudTextRecognizerOptions';
+import VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
+import VisionFaceContourType from './VisionFaceContourType';
+import VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassificationMode';
 import VisionFaceDetectorContourMode from './VisionFaceDetectorContourMode';
 import VisionFaceDetectorLandmarkMode from './VisionFaceDetectorLandmarkMode';
-import VisionBarcodeWifiEncryptionType from './VisionBarcodeWifiEncryptionType';
-import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
-import VisionCloudTextRecognizerModelType from './VisionCloudTextRecognizerModelType';
-import VisionFaceDetectorClassificationMode from './VisionFaceDetectorClassificationMode';
-import VisionDocumentTextRecognizedBreakType from './VisionDocumentTextRecognizedBreakType';
-import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
-
-import visionImageLabelerOptions from './visionImageLabelerOptions';
 import visionFaceDetectorOptions from './visionFaceDetectorOptions';
-import visionBarcodeDetectorOptions from './visionBarcodeDetectorOptions';
-import visionCloudImageLabelerOptions from './visionCloudImageLabelerOptions';
-import visionCloudTextRecognizerOptions from './visionCloudTextRecognizerOptions';
-import visionCloudLandmarkRecognizerOptions from './visionCloudLandmarkRecognizerOptions';
-import visionCloudDocumentTextRecognizerOptions from './visionCloudDocumentTextRecognizerOptions';
+import VisionFaceDetectorPerformanceMode from './VisionFaceDetectorPerformanceMode';
+import VisionFaceLandmarkType from './VisionFaceLandmarkType';
+import visionImageLabelerOptions from './visionImageLabelerOptions';
 
 const statics = {
   VisionCloudTextRecognizerModelType,
