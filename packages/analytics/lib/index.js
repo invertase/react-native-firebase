@@ -21,6 +21,7 @@ import {
   isObject,
   isOneOf,
   isString,
+  isNumber,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import {
@@ -29,6 +30,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import version from './version';
+import { isBoolean } from '../../app/lib/common';
 
 const ReservedEventNames = [
   'app_clear_data',
@@ -55,58 +57,63 @@ const nativeModuleName = 'RNFBAnalyticsModule';
 class FirebaseAnalyticsModule extends FirebaseModule {
   logEvent(name, params = {}) {
     if (!isString(name)) {
-      throw new Error(
-        "firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.",
-      );
+      throw new Error("firebase.analytics().logEvent(*) 'name' expected a string value.");
     }
 
     if (!isUndefined(params) && !isObject(params)) {
-      throw new Error(
-        "firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.",
-      );
+      throw new Error("firebase.analytics().logEvent(_, *) 'params' expected an object value.");
     }
 
     // check name is not a reserved event name
     if (isOneOf(name, ReservedEventNames)) {
       throw new Error(
-        `firebase.analytics().logEvent(*): event name '${name}' is a reserved event name and can not be used.`,
+        `firebase.analytics().logEvent(*) 'name' the event name '${name}' is reserved and can not be used.`,
       );
     }
 
     // name format validation
     if (!isAlphaNumericUnderscore(name)) {
       throw new Error(
-        `firebase.analytics().logEvent(*): Event name '${name}' is invalid. Names should contain 1 to 32 alphanumeric characters or underscores.`,
+        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 32 alphanumeric characters or underscores.`,
       );
     }
 
     // maximum number of allowed params check
     if (params && Object.keys(params).length > 25) {
       throw new Error(
-        'firebase.analytics().logEvent(_, *): Maximum number of parameters exceeded (25).',
+        "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
       );
     }
 
-    // Parameter names can be up to 24 characters long and must start with an
-    // alphabetic character and contain only alphanumeric characters and
-    // underscores. Only String, long and double param types are supported.
-    // String parameter values can be up to 36 characters long. The "firebase_"
-    // prefix is reserved and should not be used for parameter names.
+    const entries = Object.entries(params);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, value] = entries[i];
+      if (!isString(value) && !isNumber(value) && !isBoolean(value)) {
+        throw new Error(
+          `firebase.analytics().logEvent(_, *) 'params' value for parameter '${key}' is invalid, expected a string or number value.`,
+        );
+      }
+    }
+
     return this.native.logEvent(name, params);
   }
 
   setAnalyticsCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error("firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.");
+    }
+
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
   setCurrentScreen(screenName, screenClassOverride) {
     if (!isString(screenName)) {
-      throw new Error('firebase.analytics().setCurrentScreen(*): screenName must be a string.');
+      throw new Error("firebase.analytics().setCurrentScreen(*) 'screenName' expected a string value.");
     }
 
     if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
       throw new Error(
-        'firebase.analytics().setCurrentScreen(_, *): screenClassOverride must be undefined or a string.',
+        "firebase.analytics().setCurrentScreen(_, *) 'screenClassOverride' expected a string value.",
       );
     }
 
@@ -114,17 +121,41 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setMinimumSessionDuration(milliseconds = 10000) {
+    if (!isNumber(milliseconds)) {
+      throw new Error(
+        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a number value.",
+      );
+    }
+
+    if (milliseconds < 0) {
+      throw new Error(
+        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a positive number value.",
+      );
+    }
+
     return this.native.setMinimumSessionDuration(milliseconds);
   }
 
   setSessionTimeoutDuration(milliseconds = 1800000) {
+    if (!isNumber(milliseconds)) {
+      throw new Error(
+        "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a number value.",
+      );
+    }
+
+    if (milliseconds < 0) {
+      throw new Error(
+        "firebase.analytics().setSessionTimeoutDuration(*) 'milliseconds' expected a positive number value.",
+      );
+    }
+
     return this.native.setSessionTimeoutDuration(milliseconds);
   }
 
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
       throw new Error(
-        'firebase.analytics().setUserId(*): The supplied userId must be a string value or null.',
+        "firebase.analytics().setUserId(*) 'id' expected a string value.",
       );
     }
 
@@ -134,27 +165,37 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   setUserProperty(name, value) {
     if (!isString(name)) {
       throw new Error(
-        'firebase.analytics().setUserProperty(*): The supplied property name must be a string.',
+        "firebase.analytics().setUserProperty(*) 'name' expected a string value.",
       );
     }
 
     if (value !== null && !isString(value)) {
       throw new Error(
-        'firebase.analytics().setUserProperty(_, *): The supplied property value must be a string value or null.',
+        "firebase.analytics().setUserProperty(_, *) 'value' expected a string value.",
       );
     }
 
     return this.native.setUserProperty(name, value);
   }
 
-  setUserProperties(object) {
-    if (!isObject(object)) {
+  setUserProperties(properties) {
+    if (!isObject(properties)) {
       throw new Error(
-        'firebase.analytics().setUserProperties(*): The supplied arg must be an object of key value strings.',
+        "firebase.analytics().setUserProperties(*) 'properties' expected an object of key/value pairs.",
       );
     }
 
-    return this.native.setUserProperties(object);
+    const entries = Object.entries(properties);
+    for (let i = 0; i < entries.length; i++) {
+      const [key, value] = entries[i];
+      if (!isNull(value) && (!isString(value) && !isNumber(value))) {
+        throw new Error(
+          `firebase.analytics().setUserProperties(*) 'properties' value for parameter '${key}' is invalid, expected a string or number value.`,
+        );
+      }
+    }
+
+    return this.native.setUserProperties(properties);
   }
 
   resetAnalyticsData() {

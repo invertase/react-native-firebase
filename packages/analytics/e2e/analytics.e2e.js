@@ -59,12 +59,33 @@ describe('analytics()', () => {
   });
 
   describe('logEvent()', () => {
+    it('errors if name is not a string', () => {
+      try {
+        firebase.analytics().logEvent(123);
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'name' expected a string value");
+        return Promise.resolve();
+      }
+    });
+
+    it('errors if params is not an object', () => {
+      try {
+        firebase.analytics().logEvent('invertase_event', 'foobar');
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'params' expected an object value");
+        return Promise.resolve();
+      }
+    });
+
     it('errors on using a reserved name', () => {
       try {
         firebase.analytics().logEvent('session_start');
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('reserved event');
+        e.message.should.containEql(`'name' the event name 'session_start' is reserved and can not be used`);
+        return Promise.resolve();
       }
     });
 
@@ -73,7 +94,8 @@ describe('analytics()', () => {
         firebase.analytics().logEvent('!@£$%^&*');
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('is invalid');
+        e.message.should.containEql(`'name' invalid event name '!@£$%^&*'`);
+        return Promise.resolve();
       }
     });
 
@@ -82,24 +104,24 @@ describe('analytics()', () => {
         firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1)));
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('Maximum number of parameters exceeded');
+        e.message.should.containEql("'params' maximum number of parameters exceeded (25)");
+        return Promise.resolve();
       }
     });
 
-    it('errors if name is not a string', () => {
-      (() => {
-        firebase.analytics().logEvent(13377331);
-      }).should.throw(
-        "firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.",
-      );
-    });
-
-    it('errors if params is not an object', () => {
-      (() => {
-        firebase.analytics().logEvent('invertase_event', 'this should be an object');
-      }).should.throw(
-        "firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.",
-      );
+    it('errors if params contains invalid types', () => {
+      try {
+        firebase.analytics().logEvent('invertase', {
+          foo: 'bar',
+          bar: {
+            baz: 123,
+          }
+        });
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'params' value for parameter 'bar' is invalid");
+        return Promise.resolve();
+      }
     });
 
     it('log an event without parameters', async () => {
@@ -116,6 +138,16 @@ describe('analytics()', () => {
   });
 
   describe('setAnalyticsCollectionEnabled()', () => {
+    it('throws if not a boolean', () => {
+      try {
+        firebase.analytics().setAnalyticsCollectionEnabled('foo');
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'enabled' expected a boolean value");
+        return Promise.resolve();
+      }
+    });
+
     it('true', async () => {
       await firebase.analytics().setAnalyticsCollectionEnabled(true);
     });
@@ -145,7 +177,7 @@ describe('analytics()', () => {
         await firebase.analytics().setCurrentScreen(666.1337);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('must be a string');
+        e.message.should.containEql("'screenName' expected a string value");
       }
     });
 
@@ -154,7 +186,7 @@ describe('analytics()', () => {
         await firebase.analytics().setCurrentScreen('invertase screen', 666.1337);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('must be undefined or a string');
+        e.message.should.containEql("'screenClassOverride' expected a string value");
       }
     });
   });
@@ -162,6 +194,24 @@ describe('analytics()', () => {
   describe('setMinimumSessionDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setMinimumSessionDuration();
+    });
+
+    it('errors if milliseconds not a number', async () => {
+      try {
+        await firebase.analytics().setMinimumSessionDuration('123');
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'milliseconds' expected a number value");
+      }
+    });
+
+    it('errors if milliseconds is less than 0', async () => {
+      try {
+        await firebase.analytics().setMinimumSessionDuration(-100);
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'milliseconds' expected a positive number value");
+      }
     });
 
     it('custom duration', async () => {
@@ -172,6 +222,24 @@ describe('analytics()', () => {
   describe('setSessionTimeoutDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setSessionTimeoutDuration();
+    });
+
+    it('errors if milliseconds not a number', async () => {
+      try {
+        await firebase.analytics().setSessionTimeoutDuration('123');
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'milliseconds' expected a number value");
+      }
+    });
+
+    it('errors if milliseconds is less than 0', async () => {
+      try {
+        await firebase.analytics().setSessionTimeoutDuration(-100);
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'milliseconds' expected a positive number value");
+      }
     });
 
     it('custom duration', async () => {
@@ -188,12 +256,12 @@ describe('analytics()', () => {
       await firebase.analytics().setUserId('rn-firebase');
     });
 
-    it('rejects none string none null values', async () => {
+    it('throws if none string none null values', async () => {
       try {
-        await firebase.analytics().setUserId(666.1337);
+        await firebase.analytics().setUserId(123);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('must be a string');
+        e.message.should.containEql("'id' expected a string value");
       }
     });
   });
@@ -207,32 +275,46 @@ describe('analytics()', () => {
       await firebase.analytics().setUserProperty('invertase2', 'rn-firebase');
     });
 
-    it('rejects none string none null values', async () => {
-      try {
-        await firebase.analytics().setUserProperty('invertase3', 33.3333);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-
-    it('errors if property name is not a string', async () => {
+    it('throws if name is not a string', async () => {
       try {
         await firebase.analytics().setUserProperty(1337, 'invertase');
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('must be a string');
+        e.message.should.containEql("'name' expected a string value");
+      }
+    });
+
+    it('throws if value is invalid', async () => {
+      try {
+        await firebase.analytics().setUserProperty('invertase3', 33.3333);
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'value' expected a string value");
       }
     });
   });
 
   describe('setUserProperties()', () => {
-    it('errors if arg is not an object', async () => {
+    it('throws if properties is not an object', async () => {
       try {
         await firebase.analytics().setUserProperties(1337);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql('must be an object');
+        e.message.should.containEql("'properties' expected an object of key/value pairs");
+      }
+    });
+
+    it('throws if property value is invalid', async () => {
+      try {
+        await firebase.analytics().setUserProperties({
+          test: 123,
+          foo: {
+            bar: 'baz'
+          }
+        });
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql("'properties' value for parameter 'foo' is invalid");
       }
     });
 
@@ -242,6 +324,10 @@ describe('analytics()', () => {
 
     it('accepts string values', async () => {
       await firebase.analytics().setUserProperties({ invertase2: 'rn-firebase' });
+    });
+
+    it('accepts number values', async () => {
+      await firebase.analytics().setUserProperties({ invertase3: 123 });
     });
   });
 });
