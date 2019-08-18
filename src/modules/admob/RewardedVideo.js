@@ -70,6 +70,19 @@ export default class RewardedVideo {
   }
 
   /**
+   * Set custom data
+   * @param customData
+   * @returns {*}
+   */
+
+  setCustomData(customData: string) {
+    return getNativeModule(this._admob).rewardedVideoSetCustomData(
+      this.adUnit,
+      customData
+    );
+  }
+
+  /**
    * Return a local instance of isLoaded
    * @returns {boolean}
    */
