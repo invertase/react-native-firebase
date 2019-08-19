@@ -15,34 +15,10 @@
  *
  */
 
-import {
-  isAlphaNumericUnderscore,
-  isNull,
-  isObject,
-  isOneOf,
-  isString,
-  isNumber,
-  isUndefined,
-} from '@react-native-firebase/app/lib/common';
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import version from './version';
+import { isAlphaNumericUnderscore, isNull, isNumber, isObject, isOneOf, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import { createModuleNamespace, FirebaseModule, getFirebaseRoot } from '@react-native-firebase/app/lib/internal';
 import { isBoolean } from '../../app/lib/common';
-
-const ReservedEventNames = [
-  'app_clear_data',
-  'app_uninstall',
-  'app_update',
-  'error',
-  'first_open',
-  'in_app_purchase',
-  'notification_dismiss',
-  'notification_foreground',
-  'notification_open',
-  'notification_receive',
+import version from './version';
   'os_update',
   'session_start',
   'user_engagement',
