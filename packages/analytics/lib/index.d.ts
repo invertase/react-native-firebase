@@ -88,7 +88,7 @@ export namespace Analytics {
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
      */
-    logEvent(name: string, params: { [key: string]: string }): Promise<void>;
+    logEvent(name: string, params: { [key: string]: string | number | boolean }): Promise<void>;
 
     /**
      * If true, allows the device to collect analytical data and send it to
@@ -136,7 +136,7 @@ export namespace Analytics {
      *
      * @param milliseconds The default value is 10000 (10 seconds).
      */
-    setMinimumSessionDuration(milliseconds: number): Promise<void>;
+    setMinimumSessionDuration(milliseconds?: number): Promise<void>;
 
     /**
      * Sets the duration of inactivity that terminates the current session.
@@ -150,7 +150,7 @@ export namespace Analytics {
      *
      * @param milliseconds The default value is 1800000 (30 minutes).
      */
-    setSessionTimeoutDuration(milliseconds: number): Promise<void>;
+    setSessionTimeoutDuration(milliseconds?: number): Promise<void>;
 
     /**
      * Gives a user a unique identification.
