@@ -84,7 +84,9 @@ describe('analytics()', () => {
         firebase.analytics().logEvent('session_start');
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
-        e.message.should.containEql(`'name' the event name 'session_start' is reserved and can not be used`);
+        e.message.should.containEql(
+          `'name' the event name 'session_start' is reserved and can not be used`,
+        );
         return Promise.resolve();
       }
     });
@@ -115,7 +117,7 @@ describe('analytics()', () => {
           foo: 'bar',
           bar: {
             baz: 123,
-          }
+          },
         });
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
@@ -309,8 +311,8 @@ describe('analytics()', () => {
         await firebase.analytics().setUserProperties({
           test: 123,
           foo: {
-            bar: 'baz'
-          }
+            bar: 'baz',
+          },
         });
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {

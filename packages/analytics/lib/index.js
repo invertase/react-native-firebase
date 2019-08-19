@@ -15,10 +15,34 @@
  *
  */
 
-import { isAlphaNumericUnderscore, isNull, isNumber, isObject, isOneOf, isString, isUndefined } from '@react-native-firebase/app/lib/common';
-import { createModuleNamespace, FirebaseModule, getFirebaseRoot } from '@react-native-firebase/app/lib/internal';
+import {
+  isAlphaNumericUnderscore,
+  isNull,
+  isNumber,
+  isObject,
+  isOneOf,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/app/lib/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/lib/internal';
 import { isBoolean } from '../../app/lib/common';
 import version from './version';
+
+const ReservedEventNames = [
+  'app_clear_data',
+  'app_uninstall',
+  'app_update',
+  'error',
+  'first_open',
+  'in_app_purchase',
+  'notification_dismiss',
+  'notification_foreground',
+  'notification_open',
+  'notification_receive',
   'os_update',
   'session_start',
   'user_engagement',
@@ -76,7 +100,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setAnalyticsCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
-      throw new Error("firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.");
+      throw new Error(
+        "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
+      );
     }
 
     return this.native.setAnalyticsCollectionEnabled(enabled);
@@ -84,7 +110,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setCurrentScreen(screenName, screenClassOverride) {
     if (!isString(screenName)) {
-      throw new Error("firebase.analytics().setCurrentScreen(*) 'screenName' expected a string value.");
+      throw new Error(
+        "firebase.analytics().setCurrentScreen(*) 'screenName' expected a string value.",
+      );
     }
 
     if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
@@ -130,9 +158,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
-      throw new Error(
-        "firebase.analytics().setUserId(*) 'id' expected a string value.",
-      );
+      throw new Error("firebase.analytics().setUserId(*) 'id' expected a string value.");
     }
 
     return this.native.setUserId(id);
@@ -140,9 +166,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   setUserProperty(name, value) {
     if (!isString(name)) {
-      throw new Error(
-        "firebase.analytics().setUserProperty(*) 'name' expected a string value.",
-      );
+      throw new Error("firebase.analytics().setUserProperty(*) 'name' expected a string value.");
     }
 
     if (value !== null && !isString(value)) {
