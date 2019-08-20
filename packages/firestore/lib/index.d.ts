@@ -1560,27 +1560,27 @@ export namespace Firestore {
     /**
      * Returns the `Blob` class.
      */
-    Blob: Blob;
+    Blob: typeof Blob;
 
     /**
      * Returns the `FieldPath` class.
      */
-    FieldPath: FieldPath;
+    FieldPath: typeof FieldPath;
 
     /**
      * Returns the `FieldValue` class.
      */
-    FieldValue: FieldValue;
+    FieldValue: typeof FieldValue;
 
     /**
      * Returns the `GeoPoint` class.
      */
-    GeoPoint: GeoPoint;
+    GeoPoint: typeof GeoPoint;
 
     /**
      * Returns the `Timestamp` class.
      */
-    Timestamp: Timestamp;
+    Timestamp: typeof Timestamp;
 
     /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in
