@@ -257,7 +257,3 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
