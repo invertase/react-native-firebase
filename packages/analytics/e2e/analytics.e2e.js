@@ -320,16 +320,23 @@ describe('analytics()', () => {
       }
     });
 
+    it('throws if value is a number', async () => {
+      try {
+        await firebase.analytics().setUserProperties({ invertase1: 123 });
+        return Promise.reject(new Error('Did not throw.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'properties' value for parameter 'invertase1' is invalid, expected a string.",
+        );
+      }
+    });
+
     it('allows null values to be set', async () => {
-      await firebase.analytics().setUserProperties({ invertase: null });
+      await firebase.analytics().setUserProperties({ invertase2: null });
     });
 
     it('accepts string values', async () => {
-      await firebase.analytics().setUserProperties({ invertase2: 'rn-firebase' });
-    });
-
-    it('accepts number values', async () => {
-      await firebase.analytics().setUserProperties({ invertase3: 123 });
+      await firebase.analytics().setUserProperties({ invertase3: 'rn-firebase' });
     });
   });
 });
