@@ -26,6 +26,14 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
 	>
     Install & start monetizing your React Native application with AdMob.
 	</Block>
+  	<Block
+		icon="pan_tool"
+		color="##f44336"
+		title="European User Consent"
+		to="european-user-consent"
+	>
+    Learn how to request consent from users within the EEA. The AdMob library comes with built in support to help you handle GDPR regulations in your application.
+	</Block>
 	<Block
 		icon="school"
 		color="#4CAF50"
