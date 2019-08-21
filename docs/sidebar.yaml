@@ -152,18 +152,6 @@
     - text: iOS Setup
       to: '/ios'
 
-- module: indexing
-  group: App Indexing
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-
 - module: iid
   group: Instance ID
   children:
