@@ -62,7 +62,7 @@ for certain packages. To create an additional app instance, call the `initialize
 The package also provides access to the firebase instance:
 
 ```js
-import { firebase } from '@react-native-firebase/app/lib/utils';
+import { utils } from '@react-native-firebase/app';
 ```
 
 ### Detect whether the app is running within TestL Lab
@@ -76,7 +76,7 @@ It is useful to change the apps configuration if it is being run in Test Lab, fo
 data collection. Such functionality can be carried out by taking advantage of the `isRunningInTestLab` property:
 
 ```js
-import utils from '@react-native-firebase/app/lib/utils';
+import { utils } from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 
 async function bootstrap() {
