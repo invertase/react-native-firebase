@@ -50,7 +50,7 @@ apply plugin: 'com.google.gms.google-services'
 
 ## Next
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="iOS Firebase Credentials"
 		to="/quick-start/ios-firebase-credentials"

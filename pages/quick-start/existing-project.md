@@ -7,7 +7,7 @@ description: Integrate Firebase into an existing React Native project
 
 This guide is for integrating Firebase into an existing React Native project.
 
-Creating a new React Native project? See the [`new projects guide`](/quick-start/new-project) instead.
+Creating a new React Native project? See the [new projects guide](/quick-start/new-project) instead.
 
 ## Before you begin
 
@@ -25,11 +25,11 @@ yarn add @react-native-firebase/app
 
 Now that you've installed the core Firebase module into your exist project, let's continue to the final step; follow the guides below for the platforms you wish to integrate with.
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="Adding Firebase credentials to your Android app"
 		to="/quick-start/android-firebase-credentials"
-		icon="phone_android"
+		icon="android"
 		color="#4CAF50"
 	>
 		Creating an Android Firebase app and downloading the credentials from the Firebase console.

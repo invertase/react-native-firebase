@@ -66,11 +66,11 @@ Add the following lines to the file:
 
 ## Next
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="Android Firebase Credentials"
 		to="/quick-start/android-firebase-credentials"
-		icon="phone_android"
+		icon="android"
 		color="#4CAF50"
 	>
 		Adding Firebase credentials to your Android app from the Firebase console.

@@ -32,7 +32,7 @@ Now that you have a Firebase project; lets continue integrating Firebase for Rea
 
 You can get started with Firebase in React Native using one of the following options:
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="New Projects"
 		to="/quick-start/new-project"

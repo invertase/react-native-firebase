@@ -3,48 +3,50 @@ title: Quick Start
 description: Get started with Firebase & React Native.
 ---
 
-# Add Firebase to your React Native project
+# Quick Start
 
-## Before you begin
+## Prerequisites
 
-This guide makes the following assumptions
+To get started with React Native Firebase you must have your React Native environment setup along with a Firebase project.
 
-- you have already installed the required development dependencies described on the React Native [getting started](https://facebook.github.io/react-native/docs/getting-started) documentation.
-- you have an active Firebase project
-
-If you do not already have a Firebase project on the Firebase console, visit the following guide first.
-
-<Grid>
+<Grid columns="2">
+	<Block
+		title="Getting started with React Native"
+		to="https://facebook.github.io/react-native/docs/getting-started"
+		icon="code"
+		color="#61dafb"
+	>
+		Visit the React Native documentation to get started on setting up your first application.
+  	</Block>
 	<Block
 		title="Creating a Firebase Project"
 		to="/quick-start/create-firebase-project"
 		icon="forward"
-		color="#4CAF50"
+		color="#FBC02D"
 	>
-		Creating a new Firebase project on the Firebase Console.
+		New to Firebase? Learn how to setup a new project using the Firebase console.
   	</Block>
 </Grid>
 
-> **Note**: Integration for iOS is currently only supported via CocoaPods see [#2128](https://github.com/invertase/react-native-firebase/issues/2128) to learn more or to help implement non-pods support.
 
 ## Choose your integration path
 
-You can get started with Firebase in React Native using one of the following options:
+React Native Firebase can integrate with a new React Native app or an existing setup.
 
 <Grid columns="2">
 	<Block
-		title="New Projects"
+		title="New Project"
 		to="/quick-start/new-project"
 		icon="fiber_new"
 		color="#4CAF50"
 	>
-		Start a new React Native project with Firebase pre-integrated.
+		Create a new React Native app with React Native Firebase pre-integrated.
   	</Block>
 	<Block
 		title="Existing Projects"
 		to="/quick-start/existing-project"
 		icon="forward"
-		color="#ffc107"
+		color="##2196f3"
 	>
 		Integrate Firebase into an existing React Native project.
   	</Block>

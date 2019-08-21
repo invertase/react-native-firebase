@@ -31,7 +31,7 @@ Now that you have a new project with the core Firebase module integrated, let's 
 	<Block
 		title="Adding Firebase credentials to your Android app"
 		to="/quick-start/android-firebase-credentials"
-		icon="phone_android"
+		icon="android"
 		color="#4CAF50"
 	>
 		Creating an Android Firebase app and downloading the credentials from the Firebase console.

@@ -38,7 +38,7 @@ You can learn more about the various ways of contributing to this project by vis
 	</Block>
 	<Block
 		icon="edit"
-		color="#673ab7"
+		color="#4caf50"
 		title="Marketing & Content"
 		to="/contributing/marketing-content"
 	>
@@ -46,7 +46,7 @@ You can learn more about the various ways of contributing to this project by vis
 	</Block>
 	<Block
 		icon="person_pin"
-		color="#3f51b5"
+		color="#00bcd4"
 		title="Community & Events"
 		to="/contributing/community"
 	>
@@ -54,7 +54,7 @@ You can learn more about the various ways of contributing to this project by vis
 	</Block>
 	<Block
 		icon="attach_money"
-		color="#ffeb3b"
+		color="#4caf50"
 		title="Donations & Expenses"
 		to="/contributing/donations-expenses"
 	>
