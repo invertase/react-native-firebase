@@ -48,12 +48,6 @@
   return nil;
 }
 
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-  return queryItem.value;
-}
-
 + (NSString *)utiToMimeType:(NSString *)dataUTI {
   return (__bridge_transfer NSString *) UTTypeCopyPreferredTagWithClass((__bridge CFStringRef) dataUTI,
       kUTTagClassMIMEType);

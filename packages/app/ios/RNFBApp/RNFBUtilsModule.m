@@ -43,6 +43,12 @@ RCT_EXPORT_MODULE();
     return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
 }
 
++ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
+    return queryItem.value;
+}
+
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
     PHAsset *asset;
     
@@ -57,6 +63,25 @@ RCT_EXPORT_MODULE();
     }
     
     return asset;
+}
+
+- (NSString *)getPathForDirectory:(int)directory {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory) directory, NSUserDomainMask, YES);
+    return [paths firstObject];
+}
+
+- (NSDictionary *)constantsToExport {
+    NSMutableDictionary *constants = [@{
+        @"MAIN_BUNDLE": [[NSBundle mainBundle] bundlePath],
+        @"CACHES_DIRECTORY": [self getPathForDirectory:NSCachesDirectory],
+        @"DOCUMENT_DIRECTORY": [self getPathForDirectory:NSDocumentDirectory],
+        @"PICTURES_DIRECTORY": [self getPathForDirectory:NSPicturesDirectory],
+        @"MOVIES_DIRECTORY": [self getPathForDirectory:NSMoviesDirectory],
+        @"TEMP_DIRECTORY": NSTemporaryDirectory(),
+        @"LIBRARY_DIRECTORY": [self getPathForDirectory:NSLibraryDirectory],
+    } mutableCopy];
+    
+    return constants;
 }
 
 @end
