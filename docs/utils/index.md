@@ -10,7 +10,7 @@ development of the React Native Firebase library.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"

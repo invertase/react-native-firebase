@@ -17,7 +17,7 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="attach_money"
 		color="#2196f3"
@@ -28,7 +28,7 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
 	</Block>
   	<Block
 		icon="pan_tool"
-		color="##f44336"
+		color="#f44336"
 		title="European User Consent"
 		to="european-user-consent"
 	>
