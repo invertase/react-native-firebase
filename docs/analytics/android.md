@@ -31,7 +31,7 @@ dependencies {
 
 #### Add Analytics to Main Android Application:
 
-**`android/app/src/main/java/**/MainApplication.java`\*\*:
+**`android/app/src/main/java/**/MainApplication.java`**:
 
 ```java{2,8}
 // ..

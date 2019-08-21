@@ -5,28 +5,14 @@ description: Getting started with the Utils package in React Native Firebase
 
 # Utils Quick Start
 
-## Installation
-
-Install this module with Yarn:
-
-```bash
-yarn add @react-native-firebase/utils
-```
-
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+The utils module comes installed with the `app` module.
 
 ## Module usage
 
-Import the Performance Monitoring package into your project:
+Import the Utils package into your project:
 
 ```js
-import utils from '@react-native-firebase/utils';
-```
-
-The package also provides access to the firebase instance:
-
-```js
-import { firebase } from '@react-native-firebase/utils';
+import { utils } from '@react-native-firebase/app';
 ```
 
 ### Detect whether the app is running within TestL Lab
@@ -40,7 +26,7 @@ It is useful to change the apps configuration if it is being run in Test Lab, fo
 data collection. Such functionality can be carried out by taking advantage of the `isRunningInTestLab` property:
 
 ```js
-import utils from '@react-native-firebase/utils';
+import { utils } from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 
 async function bootstrap() {
@@ -48,4 +34,16 @@ async function bootstrap() {
     await analytics().setAnalyticsCollectionEnabled(false);
   }
 }
+```
+
+### Access device file paths
+
+Some modules require access to your local device filesystem (such as Storage & ML Kit Vision). The utils
+module access to the device directory locations, working cross platform on Android & iOS.
+
+```js
+import { utils } from '@react-native-firebase/app';
+
+// Access the device pictures directory
+const picturesDir = utils.FilePath.PICTURES_DIRECTORY;
 ```
