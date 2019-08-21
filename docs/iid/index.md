@@ -10,7 +10,7 @@ your app's server side managed resources, for example sending FCM messages.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
