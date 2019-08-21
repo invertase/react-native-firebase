@@ -21,4 +21,8 @@
 
 @interface RNFBUtilsModule : NSObject <RCTBridgeModule>
 
++ (BOOL)isRemoteAsset:(NSString *);
++ (BOOL)unused_isHeic:(NSString *)localFilePath;
++ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
+
 @end

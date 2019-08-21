@@ -35,4 +35,28 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Utils Methods
 
++ (BOOL)isRemoteAsset:(NSString *)localFilePath {
+    return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
+}
+
++ (BOOL)unused_isHeic:(NSString *)localFilePath {
+    return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
+}
+
++ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
+    PHAsset *asset;
+    
+    if ([localFilePath hasPrefix:@"assets-library://"]) {
+        NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
+        asset = [[PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil] firstObject];
+    } else {
+        NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
+        NSArray *queryItems = components.queryItems;
+        NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
+        asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil] firstObject];
+    }
+    
+    return asset;
+}
+
 @end
