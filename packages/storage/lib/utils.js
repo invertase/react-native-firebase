@@ -38,10 +38,9 @@ export function handleStorageEvent(storageInstance, event) {
   storageInstance.emitter.emit(storageInstance.eventNameForApp(taskId, eventName), body);
 }
 
-// https://regex101.com/r/99E00o/2/
 export function getHttpUrlParts(url) {
   const parts = url.match(
-    /\/b\/(?<bucket>.*)\.appspot.com\/o\/(?<path>[a-zA-Z0-9./\-_]+)(?<params>.*)/,
+    /\/b\/(.*)\.appspot.com\/o\/([a-zA-Z0-9./\-_]+)(.*)/,
   );
 
   if (!parts || parts.length < 3) {
