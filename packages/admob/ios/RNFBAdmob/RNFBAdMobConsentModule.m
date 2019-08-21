@@ -66,23 +66,9 @@ RCT_EXPORT_METHOD(showForm:
   NSString *privacyPolicy = options[@"privacyPolicy"];
   PACConsentForm *form = [[PACConsentForm alloc] initWithApplicationPrivacyPolicyURL:[NSURL URLWithString:privacyPolicy]];
 
-  if (options[@"withPersonalizedAds"]) {
-    form.shouldOfferPersonalizedAds = YES;
-  } else {
-    form.shouldOfferNonPersonalizedAds = NO;
-  }
-
-  if (options[@"withNonPersonalizedAds"]) {
-    form.shouldOfferNonPersonalizedAds = YES;
-  } else {
-    form.shouldOfferNonPersonalizedAds = NO;
-  }
-
-  if (options[@"withAdFree"]) {
-    form.shouldOfferAdFree = YES;
-  } else {
-    form.shouldOfferAdFree = NO;
-  }
+  form.shouldOfferPersonalizedAds = [options[@"withPersonalizedAds"] boolValue];
+  form.shouldOfferNonPersonalizedAds = [options[@"withNonPersonalizedAds"] boolValue];
+  form.shouldOfferAdFree = [options[@"withAdFree"] boolValue];
 
   id dismissCompletionBlock = ^(NSError *error, BOOL userPrefersAdFree) {
     if (error != nil) {
