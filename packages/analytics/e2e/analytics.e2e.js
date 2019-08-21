@@ -85,7 +85,7 @@ describe('analytics()', () => {
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql(
-          `'name' the event name 'session_start' is reserved and can not be used`,
+          "'name' the event name 'session_start' is reserved and can not be used",
         );
         return Promise.resolve();
       }
