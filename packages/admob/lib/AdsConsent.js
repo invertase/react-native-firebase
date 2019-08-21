@@ -132,8 +132,6 @@ export default {
     return native.getStatus();
   },
 
-  // TODO getStatus
-
   /**
    *
    * @param status
