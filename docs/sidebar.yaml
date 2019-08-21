@@ -227,7 +227,7 @@
       to: '/ios'
 
 - module: remote-config
-  group: Remote RemoteConfig
+  group: Remote Config
   children:
     - text: Overview
       to: '/'
