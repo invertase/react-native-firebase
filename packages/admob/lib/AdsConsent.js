@@ -97,6 +97,12 @@ export default {
       );
     }
 
+    if (!options.withPersonalizedAds && !options.withNonPersonalizedAds && !options.withAdFree) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options' form requires at least one option to be enabled.",
+      );
+    }
+
     return native.showForm(options);
   },
 
