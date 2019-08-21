@@ -309,7 +309,7 @@ describe('analytics()', () => {
     it('throws if property value is invalid', async () => {
       try {
         await firebase.analytics().setUserProperties({
-          test: 123,
+          test: '123',
           foo: {
             bar: 'baz',
           },
