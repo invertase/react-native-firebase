@@ -31,7 +31,7 @@ If you do not already have a Firebase project on the Firebase console, visit the
 
 You can get started with Firebase in React Native using one of the following options:
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="New Projects"
 		to="/quick-start/new-project"
