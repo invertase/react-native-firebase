@@ -61,7 +61,7 @@ const androidConfig = {
 };
 
 const kittensApp = firebase.initializeApp(
-        // use platform specific firebase config
+  // use platform-specific firebase config
         Platform.OS === 'ios' ? iosConfig : androidConfig,
         // name of this app
         'kittens',
