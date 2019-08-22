@@ -11,7 +11,7 @@ App initialization in React Native Firebase is, for the most part, the same as t
 
 ## Supported Modules
 
-Only 4 modules on the official firebase native SDK's support multiple apps, they are as follows:
+Only some modules on the official Firebase native SDK's support multiple apps, they are as follows:
 
  - Authentication
  - Database
