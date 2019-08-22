@@ -83,4 +83,10 @@ const dogsApp = firebase.app('dogs');
 
 # Deleting an app instance
 
-Currently it's not possible to provide cross platform 'delete app' functionality as the Firebase Android SDK is missing the app delete method, this has been flagged with firebase ([firebase/firebase-ios-sdk#140 (comment)](https://github.com/firebase/firebase-ios-sdk/issues/140#issuecomment-315953708)).
+Firebase App instances can be deleted via `app.delete()`. 
+
+```js
+await firebase.app('kittens').delete();
+```
+
+> Note that it's not possible to delete the `default` app instance.
