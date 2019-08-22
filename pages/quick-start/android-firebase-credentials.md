@@ -14,22 +14,22 @@ We'll quickly walk through the process of retrieving this file and installing it
 The credential file is generated from the Firebase [console](https://console.firebase.google.com/).
 
 - Select your Firebase project.
-- Go to the general project settings: 'Project settings' -> 'General'.
-- Add an Android app to the project:
+- Go to the general project settings by clicking on the gear icon (Settings -> General).
+- Under 'Your apps' click on Android to add an Android app to your project:
 
 ![Add an Android app to the project](https://prismic-io.s3.amazonaws.com/invertase%2F5efac24d-9551-4667-8ce7-2d6d4e5910f3_screenshot+2019-05-07+at+10.43.40.png)
 
-- Enter your application details & 'Register app':
+- Enter your application details then click on 'Register app':
 
 > The debug signing certificate is optional, however is required for Dynamic Links, Invites, Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
 
-- Download the config file:
+- Download the config file and save it to the `android/app/` folder in your project:
 
 ![Download](https://prismic-io.s3.amazonaws.com/invertase%2F3bd36734-a2a7-46c7-aca5-a7b007c4ec35_screenshot+2019-05-07+at+10.48.12.png)
 
-- Load the `google-services.json` with the Google services plugin for Gradle:
+- Ignore the next steps on the Firebase Console and load the `google-services.json` file with the Google services plugin for Gradle:
 
 **`android/build.gradle`**:
 ```groovy
