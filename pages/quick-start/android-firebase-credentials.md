@@ -5,17 +5,17 @@ description: Firebase provides a google-services.json file containing your Fireb
 
 # Adding Firebase credentials to your Android app
 
-Firebase provides a `google-services.json` file containing a set of credentials for Android devices to use when authenticating with your Firebase project.
+The Firebase console provides a `google-services.json` file containing a set of credentials for Android devices to use when authenticating with your Firebase project.
 
 We'll quickly walk through the process of retrieving this file and installing it into your Android project.
 
 ## Generating the credentials
 
-The credential file is generated from the Firebase [console](https://console.firebase.google.com/).
+The credential file can be generated from the Firebase [console](https://console.firebase.google.com/):
 
 - Select your Firebase project.
-- Go to the general project settings by clicking on the gear icon (Settings -> General).
-- Under 'Your apps' click on Android to add an Android app to your project:
+- Go to the general project settings by clicking on the gear icon and then 'Project Settings'.
+- Under 'Your apps', click on Android to add an Android app to your Firebase project. If you already have an app added, click on 'Add app' first to add another one.
 
 ![Add an Android app to the project](https://prismic-io.s3.amazonaws.com/invertase%2F5efac24d-9551-4667-8ce7-2d6d4e5910f3_screenshot+2019-05-07+at+10.43.40.png)
 
@@ -25,7 +25,8 @@ The credential file is generated from the Firebase [console](https://console.fir
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
 
-- Download the config file and save it to the `android/app/` folder in your project:
+- Download the config file and save it to the `ios/<myProjectName>/` folder in your project:
+> Substitute `<myProjectName>` for the name of your new project.
 
 ![Download](https://prismic-io.s3.amazonaws.com/invertase%2F3bd36734-a2a7-46c7-aca5-a7b007c4ec35_screenshot+2019-05-07+at+10.48.12.png)
 
