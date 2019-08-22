@@ -77,7 +77,7 @@ For example, if you created an app natively called `dogs` then the following wou
 ```javascript
 import firebase from '@react-native-firebase/app';
 
-const dogsApp = firebase.app('dogs').then(app => console.log('initialized apps ->', firebase.apps));
+const dogsApp = firebase.app('dogs');
 
 ```
 
