@@ -16,6 +16,8 @@ Only some modules on the official Firebase native SDK's support multiple apps, t
  - Authentication
  - Database
  - Firestore
+ - Functions
+ - Instance ID
  - Storage
 
 For further information, view [Firebase Documentation for Multiple Projects](https://firebase.google.com/docs/web/setup#multiple-projects).
