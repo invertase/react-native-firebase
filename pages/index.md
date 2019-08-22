@@ -103,7 +103,7 @@ The React Native Firebase documentation is a great place to get started, however
   </Block>
   <Block
     title="Community Chat"
-    to="https://discordapp.com/invite/XsKpw4"
+    to="https://discordapp.com/invite/C9aK28N"
     icon="speaker_notes"
     color="#7289DA"
   >
