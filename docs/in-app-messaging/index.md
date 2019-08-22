@@ -13,7 +13,7 @@ messages that encourage them to use key app features. React Native Firebase prov
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"

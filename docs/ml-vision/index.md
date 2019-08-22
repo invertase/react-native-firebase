@@ -9,39 +9,30 @@ Firebase ML Kit brings the power of machine learning vision to your React Native
 
 <Youtube id="ejrn_JHksws" />
 
-ML Kit Vision for React Native currently supports the following Firebase APIs:
+ML Kit Vision for React Native currently supports the following Firebase APIs. APIs marked with ❌ will be support in a later release.
 
-- [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [x] Cloud
-  - [x] On Device
-- [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [x] Cloud
-- [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)
-  - [x] On Device
-- [Barcode Detection](https://firebase.google.com/docs/ml-kit/read-barcodes)
-  - [x] On Device
-- [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)
-  - [x] Cloud
-  - [x] On Device
-- [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)
-  - [x] Cloud
-
-The following APIs are **unsupported**, with support coming in a future release;
-
-- AutoML Vision Edge
-- Object detection & tracking
-- Image Labeling with a custom model
+| API                                 | Cloud Model | On Device |
+|-------------------------------------|-------------|-----------|
+| [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)                    | ✅          | ✅        |
+| [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))           | ✅          |           |
+| [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                      |             | ✅        |
+| [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)                   |             | ✅        |
+| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)                     | ✅          | ✅        |
+| [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)                |             | ✅        |
+| [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)                  | ❌          | ❌        |
+| [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)           | ❌          | ❌        |
+| Image Labelling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & .
+    Install & start using the power of Machine Learning in your app.
 	</Block>
 	<Block
 		icon="school"

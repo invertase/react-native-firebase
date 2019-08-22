@@ -10,14 +10,14 @@ development of the React Native Firebase library.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & integrate the utils functionality into your app or tests.
+    Start using the utilities in your own application.
 	</Block>
   <Block
 		icon="layers"
@@ -25,6 +25,6 @@ development of the React Native Firebase library.
 		title="Reference"
 		to="/reference"
 	>
-    The API reference covers everything required to successfully monitor your apps performance.
+    The API reference covers everything required to use the utils within your own application.
 	</Block>
 </Grid>

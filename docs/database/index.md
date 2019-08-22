@@ -13,7 +13,7 @@ both realtime data sync and offline capabilities.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"

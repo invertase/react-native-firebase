@@ -28,7 +28,6 @@ for installation instructions on each individual module page.
 | <Anchor href="/admob">AdMob</Anchor>                       | <Badge type="downloads">@react-native-firebase/admob</Badge>               | <Badge type="coverage">admob</Badge>               |
 | <Anchor href="/analytics">Analytics</Anchor>               | <Badge type="downloads">@react-native-firebase/analytics</Badge>           | <Badge type="coverage">analytics</Badge>           |
 | <Anchor href="/app">App</Anchor>                           | <Badge type="downloads">@react-native-firebase/app</Badge>                 | <Badge type="coverage">app</Badge>                 |
-| <Anchor href="/indexing">App Indexing</Anchor>             | <Badge type="downloads">@react-native-firebase/indexing</Badge>            | <Badge type="coverage">indexing</Badge>            |
 | <Anchor href="/invites">App Invites</Anchor>               | <Badge type="downloads">@react-native-firebase/invites</Badge>             | <Badge type="coverage">invites</Badge>             |
 | <Anchor href="/auth">Authentication</Anchor>               | <Badge type="downloads">@react-native-firebase/auth</Badge>                | <Badge type="coverage">auth</Badge>                |
 | <Anchor href="/firestore">Cloud Firestore</Anchor>         | <Badge type="downloads">@react-native-firebase/firestore</Badge>           | <Badge type="coverage">firestore</Badge>           |
@@ -44,5 +43,5 @@ for installation instructions on each individual module page.
 | <Anchor href="/notifications">Notifications</Anchor>       | <Badge type="downloads">@react-native-firebase/notifications</Badge>       | <Badge type="coverage">notifications</Badge>       |
 | <Anchor href="/perf">Performance Monitoring</Anchor>       | <Badge type="downloads">@react-native-firebase/perf</Badge>                | <Badge type="coverage">perf</Badge>                |
 | <Anchor href="/database">Realtime Database</Anchor>        | <Badge type="downloads">@react-native-firebase/database</Badge>            | <Badge type="coverage">database</Badge>            |
-| <Anchor href="/config">Remote Config</Anchor>              | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |
+| <Anchor href="/remote-config">Remote Config</Anchor>       | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |
 | <Anchor href="/utils">Utils</Anchor>                       | <Badge type="downloads">@react-native-firebase/utils</Badge>               | <Badge type="coverage">utils</Badge>               |
