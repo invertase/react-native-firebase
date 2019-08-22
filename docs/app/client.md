@@ -7,7 +7,7 @@ description: Initialization Firebase with the client method.
 
 > The default firebase app instance can not be initialized via JS. After following the iOS & Android installation guides and correctly setting up your google services plist/json files, the default app is automatically initialized and available for use in react-native-firebase.
 
-App initialization in RNFirebase is for the most part the same as the web sdk, with only a few minor differences.
+App initialization in React Native Firebase is, for the most part, the same as the web SDK, with only a few minor differences.
 
 ## Supported Modules
 
