@@ -14,16 +14,16 @@ We'll quickly walk through the process of retrieving this file and installing it
 The credential file can be generated from the Firebase [console](https://console.firebase.google.com/):
 
 - Select your Firebase project.
-- Go to the general project settings: 'Project settings' -> 'General'.
-- Add an iOS app to the project:
+- Go to the general project settings by clicking on the gear icon and then 'Project Settings'.
+- Under 'Your apps', click on iOS to add an iOS app to your Firebase project. If you already have an app added, click on 'Add app' first to add another one.
 
 ![Add an iOS app](https://prismic-io.s3.amazonaws.com/invertase%2Ffd23f086-ac13-4b31-8c08-8fc6a7c512f4_screenshot+2019-05-07+at+11.11.36.png)
 
-- Enter your application details & 'Register app':
+- Enter your application details then click on 'Register app':
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2Fa5074801-2205-4812-99e2-a8b9ddebec74_screenshot+2019-05-07+at+11.12.48.png)
 
-- Download the config file:
+- Download the config file to your machine:
 
 ![Download file](https://prismic-io.s3.amazonaws.com/invertase%2Fb5967fd4-7620-4d6b-8c2e-d582a1f66f86_screenshot+2019-05-07+at+11.13.51.png)
 
