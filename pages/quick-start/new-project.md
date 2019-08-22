@@ -27,7 +27,7 @@ This will create a new React Native project in a folder called `<myProjectName>`
 
 Now that you have a new project with the core Firebase module integrated, let's continue to the final step; follow the guides below for the platforms you wish to integrate with.
 
-<Grid>
+<Grid columns="2">
 	<Block
 		title="Adding Firebase credentials to your Android app"
 		to="/quick-start/android-firebase-credentials"
