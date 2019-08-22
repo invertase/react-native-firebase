@@ -19,6 +19,8 @@ Only some modules on the official Firebase native SDK's support multiple apps, t
  - Functions
  - Instance ID
  - Storage
+ - ML Kit Natural Language
+ - ML Kit Vision
 
 For further information, view [Firebase Documentation for Multiple Projects](https://firebase.google.com/docs/web/setup#multiple-projects).
 
