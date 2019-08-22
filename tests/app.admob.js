@@ -36,8 +36,8 @@ function Root() {
     console.warn(foo);
     const r = await AdsConsent.showForm({
       privacyPolicy: 'https://invertase.io/privacy-policy',
-      // withPersonalizedAds: true,
-      // withNonPersonalizedAds: false,
+      // withPersonalizedAds: false,
+      // withNonPersonalizedAds: true,
       // withAdFree: false,
     });
     // console.log(r);

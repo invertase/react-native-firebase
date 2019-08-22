@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,10 @@
  *
  */
 
-// require('./app');
-require('./app.admob');
-// require('./app.smartreply');
+#import <Foundation/Foundation.h>
+
+#import <React/RCTBridgeModule.h>
+
+@interface RNFBNotificationsModule : NSObject <RCTBridgeModule>
+
+@end

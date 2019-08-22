@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,24 @@
  *
  */
 
-// require('./app');
-require('./app.admob');
-// require('./app.smartreply');
+#import <React/RCTUtils.h>
+#import <Firebase/Firebase.h>
+
+#import "RNFBNotificationsModule.h"
+#import "RNFBApp/RNFBSharedUtils.h"
+
+
+@implementation RNFBNotificationsModule
+#pragma mark -
+#pragma mark Module Setup
+
+  RCT_EXPORT_MODULE();
+
+  - (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
+  }
+
+#pragma mark -
+#pragma mark Firebase Notifications Methods
+
+@end
