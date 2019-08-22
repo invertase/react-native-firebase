@@ -15,7 +15,7 @@ The first thing you'll need to have to use Firebase is an active Firebase projec
 ![Dashboard](https://i.imgur.com/ZsSH1bJ.png)
 
 - A dialog will appear as shown below
-  - Enter your new **project name** and modify the **project id** and **region** if necessary
+  - Enter your new **project name** and modify the **project ID** and **region** if necessary
   - Click `Create Project` when finished
   - Your project will now be created - this can take a few seconds
   - Once created click the `Continue` button
