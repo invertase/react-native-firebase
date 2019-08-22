@@ -24,7 +24,7 @@ Only some modules on the official Firebase native SDK's support multiple apps, t
 
 For further information, view [Firebase Documentation for Multiple Projects](https://firebase.google.com/docs/web/setup#multiple-projects).
 
-# Initialize via JavaScript
+# Initialize apps via JavaScript
 
 ## Cross Platform Example
 
