@@ -25,7 +25,7 @@ The credential file can be generated from the Firebase [console](https://console
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
 
-- Download the config file and save it to the `ios/<myProjectName>/` folder in your project:
+- Download the config file and save it to the `android/<myProjectName>/` folder in your project:
 > Substitute `<myProjectName>` for the name of your new project.
 
 ![Download](https://prismic-io.s3.amazonaws.com/invertase%2F3bd36734-a2a7-46c7-aca5-a7b007c4ec35_screenshot+2019-05-07+at+10.48.12.png)
