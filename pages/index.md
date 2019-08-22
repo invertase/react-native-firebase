@@ -67,7 +67,7 @@ The React Native Firebase documentation is a great place to get started, however
     icon="question_answer"
     color="#4caf50"
   >
-    Our Frequently Asked Questions have been put together to help you quickly find help on commonly asked questions 		throughtout the community.
+    Our Frequently Asked Questions have been put together to help you quickly find help on commonly asked questions 		throughout the community.
   </Block>
   <Block
     title="Feedback"
