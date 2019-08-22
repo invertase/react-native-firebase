@@ -13,7 +13,7 @@ device information, location, user actions and more.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="multiline_chart"
 		color="#2196f3"

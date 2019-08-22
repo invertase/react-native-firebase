@@ -152,18 +152,6 @@
     - text: iOS Setup
       to: '/ios'
 
-- module: indexing
-  group: App Indexing
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-
 - module: iid
   group: Instance ID
   children:
@@ -227,7 +215,7 @@
       to: '/ios'
 
 - module: remote-config
-  group: Remote RemoteConfig
+  group: Remote Config
   children:
     - text: Overview
       to: '/'
@@ -257,7 +245,3 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'

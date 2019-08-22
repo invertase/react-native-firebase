@@ -12,7 +12,7 @@ React Native Firebase provides access to all Firebase authentication methods and
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"

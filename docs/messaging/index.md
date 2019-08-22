@@ -16,7 +16,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
