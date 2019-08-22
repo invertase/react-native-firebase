@@ -68,7 +68,7 @@ const kittensApp = firebase.initializeApp(
 ).then(app => console.log('initialized apps ->', firebase.apps));
 ```
 
-# Initialize via Android/iOS native code
+# Initialize apps via Android/iOS native code
 
 If you're familiar with native code you can create apps natively also (or if you are already initializing additional apps natively on app boot) - these apps automatically become available for use inside RNFirebase.
 
