@@ -7,11 +7,11 @@ description: Create a new React Native project with Firebase pre-integrated
 
 This guide is for starting a **new** React Native app with Firebase pre-integrated.
 
-For pre-existing React Native projects see the [`existing projects guide`](/quick-start/existing-project)
+For pre-existing React Native projects see the [`existing projects guide`](/quick-start/existing-project).
 
 ## Guide
 
-Let's 'init' a project using the React Native CLI with the React Native Firebase project template:
+Let's initialise a project using the React Native CLI with the React Native Firebase project template:
 
 #### Init Project from Template
 
@@ -25,7 +25,7 @@ This will create a new React Native project in a folder called `<myProjectName>`
 
 ## Next
 
-Now that you have a new project with the core Firebase module integrated, let's continue to the final step; follow the guides below for the platforms you wish to integrate with.
+Now that you have a new project with the core Firebase module integrated, you have to complete the integration of Firebase into your project by adding your Firebase credentials. Follow the guides below for the platforms you wish to integrate with.
 
 <Grid columns="2">
 	<Block
