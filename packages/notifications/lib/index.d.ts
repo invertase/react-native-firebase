@@ -57,11 +57,347 @@ export namespace Notifications {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {
-    // firebase.notifications.* static props go here
+    AndroidBadgeIconType: AndroidBadgeIconType;
+    AndroidCategory: AndroidCategory;
+    AndroidGroupAlertBehavior: AndroidGroupAlertBehavior;
+    AndroidPriority: AndroidPriority;
+    AndroidVisibility: AndroidVisibility;
+    AndroidRepeatInterval: AndroidRepeatInterval;
+  }
+
+  export interface Notification {
+    notificationId?: string;
+    title?: string;
+    subtitle?: string;
+    body: string;
+    data?: { [key: string]: string };
+    ios?: IOSNotification;
+    android?: AndroidNotification;
+    sound?: string;
+  }
+
+  export interface IOSNotification {
+    /**
+     * @ios iOS 10+
+     */
+    attachment?: IOSAttachment;
+
+    /**
+     * @ios iOS 9 Only
+     */
+    alertAction?: string;
+
+    badge?: number;
+
+    // todo ios categories?
+    category?: string;
+
+    /**
+     * @ios iOS 9 Only
+     */
+    hasAction?: boolean;
+
+    launchImage?: string;
+
+    /**
+     * @ios iOS 10+
+     */
+    threadIdentifier?: string;
+
+    // todo
+    complete?: Function;
+  }
+
+  export interface IOSAttachment {
+    identifier: string;
+    url: string;
+    options?: IOSAttachmentOptions;
+  }
+
+  // TODO whats required here?
+  export interface IOSAttachmentOptions {
+    typeHint: string;
+    thumbnailHidden?: boolean;
+    thumbnailClippingRect?: object;
+    thumbnailTime: number;
+  }
+
+  export interface AndroidNotification {
+    actions?: AndroidAction[];
+
+    /**
+     * Setting this flag will make it so the notification is automatically canceled when the user
+     * clicks it in the panel.
+     *
+     * Defaults to `false`.
+     */
+    autoCancel?: boolean;
+
+    /**
+     * Sets which icon to display as a badge for this notification.
+     *
+     * **Note**: This value might be ignored, for launchers that don't support badge icons.
+     */
+    badgeIconType?:
+      | AndroidBadgeIconType.NONE
+      | AndroidBadgeIconType.SMALL
+      | AndroidBadgeIconType.LARGE;
+
+    bigPictureStyle?: AndroidBigPictureStyle;
+
+    bigTextStyle?: AndroidBigTextStyle;
+
+    category?:
+      | AndroidCategory.ALARM
+      | AndroidCategory.CALL
+      | AndroidCategory.EMAIL
+      | AndroidCategory.ERROR
+      | AndroidCategory.EVENT
+      | AndroidCategory.MESSAGE
+      | AndroidCategory.NAVIGATION
+      | AndroidCategory.PROGRESS
+      | AndroidCategory.PROMO
+      | AndroidCategory.RECOMMENDATION
+      | AndroidCategory.REMINDER
+      | AndroidCategory.SERVICE
+      | AndroidCategory.SOCIAL
+      | AndroidCategory.STATUS
+      | AndroidCategory.SYSTEM
+      | AndroidCategory.TRANSPORT;
+
+    channelId?: string;
+
+    clickAction?: string; // todo
+
+    /**
+     * https://developer.android.com/reference/android/graphics/Color.html#parseColor(java.lang.String)
+     */
+    color?: string;
+
+    colorized?: boolean;
+
+    contentInfo?: string;
+
+    defaults: string; // todo
+
+    group?: string;
+
+    groupAlertBehaviour?:
+      | AndroidGroupAlertBehavior.ALL
+      | AndroidGroupAlertBehavior.SUMMARY
+      | AndroidGroupAlertBehavior.CHILDREN;
+
+    groupSummary?: boolean;
+
+    largeIcon?: string;
+
+    lights?: [string, number, number];
+
+    localOnly?: boolean;
+
+    number?: number;
+
+    ongoing?: boolean;
+
+    onlyAlertOnce?: boolean;
+
+    priority?:
+      | AndroidPriority.DEFAULT
+      | AndroidPriority.HIGH
+      | AndroidPriority.LOW
+      | AndroidPriority.MAX
+      | AndroidPriority.MIN
+      | AndroidPriority.NONE;
+
+    progress?: AndroidProgress;
+
+    remoteInputHistory?: string[];
+
+    shortcutId?: string;
+
+    showWhenTimestamp?: boolean;
+
+    // missing level? deprecate it?
+    smallIcon?: string;
+
+    sortKey?: string;
+
+    ticker?: string;
+
+    timeoutAfter?: number;
+
+    usesChronometer?: boolean;
+
+    vibrate?: boolean;
+
+    vibratePattern?: number[];
+
+    visibility?: AndroidVisibility.PRIVATE | AndroidVisibility.PUBLIC | AndroidVisibility.SECRET;
+
+    when?: number;
+  }
+
+  export interface AndroidAction {
+    action: string;
+    icon: string;
+    title: string;
+    allowGeneratedReplies?: boolean;
+    remoteInputs?: AndroidRemoteInput[];
+    semanticAction?: AndroidSemanticAction;
+    showUserInterface?: boolean; // true
+  }
+
+  export interface AndroidRemoteInput {
+    key: string;
+    extras?: { [key: string]: string };
+    allowDataTypes?: string[];
+    allowFreeFormTextInput?: boolean; // true
+    choices?: string[];
+    label?: string;
+  }
+
+  export interface AndroidSemanticAction {
+    ARCHIVE: 5;
+    CALL: 10;
+    DELETE: 4;
+    MARK_AS_READ: 2;
+    MARK_AS_UNREAD: 3;
+    MUTE: 6;
+    NONE: 0;
+    REPLY: 1;
+    THUMBS_DOWN: 9;
+    THUMBS_UP: 8;
+    UNMUTE: 7;
+  }
+
+  export interface AndroidBadgeIconType {
+    NONE: 0;
+    SMALL: 1;
+    LARGE: 2;
+  }
+
+  export interface AndroidBigPictureStyle {
+    picture: string;
+    largeIcon?: string;
+    contentTitle?: string;
+    summaryText?: string;
+  }
+
+  export interface AndroidBigTextStyle {
+    text: string;
+    contentTitle?: string;
+    summaryText?: string;
+  }
+
+  export interface AndroidCategory {
+    ALARM: 'alarm';
+    CALL: 'call';
+    EMAIL: 'email';
+    ERROR: 'error';
+    EVENT: 'event';
+    MESSAGE: 'msg';
+    NAVIGATION: 'navigation';
+    PROGRESS: 'progress';
+    PROMO: 'promo';
+    RECOMMENDATION: 'recommendation';
+    REMINDER: 'reminder';
+    SERVICE: 'service';
+    SOCIAL: 'social';
+    STATUS: 'status';
+    SYSTEM: 'sys';
+    TRANSPORT: 'transport';
+  }
+
+  export interface AndroidGroupAlertBehavior {
+    ALL: 0;
+    SUMMARY: 1;
+    CHILDREN: 2;
+  }
+
+  export interface AndroidPriority {
+    DEFAULT: 3;
+    HIGH: 4;
+    LOW: 2;
+    MAX: 5;
+    MIN: 1;
+    NONE: 0;
+  }
+
+  export interface AndroidProgress {
+    max: number;
+    progress: number;
+    indeterminate?: boolean;
+  }
+
+  export interface AndroidVisibility {
+    PRIVATE: 0;
+    PUBLIC: 1;
+    SECRET: -1;
+  }
+
+  export interface AndroidRepeatInterval {
+    MINUTE: 'minute';
+    HOUR: 'hour';
+    DAY: 'day';
+    WEEK: 'week';
+  }
+
+  export interface NotificationObserver {}
+
+  export interface Schedule {
+    /**
+     * The date when the notification should first be shown, in milliseconds since 1970.
+     *
+     * #### Example
+     *
+     * Schedule notification to display 10 minutes from now.
+     *
+     * ```js
+     * await firebase.notifications().scheduleNotification(notification, {
+     *   fireDate: Date.now() + 600000,
+     * });
+     * ```
+     */
+    fireDate: number;
+
+    /**
+     * Whether the `fireDate` should be respected exactly.
+     *
+     * To help save battery, only set to `true` under scenarios where the notification
+     * `fireDate` is critical.
+     *
+     * Defaults to `false`. Has no effect on iOS.
+     *
+     * @android
+     */
+    exact?: boolean;
+
+    /**
+     * How frequently after  the `fireDate` should the notification be repeated.
+     *
+     * If not present, the notification will only be displayed once on the given `fireDate`.
+     *
+     * #### Example
+     *
+     * Schedule notification to display 10 minutes from now, and repeat
+     * every week
+     *
+     * ```js
+     * import notifications, { AndroidRepeatInterval } from '@react-native-firebase/notifications';
+     *
+     * await firebase.notifications().scheduleNotification(notification, {
+     *   fireDate: Date.now() + 600000,
+     *   repeatInterval: AndroidRepeatInterval.WEEK,
+     * });
+     */
+    repeatInterval?:
+      | AndroidRepeatInterval.MINUTE
+      | AndroidRepeatInterval.HOUR
+      | AndroidRepeatInterval.DAY
+      | AndroidRepeatInterval.WEEK;
   }
 
   /**
-   * // TODO CHOOSE THIS ---------------------------------------
    *
    * The Firebase Notifications service interface.
    *
@@ -74,31 +410,34 @@ export namespace Notifications {
    * ```js
    * const defaultAppNotifications = firebase.notifications();
    * ```
-   *
-   * // TODO OR THIS -------------------------------------------
-   *
-   * The Firebase Notifications service is available for the default app or a given app.
-   *
-   * #### Example 1
-   *
-   * Get the notifications instance for the **default app**:
-   *
-   * ```js
-   * const notificationsForDefaultApp = firebase.notifications();
-   * ```
-   *
-   * #### Example 2
-   *
-   * Get the notifications instance for a **secondary app**:
-   *˚
-   * ```js
-   * const otherApp = firebase.app('otherApp');
-   * const notificationsForOtherApp = firebase.notifications(otherApp);
-   * ```
-   *
    */
   export class Module extends FirebaseModule {
-    // firebase.notifications().* methods & props go here
+    cancelAllNotifications(): Promise<void>;
+
+    cancelNotification(notificationId: string): Promise<void>;
+
+    displayNotification(notification: Notification): Promise<void>;
+
+    // todo null if no badge?
+    getBadge(): Promise<number | null>;
+
+    getInitialNotification(): Promise<Notification | null>;
+
+    getScheduledNotifications(): Promise<Notification[]>;
+
+    onNotification(observer: NotificationObserver): Function;
+
+    onNotificationDisplayed(observer: NotificationObserver): Function;
+
+    onNotificationOpened(observer: NotificationObserver): Function;
+
+    removeAllDeliveredNotifications(): Promise<void>;
+
+    removeDeliveredNotification(notificationId: string): Promise<void>;
+
+    scheduleNotification(notification: Notification, schedule: Schedule): Promise<void>;
+
+    setBadge(badge: number): Promise<void>;
   }
 }
 
