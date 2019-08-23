@@ -86,4 +86,13 @@ async function bootstrap() {
 }
 ```
 
+### Access device file paths
+
+Some modules require access to your local device filesystem (such as Storage & ML Kit Vision). The utils module provides paths to common device directory locations.
+
+```js
+import firebase from '@react-native-firebase/app';
+// Access the device pictures directory
+const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
+```
 TODO
