@@ -21,27 +21,21 @@ import android.app.Activity;
 import android.content.IntentSender;
 import android.provider.Settings;
 import android.util.Log;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.*;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import io.invertase.firebase.app.ReactNativeFirebaseApp;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Utils";
 
   private static final String FIREBASE_TEST_LAB = "firebase.test.lab";
 
-  ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
+  public ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 
