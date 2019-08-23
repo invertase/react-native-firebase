@@ -53,7 +53,6 @@ repositories {
 dependencies {
   api project(':@react-native-firebase_app')
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-notifications"
 }
 
 ReactNative.shared.applyPackageVersion()

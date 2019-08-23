@@ -17,17 +17,20 @@ package io.invertase.firebase.notifications;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.os.Build;
+import android.util.Log;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
-
+import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseModule {
@@ -35,6 +38,34 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
 
   ReactNativeFirebaseNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+  }
+
+  /**
+   * notificationId?: string;
+   * title?: string;
+   * subtitle?: string;
+   * body: string;
+   * data?: { [key: string]: string };
+   * ios?: IOSNotification;
+   * android?: AndroidNotification;
+   * sound?: string;
+   */
+  @RequiresApi(api = Build.VERSION_CODES.O)
+  @ReactMethod
+  public void displayNotification(ReadableMap notificationRaw, Promise promise) {
+    ReactNativeFirebaseNotification nativeFirebaseNotification = ReactNativeFirebaseNotification.fromReadableMap(notificationRaw);
+    // TODO move me
+    NotificationChannel channel = new NotificationChannel("foo1", "bar1", NotificationManager.IMPORTANCE_HIGH);
+    channel.setDescription("Just a foo bar channel");
+    nativeFirebaseNotification.getNotificationManager().createNotificationChannel(channel);
+
+
+    // getchannel - check it exists and API level supports channels
+    //   - does not exist
+    //      - Reject promise
+
+    nativeFirebaseNotification.displayNotification();
+    promise.resolve(nativeFirebaseNotification.toWriteableMap());
   }
 
 }

@@ -63,14 +63,13 @@ class FirebaseNotificationsModule extends FirebaseModule {
   }
 
   displayNotification(notification) {
-    let options;
-    try {
-      options = validateNotification(notification);
-    } catch (e) {
-      throw new Error(`firebase.notifications().displayNotification(*) ${e.message}`);
-    }
-
-    return this.native.displayNotification(options);
+    // let options;
+    // try {
+    //   options = validateNotification(notification);
+    // } catch (e) {
+    //   throw new Error(`firebase.notifications().displayNotification(*) ${e.message}`);
+    // }
+    return this.native.displayNotification(notification);
   }
 
   getBadge() {
