@@ -63,6 +63,7 @@ export namespace Notifications {
     AndroidPriority: AndroidPriority;
     AndroidVisibility: AndroidVisibility;
     AndroidRepeatInterval: AndroidRepeatInterval;
+    AndroidDefaults: AndroidDefaults;
   }
 
   export interface Notification {
@@ -170,15 +171,50 @@ export namespace Notifications {
     clickAction?: string; // todo
 
     /**
-     * https://developer.android.com/reference/android/graphics/Color.html#parseColor(java.lang.String)
+     * Set an custom accent color for the notification. If not provided, the default notification
+     * system color will be used.
+     *
+     * The color can be a predefined system `AndroidColor` or [hexadecimal](https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4).
+     *
+     * #### Example
+     *
+     * Using a predefined color.
+     *
+     * ```js
+     * import notification, { AndroidColor } from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     color: AndroidColor.AQUA,
+     *   },
+     * });
+     * ```
+     *
+     * #### Example
+     *
+     * Using a hexadecimal color.
+     *
+     * ```js
+     * import notification, { AndroidColor } from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     color: '#2196f3', // material blue
+     *     // color: '#802196f3', // 50% opacity material blue
+     *   },
+     * });
+     * ```
      */
-    color?: string;
+    color?: AndroidColor;
 
+    /**
+     *
+     */
     colorized?: boolean;
 
     contentInfo?: string;
 
-    defaults: string; // todo
+    defaults?: AndroidDefaults[];
 
     group?: string;
 
@@ -308,6 +344,39 @@ export namespace Notifications {
     TRANSPORT: 'transport';
   }
 
+  type AndroidColor =
+    | string
+    | 'red'
+    | 'blue'
+    | 'green'
+    | 'black'
+    | 'white'
+    | 'gray'
+    | 'cyan'
+    | 'magenta'
+    | 'yellow'
+    | 'lightgray'
+    | 'darkgray'
+    | 'gray'
+    | 'lightgrey'
+    | 'darkgrey'
+    | 'aqua'
+    | 'fuchsia'
+    | 'lime'
+    | 'maroon'
+    | 'navy'
+    | 'olive'
+    | 'purple'
+    | 'silver'
+    | 'teal';
+
+  export interface AndroidDefaults {
+    ALL: -1;
+    SOUND: 1;
+    VIBRATE: 2;
+    LIGHTS: 4;
+  }
+
   export interface AndroidGroupAlertBehavior {
     ALL: 0;
     SUMMARY: 1;
@@ -397,6 +466,29 @@ export namespace Notifications {
       | AndroidRepeatInterval.WEEK;
   }
 
+  export interface AndroidChannel {
+    channelId: string;
+    name: string;
+    allowBubbles?: boolean; // todo not in v5
+    bypassDnd?: boolean;
+    description?: string;
+    enableLights?: boolean;
+    enableVibration?: boolean;
+    groupId?: string;
+    importance?: string; // todo importance or priority?
+    lightColor?: string;
+    lockscreenVisibility?: string; // todo
+    showBadge?: boolean;
+    sound?: string; // audio attributes?
+    vibrationPattern?: number[];
+  }
+
+  export interface AndroidChannelGroup {
+    channelGroupId: string;
+    name: string;
+    description?: string;
+  }
+
   /**
    *
    * The Firebase Notifications service interface.
@@ -415,6 +507,18 @@ export namespace Notifications {
     cancelAllNotifications(): Promise<void>;
 
     cancelNotification(notificationId: string): Promise<void>;
+
+    createChannel(channel: AndroidChannel): Promise<void>;
+
+    createChannels(channels: AndroidChannel[]): Promise<void>;
+
+    createChannelGroup(channelGroup: AndroidChannelGroup): Promise<void>;
+
+    createChannelGroups(channelGroups: AndroidChannelGroup[]): Promise<void>;
+
+    deleteChannel(channelId: string): Promise<void>;
+
+    deleteChannelGroup(channelGroupId: string): Promise<void>;
 
     displayNotification(notification: Notification): Promise<void>;
 
