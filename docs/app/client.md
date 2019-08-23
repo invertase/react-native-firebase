@@ -24,9 +24,9 @@ Only some modules on the official Firebase native SDK's support multiple apps, t
 
 For further information, view [Firebase Documentation for Multiple Projects](https://firebase.google.com/docs/web/setup#multiple-projects).
 
-# Initialize apps via JavaScript
+## Initialize apps via JavaScript
 
-## Cross Platform Example
+### Cross Platform Example
 
 ```javascript
 import { Platform } from 'react-native';
@@ -68,7 +68,7 @@ const kittensApp = firebase.initializeApp(
 ).then(app => console.log('initialized apps ->', firebase.apps));
 ```
 
-# Initialize apps via Android/iOS native code
+## Initialize apps via Android/iOS native code
 
 If you're familiar with native code you can create apps natively also (or if you are already initializing additional apps natively on app boot) - these apps automatically become available for use inside RNFirebase.
 
@@ -81,7 +81,7 @@ const dogsApp = firebase.app('dogs');
 
 ```
 
-# Deleting an app instance
+## Deleting an app instance
 
 Firebase App instances can be deleted via `app.delete()`. 
 

@@ -18,10 +18,10 @@
 import {
   isAlphaNumericUnderscore,
   isNull,
+  isNumber,
   isObject,
   isOneOf,
   isString,
-  isNumber,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import {
@@ -29,8 +29,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import version from './version';
 import { isBoolean } from '../../app/lib/common';
+import version from './version';
 
 const ReservedEventNames = [
   'app_clear_data',
@@ -188,9 +188,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     const entries = Object.entries(properties);
     for (let i = 0; i < entries.length; i++) {
       const [key, value] = entries[i];
-      if (!isNull(value) && (!isString(value) && !isNumber(value))) {
+      if (!isNull(value) && !isString(value)) {
         throw new Error(
-          `firebase.analytics().setUserProperties(*) 'properties' value for parameter '${key}' is invalid, expected a string or number value.`,
+          `firebase.analytics().setUserProperties(*) 'properties' value for parameter '${key}' is invalid, expected a string.`,
         );
       }
     }
