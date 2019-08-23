@@ -23,6 +23,9 @@ import {
   isObject,
   isString,
 } from '@react-native-firebase/app/lib/common';
+import { isValidColor, isValidVibratePattern } from './validate';
+import AndroidVisibility from './AndroidVisibility';
+import AndroidImportance from './AndroidImportance';
 
 export default function validateAndroidChannel(channel) {
   if (!isObject(channel)) {
@@ -64,6 +67,9 @@ export default function validateAndroidChannel(channel) {
     enableLights: true,
     enableVibration: true,
     showBadge: false,
+    importance: AndroidImportance.DEFAULT,
+    sound: 'default',
+    lockscreenVisibility: AndroidVisibility.PRIVATE,
   };
 
   /**
@@ -136,7 +142,16 @@ export default function validateAndroidChannel(channel) {
    * importance
    */
   if (hasOwnProperty(channel, 'importance')) {
-    // todo importance
+    if(
+      channel.importance !== AndroidImportance.DEFAULT ||
+      channel.importance !== AndroidImportance.HIGH ||
+      channel.importance !== AndroidImportance.LOW ||
+      channel.importance !== AndroidImportance.MAX ||
+      channel.importance !== AndroidImportance.MIN ||
+      channel.importance !== AndroidImportance.NONE
+    ) {
+      throw new Error("'channel.importance' expected an AndroidImportance value.");
+    }
 
     out.importance = channel.importance;
   }
@@ -145,7 +160,13 @@ export default function validateAndroidChannel(channel) {
    * lightColor
    */
   if (hasOwnProperty(channel, 'lightColor')) {
-    // todo lightColor
+    if(!isString(channel.lightColor)) {
+      throw new Error("'channel.lightColor' expected a string value.");
+    }
+
+    if (!isValidColor(channel.lightColor)) {
+      throw new Error("'channel.lightColor' invalid color. Expected an AndroidColor or hexadecimal string value")
+    }
 
     out.lightColor = channel.lightColor;
   }
@@ -154,7 +175,13 @@ export default function validateAndroidChannel(channel) {
    * lockscreenVisibility
    */
   if (hasOwnProperty(channel, 'lockscreenVisibility')) {
-    // todo lockscreenVisibility / default
+    if (
+      channel.lockscreenVisibility !== AndroidVisibility.PRIVATE ||
+      channel.lockscreenVisibility !== AndroidVisibility.PUBLIC ||
+      channel.lockscreenVisibility !== AndroidVisibility.SECRET
+    ) {
+      throw new Error("'channel.lockscreenVisibility' expected visibility to be an AndroidVisibility value.")
+    }
 
     out.lockscreenVisibility = channel.lockscreenVisibility;
   }
@@ -174,7 +201,13 @@ export default function validateAndroidChannel(channel) {
    * sound
    */
   if (hasOwnProperty(channel, 'sound')) {
-    // todo sound
+    if (!isString(channel.sound)) {
+      throw new Error("'channel.sound' expected a string value.");
+    }
+
+    if (!channel.sound) {
+      throw new Error("'channel.sound' expected a valid sound string.");
+    }
 
     out.sound = channel.sound;
   }
@@ -187,11 +220,8 @@ export default function validateAndroidChannel(channel) {
       throw new Error("'channel.vibrationPattern' expected an array.");
     }
 
-    // todo common
-    for (let i = 0; i < channel.vibrationPattern.length; i++) {
-      if (!isNumber(channel.vibrationPattern[i])) {
-        throw new Error("'channel.vibrationPattern' invalid pattern, expected all values to be numbers.");
-      }
+    if (!isValidVibratePattern(channel.vibrationPattern)) {
+      throw new Error("'channel.vibratePattern' expected an array containing an even number of positive values.");
     }
 
     out.vibrationPattern = channel.vibrationPattern;

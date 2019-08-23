@@ -196,6 +196,13 @@ export default function validateAndroidNotification(android) {
     out.bigTextStyle = bigTextStyle;
   }
 
+  // Validate both are not set
+  if (out.bigPictureStyle && out.bigTextStyle) {
+    throw new Error(
+      "'notification.android' cannot set a bigPictureStyle and bigTextStyle in the same notification.",
+    );
+  }
+
   /**
    * category
    */
@@ -226,7 +233,8 @@ export default function validateAndroidNotification(android) {
 
   /**
    * channelId
-   */
+   * TODO is this now required?
+   * */
   if (hasOwnProperty(android, 'channelId')) {
     if (!isString(android.channelId)) {
       throw new Error("'notification.android.channelId' expected a string value.");

@@ -15,12 +15,6 @@
  *
  */
 
-import AndroidPriority from '../lib/AndroidPriority';
-import AndroidVisibility from '../lib/AndroidVisibility';
-import AndroidCategory from '../lib/AndroidCategory';
-import AndroidDefaults from '../lib/AndroidDefaults';
-import AndroidGroupAlertBehavior from '../lib/AndroidGroupAlertBehavior';
-
 let validate;
 
 describe('notifications() Notification', () => {
@@ -892,9 +886,7 @@ describe('notifications() Notification', () => {
         validate({ shortcutId: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.shortcutId' expected a string value",
-        );
+        e.message.should.containEql("'notification.android.shortcutId' expected a string value");
         return Promise.resolve();
       }
     });
@@ -930,9 +922,7 @@ describe('notifications() Notification', () => {
         validate({ smallIcon: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.smallIcon' expected a string value",
-        );
+        e.message.should.containEql("'notification.android.smallIcon' expected a string value");
         return Promise.resolve();
       }
     });
@@ -949,9 +939,7 @@ describe('notifications() Notification', () => {
         validate({ sortKey: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.sortKey' expected a string value",
-        );
+        e.message.should.containEql("'notification.android.sortKey' expected a string value");
         return Promise.resolve();
       }
     });
@@ -968,9 +956,7 @@ describe('notifications() Notification', () => {
         validate({ sortKey: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.ticker' expected a string value",
-        );
+        e.message.should.containEql("'notification.android.ticker' expected a string value");
         return Promise.resolve();
       }
     });
@@ -987,9 +973,7 @@ describe('notifications() Notification', () => {
         validate({ timeoutAfter: 'now' });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.timeoutAfter' expected a number value",
-        );
+        e.message.should.containEql("'notification.android.timeoutAfter' expected a number value");
         return Promise.resolve();
       }
     });
@@ -1038,9 +1022,7 @@ describe('notifications() Notification', () => {
         validate({ vibrate: 'true' });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.vibrate' expected a boolean value",
-        );
+        e.message.should.containEql("'notification.android.vibrate' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -1115,9 +1097,7 @@ describe('notifications() Notification', () => {
         validate({ when: 'tomorrow' });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.when' expected a number value",
-        );
+        e.message.should.containEql("'notification.android.when' expected a number value");
         return Promise.resolve();
       }
     });

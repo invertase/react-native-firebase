@@ -35,7 +35,7 @@ export function validateAndroidChannelGroup(group) {
 
   // empty check
   if (!group.channelGroupId) {
-    throw new Error("'group.channelGroupId' expected a valid string channelGroupId.");
+    throw new Error("'group.channelGroupId' expected a valid id string.");
   }
 
   /**
