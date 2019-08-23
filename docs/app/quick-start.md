@@ -59,7 +59,7 @@ for certain packages. To create an additional app instance, call the `initialize
 
 ## Additional Utilities
 
-The package also provides access to the firebase instance:
+The package also provides access to a utility Firebase module:
 
 ```js
 import { utils } from '@react-native-firebase/app';
