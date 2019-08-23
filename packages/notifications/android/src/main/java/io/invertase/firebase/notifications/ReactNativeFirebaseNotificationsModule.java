@@ -19,6 +19,8 @@ package io.invertase.firebase.notifications;
 
 import android.app.Activity;
 
+import androidx.core.app.NotificationCompat;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -35,6 +37,7 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
 
   ReactNativeFirebaseNotificationsModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+    new NotificationCompat.Builder(getActivity(), null);
   }
 
 }

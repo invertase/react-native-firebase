@@ -65,6 +65,7 @@ export namespace Notifications {
     AndroidRepeatInterval: AndroidRepeatInterval;
     AndroidDefaults: AndroidDefaults;
     AndroidImportance: AndroidImportance;
+    AndroidColor: typeof AndroidColor;
   }
 
   /**
@@ -285,6 +286,8 @@ export namespace Notifications {
    *
    * await firebase.notifications().displayNotification(notification);
    * ```
+   *
+   * @android
    */
   export interface AndroidNotification {
     /**
@@ -485,7 +488,7 @@ export namespace Notifications {
      * });
      * ```
      */
-    color?: AndroidColor;
+    color?: AndroidColor | string;
 
     /**
      * Set whether this notification should be colorized. When set, the color set with `color`
@@ -733,6 +736,11 @@ export namespace Notifications {
     smallIcon?: string;
 
     /**
+     * TODO document me, name, level
+     */
+    smallIcon?: [string, number];
+
+    /**
      * Set a sort key that orders this notification among other notifications from the same package.
      * This can be useful if an external sort was already applied and an app would like to preserve
      * this. Notifications will be sorted lexicographically using this value, although providing
@@ -921,31 +929,31 @@ export namespace Notifications {
     TRANSPORT: 'transport';
   }
 
-  type AndroidColor =
-    | string
-    | 'red'
-    | 'blue'
-    | 'green'
-    | 'black'
-    | 'white'
-    | 'gray'
-    | 'cyan'
-    | 'magenta'
-    | 'yellow'
-    | 'lightgray'
-    | 'darkgray'
-    | 'gray'
-    | 'lightgrey'
-    | 'darkgrey'
-    | 'aqua'
-    | 'fuchsia'
-    | 'lime'
-    | 'maroon'
-    | 'navy'
-    | 'olive'
-    | 'purple'
-    | 'silver'
-    | 'teal';
+  export enum AndroidColor {
+    RED = 'red',
+    BLUE = 'blue',
+    GREEN = 'green',
+    BLACK = 'black',
+    WHITE = 'white',
+    GRAY = 'gray',
+    CYAN = 'cyan',
+    MAGENTA = 'magenta',
+    YELLOW = 'yellow',
+    LIGHTGRAY = 'lightgray',
+    DARKGRAY = 'darkgray',
+    GRAY = 'gray',
+    LIGHTGREY = 'lightgrey',
+    DARKGREY = 'darkgrey',
+    AQUA = 'aqua',
+    FUCHSIA = 'fuchsia',
+    LIME = 'lime',
+    MAROON = 'maroon',
+    NAVY = 'navy',
+    OLIVE = 'olive',
+    PURPLE = 'purple',
+    SILVER = 'silver',
+    TEAL = 'teal',
+  }
 
   export interface AndroidDefaults {
     ALL: -1;
@@ -1143,9 +1151,12 @@ export namespace Notifications {
 declare module '@react-native-firebase/notifications' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+  import AndroidColor = Notifications.AndroidColor;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
+
+  export const AndroidColor = AndroidColor;
 
   const module: FirebaseModuleWithStaticsAndApp<Notifications.Module, Notifications.Statics>;
   export default module;

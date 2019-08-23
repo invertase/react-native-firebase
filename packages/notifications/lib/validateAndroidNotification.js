@@ -21,7 +21,8 @@ import {
   isBoolean,
   isNumber,
   isObject,
-  isString, isUndefined,
+  isString,
+  isUndefined,
 } from '@react-native-firebase/app/lib/common';
 
 import AndroidBadgeIconType from './AndroidBadgeIconType';
@@ -105,15 +106,11 @@ export default function validateAndroidNotification(android) {
    */
   if (hasOwnProperty(android.bigPictureStyle)) {
     if (!isObject(android.bigPictureStyle)) {
-      throw new Error(
-        "'notification.android.bigPictureStyle' expected an object value.",
-      );
+      throw new Error("'notification.android.bigPictureStyle' expected an object value.");
     }
 
     if (!isString(android.bigPictureStyle.picture) || !android.bigPictureStyle.picture) {
-      throw new Error(
-        "'notification.android.bigPictureStyle.picture' expected a string value.",
-      );
+      throw new Error("'notification.android.bigPictureStyle.picture' expected a string value.");
     }
 
     const bigPictureStyle = {
@@ -158,15 +155,11 @@ export default function validateAndroidNotification(android) {
    */
   if (hasOwnProperty(android.bigTextStyle)) {
     if (!isObject(android.bigTextStyle)) {
-      throw new Error(
-        "'notification.android.bigTextStyle' expected an object value.",
-      );
+      throw new Error("'notification.android.bigTextStyle' expected an object value.");
     }
 
     if (!isString(android.bigTextStyle.text) || !android.bigTextStyle.text) {
-      throw new Error(
-        "'notification.android.bigTextStyle.text' expected a string value.",
-      );
+      throw new Error("'notification.android.bigTextStyle.text' expected a string value.");
     }
 
     const bigTextStyle = {
@@ -185,9 +178,7 @@ export default function validateAndroidNotification(android) {
 
     if (hasOwnProperty(android.bigTextStyle.summaryText)) {
       if (!isString(android.bigTextStyle.summaryText)) {
-        throw new Error(
-          "'notification.android.bigTextStyle.summaryText' expected a string value.",
-        );
+        throw new Error("'notification.android.bigTextStyle.summaryText' expected a string value.");
       }
 
       bigTextStyle.summaryText = android.bigTextStyle.summaryText;
@@ -263,7 +254,9 @@ export default function validateAndroidNotification(android) {
     }
 
     if (!isValidColor(android.color)) {
-      throw new Error("'notification.android.color' invalid color. Expected an AndroidColor or hexadecimal string value.");
+      throw new Error(
+        "'notification.android.color' invalid color. Expected an AndroidColor or hexadecimal string value.",
+      );
     }
 
     // is valid colour
@@ -301,7 +294,9 @@ export default function validateAndroidNotification(android) {
     }
 
     if (android.defaults.length === 0) {
-      throw new Error("'notification.android.defaults' expected an array containing AndroidDefaults.");
+      throw new Error(
+        "'notification.android.defaults' expected an array containing AndroidDefaults.",
+      );
     }
 
     for (let i = 0; i < android.defaults.length; i++) {
@@ -313,7 +308,9 @@ export default function validateAndroidNotification(android) {
         value !== AndroidDefaults.SOUND ||
         value !== AndroidDefaults.VIBRATE
       ) {
-        throw new Error("'notification.android.defaults' invalid array value, expected a AndroidDefaults value.");
+        throw new Error(
+          "'notification.android.defaults' invalid array value, expected a AndroidDefaults value.",
+        );
       }
     }
 
@@ -481,7 +478,9 @@ export default function validateAndroidNotification(android) {
     }
 
     if (android.progress.max < android.progress.current) {
-      throw new Error("'notification.android.progress.current' current progress can not exceed max progress value.");
+      throw new Error(
+        "'notification.android.progress.current' current progress can not exceed max progress value.",
+      );
     }
 
     const progress = {
@@ -505,7 +504,10 @@ export default function validateAndroidNotification(android) {
    * remoteInputHistory
    */
   if (hasOwnProperty(android, 'remoteInputHistory')) {
-    if (!isArray(android.remoteInputHistory) || !isValidRemoteInputHistory(android.remoteInputHistory)) {
+    if (
+      !isArray(android.remoteInputHistory) ||
+      !isValidRemoteInputHistory(android.remoteInputHistory)
+    ) {
       throw new Error(
         `'notification.android.remoteInputHistory' expected an array of string values.`,
       );
@@ -539,11 +541,27 @@ export default function validateAndroidNotification(android) {
   /**
    * smallIcon
    */
-  if (!isString(android.smallIcon)) {
-    throw new Error("'notification.android.smallIcon' expected a string value.");
-  }
+  if (hasOwnProperty(android, 'smallIcon')) {
+    if (isArray(android.smallIcon)) {
+      const [icon, level] = android.smallIcon;
 
-  out.smallIcon = android.smallIcon;
+      if (!isString(icon)) {
+        throw new Error("'notification.android.smallIcon' expected icon to be a string.");
+      }
+
+      if (!isNumber(level) || level < 0) {
+        throw new Error("'notification.android.smallIcon' expected level to be a positive number.");
+      }
+
+      out.smallIcon = [icon, level];
+    } else if (isString(android.smallIcon)) {
+      out.smallIcon = [android.smallIcon, -1];
+    } else {
+      throw new Error(
+        "'notification.android.smallIcon' expected an array containing icon with level or string value.",
+      );
+    }
+  }
 
   /**
    * sortKey
@@ -576,7 +594,9 @@ export default function validateAndroidNotification(android) {
     }
 
     if (!isValidTimestamp(android.timeoutAfter)) {
-      throw new Error("'notification.android.timeoutAfter' invalid millisecond timestamp, date must be in the future.");
+      throw new Error(
+        "'notification.android.timeoutAfter' invalid millisecond timestamp, date must be in the future.",
+      );
     }
 
     out.timeoutAfter = android.timeoutAfter;
@@ -617,7 +637,6 @@ export default function validateAndroidNotification(android) {
     out.vibratePattern = android.vibratePattern;
   }
 
-
   /**
    * when
    */
@@ -627,7 +646,9 @@ export default function validateAndroidNotification(android) {
     }
 
     if (!isValidTimestamp(android.when)) {
-      throw new Error("'notification.android.when' invalid millisecond timestamp, date must be in the future.");
+      throw new Error(
+        "'notification.android.when' invalid millisecond timestamp, date must be in the future.",
+      );
     }
 
     out.when = android.when;

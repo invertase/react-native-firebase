@@ -36,6 +36,7 @@ import AndroidVisibility from './AndroidVisibility';
 import AndroidRepeatInterval from './AndroidRepeatInterval';
 import AndroidDefaults from './AndroidDefaults';
 import AndroidImportance from './AndroidImportance';
+import AndroidColor from './AndroidColor';
 import { validateAndroidChannelGroup } from './validateAndroidChannelGroup';
 
 const statics = {
@@ -47,6 +48,7 @@ const statics = {
   AndroidRepeatInterval,
   AndroidDefaults,
   AndroidImportance,
+  AndroidColor,
 };
 
 const namespace = 'notifications';
@@ -304,3 +306,4 @@ export AndroidVisibility from './AndroidVisibility';
 export AndroidRepeatInterval from './AndroidRepeatInterval';
 export AndroidDefaults from './AndroidDefaults';
 export AndroidImportance from './AndroidImportance';
+export AndroidColor from './AndroidColor';
