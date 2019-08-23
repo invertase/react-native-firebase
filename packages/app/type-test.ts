@@ -26,6 +26,11 @@ console.log(firebase.app().utils().app.name);
 // checks statics exist
 console.log(firebase.utils.SDK_VERSION);
 console.log(utils.SDK_VERSION);
+console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
+console.log(utils.FilePath.CACHES_DIRECTORY);
+
+console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
+console.log(utils.FilePath.CACHES_DIRECTORY);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
