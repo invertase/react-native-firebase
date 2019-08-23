@@ -15,4 +15,9 @@
  *
  */
 
-export default function validateiOSNotification(ios) {}
+export default {
+  ALL: -1,
+  LIGHTS: 4,
+  SOUND: 1,
+  VIBRATE: 2,
+}

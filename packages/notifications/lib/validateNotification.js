@@ -34,7 +34,7 @@ export default function validateNotification(notification) {
   if (
     !hasOwnProperty(notification, 'body') ||
     !isString(notification.body) ||
-    notification.body.length
+    !notification.body
   ) {
     throw new Error("'notification.body' expected a string value containing notification text.");
   }
@@ -55,12 +55,8 @@ export default function validateNotification(notification) {
    * notificationId
    */
   if (hasOwnProperty(notification, 'notificationId')) {
-    if (!isString(notification.notificationId)) {
-      throw new Error("'notification.notificationId' expected a string value.");
-    }
-
-    if (notification.notificationId.length === 0) {
-      throw new Error("'notification.notificationId' ID must be a unique non-empty value.");
+    if (!isString(notification.notificationId) || !notification.notificationId) {
+      throw new Error("'notification.notificationId' invalid notification ID, expected a unique string value.");
     }
 
     out.notificationId = notification.notificationId;

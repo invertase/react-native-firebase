@@ -63,16 +63,163 @@ export namespace Notifications {
     AndroidPriority: AndroidPriority;
     AndroidVisibility: AndroidVisibility;
     AndroidRepeatInterval: AndroidRepeatInterval;
+    AndroidDefaults: AndroidDefaults;
+    AndroidImportance: AndroidImportance;
+    AndroidColor: typeof AndroidColor;
   }
 
+  /**
+   * Interface for building a local notification for both Android & iOS devices.
+   *
+   * #### Example
+   *
+   * ```js
+   * const notification = {
+   *   body: 'Hello World!',
+   *   title: 'Welcome',
+   *   data: {
+   *     user: '123',
+   *   },
+   *   android: {
+   *     color: '#3f51b5',
+   *   },
+   *   ios: {
+   *     alertAction: 'Open App',
+   *   },
+   * };
+   *
+   * await firebase.notifications().displayNotification(notification);
+   * ```
+   */
   export interface Notification {
-    notificationId?: string;
-    title?: string;
-    subtitle?: string;
+    /**
+     * The main body content of a notification. This field required and is the main body of your notification.
+     *
+     * On Android, if you wish to read the body when the notification is opened, add it to the `data` object.
+     *
+     * #### Example
+     *
+     * ![Body Text](https://prismic-io.s3.amazonaws.com/invertase%2F7f9cc068-c618-44f0-88da-6041c6d55f48_new+project+%2817%29.jpg)
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Hello World!',
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     body: string;
+
+    /**
+     * A unique identifier for your notification.
+     *
+     * Defaults to a random string.
+     */
+    notificationId?: string;
+
+    /**
+     * The notification title which appears above the body text.
+     *
+     * On Android, if you wish to read the title when the notification is opened, add it to the `data` object.
+     *
+     * #### Example
+     *
+     * ![Title Text](https://prismic-io.s3.amazonaws.com/invertase%2F6fa1dea9-8cf6-4e9a-b318-8d8f73d568cf_new+project+%2818%29.jpg)
+     *
+     * ```js
+     * const notification = {
+     *   title: 'Welcome!',
+     *   body: 'Hello World!',
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
+    title?: string;
+
+    /**
+     * The notification subtitle, which appears on a new line below the title.
+     *
+     * #### Example
+     *
+     * ![Title Text](https://prismic-io.s3.amazonaws.com/invertase%2F6fa1dea9-8cf6-4e9a-b318-8d8f73d568cf_new+project+%2818%29.jpg)
+     *
+     * ```js
+     * const notification = {
+     *   title: 'Welcome!',
+     *   subtitle: 'Learn more...',
+     *   body: 'Hello World!',
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
+    subtitle?: string;
+
+    /**
+     * Additional data to store on the notification. Only `string` values can be stored.
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Hello World!',
+     *   data: {
+     *     user: '123',
+     *   }
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     data?: { [key: string]: string };
+
+    /**
+     * iOS specific notification options. See the `IOSNotification` interface for more information
+     * and default options which are applied to a notification.
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Hello World!',
+     *   ios: {
+     *     alertAction: 'Open App',
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     ios?: IOSNotification;
+
+    /**
+     * Android specific notification options. See the `AndroidNotification` interface for more
+     * information and default options which are applied to a notification.
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Hello World!',
+     *   android: {
+     *     color: '#3f51b5',
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     android?: AndroidNotification;
+
+    /**
+     * Overrides the sound the notification is displayed with.
+     *
+     * The default value is `default`, which is the system default sound.
+     *
+     * TODO @ehesp FAQ/Guide on custom sounds
+     */
     sound?: string;
   }
 
@@ -122,31 +269,138 @@ export namespace Notifications {
     thumbnailTime: number;
   }
 
+  /**
+   * The interface for Android specific options which are applied to a notification.
+   *
+   * #### Example
+   *
+   * ```js
+   * const notification = {
+   *   body: 'Hello World!',
+   *   android: {
+   *     color: '#3F51B5',
+   *     autoCancel: false,
+   *     ongoing: true,
+   *   },
+   * };
+   *
+   * await firebase.notifications().displayNotification(notification);
+   * ```
+   *
+   * @android
+   */
   export interface AndroidNotification {
+    /**
+     *
+     */
     actions?: AndroidAction[];
 
     /**
      * Setting this flag will make it so the notification is automatically canceled when the user
      * clicks it in the panel.
      *
-     * Defaults to `false`.
+     * By default when the user taps a notification it is automatically removed from the notification
+     * panel. Setting this to `false` will keep the notification in the panel.
+     *
+     * If `false`, the notification will persist in the notification panel after being pressed. It will
+     * remain there until the user removes (e.g. swipes away) or is cancelled via `removeDeliveredNotification`.
+     *
+     * Defaults to `true`.
      */
     autoCancel?: boolean;
 
     /**
-     * Sets which icon to display as a badge for this notification.
+     * Starting with 8.0 (API level 26), notification badges (also known as notification dots) appear
+     * on a launcher icon when the associated app has an active notification. Users can long-press
+     * on the app icon to reveal the notifications (alongside any app shortcuts).
      *
-     * **Note**: This value might be ignored, for launchers that don't support badge icons.
+     * ![Badges](https://developer.android.com/images/ui/notifications/badges-open_2x.png)
+     *
+     * If the notification is shown as a badge, this option can be set to control how the badge icon
+     * is shown:
+     *
+     * - `NONE`: Always shows as a number.
+     * - `SMALL`: Uses the icon provided to `smallIcon`.
+     * - `LARGE`: Uses the icon provided to `largeIcon`.
+     *
+     * Defaults to `AndroidBadgeIconType.NONE`.
      */
     badgeIconType?:
       | AndroidBadgeIconType.NONE
       | AndroidBadgeIconType.SMALL
       | AndroidBadgeIconType.LARGE;
 
+    /**
+     * Notifications can show a large image when expanded, which is useful for apps with a heavy media
+     * focus, such as Instagram.
+     *
+     * ![Big Picture Style](https://developer.android.com/images/ui/notifications/template-image_2x.png)
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Hello World!',
+     *   android: {
+     *     bigPictureStyle: {
+     *       picture: 'https://cdn.com/large-image.jpg',
+     *       largeIcon: 'icon_large',
+     *       contentTitle: 'New post',
+     *       summaryText: 'A beautiful image',
+     *     },
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     *
+     * > Setting a bigPictureStyle and bigTextStyle is not supported and will throw an error.
+     */
     bigPictureStyle?: AndroidBigPictureStyle;
 
+    /**
+     * Notifications can show a large amount of text when expanded, for example when displaying new
+     * messages.
+     *
+     * By default, messages are not expanded, causing any overflowing notification `body` next to be
+     * truncated. Setting a `bigTextStyle` allows the notification to be expandable showing the full
+     * text body.
+     *
+     * ![Big Text Style](https://developer.android.com/images/ui/notifications/template-large-text_2x.png)
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Congratulations...',
+     *   android: {
+     *     bigTextStyle: {
+     *       text: 'Congratulations you have won a prize.',
+     *     },
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     bigTextStyle?: AndroidBigTextStyle;
 
+    /**
+     * Assigns the notification to a category. Use the one which best describes the notifcation.
+     *
+     * The category may be used by the device for ranking and filtering.
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Congratulations...',
+     *   android: {
+     *     category: firebase.notifications.AndroidCategory.MESSAGE,
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     * ```
+     */
     category?:
       | AndroidCategory.ALARM
       | AndroidCategory.CALL
@@ -165,42 +419,229 @@ export namespace Notifications {
       | AndroidCategory.SYSTEM
       | AndroidCategory.TRANSPORT;
 
+    /**
+     * Specified the `AndroidChannel` which the notification will be delivered on.
+     *
+     * TODO required on some APIs
+     */
     channelId?: string;
 
-    clickAction?: string; // todo
+    /**
+     * A click action is used to help identify a notification which is being handled by your application.
+     *
+     * #### Example
+     *
+     * ```js
+     * const notification = {
+     *   body: 'Update your settings',
+     *   android: {
+     *     channelId: 'open_settings',
+     *   },
+     * };
+     *
+     * await firebase.notifications().displayNotification(notification);
+     *
+     * ...
+     *
+     * // The user taps the notification....
+     * const notification = await firebase.notifications().getInitialNotification();
+     *
+     * if (notification.android.clickAction === 'open_settings') {
+     *   // open settings view
+     * }
+     * ```
+     */
+    clickAction?: string;
 
     /**
-     * https://developer.android.com/reference/android/graphics/Color.html#parseColor(java.lang.String)
+     * Set an custom accent color for the notification. If not provided, the default notification
+     * system color will be used.
+     *
+     * The color can be a predefined system `AndroidColor` or [hexadecimal](https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4).
+     *
+     * #### Example
+     *
+     * Using a predefined color.
+     *
+     * ```js
+     * import notification, { AndroidColor } from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     color: AndroidColor.AQUA,
+     *   },
+     * });
+     * ```
+     *
+     * #### Example
+     *
+     * Using a hexadecimal color.
+     *
+     * ```js
+     * import notification, { AndroidColor } from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     color: '#2196f3', // material blue
+     *     // color: '#802196f3', // 50% opacity material blue
+     *   },
+     * });
+     * ```
      */
-    color?: string;
+    color?: AndroidColor | string;
 
+    /**
+     * Set whether this notification should be colorized. When set, the color set with `color`
+     * will be used as the background color of this notification.
+     *
+     * This should only be used for high priority ongoing tasks like navigation, an ongoing call,
+     * or other similarly high-priority events for the user.
+     *
+     * For most styles, the coloring will only be applied if the notification is for a foreground service notification.
+     */
     colorized?: boolean;
 
+    // TODO is this needed? https://stackoverflow.com/a/40753998/11760094 - use subtext instead?
     contentInfo?: string;
 
-    defaults: string; // todo
+    // todo
+    defaults?: AndroidDefaults[];
 
+    /**
+     * Set this notification to be part of a group of notifications sharing the same key. Grouped notifications may
+     * display in a cluster or stack on devices which support such rendering.
+     *
+     * To make this notification the summary for its group, set `groupSummary` to `true`.
+     *
+     * ![Grouped Notifications](https://developer.android.com/images/ui/notifications/notification-group_2x.png)
+     *
+     * ```js
+     * import notification from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     group: message.group.id,
+     *   },
+     * });
+     * ```
+     */
     group?: string;
 
+    /**
+     * Sets the group alert behavior for this notification. Use this method to mute this notification
+     * if alerts for this notification's group should be handled by a different notification. This is
+     * only applicable for notifications that belong to a `group`. This must be called on all notifications
+     * you want to mute. For example, if you want only the summary of your group to make noise, all
+     * children in the group should have the group alert behavior `AndroidGroupAlertBehavior.SUMMARY`.
+     *
+     * See `AndroidGroupAlertBehavior` for more information on different behaviours.
+     *
+     * Defaults to `AndroidGroupAlertBehavior.ALL`.
+     *
+     * #### Example
+     *
+     * ```js
+     * import notification, { AndroidGroupAlertBehavior } from '@react-native-firebase/notifications';
+     *
+     * await notification.displayNotification({
+     *   android: {
+     *     group: message.group.id,
+     *     groupAlertBehaviour: AndroidGroupAlertBehavior.CHILDREN,
+     *   },
+     * });
+     * ```
+     */
     groupAlertBehaviour?:
       | AndroidGroupAlertBehavior.ALL
       | AndroidGroupAlertBehavior.SUMMARY
       | AndroidGroupAlertBehavior.CHILDREN;
 
+    /**
+     * Whether this notification should be a group summary.
+     *
+     * If `true`, Set this notification to be the group summary for a group of notifications. Grouped notifications may display in
+     * a cluster or stack on devices which support such rendering. Requires a `group` key to be set.
+     *
+     * Defaults to `false`.
+     */
     groupSummary?: boolean;
 
+    /**
+     * Sets a large icon on the notification.
+     *
+     * ![Large Icon](https://prismic-io.s3.amazonaws.com/invertase%2F3f2f803e-b9ae-4e6b-8b58-f0b8ab01aa52_new+project+%2819%29.jpg)
+     *
+     * TODO: example, URL?
+     */
     largeIcon?: string;
 
+    /**
+     * Sets the color and frequency of the light pattern. This only has effect on supported devices.
+     *
+     * The option takes an array containing a hexadecimal color value or predefined `AndroidColor`,
+     * along with the number of milliseconds to show the light, and the number of milliseconds to
+     * turn off the light. The light frequency pattern is repeated.
+     *
+     * #### Example
+     *
+     * Show a red light, for 300ms and turn it off for 600ms.
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     lights: ['#f44336', 300, 600],
+     *   },
+     * });
+     * ```
+     */
     lights?: [string, number, number];
 
+    /**
+     * Set whether or not this notification is only relevant to the current device.
+     *
+     * Some notifications can be bridged to other devices for remote display. This hint can be set to recommend this notification not be bridged.
+     *
+     * Defaults to `false`.
+     */
     localOnly?: boolean;
 
+    // todo example
     number?: number;
 
+    /**
+     * Set whether this is an on-going notification.
+     *
+     * - Ongoing notifications are sorted above the regular notifications in the notification panel.
+     * - Ongoing notifications do not have an 'X' close button, and are not affected by the "Clear all" button.
+     */
     ongoing?: boolean;
 
+    /**
+     * Set this flag if you would only like the sound, vibrate and ticker to be played if the notification is not already showing.
+     */
     onlyAlertOnce?: boolean;
 
+    /**
+     * Set the relative priority for this notification. Priority is an indication of how much of the
+     * user's valuable attention should be consumed by this notification. Low-priority notifications
+     * may be hidden from the user in certain situations, while the user might be interrupted for a
+     * higher-priority notification. The system sets a notification's priority based on various
+     * factors including the setPriority value. The effect may differ slightly on different platforms.
+     *
+     * Defaults to `AndroidPriority.DEFAULT`.
+     *
+     * See `AndroidPriority` for descriptions of each priority settings.
+     *
+     * #### Example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     priority: firebase.notifications.AndroidPriority.LOW,
+     *   },
+     * });
+     * ```
+     */
     priority?:
       | AndroidPriority.DEFAULT
       | AndroidPriority.HIGH
@@ -209,31 +650,211 @@ export namespace Notifications {
       | AndroidPriority.MIN
       | AndroidPriority.NONE;
 
+    /**
+     * A notification can show current progress of a task. The progress state can either be fixed or
+     * indeterminate (unknown).
+     *
+     * #### Example - Fixed Progress
+     *
+     * ![Fixed Progress](https://miro.medium.com/max/480/1*OHOY45cU27NaYkF0MU3hrw.gif)
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     progress: {
+     *       max: 10,
+     *       current: 5,
+     *     }
+     *   },
+     * });
+     * ```
+     *
+     * #### Example - Indeterminate Progress
+     *
+     * Setting `indeterminate` to `true` overrides the `max`/`current` settings.
+     *
+     * ![Progress](https://miro.medium.com/max/480/1*mW-_3PUxAG1unAZOf0IuoQ.gif)
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     progress: {
+     *       max: 10,
+     *       current: 5,
+     *       indeterminate: true,
+     *     }
+     *   },
+     * });
+     * ```
+     *
+     * // TODO how to update the progess over time?
+     */
     progress?: AndroidProgress;
 
+    // todo
     remoteInputHistory?: string[];
 
+    /**
+     * If this notification is duplicative of a Launcher shortcut, sets the id of the shortcut,
+     * in case the Launcher wants to hide the shortcut.
+     *
+     * Note: This field will be ignored by Launchers that don't support badging or shortcuts.
+     */
     shortcutId?: string;
 
+    /**
+     * Sets whether the timestamp provided to `when` is shown in the notification.
+     *
+     * Setting this field is useful for notifications which are more informative with a timestamp,
+     * such as a message.
+     *
+     * #### Example
+     *
+     * Assuming the current notification has delivered to the user 8 minutes ago, the timestamp
+     * will be displayed to the user in the notification, for example:
+     *
+     * ![When Timestamp](https://prismic-io.s3.amazonaws.com/invertase%2F3f2f803e-b9ae-4e6b-8b58-f0b8ab01aa52_new+project+%2819%29.jpg)
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     when: Date.now(),
+     *     showWhenTimestamp: true,
+     *   },
+     * });
+     * ```
+     */
     showWhenTimestamp?: boolean;
 
-    // missing level? deprecate it?
+    /**
+     * The small icon for the notification.
+     *
+     * ![Small Icon](https://prismic-io.s3.amazonaws.com/invertase%2F566dd0e6-99bc-4e58-82c1-755f0225ec0b_new+project+%2820%29.jpg)
+     *
+     * TODO launcher/custom URL
+     */
     smallIcon?: string;
 
+    /**
+     * TODO document me, name, level
+     */
+    smallIcon?: [string, number];
+
+    /**
+     * Set a sort key that orders this notification among other notifications from the same package.
+     * This can be useful if an external sort was already applied and an app would like to preserve
+     * this. Notifications will be sorted lexicographically using this value, although providing
+     * different priorities in addition to providing sort key may cause this value to be ignored.
+     *
+     * If a `group` has been set, the sort key can also be used to order members of a notification group.
+     */
     sortKey?: string;
 
+    /**
+     * A ticker is used for accessibility purposes for devices with accessibility services enabled. Text passed
+     * to `ticker` will be audibly announced.
+     *
+     * Ticker text does not show in the notification.
+     *
+     * #### Example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     body: 'You have 1 new message',
+     *     ticker: 'A new message has been received',
+     *   },
+     * });
+     * ```
+     */
     ticker?: string;
 
+    /**
+     * Sets the time in milliseconds at which the notification should be
+     * cancelled, if it is not already cancelled.
+     *
+     * #### Example
+     *
+     * Time out in 10 minutes.
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     body: 'Limited time prize available',
+     *     timeoutAfter: Date.now() + 600000,
+     *   },
+     * });
+     * ```
+     */
     timeoutAfter?: number;
 
+    /**
+     * Show the `when` field as a stopwatch. Instead of presenting when as a timestamp, the
+     * notification will show an automatically updating display of the minutes and seconds since when.
+     * Useful when showing an elapsed time (like an ongoing phone call).
+     *
+     * Defaults to `false`.
+     *
+     * // TODO example
+     */
     usesChronometer?: boolean;
 
+    /**
+     * Whether the notification should vibrate.
+     *
+     * Defaults to `true`.
+     */
     vibrate?: boolean;
 
+    /**
+     * The vibrate pattern in milliseconds.
+     *
+     * #### Example
+     *
+     * Vibrate for 300ms with a 300ms delay.
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     body: 'Limited time prize available',
+     *     vibratePattern: [300, 300],
+     *   },
+     * });
+     * ```
+     */
     vibratePattern?: number[];
 
+    /**
+     * Sets the visibility for this notification. This may be used for apps which show user
+     * sensitive information (e.g. a banking app).
+     *
+     * Defaults to `AndroidVisibility.PRIVATE`.
+     *
+     * See `AndroidVisibility` for more information.
+     */
     visibility?: AndroidVisibility.PRIVATE | AndroidVisibility.PUBLIC | AndroidVisibility.SECRET;
 
+    /**
+     * The timestamp in milliseconds for this notification. Notifications in the panel are sorted by this time.
+     *
+     * - Use with `showWhenTimestamp` to show the timestamp to the users.
+     * - Use with `usesChronometer` to create a on-going timer.
+     *
+     * #### Example
+     *
+     * Show the length of time the notification has been showing for.
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   android: {
+     *     body: 'Phone call in progress',
+     *     ongoing: true,
+     *     when: Date.now(),
+     *     usesChronometer: true,
+     *   },
+     * });
+     * ```
+     */
     when?: number;
   }
 
@@ -308,6 +929,39 @@ export namespace Notifications {
     TRANSPORT: 'transport';
   }
 
+  export enum AndroidColor {
+    RED = 'red',
+    BLUE = 'blue',
+    GREEN = 'green',
+    BLACK = 'black',
+    WHITE = 'white',
+    GRAY = 'gray',
+    CYAN = 'cyan',
+    MAGENTA = 'magenta',
+    YELLOW = 'yellow',
+    LIGHTGRAY = 'lightgray',
+    DARKGRAY = 'darkgray',
+    GRAY = 'gray',
+    LIGHTGREY = 'lightgrey',
+    DARKGREY = 'darkgrey',
+    AQUA = 'aqua',
+    FUCHSIA = 'fuchsia',
+    LIME = 'lime',
+    MAROON = 'maroon',
+    NAVY = 'navy',
+    OLIVE = 'olive',
+    PURPLE = 'purple',
+    SILVER = 'silver',
+    TEAL = 'teal',
+  }
+
+  export interface AndroidDefaults {
+    ALL: -1;
+    SOUND: 1;
+    VIBRATE: 2;
+    LIGHTS: 4;
+  }
+
   export interface AndroidGroupAlertBehavior {
     ALL: 0;
     SUMMARY: 1;
@@ -315,6 +969,15 @@ export namespace Notifications {
   }
 
   export interface AndroidPriority {
+    DEFAULT: 3;
+    HIGH: 4;
+    LOW: 2;
+    MAX: 5;
+    MIN: 1;
+    NONE: 0;
+  }
+
+  export interface AndroidImportance {
     DEFAULT: 3;
     HIGH: 4;
     LOW: 2;
@@ -397,6 +1060,38 @@ export namespace Notifications {
       | AndroidRepeatInterval.WEEK;
   }
 
+  export interface AndroidChannel {
+    channelId: string;
+    name: string;
+    allowBubbles?: boolean; // todo not in v5
+    bypassDnd?: boolean;
+    description?: string;
+    enableLights?: boolean;
+    enableVibration?: boolean;
+    groupId?: string;
+    importance?:
+      | AndroidImportance.DEFAULT
+      | AndroidImportance.HIGH
+      | AndroidImportance.LOW
+      | AndroidImportance.MAX
+      | AndroidImportance.MIN
+      | AndroidImportance.NONE;
+    lightColor?: string;
+    lockscreenVisibility?:
+      | AndroidVisibility.PRIVATE
+      | AndroidVisibility.PUBLIC
+      | AndroidVisibility.SECRET;
+    showBadge?: boolean;
+    sound?: string; // audio attributes?
+    vibrationPattern?: number[];
+  }
+
+  export interface AndroidChannelGroup {
+    channelGroupId: string;
+    name: string;
+    description?: string;
+  }
+
   /**
    *
    * The Firebase Notifications service interface.
@@ -415,6 +1110,18 @@ export namespace Notifications {
     cancelAllNotifications(): Promise<void>;
 
     cancelNotification(notificationId: string): Promise<void>;
+
+    createChannel(channel: AndroidChannel): Promise<void>;
+
+    createChannels(channels: AndroidChannel[]): Promise<void>;
+
+    createChannelGroup(channelGroup: AndroidChannelGroup): Promise<void>;
+
+    createChannelGroups(channelGroups: AndroidChannelGroup[]): Promise<void>;
+
+    deleteChannel(channelId: string): Promise<void>;
+
+    deleteChannelGroup(channelGroupId: string): Promise<void>;
 
     displayNotification(notification: Notification): Promise<void>;
 
@@ -444,9 +1151,12 @@ export namespace Notifications {
 declare module '@react-native-firebase/notifications' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+  import AndroidColor = Notifications.AndroidColor;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
+
+  export const AndroidColor = AndroidColor;
 
   const module: FirebaseModuleWithStaticsAndApp<Notifications.Module, Notifications.Statics>;
   export default module;
@@ -458,9 +1168,11 @@ declare module '@react-native-firebase/notifications' {
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
     interface Module {
       notifications: FirebaseModuleWithStaticsAndApp<Notifications.Module, Notifications.Statics>;
     }
+
     interface FirebaseApp {
       notifications(): Notifications.Module;
     }
