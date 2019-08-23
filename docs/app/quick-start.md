@@ -65,7 +65,7 @@ The package also provides access to a utility Firebase module:
 import { utils } from '@react-native-firebase/app';
 ```
 
-### Detect whether the app is running within TestL Lab
+### Detect whether the app is running within Firebase Test Lab
 
 Firebase [TestLab](https://firebase.google.com/docs/test-lab/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=utils)
 is a cloud-based app-testing infrastructure. With one operation, you can test your Android or iOS app across
