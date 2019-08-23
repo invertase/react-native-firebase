@@ -15,14 +15,9 @@
  *
  */
 
-import { isIOS } from '@react-native-firebase/app/lib/common';
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import version from '../version';
+import { isIOS } from '../../lib/common';
 import UtilsStatics from './UtilsStatics';
+import { createModuleNamespace, FirebaseModule } from '../../lib/internal';
 
 const namespace = 'utils';
 const statics = UtilsStatics;
@@ -37,14 +32,11 @@ class FirebaseUtilsModule extends FirebaseModule {
   }
 }
 
-// import { SDK_VERSION } from '@react-native-firebase/utils';
-export const SDK_VERSION = version;
-
-// import utils from '@react-native-firebase/utils';
+// import { utils } from '@react-native-firebase/app';
 // utils().X(...);
 export default createModuleNamespace({
   statics,
-  version,
+  version: UtilsStatics.SDK_VERSION,
   namespace,
   nativeModuleName,
   nativeEvents: false,
@@ -52,8 +44,3 @@ export default createModuleNamespace({
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseUtilsModule,
 });
-
-// import utils, { firebase } from '@react-native-firebase/utils';
-// utils().X(...);
-// firebase.utils().X(...);
-export const firebase = getFirebaseRoot();
