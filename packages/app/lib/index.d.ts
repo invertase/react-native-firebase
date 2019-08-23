@@ -235,11 +235,6 @@ export namespace ReactNativeFirebase {
   export interface FirebaseJsonConfig {}
 }
 
-declare module '@react-native-firebase/app' {
-  const module: {} & ReactNativeFirebase.Module;
-  export default module;
-}
-
 /*
  * @firebase utils
  */
@@ -387,21 +382,23 @@ export namespace Utils {
   }
 }
 
-declare module '@react-native-firebase/app/lib/utils' {
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare module '@react-native-firebase/app' {
+  /**
+   * Add Utils module as a named export for `app`.
+   */
+  export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
-
-  const module: FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
+  /**
+   * Default Firebase export.
+   */
+  const module: {} & ReactNativeFirebase.Module;
   export default module;
 }
 
-/**
- * Attach namespace to `firebase.` and `FirebaseApp.`.
- */
 declare module '@react-native-firebase/app' {
+  /**
+   * Attach Utils namespace to `firebase.` and `FirebaseApp.`.
+   */
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
