@@ -27,7 +27,6 @@
     "@react-native-firebase/perf": "0.2.3",
     "@react-native-firebase/remote-config": "0.2.3",
     "@react-native-firebase/storage": "0.2.3",
-    "@react-native-firebase/utils": "0.2.3",
     "react": "16.8.6",
     "react-native": "0.60.4"
   },

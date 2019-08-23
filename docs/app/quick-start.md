@@ -51,3 +51,4 @@ The instance is also accessible from other installed packages, for example:
 ```js
 import auth, { firebase } from '@react-native-firebase/auth';
 ```
+
