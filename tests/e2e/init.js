@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  */
-const detox = require('detox');
 
 // DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE
 // BEEN WARNED 🙃
@@ -23,6 +22,7 @@ require('@react-native-firebase/private-tests-helpers');
 
 global.TestAdminApi = new TestingApi();
 
+const detox = require('detox');
 const jet = require('jet/platform/node');
 
 const { requirePackageTests } = require('./helpers');
