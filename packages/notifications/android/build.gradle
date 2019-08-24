@@ -53,6 +53,7 @@ repositories {
 dependencies {
   api project(':@react-native-firebase_app')
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-core"
 }
 
 ReactNative.shared.applyPackageVersion()

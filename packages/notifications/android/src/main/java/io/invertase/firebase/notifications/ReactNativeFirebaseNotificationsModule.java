@@ -17,21 +17,12 @@ package io.invertase.firebase.notifications;
  *
  */
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.os.Build;
-import android.util.Log;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import io.invertase.firebase.common.RCTConvertFirebase;
+import com.facebook.react.bridge.*;
+import com.google.android.gms.tasks.Tasks;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+
+import java.util.Collections;
+import java.util.Objects;
 
 public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Notifications";
@@ -40,32 +31,131 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
     super(reactContext, TAG);
   }
 
-  /**
-   * notificationId?: string;
-   * title?: string;
-   * subtitle?: string;
-   * body: string;
-   * data?: { [key: string]: string };
-   * ios?: IOSNotification;
-   * android?: AndroidNotification;
-   * sound?: string;
-   */
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @ReactMethod
   public void displayNotification(ReadableMap notificationRaw, Promise promise) {
-    ReactNativeFirebaseNotification nativeFirebaseNotification = ReactNativeFirebaseNotification.fromReadableMap(notificationRaw);
-    // TODO move me
-    NotificationChannel channel = new NotificationChannel("foo1", "bar1", NotificationManager.IMPORTANCE_HIGH);
-    channel.setDescription("Just a foo bar channel");
-    nativeFirebaseNotification.getNotificationManager().createNotificationChannel(channel);
-
-
-    // getchannel - check it exists and API level supports channels
-    //   - does not exist
-    //      - Reject promise
-
-    nativeFirebaseNotification.displayNotification();
-    promise.resolve(nativeFirebaseNotification.toWriteableMap());
+    Tasks.call(getExecutor(), () -> {
+      ReactNativeFirebaseNotification nativeFirebaseNotification = ReactNativeFirebaseNotification.fromReadableMap(notificationRaw);
+      nativeFirebaseNotification.displayNotification();
+      return nativeFirebaseNotification;
+    }).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(Objects.requireNonNull(task.getResult()).toWriteableMap());
+      } else {
+        Exception exception = task.getException();
+        if (exception instanceof InvalidNotificationParameterException) {
+          InvalidNotificationParameterException notificationParameterException = (InvalidNotificationParameterException) exception;
+          rejectPromiseWithCodeAndMessage(promise, notificationParameterException.getCode(), notificationParameterException.getMessage(), notificationParameterException);
+        } else {
+          rejectPromiseWithExceptionMap(promise, exception);
+        }
+      }
+    });
   }
 
+  @ReactMethod
+  public void createChannel(ReadableMap channelMap, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.createChannel(channelMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void createChannelGroup(ReadableMap channelGroupMap, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.createChannelGroup(channelGroupMap);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void createChannelGroups(ReadableArray channelGroupsArray, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.createChannelGroups(channelGroupsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void createChannels(ReadableArray channelsArray, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.createChannels(channelsArray);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void deleteChannelGroup(String channelId, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.deleteChannelGroup(channelId);
+      promise.resolve(null);
+    } catch (NullPointerException e) {
+      promise.reject(
+        "notifications/channel-group-not-found",
+        "The requested NotificationChannelGroup does not exist, have you created it?"
+      );
+    }
+  }
+
+  @ReactMethod
+  public void deleteChannel(String channelId, Promise promise) {
+    try {
+      ReactNativeFirebaseNotificationChannel.deleteChannel(channelId);
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannel(String channelId, Promise promise) {
+    try {
+      promise.resolve(ReactNativeFirebaseNotificationChannel.getChannel(channelId));
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannels(Promise promise) {
+    try {
+      promise.resolve(ReactNativeFirebaseNotificationChannel.getChannels());
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(Collections.emptyList());
+  }
+
+  @ReactMethod
+  public void getChannelGroup(String channelGroupId, Promise promise) {
+    try {
+      promise.resolve(ReactNativeFirebaseNotificationChannel.getChannelGroup(channelGroupId));
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void getChannelGroups(Promise promise) {
+    try {
+      promise.resolve(ReactNativeFirebaseNotificationChannel.getChannelGroups());
+      return;
+    } catch (Throwable t) {
+      // do nothing - most likely a NoSuchMethodError for < v4 support lib
+    }
+    promise.resolve(Collections.emptyList());
+  }
 }

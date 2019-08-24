@@ -22,7 +22,14 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 
 import version from './version';
-import { isFunction, isNumber, isString, isIOS, isArray, isNull } from '@react-native-firebase/app/lib/common';
+import {
+  isFunction,
+  isNumber,
+  isString,
+  isIOS,
+  isArray,
+  isNull,
+} from '@react-native-firebase/app/lib/common';
 
 import validateNotification from './validateNotification';
 import validateSchedule from './validateSchedule';
@@ -75,9 +82,7 @@ class FirebaseNotificationsModule extends FirebaseModule {
     try {
       options = validateAndroidChannel(channel);
     } catch (e) {
-      throw new Error(
-        `firebase.notifications().createChannel(*) ${e.message}`,
-      );
+      throw new Error(`firebase.notifications().createChannel(*) ${e.message}`);
     }
 
     if (isIOS) {
@@ -109,7 +114,7 @@ class FirebaseNotificationsModule extends FirebaseModule {
       return Promise.resolve();
     }
 
-    return this.native.createChannel(options);
+    return this.native.createChannels(options);
   }
 
   createChannelGroup(channelGroup) {
@@ -117,9 +122,7 @@ class FirebaseNotificationsModule extends FirebaseModule {
     try {
       options = validateAndroidChannelGroup(channelGroup);
     } catch (e) {
-      throw new Error(
-        `firebase.notifications().createChannelGroup(*) ${e.message}`,
-      );
+      throw new Error(`firebase.notifications().createChannelGroup(*) ${e.message}`);
     }
 
     if (isIOS) {
@@ -143,7 +146,9 @@ class FirebaseNotificationsModule extends FirebaseModule {
       }
     } catch (e) {
       throw new Error(
-        `firebase.notifications().createChannelGroups(*) 'channelGroups' a channel group is invalid: ${e.message}`,
+        `firebase.notifications().createChannelGroups(*) 'channelGroups' a channel group is invalid: ${
+          e.message
+        }`,
       );
     }
 

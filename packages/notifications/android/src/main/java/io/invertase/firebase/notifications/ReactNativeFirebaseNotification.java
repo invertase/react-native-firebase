@@ -17,8 +17,10 @@
 package io.invertase.firebase.notifications;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -75,8 +77,14 @@ public class ReactNativeFirebaseNotification {
       notificationBuilder.setContentText(notificationBundle.getString("body"));
     }
 
-    if (notificationBundle.containsKey("channelId")) {
-      notificationBuilder.setChannelId(Objects.requireNonNull(notificationBundle.getString("channelId")));
+    if (Build.VERSION.SDK_INT >= 26) {
+      NotificationChannel notificationChannel = getNotificationManager().getNotificationChannel(channelId);
+      if (notificationChannel == null) {
+        throw new InvalidNotificationParameterException(
+          InvalidNotificationParameterException.CHANNEL_NOT_FOUND,
+          String.format("Notification channel does not exist for the specified id '%s'.", channelId)
+        );
+      }
     }
 
     // TODO get specified resource or launcher drawable (ic_launcher)
@@ -92,8 +100,6 @@ public class ReactNativeFirebaseNotification {
     if (notificationBundle.containsKey("tag")) {
       notificationTag = Objects.requireNonNull(notificationBundle.getString("tag"));
     }
-
-
 
     getNotificationManagerCompat().notify(notificationTag, notificationId.hashCode(), getNotification());
   }

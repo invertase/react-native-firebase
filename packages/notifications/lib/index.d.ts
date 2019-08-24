@@ -386,7 +386,7 @@ export namespace Notifications {
     bigTextStyle?: AndroidBigTextStyle;
 
     /**
-     * Assigns the notification to a category. Use the one which best describes the notifcation.
+     * Assigns the notification to a category. Use the one which best describes the notification.
      *
      * The category may be used by the device for ranking and filtering.
      *

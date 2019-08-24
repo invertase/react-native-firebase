@@ -23,12 +23,17 @@ import '@react-native-firebase/notifications';
 
 function Root() {
   async function init() {
+    const channel = await firebase.notifications().createChannel({
+      name: 'Hellow World',
+      channelId: 'foo3',
+    });
+
     const returnedNotification = await firebase.notifications().displayNotification({
       notificationId: Math.random().toString(10),
       title: 'Hello',
       subtitle: 'World',
-      body: 'foobarbazdaz test test',
-      channelId: 'foo2',
+      body: 'foobarbazdaz test \n test \n',
+      channelId: 'foo1',
     });
 
     console.warn(JSON.stringify(returnedNotification));
