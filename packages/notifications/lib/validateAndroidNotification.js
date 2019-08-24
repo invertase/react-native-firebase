@@ -536,6 +536,19 @@ export default function validateAndroidNotification(android) {
   }
 
   /**
+   * visibility
+   */
+  if (hasOwnProperty(android, 'visibility')) {
+    if (!Object.values(AndroidVisibility).includes(android.visibility)) {
+      throw new Error(
+        "'notification.android.visibility' expected a valid AndroidVisibility value.",
+      );
+    }
+
+    out.visibility = android.visibility;
+  }
+
+  /**
    * when
    */
   if (hasOwnProperty(android, 'when')) {
