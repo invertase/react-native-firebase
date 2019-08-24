@@ -66,6 +66,7 @@ export namespace Notifications {
     AndroidDefaults: AndroidDefaults;
     AndroidImportance: AndroidImportance;
     AndroidColor: typeof AndroidColor;
+    AndroidStyle: AndroidStyle;
   }
 
   /**
@@ -329,61 +330,6 @@ export namespace Notifications {
       | AndroidBadgeIconType.NONE
       | AndroidBadgeIconType.SMALL
       | AndroidBadgeIconType.LARGE;
-
-    /**
-     * Notifications can show a large image when expanded, which is useful for apps with a heavy media
-     * focus, such as Instagram.
-     *
-     * ![Big Picture Style](https://developer.android.com/images/ui/notifications/template-image_2x.png)
-     *
-     * #### Example
-     *
-     * ```js
-     * const notification = {
-     *   body: 'Hello World!',
-     *   android: {
-     *     bigPictureStyle: {
-     *       picture: 'https://cdn.com/large-image.jpg',
-     *       largeIcon: 'icon_large',
-     *       contentTitle: 'New post',
-     *       summaryText: 'A beautiful image',
-     *     },
-     *   },
-     * };
-     *
-     * await firebase.notifications().displayNotification(notification);
-     * ```
-     *
-     * > Setting a bigPictureStyle and bigTextStyle is not supported and will throw an error.
-     */
-    bigPictureStyle?: AndroidBigPictureStyle;
-
-    /**
-     * Notifications can show a large amount of text when expanded, for example when displaying new
-     * messages.
-     *
-     * By default, messages are not expanded, causing any overflowing notification `body` next to be
-     * truncated. Setting a `bigTextStyle` allows the notification to be expandable showing the full
-     * text body.
-     *
-     * ![Big Text Style](https://developer.android.com/images/ui/notifications/template-large-text_2x.png)
-     *
-     * #### Example
-     *
-     * ```js
-     * const notification = {
-     *   body: 'Congratulations...',
-     *   android: {
-     *     bigTextStyle: {
-     *       text: 'Congratulations you have won a prize.',
-     *     },
-     *   },
-     * };
-     *
-     * await firebase.notifications().displayNotification(notification);
-     * ```
-     */
-    bigTextStyle?: AndroidBigTextStyle;
 
     /**
      * Assigns the notification to a category. Use the one which best describes the notification.
@@ -729,14 +675,19 @@ export namespace Notifications {
     /**
      * The small icon for the notification.
      *
-     * ![Small Icon](https://prismic-io.s3.amazonaws.com/invertase%2F566dd0e6-99bc-4e58-82c1-755f0225ec0b_new+project+%2820%29.jpg)
+     * To set custom small icon levels (e.g. for battery levels), see below.
      *
-     * TODO launcher/custom URL
+     * ![Small Icon](https://prismic-io.s3.amazonaws.com/invertase%2F566dd0e6-99bc-4e58-82c1-755f0225ec0b_new+project+%2820%29.jpg)
      */
     smallIcon?: string;
 
     /**
-     * TODO document me, name, level
+     * The small icon for the notification with various levels.
+     *
+     * Icon levels can be used to show different icons. For example if displaying a notification about the
+     * device battery level, 4 different levels can be defined (4 = full battery icon, 1 = low battery icon).
+     *
+     * TODO @ehesp guide on how to set levels
      */
     smallIcon?: [string, number];
 
@@ -749,6 +700,31 @@ export namespace Notifications {
      * If a `group` has been set, the sort key can also be used to order members of a notification group.
      */
     sortKey?: string;
+
+    /**
+     * Styled notifications provide users with more informative content and additional functionality.
+     * The current supported formats are:
+     *
+     * 1. **Big Picture Style**: Shows a large picture when expanded. See `AndroidBigPictureStyle` for more information and examples.
+     * 2. **Big Text Style**: Shows a large volume of text when expanded. See `AndroidBigTextStyle` for more information and examples.
+     *
+     * #### Example - Big Text Style
+     *
+     * TODO better example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   body: 'Congratulations you have won a prize...',
+     *   android: {
+     *     style: {
+     *       type: firebase.notifications.AndroidStyle.BIGTEXT,
+     *       text: 'Congratulations you have won a prize. To claim the prize please login to your account...'
+     *     }
+     *   },
+     * });
+     * ```
+     **/
+    style?: AndroidBigPictureStyle | AndroidBigTextStyle;
 
     /**
      * A ticker is used for accessibility purposes for devices with accessibility services enabled. Text passed
@@ -807,7 +783,7 @@ export namespace Notifications {
     vibrate?: boolean;
 
     /**
-     * The vibrate pattern in milliseconds.
+     * The vibrate pattern in milliseconds. Must be an even amount of numbers.
      *
      * #### Example
      *
@@ -891,23 +867,66 @@ export namespace Notifications {
     UNMUTE: 7;
   }
 
+  /**
+   *
+   */
   export interface AndroidBadgeIconType {
     NONE: 0;
     SMALL: 1;
     LARGE: 2;
   }
 
-  export interface AndroidBigPictureStyle {
-    picture: string;
-    largeIcon?: string;
-    contentTitle?: string;
-    summaryText?: string;
+  /**
+   * Available Android Notification Styles.
+   *
+   * Used when providing a `style` to a notification builder with `displayNotification`.
+   */
+  export interface AndroidStyle {
+    BIGPICTURE: 0;
+    BIGTEXT: 1;
   }
 
+  /**
+   * Notifications can show a large image when expanded, which is useful for apps with a heavy media
+   * focus, such as Instagram.
+   *
+   * ![Big Picture Style](https://developer.android.com/images/ui/notifications/template-image_2x.png)
+   *
+   * #### Example
+   *
+   * ```js
+   * TODO example
+   * ```
+   */
+  export interface AndroidBigPictureStyle {
+    type: AndroidStyle.BIGPICTURE;
+    picture: string;
+    title?: string;
+    largeIcon?: string;
+    summary?: string;
+  }
+
+  /**
+   * Notifications can show a large amount of text when expanded, for example when displaying new
+   * messages.
+   *
+   * By default, messages are not expanded, causing any overflowing notification `body` next to be
+   * truncated. Setting a `bigTextStyle` allows the notification to be expandable showing the full
+   * text body.
+   *
+   * ![Big Text Style](https://developer.android.com/images/ui/notifications/template-large-text_2x.png)
+   *
+   * #### Example
+   *
+   * ```js
+   * TODO example
+   * ```
+   */
   export interface AndroidBigTextStyle {
+    type: AndroidStyle.BIGTEXT;
     text: string;
-    contentTitle?: string;
-    summaryText?: string;
+    title?: string;
+    summary?: string;
   }
 
   export interface AndroidCategory {
@@ -929,6 +948,9 @@ export namespace Notifications {
     TRANSPORT: 'transport';
   }
 
+  /**
+   * A set or predefined colors which can be used with Android Notifications.
+   */
   export enum AndroidColor {
     RED = 'red',
     BLUE = 'blue',
@@ -986,18 +1008,98 @@ export namespace Notifications {
     NONE: 0;
   }
 
+  /**
+   * Interface for defining the progress of an Android Notification.
+   *
+   * A notification can show current progress of a task. The progress state can either be fixed or
+   * indeterminate (unknown).
+   *
+   * #### Example - Fixed Progress
+   *
+   * ![Fixed Progress](https://miro.medium.com/max/480/1*OHOY45cU27NaYkF0MU3hrw.gif)
+   *
+   * ```js
+   * await notification.displayNotification({
+   *   android: {
+   *     progress: {
+   *       max: 10,
+   *       current: 5,
+   *     }
+   *   },
+   * });
+   * ```
+   *
+   * #### Example - Indeterminate Progress
+   *
+   * Setting `indeterminate` to `true` overrides the `max`/`current` settings.
+   *
+   * ![Progress](https://miro.medium.com/max/480/1*mW-_3PUxAG1unAZOf0IuoQ.gif)
+   *
+   * ```js
+   * await notification.displayNotification({
+   *   android: {
+   *     progress: {
+   *       max: 10,
+   *       current: 5,
+   *       indeterminate: true,
+   *     }
+   *   },
+   * });
+   * ```
+   */
   export interface AndroidProgress {
+    /**
+     * The maximum progress number. E.g `10`.
+     *
+     * Must be greater than the `current` value.
+     */
     max: number;
-    progress: number;
+
+    /**
+     * The current progress.
+     *
+     * E.g. setting to `4` with a `max` value of `10` would set a fixed progress bar on the notification at 40% complete.
+     */
+    current: number;
+
+    /**
+     * If `true`, overrides the `max` and `current` values and displays an unknown progress style. Useful when you have no
+     * knowledge of a tasks completion state.
+     *
+     * Defaults to `false`.
+     */
     indeterminate?: boolean;
   }
 
+  /**
+   * Interface used to define the visibility of an Android notification.
+   *
+   * Use with the `visibility` property on the notification.
+   *
+   * Default value is `AndroidVisibility.PRIVATE`.
+   */
   export interface AndroidVisibility {
+    /**
+     * Show the notification on all lockscreens, but conceal sensitive or private information on secure lockscreens.
+     */
     PRIVATE: 0;
+
+    /**
+     * Show this notification in its entirety on all lockscreens.
+     */
     PUBLIC: 1;
+
+    /**
+     * Do not reveal any part of this notification on a secure lockscreen.
+     *
+     * Useful for notifications showing sensitive information such as banking apps.
+     */
     SECRET: -1;
   }
 
+  /**
+   * Interface used when defining the `repeatInterval` on a scheduled notification.
+   */
   export interface AndroidRepeatInterval {
     MINUTE: 'minute';
     HOUR: 'hour';
@@ -1005,6 +1107,9 @@ export namespace Notifications {
     WEEK: 'week';
   }
 
+  /**
+   * TODO
+   */
   export interface NotificationObserver {}
 
   export interface Schedule {
@@ -1063,7 +1168,6 @@ export namespace Notifications {
   export interface AndroidChannel {
     channelId: string;
     name: string;
-    allowBubbles?: boolean; // todo not in v5
     bypassDnd?: boolean;
     description?: string;
     enableLights?: boolean;
@@ -1076,13 +1180,13 @@ export namespace Notifications {
       | AndroidImportance.MAX
       | AndroidImportance.MIN
       | AndroidImportance.NONE;
-    lightColor?: string;
+    lightColor?: AndroidColor | string;
     lockscreenVisibility?:
       | AndroidVisibility.PRIVATE
       | AndroidVisibility.PUBLIC
       | AndroidVisibility.SECRET;
     showBadge?: boolean;
-    sound?: string; // audio attributes?
+    sensitive?: string; // audio attributes?
     vibrationPattern?: number[];
   }
 
@@ -1124,6 +1228,14 @@ export namespace Notifications {
     deleteChannelGroup(channelGroupId: string): Promise<void>;
 
     displayNotification(notification: Notification): Promise<void>;
+
+    getChannel(channelId: string): Promise<AndroidChannel | null>;
+
+    getChannels(): Promise<AndroidChannel[]>;
+
+    getChannelGroup(channelGroupId: string): Promise<AndroidChannelGroup | null>;
+
+    getChannelGroups(): Promise<AndroidChannelGroup[]>;
 
     // todo null if no badge?
     getBadge(): Promise<number | null>;

@@ -43,8 +43,7 @@ export function isValidColor(color) {
  * @returns {boolean}
  */
 export function isValidTimestamp(timestamp) {
-  const now = Date.now();
-  return timestamp <= now;
+  return timestamp > 0;
 }
 
 /**
@@ -71,8 +70,8 @@ export function isValidLightPattern(pattern) {
   if (!isValidColor(color)) return [false, 'color'];
   if (!isNumber(onMs)) return [false, 'onMs'];
   if (!isNumber(offMs)) return [false, 'offMs'];
-  if (onMs <= 0) return [false, 'onMs'];
-  if (offMs <= 0) return [false, 'offMs'];
+  if (onMs < 1) return [false, 'onMs'];
+  if (offMs < 1) return [false, 'offMs'];
 
   return [true];
 }

@@ -72,16 +72,16 @@ export default function validateAndroidChannel(channel) {
     lockscreenVisibility: AndroidVisibility.PRIVATE,
   };
 
-  /**
-   * allowBubbles
-   */
-  if (hasOwnProperty(channel, 'allowBubbles')) {
-    if (!isBoolean(channel.allowBubbles)) {
-      throw new Error("'channel.allowBubbles' expected a boolean value.");
-    }
-
-    out.allowBubbles = channel.allowBubbles;
-  }
+  // /**
+  //  * allowBubbles
+  //  */
+  // if (hasOwnProperty(channel, 'allowBubbles')) {
+  //   if (!isBoolean(channel.allowBubbles)) {
+  //     throw new Error("'channel.allowBubbles' expected a boolean value.");
+  //   }
+  //
+  //   out.allowBubbles = channel.allowBubbles;
+  // }
 
   /**
    * bypassDnd
@@ -142,14 +142,7 @@ export default function validateAndroidChannel(channel) {
    * importance
    */
   if (hasOwnProperty(channel, 'importance')) {
-    if(
-      channel.importance !== AndroidImportance.DEFAULT ||
-      channel.importance !== AndroidImportance.HIGH ||
-      channel.importance !== AndroidImportance.LOW ||
-      channel.importance !== AndroidImportance.MAX ||
-      channel.importance !== AndroidImportance.MIN ||
-      channel.importance !== AndroidImportance.NONE
-    ) {
+    if (!Object.values(AndroidImportance).includes(channel.importance)) {
       throw new Error("'channel.importance' expected an AndroidImportance value.");
     }
 
@@ -175,11 +168,7 @@ export default function validateAndroidChannel(channel) {
    * lockscreenVisibility
    */
   if (hasOwnProperty(channel, 'lockscreenVisibility')) {
-    if (
-      channel.lockscreenVisibility !== AndroidVisibility.PRIVATE ||
-      channel.lockscreenVisibility !== AndroidVisibility.PUBLIC ||
-      channel.lockscreenVisibility !== AndroidVisibility.SECRET
-    ) {
+    if (!Object.values(AndroidVisibility).includes(channel.lockscreenVisibility)) {
       throw new Error("'channel.lockscreenVisibility' expected visibility to be an AndroidVisibility value.")
     }
 
@@ -221,7 +210,7 @@ export default function validateAndroidChannel(channel) {
     }
 
     if (!isValidVibratePattern(channel.vibrationPattern)) {
-      throw new Error("'channel.vibratePattern' expected an array containing an even number of positive values.");
+      throw new Error("'channel.vibrationPattern' expected an array containing an even number of positive values.");
     }
 
     out.vibrationPattern = channel.vibrationPattern;

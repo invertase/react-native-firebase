@@ -446,6 +446,10 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.5.0)
     - React
     - RNFBApp
+  - RNFBNotifications (0.2.3):
+    - Firebase/Core (~> 6.5.0)
+    - React
+    - RNFBApp
   - RNFBPerf (0.2.3):
     - Firebase/Core (~> 6.5.0)
     - Firebase/Performance (~> 6.5.0)
@@ -504,6 +508,7 @@ DEPENDENCIES:
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging/ios`)"
   - "RNFBMLNaturalLanguage (from `../node_modules/@react-native-firebase/ml-natural-language/ios`)"
   - "RNFBMLVision (from `../node_modules/@react-native-firebase/ml-vision/ios`)"
+  - "RNFBNotifications (from `../node_modules/@react-native-firebase/notifications/ios`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - "RNFBRemoteConfig (from `../node_modules/@react-native-firebase/remote-config/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
@@ -630,6 +635,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/ml-natural-language/ios"
   RNFBMLVision:
     :path: "../node_modules/@react-native-firebase/ml-vision/ios"
+  RNFBNotifications:
+    :path: "../node_modules/@react-native-firebase/notifications/ios"
   RNFBPerf:
     :path: "../node_modules/@react-native-firebase/perf/ios"
   RNFBRemoteConfig:
@@ -722,6 +729,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: d02caf8e2afee38b508595b645b95addf9c2f406
   RNFBMLNaturalLanguage: 28038b1e75e54d7344737c92752f18c74cc170d8
   RNFBMLVision: 973be5f17126dc4c01a1eb591242ef91e2114791
+  RNFBNotifications: 98dcab9840b9a3178a0e37bc8605d3ff94856512
   RNFBPerf: 47d1afb0c25cc4987dd979d463b5a25dbb81ecbb
   RNFBRemoteConfig: e62acf099b0e1026a6cc085006c8415022b8e6ac
   RNFBStorage: fd285de854aca892a13126a6cb491376f33a4bb7

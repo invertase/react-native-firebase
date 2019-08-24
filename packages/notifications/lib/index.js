@@ -34,6 +34,7 @@ import {
 import validateNotification from './validateNotification';
 import validateSchedule from './validateSchedule';
 import validateAndroidChannel from './validateAndroidChannel';
+import validateAndroidChannelGroup from './validateAndroidChannelGroup';
 
 import AndroidBadgeIconType from './AndroidBadgeIconType';
 import AndroidCategory from './AndroidCategory';
@@ -44,7 +45,7 @@ import AndroidRepeatInterval from './AndroidRepeatInterval';
 import AndroidDefaults from './AndroidDefaults';
 import AndroidImportance from './AndroidImportance';
 import AndroidColor from './AndroidColor';
-import { validateAndroidChannelGroup } from './validateAndroidChannelGroup';
+import AndroidStyle from './AndroidStyle';
 
 const statics = {
   AndroidBadgeIconType,
@@ -56,6 +57,7 @@ const statics = {
   AndroidDefaults,
   AndroidImportance,
   AndroidColor,
+  AndroidStyle,
 };
 
 const namespace = 'notifications';
@@ -201,6 +203,50 @@ class FirebaseNotificationsModule extends FirebaseModule {
     return this.native.getBadge();
   }
 
+  getChannel(channelId) {
+    if (!isString(channelId)) {
+      throw new Error(
+        "firebase.notifications().getChannel(*) 'channelId' expected a string value.",
+      );
+    }
+
+    if (isIOS) {
+      return Promise.resolve(null);
+    }
+
+    return this.native.getChannel(channelId);
+  }
+
+  getChannels() {
+    if (isIOS) {
+      return Promise.resolve([]);
+    }
+
+    return this.native.getChannels();
+  }
+
+  getChannelGroup(channelGroupId) {
+    if (!isString(channelGroupId)) {
+      throw new Error(
+        "firebase.notifications().getChannelGroup(*) 'channelGroupId' expected a string value.",
+      );
+    }
+
+    if (isIOS) {
+      return Promise.resolve(null);
+    }
+
+    return this.native.getChannelGroup(channelGroupId);
+  }
+
+  getChannelGroups() {
+    if (isIOS) {
+      return Promise.resolve([]);
+    }
+
+    return this.native.getChannelGroups();
+  }
+
   getInitialNotification() {
     return this.native.getInitialNotification();
   }
@@ -311,3 +357,4 @@ export AndroidRepeatInterval from './AndroidRepeatInterval';
 export AndroidDefaults from './AndroidDefaults';
 export AndroidImportance from './AndroidImportance';
 export AndroidColor from './AndroidColor';
+export AndroidStyle from './AndroidStyle';

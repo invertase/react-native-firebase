@@ -19,7 +19,8 @@ let validate;
 
 describe('notifications() Notification', () => {
   before(() => {
-    validate = jet.require('packages/notifications/lib/validateAndroidChannelGroup');
+    validate = jet.require('../packages/notifications/lib/validateAndroidChannelGroup.js');
+    console.log(validate);
   });
 
   it('throws if not an object', () => {
@@ -52,7 +53,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'group.channelGroupId' expected a valid is string");
+        e.message.should.containEql("'group.channelGroupId' expected a string value");
         return Promise.resolve();
       }
     });
@@ -80,7 +81,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'group.name' expected a valid channel name");
+        e.message.should.containEql("'group.name' expected a string value");
         return Promise.resolve();
       }
     });

@@ -19,8 +19,7 @@ let validate;
 
 describe('notifications() Notification', () => {
   before(() => {
-    const func = jet.require('packages/notifications/lib/validateAndroidNotification');
-    validate = android => func({ body: 'foo', android });
+    validate = jet.require('packages/notifications/lib/validateAndroidNotification');
   });
 
   it('uses default values', () => {
@@ -42,7 +41,8 @@ describe('notifications() Notification', () => {
       visibility: firebase.notifications.AndroidVisibility.PRIVATE,
     });
 
-    jet.contextify(v.android).should.eql(expected);
+    const actual = jet.contextify(v);
+    actual.should.eql(expected);
   });
 
   it('throws if not an object', () => {
@@ -72,7 +72,7 @@ describe('notifications() Notification', () => {
 
     it('sets a autoCancel value', () => {
       const v = validate({ autoCancel: false });
-      v.android.autoCancel.should.be.eql(false);
+      v.autoCancel.should.be.eql(false);
     });
   });
 
@@ -91,218 +91,7 @@ describe('notifications() Notification', () => {
 
     it('sets a badgeIconType value', () => {
       const v = validate({ badgeIconType: firebase.notifications.AndroidBadgeIconType.LARGE });
-      v.android.badgeIconType.should.be.eql(firebase.notifications.AndroidBadgeIconType.LARGE);
-    });
-  });
-
-  describe('bigPictureStyle', () => {
-    it('throws if not an object', () => {
-      try {
-        validate({ bigPictureStyle: 'icon' });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle' expected an object value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if picture is not a string', () => {
-      try {
-        validate({ bigPictureStyle: { picture: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle.picture' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if picture is not a valid string', () => {
-      try {
-        validate({ bigPictureStyle: { picture: '' } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle.picture' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a picture value', () => {
-      const v = validate({ bigPictureStyle: { picture: 'foo' } });
-      v.android.bigPictureStyle.picture.should.eql('foo');
-      Object.keys(v.android.bigPictureStyle).length.should.be.eql(1);
-    });
-
-    it('throws if largeIcon is not a valid string', () => {
-      try {
-        validate({ bigPictureStyle: { picture: 'foo', largeIcon: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle.largeIcon' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a largeIcon value', () => {
-      const v = validate({ bigPictureStyle: { picture: 'foo', largeIcon: 'bar' } });
-      v.android.bigPictureStyle.picture.should.eql('foo');
-      v.android.bigPictureStyle.largeIcon.should.eql('bar');
-      Object.keys(v.android.bigPictureStyle).length.should.be.eql(2);
-    });
-
-    it('throws if contentTitle is not a valid string', () => {
-      try {
-        validate({ bigPictureStyle: { picture: 'foo', contentTitle: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle.contentTitle' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a contentTitle value', () => {
-      const v = validate({ bigPictureStyle: { picture: 'foo', contentTitle: 'bar' } });
-      v.android.bigPictureStyle.picture.should.eql('foo');
-      v.android.bigPictureStyle.contentTitle.should.eql('bar');
-      Object.keys(v.android.bigPictureStyle).length.should.be.eql(2);
-    });
-
-    it('throws if summaryText is not a valid string', () => {
-      try {
-        validate({ bigPictureStyle: { picture: 'foo', summaryText: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigPictureStyle.summaryText' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a summaryText value', () => {
-      const v = validate({ bigPictureStyle: { picture: 'foo', summaryText: 'bar' } });
-      v.android.bigPictureStyle.picture.should.eql('foo');
-      v.android.bigPictureStyle.summaryText.should.eql('bar');
-      Object.keys(v.android.bigPictureStyle).length.should.be.eql(2);
-    });
-
-    it('sets all values', () => {
-      const v = validate({
-        bigPictureStyle: {
-          picture: 'foo',
-          largeIcon: 'bar',
-          contentTitle: 'baz',
-          summaryText: 'dave',
-        },
-      });
-      v.android.bigPictureStyle.picture.should.eql('foo');
-      v.android.bigPictureStyle.largeIcon.should.eql('bar');
-      v.android.bigPictureStyle.contentTitle.should.eql('baz');
-      v.android.bigPictureStyle.summaryText.should.eql('dave');
-      Object.keys(v.android.bigPictureStyle).length.should.be.eql(4);
-    });
-  });
-
-  describe('bigTextStyle', () => {
-    it('throws if not an object', () => {
-      try {
-        validate({ bigTextStyle: 'icon' });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql("'notification.android.bigTextStyle' expected an object value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if text is not a string', () => {
-      try {
-        validate({ bigTextStyle: { text: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigTextStyle.text' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if text is not a valid string', () => {
-      try {
-        validate({ bigTextStyle: { text: '' } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigTextStyle.text' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a text value', () => {
-      const v = validate({ bigTextStyle: { text: 'foo' } });
-      v.android.bigTextStyle.text.should.eql('foo');
-      Object.keys(v.android.bigTextStyle).length.should.be.eql(1);
-    });
-
-    it('throws if contentTitle is not a valid string', () => {
-      try {
-        validate({ bigTextStyle: { text: 'foo', contentTitle: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigTextStyle.contentTitle' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a contentTitle value', () => {
-      const v = validate({ bigTextStyle: { text: 'foo', contentTitle: 'baz' } });
-      v.android.bigTextStyle.text.should.eql('foo');
-      v.android.bigTextStyle.contentTitle.should.eql('baz');
-      Object.keys(v.android.bigTextStyle).length.should.be.eql(2);
-    });
-
-    it('throws if summaryText is not a valid string', () => {
-      try {
-        validate({ bigTextStyle: { text: 'foo', summaryText: 123 } });
-        return Promise.reject(new Error('Did not throw Error'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.bigTextStyle.summaryText' expected a string value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('sets a summaryText value', () => {
-      const v = validate({ bigTextStyle: { text: 'foo', summaryText: 'baz' } });
-      v.android.bigTextStyle.text.should.eql('foo');
-      v.android.bigTextStyle.summaryText.should.eql('baz');
-      Object.keys(v.android.bigTextStyle).length.should.be.eql(2);
-    });
-
-    it('sets all values', () => {
-      const v = validate({
-        bigTextStyle: {
-          text: 'foo',
-          contentTitle: 'baz',
-          summaryText: 'baz',
-        },
-      });
-      v.android.bigTextStyle.text.should.eql('foo');
-      v.android.bigTextStyle.contentTitle.should.eql('bar');
-      v.android.bigTextStyle.summaryText.should.eql('baz');
-      Object.keys(v.android.bigTextStyle).length.should.be.eql(3);
+      v.badgeIconType.should.be.eql(firebase.notifications.AndroidBadgeIconType.LARGE);
     });
   });
 
@@ -321,7 +110,7 @@ describe('notifications() Notification', () => {
 
     it('sets a category', () => {
       const v = validate({ category: firebase.notifications.AndroidCategory.EMAIL });
-      v.android.category.should.eql(firebase.notifications.AndroidCategory.EMAIL);
+      v.category.should.eql(firebase.notifications.AndroidCategory.EMAIL);
     });
   });
 
@@ -338,7 +127,7 @@ describe('notifications() Notification', () => {
 
     it('sets a channelId', () => {
       const v = validate({ channelId: 'foobar' });
-      v.android.channelId.should.eql('foobar');
+      v.channelId.should.eql('foobar');
     });
   });
 
@@ -355,7 +144,7 @@ describe('notifications() Notification', () => {
 
     it('sets a clickAction', () => {
       const v = validate({ clickAction: 'foobar' });
-      v.android.clickAction.should.eql('foobar');
+      v.clickAction.should.eql('foobar');
     });
   });
 
@@ -385,9 +174,9 @@ describe('notifications() Notification', () => {
       const v2 = validate({ color: '#ffffff' });
       const v3 = validate({ color: '#80ffffff' });
 
-      v1.android.color.should.eql(firebase.notifications.AndroidColor.GREEN);
-      v1.android.color.should.eql('#ffffff');
-      v1.android.color.should.eql('#80ffffff');
+      v1.color.should.eql(firebase.notifications.AndroidColor.GREEN);
+      v2.color.should.eql('#ffffff');
+      v3.color.should.eql('#80ffffff');
     });
   });
 
@@ -404,7 +193,7 @@ describe('notifications() Notification', () => {
 
     it('sets colorized', () => {
       const v = validate({ colorized: true });
-      v.android.colorized.should.eql(true);
+      v.colorized.should.eql(true);
     });
   });
 
@@ -421,7 +210,7 @@ describe('notifications() Notification', () => {
 
     it('sets contentInfo value', () => {
       const v = validate({ contentInfo: 'foo bar' });
-      v.android.contentInfo.should.eql('foo bar');
+      v.contentInfo.should.eql('foo bar');
     });
   });
 
@@ -473,10 +262,10 @@ describe('notifications() Notification', () => {
           firebase.notifications.AndroidDefaults.VIBRATE,
         ],
       });
-      v.android.defaults.should.be.Array();
-      v.android.defaults.length.should.eql(2);
-      v.android.defaults[0].should.eql(firebase.notifications.AndroidDefaults.SOUND);
-      v.android.defaults[1].should.eql(firebase.notifications.AndroidDefaults.VIBRATE);
+      v.defaults.should.be.Array();
+      v.defaults.length.should.eql(2);
+      v.defaults[0].should.eql(firebase.notifications.AndroidDefaults.SOUND);
+      v.defaults[1].should.eql(firebase.notifications.AndroidDefaults.VIBRATE);
     });
   });
 
@@ -493,7 +282,7 @@ describe('notifications() Notification', () => {
 
     it('sets a group', () => {
       const v = validate({ group: 'foobar' });
-      v.android.group.should.eql('foobar');
+      v.group.should.eql('foobar');
     });
   });
 
@@ -514,9 +303,7 @@ describe('notifications() Notification', () => {
       const v = validate({
         groupAlertBehaviour: firebase.notifications.AndroidGroupAlertBehavior.SUMMARY,
       });
-      v.android.groupAlertBehaviour.should.eql(
-        firebase.notifications.AndroidGroupAlertBehavior.SUMMARY,
-      );
+      v.groupAlertBehaviour.should.eql(firebase.notifications.AndroidGroupAlertBehavior.SUMMARY);
     });
   });
 
@@ -533,7 +320,7 @@ describe('notifications() Notification', () => {
 
     it('sets groupSummary', () => {
       const v = validate({ groupSummary: true });
-      v.android.groupSummary.should.eql(true);
+      v.groupSummary.should.eql(true);
     });
   });
 
@@ -553,16 +340,14 @@ describe('notifications() Notification', () => {
         validate({ largeIcon: '' });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.largeIcon' expected a valid string value",
-        );
+        e.message.should.containEql("'notification.android.largeIcon' expected a string value");
         return Promise.resolve();
       }
     });
 
     it('sets largeIcon', () => {
       const v = validate({ largeIcon: 'foobar' });
-      v.android.largeIcon.should.eql('foobar');
+      v.largeIcon.should.eql('foobar');
     });
   });
 
@@ -593,7 +378,7 @@ describe('notifications() Notification', () => {
 
     it('throws if onMs is invalid', () => {
       try {
-        validate({ lights: ['#ffffff', '123'] });
+        validate({ lights: ['#ffffff', '123', 100] });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
@@ -605,7 +390,7 @@ describe('notifications() Notification', () => {
 
     it('throws if onMs is less than 1', () => {
       try {
-        validate({ lights: ['#ffffff', 0] });
+        validate({ lights: ['#ffffff', 0, 100] });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
@@ -641,10 +426,10 @@ describe('notifications() Notification', () => {
 
     it('sets lights', () => {
       const v = validate({ lights: ['#ffffff', 300, 400] });
-      v.android.lights.should.be.Array();
-      v.android.lights[0].should.eql('#ffffff');
-      v.android.lights[1].should.eql(300);
-      v.android.lights[2].should.eql(400);
+      v.lights.should.be.Array();
+      v.lights[0].should.eql('#ffffff');
+      v.lights[1].should.eql(300);
+      v.lights[2].should.eql(400);
     });
   });
 
@@ -661,7 +446,7 @@ describe('notifications() Notification', () => {
 
     it('sets localOnly', () => {
       const v = validate({ localOnly: true });
-      v.android.localOnly.should.eql(true);
+      v.localOnly.should.eql(true);
     });
   });
 
@@ -678,7 +463,7 @@ describe('notifications() Notification', () => {
 
     it('sets a number', () => {
       const v = validate({ number: 1337 });
-      v.android.number.should.eql(1337);
+      v.number.should.eql(1337);
     });
   });
 
@@ -695,7 +480,7 @@ describe('notifications() Notification', () => {
 
     it('sets ongoing', () => {
       const v = validate({ ongoing: true });
-      v.android.ongoing.should.eql(true);
+      v.ongoing.should.eql(true);
     });
   });
 
@@ -714,7 +499,7 @@ describe('notifications() Notification', () => {
 
     it('sets onlyAlertOnce', () => {
       const v = validate({ onlyAlertOnce: true });
-      v.android.onlyAlertOnce.should.eql(true);
+      v.onlyAlertOnce.should.eql(true);
     });
   });
 
@@ -733,7 +518,7 @@ describe('notifications() Notification', () => {
 
     it('sets priority', () => {
       const v = validate({ priority: firebase.notifications.AndroidPriority.LOW });
-      v.android.priority.should.eql(firebase.notifications.AndroidPriority.LOW);
+      v.priority.should.eql(firebase.notifications.AndroidPriority.LOW);
     });
   });
 
@@ -803,9 +588,9 @@ describe('notifications() Notification', () => {
           current: 5,
         },
       });
-      v.android.progress.max.should.eql(10);
-      v.android.progress.current.should.eql(5);
-      v.android.progress.indeterminate.should.eql(false);
+      v.progress.max.should.eql(10);
+      v.progress.current.should.eql(5);
+      v.progress.indeterminate.should.eql(false);
     });
 
     it('throws if indeterminate is not a boolean', () => {
@@ -834,9 +619,9 @@ describe('notifications() Notification', () => {
           indeterminate: true,
         },
       });
-      v.android.progress.max.should.eql(10);
-      v.android.progress.current.should.eql(5);
-      v.android.progress.indeterminate.should.eql(true);
+      v.progress.max.should.eql(10);
+      v.progress.current.should.eql(5);
+      v.progress.indeterminate.should.eql(true);
     });
   });
 
@@ -873,10 +658,10 @@ describe('notifications() Notification', () => {
       const v = validate({
         remoteInputHistory: ['foo', 'bar'],
       });
-      v.android.remoteInputHistory.should.be.Array();
-      v.android.remoteInputHistory.length.should.eql(2);
-      v.android.remoteInputHistory[0].should.eql('foo');
-      v.android.remoteInputHistory[1].should.eql('bar');
+      v.remoteInputHistory.should.be.Array();
+      v.remoteInputHistory.length.should.eql(2);
+      v.remoteInputHistory[0].should.eql('foo');
+      v.remoteInputHistory[1].should.eql('bar');
     });
   });
 
@@ -893,7 +678,7 @@ describe('notifications() Notification', () => {
 
     it('sets shortcutId', () => {
       const v = validate({ shortcutId: 'foo' });
-      v.android.shortcutId.should.eql('foo');
+      v.shortcutId.should.eql('foo');
     });
   });
 
@@ -912,7 +697,7 @@ describe('notifications() Notification', () => {
 
     it('sets showWhenTimestamp', () => {
       const v = validate({ showWhenTimestamp: true });
-      v.android.showWhenTimestamp.should.eql(true);
+      v.showWhenTimestamp.should.eql(true);
     });
   });
 
@@ -922,14 +707,47 @@ describe('notifications() Notification', () => {
         validate({ smallIcon: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'notification.android.smallIcon' expected a string value");
+        e.message.should.containEql('expected an array containing icon with level or string value');
         return Promise.resolve();
       }
     });
 
-    it('sets smallIcon', () => {
+    it('throws if smallIcon (w/ level) is not a string', () => {
+      try {
+        validate({ smallIcon: [123] });
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'notification.android.smallIcon' expected icon to be a string",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if smallIcon level (w/ level) is not a valid number', () => {
+      try {
+        validate({ smallIcon: ['foo', -1] });
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'notification.android.smallIcon' expected level to be a positive number",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('sets smallIcon string', () => {
       const v = validate({ smallIcon: 'foo' });
-      v.android.smallIcon.should.eql('foo');
+      v.smallIcon.should.be.Array();
+      v.smallIcon[0].should.eql('foo');
+      v.smallIcon[1].should.eql(-1);
+    });
+
+    it('sets smallIcon string with level', () => {
+      const v = validate({ smallIcon: ['foo', 2] });
+      v.smallIcon.should.be.Array();
+      v.smallIcon[0].should.be.eql('foo');
+      v.smallIcon[1].should.be.eql(2);
     });
   });
 
@@ -946,14 +764,321 @@ describe('notifications() Notification', () => {
 
     it('sets sortKey', () => {
       const v = validate({ sortKey: 'foo' });
-      v.android.sortKey.should.eql('foo');
+      v.sortKey.should.eql('foo');
+    });
+  });
+
+  describe('style', () => {
+    it('throws if style is not an object', () => {
+      try {
+        validate({ style: 123 });
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (e) {
+        e.message.should.containEql("'notification.android.style' expected an object value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if style type is invalid', () => {
+      try {
+        validate({
+          style: {
+            type: 'custom',
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (e) {
+        e.message.should.containEql("'notification.android.style' style type must be one of ");
+        return Promise.resolve();
+      }
+    });
+
+    describe('BigPictureStyle', () => {
+      it('throws if picture is not a string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGPICTURE,
+              picture: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigPictureStyle: 'picture' expected a valid string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if picture is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGPICTURE,
+              picture: '',
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigPictureStyle: 'picture' expected a valid string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a picture value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGPICTURE,
+            picture: 'foo',
+          },
+        });
+        v.style.picture.should.eql('foo');
+        Object.keys(v.style).length.should.be.eql(2);
+      });
+
+      it('throws if largeIcon is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGPICTURE,
+              picture: 'foo',
+              largeIcon: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigPictureStyle: 'largeIcon' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a largeIcon value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGPICTURE,
+            picture: 'foo',
+            largeIcon: 'bar',
+          },
+        });
+        v.style.picture.should.eql('foo');
+        v.style.largeIcon.should.eql('bar');
+        Object.keys(v.style).length.should.be.eql(3);
+      });
+
+      it('throws if title is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGPICTURE,
+              picture: 'foo',
+              title: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigPictureStyle: 'title' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a title value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGPICTURE,
+            picture: 'foo',
+            title: 'bar',
+          },
+        });
+        v.style.picture.should.eql('foo');
+        v.style.title.should.eql('bar');
+        Object.keys(v.style).length.should.be.eql(3);
+      });
+
+      it('throws if summary is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGPICTURE,
+              picture: 'foo',
+              summary: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigPictureStyle: 'summary' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a summary value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGPICTURE,
+            picture: 'foo',
+            summary: 'bar',
+          },
+        });
+        v.style.picture.should.eql('foo');
+        v.style.summary.should.eql('bar');
+        Object.keys(v.style).length.should.be.eql(3);
+      });
+
+      it('sets all values', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGPICTURE,
+            picture: 'foo',
+            largeIcon: 'bar',
+            title: 'baz',
+            summary: 'dave',
+          },
+        });
+        v.style.picture.should.eql('foo');
+        v.style.largeIcon.should.eql('bar');
+        v.style.title.should.eql('baz');
+        v.style.summary.should.eql('dave');
+        Object.keys(v.style).length.should.be.eql(5);
+      });
+    });
+
+    describe('BigTextStyle', () => {
+      it('throws if text is not a string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGTEXT,
+              text: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigTextStyle: 'text' expected a valid string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if text is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGTEXT,
+              text: '',
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigTextStyle: 'text' expected a valid string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a text value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGTEXT,
+            text: 'foo',
+          },
+        });
+        v.style.text.should.eql('foo');
+        Object.keys(v.style).length.should.be.eql(2);
+      });
+
+      it('throws if title is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGTEXT,
+              text: 'foo',
+              title: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigTextStyle: 'title' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a title value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGTEXT,
+            text: 'foo',
+            title: 'baz',
+          },
+        });
+        v.style.text.should.eql('foo');
+        v.style.title.should.eql('baz');
+        Object.keys(v.style).length.should.be.eql(3);
+      });
+
+      it('throws if summary is not a valid string', () => {
+        try {
+          validate({
+            style: {
+              type: firebase.notifications.AndroidStyle.BIGTEXT,
+              text: 'foo',
+              summary: 123,
+            },
+          });
+          return Promise.reject(new Error('Did not throw Error'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'notification.android.style' BigTextStyle: 'summary' expected a string value",
+          );
+          return Promise.resolve();
+        }
+      });
+
+      it('sets a summary value', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGTEXT,
+            text: 'foo',
+            summary: 'baz',
+          },
+        });
+        v.style.text.should.eql('foo');
+        v.style.summary.should.eql('baz');
+        Object.keys(v.style).length.should.be.eql(3);
+      });
+
+      it('sets all values', () => {
+        const v = validate({
+          style: {
+            type: firebase.notifications.AndroidStyle.BIGTEXT,
+            text: 'foo',
+            title: 'bar',
+            summary: 'baz',
+          },
+        });
+        v.style.text.should.eql('foo');
+        v.style.title.should.eql('bar');
+        v.style.summary.should.eql('baz');
+        Object.keys(v.style).length.should.be.eql(4);
+      });
     });
   });
 
   describe('ticker', () => {
     it('throws if ticker is not a string', () => {
       try {
-        validate({ sortKey: 123 });
+        validate({ ticker: 123 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql("'notification.android.ticker' expected a string value");
@@ -963,7 +1088,7 @@ describe('notifications() Notification', () => {
 
     it('sets ticker', () => {
       const v = validate({ ticker: 'foo' });
-      v.android.ticker.should.eql('foo');
+      v.ticker.should.eql('foo');
     });
   });
 
@@ -980,11 +1105,11 @@ describe('notifications() Notification', () => {
 
     it('throws if timestamp is invalid', () => {
       try {
-        validate({ timeoutAfter: Date.now() - 1000 });
+        validate({ timeoutAfter: -1000 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          "'notification.android.timeoutAfter' invalid millisecond timestamp, date must be in the future",
+          "'notification.android.timeoutAfter' invalid millisecond timestamp",
         );
         return Promise.resolve();
       }
@@ -993,7 +1118,7 @@ describe('notifications() Notification', () => {
     it('sets timeoutAfter', () => {
       const future = Date.now() + 10000;
       const v = validate({ timeoutAfter: future });
-      v.android.ticker.should.eql(future);
+      v.timeoutAfter.should.eql(future);
     });
   });
 
@@ -1012,7 +1137,7 @@ describe('notifications() Notification', () => {
 
     it('sets usesChronometer', () => {
       const v = validate({ usesChronometer: true });
-      v.android.usesChronometer.should.eql(true);
+      v.usesChronometer.should.eql(true);
     });
   });
 
@@ -1029,18 +1154,18 @@ describe('notifications() Notification', () => {
 
     it('sets vibrate', () => {
       const v = validate({ vibrate: false });
-      v.android.usesChronometer.should.eql(false);
+      v.usesChronometer.should.eql(false);
     });
   });
 
-  describe('vibratePattern', () => {
-    it('throws if vibratePattern is not an array', () => {
+  describe('vibrationPattern', () => {
+    it('throws if vibrationPattern is not an array', () => {
       try {
-        validate({ vibratePattern: 'true' });
+        validate({ vibrationPattern: 'true' });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          "'notification.android.vibratePattern' expected an array containing positive number values",
+          "'notification.android.vibrationPattern' expected an array containing an even number of positive values",
         );
         return Promise.resolve();
       }
@@ -1048,46 +1173,46 @@ describe('notifications() Notification', () => {
 
     it('throws if vibratePattern does not have valid length', () => {
       try {
-        validate({ vibratePattern: [100, 200, 100] });
+        validate({ vibrationPattern: [100, 200, 100] });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          "'notification.android.vibratePattern' expected an array containing positive number values",
+          "'notification.android.vibrationPattern' expected an array containing an even number of positive values",
         );
         return Promise.resolve();
       }
     });
 
-    it('throws if vibratePattern does not have valid values', () => {
+    it('throws if vibrationPattern does not have valid values', () => {
       try {
-        validate({ vibratePattern: [100, '200'] });
+        validate({ vibrationPattern: [100, '200'] });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          "'notification.android.vibratePattern' expected an array containing positive number values",
+          "'notification.android.vibrationPattern' expected an array containing an even number of positive values",
         );
         return Promise.resolve();
       }
     });
 
-    it('throws if vibratePattern value is less than 1', () => {
+    it('throws if vibrationPattern value is less than 1', () => {
       try {
-        validate({ vibratePattern: [100, 0] });
+        validate({ vibrationPattern: [100, 0] });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          "'notification.android.vibratePattern' expected an array containing positive number values",
+          "'notification.android.vibrationPattern' expected an array containing an even number of positive values",
         );
         return Promise.resolve();
       }
     });
 
-    it('sets vibratePattern', () => {
-      const v = validate({ vibratePattern: [100, 200] });
-      v.android.vibratePattern.should.be.Array();
-      v.android.vibratePattern.length.should.eql(2);
-      v.android.vibratePattern[0].should.be.eql(100);
-      v.android.vibratePattern[1].should.be.eql(200);
+    it('sets vibrationPattern', () => {
+      const v = validate({ vibrationPattern: [100, 200] });
+      v.vibrationPattern.should.be.Array();
+      v.vibrationPattern.length.should.eql(2);
+      v.vibrationPattern[0].should.be.eql(100);
+      v.vibrationPattern[1].should.be.eql(200);
     });
   });
 
@@ -1104,12 +1229,10 @@ describe('notifications() Notification', () => {
 
     it('throws if when is not a valid timestamp', () => {
       try {
-        validate({ when: Date.now() - 2000 });
+        validate({ when: -2000 });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'notification.android.when' invalid millisecond timestamp, date must be in the future",
-        );
+        e.message.should.containEql("'notification.android.when' invalid millisecond timestamp");
         return Promise.resolve();
       }
     });
@@ -1117,7 +1240,7 @@ describe('notifications() Notification', () => {
     it('sets when', () => {
       const future = Date.now() + 10000;
       const v = validate({ when: future });
-      v.android.when.should.eql(future);
+      v.when.should.eql(future);
     });
   });
 });

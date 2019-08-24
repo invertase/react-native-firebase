@@ -71,7 +71,7 @@ describe('notifications() Notification', () => {
       const v = validate({
         body: 'foo bar',
       });
-      v.notificationId.should.be.eql('foo bar');
+      v.body.should.be.eql('foo bar');
     });
   });
 
@@ -204,7 +204,27 @@ describe('notifications() Notification', () => {
   });
 
   describe('sound', () => {
-    // todo
+    it('throws if not a string', () => {
+      try {
+        validate({
+          body: 'foo',
+          sound: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (e) {
+        e.message.should.containEql("'notification.sound' expected a string value");
+        return Promise.resolve();
+      }
+    });
+
+    it('sets sound', () => {
+      const v = validate({
+        body: 'foo',
+        sound: 'fart',
+      });
+
+      v.sound.should.eql('fart');
+    });
   });
 
   // Has own validation tests
@@ -222,7 +242,7 @@ describe('notifications() Notification', () => {
   });
 
   // Has own validation tests
-  describe('ios', () => {
+  xdescribe('ios', () => {
     // todo
   });
 });

@@ -21,7 +21,7 @@ import {
   isString,
 } from '@react-native-firebase/app/lib/common';
 
-export function validateAndroidChannelGroup(group) {
+export default function validateAndroidChannelGroup(group) {
   if (!isObject(group)) {
     throw new Error("'group' expected an object value.");
   }
@@ -29,25 +29,15 @@ export function validateAndroidChannelGroup(group) {
   /**
    * channelGroupId
    */
-  if (!isString(group.channelGroupId)) {
+  if (!isString(group.channelGroupId) || !group.channelGroupId) {
     throw new Error("'group.channelGroupId' expected a string value.");
-  }
-
-  // empty check
-  if (!group.channelGroupId) {
-    throw new Error("'group.channelGroupId' expected a valid id string.");
   }
 
   /**
    * name
    */
-  if (!isString(group.name)) {
+  if (!isString(group.name) || !group.name) {
     throw new Error("'group.name' expected a string value.");
-  }
-
-  // empty check
-  if (!group.name) {
-    throw new Error("'group.name' expected a valid channel name.");
   }
 
   /**

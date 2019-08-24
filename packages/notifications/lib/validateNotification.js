@@ -109,7 +109,12 @@ export default function validateNotification(notification) {
   }
 
   if (hasOwnProperty(notification, 'sound')) {
-    // todo
+    if (!isString(notification.sound)) {
+      throw new Error("'notification.sound' expected a string value.");
+    }
+
+
+    out.sound = notification.sound;
   }
 
   /**
