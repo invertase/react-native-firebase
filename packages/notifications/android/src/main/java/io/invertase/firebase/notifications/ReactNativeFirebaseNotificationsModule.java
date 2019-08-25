@@ -17,6 +17,7 @@ package io.invertase.firebase.notifications;
  *
  */
 
+import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
@@ -42,6 +43,7 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
         promise.resolve(Objects.requireNonNull(task.getResult()).toWriteableMap());
       } else {
         Exception exception = task.getException();
+        Log.e(TAG, "Error displaying a notification", exception);
         if (exception instanceof InvalidNotificationParameterException) {
           InvalidNotificationParameterException notificationParameterException = (InvalidNotificationParameterException) exception;
           rejectPromiseWithCodeAndMessage(promise, notificationParameterException.getCode(), notificationParameterException.getMessage(), notificationParameterException);

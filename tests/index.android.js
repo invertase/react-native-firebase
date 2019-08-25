@@ -1,3 +1,3 @@
-// require('./app');
+require('./app');
 // require('./app.admob');
-require('./app.notifications');
+// require('./app.notifications');
