@@ -21,27 +21,26 @@ import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react
 import jet from 'jet/platform/react-native';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 
+import firebase from '@react-native-firebase/app';
 import '@react-native-firebase/admob';
-import '@react-native-firebase/firestore';
-import '@react-native-firebase/auth';
-import '@react-native-firebase/database';
 import '@react-native-firebase/analytics';
-import '@react-native-firebase/remote-config';
-import '@react-native-firebase/utils';
-import '@react-native-firebase/dynamic-links';
+import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/in-app-messaging';
+import '@react-native-firebase/database';
+import '@react-native-firebase/dynamic-links';
+import '@react-native-firebase/firestore';
 import '@react-native-firebase/functions';
+import '@react-native-firebase/iid';
+import '@react-native-firebase/in-app-messaging';
+// import '@react-native-firebase/indexing';
+import '@react-native-firebase/invites';
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/ml-vision';
 import '@react-native-firebase/notifications';
-import '@react-native-firebase/storage';
-import '@react-native-firebase/iid';
-import '@react-native-firebase/indexing';
-import '@react-native-firebase/invites';
 import '@react-native-firebase/perf';
-import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/remote-config';
+import '@react-native-firebase/storage';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
