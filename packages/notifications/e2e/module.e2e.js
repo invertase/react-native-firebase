@@ -267,9 +267,12 @@ describe('notifications()', () => {
 
     it('throws if schedule is invalid', () => {
       try {
-        firebase.notifications().scheduleNotification({
-          body: 'foobar',
-        }, 'foo');
+        firebase.notifications().scheduleNotification(
+          {
+            body: 'foobar',
+          },
+          'foo',
+        );
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         // own tests
@@ -279,6 +282,6 @@ describe('notifications()', () => {
 
     it('schedules a notification', () => {
       // todo
-    })
+    });
   });
 });

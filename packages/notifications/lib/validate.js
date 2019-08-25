@@ -51,11 +51,17 @@ export function isValidTimestamp(timestamp) {
  * @param pattern {array}
  */
 export function isValidVibratePattern(pattern) {
-  if (pattern.length % 2 !== 0) return false;
+  if (pattern.length % 2 !== 0) {
+    return false;
+  }
   for (let i = 0; i < pattern.length; i++) {
     const ms = pattern[i];
-    if (!isNumber(ms)) return false;
-    if (ms <= 0) return false;
+    if (!isNumber(ms)) {
+      return false;
+    }
+    if (ms <= 0) {
+      return false;
+    }
   }
   return true;
 }
@@ -67,11 +73,21 @@ export function isValidVibratePattern(pattern) {
 export function isValidLightPattern(pattern) {
   const [color, onMs, offMs] = pattern;
 
-  if (!isValidColor(color)) return [false, 'color'];
-  if (!isNumber(onMs)) return [false, 'onMs'];
-  if (!isNumber(offMs)) return [false, 'offMs'];
-  if (onMs < 1) return [false, 'onMs'];
-  if (offMs < 1) return [false, 'offMs'];
+  if (!isValidColor(color)) {
+    return [false, 'color'];
+  }
+  if (!isNumber(onMs)) {
+    return [false, 'onMs'];
+  }
+  if (!isNumber(offMs)) {
+    return [false, 'offMs'];
+  }
+  if (onMs < 1) {
+    return [false, 'onMs'];
+  }
+  if (offMs < 1) {
+    return [false, 'offMs'];
+  }
 
   return [true];
 }
@@ -79,8 +95,12 @@ export function isValidLightPattern(pattern) {
 export function isValidRemoteInputHistory(history) {
   for (let i = 0; i < history.length; i++) {
     const element = history[i];
-    if (!isString(element)) return false;
-    if (!element) return false;
+    if (!isString(element)) {
+      return false;
+    }
+    if (!element) {
+      return false;
+    }
   }
 
   return true;

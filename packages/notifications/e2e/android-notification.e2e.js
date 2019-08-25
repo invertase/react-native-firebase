@@ -382,7 +382,7 @@ describe('notifications() Notification', () => {
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          `'notification.android.lights' invalid "on" millisecond value, expected a number greater than 0`,
+          '\'notification.android.lights\' invalid "on" millisecond value, expected a number greater than 0',
         );
         return Promise.resolve();
       }
@@ -394,7 +394,7 @@ describe('notifications() Notification', () => {
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          `'notification.android.lights' invalid "on" millisecond value, expected a number greater than 0`,
+          '\'notification.android.lights\' invalid "on" millisecond value, expected a number greater than 0',
         );
         return Promise.resolve();
       }
@@ -406,7 +406,7 @@ describe('notifications() Notification', () => {
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          `'notification.android.lights' invalid "off" millisecond value, expected a number greater than 0`,
+          '\'notification.android.lights\' invalid "off" millisecond value, expected a number greater than 0',
         );
         return Promise.resolve();
       }
@@ -418,7 +418,7 @@ describe('notifications() Notification', () => {
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
         e.message.should.containEql(
-          `'notification.android.lights' invalid "off" millisecond value, expected a number greater than 0`,
+          '\'notification.android.lights\' invalid "off" millisecond value, expected a number greater than 0',
         );
         return Promise.resolve();
       }

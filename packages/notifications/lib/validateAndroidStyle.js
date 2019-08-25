@@ -26,7 +26,7 @@ import { hasOwnProperty, isString } from '@react-native-firebase/app/lib/common'
 export function validateAndroidBigPictureStyle(style) {
   if (!isString(style.picture) || !style.picture) {
     throw new Error(
-      "'notification.android.style' BigPictureStyle: 'picture' expected a valid string value."
+      "'notification.android.style' BigPictureStyle: 'picture' expected a valid string value.",
     );
   }
 
@@ -39,7 +39,7 @@ export function validateAndroidBigPictureStyle(style) {
   if (hasOwnProperty(style, 'largeIcon')) {
     if (!isString(style.largeIcon)) {
       throw new Error(
-        "'notification.android.style' BigPictureStyle: 'largeIcon' expected a string value."
+        "'notification.android.style' BigPictureStyle: 'largeIcon' expected a string value.",
       );
     }
 
@@ -49,7 +49,7 @@ export function validateAndroidBigPictureStyle(style) {
   if (hasOwnProperty(style, 'title')) {
     if (!isString(style.title)) {
       throw new Error(
-        "'notification.android.style' BigPictureStyle: 'title' expected a string value."
+        "'notification.android.style' BigPictureStyle: 'title' expected a string value.",
       );
     }
 
@@ -59,7 +59,7 @@ export function validateAndroidBigPictureStyle(style) {
   if (hasOwnProperty(style, 'summary')) {
     if (!isString(style.summary)) {
       throw new Error(
-        "'notification.android.style' BigPictureStyle: 'summary' expected a string value."
+        "'notification.android.style' BigPictureStyle: 'summary' expected a string value.",
       );
     }
 
@@ -76,7 +76,7 @@ export function validateAndroidBigPictureStyle(style) {
 export function validateAndroidBigTextStyle(style) {
   if (!isString(style.text) || !style.text) {
     throw new Error(
-      "'notification.android.style' BigTextStyle: 'text' expected a valid string value."
+      "'notification.android.style' BigTextStyle: 'text' expected a valid string value.",
     );
   }
 
@@ -89,7 +89,7 @@ export function validateAndroidBigTextStyle(style) {
   if (hasOwnProperty(style, 'title')) {
     if (!isString(style.title)) {
       throw new Error(
-        "'notification.android.style' BigTextStyle: 'title' expected a string value."
+        "'notification.android.style' BigTextStyle: 'title' expected a string value.",
       );
     }
 
@@ -99,7 +99,7 @@ export function validateAndroidBigTextStyle(style) {
   if (hasOwnProperty(style, 'summary')) {
     if (!isString(style.summary)) {
       throw new Error(
-        "'notification.android.style' BigTextStyle: 'summary' expected a string value."
+        "'notification.android.style' BigTextStyle: 'summary' expected a string value.",
       );
     }
 

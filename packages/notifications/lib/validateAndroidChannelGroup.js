@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  hasOwnProperty,
-  isObject,
-  isString,
-} from '@react-native-firebase/app/lib/common';
+import { hasOwnProperty, isObject, isString } from '@react-native-firebase/app/lib/common';
 
 export default function validateAndroidChannelGroup(group) {
   if (!isObject(group)) {

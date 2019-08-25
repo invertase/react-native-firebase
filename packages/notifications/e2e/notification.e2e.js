@@ -38,7 +38,9 @@ describe('notifications() Notification', () => {
         validate({});
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'notification.body' expected a string value containing notification text");
+        e.message.should.containEql(
+          "'notification.body' expected a string value containing notification text",
+        );
         return Promise.resolve();
       }
     });
@@ -50,7 +52,9 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'notification.body' expected a string value containing notification text");
+        e.message.should.containEql(
+          "'notification.body' expected a string value containing notification text",
+        );
         return Promise.resolve();
       }
     });
@@ -62,7 +66,9 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'notification.body' expected a string value containing notification text");
+        e.message.should.containEql(
+          "'notification.body' expected a string value containing notification text",
+        );
         return Promise.resolve();
       }
     });
@@ -84,7 +90,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("invalid notification ID, expected a unique string value");
+        e.message.should.containEql('invalid notification ID, expected a unique string value');
         return Promise.resolve();
       }
     });
@@ -97,7 +103,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("invalid notification ID, expected a unique string value");
+        e.message.should.containEql('invalid notification ID, expected a unique string value');
         return Promise.resolve();
       }
     });
@@ -166,7 +172,9 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql("'notification.data' expected an object value containing key/value pairs");
+        e.message.should.containEql(
+          "'notification.data' expected an object value containing key/value pairs",
+        );
         return Promise.resolve();
       }
     });
@@ -182,7 +190,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(`'notification.data' value for key "bar" is invalid`);
+        e.message.should.containEql('\'notification.data\' value for key "bar" is invalid');
         return Promise.resolve();
       }
     });

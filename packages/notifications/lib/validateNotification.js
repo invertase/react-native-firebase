@@ -31,11 +31,7 @@ export default function validateNotification(notification) {
   }
 
   // Required
-  if (
-    !hasOwnProperty(notification, 'body') ||
-    !isString(notification.body) ||
-    !notification.body
-  ) {
+  if (!hasOwnProperty(notification, 'body') || !isString(notification.body) || !notification.body) {
     throw new Error("'notification.body' expected a string value containing notification text.");
   }
 
@@ -56,7 +52,9 @@ export default function validateNotification(notification) {
    */
   if (hasOwnProperty(notification, 'notificationId')) {
     if (!isString(notification.notificationId) || !notification.notificationId) {
-      throw new Error("'notification.notificationId' invalid notification ID, expected a unique string value.");
+      throw new Error(
+        "'notification.notificationId' invalid notification ID, expected a unique string value.",
+      );
     }
 
     out.notificationId = notification.notificationId;
@@ -112,7 +110,6 @@ export default function validateNotification(notification) {
     if (!isString(notification.sound)) {
       throw new Error("'notification.sound' expected a string value.");
     }
-
 
     out.sound = notification.sound;
   }

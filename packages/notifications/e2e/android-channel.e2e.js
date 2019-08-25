@@ -411,9 +411,7 @@ describe('notifications() Notification', () => {
         });
         return Promise.reject(new Error('Did not throw Error'));
       } catch (e) {
-        e.message.should.containEql(
-          "'channel.vibrationPattern' expected an array",
-        );
+        e.message.should.containEql("'channel.vibrationPattern' expected an array");
         return Promise.resolve();
       }
     });

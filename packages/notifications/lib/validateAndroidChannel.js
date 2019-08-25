@@ -153,12 +153,14 @@ export default function validateAndroidChannel(channel) {
    * lightColor
    */
   if (hasOwnProperty(channel, 'lightColor')) {
-    if(!isString(channel.lightColor)) {
+    if (!isString(channel.lightColor)) {
       throw new Error("'channel.lightColor' expected a string value.");
     }
 
     if (!isValidColor(channel.lightColor)) {
-      throw new Error("'channel.lightColor' invalid color. Expected an AndroidColor or hexadecimal string value")
+      throw new Error(
+        "'channel.lightColor' invalid color. Expected an AndroidColor or hexadecimal string value",
+      );
     }
 
     out.lightColor = channel.lightColor;
@@ -169,7 +171,9 @@ export default function validateAndroidChannel(channel) {
    */
   if (hasOwnProperty(channel, 'lockscreenVisibility')) {
     if (!Object.values(AndroidVisibility).includes(channel.lockscreenVisibility)) {
-      throw new Error("'channel.lockscreenVisibility' expected visibility to be an AndroidVisibility value.")
+      throw new Error(
+        "'channel.lockscreenVisibility' expected visibility to be an AndroidVisibility value.",
+      );
     }
 
     out.lockscreenVisibility = channel.lockscreenVisibility;
@@ -210,7 +214,9 @@ export default function validateAndroidChannel(channel) {
     }
 
     if (!isValidVibratePattern(channel.vibrationPattern)) {
-      throw new Error("'channel.vibrationPattern' expected an array containing an even number of positive values.");
+      throw new Error(
+        "'channel.vibrationPattern' expected an array containing an even number of positive values.",
+      );
     }
 
     out.vibrationPattern = channel.vibrationPattern;

@@ -20,4 +20,4 @@ export default {
   LIGHTS: 4,
   SOUND: 1,
   VIBRATE: 2,
-}
+};

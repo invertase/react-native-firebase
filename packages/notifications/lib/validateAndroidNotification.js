@@ -41,7 +41,10 @@ import {
   isValidVibratePattern,
 } from './validate';
 
-import { validateAndroidBigPictureStyle, validateAndroidBigTextStyle } from './validateAndroidStyle';
+import {
+  validateAndroidBigPictureStyle,
+  validateAndroidBigTextStyle,
+} from './validateAndroidStyle';
 
 export default function validateAndroidNotification(android) {
   const out = {
@@ -271,11 +274,11 @@ export default function validateAndroidNotification(android) {
           );
         case 'onMs':
           throw new Error(
-            `'notification.android.lights' invalid "on" millisecond value, expected a number greater than 0.`,
+            '\'notification.android.lights\' invalid "on" millisecond value, expected a number greater than 0.',
           );
         case 'offMs':
           throw new Error(
-            `'notification.android.lights' invalid "off" millisecond value, expected a number greater than 0.`,
+            '\'notification.android.lights\' invalid "off" millisecond value, expected a number greater than 0.',
           );
       }
     }
@@ -386,7 +389,7 @@ export default function validateAndroidNotification(android) {
       !isValidRemoteInputHistory(android.remoteInputHistory)
     ) {
       throw new Error(
-        `'notification.android.remoteInputHistory' expected an array of string values.`,
+        "'notification.android.remoteInputHistory' expected an array of string values.",
       );
     }
 
@@ -468,7 +471,9 @@ export default function validateAndroidNotification(android) {
         out.style = validateAndroidBigTextStyle(android.style);
         break;
       default:
-        throw new Error("'notification.android.style' style type must be one of AndroidStyle.BIGPICTURE or AndroidStyle.BIGTEXT.");
+        throw new Error(
+          "'notification.android.style' style type must be one of AndroidStyle.BIGPICTURE or AndroidStyle.BIGTEXT.",
+        );
     }
   }
 
@@ -492,9 +497,7 @@ export default function validateAndroidNotification(android) {
     }
 
     if (!isValidTimestamp(android.timeoutAfter)) {
-      throw new Error(
-        "'notification.android.timeoutAfter' invalid millisecond timestamp.",
-      );
+      throw new Error("'notification.android.timeoutAfter' invalid millisecond timestamp.");
     }
 
     out.timeoutAfter = android.timeoutAfter;

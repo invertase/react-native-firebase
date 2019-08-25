@@ -18,4 +18,4 @@
 export default {
   BIGPICTURE: 0,
   BIGTEXT: 1,
-}
+};
