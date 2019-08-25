@@ -45,6 +45,7 @@ const PACKAGES = [
   'crashlytics',
   'ml-natural-language',
   'ml-vision',
+  'notifications',
   'in-app-messaging',
   'auth',
   'database',
