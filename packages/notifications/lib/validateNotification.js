@@ -117,9 +117,7 @@ export default function validateNotification(notification) {
   /**
    * android
    */
-  if (hasOwnProperty(notification, 'android')) {
-    out.android = validateAndroidNotification(notification.android);
-  }
+  out.android = validateAndroidNotification(notification.android);
 
   /**
    * ios

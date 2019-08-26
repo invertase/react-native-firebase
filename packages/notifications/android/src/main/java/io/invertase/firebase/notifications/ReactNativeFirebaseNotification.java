@@ -81,6 +81,10 @@ public class ReactNativeFirebaseNotification {
       notificationBuilder.setContentText(notificationBundle.getString("body"));
     }
 
+    if (notificationBundle.containsKey("data")) {
+      notificationBuilder.setExtras(notificationBundle.getBundle("data"));
+    }
+
     // todo addAction()
 
     if (androidOptionsBundle.containsKey("autoCancel")) {
@@ -88,7 +92,7 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("badgeIconType")) {
-      int badgeIconType = androidOptionsBundle.getInt("badgeIconType");
+      int badgeIconType = (int) androidOptionsBundle.getDouble("badgeIconType");
       notificationBuilder.setBadgeIconType(badgeIconType);
     }
 
@@ -136,7 +140,7 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("groupAlertBehaviour")) {
-      int groupAlertBehaviour = androidOptionsBundle.getInt("groupAlertBehaviour");
+      int groupAlertBehaviour = (int) androidOptionsBundle.getDouble("groupAlertBehaviour");
       notificationBuilder.setGroupAlertBehavior(groupAlertBehaviour);
     }
 
@@ -163,7 +167,7 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("number")) {
-      notificationBuilder.setNumber(androidOptionsBundle.getInt("number"));
+      notificationBuilder.setNumber((int) androidOptionsBundle.getDouble("number"));
     }
 
     if (androidOptionsBundle.containsKey("ongoing")) {
@@ -175,13 +179,13 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("priority")) {
-      notificationBuilder.setPriority(androidOptionsBundle.getInt("priority"));
+      notificationBuilder.setPriority((int) androidOptionsBundle.getDouble("priority"));
     }
 
     if (androidOptionsBundle.containsKey("progress")) {
       Bundle progressBundle = androidOptionsBundle.getBundle("progress");
-      int max = progressBundle.getInt("max");
-      int current = progressBundle.getInt("current");
+      int max = (int) progressBundle.getDouble("max");
+      int current = (int) progressBundle.getDouble("current");
       boolean indeterminate = progressBundle.getBoolean("indeterminate");
       notificationBuilder.setProgress(max, current, indeterminate);
     }
@@ -218,7 +222,7 @@ public class ReactNativeFirebaseNotification {
 
     if (androidOptionsBundle.containsKey("style")) {
       Bundle styleBundle = androidOptionsBundle.getBundle("style");
-      int type = styleBundle.getInt("type");
+      int type = (int) styleBundle.getDouble("type");
       NotificationCompat.Style style = null;
 
       switch (type) {
@@ -240,7 +244,8 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("timeoutAfter")) {
-      notificationBuilder.setTimeoutAfter(androidOptionsBundle.getLong("timeoutAfter"));
+      long timeoutAfter = (long) androidOptionsBundle.getDouble("timeoutAfter");
+      notificationBuilder.setTimeoutAfter(timeoutAfter);
     }
 
     if (androidOptionsBundle.containsKey("usesChronometer")) {
@@ -248,20 +253,24 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("vibrate")) {
-      // todo vibrate - can you even turn this off/on?
-    }
+      ArrayList vibrationPattern = androidOptionsBundle.getParcelableArrayList("vibrate");
+      long[] vibrateArray = new long[vibrationPattern.size()];
 
-    if (androidOptionsBundle.containsKey("vibrationPattern")) {
-      ArrayList vibrationPattern = androidOptionsBundle.getParcelableArrayList("vibrationPattern");
-      // todo vibrationPattern
+      for (int i = 0; i < vibrationPattern.size(); i++) {
+        Integer value = (Integer) vibrationPattern.get(i);
+        vibrateArray[i] = value.longValue();
+      }
+
+      notificationBuilder.setVibrate(vibrateArray);
     }
 
     if (androidOptionsBundle.containsKey("visibility")) {
-      notificationBuilder.setVisibility(androidOptionsBundle.getInt("visibility"));
+      notificationBuilder.setVisibility((int) androidOptionsBundle.getDouble("visibility"));
     }
 
     if (androidOptionsBundle.containsKey("when")) {
-      notificationBuilder.setWhen(androidOptionsBundle.getLong("when"));
+      long when = (long) androidOptionsBundle.getDouble("when");
+      notificationBuilder.setWhen(when);
     }
 
     return notificationBuilder.build();
@@ -313,8 +322,8 @@ public class ReactNativeFirebaseNotification {
     String notificationId = Objects.requireNonNull(notificationBundle.getString("notificationId"));
 
     String notificationTag = null;
-    if (notificationBundle.containsKey("tag")) {
-      notificationTag = Objects.requireNonNull(notificationBundle.getString("tag"));
+    if (androidOptionsBundle.containsKey("tag")) {
+      notificationTag = Objects.requireNonNull(androidOptionsBundle.getString("tag"));
     }
 
     getNotificationManagerCompat().notify(notificationTag, notificationId.hashCode(), getNotification());

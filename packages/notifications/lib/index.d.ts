@@ -776,14 +776,9 @@ export namespace Notifications {
     usesChronometer?: boolean;
 
     /**
-     * Whether the notification should vibrate.
+     * Enables and sets the vibrate pattern.
      *
-     * Defaults to `true`.
-     */
-    vibrate?: boolean;
-
-    /**
-     * The vibrate pattern in milliseconds. Must be an even amount of numbers.
+     * The pattern in milliseconds. Must be an even amount of numbers.
      *
      * #### Example
      *
@@ -793,12 +788,12 @@ export namespace Notifications {
      * await notification.displayNotification({
      *   android: {
      *     body: 'Limited time prize available',
-     *     vibratePattern: [300, 300],
+     *     vibrate: [300, 300],
      *   },
      * });
      * ```
      */
-    vibratePattern?: number[];
+    vibrate?: number[];
 
     /**
      * Sets the visibility for this notification. This may be used for apps which show user

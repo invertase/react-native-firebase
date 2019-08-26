@@ -82,7 +82,7 @@ export function validateAndroidBigTextStyle(style) {
 
   // Defaults
   const out = {
-    type: AndroidStyle.BIGPICTURE,
+    type: AndroidStyle.BIGTEXT,
     text: style.text,
   };
 

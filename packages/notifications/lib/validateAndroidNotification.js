@@ -51,6 +51,7 @@ export default function validateAndroidNotification(android) {
     autoCancel: true,
     badgeIconType: AndroidBadgeIconType.NONE,
     colorized: false,
+    channelId: '',
     groupAlertBehaviour: AndroidGroupAlertBehavior.ALL,
     groupSummary: false,
     localOnly: false,
@@ -58,8 +59,8 @@ export default function validateAndroidNotification(android) {
     onlyAlertOnce: false,
     priority: AndroidPriority.DEFAULT,
     showWhenTimestamp: false,
+    smallIcon: ['ic_launcher', -1],
     usesChronometer: false,
-    vibrate: true,
     visibility: AndroidVisibility.PRIVATE,
   };
 
@@ -425,7 +426,7 @@ export default function validateAndroidNotification(android) {
     if (isArray(android.smallIcon)) {
       const [icon, level] = android.smallIcon;
 
-      if (!isString(icon)) {
+      if (!isString(icon) || !icon) {
         throw new Error("'notification.android.smallIcon' expected icon to be a string.");
       }
 
@@ -434,7 +435,7 @@ export default function validateAndroidNotification(android) {
       }
 
       out.smallIcon = [icon, level];
-    } else if (isString(android.smallIcon)) {
+    } else if (isString(android.smallIcon) || !android.smallIcon) {
       out.smallIcon = [android.smallIcon, -1];
     } else {
       throw new Error(
@@ -478,6 +479,21 @@ export default function validateAndroidNotification(android) {
   }
 
   /**
+   * tag
+   */
+  if (hasOwnProperty(android, 'tag')) {
+    if (!isString(android.tag)) {
+      throw new Error("'notification.android.tag' expected a string value.");
+    }
+
+    if (android.tag.includes('|')) {
+      throw new Error(`'notification.android.tag' tag cannot contain the "|" (pipe) character.`);
+    }
+
+    out.tag = android.tag;
+  }
+
+  /**
    * ticker
    */
   if (hasOwnProperty(android, 'ticker')) {
@@ -518,24 +534,13 @@ export default function validateAndroidNotification(android) {
    * vibrate
    */
   if (hasOwnProperty(android, 'vibrate')) {
-    if (!isBoolean(android.vibrate)) {
-      throw new Error("'notification.android.vibrate' expected a boolean value.");
-    }
-
-    out.vibrate = android.vibrate;
-  }
-
-  /**
-   * vibrationPattern
-   */
-  if (hasOwnProperty(android, 'vibrationPattern')) {
-    if (!isArray(android.vibrationPattern) || !isValidVibratePattern(android.vibrationPattern)) {
+    if (!isArray(android.vibrate) || !isValidVibratePattern(android.vibrate)) {
       throw new Error(
         "'notification.android.vibrationPattern' expected an array containing an even number of positive values.",
       );
     }
 
-    out.vibrationPattern = android.vibrationPattern;
+    out.vibrate = android.vibrate;
   }
 
   /**

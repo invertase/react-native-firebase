@@ -196,6 +196,7 @@ class FirebaseNotificationsModule extends FirebaseModule {
     } catch (e) {
       throw new Error(`firebase.notifications().displayNotification(*) ${e.message}`);
     }
+
     return this.native.displayNotification(options);
   }
 

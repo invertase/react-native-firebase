@@ -66,7 +66,7 @@ export default function validateAndroidChannel(channel) {
     bypassDnd: false,
     enableLights: true,
     enableVibration: true,
-    showBadge: false,
+    showBadge: true,
     importance: AndroidImportance.DEFAULT,
     sound: 'default',
     lockscreenVisibility: AndroidVisibility.PRIVATE,

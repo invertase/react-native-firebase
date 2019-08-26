@@ -15,11 +15,11 @@
  *
  */
 
+// https://developer.android.com/reference/android/app/NotificationManager.html#IMPORTANCE_DEFAULT
 export default {
   DEFAULT: 3,
   HIGH: 4,
   LOW: 2,
-  MAX: 5,
   MIN: 1,
   NONE: 0,
 };

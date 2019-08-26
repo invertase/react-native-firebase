@@ -36,6 +36,7 @@ describe('notifications() Notification', () => {
       onlyAlertOnce: false,
       priority: firebase.notifications.AndroidPriority.DEFAULT,
       showWhenTimestamp: false,
+      smallIcon: ['ic_launcher', -1],
       usesChronometer: false,
       vibrate: true,
       visibility: firebase.notifications.AndroidVisibility.PRIVATE,
