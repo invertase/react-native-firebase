@@ -366,9 +366,27 @@ export namespace Notifications {
       | AndroidCategory.TRANSPORT;
 
     /**
-     * Specified the `AndroidChannel` which the notification will be delivered on.
+     * Specify the `AndroidChannel` which the notification will be delivered on.
      *
-     * TODO required on some APIs
+     * Channels override any notification options.
+     *
+     * > On Android 8.0 (API 26) the channel ID is required. Providing a invalid channel ID will throw an error.
+     *
+     * #### Example
+     *
+     * ```js
+     * const channelId = firebase.notifications().createChannel({
+     *   channelId: 'my-custom-channel',
+     *   name: 'Custom Notification Channel',
+     * });
+     *
+     * await firebase.notifications().displayNotification({
+     *   body: 'Notification with channel',
+     *   android: {
+     *     channelId,
+     *   },
+     * });
+     * ```
      */
     channelId?: string;
 
@@ -492,12 +510,12 @@ export namespace Notifications {
      * await notification.displayNotification({
      *   android: {
      *     group: message.group.id,
-     *     groupAlertBehaviour: AndroidGroupAlertBehavior.CHILDREN,
+     *     groupAlertBehavior: AndroidGroupAlertBehavior.CHILDREN,
      *   },
      * });
      * ```
      */
-    groupAlertBehaviour?:
+    groupAlertBehavior?:
       | AndroidGroupAlertBehavior.ALL
       | AndroidGroupAlertBehavior.SUMMARY
       | AndroidGroupAlertBehavior.CHILDREN;
@@ -540,7 +558,7 @@ export namespace Notifications {
      * });
      * ```
      */
-    lights?: [string, number, number];
+    lights?: [AndroidColor | string, number, number];
 
     /**
      * Set whether or not this notification is only relevant to the current device.
@@ -551,7 +569,9 @@ export namespace Notifications {
      */
     localOnly?: boolean;
 
-    // todo example
+    /**
+     * Set the large number at the right-hand side of the notification.
+     */
     number?: number;
 
     /**
@@ -606,6 +626,18 @@ export namespace Notifications {
      *
      * ```js
      * await notification.displayNotification({
+     *   notificationId: 'upload-task',
+     *   android: {
+     *     progress: {
+     *       max: 10,
+     *       current: 0,
+     *     }
+     *   },
+     * });
+     *
+     * // Sometime later... Set progress to 50%
+     * await notification.displayNotification({
+     *   notificationId: 'upload-task',
      *   android: {
      *     progress: {
      *       max: 10,
@@ -632,8 +664,6 @@ export namespace Notifications {
      *   },
      * });
      * ```
-     *
-     * // TODO how to update the progess over time?
      */
     progress?: AndroidProgress;
 
@@ -653,6 +683,8 @@ export namespace Notifications {
      *
      * Setting this field is useful for notifications which are more informative with a timestamp,
      * such as a message.
+     *
+     * If no `when` timestamp is set, this field has no effect.
      *
      * #### Example
      *
@@ -678,6 +710,17 @@ export namespace Notifications {
      * To set custom small icon levels (e.g. for battery levels), see below.
      *
      * ![Small Icon](https://prismic-io.s3.amazonaws.com/invertase%2F566dd0e6-99bc-4e58-82c1-755f0225ec0b_new+project+%2820%29.jpg)
+     *
+     * #### Example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   bodyL: 'Custom small icon',
+     *   android: {
+     *     smallIcon: 'my_app_icon',
+     *   },
+     * });
+     * ```
      */
     smallIcon?: string;
 
@@ -687,7 +730,16 @@ export namespace Notifications {
      * Icon levels can be used to show different icons. For example if displaying a notification about the
      * device battery level, 4 different levels can be defined (4 = full battery icon, 1 = low battery icon).
      *
-     * TODO @ehesp guide on how to set levels
+     * #### Example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   bodyL: 'Custom small icon',
+     *   android: {
+     *     smallIcon: ['battery_level', 2],
+     *   },
+     * });
+     * ```
      */
     smallIcon?: [string, number];
 
@@ -708,9 +760,9 @@ export namespace Notifications {
      * 1. **Big Picture Style**: Shows a large picture when expanded. See `AndroidBigPictureStyle` for more information and examples.
      * 2. **Big Text Style**: Shows a large volume of text when expanded. See `AndroidBigTextStyle` for more information and examples.
      *
-     * #### Example - Big Text Style
+     * #### Example - Big Picture Style
      *
-     * TODO better example
+     * #### Example - Big Text Style
      *
      * ```js
      * await notification.displayNotification({
@@ -755,8 +807,8 @@ export namespace Notifications {
      *
      * ```js
      * await notification.displayNotification({
+     *   body: 'Limited time prize available',
      *   android: {
-     *     body: 'Limited time prize available',
      *     timeoutAfter: Date.now() + 600000,
      *   },
      * });
@@ -766,12 +818,24 @@ export namespace Notifications {
 
     /**
      * Show the `when` field as a stopwatch. Instead of presenting when as a timestamp, the
-     * notification will show an automatically updating display of the minutes and seconds since when.
+     * notification will show an automatically updating display of the minutes and seconds from the `when` timestamp.
      * Useful when showing an elapsed time (like an ongoing phone call).
+     *
+     * If no `when` timestamp is set, this has no effect.
      *
      * Defaults to `false`.
      *
-     * // TODO example
+     * #### Example
+     *
+     * ```js
+     * await notification.displayNotification({
+     *   body: 'Limited time prize available',
+     *   android: {
+     *     when: Date.now() + 300000,
+     *     usesChronometer: true,
+     *   },
+     * });
+     * ```
      */
     usesChronometer?: boolean;
 
@@ -787,7 +851,7 @@ export namespace Notifications {
      * ```js
      * await notification.displayNotification({
      *   android: {
-     *     body: 'Limited time prize available',
+     *     body: 'Vibrating notification',
      *     vibrate: [300, 300],
      *   },
      * });
@@ -817,8 +881,8 @@ export namespace Notifications {
      *
      * ```js
      * await notification.displayNotification({
+     *   body: 'Phone call in progress',
      *   android: {
-     *     body: 'Phone call in progress',
      *     ongoing: true,
      *     when: Date.now(),
      *     usesChronometer: true,
@@ -830,13 +894,13 @@ export namespace Notifications {
   }
 
   export interface AndroidAction {
-    action: string;
+    key: string;
     icon: string;
     title: string;
     allowGeneratedReplies?: boolean;
     remoteInputs?: AndroidRemoteInput[];
     semanticAction?: AndroidSemanticAction;
-    showUserInterface?: boolean; // true
+    showsUserInterface?: boolean; // true
   }
 
   export interface AndroidRemoteInput {
@@ -848,26 +912,84 @@ export namespace Notifications {
     label?: string;
   }
 
+  /**
+   * TODO
+   */
   export interface AndroidSemanticAction {
+    /**
+     * Archive the content associated with the notification. This could mean archiving an email, message, etc.
+     */
     ARCHIVE: 5;
+
+    /**
+     * Call a contact, group, etc.
+     */
     CALL: 10;
+
+    /**
+     * Delete the content associated with the notification. This could mean deleting an email, message, etc.
+     */
     DELETE: 4;
+
+    /**
+     * Mark content as read.
+     */
     MARK_AS_READ: 2;
+
+    /**
+     * Mark content as unread.
+     */
     MARK_AS_UNREAD: 3;
+
+    /**
+     * Mute the content associated with the notification. This could mean silencing a conversation or currently playing media.
+     */
     MUTE: 6;
+
+    /**
+     * No semantic action defined.
+     */
     NONE: 0;
+
+    /**
+     * Reply to a conversation, chat, group, or wherever replies may be appropriate.
+     */
     REPLY: 1;
+
+    /**
+     * Mark content with a thumbs down.
+     */
     THUMBS_DOWN: 9;
+
+    /**
+     * Mark content with a thumbs up.
+     */
     THUMBS_UP: 8;
+
+    /**
+     * Unmute the content associated with the notification. This could mean un-silencing a conversation or currently playing media.
+     */
     UNMUTE: 7;
   }
 
   /**
-   *
+   * When a notification is being displayed as a badge, the `AndroidBadgeIconType` interface
+   * describes how the badge icon is shown to the user.
    */
   export interface AndroidBadgeIconType {
+    /**
+     * Shows no badge, but instead uses the notification `number` if provided.
+     */
     NONE: 0;
+
+    /**
+     * Shows the notification `smallIcon`.
+     */
     SMALL: 1;
+
+    /**
+     * Shows the notification `largeIcon`.
+     */
     LARGE: 2;
   }
 
@@ -914,13 +1036,32 @@ export namespace Notifications {
    * #### Example
    *
    * ```js
-   * TODO example
+   * await firebase.notifications().displayNotification({
+   *   body: 'Hello World',
+   *   android: {
+   *     style: {
+   *       type: firebase.notifications.AndroidStyle.BIGTEXT,
+   *       text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis consectetur magna ut nulla blandit tristique.',
+   *     },
+   *   }
+   * });
    * ```
    */
   export interface AndroidBigTextStyle {
     type: AndroidStyle.BIGTEXT;
+    /**
+     * The text to display when the notification is expanded.
+     */
     text: string;
+
+    /**
+     * Overrides the notification title when expanded.
+     */
     title?: string;
+
+    /**
+     * Sets summary text when the notification is expanded.
+     */
     summary?: string;
   }
 
@@ -1210,22 +1351,109 @@ export namespace Notifications {
 
     cancelNotification(notificationId: string): Promise<void>;
 
-    createChannel(channel: AndroidChannel): Promise<void>;
+    /**
+     * Creates a new Android channel. Channels are used to collectively assign notifications to
+     * a single responsible channel. Users can manage settings for channels, e.g. disabling sound or vibration.
+     * Channels can be further organized into groups (see `createChannelGroup`).
+     *
+     * Once a channel has been created, only certain fields such as the name & description can be
+     * modified. To change a groups settings, you must delete the group (via `deleteChannel`)
+     * and re-create it. Keep in mind the user always have final control over channel settings.
+     *
+     * Creating an existing notification channel with its original values performs no operation,
+     * so it's safe to call this code when starting an app.
+     *
+     * Created channels can be viewed/managed under App Info -> Notifications.
+     *
+     * > On Android 8.0 (API 26) all notifications must be assigned to a channel.
+     *
+     * Returns the channel ID.
+     *
+     * #### Example
+     *
+     * ```js
+     * const channelId = await firebase.notifications().createChannel({
+     *   channelId: 'custom-channel',
+     *   name: 'Custom Channel',
+     *   description: 'A test channel',
+     * });
+     *
+     * await firebase.notifications().displayNotification({
+     *   body: 'Test notification',
+     *   android: {
+     *     channelId, // 'custom-channel'
+     *   },
+     * });
+     * ```
+     *
+     * @param channel An `AndroidChannel` interface.
+     */
+    createChannel(channel: AndroidChannel): Promise<string>;
 
+    /**
+     * Creates multiple channels in a single operation.
+     *
+     * See `createChannel` for more information.
+     *
+     * @param channels An array of AndroidChannel interfaces.
+     */
     createChannels(channels: AndroidChannel[]): Promise<void>;
 
-    createChannelGroup(channelGroup: AndroidChannelGroup): Promise<void>;
+    createChannelGroup(channelGroup: AndroidChannelGroup): Promise<string>;
 
     createChannelGroups(channelGroups: AndroidChannelGroup[]): Promise<void>;
 
+    /**
+     * Deletes a channel by ID.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.notifications().deleteChannel('custom-channel');
+     * ```
+     *
+     * @param channelId The channel ID to delete.
+     */
     deleteChannel(channelId: string): Promise<void>;
 
     deleteChannelGroup(channelGroupId: string): Promise<void>;
 
-    displayNotification(notification: Notification): Promise<void>;
+    /**
+     * Displays a notification on the device.
+     *
+     * See `AndroidNotification` and `IOSNotification` for platform specific options.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.notifications().displayNotification({
+     *   title: 'Test',
+     *   body: 'Test notification body',
+     *   android: {
+     *     // Android specific options
+     *   },
+     *   ios: {
+     *     // iOS specific options
+     *   },
+     * });
+     * ```
+     *
+     * @param notification A `Notification` interface.
+     */
+    displayNotification(notification: Notification): Promise<string>;
 
+    /**
+     * Returns a single `AndroidChannel` by id.
+     *
+     * Returns `null` if no channel could be matched to the given ID.
+     *
+     * @param channelId The channel id.
+     */
     getChannel(channelId: string): Promise<AndroidChannel | null>;
 
+    /**
+     * Returns an array of `AndroidChannel` which are currently active on the device.
+     */
     getChannels(): Promise<AndroidChannel[]>;
 
     getChannelGroup(channelGroupId: string): Promise<AndroidChannelGroup | null>;

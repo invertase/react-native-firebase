@@ -35,23 +35,23 @@ console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
 
 const PACKAGES = [
   'app',
-  'admob',
-  'dynamic-links',
-  'iid',
-  'perf',
-  'functions',
-  'analytics',
-  'remote-config',
-  'crashlytics',
-  'ml-natural-language',
-  'ml-vision',
+  // 'admob',
+  // 'dynamic-links',
+  // 'iid',
+  // 'perf',
+  // 'functions',
+  // 'analytics',
+  // 'remote-config',
+  // 'crashlytics',
+  // 'ml-natural-language',
+  // 'ml-vision',
   'notifications',
-  'in-app-messaging',
-  'auth',
-  'database',
-  'storage',
-  'messaging',
-  'firestore',
+  // 'in-app-messaging',
+  // 'auth',
+  // 'database',
+  // 'storage',
+  // 'messaging',
+  // 'firestore',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
@@ -60,7 +60,7 @@ for (let i = 0; i < PACKAGES.length; i++) {
 
 before(async () => {
   await detox.init(config);
-  await require('./helpers2')();
+  await require('@invertase/private-notification-parser/build/helper.min')();
   await jet.init();
 });
 

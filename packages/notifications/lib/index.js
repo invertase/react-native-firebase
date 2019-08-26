@@ -88,10 +88,12 @@ class FirebaseNotificationsModule extends FirebaseModule {
     }
 
     if (isIOS) {
-      return Promise.resolve();
+      return Promise.resolve('');
     }
 
-    return this.native.createChannel(options);
+    return this.native.createChannel(options).then(() => {
+      return options.channelId;
+    });
   }
 
   createChannels(channels) {
@@ -128,10 +130,12 @@ class FirebaseNotificationsModule extends FirebaseModule {
     }
 
     if (isIOS) {
-      return Promise.resolve();
+      return Promise.resolve('');
     }
 
-    return this.native.createChannelGroup(options);
+    return this.native.createChannelGroup(options).then(() => {
+      return options.channelGroupId;
+    });
   }
 
   createChannelGroups(channelGroups) {
@@ -197,7 +201,9 @@ class FirebaseNotificationsModule extends FirebaseModule {
       throw new Error(`firebase.notifications().displayNotification(*) ${e.message}`);
     }
 
-    return this.native.displayNotification(options);
+    return this.native.displayNotification(options).then(() => {
+      return options.notificationId;
+    });
   }
 
   getBadge() {

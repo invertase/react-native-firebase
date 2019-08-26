@@ -85,7 +85,15 @@ public class ReactNativeFirebaseNotification {
       notificationBuilder.setExtras(notificationBundle.getBundle("data"));
     }
 
-    // todo addAction()
+    if (androidOptionsBundle.containsKey("actions")) {
+      ArrayList actions = androidOptionsBundle.getParcelableArrayList("actions");
+
+      for (Object action : Objects.requireNonNull(actions)) {
+//        notificationBuilder.addAction(
+//          buildNotificationAction(action)
+//        );
+      }
+    }
 
     if (androidOptionsBundle.containsKey("autoCancel")) {
       notificationBuilder.setAutoCancel(androidOptionsBundle.getBoolean("autoCancel"));
@@ -139,9 +147,9 @@ public class ReactNativeFirebaseNotification {
       notificationBuilder.setGroup(androidOptionsBundle.getString("group"));
     }
 
-    if (androidOptionsBundle.containsKey("groupAlertBehaviour")) {
-      int groupAlertBehaviour = (int) androidOptionsBundle.getDouble("groupAlertBehaviour");
-      notificationBuilder.setGroupAlertBehavior(groupAlertBehaviour);
+    if (androidOptionsBundle.containsKey("groupAlertBehavior")) {
+      int groupAlertBehavior = (int) androidOptionsBundle.getDouble("groupAlertBehavior");
+      notificationBuilder.setGroupAlertBehavior(groupAlertBehavior);
     }
 
     if (androidOptionsBundle.containsKey("groupSummary")) {
@@ -275,6 +283,16 @@ public class ReactNativeFirebaseNotification {
 
     return notificationBuilder.build();
   }
+
+//  private NotificationCompat.Action buildNotificationAction(Object action) {
+//    String icon = action.getString();
+//
+//    NotificationCompat.Action.Builder ab = new NotificationCompat.Action.Builder(
+//      "foo",
+//      "bar",
+//      "baz"
+//    );
+//  }
 
   private NotificationCompat.BigPictureStyle getBigPictureStyle(Bundle bigPictureStyleBundle) {
     NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();

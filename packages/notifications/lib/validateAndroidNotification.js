@@ -41,6 +41,7 @@ import {
   isValidVibratePattern,
 } from './validate';
 
+import validateAndroidAction from './validateAndroidAction';
 import {
   validateAndroidBigPictureStyle,
   validateAndroidBigTextStyle,
@@ -52,7 +53,7 @@ export default function validateAndroidNotification(android) {
     badgeIconType: AndroidBadgeIconType.NONE,
     colorized: false,
     channelId: '',
-    groupAlertBehaviour: AndroidGroupAlertBehavior.ALL,
+    groupAlertBehavior: AndroidGroupAlertBehavior.ALL,
     groupSummary: false,
     localOnly: false,
     ongoing: false,
@@ -80,9 +81,18 @@ export default function validateAndroidNotification(android) {
       throw new Error("'notification.android.actions' expected an array of AndroidAction types.");
     }
 
-    // todo validate valid action helper
+    const actions = [];
+    try {
+      for (let i = 0; i < android.actions.length; i++) {
+        actions.push(validateAndroidAction(android.actions[i]));
+      }
+    } catch (e) {
+      throw new Error(`'notification.android.actions' invalid AndroidAction. ${e.message}.`);
+    }
 
-    out.actions = android.actions;
+    if (actions.length) {
+      out.actions = android.actions;
+    }
   }
 
   /**
@@ -221,16 +231,16 @@ export default function validateAndroidNotification(android) {
   }
 
   /**
-   * groupAlertBehaviour
+   * groupAlertBehavior
    */
-  if (hasOwnProperty(android, 'groupAlertBehaviour')) {
-    if (!Object.values(AndroidGroupAlertBehavior).includes(android.groupAlertBehaviour)) {
+  if (hasOwnProperty(android, 'groupAlertBehavior')) {
+    if (!Object.values(AndroidGroupAlertBehavior).includes(android.groupAlertBehavior)) {
       throw new Error(
-        "'notification.android.groupAlertBehaviour' expected a valid AndroidGroupAlertBehavior.",
+        "'notification.android.groupAlertBehavior' expected a valid AndroidGroupAlertBehavior.",
       );
     }
 
-    out.groupAlertBehaviour = android.groupAlertBehaviour;
+    out.groupAlertBehavior = android.groupAlertBehavior;
   }
 
   /**

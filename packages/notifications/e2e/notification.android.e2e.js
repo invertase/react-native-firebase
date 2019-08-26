@@ -28,6 +28,7 @@ android.describe('notifications', () => {
       name: 'Hello Foo',
       channelId: 'foo',
     });
+    const notifications = await device.notifications.all();
   });
 
   describe.only('android', () => {
@@ -56,9 +57,9 @@ android.describe('notifications', () => {
 
       const notification = await device.notifications.latest();
 
-      notification.extras.text.should.eql('foo bar baz');
-      notification.extras.title.should.eql('String '); // todo parser
-      notification.extras.subText.should.eql('String '); // todo parser
+      notification.text.should.eql('foo bar baz');
+      notification.title.should.eql('');
+      notification.subText.should.eql('');
     });
 
     it('creates a basic notification with custom id', async () => {
@@ -71,7 +72,7 @@ android.describe('notifications', () => {
       });
 
       const notification = await device.notifications.latest();
-      notification.key.should.containEql(notificationId.hash); // todo parser
+      should.equal(notification.id, notificationId.hash);
     });
 
     it('creates a notification with a custom tag', async () => {
@@ -84,14 +85,14 @@ android.describe('notifications', () => {
       });
 
       const notification = await device.notifications.latest();
-      notification.key.should.containEql('foobarbaz'); // todo parser
+      notification.tag.should.containEql('foobarbaz');
     });
 
     it('creates with base data', async () => {
       await firebase.notifications().displayNotification({
         title: 'Hello',
         subtitle: 'World',
-        body: 'foo bar baz',
+        body: 'foo bar baz3',
         android: {
           channelId: 'foo',
         },
@@ -99,19 +100,20 @@ android.describe('notifications', () => {
 
       const notification = await device.notifications.latest();
 
-      notification.extras.text.should.eql('foo bar baz');
-      notification.extras.title.should.eql('Hello');
-      notification.extras.subText.should.eql('World');
+      notification.text.should.eql('foo bar baz3');
+      notification.title.should.eql('Hello');
+      notification.subText.should.eql('World');
     });
 
     it('stores data on the notification', async () => {
       const data = {
         foo: 'bar',
-        bar: 'elliot',
+        bar: 'invertase',
       };
 
       await firebase.notifications().displayNotification({
-        body: 'foo bar baz',
+        title: 'foo6',
+        body: 'foo bar baz5',
         android: {
           channelId: 'foo',
         },
@@ -119,10 +121,10 @@ android.describe('notifications', () => {
       });
 
       const notification = await device.notifications.latest();
-      console.log(notification);
-      // notification.extras.text.should.eql('foo bar baz'); // TODO works if running on own, errors in row
-      notification.extras.foo.should.eql(data.foo); // todo parser
-      notification.extras.bar.should.eql(data.bar); // todo parser
+
+      notification.text.should.eql('foo bar baz5');
+      notification.data.foo.should.eql(data.foo);
+      notification.data.bar.should.eql(data.bar);
     });
 
     it('uses a sound', () => {
@@ -186,7 +188,6 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // TODO category?
       });
     });
@@ -239,7 +240,7 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        notification.extras.colorized.should.eql(false);
+        notification.colorized.should.eql(false);
       });
 
       // todo setting colorized seems to remove the color?
@@ -256,14 +257,15 @@ android.describe('notifications', () => {
         const notification = await device.notifications.latest();
         // https://convertingcolors.com/hex-color-9C27B0.html
         notification.color.should.containEql('0xff9c27b0');
-        notification.extras.colorized.should.eql(true);
+        notification.colorized.should.eql(true);
       });
     });
 
     describe('contentInfo', () => {
       it('sets contentInfo', async () => {
         await firebase.notifications().displayNotification({
-          body: 'foo bar baz',
+          title: 'foo bar baz5',
+          body: 'foo bar baz5',
           android: {
             channelId: 'foo',
             contentInfo: 'Content Information',
@@ -271,7 +273,7 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        notification.extras.infoText.should.eql('Content Information');
+        notification.infoText.should.eql('Content Information');
       });
     });
 
@@ -281,7 +283,7 @@ android.describe('notifications', () => {
 
     describe('group', () => {
       it('sets group', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -289,25 +291,26 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.groupKey.should.containEql('foo bar group');
+        const notification = await device.notifications.findById(notificationId);
+        notification.group.should.equal('foo bar group');
       });
     });
 
     describe('groupAlertBehaviour', () => {
       it('sets groupAlertBehaviour', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
             group: 'foo bar group',
-            groupAlertBehaviour: firebase.notifications.AndroidGroupAlertBehavior.CHILDREN,
+            groupAlertBehavior: firebase.notifications.AndroidGroupAlertBehavior.CHILDREN,
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.groupKey.should.containEql('foo bar group');
-        notification.groupAlertBehaviour.should.eql(
+        const notification = await device.notifications.findById(notificationId);
+        notification.group.should.equal('foo bar group');
+
+        notification.groupAlertBehavior.should.eql(
           firebase.notifications.AndroidGroupAlertBehavior.CHILDREN,
         );
       });
@@ -345,7 +348,6 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo lights - seems to work on native but no logs
       });
     });
@@ -361,14 +363,13 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo localOnly - seems to work on native but no logs
       });
     });
 
     describe('number', () => {
       it('sets custom number', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -376,7 +377,7 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
+        const notification = await device.notifications.findById(notificationId);
         notification.number.should.eql(123);
       });
     });
@@ -413,7 +414,7 @@ android.describe('notifications', () => {
 
     describe('priority', () => {
       it('sets priority', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -421,14 +422,14 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
+        const notification = await device.notifications.findById(notificationId);
         notification.priority.should.eql(firebase.notifications.AndroidPriority.MAX);
       });
     });
 
     describe('progress', () => {
       it('sets max/current progress', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -439,14 +440,14 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.extras.progress.should.eql(5);
-        notification.extras.progressMax.should.eql(10);
-        notification.extras.progressIndeterminate.should.eql(false);
+        const notification = await device.notifications.findById(notificationId);
+        notification.progress.should.eql(5);
+        notification.progressMax.should.eql(10);
+        notification.progressIndeterminate.should.eql(false);
       });
 
       it('sets indeterminate progress', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -458,10 +459,10 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.extras.progress.should.eql(5);
-        notification.extras.progressMax.should.eql(10);
-        notification.extras.progressIndeterminate.should.eql(true);
+        const notification = await device.notifications.findById(notificationId);
+        notification.progress.should.eql(5);
+        notification.progressMax.should.eql(10);
+        notification.progressIndeterminate.should.eql(true);
       });
     });
 
@@ -480,14 +481,13 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo shortcutId
       });
     });
 
     describe('showWhenTimestamp', () => {
       it('sets showWhenTimestamp', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -495,8 +495,8 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.extras.showWhen.should.eql(true);
+        const notification = await device.notifications.findById(notificationId);
+        notification.showWhen.should.eql(true);
       });
     });
 
@@ -515,7 +515,6 @@ android.describe('notifications', () => {
         });
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo sortkey
       });
     });
@@ -526,7 +525,7 @@ android.describe('notifications', () => {
 
     describe('style -> BigTextStyle', () => {
       it('sets a big text style', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -537,13 +536,13 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        notification.extras.template.should.containEql('BigTextStyle');
-        notification.extras.bigText.should.eql(bigText);
+        const notification = await device.notifications.findById(notificationId);
+        notification.style.should.equal('BigTextStyle');
+        notification.bigText.should.eql(bigText);
       });
 
       it('sets bigText with options', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -556,18 +555,17 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
-        console.log(notification);
-        notification.extras.template.should.containEql('BigTextStyle');
-        notification.extras.bigText.should.eql(bigText);
-        notification.extras['title.big'].should.eql('title expanded');
-        notification.extras.summaryText.should.eql('summary expanded');
+        const notification = await device.notifications.findById(notificationId);
+        notification.style.should.equal('BigTextStyle');
+        notification.bigText.should.eql(bigText);
+        notification['title.big'].should.eql('title expanded');
+        notification.summaryText.should.eql('summary expanded');
       });
     });
 
     describe('ticker', () => {
       it('sets ticker', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
@@ -575,7 +573,7 @@ android.describe('notifications', () => {
           },
         });
 
-        const notification = await device.notifications.latest();
+        const notification = await device.notifications.findById(notificationId);
         notification.tickerText.should.eql('ticker value');
       });
     });
@@ -591,25 +589,23 @@ android.describe('notifications', () => {
             timeoutAfter: timeout,
           },
         });
-        console.log(timeout);
 
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo timeoutAfter
       });
     });
 
     describe('usesChronometer', () => {
       it('sets usesChronometer', async () => {
-        await firebase.notifications().displayNotification({
+        const notificationId = await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
             channelId: 'foo',
             usesChronometer: true,
           },
         });
-        const notification = await device.notifications.latest();
-        notification.extras.showChronometer.should.eql(true);
+        const notification = await device.notifications.findById(notificationId);
+        notification.showChronometer.should.eql(true);
       });
     });
 
@@ -653,7 +649,6 @@ android.describe('notifications', () => {
           },
         });
         const notification = await device.notifications.latest();
-        console.log(notification);
         // todo visibility
       });
     });
@@ -661,7 +656,6 @@ android.describe('notifications', () => {
     xdescribe('when', () => {
       it('sets when timestamp', async () => {
         const when = Date.now() + 3000000;
-        console.log(when);
         await firebase.notifications().displayNotification({
           body: 'foo bar baz',
           android: {
