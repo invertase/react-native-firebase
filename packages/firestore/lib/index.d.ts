@@ -1154,6 +1154,11 @@ export namespace Firestore {
   }
 
   /**
+   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', and 'array-contains'.
+   */
+  export type WhereFilterOp = '<' | '<=' | '==' | '>' | '>=' | 'array-contains';
+
+  /**
    * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
    * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
    * can be determined via the `empty` and `size` properties.
