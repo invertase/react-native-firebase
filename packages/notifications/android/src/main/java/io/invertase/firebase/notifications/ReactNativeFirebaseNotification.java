@@ -20,20 +20,30 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 
-import java.lang.reflect.Array;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static io.invertase.firebase.app.ReactNativeFirebaseApp.getApplicationContext;
+import static io.invertase.firebase.common.SharedUtils.getResourceIdByName;
+import static io.invertase.firebase.notifications.ReactNativeFirebaseNotificationUtils.getSoundUri;
 
 public class ReactNativeFirebaseNotification {
   private Bundle notificationBundle;
@@ -52,19 +62,19 @@ public class ReactNativeFirebaseNotification {
     return new ReactNativeFirebaseNotification(Arguments.toBundle(readableMap));
   }
 
-  public WritableMap toWriteableMap() {
+  WritableMap toWritableMap() {
     return Arguments.fromBundle(notificationBundle);
   }
 
-  public NotificationManager getNotificationManager() {
+  private NotificationManager getNotificationManager() {
     return (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
   }
 
-  public NotificationManagerCompat getNotificationManagerCompat() {
+  private NotificationManagerCompat getNotificationManagerCompat() {
     return NotificationManagerCompat.from(getApplicationContext());
   }
 
-  public Notification getNotification() {
+  private Notification getNotification() {
     String channelId = Objects.requireNonNull(androidOptionsBundle.getString("channelId"));
     NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId);
 
@@ -83,6 +93,11 @@ public class ReactNativeFirebaseNotification {
 
     if (notificationBundle.containsKey("data")) {
       notificationBuilder.setExtras(notificationBundle.getBundle("data"));
+    }
+
+    if (notificationBundle.containsKey("sound")) {
+      Uri sound = getSoundUri(Objects.requireNonNull(notificationBundle.getString("sound")));
+      notificationBuilder.setSound(sound);
     }
 
     if (androidOptionsBundle.containsKey("actions")) {
@@ -157,8 +172,11 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("largeIcon")) {
-      // todo largeIcon
-      // notificationBuilder.setLargeIcon();
+      Bitmap largeIcon = getImageBitmap(Objects.requireNonNull(androidOptionsBundle.getString("largeIcon")));
+
+      if (largeIcon != null) {
+        notificationBuilder.setLargeIcon(largeIcon);
+      }
     }
 
     if (androidOptionsBundle.containsKey("lights")) {
@@ -199,7 +217,13 @@ public class ReactNativeFirebaseNotification {
     }
 
     if (androidOptionsBundle.containsKey("remoteInputHistory")) {
-      // todo remoteInputHistory
+      ArrayList remoteInputHistory = androidOptionsBundle.getParcelableArrayList("remoteInputHistory");
+      String[] history = new String[remoteInputHistory.size()];
+      for (int i = 0; i < remoteInputHistory.size(); i++) {
+        history[i] = (String) remoteInputHistory.get(i);
+      }
+
+      notificationBuilder.setRemoteInputHistory(history);
     }
 
     if (androidOptionsBundle.containsKey("shortcutId")) {
@@ -212,15 +236,16 @@ public class ReactNativeFirebaseNotification {
 
     if (androidOptionsBundle.containsKey("smallIcon")) {
       ArrayList smallIconList = androidOptionsBundle.getParcelableArrayList("smallIcon");
-      String smallIcon = (String) smallIconList.get(0);
-      int level = (int) smallIconList.get(1);
+      String smallIconRaw = (String) smallIconList.get(0);
+      int smallIcon = getResourceIcon(smallIconRaw);
 
-      // todo smallIcon
-      // todo get specified resource or launcher drawable (ic_launcher)
-      if (level == -1) {
-        notificationBuilder.setSmallIcon(R.drawable.redbox_top_border_background);
-      } else {
-        notificationBuilder.setSmallIcon(R.drawable.redbox_top_border_background, level);
+      if (smallIcon != 0) {
+        int level = (int) smallIconList.get(1);
+        if (level == -1) {
+          notificationBuilder.setSmallIcon(smallIcon);
+        } else {
+          notificationBuilder.setSmallIcon(smallIcon, level);
+        }
       }
     }
 
@@ -260,8 +285,8 @@ public class ReactNativeFirebaseNotification {
       notificationBuilder.setUsesChronometer(androidOptionsBundle.getBoolean("usesChronometer"));
     }
 
-    if (androidOptionsBundle.containsKey("vibrate")) {
-      ArrayList vibrationPattern = androidOptionsBundle.getParcelableArrayList("vibrate");
+    if (androidOptionsBundle.containsKey("vibrationPattern")) {
+      ArrayList vibrationPattern = androidOptionsBundle.getParcelableArrayList("vibrationPattern");
       long[] vibrateArray = new long[vibrationPattern.size()];
 
       for (int i = 0; i < vibrationPattern.size(); i++) {
@@ -294,16 +319,26 @@ public class ReactNativeFirebaseNotification {
 //    );
 //  }
 
+  /**
+   * BigPictureStyle
+   */
   private NotificationCompat.BigPictureStyle getBigPictureStyle(Bundle bigPictureStyleBundle) {
     NotificationCompat.BigPictureStyle bigPictureStyle = new NotificationCompat.BigPictureStyle();
 
     if (bigPictureStyleBundle.containsKey("picture")) {
-      // todo
-      // bigPictureStyle = bigPictureStyle.bigPicture();
+      Bitmap picture = getImageBitmap(Objects.requireNonNull(bigPictureStyleBundle.getString("picture")));
+
+      if (picture != null) {
+        bigPictureStyle.bigPicture(picture);
+      }
     }
 
     if (bigPictureStyleBundle.containsKey("largeIcon")) {
-      // todo
+      Bitmap largeIcon = getImageBitmap(Objects.requireNonNull(bigPictureStyleBundle.getString("largeIcon")));
+
+      if (largeIcon != null) {
+        bigPictureStyle.bigLargeIcon(largeIcon);
+      }
     }
 
     if (bigPictureStyleBundle.containsKey("title")) {
@@ -317,6 +352,9 @@ public class ReactNativeFirebaseNotification {
     return bigPictureStyle;
   }
 
+  /**
+   * BigTextStyle
+   */
   private NotificationCompat.BigTextStyle getBigTextStyle(Bundle bigTextStyleBundle) {
     NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
 
@@ -335,6 +373,48 @@ public class ReactNativeFirebaseNotification {
     return bigTextStyle;
   }
 
+  /**
+   * Returns a Bitmap from a user image (local/url)
+   */
+  private Bitmap getImageBitmap(String image) {
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return getBitmapFromHttpUrl(image);
+    }
+
+    if (image.startsWith("file://")) {
+      return BitmapFactory.decodeFile(image.replace("file://", ""));
+    }
+
+    int resourceId = getResourceIcon(image);
+
+    return BitmapFactory.decodeResource(
+      getApplicationContext().getResources(),
+      resourceId
+    );
+  }
+
+  private Bitmap getBitmapFromHttpUrl(String httpUrl) {
+    // TODO should probably be using fresco for this, comes with RN, comes with caching e.g for offline
+    // this will hang if no connection?
+    try {
+      HttpURLConnection connection = (HttpURLConnection) new URL(httpUrl).openConnection();
+      connection.setDoInput(true);
+      connection.connect();
+      return BitmapFactory.decodeStream(connection.getInputStream());
+    } catch (IOException e) {
+      Log.e("RNFBNotifications", "Failed to get bitmap for url: " + httpUrl, e);
+      return null;
+    }
+  }
+
+  private int getResourceIcon(String icon) {
+    int resourceId = getResourceIdByName(icon, "mipmap");
+    if (resourceId == 0) {
+      resourceId = getResourceIdByName(icon, "drawable");
+    }
+
+    return resourceId;
+  }
 
   public void displayNotification() {
     String notificationId = Objects.requireNonNull(notificationBundle.getString("notificationId"));

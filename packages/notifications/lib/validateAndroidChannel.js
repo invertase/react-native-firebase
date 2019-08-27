@@ -68,8 +68,7 @@ export default function validateAndroidChannel(channel) {
     enableVibration: true,
     showBadge: true,
     importance: AndroidImportance.DEFAULT,
-    sound: 'default',
-    lockscreenVisibility: AndroidVisibility.PRIVATE,
+    visibility: AndroidVisibility.PRIVATE,
   };
 
   // /**
@@ -167,16 +166,16 @@ export default function validateAndroidChannel(channel) {
   }
 
   /**
-   * lockscreenVisibility
+   * visibility
    */
-  if (hasOwnProperty(channel, 'lockscreenVisibility')) {
-    if (!Object.values(AndroidVisibility).includes(channel.lockscreenVisibility)) {
+  if (hasOwnProperty(channel, 'visibility')) {
+    if (!Object.values(AndroidVisibility).includes(channel.visibility)) {
       throw new Error(
-        "'channel.lockscreenVisibility' expected visibility to be an AndroidVisibility value.",
+        "'channel.visibility' expected visibility to be an AndroidVisibility value.",
       );
     }
 
-    out.lockscreenVisibility = channel.lockscreenVisibility;
+    out.visibility = channel.visibility;
   }
 
   /**

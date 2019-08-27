@@ -40,7 +40,7 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
       return nativeFirebaseNotification;
     }).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
-        promise.resolve(Objects.requireNonNull(task.getResult()).toWriteableMap());
+        promise.resolve(Objects.requireNonNull(task.getResult()).toWritableMap());
       } else {
         Exception exception = task.getException();
         Log.e(TAG, "Error displaying a notification", exception);
@@ -59,6 +59,7 @@ public class ReactNativeFirebaseNotificationsModule extends ReactNativeFirebaseM
     try {
       ReactNativeFirebaseNotificationChannel.createChannel(channelMap);
     } catch (Throwable t) {
+      Log.e(TAG, "FSAGFSDG", t);
       // do nothing - most likely a NoSuchMethodError for < v4 support lib
     }
     promise.resolve(null);

@@ -21,14 +21,20 @@ import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import static io.invertase.firebase.app.ReactNativeFirebaseApp.getApplicationContext;
+import static io.invertase.firebase.common.SharedUtils.getResourceIdByName;
 
 public class ReactNativeFirebaseNotificationUtils {
 
-  static int getResourceId(Context context, String type, String image) {
-    return context
-      .getResources()
-      .getIdentifier(image, type, context.getPackageName());
-  }
+//  static int getResourceId(Context context, String type, String image) {
+//    return context
+//      .getResources()
+//      .getIdentifier(image, type, context.getPackageName());
+//  }
 
   static String getFileName(Context context, Uri uri) {
     String result = null;
@@ -61,19 +67,47 @@ public class ReactNativeFirebaseNotificationUtils {
   }
 
 
-  static Uri getSound(Context context, String sound) {
+//  static Uri getSound(Context context, String sound) {
+//    if (sound == null) {
+//      return null;
+//    } else if (sound.contains("://")) {
+//      return Uri.parse(sound);
+//    } else if (sound.equalsIgnoreCase("default")) {
+//      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//    } else {
+//      int soundResourceId = getResourceId(context, "raw", sound);
+//      if (soundResourceId == 0) {
+//        soundResourceId = getResourceId(context, "raw", sound.substring(0, sound.lastIndexOf('.')));
+//      }
+//      return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId);
+//    }
+//  }
+
+  static Uri getSoundUri(@Nullable String sound) {
     if (sound == null) {
-      return null;
-    } else if (sound.contains("://")) {
-      return Uri.parse(sound);
-    } else if (sound.equalsIgnoreCase("default")) {
       return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    } else {
-      int soundResourceId = getResourceId(context, "raw", sound);
-      if (soundResourceId == 0) {
-        soundResourceId = getResourceId(context, "raw", sound.substring(0, sound.lastIndexOf('.')));
-      }
-      return Uri.parse("android.resource://" + context.getPackageName() + "/" + soundResourceId);
     }
+
+    if (sound.contains("://")) {
+      return Uri.parse(sound);
+    }
+
+    if (sound.equalsIgnoreCase("default")) {
+      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    }
+
+    int resourceId = getResourceIdByName(sound, "raw");
+
+    if (resourceId == 0 && sound.contains(".")) {
+      resourceId = getResourceIdByName(sound.substring(0, sound.lastIndexOf('.')), "raw");
+    }
+
+    // If still no resource, default
+    if (resourceId == 0) {
+      Log.d("RNFBNotificationUtils", "Could not find specified sound " + sound);
+      return RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    }
+
+    return Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/" + resourceId);
   }
 }

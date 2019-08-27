@@ -61,6 +61,7 @@ export default function validateAndroidNotification(android) {
     priority: AndroidPriority.DEFAULT,
     showWhenTimestamp: false,
     smallIcon: ['ic_launcher', -1],
+    sound: 'default',
     usesChronometer: false,
     visibility: AndroidVisibility.PRIVATE,
   };
@@ -541,16 +542,16 @@ export default function validateAndroidNotification(android) {
   }
 
   /**
-   * vibrate
+   * vibrationPattern
    */
-  if (hasOwnProperty(android, 'vibrate')) {
-    if (!isArray(android.vibrate) || !isValidVibratePattern(android.vibrate)) {
+  if (hasOwnProperty(android, 'vibrationPattern')) {
+    if (!isArray(android.vibrationPattern) || !isValidVibratePattern(android.vibrationPattern)) {
       throw new Error(
         "'notification.android.vibrationPattern' expected an array containing an even number of positive values.",
       );
     }
 
-    out.vibrate = android.vibrate;
+    out.vibrationPattern = android.vibrationPattern;
   }
 
   /**

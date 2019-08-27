@@ -23,8 +23,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +38,7 @@ import java.util.Objects;
 
 import static io.invertase.firebase.app.ReactNativeFirebaseApp.getApplicationContext;
 import static io.invertase.firebase.notifications.ReactNativeFirebaseNotificationUtils.getFileName;
-import static io.invertase.firebase.notifications.ReactNativeFirebaseNotificationUtils.getSound;
+import static io.invertase.firebase.notifications.ReactNativeFirebaseNotificationUtils.getSoundUri;
 
 class ReactNativeFirebaseNotificationChannel {
   private static NotificationManager getNotificationManager() {
@@ -186,11 +192,10 @@ class ReactNativeFirebaseNotificationChannel {
 
       int visibility = notificationChannel.getLockscreenVisibility();
 
-      // TODO where did -1000 come from?
       if (visibility == -1000) { // -1000 = not set
-        writableMap.putNull("lockScreenVisibility");
+        writableMap.putNull("visibility");
       } else {
-        writableMap.putInt("lockScreenVisibility", visibility);
+        writableMap.putInt("visibility", visibility);
       }
 
       writableMap.putBoolean("showBadge", notificationChannel.canShowBadge());
@@ -240,8 +245,8 @@ class ReactNativeFirebaseNotificationChannel {
         channel.enableLights(channelMap.getBoolean("lightsEnabled"));
       }
 
-      if (channelMap.hasKey("lockScreenVisibility")) {
-        channel.setLockscreenVisibility(channelMap.getInt("lockScreenVisibility"));
+      if (channelMap.hasKey("visibility")) {
+        channel.setLockscreenVisibility(channelMap.getInt("visibility"));
       }
 
       if (channelMap.hasKey("showBadge")) {
@@ -249,7 +254,7 @@ class ReactNativeFirebaseNotificationChannel {
       }
 
       if (channelMap.hasKey("sound")) {
-        Uri sound = getSound(getApplicationContext(), channelMap.getString("sound"));
+        Uri sound = getSoundUri(channelMap.getString("sound"));
         channel.setSound(sound, null);
       }
 

@@ -56,6 +56,9 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace Notifications {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
+  /**
+   * `firebase.notifications.X`
+   */
   export interface Statics {
     AndroidBadgeIconType: AndroidBadgeIconType;
     AndroidCategory: AndroidCategory;
@@ -852,12 +855,12 @@ export namespace Notifications {
      * await notification.displayNotification({
      *   android: {
      *     body: 'Vibrating notification',
-     *     vibrate: [300, 300],
+     *     vibrationPattern: [300, 300],
      *   },
      * });
      * ```
      */
-    vibrate?: number[];
+    vibrationPattern?: number[];
 
     /**
      * Sets the visibility for this notification. This may be used for apps which show user
@@ -1301,14 +1304,87 @@ export namespace Notifications {
       | AndroidRepeatInterval.WEEK;
   }
 
+  /**
+   * An interface for describing an Android Channel.
+   *
+   * Channels override any individual notification preferences (e.g. lights/vibration) and the user
+   * has control over the setting.
+   *
+   * > On Android 8.0 (API 26) each notification must be assigned to a channel.
+   *
+   * ![Android Channel](https://prismic-io.s3.amazonaws.com/invertase%2Fbb773539-581a-457d-ae43-687a7a7646a9_new+project+%2822%29.jpg)
+   *
+   * #### Example
+   *
+   * ```js
+   * await firebase.notifications().createChannel({
+   *   channelId: 'alarms',
+   *   name: 'Alarms & Timers',
+   *   lightColor: '#3f51b5',
+   *   vibrationPattern: [300, 400],
+   * });
+   * ```
+   */
   export interface AndroidChannel {
+    /**
+     * The unique channel ID.
+     */
     channelId: string;
+
+    /**
+     * The channel name. This is shown to the user so must be descriptive and relate to the notifications
+     * which will be delivered under this channel.
+     *
+     * This setting can be updated after creation.
+     */
     name: string;
+
+    // todo used?
     bypassDnd?: boolean;
+
+    /**
+     * Sets the user visible description of this channel.
+     *
+     * The recommended maximum length is 300 characters; the value may be truncated if it is too long.
+     *
+     * This setting can be updated after creation.
+     */
     description?: string;
+
+    /**
+     * Sets whether notifications posted to this channel should display notification lights, on devices that support that feature.
+     *
+     * Defaults to `true`.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
     enableLights?: boolean;
+
+    /**
+     * Sets whether notification posted to this channel should vibrate.
+     *
+     * Defaults to `true`.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
     enableVibration?: boolean;
+
+    /**
+     * Sets what group this channel belongs to. Group information is only used for presentation, not for behavior.
+     *
+     * Create a group via `createChannelGroup()`.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
     groupId?: string;
+
+    /**
+     * Sets the level of interruption of this notification channel.
+     *
+     * See `AndroidImportance` for more details on the levels.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
     importance?:
       | AndroidImportance.DEFAULT
       | AndroidImportance.HIGH
@@ -1316,19 +1392,60 @@ export namespace Notifications {
       | AndroidImportance.MAX
       | AndroidImportance.MIN
       | AndroidImportance.NONE;
+
+    /**
+     * If lights are enabled (via `enableLights`), sets/overrides the light color for notifications
+     * posted to this channel.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
     lightColor?: AndroidColor | string;
-    lockscreenVisibility?:
-      | AndroidVisibility.PRIVATE
-      | AndroidVisibility.PUBLIC
-      | AndroidVisibility.SECRET;
+
+    /**
+     * Sets whether notifications posted to this channel appear on the lockscreen or not, and if so, whether they appear in a redacted form.
+     *
+     * This setting cannot be overridden once the channel is created.
+     */
+    visibility?: AndroidVisibility.PRIVATE | AndroidVisibility.PUBLIC | AndroidVisibility.SECRET;
+
+    /**
+     * Sets whether notifications posted to this channel can appear as application icon badges in a Launcher.
+     *
+     * Defaults to `true`.
+     */
     showBadge?: boolean;
-    sensitive?: string; // audio attributes?
+
+    // todo
+    sound?: string; // audio attributes?
+
+    /**
+     * Sets/overrides the vibration pattern for notifications posted to this channel.
+     *
+     * The pattern in milliseconds. Must be an even amount of numbers.
+     */
     vibrationPattern?: number[];
   }
 
+  /**
+   * Interface for an Android Channel Group.
+   *
+   * ![Channel Group Example](https://prismic-io.s3.amazonaws.com/invertase%2F21fb6bbf-6932-47c3-8695-877e1d4f296b_new+project+%2821%29.jpg)
+   */
   export interface AndroidChannelGroup {
+    /**
+     * Unique id for this channel group.
+     */
     channelGroupId: string;
+
+    /**
+     * The name of the group. This is visible to the user so should be a descriptive name which
+     * categorizes other channels (e.g. reminders).
+     */
     name: string;
+
+    /**
+     * An optional description of the group. This is visible to the user.
+     */
     description?: string;
   }
 
