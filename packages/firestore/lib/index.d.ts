@@ -1060,7 +1060,8 @@ export namespace Firestore {
      * const querySnapshot = await firebase.firestore()
      *   .collection('users')
      *   .orderBy('age')
-     *   .startAfter(user);
+     *   .startAfter(user)
+     *   .get();
      * ```
      *
      * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
@@ -1080,7 +1081,8 @@ export namespace Firestore {
      * const querySnapshot = await firebase.firestore()
      *   .collection('users')
      *   .orderBy('age')
-     *   .startAfter(30);
+     *   .startAfter(30)
+     *   .get();
      * ```
      *
      * @param fieldValues The field values to start this query after, in order of the query's order by.
@@ -1101,7 +1103,8 @@ export namespace Firestore {
      * const querySnapshot = await firebase.firestore()
      *   .collection('users')
      *   .orderBy('age')
-     *   .startAt(user);
+     *   .startAt(user)
+     *   .get();
      * ```
      *
      * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
@@ -1121,12 +1124,33 @@ export namespace Firestore {
      * const querySnapshot = await firebase.firestore()
      *   .collection('users')
      *   .orderBy('age')
-     *   .startAt(30);
+     *   .startAt(30)
+     *   .get();
      * ```
      *
      * @param fieldValues The field values to start this query at, in order of the query's order by.
      */
     startAt(...fieldValues: any[]): Query;
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain the specified field and
+     * the value should satisfy the relation constraint provided.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or above
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .where('age', '>=', 30);
+     *   .get();
+     * ```
+     *
+     * @param fieldPath The path to compare.
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains").
+     * @param value The comparison value.
+     */
+    where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
   }
 
   /**
