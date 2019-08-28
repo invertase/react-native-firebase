@@ -80,11 +80,11 @@ export default {
   SDK_VERSION: require('./../version'),
   get FilePath() {
     // TODO move from storage native code into utils native code
-    return processPathConstants(NativeModules.RNFBStorageModule);
+    return processPathConstants(NativeModules.RNFBUtilsModule);
   },
   // TODO(salakar) deprecated remove in 6.1.0:
   get Native() {
     // TODO move from storage native code into utils native code
-    return processPathConstants(NativeModules.RNFBStorageModule);
+    return processPathConstants(NativeModules.RNFBUtilsModule);
   },
 };

@@ -43,4 +43,4 @@ for installation instructions on each individual module page.
 | <Anchor href="/notifications">Notifications</Anchor>       | <Badge type="downloads">@react-native-firebase/notifications</Badge>       | <Badge type="coverage">notifications</Badge>       |
 | <Anchor href="/perf">Performance Monitoring</Anchor>       | <Badge type="downloads">@react-native-firebase/perf</Badge>                | <Badge type="coverage">perf</Badge>                |
 | <Anchor href="/database">Realtime Database</Anchor>        | <Badge type="downloads">@react-native-firebase/database</Badge>            | <Badge type="coverage">database</Badge>            |
-| <Anchor href="/remote-config">Remote Config</Anchor>              | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |
+| <Anchor href="/remote-config">Remote Config</Anchor>       | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |

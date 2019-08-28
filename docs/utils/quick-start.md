@@ -19,7 +19,6 @@ import { utils } from '@react-native-firebase/app';
 import firebase from '@react-native-firebase/app';
 
 // firebase.utils().X
-
 ```
 
 ## Utilities
@@ -54,4 +53,3 @@ import firebase from '@react-native-firebase/app';
 // Access the device pictures directory
 const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 ```
-
