@@ -13,14 +13,14 @@ App initialization in React Native Firebase is, for the most part, the same as t
 
 Only some modules on the official Firebase native SDK's support multiple apps, they are as follows:
 
- - Authentication
- - Database
- - Firestore
- - Functions
- - Instance ID
- - Storage
- - ML Kit Natural Language
- - ML Kit Vision
+- Authentication
+- Database
+- Firestore
+- Functions
+- Instance ID
+- Storage
+- ML Kit Natural Language
+- ML Kit Vision
 
 For further information, view [Firebase Documentation for Multiple Projects](https://firebase.google.com/docs/web/setup#multiple-projects).
 
@@ -60,12 +60,14 @@ const androidConfig = {
   persistence: true,
 };
 
-const kittensApp = firebase.initializeApp(
-  // use platform-specific firebase config
-  Platform.OS === 'ios' ? iosConfig : androidConfig,
-  // name of this app
-  'kittens',
-).then(app => console.log('initialized apps ->', firebase.apps));
+const kittensApp = firebase
+  .initializeApp(
+    // use platform-specific firebase config
+    Platform.OS === 'ios' ? iosConfig : androidConfig,
+    // name of this app
+    'kittens',
+  )
+  .then(app => console.log('initialized apps ->', firebase.apps));
 ```
 
 ## Initialize apps via Android/iOS native code
@@ -78,12 +80,11 @@ For example, if you created an app natively called `dogs` then the following wou
 import firebase from '@react-native-firebase/app';
 
 const dogsApp = firebase.app('dogs');
-
 ```
 
 ## Deleting an app instance
 
-Firebase App instances can be deleted via `app.delete()`. 
+Firebase App instances can be deleted via `app.delete()`.
 
 ```js
 await firebase.app('kittens').delete();
