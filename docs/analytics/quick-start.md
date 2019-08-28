@@ -52,7 +52,7 @@ async function onProductView() {
 
 ### Attaching user data
 
-User data can be attached to analytical events via the [***`setUserId`](reference/module#setUserId), [***`setUserProperties`](reference/module#setUserProperties) and [***`setUserProperty`](reference/module#setUserProperty) methods:
+User data can be attached to analytical events via the [***`setUserId`](reference/module#setUserId), [***`setUserProperties`](reference/module#setUserProperties) and [***`setUserProperty`](reference/module#setUserProperty) methods. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
 
 ```js
 import analytics from '@react-native-firebase/analytics';
@@ -64,6 +64,8 @@ async function onSignIn(user) {
   ]);
 }
 ```
+
+> When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.
 
 ### Tracking screen names
 

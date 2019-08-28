@@ -164,7 +164,7 @@ export namespace Analytics {
     setUserId(id: string | null): Promise<void>;
 
     /**
-     * Sets a key/value pair of data on the current user.
+     * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
      *
      * #### Example
      *
@@ -178,7 +178,7 @@ export namespace Analytics {
     setUserProperty(name: string, value: string | null): Promise<void>;
 
     /**
-     * Sets multiple key/value pairs of data on the current user.
+     * Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
      *
      * #### Example
      *
@@ -188,6 +188,8 @@ export namespace Analytics {
      *   account_name: 'Gold Badge',
      * });
      * ```
+     *
+     * > When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.
      *
      * @react-native-firebase
      * @param properties Set a property value to null to remove it.
