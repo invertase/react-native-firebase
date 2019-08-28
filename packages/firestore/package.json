@@ -32,7 +32,7 @@
   "dependencies": {
     "@react-native-firebase/app-types": "0.3.0"
   },
-  "gitHead": "889bf5379c8ce5257b33fb3ad1ac9c905fe26fff",
+  "gitHead": "78b4d9cbef3f0e80eb4e5031f395d80e0c30aa24",
   "publishConfig": {
     "access": "public"
   }
