@@ -124,7 +124,7 @@ export namespace Admob {
     ERROR = 'error',
 
     /**
-     * The ad opened and is currently visible to the user. This event is received after the `show()`
+     * The ad opened and is currently visible to the user. This event is fired after the `show()`
      * method has been called.
      */
     OPENED = 'opened',
@@ -152,7 +152,7 @@ export namespace Admob {
    */
   export enum RewardedAdEventType {
     /**
-     * When a rewarded ad has loaded.
+     * An event fired when a rewarded ad has loaded.
      *
      * This type differs from `AdEventType.LOADED` as when a rewarded ad is loaded,
      * an additional data payload is provided to the event handler containing the ad reward
@@ -770,13 +770,13 @@ export namespace Admob {
     /**
      * @param type The event type, e.g. `AdEventType.LOADED`.
      * @param error An optional JavaScript Error containing the error code and message.
-     * @param data Optional data for the event, e.g. rewarded
+     * @param data Optional data for the event, e.g. reward type and amount
      */
     (type: AdEventType | RewardedAdEventType, error?: Error, data?: any | RewardedAdReward): void;
   }
 
   /**
-   * Base call for InterstitialAd, RewardedAd and NativeAd.
+   * Base class for InterstitialAd, RewardedAd, NativeAd and BannerAd.
    */
   export class MobileAd {
     /**
