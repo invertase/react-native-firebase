@@ -19,20 +19,30 @@ package io.invertase.firebase.admob;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.views.view.ReactViewGroup;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 
-public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManager<ReactViewGroup> {
+public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManager<AdView> {
 
   public static final String REACT_CLASS = "RNFBBannerAd";
   private AdView adView;
+  private ThemedReactContext context;
+
 
   @Nonnull
   @Override
@@ -42,13 +52,14 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
 
   @Nonnull
   @Override
-  protected ReactViewGroup createViewInstance(@Nonnull ThemedReactContext reactContext) {
-    ReactViewGroup viewGroup = new ReactViewGroup(reactContext);
+  protected AdView createViewInstance(@Nonnull ThemedReactContext reactContext) {
+    context = reactContext;
     adView = new AdView(reactContext);
+
 
     adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
 
-    adView.setAdSize(AdSize.SMART_BANNER);
+    adView.setAdSize(AdSize.BANNER);
     AdRequest adRequest = new AdRequest.Builder().build();
 
     adView.setAdListener(new AdListener() {
@@ -56,6 +67,19 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
       public void onAdLoaded() {
         Log.d("ELLIOT", "LOADED");
         // Code to be executed when an ad finishes loading.
+        int left = adView.getLeft();
+        int top = adView.getTop();
+
+        int width = adView
+          .getAdSize()
+          .getWidthInPixels(reactContext);
+        int height = adView
+          .getAdSize()
+          .getHeightInPixels(reactContext);
+
+        adView.measure(width, height);
+        adView.layout(left, top, left + width, top + height);
+
       }
 
       @Override
@@ -90,8 +114,79 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
 
     adView.loadAd(adRequest);
 
-    viewGroup.addView(adView);
 
-    return viewGroup;
+    return adView;
+  }
+
+  @Override
+  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
+    builder.put("onNativeEvent", MapBuilder.of("registrationName", "onNativeEvent"));
+    return builder.build();
+  }
+
+  /**
+   * Handle unitId prop
+   *
+   * @param view
+   * @param value
+   */
+  @ReactProp(name = "unitId")
+  public void setUnitId(AdView view, String value) {
+    AdRequest adRequest = new AdRequest.Builder().build();
+    view.loadAd(adRequest);
+
+  }
+
+  /**
+   * Handle request prop
+   *
+   * @param view
+   * @param value
+   */
+  @ReactProp(name = "request")
+  public void setRequest(AdView view, ReadableMap value) {
+    AdRequest adRequest = new AdRequest.Builder().build();
+    view.loadAd(adRequest);
+  }
+
+  /**
+   * Handle size prop
+   *
+   * @param view
+   * @param value
+   */
+  @ReactProp(name = "size")
+  public void setSize(AdView view, String value) {
+    AdSize adSize = ReactNativeFirebaseAdMobCommon.stringToAdSize(value);
+
+    // Send the width & height back to the JS
+    int width;
+    int height;
+    WritableMap payload = Arguments.createMap();
+
+    if (adSize == AdSize.SMART_BANNER) {
+      width = (int) PixelUtil.toDIPFromPixel(adSize.getWidthInPixels(context));
+      height = (int) PixelUtil.toDIPFromPixel(adSize.getHeightInPixels(context));
+    } else {
+      width = adSize.getWidth();
+      height = adSize.getHeight();
+    }
+
+    payload.putDouble("width", width);
+    payload.putDouble("height", height);
+
+    sendEvent("onSizeChange", payload);
+
+
+//    view.setAdSize(adSize);
+//    requestAd();
+  }
+
+  private void sendEvent(String type, WritableMap payload) {
+    WritableMap event = Arguments.createMap();
+    event.putString("type", type);
+    event.merge(payload);
+    context.getJSModule(RCTEventEmitter.class).receiveEvent(adView.getId(), "onNativeEvent", event);
   }
 }

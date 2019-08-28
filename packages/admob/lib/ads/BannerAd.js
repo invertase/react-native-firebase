@@ -15,14 +15,45 @@
  *
  */
 
-import React from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
+import { View, Dimensions } from 'react-native';
 import { requireNativeComponent } from 'react-native';
 
-class BannerAd extends React.Component {
-  render() {
-    return <RNFBBannerAd {...this.props} />;
+const initialState = [0, 0];
+
+function BannerAd({ unitId, size, request, onAdEvent }) {
+  const [dimensions, setDimensions] = useState(initialState);
+
+  function onNativeEvent({ nativeEvent }) {
+    const { width, height, type } = nativeEvent;
+    // todo habdle event type/onAdEvent
+
+    switch (type) {
+      case 'onSizeChange':
+        setDimensions(nativeEvent.width, nativeEvent.height);
+        break;
+      case 'onAdLoaded':
+        onAdEvent('onAdLoaded');
+        break;
+    }
   }
+
+  const style = {
+    width: dimensions[0],
+    height: dimensions[1],
+  };
+
+  return (
+    <RNFBBannerAd
+      style={style}
+      unitId={''}
+      size={''}
+      request={{}}
+      onNativeEvent={onNativeEvent}
+    />
+  );
 }
+
 
 const RNFBBannerAd = requireNativeComponent('RNFBBannerAd', BannerAd);
 

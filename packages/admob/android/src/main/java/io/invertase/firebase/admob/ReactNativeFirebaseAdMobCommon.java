@@ -27,10 +27,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -38,6 +41,36 @@ import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
 
 public class ReactNativeFirebaseAdMobCommon {
+
+  static AdSize stringToAdSize(String value) {
+    Pattern pattern = Pattern.compile("([0-9]+)x([0-9]+)");
+    Matcher matcher = pattern.matcher(value);
+
+    // If size is "valXval"
+    if (matcher.find()) {
+      int width = Integer.parseInt(matcher.group(1));
+      int height = Integer.parseInt(matcher.group(2));
+      return new AdSize(width, height);
+    }
+
+    switch (value.toUpperCase()) {
+      default:
+      case "BANNER":
+        return AdSize.BANNER;
+      case "LARGE_BANNER":
+        return AdSize.LARGE_BANNER;
+      case "MEDIUM_RECTANGLE":
+        return AdSize.MEDIUM_RECTANGLE;
+      case "FULL_BANNER":
+        return AdSize.FULL_BANNER;
+      case "LEADERBOARD":
+        return AdSize.LEADERBOARD;
+      case "SMART_BANNER":
+        return AdSize.SMART_BANNER;
+      case "SMART_BANNER_LANDSCAPE":
+        return AdSize.SMART_BANNER;
+    }
+  }
 
   static public AdRequest buildAdRequest(ReadableMap adRequestOptions) {
     AdRequest.Builder builder = new AdRequest.Builder();
