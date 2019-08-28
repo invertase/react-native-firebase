@@ -248,7 +248,7 @@ This is a common error which occurs on both Android & iOS when making a request 
   - The publisher ID needs to be available on the same account as your AdMob App ID.
 - The user is outside of the EEA: If a user does not need to provide consent, the form request will error. Ensure you have checked the users status via `requestInfoUpdate`. If using an emulator, ensure you set a debug location via `setDebugGeography`.
 - Your AdMob account is not valid:
-  - Your account is not disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
+  - Your account is disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
   - You have provided invalid payment information: If your account has no payment information set up, this seems to cause this error to trigger.
 
 If you are still struggling to present the consent form, reach out to AdMob support to investigate your account status.

@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Authentication package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `auth` package:
+ * #### Example: Access the firebase export from the `auth` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/auth';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.auth().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `auth` package:
+ * #### Example: Using the default export from the `auth` package:
  *
  * ```js
  * import auth from '@react-native-firebase/auth';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // auth().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -488,15 +482,16 @@ export namespace Auth {
    */
   export interface ActionCodeSettingsAndroid {
     /**
-     * The Android Package Name.
+     * Defines the required Android package name of the app where the link should be handled if the Android app is installed.
      */
     packageName: string;
     /**
-     * The preference for whether to attempt to install the app if it is not present.
+     * Whether to install the Android app if the device supports it and the app is not already installed.
      */
     installApp?: boolean;
     /**
-     * The minimum Android app version.
+     *
+     * The Android minimum version if available. If the installed app is an older version, the user is taken to the Play Store to upgrade the app.
      */
     minimumVersion?: string;
   }
@@ -508,13 +503,19 @@ export namespace Auth {
    *
    * ```js
    * const actionCodeInfo = await firebase.auth().checkActionCode('ABCD');
-   *
+   *Data
    * console.log('Action code email: ', actionCodeInfo.data.email);
    * console.log('Action code from email: ', actionCodeInfo.data.fromEmail);
    * ```
    */
   export interface ActionCodeInfoData {
+    /**
+     * This signifies the email before the call was made.
+     */
     email?: string;
+    /**
+     * This signifies the current email associated with the account, which may have changed as a result of the {@link auth#checkActionCode} call performed.
+     */
     fromEmail?: string;
   }
 
@@ -1206,7 +1207,7 @@ export namespace Auth {
     onAuthStateChanged(listener: AuthListenerCallback): () => void;
 
     /**
-     * Listen for changes in id token.
+     * Listen for changes in ID token.
      * This method returns a unsubscribe function to stop listening to events.
      * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
      *
