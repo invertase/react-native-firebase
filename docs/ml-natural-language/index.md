@@ -9,6 +9,8 @@ Firebase ML Kit brings the power of machine learning to your React Native applic
 
 <Youtube id="ejrn_JHksws" />
 
+## Supported APIs
+
 ML Kit Natural Language for React Native currently supports the following APIs.
 
 | API                                 | Supported |

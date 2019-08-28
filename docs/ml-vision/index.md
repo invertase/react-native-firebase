@@ -9,6 +9,8 @@ Firebase ML Kit brings the power of machine learning vision to your React Native
 
 <Youtube id="ejrn_JHksws" />
 
+## Supported APIs
+
 ML Kit Vision for React Native currently supports the following Firebase APIs. APIs marked with ❌ will be support in a later release.
 
 | API                                 | Cloud Model | On Device |
@@ -21,11 +23,11 @@ ML Kit Vision for React Native currently supports the following Firebase APIs. A
 | [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)                |             | ✅        |
 | [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)                  | ❌          | ❌        |
 | [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)           | ❌          | ❌        |
-| Image Labelling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
+| Image Labelling (with [Custom Model](https://firebase.google.com/docs/ml-kit/label-images)) | ❌          | ❌        |
 
 ## Getting Started
 
-<Grid columns="3">
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"
@@ -33,15 +35,6 @@ ML Kit Vision for React Native currently supports the following Firebase APIs. A
 		to="/quick-start"
 	>
     Install & start using the power of Machine Learning in your app.
-	</Block>
-	<Block
-		icon="school"
-		color="#4CAF50"
-		title="Guides"
-		version={false}
-		to="/guides?tags=mlkit"
-	>
-	  Our guides 
 	</Block>
   <Block
 		icon="layers"

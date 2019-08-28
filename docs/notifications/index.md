@@ -1,39 +1,34 @@
 ---
 title: Notifications
-description: TODO
+description: Display custom notifications to your users on both Android & iOS.
 ---
 
 # Notifications
 
-TODO
+React Native Firebase Notifications brings the power of the [Android](https://developer.android.com/guide/topics/ui/notifiers/notifications)
+and [iOS](https://developer.apple.com/design/human-interface-guidelines/ios/system-capabilities/notifications/) notifications
+capabilities to React Native. 
+
+*If you are looking to receive data messages from FCM, check out the Messaging module.* 
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
-		icon="build"
-		color="#ffc107"
-		title="Quick Start"
-		to="/quick-start"
+		icon="android"
+		color="#7DC45D"
+		title="Android Quick Start"
+		to="/android"
 	>
-    Install & TODO.
+    Setup and take advantage of Androids feature rich notifications.
 	</Block>
 	<Block
-		icon="school"
-		color="#4CAF50"
-		title="Guides"
-		version={false}
-		to="/guides?tags=notifications"
+		icon="phone_iphone"
+		color="#333333"
+		title="iOS Quick Start"
+		to="/ios"
 	>
-	  TODO
-	</Block>
-  <Block
-		icon="layers"
-		color="#03A9F4"
-		title="Reference"
-		to="/reference"
-	>
-    The API reference covers everything required to successfully integrate Notifications into your apps.
+	  Setup and start displaying notifications to your iOS users.
 	</Block>
 </Grid>
 

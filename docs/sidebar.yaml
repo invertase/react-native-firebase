@@ -203,16 +203,25 @@
       to: '/ios'
 
 - module: notifications
-  group: Notifications
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  groups:
+    - group: Notifications
+      children:
+        - text: Overview
+          to: "/"
+    - group: Android
+      children:
+        - text: Quick Start
+          to: "/android"
+        - text: Android Channels
+          to: "/android/android-channels"
+        - text: Android Notifications
+          to: "/android/android-notifications"
+    - group: iOS
+      children:
+        - text: Quick Start
+          to: "/iOS"
+        - text: iOS Notifications
+          to: "/ios/ios-notifications"
 
 - module: remote-config
   group: Remote Config
