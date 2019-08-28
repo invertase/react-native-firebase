@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/indexing",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Indexing",
   "main": "lib/index.js",
@@ -26,7 +26,7 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.2.3"
+    "@react-native-firebase/app-types": "0.3.0"
   },
   "gitHead": "889bf5379c8ce5257b33fb3ad1ac9c905fe26fff",
   "publishConfig": {
