@@ -15,8 +15,8 @@
  *
  */
 
-import { isIOS } from '@react-native-firebase/app/lib/common';
-import { createModuleNamespace, FirebaseModule } from '@react-native-firebase/app/lib/internal';
+import { isIOS } from '../../lib/common';
+import { createModuleNamespace, FirebaseModule } from '../../lib/internal';
 import UtilsStatics from './UtilsStatics';
 
 const namespace = 'utils';
