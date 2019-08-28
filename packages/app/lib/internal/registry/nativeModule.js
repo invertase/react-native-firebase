@@ -38,10 +38,10 @@ function nativeModuleKey(module) {
  * @param argToPrepend
  * @returns {Function}
  */
-function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
+function nativeModuleMethodWrapped(namespace, method, argToPrepend, methodName) {
   return (...args) => {
     if (Logger.config.enableMethodLogging) {
-      Logger.info(`${namespace} - ${method.name} - ${JSON.stringify(args)}`);
+      Logger.info(`${namespace} -> ${methodName}`, args);
     }
 
     const possiblePromise = method(...[...argToPrepend, ...args]);
@@ -75,7 +75,12 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
   for (let i = 0, len = properties.length; i < len; i++) {
     const property = properties[i];
     if (typeof NativeModule[property] === 'function') {
-      native[property] = nativeModuleMethodWrapped(namespace, NativeModule[property], argToPrepend);
+      native[property] = nativeModuleMethodWrapped(
+        namespace,
+        NativeModule[property],
+        argToPrepend,
+        property,
+      );
     } else {
       native[property] = NativeModule[property];
     }
