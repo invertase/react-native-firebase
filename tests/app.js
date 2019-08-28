@@ -44,6 +44,8 @@ jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 
+firebase.utils().enableLogger({ enableMethodLogging: true });
+
 class Root extends Component {
   constructor(props) {
     super(props);

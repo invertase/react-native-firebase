@@ -17,6 +17,7 @@
 
 import { isIOS } from '../../lib/common';
 import { createModuleNamespace, FirebaseModule } from '../../lib/internal';
+import Logger from './logger';
 import UtilsStatics from './UtilsStatics';
 
 const namespace = 'utils';
@@ -29,6 +30,14 @@ class FirebaseUtilsModule extends FirebaseModule {
       return false;
     }
     return this.native.isRunningInTestLab;
+  }
+
+  enableLogger(config) {
+    Logger.config = { ...Logger.config, ...config };
+  }
+
+  logger() {
+    return Logger;
   }
 }
 

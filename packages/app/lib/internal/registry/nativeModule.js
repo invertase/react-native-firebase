@@ -16,6 +16,7 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
+import Logger from '../../utils/logger';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
@@ -39,6 +40,10 @@ function nativeModuleKey(module) {
  */
 function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
   return (...args) => {
+    if (Logger.config.enableMethodLogging) {
+      Logger.info(`${namespace} - ${method.name} - ${JSON.stringify(args)}`);
+    }
+
     const possiblePromise = method(...[...argToPrepend, ...args]);
 
     if (possiblePromise && possiblePromise.then) {
