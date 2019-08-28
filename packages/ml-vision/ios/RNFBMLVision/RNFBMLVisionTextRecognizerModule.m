@@ -184,7 +184,9 @@ RCT_EXPORT_METHOD(cloudTextRecognizerProcessImage:
   NSMutableArray *languageCodes = [[NSMutableArray alloc] init];
 
   for (FIRVisionTextRecognizedLanguage *language in languages) {
-    [languageCodes addObject:language.languageCode];
+    if (language.languageCode != nil) {
+      [languageCodes addObject:language.languageCode];
+    }
   }
 
   return languageCodes;
