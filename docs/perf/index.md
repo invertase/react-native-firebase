@@ -13,7 +13,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"

@@ -35,7 +35,7 @@ initialization via the client using `initializeApp`.
 
 > Due to limitation with some Firebase SDKs, the Remote Config, Crashlytics & Performance Monitoring modules will not work with this method of initialization.
 
-For further information, view the <Anchor version group href="/client-initialization">client initialization</Anchor>
+For further information, view the <Anchor version group href="/client">client initialization</Anchor>
 documentation.
 
 ## Module Usage

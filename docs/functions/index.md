@@ -12,7 +12,7 @@ React Native Firebase supports integration with production and locally emulated 
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="build"
 		color="#ffc107"

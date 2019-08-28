@@ -122,6 +122,18 @@ describe('admob() AdsConsent', () => {
       }
     });
 
+    it('throws if all options are false', () => {
+      try {
+        AdsConsent.showForm({
+          privacyPolicy: 'https://invertase.io',
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(`'options' form requires at least one option to be enabled`);
+        return Promise.resolve();
+      }
+    });
+
     // TODO test show form works?
   });
 
