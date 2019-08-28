@@ -30,6 +30,10 @@ class FirebaseUtilsModule extends FirebaseModule {
     }
     return this.native.isRunningInTestLab;
   }
+
+  logInfo(...args) {
+    return logger.logInfo(...args);
+  }
 }
 
 // import { utils } from '@react-native-firebase/app';
