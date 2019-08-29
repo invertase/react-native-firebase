@@ -12,7 +12,7 @@ directly from your device and from your Firebase Cloud Storage bucket.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="cloud_queue"
 		color="#ffc107"

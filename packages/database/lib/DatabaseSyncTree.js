@@ -15,10 +15,10 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { isString } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { isString } from '@react-native-firebase/common';
 import SharedEventEmitter from '@react-native-firebase/app/lib/internal/SharedEventEmitter';
+import { NativeModules } from 'react-native';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 
 class DatabaseSyncTree {
@@ -116,7 +116,7 @@ class DatabaseSyncTree {
    * @param registration
    * @return {null}
    */
-  getRegistration(registration: string) {
+  getRegistration(registration) {
     return this._reverseLookup[registration]
       ? Object.assign({}, this._reverseLookup[registration])
       : null;

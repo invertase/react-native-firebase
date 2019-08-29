@@ -26,7 +26,7 @@ import {
   pathIsEmpty,
   pathToUrlEncodedString,
   ReferenceBase,
-} from '@react-native-firebase/common';
+} from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
 import DatabaseSyncTree from './DatabaseSyncTree';
 

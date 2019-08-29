@@ -15,7 +15,6 @@
  *
  */
 
-import { NativeModules } from 'react-native';
 import {
   hasOwnProperty,
   isArray,
@@ -24,8 +23,8 @@ import {
   isString,
   isUndefined,
   isValidUrl,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
+import { NativeModules } from 'react-native';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 
@@ -98,6 +97,12 @@ export default {
       );
     }
 
+    if (!options.withPersonalizedAds && !options.withNonPersonalizedAds && !options.withAdFree) {
+      throw new Error(
+        "firebase.admob.AdsConsent.showForm(*) 'options' form requires at least one option to be enabled.",
+      );
+    }
+
     return native.showForm(options);
   },
 
@@ -132,8 +137,6 @@ export default {
   getStatus() {
     return native.getStatus();
   },
-
-  // TODO getStatus
 
   /**
    *

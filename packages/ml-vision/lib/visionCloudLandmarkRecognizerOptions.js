@@ -22,8 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
+} from '@react-native-firebase/app/lib/common';
 import VisionCloudLandmarkRecognizerModelType from './VisionCloudLandmarkRecognizerModelType';
 
 export default function visionCloudLandmarkRecognizerOptions(cloudLandmarkRecognizerOptions) {

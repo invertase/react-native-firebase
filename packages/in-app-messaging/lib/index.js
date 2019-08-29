@@ -15,14 +15,12 @@
  *
  */
 
+import { isBoolean } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isBoolean } from '@react-native-firebase/common';
-
 import version from './version';
 
 const statics = {};

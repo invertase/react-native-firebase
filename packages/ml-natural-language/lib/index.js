@@ -16,21 +16,20 @@
  */
 
 import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
-import {
   isArray,
   isNumber,
   isObject,
   isString,
   isUndefined,
   validateOptionalNativeDependencyExists,
-} from '@react-native-firebase/common';
-
-import version from './version';
+} from '@react-native-firebase/app/lib/common';
+import {
+  createModuleNamespace,
+  FirebaseModule,
+  getFirebaseRoot,
+} from '@react-native-firebase/app/lib/internal';
 import validateTextMessage from './validateTextMessage';
+import version from './version';
 
 // TODO not available on iOS until SDK 6.0.0
 // import TranslateModelManager from './TranslateModelManager';

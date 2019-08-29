@@ -16,11 +16,10 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
-
 import { APP_NATIVE_MODULE } from '../constants';
-import SharedEventEmitter from '../SharedEventEmitter';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
+import SharedEventEmitter from '../SharedEventEmitter';
 
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};

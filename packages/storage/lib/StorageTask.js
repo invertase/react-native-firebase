@@ -15,7 +15,7 @@
  *
  */
 
-import { isFunction, isObject, isNull } from '@react-native-firebase/common';
+import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
 import StorageStatics from './StorageStatics';
 
 let TASK_ID = 0;

@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '@react-native-firebase/common';
+import { isString } from '@react-native-firebase/app/lib/common';
 
 const RESERVED = new RegExp('[~*/\\[\\]]');
 

@@ -35,7 +35,7 @@ initialization via the client using `initializeApp`.
 
 > Due to limitation with some Firebase SDKs, the Remote Config, Crashlytics & Performance Monitoring modules will not work with this method of initialization.
 
-For further information, view the <Anchor version group href="/client-initialization">client initialization</Anchor>
+For further information, view the <Anchor version group href="/client">client initialization</Anchor>
 documentation.
 
 ## Module Usage
@@ -51,10 +51,3 @@ The instance is also accessible from other installed packages, for example:
 ```js
 import auth, { firebase } from '@react-native-firebase/auth';
 ```
-
-### Create and initialize an additional app instance
-
-It is possible to create multiple app instances, allowing full control over which Firebase project is used
-for certain packages. To create an additional app instance, call the `initialize` method:
-
-TODO

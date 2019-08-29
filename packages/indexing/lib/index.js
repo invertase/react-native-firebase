@@ -15,14 +15,13 @@
  *
  */
 
-import { Linking } from 'react-native';
+import { isFunction } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isFunction } from '@react-native-firebase/common';
+import { Linking } from 'react-native';
 import version from './version';
 
 const statics = {};

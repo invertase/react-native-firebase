@@ -15,11 +15,11 @@
  *
  */
 
-import { isObject } from '@react-native-firebase/common';
-import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
+import { isObject } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
-import { buildNativeMap } from './utils/serialize';
+import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import { parseSetOptions, parseUpdateArgs } from './utils';
+import { buildNativeMap } from './utils/serialize';
 
 export default class FirestoreTransaction {
   constructor(firestore, meta) {

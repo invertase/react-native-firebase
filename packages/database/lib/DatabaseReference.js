@@ -16,26 +16,25 @@
  */
 
 import {
-  isString,
-  pathParent,
-  pathChild,
-  isValidPath,
   generateDatabaseId,
-  isNumber,
-  isNull,
-  isUndefined,
-  isFunction,
-  promiseWithOptionalCallback,
-  isObject,
   isBoolean,
-} from '@react-native-firebase/common';
-
-import DatabaseQueryModifiers from './DatabaseQueryModifiers';
-import DatabaseOnDisconnect from './DatabaseOnDisconnect';
+  isFunction,
+  isNull,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+  isValidPath,
+  pathChild,
+  pathParent,
+  promiseWithOptionalCallback,
+} from '@react-native-firebase/app/lib/common';
 import DatabaseDataSnapshot from './DatabaseDataSnapshot';
+import DatabaseOnDisconnect from './DatabaseOnDisconnect';
 import DatabaseQuery, {
   provideReferenceClass as provideReferenceClassForQuery,
 } from './DatabaseQuery';
+import DatabaseQueryModifiers from './DatabaseQueryModifiers';
 import DatabaseThenableReference, {
   provideReferenceClass as provideReferenceClassForThenable,
 } from './DatabaseThenableReference';

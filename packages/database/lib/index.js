@@ -15,17 +15,16 @@
  *
  */
 
+import { isBoolean, isNumber, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isString, isBoolean, isNumber } from '@react-native-firebase/common';
-
-import version from './version';
-import DatabaseStatics from './DatabaseStatics';
 import DatabaseReference from './DatabaseReference';
+import DatabaseStatics from './DatabaseStatics';
 import DatabaseTransaction from './DatabaseTransaction';
+import version from './version';
 
 const namespace = 'database';
 

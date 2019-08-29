@@ -15,7 +15,7 @@
  *
  */
 
-import { isNumber } from '@react-native-firebase/common';
+import { isNumber } from '@react-native-firebase/app/lib/common';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 const OPERATORS = {

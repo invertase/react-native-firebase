@@ -15,7 +15,12 @@
  *
  */
 
-import { hasOwnProperty, isNumber, isObject, isUndefined } from '@react-native-firebase/common';
+import {
+  hasOwnProperty,
+  isNumber,
+  isObject,
+  isUndefined,
+} from '@react-native-firebase/app/lib/common';
 
 export default function visionImageLabelerOptions(imageLabelerOptions) {
   const out = {

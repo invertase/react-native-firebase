@@ -24,14 +24,13 @@ import {
   isObject,
   isString,
   isUndefined,
-} from '@react-native-firebase/common';
-
-import { getTypeMapInt, getTypeMapName } from './typemap';
+} from '@react-native-firebase/app/lib/common';
+import FirestoreBlob from '../FirestoreBlob';
 import { DOCUMENT_ID } from '../FirestoreFieldPath';
 import FirestoreGeoPoint from '../FirestoreGeoPoint';
-import FirestoreTimestamp from '../FirestoreTimestamp';
 import FirestorePath from '../FirestorePath';
-import FirestoreBlob from '../FirestoreBlob';
+import FirestoreTimestamp from '../FirestoreTimestamp';
+import { getTypeMapInt, getTypeMapName } from './typemap';
 
 // To avoid React Native require cycle warnings
 let FirestoreDocumentReference = null;

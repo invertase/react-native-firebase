@@ -530,21 +530,8 @@ RCT_EXPORT_METHOD(setTaskStatus:
   }];
 }
 
-- (NSString *)getPathForDirectory:(int)directory {
-  NSArray *paths = NSSearchPathForDirectoriesInDomains((NSSearchPathDirectory) directory, NSUserDomainMask, YES);
-  return [paths firstObject];
-}
-
 - (NSDictionary *)constantsToExport {
-  NSMutableDictionary *constants = [@{
-      @"MAIN_BUNDLE": [[NSBundle mainBundle] bundlePath],
-      @"CACHES_DIRECTORY": [self getPathForDirectory:NSCachesDirectory],
-      @"DOCUMENT_DIRECTORY": [self getPathForDirectory:NSDocumentDirectory],
-      @"PICTURES_DIRECTORY": [self getPathForDirectory:NSPicturesDirectory],
-      @"MOVIES_DIRECTORY": [self getPathForDirectory:NSMoviesDirectory],
-      @"TEMP_DIRECTORY": NSTemporaryDirectory(),
-      @"LIBRARY_DIRECTORY": [self getPathForDirectory:NSLibraryDirectory],
-  } mutableCopy];
+  NSMutableDictionary *constants = [@{} mutableCopy];
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {
     FIRStorage *storageInstance = [FIRStorage storage];

@@ -25,7 +25,7 @@ let transactionId = 0;
  * @returns {number}
  * @private
  */
-const generateTransactionId = (): number => transactionId++;
+const generateTransactionId = () => transactionId++;
 
 export default class FirestoreTransactionHandler {
   constructor(firestore) {

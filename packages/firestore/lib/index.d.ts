@@ -1045,7 +1045,118 @@ export namespace Firestore {
      * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
      */
     orderBy(fieldPath: string | FieldPath, directionStr?: 'asc' | 'desc'): Query;
+
+    /**
+     * Creates and returns a new Query that starts after the provided document (exclusive). The start
+     * position is relative to the order of the query. The document must contain all of the fields
+     * provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to, but not including, a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .startAfter(user)
+     *   .get();
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to start after.
+     */
+    startAfter(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that starts after the provided fields relative to the order of
+     * the query. The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is above 30
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .startAfter(30)
+     *   .get();
+     * ```
+     *
+     * @param fieldValues The field values to start this query after, in order of the query's order by.
+     */
+    startAfter(...fieldValues: any[]): Query;
+
+    /**
+     * Creates and returns a new Query that starts at the provided document (inclusive). The start
+     * position is relative to the order of the query. The document must contain all of the
+     * fields provided in the orderBy of this query.
+     *
+     * #### Example
+     *
+     * ```js
+     * const user = await firebase.firestore().doc('users/alovelace').get();
+     *
+     * // Get all users up to a specific user in order of age
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .startAt(user)
+     *   .get();
+     * ```
+     *
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     *
+     * @param snapshot The snapshot of the document to start at.
+     */
+    startAt(snapshot: DocumentSnapshot): Query;
+
+    /**
+     * Creates and returns a new Query that starts at the provided fields relative to the order of the query.
+     * The order of the field values must match the order of the order by clauses of the query.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or above
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .startAt(30)
+     *   .get();
+     * ```
+     *
+     * @param fieldValues The field values to start this query at, in order of the query's order by.
+     */
+    startAt(...fieldValues: any[]): Query;
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain the specified field and
+     * the value should satisfy the relation constraint provided.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or above
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .where('age', '>=', 30);
+     *   .get();
+     * ```
+     *
+     * @param fieldPath The path to compare.
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains").
+     * @param value The comparison value.
+     */
+    where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
   }
+
+  /**
+   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', and 'array-contains'.
+   */
+  export type WhereFilterOp = '<' | '<=' | '==' | '>' | '>=' | 'array-contains';
 
   /**
    * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
@@ -1560,27 +1671,27 @@ export namespace Firestore {
     /**
      * Returns the `Blob` class.
      */
-    Blob: Blob;
+    Blob: typeof Blob;
 
     /**
      * Returns the `FieldPath` class.
      */
-    FieldPath: FieldPath;
+    FieldPath: typeof FieldPath;
 
     /**
      * Returns the `FieldValue` class.
      */
-    FieldValue: FieldValue;
+    FieldValue: typeof FieldValue;
 
     /**
      * Returns the `GeoPoint` class.
      */
-    GeoPoint: GeoPoint;
+    GeoPoint: typeof GeoPoint;
 
     /**
      * Returns the `Timestamp` class.
      */
-    Timestamp: Timestamp;
+    Timestamp: typeof Timestamp;
 
     /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in

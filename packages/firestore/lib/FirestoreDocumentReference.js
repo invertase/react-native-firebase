@@ -15,11 +15,10 @@
  *
  */
 
+import { isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { isObject, isString, isUndefined } from '@react-native-firebase/common';
-
-import { provideDocumentReferenceClass, buildNativeMap } from './utils/serialize';
-import { parseSetOptions, parseUpdateArgs, parseSnapshotArgs } from './utils';
+import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
+import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
 // To avoid React Native require cycle warnings
 let FirestoreCollectionReference = null;

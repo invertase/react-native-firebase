@@ -20,17 +20,14 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import version from './version';
+import AdEventType from './AdEventType';
 import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 import MaxAdContentRating from './MaxAdContentRating';
-import TestIds from './TestIds';
-
-import AdEventType from './AdEventType';
 import RewardedAdEventType from './RewardedAdEventType';
-
+import TestIds from './TestIds';
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
+import version from './version';
 
 const statics = {
   AdsConsentDebugGeography,

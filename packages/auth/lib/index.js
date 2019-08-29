@@ -15,27 +15,24 @@
  *
  */
 
+import { isAndroid, isBoolean } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isAndroid, isBoolean } from '@react-native-firebase/common';
-
+import ConfirmationResult from './ConfirmationResult';
+import PhoneAuthListener from './PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
-import PhoneAuthProvider from './providers/PhoneAuthProvider';
-import GoogleAuthProvider from './providers/GoogleAuthProvider';
-import GithubAuthProvider from './providers/GithubAuthProvider';
-import OAuthProvider from './providers/OAuthProvider';
-import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
-
+import GithubAuthProvider from './providers/GithubAuthProvider';
+import GoogleAuthProvider from './providers/GoogleAuthProvider';
+import OAuthProvider from './providers/OAuthProvider';
+import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import Settings from './Settings';
 import User from './User';
 import version from './version';
-import Settings from './Settings';
-import PhoneAuthListener from './PhoneAuthListener';
-import ConfirmationResult from './ConfirmationResult';
 
 const statics = {
   EmailAuthProvider,
