@@ -15,46 +15,57 @@
  *
  */
 
-import React, { useState, useEffect, useReducer } from 'react';
-import { View, Dimensions } from 'react-native';
+import React, { useState } from 'react';
 import { requireNativeComponent } from 'react-native';
+import { isFunction } from '@react-native-firebase/common';
+import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 
 const initialState = [0, 0];
 
-function BannerAd({ unitId, size, request, onAdEvent }) {
+function BannerAd({ unitId, size, request, ...props }) {
   const [dimensions, setDimensions] = useState(initialState);
 
   function onNativeEvent({ nativeEvent }) {
     const { width, height, type } = nativeEvent;
-    // todo habdle event type/onAdEvent
 
-    switch (type) {
-      case 'onSizeChange':
-        setDimensions(nativeEvent.width, nativeEvent.height);
-        break;
-      case 'onAdLoaded':
-        onAdEvent('onAdLoaded');
-        break;
+    if (type !== 'onSizeChanged' && isFunction(props[type])) {
+      let eventPayload;
+      if (type === 'onAdFailedToLoad') {
+        eventPayload = NativeFirebaseError.fromEvent(nativeEvent, 'admob');
+      }
+
+      props[type](eventPayload);
+    }
+
+    if (width && height && size !== 'FLUID') {
+      setDimensions([width, height]);
     }
   }
 
-  const style = {
-    width: dimensions[0],
-    height: dimensions[1],
-  };
+  let style;
+  if (size === 'FLUID') {
+    style = props.style;
+  } else {
+    style = {
+      width: dimensions[0],
+      height: dimensions[1],
+    };
+  }
 
   return (
-    <RNFBBannerAd
+    <ReactNativeFirebaseAdMobBannerView
+      size={size}
       style={style}
-      unitId={''}
-      size={''}
-      request={{}}
+      unitId={unitId}
+      request={request}
       onNativeEvent={onNativeEvent}
     />
   );
 }
 
-
-const RNFBBannerAd = requireNativeComponent('RNFBBannerAd', BannerAd);
+const ReactNativeFirebaseAdMobBannerView = requireNativeComponent(
+  'ReactNativeFirebaseAdMobBannerView',
+  BannerAd,
+);
 
 export default BannerAd;

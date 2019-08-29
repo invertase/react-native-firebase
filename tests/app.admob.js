@@ -25,6 +25,7 @@ import {
   RewardedAd,
   BannerAd,
   TestIds,
+  BannerSize,
 } from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
@@ -105,7 +106,13 @@ function Root() {
     <View
       style={{ flex: 1, justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
     >
-      <BannerAd size={'BANNER'} />
+      <BannerAd
+        size={BannerSize.SMART_BANNER}
+        request={{}}
+        unitId={'ca-app-pub-3940256099942544/6300978111'}
+        onAdLoaded={() => console.log('loaded')}
+        onAdFailedToLoad={e => console.log('failed to load', e)}
+      />
     </View>
   );
 }

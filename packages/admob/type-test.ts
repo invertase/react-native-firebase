@@ -24,3 +24,11 @@ console.log(firebase.admob(firebase.app()).app.name);
 
 // checks default export supports app arg
 console.log(defaultExport(firebase.app()).app.name);
+
+// test banner sizes
+console.log(firebase.admob.BannerSize.BANNER);
+console.log(firebase.admob.BannerSize.FULL_BANNER);
+console.log(firebase.admob.BannerSize.LARGE_BANNER);
+console.log(firebase.admob.BannerSize.LEADERBOARD);
+console.log(firebase.admob.BannerSize.MEDIUM_RECTANGLE);
+console.log(firebase.admob.BannerSize.SMART_BANNER);

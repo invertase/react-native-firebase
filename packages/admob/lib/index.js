@@ -39,6 +39,16 @@ const statics = {
   RewardedAdEventType,
   MaxAdContentRating,
   TestIds,
+  BannerSize: {
+    FLUID: 'FLUID',
+    WIDE_SKYSCRAPER: 'WIDE_SKYSCRAPER',
+    BANNER: 'BANNER',
+    FULL_BANNER: 'FULL_BANNER',
+    LARGE_BANNER: 'LARGE_BANNER',
+    LEADERBOARD: 'LEADERBOARD',
+    MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE',
+    SMART_BANNER: 'SMART_BANNER',
+  },
 };
 
 const namespace = 'admob';
@@ -77,8 +87,6 @@ class FirebaseAdMobModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/admob';
 export const SDK_VERSION = version;
 
-// import admob from '@react-native-firebase/admob';
-// admob().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -90,9 +98,6 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAdMobModule,
 });
 
-// import admob, { firebase } from '@react-native-firebase/admob';
-// admob().X(...);
-// firebase.admob().X(...);
 export const firebase = getFirebaseRoot();
 
 export AdsConsentDebugGeography from './AdsConsentDebugGeography';
@@ -101,9 +106,8 @@ export MaxAdContentRating from './MaxAdContentRating';
 export TestIds from './TestIds';
 export AdEventType from './AdEventType';
 export RewardedAdEventType from './RewardedAdEventType';
-
 export AdsConsent from './AdsConsent';
-
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
 export BannerAd from './ads/BannerAd';
+export const BannerSize = statics.BannerSize;
