@@ -17,7 +17,7 @@
 
 import React, { useState } from 'react';
 import { requireNativeComponent } from 'react-native';
-import { isFunction } from '@react-native-firebase/common';
+import { isFunction } from '@react-native-firebase/app/lib/common';
 import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 
 const initialState = [0, 0];
@@ -33,7 +33,6 @@ function BannerAd({ unitId, size, request, ...props }) {
       if (type === 'onAdFailedToLoad') {
         eventPayload = NativeFirebaseError.fromEvent(nativeEvent, 'admob');
       }
-
       props[type](eventPayload);
     }
 
