@@ -9,6 +9,8 @@ Phone authentication allows users to sign in to Firebase using their phone as th
 to the user via their phone number containing a unique code. Once the code has been authorized, the user is able to
 sign in to Firebase.
 
+Phone numbers that end users provide for authentication will be sent and stored by Google to improve our spam and abuse prevention across Google services, including but not limited to Firebase. **Developers should ensure they have appropriate end-user consent prior to using the Firebase Authentication phone number sign-in service.**
+
 > Firebase Phone Auth is not supported in all countries. Please see their [FAQs](https://firebase.google.com/support/faq/#develop) for more information.
 
 React Native Firebase provides two separate integration flows:
@@ -23,9 +25,9 @@ The `signInWithPhoneNumber` method handles the entire authentication flow, howev
 error handling. Some Android devices may also automatically handle the incoming SMS code and authenticate the user
 automatically.
 
-**Step 1**: Trigger phone auth
-
 > Whilst testing, make sure you have [whitelisted your device](https://firebase.google.com/docs/auth/ios/phone-auth#test-with-whitelisted-phone-numbers).
+
+**Step 1**: Trigger phone auth
 
 ```js
 import auth from '@react-native-firebase/auth';

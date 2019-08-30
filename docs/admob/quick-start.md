@@ -18,7 +18,7 @@ yarn add @react-native-firebase/admob
 ## Module usage
 
 The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and
-React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR. 
+React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR.
 
 Import the Cloud Functions package into your project:
 
@@ -34,7 +34,7 @@ import { firebase } from '@react-native-firebase/admob';
 
 ### Important: Adding your AdMob App ID
 
-The AdMob module needs hooking up to your own Google AdMob account. On [the dashboard](https://apps.admob.com/v2/home), you can add an application via the "Apps" menu item. Once created, under the "App settings" section you will find a custom "App ID". This ID is needed in order for the module to be used.
+The AdMob module needs to be hooked up to your own Google AdMob account. On [the dashboard](https://apps.admob.com/v2/home), you can add an application via the "Apps" menu item. Once created, under the "App settings" section you will find a custom "App ID". This ID is needed in order for the module to be used.
 
 ![App ID](https://prismic-io.s3.amazonaws.com/invertase%2F52dd6900-108c-47a6-accb-699fde963b99_new+project+%2813%29.jpg)
 
@@ -56,12 +56,11 @@ Ensure you **rebuild** your application for the changes to take effect.
 
 Out of the box, AdMob does not handle any related regulations which you may need to enforce on your application. It is up to the developer to implement and handle this on a user-by-user basis. For example, you must consent to EEA users being served both personalized and non-personalized adverts before showing them. For more information, see [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the
-<Anchor version group href="/european-user-consent">European User Consent</Anchor> page.
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page.
 
 ### Example: Displaying an Interstitial
 
-An interstitial is a full screen advert which is overlaid on-top of your currently application. They are perfect for showing periodically between game levels or after the user completes an action.
+An interstitial is a full screen advert which is overlaid on-top of your currently application. They are perfect to show periodically between game levels or after the user completes an action.
 
 #### Testing
 
@@ -111,11 +110,11 @@ Once created, you will be provided with a new Ad Unit ID which can be passed ove
 
 ### Configuring Ad Requests
 
-The AdMob module provides two ways of filtering and handling ad content within your app. 
+The AdMob module provides two ways of filtering and handling ad content within your app.
 
 ### Global Configuration
 
-To comply with various online acts, such as [Children's Online Privacy Protection Act (COPPA)](http://business.ftc.gov/privacy-and-security/children%27s-privacy) and [General Data Protection Regulation (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679), it is possible to set targetting preferences across every ad request in your aplication.
+To comply with various online acts, such as [Children's Online Privacy Protection Act (COPPA)](http://business.ftc.gov/privacy-and-security/children%27s-privacy) and [General Data Protection Regulation (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679), it is possible to set targetting preferences across every ad request in your application.
 
 Using the `setRequestConfiguration` method, all future ad requests will comply with the `RequestConfiguration` set:
 
@@ -129,7 +128,7 @@ await admob().setRequestConfiguration({
 });
 ```
 
-For more information on the options available, see the `RequestConfiguration` documentation. 
+For more information on the options available, see the [`RequestConfiguration` documentation](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/RequestConfiguration).
 
 ### Ad Specific Configuration
 
@@ -144,3 +143,4 @@ const interstitialAd = InterstitialAd.createForAdRequest('AD_UNIT_ID', {
   keywords: ['fashion', 'clothing']
 });
 ```
+``

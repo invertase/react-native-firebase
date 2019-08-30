@@ -17,7 +17,7 @@ React Native Firebase requires the following platform versions:
 
 ## Firebase Modules
 
-Each Firebase module is published as it's own package on [NPM](https://www.npmjs.com/) can be
+Each Firebase module is published as its own package on [NPM](https://www.npmjs.com/) can be
 individually installed using [`Yarn`](https://yarnpkg.com/lang/en/). Please refer to the quick start guide
 for installation instructions on each individual module page.
 
