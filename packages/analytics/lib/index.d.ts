@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Analytics package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `analytics` package:
+ * #### Example: Access the firebase export from the `analytics` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/analytics';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.analytics().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `analytics` package:
+ * #### Example: Using the default export from the `analytics` package:
  *
  * ```js
  * import analytics from '@react-native-firebase/analytics';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // analytics().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -164,13 +158,13 @@ export namespace Analytics {
      * await firebase.analytics().setUserId(null);
      * ```
      *
-     * @param id Set to null to remove a previously assigned id from analytics
+     * @param id Set to null to remove a previously assigned ID from analytics
      * events
      */
     setUserId(id: string | null): Promise<void>;
 
     /**
-     * Sets a key/value pair of data on the current user.
+     * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
      *
      * #### Example
      *
@@ -179,12 +173,12 @@ export namespace Analytics {
      * ```
      *
      * @param name A user property identifier.
-     * @param value Set to null to remove a previously assigned id from analytics events.
+     * @param value Set to null to remove a previously assigned ID from analytics events.
      */
     setUserProperty(name: string, value: string | null): Promise<void>;
 
     /**
-     * Sets multiple key/value pair of data on the current user.
+     * Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
      *
      * #### Example
      *
@@ -194,6 +188,8 @@ export namespace Analytics {
      *   account_name: 'Gold Badge',
      * });
      * ```
+     *
+     * > When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.
      *
      * @react-native-firebase
      * @param properties Set a property value to null to remove it.
