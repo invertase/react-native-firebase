@@ -21,16 +21,16 @@ The credential file can be generated from the Firebase [console](https://console
 
 - Enter your application details then click on 'Register app':
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  
+> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  This generate two variant keys. You can copy the 'SHA1' that belong to the `debugAndroidTest` variant key option
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
 
-- Download the config file and save it to the `android/<myProjectName>/` folder in your project:
+- Download the google-services.json config file for firebase and save it to the `<myProjectName>/android/app` folder in your project:
 > Substitute `<myProjectName>` for the name of your new project.
 
 ![Download](https://prismic-io.s3.amazonaws.com/invertase%2F3bd36734-a2a7-46c7-aca5-a7b007c4ec35_screenshot+2019-05-07+at+10.48.12.png)
 
-- Ignore the next steps on the Firebase Console and load the `google-services.json` file with the Google services plugin for Gradle:
+- From the next step, get the com.google.gms:google-services version number, to replace the undefined in the image above. Ignore the rest of the details in this next steps on the Firebase Console and load the `google-services.json` file with the Google services plugin for Gradle:
 
 **`android/build.gradle`**:
 ```groovy
