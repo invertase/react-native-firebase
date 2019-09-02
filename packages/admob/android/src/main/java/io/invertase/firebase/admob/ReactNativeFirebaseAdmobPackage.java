@@ -44,8 +44,7 @@ public class ReactNativeFirebaseAdmobPackage implements ReactPackage {
   @Override
   public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
     return Arrays.asList(
-      new ReactNativeFirebaseAdMobBannerAdViewManager(),
-      new ReactNativeFirebaseAdMobUnifiedNativeAdViewManager()
+      new ReactNativeFirebaseAdMobBannerAdViewManager()
     );
   }
 }

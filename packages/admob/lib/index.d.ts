@@ -93,18 +93,17 @@ export namespace Admob {
     /**
      * Used to sets the size of an Advert.
      */
-    BannerSize: BannerSize;
+    BannerAdSize: BannerAdSize;
   }
 
   /**
    * Common event types for ads.
-   * TODO should be interface
    */
-  export enum AdEventType {
+  export interface AdEventType {
     /**
-     * When a ad has loaded. At this point, the ad is ready to be shown to the user.
+     * When an ad has loaded. At this point, the ad is ready to be shown to the user.
      */
-    LOADED = 'loaded',
+    LOADED: 'loaded';
 
     /**
      * The ad errored. See the error parameter the listener callback for more information.
@@ -121,36 +120,36 @@ export namespace Admob {
      * });
      * ```
      */
-    ERROR = 'error',
+    ERROR: 'error';
 
     /**
      * The ad opened and is currently visible to the user. This event is received after the `show()`
      * method has been called.
      */
-    OPENED = 'opened',
+    OPENED: 'opened';
 
     /**
      * The user clicked the advert.
      */
-    CLICKED = 'clicked',
+    CLICKED: 'clicked';
 
     /**
      * The user has left your application (e.g. following the ad).
      *
      * Be sure to pause any tasks on this event (such as music or memory intensive tasks).
      */
-    LEFT_APPLICATION = 'left_application',
+    LEFT_APPLICATION: 'left_application';
 
     /**
      * The user closed the ad and has returned back to your application.
      */
-    CLOSED = 'closed',
+    CLOSED: 'closed';
   }
 
   /**
    * Ad event types specially for `RewardedAd`.
    */
-  export enum RewardedAdEventType {
+  export interface RewardedAdEventType {
     /**
      * When a rewarded ad has loaded.
      *
@@ -172,7 +171,7 @@ export namespace Admob {
      * });
      * ```
      */
-    LOADED = 'rewarded_loaded',
+    LOADED: 'rewarded_loaded';
 
     /**
      * An event fired when the user earned the reward for the video. If the user does not earn a reward,
@@ -192,13 +191,13 @@ export namespace Admob {
      * });
      * ```
      */
-    EARNED_REWARD = 'rewarded_earned_reward',
+    EARNED_REWARD: 'rewarded_earned_reward';
   }
 
   /**
    * Used to sets the size of an Advert.
    */
-  export interface BannerSize {
+  export interface BannerAdSize {
     /**
      * Mobile Marketing Association (MMA) banner ad size (320x50 density-independent pixels).
      */
@@ -299,6 +298,7 @@ export namespace Admob {
      *
      * The Google-rendered consent form is a full-screen configurable form that displays over your app content. The form
      * allows the following configuration options:
+     *
      *
      * 1. Consent to view personalized ads (via `withPersonalizedAds`).
      * 2. Consent to view non-personalized ads (via `withNonPersonalizedAds`).
@@ -814,7 +814,19 @@ export namespace Admob {
      * @param error An optional JavaScript Error containing the error code and message.
      * @param data Optional data for the event, e.g. rewarded
      */
-    (type: AdEventType | RewardedAdEventType, error?: Error, data?: any | RewardedAdReward): void;
+    (
+      type:
+        | AdEventType.LOADED
+        | AdEventType.ERROR
+        | AdEventType.OPENED
+        | AdEventType.CLICKED
+        | AdEventType.LEFT_APPLICATION
+        | AdEventType.CLOSED
+        | RewardedAdEventType.LOADED
+        | RewardedAdEventType.EARNED_REWARD,
+      error?: Error,
+      data?: any | RewardedAdReward,
+    ): void;
   }
 
   /**
@@ -948,6 +960,74 @@ export namespace Admob {
      * @param requestOptions Optional RequestOptions used to load the ad.
      */
     static createForAdRequest(adUnitId: string, requestOptions?: RequestOptions): RewardedAd;
+  }
+
+  /**
+   * An interface for a Banner advert component.
+   *
+   * #### Example
+   *
+   * ```js
+   * import { BannerAd, BannerAdSize, TestIds } from '@react-native-firebase/admob';
+   *
+   * function HomeScreen() {
+   *   return (
+   *     <BannerAd
+   *       unitId={TestIds.BANNER}
+   *       size={BannerAdSize.FULL_BANNER}
+   *       requestOptions={{
+   *         requestNonPersonalizedAdsOnly: true,
+   *       }}
+   *       onAdLoaded={() => {
+   *         console.log('Advert loaded');
+   *       }}
+   *     />
+   *   );
+   * }
+   * ```
+   */
+  export interface BannerAd {
+    /**
+     * The AdMob unit ID for the banner.
+     */
+    unitId: string;
+
+    /**
+     * The size of the banner. Can be a predefined size via `BannerAdSize` or custom dimensions, e.g. `300x200`.
+     *
+     * Inventory must be available for the banner size specified, otherwise a no-fill error will be sent to `onAdFailedToLoad`.
+     */
+    size: BannerAdSize | string;
+
+    /**
+     * The request options for this banner.
+     */
+    requestOptions?: RequestOptions;
+
+    /**
+     * When an ad has finished loading.
+     */
+    onAdLoaded: Function;
+
+    /**
+     * When an ad has failed to load. Callback contains an Error.
+     */
+    onAdFailedToLoad: Function;
+
+    /**
+     * The ad is now visible to the user.
+     */
+    onAdOpened: Function;
+
+    /**
+     * Called when the user is about to return to the app after tapping on an ad.
+     */
+    onAdClosed: Function;
+
+    /**
+     * Called when the user has left the application (e.g. clicking an advert).
+     */
+    onAdLeftApplication: Function;
   }
 
   /**

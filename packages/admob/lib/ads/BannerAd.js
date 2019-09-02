@@ -15,15 +15,55 @@
  *
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { requireNativeComponent } from 'react-native';
 import { isFunction } from '@react-native-firebase/app/lib/common';
 import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import BannerAdSize from '../BannerAdSize';
+import validateAdRequestOptions from '../validateAdRequestOptions';
 
 const initialState = [0, 0];
+const sizeRegex = /([0-9]+)x([0-9]+)/;
 
-function BannerAd({ unitId, size, request, ...props }) {
+function BannerAd({ unitId, size, requestOptions, ...props }) {
   const [dimensions, setDimensions] = useState(initialState);
+
+  useEffect(() => {
+    if (!unitId) {
+      throw new Error(
+        "BannerAd: 'unitId' expected a valid string unit ID."
+      );
+    }
+  }, [unitId]);
+
+  useEffect(() => {
+    if (!BannerAdSize[size] && !sizeRegex.test(size)) {
+      throw new Error(
+        "BannerAd: 'size' expected a valid BannerAdSize or custom size string."
+      );
+    }
+  }, [size]);
+
+  useEffect(() => {
+    if (!BannerAdSize[size] && !sizeRegex.test(size)) {
+      throw new Error(
+        "BannerAd: 'size' expected a valid BannerAdSize or custom size string."
+      );
+    }
+  }, [size]);
+
+  useEffect(() => {
+    if (requestOptions) {
+      try {
+        validateAdRequestOptions(requestOptions);
+      } catch (e) {
+        throw new Error(
+          `BannerAd: ${e.message}`
+        );
+      }
+    }
+  }, [JSON.stringify(requestOptions)]);
 
   function onNativeEvent({ nativeEvent }) {
     const { width, height, type } = nativeEvent;
@@ -56,7 +96,7 @@ function BannerAd({ unitId, size, request, ...props }) {
       size={size}
       style={style}
       unitId={unitId}
-      request={request}
+      request={validateAdRequestOptions(requestOptions)}
       onNativeEvent={onNativeEvent}
     />
   );
@@ -66,5 +106,16 @@ const ReactNativeFirebaseAdMobBannerView = requireNativeComponent(
   'ReactNativeFirebaseAdMobBannerView',
   BannerAd,
 );
+
+BannerAd.propTypes = {
+  unitId: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
+  requestOptions: PropTypes.object,
+  onAdLoaded: PropTypes.func,
+  onAdFailedToLoad: PropTypes.func,
+  onAdOpened: PropTypes.func,
+  onAdClosed: PropTypes.func,
+  onAdLeftApplication: PropTypes.func,
+};
 
 export default BannerAd;
