@@ -19,9 +19,10 @@ Under 'Your apps', click on the Android logo to add a new Android app to your Fi
 
 Enter your application details then click on 'Register app':
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  
+> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  This generates two variant keys. You can copy the 'SHA1' that belong to the `debugAndroidTest` variant key option.
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
+
 
 Download the config file and save it to the `android/app/<myProjectName>/` folder in your project. Substitute `<myProjectName>` for the name of your new project.
 
