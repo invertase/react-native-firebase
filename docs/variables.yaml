@@ -2,5 +2,3 @@ versions:
   reactnative: 0.60.0
   android: 16
   ios: 10.0
-google:
-  services: 4.2.0
