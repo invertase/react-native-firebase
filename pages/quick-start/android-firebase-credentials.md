@@ -30,7 +30,7 @@ Download the config file locally by pressing "Download google-services.json".  N
 
 The step "Add Firebase SDK" on the Firebase console can be skipped - React Native Firebase automatically includes the necessary Firebase SDKs.
 
-# Applying the config file
+## Applying the config file
 
 The Firebase SDKs now need to read the config file - this can be achived by applying the `google-services` plugin in our Android project.
 
@@ -53,7 +53,7 @@ apply plugin: 'com.google.gms.google-services'
 
 Once complete, rebuild your Android project using `react-native run-android`.
 
-## Next
+## Next Steps
 
 Once your Android project is setup, you can follow the setup for getting started with iOS, or get started using Firebase services.
 
