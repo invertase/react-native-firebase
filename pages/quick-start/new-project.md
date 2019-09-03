@@ -3,25 +3,26 @@ title: Create a new React Native Firebase app
 description: Create a new React Native project with Firebase pre-integrated
 ---
 
-# Create a New Project
+# Creating a new project
 
-This guide is for starting a **new** React Native app with Firebase pre-integrated.
+This guide creates a fresh React Native project with React Native Firebase pre-integrated using the [React Native CLI](https://github.com/react-native-community/cli). If you already have a React Native project setup, follow the [existing projects](/quick-start/existing-project) guide instead.
 
-For pre-existing React Native projects see the [`existing projects guide`](/quick-start/existing-project).
+## Initilizing the project
 
-## Guide
-
-Let's initialise a project using the React Native CLI with the React Native Firebase project template:
-
-#### Init Project from Template
+The following npx command will create a new directory on your machine with the `@react-native-firebase/app` package pre-integrated. The `<name>` varible is used to both create the directory name and setup the Android & iOS environments.
 
 ```bash
-npx @react-native-community/cli init --template=@react-native-firebase/template <myProjectName>
+npx @react-native-community/cli init --template=@react-native-firebase/template <name>
 ```
 
-> Substitute `<myProjectName>` for the name of your new project.
+For example, to install a new `TodoApp` on your machine and start the Android app:
 
-This will create a new React Native project in a folder called `<myProjectName>` with the `@react-react-native/app` package pre installed. The generated java package name will be `com.<myProjectName>`, while the XCode iOS Bundle Identifier will have the format `org.reactjs.native.example.<myProjectName>`
+```bash
+$ cd /Users/admin/Documents/
+$ npx @react-native-community/cli init --template=@react-native-firebase/template TodoApp
+$ cd /TodoApp/
+$ react-native run-android
+```
 
 ## Next
 
