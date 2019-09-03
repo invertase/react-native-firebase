@@ -5,12 +5,14 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Initialization
-      to: '/android'
-    - text: iOS Initialization
-      to: '/ios'
     - text: European User Consent
       to: '/european-user-consent'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: "/android-installation"
+        - text: iOS Installation
+          to: "/ios-installation"
 
 - module: analytics
   groups:
@@ -25,9 +27,9 @@
   - group: Manual Installation
     children:
       - text: Android Installation
-        to: "/android"
+        to: "/android-installation"
       - text: iOS Installation
-        to: "/ios"
+        to: "/ios-installation"
 
 - module: auth
   group: Authentication
