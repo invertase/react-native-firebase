@@ -13,18 +13,21 @@
       to: '/european-user-consent'
 
 - module: analytics
-  group: Analytics
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-    - text: Reserved Events
-      to: '/reserved-events'
+  groups:
+  - group: Analytics
+    children:
+      - text: Overview
+        to: "/"
+      - text: Quick Start
+        to: "/quick-start"
+      - text: Reserved Events
+        to: '/reserved-events'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android"
+      - text: iOS Installation
+        to: "/ios"
 
 - module: auth
   group: Authentication
