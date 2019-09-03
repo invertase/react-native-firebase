@@ -13,7 +13,7 @@ Install this module with Yarn:
 yarn add @react-native-firebase/analytics
 ```
 
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
 
 ## Module usage
 
@@ -52,7 +52,7 @@ async function onProductView() {
 
 ### Attaching user data
 
-User data can be attached to analytical events via the [***`setUserId`](reference/module#setUserId), [***`setUserProperties`](reference/module#setUserProperties) and [***`setUserProperty`](reference/module#setUserProperty) methods. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
+User data can be attached to analytical events via the [`setUserId`](reference/module#setUserId), [`setUserProperties`](reference/module#setUserProperties) and [`setUserProperty`](reference/module#setUserProperty) methods. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
 
 ```js
 import analytics from '@react-native-firebase/analytics';
