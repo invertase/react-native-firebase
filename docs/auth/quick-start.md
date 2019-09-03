@@ -13,7 +13,7 @@ Install this module with Yarn:
 yarn add @react-native-firebase/auth
 ```
 
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
 
 ## Module usage
 
@@ -88,7 +88,24 @@ The user is able to clear their state by deleting the apps data/cache from the d
 React Native Firebase provides access to the majority of authentication providers available, including social providers
 including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
 
-_Our [guides](../guides?tags=auth) provide more in-depth explanations on provides and how to integrate them into your application._
+<Grid columns="2">
+	<Block
+		icon="share"
+		color="#4caf50"
+		title="Social Auth"
+		to="/social-auth"
+	>
+    Authenticate your users with popular social providers such as Facebook, Twitter, Google, Github or your own custom provider.
+	</Block>
+	<Block
+		icon="perm_phone_msg"
+		color="#2196f3"
+		title="Phone Auth"
+		to="/phone-auth"
+	>
+    Phone authentication allows users to sign in to Firebase using their phone as the authenticator. 
+	</Block>
+</Grid>
 
 #### Anonymous Sign In
 

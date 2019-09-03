@@ -32,20 +32,23 @@
         to: "/ios-installation"
 
 - module: auth
-  group: Authentication
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-    - text: Social Auth
-      to: '/social-auth'
-    - text: Phone Auth
-      to: '/phone-auth'
+  groups:
+  - group: Authentication
+    children:
+      - text: Overview
+        to: '/'
+      - text: Quick Start
+        to: '/quick-start'
+      - text: Social Auth
+        to: '/social-auth'
+      - text: Phone Auth
+        to: '/phone-auth'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android-installation"
+      - text: iOS Installation
+        to: "/ios-installation"
 
 - module: firestore
   group: Cloud Firestore
