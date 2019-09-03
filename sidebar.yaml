@@ -5,6 +5,8 @@
     to: "/"
   - text: Quick Start
     to: "/quick-start"
+  - text: Typescript
+    to: "/typescript"
   - text: Contributing
     to: "/contributing"
   - text: Releases
