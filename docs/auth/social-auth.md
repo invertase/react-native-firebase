@@ -17,13 +17,15 @@ The recommended library of choice is the official [react-native-fbsdk](https://g
 library, which provides a wrapper around the native Android & iOS SDKs. The library handles user login and granting
 access to the users `AccessToken` which is required to create a Firebase credential.
 
+The following steps assume you have installed the `react-native-fbsdk` library and have added the Facebook project ID to your Android/iOS project following the [quick start](https://developers.facebook.com/quickstarts/) Facebook guides.
+
 **Step 1**: Login to Facebook with permissions.
 
 ```js
 import { LoginManager } from 'react-native-fbsdk';
 
 // Login with permissions
-const result = await LoginManager.logInWithReadPermissions(['public_profile', 'email']);
+const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
 if (result.isCancelled) {
   throw new Error('User cancelled the login process');

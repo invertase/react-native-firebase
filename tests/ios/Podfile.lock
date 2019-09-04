@@ -461,10 +461,6 @@ PODS:
     - Firebase/Storage (~> 6.5.0)
     - React
     - RNFBApp
-  - RNFBUtils (0.2.3):
-    - Firebase/Core (~> 6.5.0)
-    - React
-    - RNFBApp
   - yoga (0.60.4.React)
 
 DEPENDENCIES:
@@ -507,7 +503,6 @@ DEPENDENCIES:
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf/ios`)"
   - "RNFBRemoteConfig (from `../node_modules/@react-native-firebase/remote-config/ios`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage/ios`)"
-  - "RNFBUtils (from `../node_modules/@react-native-firebase/utils/ios`)"
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -636,8 +631,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/remote-config/ios"
   RNFBStorage:
     :path: "../node_modules/@react-native-firebase/storage/ios"
-  RNFBUtils:
-    :path: "../node_modules/@react-native-firebase/utils/ios"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -725,9 +718,8 @@ SPEC CHECKSUMS:
   RNFBPerf: 47d1afb0c25cc4987dd979d463b5a25dbb81ecbb
   RNFBRemoteConfig: e62acf099b0e1026a6cc085006c8415022b8e6ac
   RNFBStorage: fd285de854aca892a13126a6cb491376f33a4bb7
-  RNFBUtils: feebcf438235a3afa770a30e9eef6f414c070ec8
   yoga: c2c050f6ae6e222534760cc82f559b89214b67e2
 
 PODFILE CHECKSUM: 0142c48fc8ad8e230e216fc15af267405c520250
 
-COCOAPODS: 1.7.2
+COCOAPODS: 1.7.5
