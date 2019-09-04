@@ -1,18 +1,19 @@
 - module: admob
-  group: AdMob
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: European User Consent
-      to: '/european-user-consent'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: "/android-installation"
-        - text: iOS Installation
-          to: "/ios-installation"
+  groups:
+  - group: AdMob
+    children:
+      - text: Overview
+        to: '/'
+      - text: Quick Start
+        to: '/quick-start'
+      - text: European User Consent
+        to: '/european-user-consent'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android-installation"
+      - text: iOS Installation
+        to: "/ios-installation"
 
 - module: analytics
   groups:
