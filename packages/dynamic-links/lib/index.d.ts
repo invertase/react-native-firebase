@@ -551,11 +551,11 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
     interface Module {
-      links: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
+      dynamicLinks: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
     }
 
     interface FirebaseApp {
-      links(): DynamicLinks.Module;
+      dynamicLinks(): DynamicLinks.Module;
     }
   }
 }
