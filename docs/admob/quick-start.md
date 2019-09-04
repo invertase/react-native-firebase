@@ -61,17 +61,17 @@ The AdMob module supports 3 advert types:
 		icon="calendar_view_day"
 		color="#00bcd4"
 		title="Banners"
-		to="reference/bannerad"
+		to="/reference/bannerad"
 	>
-    Banner ads are rectangular image or text ads that occupy a spot within an app's layout. They stay on screen while users are interacting with the app, and can refresh automatically after a certain period of time. If you're new to mobile advertising, they're a great place to start.
+    Banner ads are rectangular image or text ads that occupy a spot within an app's layout.
 	</Block>
  	<Block
 		icon="subscriptions"
 		color="#009688"
 		title="Interstitial"
-		to="reference/interstitialad"
+		to="/reference/interstitialad"
 	>
-    Interstitials are full-screen ads that cover the interface of an app until closed by the user. They're best used at natural pauses in the flow of an app's execution, such as in between levels of a game or just after completing a task.
+    Interstitials are full-screen ads that cover the interface of an app until closed by the user.
 	</Block>
 	<Block
 		icon="attach_money"
@@ -79,7 +79,7 @@ The AdMob module supports 3 advert types:
 		title="Rewarded"
 		to="reference/rewardedad"
 	>
-    Rewarded ads are ads that users have the option of interacting with in exchange for in-app rewards. Rewards can be setup directly on the AdMob dashboard and users can earn the rewards by interacting or watching the advert.
+    Rewarded ads are ads that users have the option of interacting with in exchange for in-app rewards.
 	</Block>
 </Grid>
 
