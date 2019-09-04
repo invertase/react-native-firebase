@@ -384,7 +384,7 @@ export namespace Utils {
     /**
      * Enables logging based on configuration that was passed in
      */
-    enableLogger: (config: LoggerConfig) => void;
+    enableLogger: (config: LoggerConfig) => LoggerConfig;
 
     /**
      * Returns logger instance

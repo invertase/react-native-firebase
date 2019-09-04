@@ -15,7 +15,7 @@
  *
  */
 
-import { isIOS } from '../../lib/common';
+import { hasOwnProperty, isIOS, isObject } from '../../lib/common';
 import { createModuleNamespace, FirebaseModule } from '../../lib/internal';
 import Logger from './logger';
 import UtilsStatics from './UtilsStatics';
@@ -33,7 +33,22 @@ class FirebaseUtilsModule extends FirebaseModule {
   }
 
   enableLogger(config) {
+    if (!isObject(config)) {
+      throw new Error('Invalid config passed to enableLogger');
+    }
+
+    if (
+      !hasOwnProperty(config, 'enableMethodLogging') &&
+      !hasOwnProperty(config, 'enableEventLogging')
+    ) {
+      throw new Error(
+        'enableLogger expects at least one option: enableMethodLogging or enableEventLogging',
+      );
+    }
+
     Logger.config = { ...Logger.config, ...config };
+
+    return Logger.config;
   }
 
   logger() {

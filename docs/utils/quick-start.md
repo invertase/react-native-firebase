@@ -65,6 +65,15 @@ firebase.utils().enableLogger({
   enableMethodLogging: true,
   enableEventLogging: true,
 });
+
+// It also returns back config
+
+const config = firebase.utils().enableLogger({
+  enableMethodLogging: true,
+  enableEventLogging: true,
+});
+
+// config = { enableMethodLogging: true, enableEventLogging: ture }
 ```
 
 ### Log out custom information

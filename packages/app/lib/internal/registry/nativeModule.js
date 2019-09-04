@@ -41,7 +41,7 @@ function nativeModuleKey(module) {
 function nativeModuleMethodWrapped(namespace, method, argToPrepend, methodName) {
   return (...args) => {
     if (Logger.config.enableMethodLogging) {
-      Logger.info(`${namespace} -> ${methodName}`, args);
+      Logger.info(`METHOD:${namespace}::${methodName}`, args);
     }
 
     const possiblePromise = method(...[...argToPrepend, ...args]);
@@ -160,11 +160,19 @@ function initialiseNativeModule(module) {
  */
 function subscribeToNativeModuleEvent(eventName) {
   if (!NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName]) {
+    const eventLoggingEnabled = Logger.config.enableEventLogging;
+
     RNFBNativeEventEmitter.addListener(eventName, event => {
       if (event.appName) {
+        if (eventLoggingEnabled) {
+          Logger.info(`EVENT:${eventName}::${appName}`, args);
+        }
         // native event has an appName property - auto prefix and internally emit
         SharedEventEmitter.emit(`${event.appName}-${eventName}`, event);
       } else {
+        if (eventLoggingEnabled) {
+          Logger.info(`EVENT:${eventName}`, args);
+        }
         // standard event - no need to prefix
         SharedEventEmitter.emit(eventName, event);
       }
