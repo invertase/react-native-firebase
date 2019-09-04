@@ -17,7 +17,7 @@ React Native Firebase requires the following platform versions:
 
 ## Firebase Modules
 
-Each Firebase module is published as it's own package on [NPM](https://www.npmjs.com/) can be
+Each Firebase module is published as its own package on [NPM](https://www.npmjs.com/) can be
 individually installed using [`Yarn`](https://yarnpkg.com/lang/en/). Please refer to the quick start guide
 for installation instructions on each individual module page.
 
@@ -44,4 +44,3 @@ for installation instructions on each individual module page.
 | <Anchor href="/perf">Performance Monitoring</Anchor>       | <Badge type="downloads">@react-native-firebase/perf</Badge>                | <Badge type="coverage">perf</Badge>                |
 | <Anchor href="/database">Realtime Database</Anchor>        | <Badge type="downloads">@react-native-firebase/database</Badge>            | <Badge type="coverage">database</Badge>            |
 | <Anchor href="/remote-config">Remote Config</Anchor>       | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |
-| <Anchor href="/utils">Utils</Anchor>                       | <Badge type="downloads">@react-native-firebase/utils</Badge>               | <Badge type="coverage">utils</Badge>               |

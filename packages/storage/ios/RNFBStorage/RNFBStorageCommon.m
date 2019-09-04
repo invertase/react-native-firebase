@@ -21,32 +21,9 @@
 
 #import "RNFBStorageCommon.h"
 #import "RNFBSharedUtils.h"
+#import "RNFBUtilsModule.h"
 
 @implementation RNFBStorageCommon
-
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath {
-  return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
-}
-
-+ (BOOL)unused_isHeic:(NSString *)localFilePath {
-  return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
-}
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  PHAsset *asset;
-
-  if ([localFilePath hasPrefix:@"assets-library://"]) {
-    NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
-    asset = [[PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil] firstObject];
-  } else {
-    NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
-    NSArray *queryItems = components.queryItems;
-    NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
-    asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil] firstObject];
-  }
-
-  return asset;
-}
 
 + (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format {
   if ([format isEqualToString:@"base64"]) {
@@ -69,12 +46,6 @@
   }
 
   return nil;
-}
-
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-  return queryItem.value;
 }
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI {
@@ -106,8 +77,8 @@
     NSURL *temporaryFileUrl,
     NSString *contentType
 ))completion {
-  if ([RNFBStorageCommon isRemoteAsset:localFilePath]) {
-    PHAsset *asset = [RNFBStorageCommon fetchAssetForPath:localFilePath];
+  if ([RNFBUtilsModule isRemoteAsset:localFilePath]) {
+    PHAsset *asset = [RNFBUtilsModule fetchAssetForPath:localFilePath];
     NSURL *temporaryFileUrl = [RNFBStorageCommon createTempFileUrl];
     [RNFBStorageCommon downloadAsset:asset toURL:temporaryFileUrl completion:^(
         NSArray *errorCodeMessageArray,

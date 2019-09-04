@@ -5,7 +5,7 @@ description: Getting started with the Utils package in React Native Firebase
 
 # Utils Quick Start
 
-The utils module comes installed with the `app` module.
+> This module automatically comes with the `@react-native-firebase/app` package, there are no additional steps required to install it.
 
 ## Module usage
 
@@ -13,9 +13,17 @@ Import the Utils package into your project:
 
 ```js
 import { utils } from '@react-native-firebase/app';
+
+// utils().X
+
+import firebase from '@react-native-firebase/app';
+
+// firebase.utils().X
 ```
 
-### Detect whether the app is running within TestL Lab
+## Utilities
+
+### Detect whether your app is running within Firebase Test Lab
 
 Firebase [TestLab](https://firebase.google.com/docs/test-lab/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=utils)
 is a cloud-based app-testing infrastructure. With one operation, you can test your Android or iOS app across
@@ -38,12 +46,10 @@ async function bootstrap() {
 
 ### Access device file paths
 
-Some modules require access to your local device filesystem (such as Storage & ML Kit Vision). The utils
-module access to the device directory locations, working cross platform on Android & iOS.
+Some modules require access to your local device filesystem (such as Storage & ML Kit Vision). The utils module provides paths to common device directory locations.
 
 ```js
-import { utils } from '@react-native-firebase/app';
-
+import firebase from '@react-native-firebase/app';
 // Access the device pictures directory
-const picturesDir = utils.FilePath.PICTURES_DIRECTORY;
+const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 ```

@@ -13,12 +13,12 @@ Install this module with Yarn:
 yarn add @react-native-firebase/admob
 ```
 
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
 
 ## Module usage
 
 The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and
-React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR. 
+React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR.
 
 Import the Cloud Functions package into your project:
 
@@ -34,34 +34,61 @@ import { firebase } from '@react-native-firebase/admob';
 
 ### Important: Adding your AdMob App ID
 
-The AdMob module needs hooking up to your own Google AdMob account. On [the dashboard](https://apps.admob.com/v2/home), you can add an application via the "Apps" menu item. Once created, under the "App settings" section you will find a custom "App ID". This ID is needed in order for the module to be used.
+The AdMob module needs to be hooked up to your own Google AdMob account. On [the dashboard](https://apps.admob.com/v2/home), you can add an application via the "Apps" menu item. Once created, under the "App settings" section you will find a custom "App ID". This ID is needed in order for the module to be used.
 
 ![App ID](https://prismic-io.s3.amazonaws.com/invertase%2F52dd6900-108c-47a6-accb-699fde963b99_new+project+%2813%29.jpg)
 
-> Not adding your App ID will result in a crash on app boot.
+> Installing the module without adding a valid App ID will result in a crash during app build.
 
 Add the ID to your root level `firebase.json` file under the `react-native` object:
 
 ```json
 {
   "react-native": {
-    "admob_app_id": "YOUR_ADMOB_APP_ID"
+    "admob_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
   }
 }
 ```
 
 Ensure you **rebuild** your application for the changes to take effect.
 
+### Advert Types
+
+The AdMob module supports 3 advert types:
+
+<Grid columns="3">
+	<Block
+		icon="calendar_view_day"
+		color="#00bcd4"
+		title="Banners"
+		to="admob/reference/bannerad"
+	>
+    Banner ads are rectangular image or text ads that occupy a spot within an app's layout. They stay on screen while users are interacting with the app, and can refresh automatically after a certain period of time. If you're new to mobile advertising, they're a great place to start.
+	</Block>
+ 	<Block
+		icon="subscriptions"
+		color="#009688"
+		title="Interstitial"
+		to="admob/reference/interstitialad"
+	>
+    Interstitials are full-screen ads that cover the interface of an app until closed by the user. They're best used at natural pauses in the flow of an app's execution, such as in between levels of a game or just after completing a task.
+	</Block>
+	<Block
+		icon="attach_money"
+		color="#673ab7"
+		title="Rewarded"
+		to="admob/reference/rewardedad"
+	>
+    Rewarded ads are ads that users have the option of interacting with in exchange for in-app rewards. Rewards can be setup directly on the AdMob dashboard and users can earn the rewards by interacting or watching the advert.
+	</Block>
+</Grid>
+
 ### European User Consent
 
 Out of the box, AdMob does not handle any related regulations which you may need to enforce on your application. It is up to the developer to implement and handle this on a user-by-user basis. For example, you must consent to EEA users being served both personalized and non-personalized adverts before showing them. For more information, see [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the
-<Anchor version group href="/european-user-consent">European User Consent</Anchor> page.
-
-### Example: Displaying an Interstitial
-
-An interstitial is a full screen advert which is overlaid on-top of your currently application. They are perfect for showing periodically between game levels or after the user completes an action.
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page for full examples of 
+how to integrate the helper into your application.
 
 #### Testing
 
@@ -108,14 +135,13 @@ Once created, you will be provided with a new Ad Unit ID which can be passed ove
 
 ![Ad Unit ID](https://prismic-io.s3.amazonaws.com/invertase%2F56cdd8b2-6a6e-4e9b-aa1a-30e826b078e6_new+project+%2815%29.jpg)
 
-
 ### Configuring Ad Requests
 
-The AdMob module provides two ways of filtering and handling ad content within your app. 
+The AdMob module provides two ways of filtering and handling ad content within your app.
 
 ### Global Configuration
 
-To comply with various online acts, such as [Children's Online Privacy Protection Act (COPPA)](http://business.ftc.gov/privacy-and-security/children%27s-privacy) and [General Data Protection Regulation (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679), it is possible to set targetting preferences across every ad request in your aplication.
+To comply with various online acts, such as [Children's Online Privacy Protection Act (COPPA)](http://business.ftc.gov/privacy-and-security/children%27s-privacy) and [General Data Protection Regulation (GDPR)](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679), it is possible to set targetting preferences across every ad request in your application.
 
 Using the `setRequestConfiguration` method, all future ad requests will comply with the `RequestConfiguration` set:
 
@@ -129,7 +155,7 @@ await admob().setRequestConfiguration({
 });
 ```
 
-For more information on the options available, see the `RequestConfiguration` documentation. 
+For more information on the options available, see the [`RequestConfiguration` documentation](https://firebase.google.com/docs/reference/android/com/google/android/gms/ads/RequestConfiguration).
 
 ### Ad Specific Configuration
 
@@ -139,7 +165,7 @@ It is also possible to set ad specific configuration before the advert is loaded
 import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
 
 // Create a new instance
-const interstitialAd = InterstitialAd.createForAdRequest('AD_UNIT_ID', {
+const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
   requestNonPersonalizedAdsOnly: true,
   keywords: ['fashion', 'clothing']
 });
