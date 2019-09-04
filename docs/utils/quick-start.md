@@ -53,3 +53,35 @@ import firebase from '@react-native-firebase/app';
 // Access the device pictures directory
 const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 ```
+
+### Enable logging
+
+You can enable logging for native method calls and event streams
+
+```js
+import firebase from '@react-native-firebase/app';
+
+firebase.utils().enableLogger({
+  enableMethodLogging: true,
+  enableEventLogging: true,
+});
+```
+
+### Log out custom information
+
+You can also use our built in logger to log your custom information
+
+```js
+import firebase from '@react-native-firebase/app';
+
+firebase.utils.info('Custom Log');
+```
+
+Info logger also takes in second argument that can be object or array, this is usefull
+when you need to log some additional data.
+
+```js
+import firebase from '@react-native-firebase/app';
+
+firebase.utils.info('Custom Log', { uid: '123' });
+```
