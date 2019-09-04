@@ -22,7 +22,7 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
 		icon="attach_money"
 		color="#2196f3"
 		title="Quick Start"
-		to="admob/quick-start"
+		to="/quick-start"
 	>
     Install & start monetizing your React Native application with AdMob.
 	</Block>
@@ -30,7 +30,7 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
 		icon="pan_tool"
 		color="#f44336"
 		title="European User Consent"
-		to="admob/european-user-consent"
+		to="/european-user-consent"
 	>
     Learn how to request consent from users within the EEA. The AdMob library comes with built in support to help you handle GDPR regulations in your application.
 	</Block>
