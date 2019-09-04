@@ -240,6 +240,7 @@ export namespace ReactNativeFirebase {
  */
 export namespace Utils {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  type LoggerConfig = { enableMethodLogging: boolean; enableEventLogging: boolean };
 
   /**
    * A collection of native device file paths to aid in the usage of file path based methods.
@@ -379,6 +380,16 @@ export namespace Utils {
      * @android
      */
     isRunningInTestLab: boolean;
+
+    /**
+     * Enables logging based on configuration that was passed in
+     */
+    enableLogger: (config: LoggerConfig) => void;
+
+    /**
+     * Returns logger instance
+     */
+    logger: { config: LoggerConfig; info: <T>(text: string, params?: object | T[] | null) => void };
   }
 }
 

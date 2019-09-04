@@ -4,7 +4,7 @@
  * @url https://github.com/shiena/ansicolor/blob/master/README.md
  */
 
-import { isArray, isObject, isString } from '@react-native-firebase/app/lib/common';
+import { isArray, isNull, isObject, isString } from '@react-native-firebase/app/lib/common';
 
 const config = {
   enableMethodLogging: false,
@@ -29,12 +29,14 @@ function info(text, params = null) {
   }
   console.log('\x1b[35m', text);
 
-  if (!isArray(params) && !isObject(params)) {
+  if (!isArray(params) && !isObject(params) && !isNull(params)) {
     throw new Error(
       `Invalid params passed to logger. Expected array or object, but got ${typeof params}`,
     );
   }
-  console.log('\x1b[94m', JSON.stringify(params, null, 2));
+  if (params) {
+    console.log('\x1b[94m', JSON.stringify(params, null, 2));
+  }
 
   resetTerminalColor();
 }

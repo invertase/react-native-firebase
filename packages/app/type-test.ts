@@ -32,6 +32,10 @@ console.log(utils.FilePath.CACHES_DIRECTORY);
 console.log(firebase.utils.FilePath.CACHES_DIRECTORY);
 console.log(utils.FilePath.CACHES_DIRECTORY);
 
+// checks logger
+console.log(firebase.utils().logger);
+console.log(firebase.utils().enableLogger);
+
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
