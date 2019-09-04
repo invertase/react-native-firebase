@@ -1,13 +1,13 @@
 ---
 title: European User Consent
-description: Understand how the EU User Consent Policy can be managed within AdMob and how it effects your application.
+description: Understand how the EU User Consent Policy can be managed within AdMob and how it affects your application.
 ---
 
 # European User Consent
 
 Under the Google [EU User Consent Policy](https://www.google.com/about/company/consentstaging.html), you must make
- certain disclosures to your users in the European Economic Area (EEA) and obtain their consent to use cookies or 
- other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy 
+ certain disclosures to your users in the European Economic Area (EEA) and obtain their consent to use cookies or
+ other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy
  reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).
 
 The React Native Firebase AdMob module provides out of the box support for helping to manage your users consent
@@ -22,7 +22,7 @@ The `AdsConsent` helper & AdMob module provides out of the box support for:
 
 ## Understanding AdMob Ads
 
-Ads served by Google can be categorized as personalized or non-personalized, both requiring consent from users in the EEA. By default, 
+Ads served by Google can be categorized as personalized or non-personalized, both requiring consent from users in the EEA. By default,
 ad requests to Google serve personalized ads, with ad selection based on the user's previously collected data. Users outside of the EEA do not require consent.
 
 > The `AdsConsent` helper only provides you with the tools for requesting consent, it is up to the developer to ensure the consent status is reflected throughout the app.
@@ -93,22 +93,22 @@ Now we understand the consent status of the user, we can gather their consent (i
 
 If you are aware that users are under the age of consent in Europe, it is possible to set this using the `setTagForUnderAgeOfConsent`
 method (TFUA). Once the setting is enabled, the Google-rendered consent form will fail to load. All ad requests that include
-TFUA will be made ineligible for personalized advertising and remarketing. TFUA disables requests to third-party ad technology 
+TFUA will be made ineligible for personalized advertising and remarketing. TFUA disables requests to third-party ad technology
 providers, such as ad measurement pixels and third-party ad servers.
- 
+
 To remove this setting, pass `false` to the method.
 
 #### 1. Google-rendered consent form
 
-The Google-rendered consent form is a full-screen configurable form that displays over your app content. 
+The Google-rendered consent form is a full-screen configurable form that displays over your app content.
 You can configure the form to present the user with combinations of the following options:
 
 - Consent to view personalized ads
 - Consent to view non-personalized ads
 - Use a paid version of the app instead of viewing ads
 
-You should review the consent text carefully: what appears by default is a message that might be appropriate if you use 
-Google to monetize your app; but Google cannot provide legal advice on the consent text that is appropriate for you. 
+You should review the consent text carefully: what appears by default is a message that might be appropriate if you use
+Google to monetize your app; but Google cannot provide legal advice on the consent text that is appropriate for you.
 To update consent text of the Google-rendered consent form, modify the `consentform.htm`l file included in the Consent SDK as required.
 
 > An [example of a Google-rendered](https://developers.google.com/admob/images/android_eu_consent_form.png) consent form.
@@ -122,7 +122,7 @@ import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
 const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
 
 if (
-  consentInfo.isRequestLocationInEeaOrUnknown && 
+  consentInfo.isRequestLocationInEeaOrUnknown &&
   consentInfo.status === AdsConsentStatus.UNKNOWN
 ) {
   const formResult = await AdsConsent.showForm({
@@ -134,7 +134,7 @@ if (
 }
 ```
 
-Once the user has selected their preference, the `formResult` contains their status and whether or not they prefer an 
+Once the user has selected their preference, the `formResult` contains their status and whether or not they prefer an
 ad-free option of your application (if enabled):
 
 ```js
@@ -183,16 +183,16 @@ import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
 await AdsConsent.setStatus(AdsConsentStatus.PERSONALIZED);
 ```
 
-To invalidate the users consent status (e.g. if the providers list changes since their last consent), set the status back to 
+To invalidate the users consent status (e.g. if the providers list changes since their last consent), set the status back to
 `UNKNOWN`. When your application next boots, you can get the users previous consent status using the `getStatus` method.
 
-### Testing 
+### Testing
 
-When developing the consent flow, the behaviour of the `AdsConsent` responses may not be reliable due to the environment 
-(e.g. using an emulator vs real device). It is possible to set a debug location to test the various responses from the 
+When developing the consent flow, the behaviour of the `AdsConsent` responses may not be reliable due to the environment
+(e.g. using an emulator vs real device). It is possible to set a debug location to test the various responses from the
 Consent SDK.
 
-If using a real device, ensure you whitelist it using the device ID, which can be obtained from native logs or using a library 
+If using a real device, ensure you whitelist it using the device ID, which can be obtained from native logs or using a library
 such as [react-native-device-info](https://github.com/react-native-community/react-native-device-info). Once found,
 call the `addTestDevice(deviceId)` method.
 
@@ -215,7 +215,7 @@ await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 
 ### Forwarding the consent status to ads
 
-Assuming the user is within the EEA and has provided consent, their status needs to be forwarded to every ad request we 
+Assuming the user is within the EEA and has provided consent, their status needs to be forwarded to every ad request we
 make in our application.
 
 > If the user is within the EEA and has not given consent, do not display AdMob ads (even non-personalized).
@@ -232,7 +232,7 @@ const rewardedAd = RewardedAd.createForAdRequest('AD_UNIT_ID', {
 });
 ```
 
-The requested ad URL via the SDK will send a request with an additional parameter `&npa=1`, which will return a 
+The requested ad URL via the SDK will send a request with an additional parameter `&npa=1`, which will return a
 non-personalized ad.
 
 >  The requestNonPersonalizedAdsOnly option can be applied to every supported ad format.
@@ -241,14 +241,14 @@ non-personalized ad.
 
 #### "Could not parse Event FE preflight response."
 
-This is a common error which occurrs on both Android & iOS when making a request to display a Google-rendered consent form. Unfortunatly the reasoning for this error is generic, making it hard to debug. There are a number of steps to check which are usually the cause for this error:
+This is a common error which occurs on both Android & iOS when making a request to display a Google-rendered consent form. Unfortunately the reasoning for this error is generic, making it hard to debug. There are a number of steps to check which are usually the cause for this error:
 
-- The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the React Native config, called `occurs`.
+- The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the `admob_app_id` key in the `react-native` config.
 - A publisher ID is incorrect: Ensure your entered publisher IDs are correct.
   - The publisher ID needs to be available on the same account as your AdMob App ID.
 - The user is outside of the EEA: If a user does not need to provide consent, the form request will error. Ensure you have checked the users status via `requestInfoUpdate`. If using an emulator, ensure you set a debug location via `setDebugGeography`.
 - Your AdMob account is not valid:
-  - Your account is not disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
-  - You have setup valid payment information: If your account has no payment information setup, this seems to cause this error to trigger.
+  - Your account is disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
+  - You have provided invalid payment information: If your account has no payment information set up, this seems to cause this error to trigger.
 
 If you are still struggling to present the consent form, reach out to AdMob support to investigate your account status.
