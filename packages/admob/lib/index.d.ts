@@ -844,6 +844,44 @@ export namespace Admob {
 
   /**
    * A class for interacting and showing Interstitial Ads.
+   *
+   * An Interstitial advert can be pre-loaded and shown at a suitable point in your apps flow, such as at the end of a level
+   * in a game. An Interstitial is a full screen advert, laid on-top of your entire application which the user can interact with.
+   * Interactions are passed back via events which should be handled accordingly inside of your app.
+   *
+   * #### Example
+   *
+   * First create a new Interstitial instance, passing in your Ad Unit ID from the Firebase console, and any additional
+   * request options. The example below will present a test advert, and only request a non-personalized ad.
+   *
+   * ```js
+   * import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
+   *
+   * const interstitial = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
+   *     requestNonPersonalizedAdsOnly: true,
+   * });
+   *  ```
+   *
+   * Each advert needs to be loaded from AdMob before being shown. It is recommended this is performed before the user
+   * reaches the checkpoint to show the advert, so it's ready to go. Before loading the advert, we need to setup
+   * event listeners to listen for updates from AdMob, such as advert loaded or failed to load.
+   *
+   * Event types match the `AdEventType` interface. Once the advert has loaded, we can trigger it to show:
+   *
+   * ```js
+   * import { AdEventType } from '@react-native-firebase/admob';
+   *
+   * interstitial.onAdEvent((type) => {
+   *   if (type === AdEventType.LOADED) {
+   *     interstitial.show();
+   *   }
+   * });
+   *
+   * interstitial.load();
+   *  ```
+   *
+   * The advert will be presented to the user, and several more events can be triggered such as the user clicking the
+   * advert or closing it.
    */
   export class InterstitialAd extends MobileAd {
     /**
@@ -877,6 +915,50 @@ export namespace Admob {
 
   /**
    * A class for interacting and showing Rewarded Ads.
+   *
+   * An Rewarded advert can be pre-loaded and shown at a suitable point in your apps flow, such as at the end of a level
+   * in a game. The content of a rewarded advert can be controlled via your AdMob dashboard. Typically users are rewarded
+   * after completing a specific advert action (e.g. watching a video or submitting an option via an interactive form).
+   * Events (such as the user earning a reward or closing a rewarded advert early) are sent back for you to handle accordingly
+   * within your application.
+   *
+   * #### Example
+   *
+   * First create a new Rewarded instance, passing in your Ad Unit ID from the Firebase console, and any additional
+   * request options. The example below will present a test advert, and only request a non-personalized ad.
+   *
+   * ```js
+   * import { RewardedAd, TestIds } from '@react-native-firebase/admob';
+   *
+   * const rewarded = RewardedAd.createForAdRequest(TestIds.REWARDED, {
+   *     requestNonPersonalizedAdsOnly: true,
+   * });
+   *  ```
+   *
+   * Each advert needs to be loaded from AdMob before being shown. It is recommended this is performed before the user
+   * reaches the checkpoint to show the advert, so it's ready to go. Before loading the advert, we need to setup
+   * event listeners to listen for updates from AdMob, such as advert loaded or failed to load.
+   *
+   * Event types match the `AdEventType` or `RewardedAdEventType` interface. The potential user reward for rewarded
+   * adverts are passed back to the event handler on advert load and when the user earns the reward.
+   *
+   * ```js
+   * import { RewardedAdEventType } from '@react-native-firebase/admob';
+   *
+   * rewarded.onAdEvent((type, error, reward) => {
+   *   if (type === RewardedAdEventType.LOADED) {
+   *     interstitial.show();
+   *   }
+   *   if (type === RewardedAdEventType.EARNED_REWARD) {
+   *     console.log('User earned reward of ', reward);
+   *   }
+   * });
+   *
+   * rewarded.load();
+   *  ```
+   *
+   * The rewarded advert will be presented to the user, and several more events can be triggered such as the user clicking the
+   * advert, closing it or completing the action.
    */
   export class RewardedAd extends MobileAd {
     /**
