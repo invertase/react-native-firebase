@@ -1151,7 +1151,7 @@ export namespace Admob {
      * ```js
      * import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
      *
-     * await admob.setRequestConfiguration({
+     * await admob().setRequestConfiguration({
      *   // Update all future requests suitable for parental guidance
      *   maxAdContentRating: MaxAdContentRating.PG,
      * });
