@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 941,
+							"line": 950,
 							"character": 23
 						}
 					],
@@ -44,7 +44,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 940,
+							"line": 949,
 							"character": 27
 						}
 					],
@@ -74,7 +74,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 943,
+							"line": 952,
 							"character": 14
 						}
 					],
@@ -111,7 +111,7 @@
 			"sources": [
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 936,
+					"line": 945,
 					"character": 45
 				}
 			]
@@ -135,7 +135,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 221,
+							"line": 217,
 							"character": 23
 						}
 					],
@@ -156,7 +156,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 220,
+							"line": 216,
 							"character": 27
 						}
 					],
@@ -186,7 +186,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 223,
+							"line": 219,
 							"character": 14
 						}
 					],
@@ -223,7 +223,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 216,
+					"line": 212,
 					"character": 49
 				}
 			]
@@ -278,7 +278,7 @@
 									"sources": [
 										{
 											"fileName": "admob/lib/index.d.ts",
-											"line": 959,
+											"line": 968,
 											"character": 11
 										}
 									]
@@ -306,7 +306,7 @@
 									"sources": [
 										{
 											"fileName": "analytics/lib/index.d.ts",
-											"line": 238,
+											"line": 234,
 											"character": 15
 										}
 									]
@@ -334,7 +334,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 1594,
+											"line": 1609,
 											"character": 10
 										}
 									]
@@ -895,17 +895,17 @@
 								},
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 958,
+									"line": 967,
 									"character": 25
 								},
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 237,
+									"line": 233,
 									"character": 25
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1593,
+									"line": 1608,
 									"character": 25
 								},
 								{
@@ -1001,7 +1001,7 @@
 									"sources": [
 										{
 											"fileName": "admob/lib/index.d.ts",
-											"line": 955,
+											"line": 964,
 											"character": 11
 										}
 									],
@@ -1032,7 +1032,7 @@
 									"sources": [
 										{
 											"fileName": "analytics/lib/index.d.ts",
-											"line": 234,
+											"line": 230,
 											"character": 15
 										}
 									],
@@ -1063,7 +1063,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 1591,
+											"line": 1606,
 											"character": 10
 										}
 									],
@@ -1620,17 +1620,17 @@
 								},
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 954,
+									"line": 963,
 									"character": 20
 								},
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 233,
+									"line": 229,
 									"character": 20
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1590,
+									"line": 1605,
 									"character": 20
 								},
 								{
@@ -1729,17 +1729,17 @@
 						},
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 951,
+							"line": 960,
 							"character": 31
 						},
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 231,
+							"line": 227,
 							"character": 31
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1588,
+							"line": 1603,
 							"character": 31
 						},
 						{
@@ -1920,17 +1920,17 @@
 				},
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 950,
+					"line": 959,
 					"character": 43
 				},
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 230,
+					"line": 226,
 					"character": 43
 				},
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1587,
+					"line": 1602,
 					"character": 43
 				},
 				{
@@ -2029,7 +2029,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1578,
+							"line": 1593,
 							"character": 23
 						}
 					],
@@ -2050,7 +2050,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1577,
+							"line": 1592,
 							"character": 27
 						}
 					],
@@ -2080,7 +2080,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1580,
+							"line": 1595,
 							"character": 14
 						}
 					],
@@ -2117,7 +2117,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1573,
+					"line": 1588,
 					"character": 44
 				}
 			]
@@ -3844,7 +3844,7 @@
 			},
 			"comment": {
 				"shortText": "Firebase Admob package for React Native.",
-				"text": "#### Example 1\n\nAccess the firebase export from the `admob` package:\n\n```js\nimport { firebase } from '@react-native-firebase/admob';\n\n// firebase.admob().X\n```\n\n#### Example 2\n\nUsing the default export from the `admob` package:\n\n```js\nimport admob from '@react-native-firebase/admob';\n\n// admob().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/admob';\n\n// firebase.admob().X\n```\n",
+				"text": "#### Example: access the Firebase export from the `admob` package:\n\n```jS\nimport { firebase } from '@react-native-firebase/admob';\n\n// firebase.admob().X\n```\n\n#### Example: Using the default export from the `admob` package:\n\n```js\nimport admob from '@react-native-firebase/admob';\n\n// admob().X\n```\n\n#### Example: Using the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/admob';\n\n// firebase.admob().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -3879,7 +3879,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 129,
+									"line": 135,
 									"character": 11
 								}
 							],
@@ -3899,7 +3899,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 141,
+									"line": 147,
 									"character": 10
 								}
 							],
@@ -3914,13 +3914,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The ad errored. See the error parameter the listener callback for more information.",
+								"shortText": "The ad has thrown an error. See the error parameter the listener callback for more information.",
 								"text": "#### Example\n\n```js\nimport { AdEventType } from '@react-native-firebase/admob';\n\nadvert.onAdEvent((type, error, data) => {\n  if (type === AdEventType.ERROR) {\n    console.log('Ad error:', error);\n  }\n});\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 118,
+									"line": 124,
 									"character": 9
 								}
 							],
@@ -3941,7 +3941,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 136,
+									"line": 142,
 									"character": 20
 								}
 							],
@@ -3956,12 +3956,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "When a ad has loaded. At this point, the ad is ready to be shown to the user."
+								"shortText": "When an ad has loaded. At this point, the ad is ready to be shown to the user.",
+								"text": "#### Example\n\n```js\nimport { AdEventType } from '@react-native-firebase/admob';\n\nadvert.onAdEvent((type,error,data) => {\n  if (type === AdEventType.LOADED) {\n    advert.show();\n  }\n});\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 101,
+									"line": 107,
 									"character": 10
 								}
 							],
@@ -3976,12 +3977,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The ad opened and is currently visible to the user. This event is received after the `show()`\nmethod has been called."
+								"shortText": "The ad opened and is currently visible to the user. This event is fired after the `show()`\nmethod has been called."
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 124,
+									"line": 130,
 									"character": 10
 								}
 							],
@@ -4005,7 +4006,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 97,
+							"line": 91,
 							"character": 25
 						}
 					]
@@ -4031,13 +4032,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "An event fired when the user earned the reward for the video. If the user does not earn a reward,\nthe AdEventType.CLOSED` event will be fired with no rewarded event.",
-								"text": "The reward contains a `type` and `amount`.\n\n#### Example\n\n```js\nimport { RewardedAdEventType } from '@react-native-firebase/admob';\n\nrewardedAd.onAdEvent((type, error, data) => {\n  if (type === RewardedAdEventType.EARNED_REWARD) {\n    console.log('User earned the reward:', data);\n  }\n});\n```\n"
+								"shortText": "An event fired when the user earned the reward for the video. If the user does not earn a reward,\nthe `AdEventType.CLOSED` event will be fired with no rewarded event.",
+								"text": "The reward contains a `type` and `amount`.\n\n#### Example\n\n```js\nimport { RewardedAdEventType } from '@react-native-firebase/admob';\n\nrewardedAd.onAdEvent((type, error, data) => {\n  if (type === RewardedAdEventType.EARNED_REWARD) {\n    console.log(`User earned ${data.amount} ${data.type}`);\n    // E.g. \"User earned 50 coins\"\n  }\n});\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 189,
+									"line": 198,
 									"character": 17
 								}
 							],
@@ -4052,13 +4053,13 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "When a rewarded ad has loaded.",
-								"text": "This type differs from `AdEventType.LOADED` as when a rewarded ad is loaded,\nan additional data payload is provided to the event handler containing the ad reward\n(assuming the user earns the reward).\n\nThe reward contains a `type` and `amount`.\n\n#### Example\n\n```js\nimport { RewardedAdEventType } from '@react-native-firebase/admob';\n\nrewardedAd.onAdEvent((type, error, data) => {\n  if (type === RewardedAdEventType.LOADED) {\n    console.log('Rewarded Ad loaded with reward:', data);\n  }\n});\n```\n"
+								"shortText": "An event fired when a rewarded ad has loaded.",
+								"text": "This type differs from `AdEventType.LOADED` as when a rewarded ad is loaded,\nan additional data payload is provided to the event handler containing the ad reward\n(assuming the user earns the reward).\n\nThe reward contains a `type` and `amount`.\n\n#### Example\n\n```js\nimport { RewardedAdEventType } from '@react-native-firebase/admob';\n\nrewardedAd.onAdEvent((type, error, data) => {\n  if (type === RewardedAdEventType.LOADED) {\n    console.log(`Rewarded Ad loaded with ${data.amount} ${data.type} as reward`);\n    // E.g. \"Rewarded Ad loaded with 50 coins as reward\"\n    rewardedAd.show();\n  }\n});\n```\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 169,
+									"line": 177,
 									"character": 10
 								}
 							],
@@ -4078,7 +4079,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 147,
+							"line": 153,
 							"character": 33
 						}
 					]
@@ -4109,7 +4110,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 776,
+									"line": 785,
 									"character": 12
 								}
 							],
@@ -4137,7 +4138,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 781,
+									"line": 790,
 									"character": 10
 								}
 							],
@@ -4184,7 +4185,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 788,
+									"line": 797,
 									"character": 8
 								}
 							],
@@ -4244,7 +4245,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 811,
+									"line": 820,
 									"character": 13
 								}
 							],
@@ -4312,7 +4313,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 833,
+									"line": 842,
 									"character": 8
 								}
 							],
@@ -4385,7 +4386,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 866,
+									"line": 875,
 									"character": 29
 								}
 							]
@@ -4414,7 +4415,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 839,
+							"line": 848,
 							"character": 29
 						}
 					],
@@ -4435,7 +4436,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Base call for InterstitialAd, RewardedAd and NativeAd."
+						"shortText": "Base class for InterstitialAd, RewardedAd, NativeAd and BannerAd."
 					},
 					"children": [
 						{
@@ -4452,7 +4453,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 776,
+									"line": 785,
 									"character": 12
 								}
 							],
@@ -4475,7 +4476,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 781,
+									"line": 790,
 									"character": 10
 								}
 							],
@@ -4512,7 +4513,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 788,
+									"line": 797,
 									"character": 8
 								}
 							]
@@ -4562,7 +4563,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 811,
+									"line": 820,
 									"character": 13
 								}
 							]
@@ -4620,7 +4621,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 833,
+									"line": 842,
 									"character": 8
 								}
 							]
@@ -4648,7 +4649,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 772,
+							"line": 781,
 							"character": 23
 						}
 					],
@@ -4757,7 +4758,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 932,
+									"line": 941,
 									"character": 27
 								}
 							]
@@ -4782,7 +4783,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 915,
+							"line": 924,
 							"character": 21
 						}
 					],
@@ -4820,7 +4821,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 776,
+									"line": 785,
 									"character": 12
 								}
 							],
@@ -4848,7 +4849,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 781,
+									"line": 790,
 									"character": 10
 								}
 							],
@@ -4895,7 +4896,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 788,
+									"line": 797,
 									"character": 8
 								}
 							],
@@ -4955,7 +4956,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 811,
+									"line": 820,
 									"character": 13
 								}
 							],
@@ -5023,7 +5024,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 833,
+									"line": 842,
 									"character": 8
 								}
 							],
@@ -5096,7 +5097,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 899,
+									"line": 908,
 									"character": 29
 								}
 							]
@@ -5125,7 +5126,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 872,
+							"line": 881,
 							"character": 25
 						}
 					],
@@ -5210,7 +5211,7 @@
 										"isOptional": true
 									},
 									"comment": {
-										"text": "Optional data for the event, e.g. rewarded\n"
+										"text": "Optional data for the event, e.g. reward type and amount\n"
 									},
 									"type": {
 										"type": "union",
@@ -5237,7 +5238,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 760,
+							"line": 769,
 							"character": 34
 						}
 					]
@@ -5268,7 +5269,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 519,
+									"line": 528,
 									"character": 13
 								}
 							],
@@ -5291,7 +5292,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 524,
+									"line": 533,
 									"character": 15
 								}
 							],
@@ -5314,7 +5315,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 529,
+									"line": 538,
 									"character": 20
 								}
 							],
@@ -5338,7 +5339,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 515,
+							"line": 524,
 							"character": 29
 						}
 					]
@@ -5376,7 +5377,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 465,
+									"line": 474,
 									"character": 24
 								}
 							],
@@ -5411,7 +5412,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 458,
+							"line": 467,
 							"character": 32
 						}
 					]
@@ -5426,7 +5427,7 @@
 					},
 					"comment": {
 						"shortText": "Under the Google [EU User Consent Policy](https://www.google.com/about/company/consentstaging.html), you must make certain disclosures to your users in the European Economic Area (EEA)\nand obtain their consent to use cookies or other local storage, where legally required, and to use personal data\n(such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the\nGeneral Data Protection Regulation (GDPR).",
-						"text": "It is recommended that you determine the status of a user's consent ay every app launch. The user consent status is held\non the device until a condition changes which requires the user to consent again, such as a change in publishers.\n\nFor more information, see [here](https://developers.google.com/admob/android/eu-consent#delay_app_measurement_optional).\n"
+						"text": "It is recommended that you determine the status of a user's consent at every app launch. The user consent status is held\non the device until a condition changes which requires the user to consent again, such as a change in publishers.\n\nFor more information, see [here](https://developers.google.com/admob/android/eu-consent#delay_app_measurement_optional).\n"
 					},
 					"children": [
 						{
@@ -5482,7 +5483,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 422,
+									"line": 431,
 									"character": 18
 								}
 							]
@@ -5525,7 +5526,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 311,
+									"line": 320,
 									"character": 18
 								}
 							]
@@ -5547,7 +5548,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns the current consent status of the user.",
-										"text": "> Do not persist the user consent status locally.\n\n#### Example\n\n```js\nimport { AdsConsent } from '@react-native-firebase/admob';\n\nconst status = await AdsConsent.getStatus();\n```\n"
+										"text": "> The user consent status may change at any time, therefore don't reuse old values locally and always request the current value at any time consent is required.\n\n#### Example\n\n```js\nimport { AdsConsent } from '@react-native-firebase/admob';\n\nconst status = await AdsConsent.getStatus();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -5580,7 +5581,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 385,
+									"line": 394,
 									"character": 13
 								}
 							]
@@ -5639,7 +5640,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 244,
+									"line": 253,
 									"character": 21
 								}
 							]
@@ -5710,7 +5711,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 339,
+									"line": 348,
 									"character": 21
 								}
 							]
@@ -5732,7 +5733,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Manually update the consent status of the user.",
-										"text": "This method is used when providing your own means of user consent. If using the Google-rendered form via `showForm()`,\nthe consent status is automatically set and calling this method is not required.\n\nThis method can also be used to reset the consent status (via UNKNOWN) which may be useful in certain circumstances.\n\n#### Example\n\n```js\nimport { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';\n\n// User accepted personalized ads\nawait AdsConsent.setStatus(AdsConsentStatus.PERSONALIZED);\n```\n"
+										"text": "This method is used when providing your own means of user consent. If using the Google-rendered form via `showForm()`,\nthe consent status is automatically set and calling this method is not required.\n\nThis method can also be used to reset the consent status, by setting it to `AdsConsentStatus.UNKNOWN`, which may be useful in certain circumstances.\n\n#### Example\n\n```js\nimport { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';\n\n// User accepted personalized ads\nawait AdsConsent.setStatus(AdsConsentStatus.PERSONALIZED);\n```\n"
 									},
 									"parameters": [
 										{
@@ -5781,7 +5782,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 365,
+									"line": 374,
 									"character": 13
 								}
 							]
@@ -5802,7 +5803,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "If a publisher is aware that the user is under the age of consent, all ad requests must set TFUA (Tag For Users\nunder the Age of Consent in Europe). This setting takes effect for all future ad requests.",
+										"shortText": "If a publisher is aware that the user is under the age of consent, all ad requests must set TFUA (Tag For Users\nUnder the Age of consent in Europe). This setting takes effect for all future ad requests.",
 										"text": "Once the TFUA setting is enabled, the Google-rendered consent form will fail to load. All ad requests that include\nTFUA will be made ineligible for personalized advertising and remarketing. TFUA disables requests to third-party\nad technology providers, such as ad measurement pixels and third-party ad servers.\n\nTo remove TFUA from ad requests, set the value to `false`.\n\n#### Example\n\n```js\nimport { AdsConsent } from '@react-native-firebase/admob';\n\n// User is under age of consent\nawait AdsConsent.setTagForUnderAgeOfConsent(true);\n```\n"
 									},
 									"parameters": [
@@ -5836,7 +5837,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 410,
+									"line": 419,
 									"character": 30
 								}
 							]
@@ -5895,7 +5896,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 295,
+									"line": 304,
 									"character": 12
 								}
 							]
@@ -5920,7 +5921,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 212,
+							"line": 221,
 							"character": 29
 						}
 					]
@@ -5952,7 +5953,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 541,
+									"line": 550,
 									"character": 12
 								}
 							],
@@ -5975,7 +5976,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 546,
+									"line": 555,
 									"character": 7
 								}
 							],
@@ -5998,7 +5999,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 551,
+									"line": 560,
 									"character": 11
 								}
 							],
@@ -6022,7 +6023,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 537,
+							"line": 546,
 							"character": 43
 						}
 					]
@@ -6036,7 +6037,7 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "The options used to show on the Google-rendered consent form."
+						"shortText": "The options used to show on the Google-rendered consent form. At least one of `withAdFree`, `withPersonalizedAds` and `WithNonPersonalizedAds` needs to be set to `true`."
 					},
 					"children": [
 						{
@@ -6049,12 +6050,12 @@
 							},
 							"comment": {
 								"shortText": "A fully formed HTTP or HTTPS privacy policy URL for your application.",
-								"text": "Users will have the option to visit this webpage before consenting to ads.\n"
+								"text": "Users will have the option to visit this web page before consenting to ads.\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 434,
+									"line": 443,
 									"character": 17
 								}
 							],
@@ -6073,13 +6074,13 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Set to `true` to provide the option for the user to choose an ad-free version of your app.",
+								"shortText": "Set to `true` to provide the option for the user to choose an ad-free version of your app, defaults to `false`.",
 								"text": "If the user chooses this option, you must handle it as required (e.g. navigating to a paid version of the app,\nor a subscribe view).\n"
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 452,
+									"line": 461,
 									"character": 14
 								}
 							],
@@ -6111,12 +6112,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Set to `true` to provide the option for the user to accept being shown non-personalized ads."
+								"shortText": "Set to `true` to provide the option for the user to accept being shown non-personalized ads, defaults to `false`."
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 444,
+									"line": 453,
 									"character": 26
 								}
 							],
@@ -6148,12 +6149,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Set to `true` to provide the option for the user to accept being shown personalized ads."
+								"shortText": "Set to `true` to provide the option for the user to accept being shown personalized ads, defaults to `false`."
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 439,
+									"line": 448,
 									"character": 23
 								}
 							],
@@ -6191,7 +6192,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 428,
+							"line": 437,
 							"character": 40
 						}
 					]
@@ -6223,7 +6224,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 479,
+									"line": 488,
 									"character": 10
 								}
 							],
@@ -6262,7 +6263,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 487,
+									"line": 496,
 									"character": 21
 								}
 							],
@@ -6285,7 +6286,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 471,
+							"line": 480,
 							"character": 39
 						}
 					]
@@ -6316,7 +6317,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 509,
+									"line": 518,
 									"character": 35
 								}
 							],
@@ -6340,7 +6341,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 501,
+									"line": 510,
 									"character": 10
 								}
 							],
@@ -6379,7 +6380,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 493,
+							"line": 502,
 							"character": 33
 						}
 					]
@@ -6410,7 +6411,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 566,
+									"line": 575,
 									"character": 20
 								}
 							],
@@ -6433,7 +6434,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 571,
+									"line": 580,
 									"character": 16
 								}
 							],
@@ -6456,7 +6457,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 561,
+									"line": 570,
 									"character": 11
 								}
 							],
@@ -6480,7 +6481,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 557,
+							"line": 566,
 							"character": 35
 						}
 					]
@@ -6511,7 +6512,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 724,
+									"line": 733,
 									"character": 5
 								}
 							],
@@ -6534,7 +6535,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 739,
+									"line": 748,
 									"character": 6
 								}
 							],
@@ -6557,7 +6558,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 729,
+									"line": 738,
 									"character": 6
 								}
 							],
@@ -6580,7 +6581,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 734,
+									"line": 743,
 									"character": 5
 								}
 							],
@@ -6605,7 +6606,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 720,
+							"line": 729,
 							"character": 37
 						}
 					]
@@ -6638,7 +6639,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 690,
+									"line": 699,
 									"character": 22
 								}
 							],
@@ -6684,7 +6685,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 704,
+									"line": 713,
 									"character": 32
 								}
 							],
@@ -6722,7 +6723,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 714,
+									"line": 723,
 									"character": 27
 								}
 							],
@@ -6759,7 +6760,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 684,
+							"line": 693,
 							"character": 39
 						}
 					]
@@ -6792,7 +6793,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 638,
+									"line": 647,
 									"character": 14
 								}
 							],
@@ -6826,7 +6827,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 618,
+									"line": 627,
 									"character": 12
 								}
 							],
@@ -6854,7 +6855,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 653,
+									"line": 662,
 									"character": 12
 								}
 							],
@@ -6888,7 +6889,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 662,
+									"line": 671,
 									"character": 20
 								}
 							],
@@ -6922,7 +6923,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 603,
+									"line": 612,
 									"character": 17
 								}
 							],
@@ -6988,7 +6989,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 678,
+									"line": 687,
 									"character": 16
 								}
 							],
@@ -7022,7 +7023,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 584,
+									"line": 593,
 									"character": 33
 								}
 							],
@@ -7060,7 +7061,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 631,
+									"line": 640,
 									"character": 15
 								}
 							],
@@ -7092,7 +7093,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 577,
+							"line": 586,
 							"character": 33
 						}
 					]
@@ -7123,7 +7124,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 754,
+									"line": 763,
 									"character": 10
 								}
 							],
@@ -7141,12 +7142,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The reward type, e.g. 'coins', 'diamonds'."
+								"shortText": "The reward name, e.g. 'coins', 'diamonds'."
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 749,
+									"line": 758,
 									"character": 8
 								}
 							],
@@ -7169,7 +7170,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 745,
+							"line": 754,
 							"character": 35
 						}
 					]
@@ -7200,7 +7201,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 81,
+									"line": 75,
 									"character": 15
 								}
 							],
@@ -7224,7 +7225,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 71,
+									"line": 65,
 									"character": 28
 								}
 							],
@@ -7248,7 +7249,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 66,
+									"line": 60,
 									"character": 20
 								}
 							],
@@ -7272,7 +7273,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 76,
+									"line": 70,
 									"character": 22
 								}
 							],
@@ -7296,7 +7297,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 86,
+									"line": 80,
 									"character": 23
 								}
 							],
@@ -7320,7 +7321,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 91,
+									"line": 85,
 									"character": 11
 								}
 							],
@@ -7348,7 +7349,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 62,
+							"line": 56,
 							"character": 26
 						}
 					]
@@ -7376,7 +7377,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 196,
+									"line": 205,
 									"character": 10
 								}
 							],
@@ -7396,7 +7397,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 197,
+									"line": 206,
 									"character": 16
 								}
 							],
@@ -7416,7 +7417,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 198,
+									"line": 207,
 									"character": 12
 								}
 							],
@@ -7440,7 +7441,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 195,
+							"line": 204,
 							"character": 26
 						}
 					]
@@ -7490,7 +7491,7 @@
 			"sources": [
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 56,
+					"line": 50,
 					"character": 22
 				}
 			]
@@ -7505,7 +7506,7 @@
 			},
 			"comment": {
 				"shortText": "Firebase Analytics package for React Native.",
-				"text": "#### Example 1\n\nAccess the firebase export from the `analytics` package:\n\n```js\nimport { firebase } from '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n\n#### Example 2\n\nUsing the default export from the `analytics` package:\n\n```js\nimport analytics from '@react-native-firebase/analytics';\n\n// analytics().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n",
+				"text": "#### Example: Access the firebase export from the `analytics` package:\n\n```js\nimport { firebase } from '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n\n#### Example: Using the default export from the `analytics` package:\n\n```js\nimport analytics from '@react-native-firebase/analytics';\n\n// analytics().X\n```\n\n#### Example: Using the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/analytics';\n\n// firebase.analytics().X\n```\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -7648,7 +7649,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 91,
+															"line": 85,
 															"character": 34
 														}
 													]
@@ -7671,7 +7672,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 91,
+									"line": 85,
 									"character": 12
 								}
 							]
@@ -7710,7 +7711,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 212,
+									"line": 208,
 									"character": 22
 								}
 							]
@@ -7765,7 +7766,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 106,
+									"line": 100,
 									"character": 33
 								}
 							]
@@ -7845,7 +7846,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 125,
+									"line": 119,
 									"character": 20
 								}
 							]
@@ -7911,7 +7912,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 139,
+									"line": 133,
 									"character": 29
 								}
 							]
@@ -7977,7 +7978,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 153,
+									"line": 147,
 									"character": 29
 								}
 							]
@@ -8009,7 +8010,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "Set to null to remove a previously assigned id from analytics\nevents\n"
+												"text": "Set to null to remove a previously assigned ID from analytics\nevents\n"
 											},
 											"type": {
 												"type": "union",
@@ -8041,7 +8042,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 170,
+									"line": 164,
 									"character": 13
 								}
 							]
@@ -8062,8 +8063,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets multiple key/value pair of data on the current user.",
-										"text": "#### Example\n\n```js\nawait firebase.analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n",
+										"shortText": "Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.",
+										"text": "#### Example\n\n```js\nawait firebase.analytics().setUserProperties({\n  account_type: 'gold',\n  account_name: 'Gold Badge',\n});\n```\n\n> When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.\n",
 										"tags": [
 											{
 												"tag": "react-native-firebase",
@@ -8127,7 +8128,7 @@
 													"sources": [
 														{
 															"fileName": "analytics/lib/index.d.ts",
-															"line": 201,
+															"line": 197,
 															"character": 33
 														}
 													]
@@ -8150,7 +8151,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 201,
+									"line": 197,
 									"character": 21
 								}
 							]
@@ -8171,7 +8172,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Sets a key/value pair of data on the current user.",
+										"shortText": "Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.",
 										"text": "#### Example\n\n```js\nawait firebase.analytics().setUserProperty('account_type', 'gold');\n```\n"
 									},
 									"parameters": [
@@ -8196,7 +8197,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "Set to null to remove a previously assigned id from analytics events.\n"
+												"text": "Set to null to remove a previously assigned ID from analytics events.\n"
 											},
 											"type": {
 												"type": "union",
@@ -8228,7 +8229,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 184,
+									"line": 178,
 									"character": 19
 								}
 							]
@@ -8261,7 +8262,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 74,
+							"line": 68,
 							"character": 21
 						}
 					],
@@ -8284,7 +8285,7 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 59,
+							"line": 53,
 							"character": 26
 						}
 					]
@@ -8309,7 +8310,7 @@
 			"sources": [
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 56,
+					"line": 50,
 					"character": 26
 				}
 			]
@@ -8324,7 +8325,7 @@
 			},
 			"comment": {
 				"shortText": "Firebase Authentication package for React Native.",
-				"text": "#### Example 1\n\nAccess the firebase export from the `auth` package:\n\n```js\nimport { firebase } from '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\n\n#### Example 2\n\nUsing the default export from the `auth` package:\n\n```js\nimport auth from '@react-native-firebase/auth';\n\n// auth().X\n```\n\n#### Example 3\n\nUsing the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\nTODO @salakar @ehesp missing auth providers (PhoneAuthProvider, Facebook etc)\n",
+				"text": "#### Example: Access the firebase export from the `auth` package:\n\n```js\nimport { firebase } from '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\n\n#### Example: Using the default export from the `auth` package:\n\n```js\nimport auth from '@react-native-firebase/auth';\n\n// auth().X\n```\n\n#### Example: Using the default export from the `app` package:\n\n```js\nimport firebase from '@react-native-firebase/app';\nimport '@react-native-firebase/auth';\n\n// firebase.auth().X\n```\nTODO @salakar @ehesp missing auth providers (PhoneAuthProvider, Facebook etc)\n",
 				"tags": [
 					{
 						"tag": "firebase",
@@ -8388,7 +8389,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1169,
+									"line": 1184,
 									"character": 12
 								}
 							],
@@ -8440,7 +8441,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1182,
+									"line": 1197,
 									"character": 19
 								}
 							]
@@ -8510,12 +8511,12 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1150,
+									"line": 1165,
 									"character": 20
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1164,
+									"line": 1179,
 									"character": 20
 								}
 							]
@@ -8588,7 +8589,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1515,
+									"line": 1530,
 									"character": 19
 								}
 							]
@@ -8662,7 +8663,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1533,
+									"line": 1548,
 									"character": 19
 								}
 							]
@@ -8753,7 +8754,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1498,
+									"line": 1513,
 									"character": 24
 								}
 							]
@@ -8841,7 +8842,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1345,
+									"line": 1360,
 									"character": 34
 								}
 							]
@@ -8905,7 +8906,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1551,
+									"line": 1566,
 									"character": 30
 								}
 							]
@@ -8954,7 +8955,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1461,
+									"line": 1476,
 									"character": 25
 								}
 							]
@@ -9019,7 +9020,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1206,
+													"line": 1221,
 													"character": 55
 												}
 											]
@@ -9030,7 +9031,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1206,
+									"line": 1221,
 									"character": 22
 								}
 							]
@@ -9051,7 +9052,7 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Listen for changes in id token.\nThis method returns a unsubscribe function to stop listening to events.\nAlways ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.",
+										"shortText": "Listen for changes in ID token.\nThis method returns a unsubscribe function to stop listening to events.\nAlways ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.",
 										"text": "#### Example\n\n```js\nconst unsubscribe = firebase.auth().onIdTokenChanged((user) => {\n  if (user) {\n    // User is signed in or token was refreshed.\n  }\n});\n\n// Unsubscribe from further state changes\nunsubscribe();\n```\n"
 									},
 									"parameters": [
@@ -9095,7 +9096,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1228,
+													"line": 1243,
 													"character": 53
 												}
 											]
@@ -9106,7 +9107,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1228,
+									"line": 1243,
 									"character": 20
 								}
 							]
@@ -9177,7 +9178,7 @@
 											"sources": [
 												{
 													"fileName": "auth/lib/index.d.ts",
-													"line": 1254,
+													"line": 1269,
 													"character": 50
 												}
 											]
@@ -9188,7 +9189,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1254,
+									"line": 1269,
 									"character": 17
 								}
 							]
@@ -9290,7 +9291,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1427,
+									"line": 1442,
 									"character": 26
 								}
 							]
@@ -9392,7 +9393,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1448,
+									"line": 1463,
 									"character": 25
 								}
 							]
@@ -9438,7 +9439,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1281,
+									"line": 1296,
 									"character": 21
 								}
 							]
@@ -9529,7 +9530,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1405,
+									"line": 1420,
 									"character": 24
 								}
 							]
@@ -9595,7 +9596,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1381,
+									"line": 1396,
 									"character": 25
 								}
 							]
@@ -9683,7 +9684,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1362,
+									"line": 1377,
 									"character": 30
 								}
 							]
@@ -9767,7 +9768,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1478,
+									"line": 1493,
 									"character": 23
 								}
 							]
@@ -9874,7 +9875,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1301,
+									"line": 1316,
 									"character": 25
 								}
 							]
@@ -9913,7 +9914,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1268,
+									"line": 1283,
 									"character": 11
 								}
 							]
@@ -9986,7 +9987,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1569,
+									"line": 1584,
 									"character": 27
 								}
 							]
@@ -10018,7 +10019,7 @@
 											"kindString": "Parameter",
 											"flags": {},
 											"comment": {
-												"text": "The user's phone number in E.164 format (e.g. +16505550101)."
+												"text": "The phone number identifier supplied by the user. Its format is normalized on the server, so it can be in any format here. (e.g. +16505550101)."
 											},
 											"type": {
 												"type": "intrinsic",
@@ -10090,7 +10091,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1321,
+									"line": 1336,
 									"character": 21
 								}
 							]
@@ -10143,7 +10144,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1140,
+							"line": 1155,
 							"character": 21
 						}
 					],
@@ -10177,12 +10178,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Additional action code data."
+								"shortText": "The data associated with the action code."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 535,
+									"line": 549,
 									"character": 8
 								}
 							],
@@ -10206,7 +10207,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 539,
+									"line": 553,
 									"character": 13
 								}
 							],
@@ -10250,7 +10251,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 531,
+							"line": 545,
 							"character": 33
 						}
 					]
@@ -10264,8 +10265,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "Additional data returned from a {@link auth#checkActionCode} call.",
-						"text": "#### Example\n\n```js\nconst actionCodeInfo = await firebase.auth().checkActionCode('ABCD');\n\nconsole.log('Action code email: ', actionCodeInfo.data.email);\nconsole.log('Action code from email: ', actionCodeInfo.data.fromEmail);\n```\n"
+						"shortText": "Additional data returned from a {@link auth#checkActionCode} call.\nFor the PASSWORD_RESET, VERIFY_EMAIL, and RECOVER_EMAIL actions, this object contains an email field with the address the email was sent to.\nFor the RECOVER_EMAIL action, which allows a user to undo an email address change, this object also contains a fromEmail field with the user account's new email address. After the action completes, the user's email address will revert to the value in the email field from the value in fromEmail field.",
+						"text": "#### Example\n\n```js\nconst actionCodeInfo = await firebase.auth().checkActionCode('ABCD');\nData\nconsole.log('Action code email: ', actionCodeInfo.data.email);\nconsole.log('Action code from email: ', actionCodeInfo.data.fromEmail);\n```\n"
 					},
 					"children": [
 						{
@@ -10277,10 +10278,13 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "This signifies the email before the call was made."
+							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 517,
+									"line": 528,
 									"character": 9
 								}
 							],
@@ -10307,10 +10311,13 @@
 								"isExported": true,
 								"isOptional": true
 							},
+							"comment": {
+								"shortText": "This signifies the current email associated with the account, which may have changed as a result of the {@link auth#checkActionCode} call performed."
+							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 518,
+									"line": 532,
 									"character": 13
 								}
 							],
@@ -10342,7 +10349,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 516,
+							"line": 524,
 							"character": 37
 						}
 					]
@@ -10375,7 +10382,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 579,
+									"line": 593,
 									"character": 11
 								}
 							],
@@ -10395,12 +10402,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Sets the Dynamic Links domain"
+								"shortText": "Sets the dynamic link domain (or subdomain) to use for the current link if it is to be opened using Firebase Dynamic Links. As multiple dynamic link domains can be configured per project, this field provides the ability to explicitly choose one. If none is provided, the first domain is used by default."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 594,
+									"line": 608,
 									"character": 21
 								}
 							],
@@ -10428,12 +10435,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Whether the code should be handled by the app."
+								"shortText": "Whether the email action link will be opened in a mobile app or a web link first. The default is false. When set to true, the action code link will be be sent as a Universal Link or Android App Link and will be opened by the app if installed. In the false case, the code will be sent to the web widget first and then on continue will redirect to the app if installed."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 584,
+									"line": 598,
 									"character": 19
 								}
 							],
@@ -10470,7 +10477,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 589,
+									"line": 603,
 									"character": 7
 								}
 							],
@@ -10489,12 +10496,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "Sets the URL for the action."
+								"shortText": "This URL represents the state/Continue URL in the form of a universal link. This URL can should be constructed as a universal link that would either directly open the app where the action code would be handled or continue to the app after the action code is handled by Firebase."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 599,
+									"line": 613,
 									"character": 7
 								}
 							],
@@ -10520,7 +10527,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 575,
+							"line": 589,
 							"character": 37
 						}
 					]
@@ -10548,12 +10555,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "The preference for whether to attempt to install the app if it is not present."
+								"shortText": "If installApp is passed, it specifies whether to install the Android app if the device supports it and the app is not already installed. If this field is provided without a packageName, an error is thrown explaining that the packageName must be provided in conjunction with this field."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 497,
+									"line": 503,
 									"character": 14
 								}
 							],
@@ -10585,12 +10592,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "The minimum Android app version."
+								"shortText": "If minimumVersion is specified, and an older version of the app is installed, the user is taken to the Play Store to upgrade the app. The Android app needs to be registered in the Console."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 501,
+									"line": 507,
 									"character": 18
 								}
 							],
@@ -10617,12 +10624,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The Android Package Name."
+								"shortText": "Sets the Android package name. This will try to open the link in an android app if it is installed."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 493,
+									"line": 499,
 									"character": 15
 								}
 							],
@@ -10646,7 +10653,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 489,
+							"line": 495,
 							"character": 44
 						}
 					]
@@ -10674,12 +10681,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "An iOS build ID."
+								"shortText": "Sets the iOS bundle ID. This will try to open the link in an iOS app if it is installed. The iOS app needs to be registered in the Console."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 560,
+									"line": 574,
 									"character": 12
 								}
 							],
@@ -10710,7 +10717,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 556,
+							"line": 570,
 							"character": 40
 						}
 					]
@@ -10748,7 +10755,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 278,
+									"line": 284,
 									"character": 13
 								}
 							],
@@ -10767,12 +10774,12 @@
 								"isOptional": true
 							},
 							"comment": {
-								"shortText": "Returns a Object containing IDP-specific user data if the provider is one of Facebook,\nGitHub, Google, Twitter, Microsoft, or Yahoo."
+								"shortText": "Returns an Object containing IDP-specific user data if the provider is one of Facebook,\nGitHub, Google, Twitter, Microsoft, or Yahoo."
 							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 283,
+									"line": 289,
 									"character": 11
 								}
 							],
@@ -10795,7 +10802,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 287,
+									"line": 293,
 									"character": 14
 								}
 							],
@@ -10819,7 +10826,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 291,
+									"line": 297,
 									"character": 12
 								}
 							],
@@ -10853,7 +10860,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 274,
+							"line": 280,
 							"character": 37
 						}
 					]
@@ -10885,7 +10892,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 80,
+									"line": 74,
 									"character": 14
 								}
 							],
@@ -10905,7 +10912,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 82,
+									"line": 76,
 									"character": 10
 								}
 							],
@@ -10925,7 +10932,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 81,
+									"line": 75,
 									"character": 9
 								}
 							],
@@ -10949,7 +10956,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 76,
+							"line": 70,
 							"character": 33
 						}
 					]
@@ -10980,7 +10987,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 92,
+									"line": 86,
 									"character": 15
 								}
 							],
@@ -11019,7 +11026,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 100,
+									"line": 94,
 									"character": 14
 								}
 							],
@@ -11092,7 +11099,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 100,
+											"line": 94,
 											"character": 15
 										}
 									]
@@ -11113,7 +11120,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 88,
+							"line": 82,
 							"character": 31
 						}
 					]
@@ -11140,7 +11147,8 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "iOS only flag to determine whether app verification should be disabled for testing or not.",
+								"shortText": "iOS only flag to disable app verification for the purpose of testing phone authentication. For this property to take effect, it needs to be set before rendering a reCAPTCHA app verifier. When this is disabled, a mock reCAPTCHA is rendered instead. This is useful for manual testing during development or for automated integration tests.",
+								"text": "> In order to use this feature, you will need to [whitelist your phone number](https://firebase.google.com/docs/auth/web/phone-auth#test-with-whitelisted-phone-numbers) via the Firebase Console.\n",
 								"tags": [
 									{
 										"tag": "platform",
@@ -11156,7 +11164,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 794,
+									"line": 810,
 									"character": 37
 								}
 							],
@@ -11181,8 +11189,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "The phone number and SMS code here must have been configured in the\nFirebase Console (Authentication > Sign In Method > Phone).",
-										"text": "Calling this method a second time will overwrite the previously passed parameters.\nOnly one number can be configured at a given time.\n\n#### Example\n\n```js\nawait firebase.auth().settings.setAutoRetrievedSmsCodeForPhoneNumber('+4423456789', 'ABCDE');\n```\n",
+										"shortText": "Calling this method a second time will overwrite the previously passed parameters.\nOnly one number can be configured at a given time.",
+										"text": "> The phone number and SMS code here must have been configured in the Firebase Console (Authentication > Sign In Method > Phone).\n\n#### Example\n\n```js\nawait firebase.auth().settings.setAutoRetrievedSmsCodeForPhoneNumber('+4423456789', 'ABCDE');\n```\n",
 										"tags": [
 											{
 												"tag": "platform",
@@ -11235,7 +11243,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 813,
+									"line": 828,
 									"character": 41
 								}
 							]
@@ -11260,7 +11268,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 787,
+							"line": 801,
 							"character": 31
 						}
 					]
@@ -11292,7 +11300,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 465,
+									"line": 471,
 									"character": 18
 								}
 							],
@@ -11369,7 +11377,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 471,
+									"line": 477,
 									"character": 11
 								}
 							]
@@ -11394,7 +11402,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 460,
+							"line": 466,
 							"character": 37
 						}
 					]
@@ -11426,7 +11434,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 123,
+									"line": 117,
 									"character": 29
 								}
 							],
@@ -11450,7 +11458,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 136,
+									"line": 130,
 									"character": 33
 								}
 							],
@@ -11473,7 +11481,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 110,
+									"line": 104,
 									"character": 15
 								}
 							],
@@ -11513,7 +11521,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 150,
+									"line": 144,
 									"character": 14
 								}
 							],
@@ -11566,7 +11574,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 150,
+											"line": 144,
 											"character": 15
 										}
 									]
@@ -11600,7 +11608,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 163,
+									"line": 157,
 									"character": 22
 								}
 							],
@@ -11653,7 +11661,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 163,
+											"line": 157,
 											"character": 23
 										}
 									]
@@ -11677,7 +11685,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 106,
+							"line": 100,
 							"character": 36
 						}
 					]
@@ -11709,7 +11717,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 401,
+									"line": 407,
 									"character": 12
 								}
 							],
@@ -11732,7 +11740,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 419,
+									"line": 425,
 									"character": 10
 								}
 							],
@@ -11773,7 +11781,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 419,
+											"line": 425,
 											"character": 11
 										}
 									]
@@ -11794,7 +11802,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 409,
+									"line": 415,
 									"character": 18
 								}
 							],
@@ -11817,7 +11825,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 405,
+									"line": 411,
 									"character": 16
 								}
 							],
@@ -11840,7 +11848,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 414,
+									"line": 420,
 									"character": 18
 								}
 							],
@@ -11872,7 +11880,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 396,
+									"line": 402,
 									"character": 9
 								}
 							],
@@ -11899,7 +11907,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 392,
+							"line": 398,
 							"character": 32
 						}
 					]
@@ -11931,7 +11939,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 675,
+									"line": 689,
 									"character": 8
 								}
 							],
@@ -11963,7 +11971,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 683,
+									"line": 697,
 									"character": 11
 								}
 							],
@@ -11995,7 +12003,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 687,
+									"line": 701,
 									"character": 9
 								}
 							],
@@ -12027,7 +12035,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 679,
+									"line": 693,
 									"character": 18
 								}
 							],
@@ -12052,7 +12060,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 671,
+							"line": 685,
 							"character": 33
 						}
 					]
@@ -12086,7 +12094,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "A promise handler called once the `on` listener flow has rejected.",
-										"text": "#### Example\n\n```js\nfirebase.auth().verifyPhoneNumber('+4423456789')\n .on('state_changed', (phoneAuthSnapshot) => {\n   return Promise.reject(\n     new Error('Code not sent!')\n   );\n })\n .catch((error) => {\n   console.error(error.message);\n });\n```\n\n> Used when no `onRejected` handler is passed to the `then`.\n"
+										"text": "#### Example\n\n```js\nfirebase.auth().verifyPhoneNumber('+4423456789')\n .on('state_changed', (phoneAuthSnapshot) => {\n   return Promise.reject(\n     new Error('Code not sent!')\n   );\n })\n .catch((error) => {\n   console.error(error.message);\n });\n```\n\n> Used when no `onRejected` handler is passed to {@link auth.PhoneAuthListener#then}.\n"
 									},
 									"parameters": [
 										{
@@ -12136,7 +12144,7 @@
 													"sources": [
 														{
 															"fileName": "auth/lib/index.d.ts",
-															"line": 774,
+															"line": 788,
 															"character": 21
 														}
 													]
@@ -12159,7 +12167,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 774,
+									"line": 788,
 									"character": 9
 								}
 							]
@@ -12245,7 +12253,7 @@
 													"sources": [
 														{
 															"fileName": "auth/lib/index.d.ts",
-															"line": 717,
+															"line": 731,
 															"character": 15
 														}
 													]
@@ -12379,7 +12387,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 715,
+									"line": 729,
 									"character": 6
 								}
 							]
@@ -12456,7 +12464,7 @@
 															"sources": [
 																{
 																	"fileName": "auth/lib/index.d.ts",
-																	"line": 749,
+																	"line": 763,
 																	"character": 19
 																}
 															]
@@ -12521,7 +12529,7 @@
 															"sources": [
 																{
 																	"fileName": "auth/lib/index.d.ts",
-																	"line": 750,
+																	"line": 764,
 																	"character": 18
 																}
 															]
@@ -12550,7 +12558,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 748,
+									"line": 762,
 									"character": 8
 								}
 							]
@@ -12570,7 +12578,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 693,
+							"line": 707,
 							"character": 36
 						}
 					]
@@ -12602,7 +12610,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 650,
+									"line": 664,
 									"character": 8
 								}
 							],
@@ -12634,7 +12642,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 654,
+									"line": 668,
 									"character": 9
 								}
 							],
@@ -12668,7 +12676,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 642,
+									"line": 656,
 									"character": 9
 								}
 							],
@@ -12708,7 +12716,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 646,
+									"line": 660,
 									"character": 18
 								}
 							],
@@ -12733,7 +12741,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 633,
+							"line": 647,
 							"character": 36
 						}
 					]
@@ -12756,10 +12764,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Phone number auto-verification succeeded."
+							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 172,
+									"line": 175,
 									"character": 17
 								}
 							],
@@ -12775,6 +12786,9 @@
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
+							},
+							"comment": {
+								"shortText": "SMS message with verification code sent to phone number."
 							},
 							"sources": [
 								{
@@ -12796,10 +12810,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "The timeout specified in {@link auth#verifyPhoneNumber} has expired."
+							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 170,
+									"line": 167,
 									"character": 13
 								}
 							],
@@ -12816,10 +12833,13 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Phone number verification failed with an error."
+							},
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 173,
+									"line": 179,
 									"character": 9
 								}
 							],
@@ -12844,7 +12864,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 169,
+							"line": 163,
 							"character": 33
 						}
 					]
@@ -12876,7 +12896,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 189,
+									"line": 195,
 									"character": 21
 								}
 							],
@@ -12901,7 +12921,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 239,
+									"line": 245,
 									"character": 24
 								}
 							],
@@ -12926,7 +12946,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 219,
+									"line": 225,
 									"character": 22
 								}
 							],
@@ -12951,7 +12971,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 209,
+									"line": 215,
 									"character": 22
 								}
 							],
@@ -12976,7 +12996,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 249,
+									"line": 255,
 									"character": 17
 								}
 							],
@@ -13001,7 +13021,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 199,
+									"line": 205,
 									"character": 21
 								}
 							],
@@ -13026,7 +13046,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 259,
+									"line": 265,
 									"character": 18
 								}
 							],
@@ -13051,7 +13071,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 229,
+									"line": 235,
 									"character": 23
 								}
 							],
@@ -13081,7 +13101,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 179,
+							"line": 185,
 							"character": 26
 						}
 					]
@@ -13114,7 +13134,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 442,
+									"line": 448,
 									"character": 15
 								}
 							],
@@ -13147,7 +13167,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 446,
+									"line": 452,
 									"character": 12
 								}
 							],
@@ -13179,7 +13199,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 438,
+							"line": 444,
 							"character": 32
 						}
 					]
@@ -13211,7 +13231,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 846,
+									"line": 861,
 									"character": 15
 								}
 							],
@@ -13243,7 +13263,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 850,
+									"line": 865,
 									"character": 9
 								}
 							],
@@ -13275,7 +13295,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 854,
+									"line": 869,
 									"character": 17
 								}
 							],
@@ -13298,7 +13318,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 860,
+									"line": 875,
 									"character": 15
 								}
 							],
@@ -13321,7 +13341,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 865,
+									"line": 880,
 									"character": 12
 								}
 							],
@@ -13345,7 +13365,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 871,
+									"line": 886,
 									"character": 15
 								}
 							],
@@ -13377,7 +13397,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 876,
+									"line": 891,
 									"character": 12
 								}
 							],
@@ -13409,7 +13429,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 881,
+									"line": 896,
 									"character": 16
 								}
 							],
@@ -13436,7 +13456,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 887,
+									"line": 902,
 									"character": 14
 								}
 							],
@@ -13459,7 +13479,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 892,
+									"line": 907,
 									"character": 7
 								}
 							],
@@ -13508,7 +13528,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 905,
+									"line": 920,
 									"character": 10
 								}
 							]
@@ -13578,7 +13598,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 919,
+									"line": 934,
 									"character": 14
 								}
 							]
@@ -13649,7 +13669,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 935,
+									"line": 950,
 									"character": 20
 								}
 							]
@@ -13744,7 +13764,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 958,
+									"line": 973,
 									"character": 22
 								}
 							]
@@ -13831,7 +13851,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 979,
+									"line": 994,
 									"character": 32
 								}
 							]
@@ -13870,7 +13890,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 990,
+									"line": 1005,
 									"character": 10
 								}
 							]
@@ -13950,7 +13970,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1012,
+									"line": 1027,
 									"character": 25
 								}
 							]
@@ -13983,7 +14003,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1023,
+									"line": 1038,
 									"character": 10
 								}
 							]
@@ -14045,7 +14065,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1037,
+									"line": 1052,
 									"character": 10
 								}
 							]
@@ -14114,7 +14134,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1057,
+									"line": 1072,
 									"character": 15
 								}
 							]
@@ -14179,7 +14199,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1077,
+									"line": 1092,
 									"character": 18
 								}
 							]
@@ -14245,7 +14265,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1102,
+									"line": 1117,
 									"character": 21
 								}
 							]
@@ -14298,7 +14318,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1115,
+									"line": 1130,
 									"character": 17
 								}
 							]
@@ -14344,7 +14364,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 842,
+							"line": 857,
 							"character": 23
 						}
 					]
@@ -14377,7 +14397,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 305,
+									"line": 311,
 									"character": 22
 								}
 							],
@@ -14401,7 +14421,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 309,
+									"line": 315,
 									"character": 8
 								}
 							],
@@ -14425,7 +14445,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 301,
+							"line": 307,
 							"character": 33
 						}
 					]
@@ -14458,7 +14478,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 355,
+									"line": 361,
 									"character": 15
 								}
 							],
@@ -14491,7 +14511,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 359,
+									"line": 365,
 									"character": 9
 								}
 							],
@@ -14524,7 +14544,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 363,
+									"line": 369,
 									"character": 15
 								}
 							],
@@ -14557,7 +14577,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 367,
+									"line": 373,
 									"character": 12
 								}
 							],
@@ -14589,7 +14609,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 371,
+									"line": 377,
 									"character": 14
 								}
 							],
@@ -14612,7 +14632,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 375,
+									"line": 381,
 									"character": 7
 								}
 							],
@@ -14639,7 +14659,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 351,
+							"line": 357,
 							"character": 27
 						}
 					]
@@ -14672,7 +14692,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 327,
+									"line": 333,
 									"character": 16
 								}
 							],
@@ -14705,7 +14725,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 332,
+									"line": 338,
 									"character": 18
 								}
 							],
@@ -14737,7 +14757,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 322,
+							"line": 328,
 							"character": 31
 						}
 					]
@@ -14757,7 +14777,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 619,
+							"line": 633,
 							"character": 34
 						}
 					],
@@ -14808,7 +14828,7 @@
 							"sources": [
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 619,
+									"line": 633,
 									"character": 36
 								}
 							]
@@ -14863,7 +14883,7 @@
 			"sources": [
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 57,
+					"line": 51,
 					"character": 21
 				}
 			]
@@ -49139,7 +49159,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 973,
+									"line": 982,
 									"character": 16
 								}
 							],
@@ -49163,7 +49183,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 983,
+									"line": 992,
 									"character": 36
 								}
 							],
@@ -49187,7 +49207,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 267,
+									"line": 263,
 									"character": 37
 								}
 							],
@@ -49543,12 +49563,12 @@
 						},
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 965,
+							"line": 974,
 							"character": 30
 						},
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 244,
+							"line": 240,
 							"character": 30
 						},
 						{
@@ -50375,12 +50395,12 @@
 				},
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 964,
+					"line": 973,
 					"character": 29
 				},
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 243,
+					"line": 239,
 					"character": 29
 				},
 				{

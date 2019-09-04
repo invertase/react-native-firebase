@@ -1,46 +1,55 @@
 - module: admob
-  group: AdMob
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Initialization
-      to: '/android'
-    - text: iOS Initialization
-      to: '/ios'
-    - text: European User Consent
-      to: '/european-user-consent'
+  groups:
+  - group: AdMob
+    children:
+      - text: Overview
+        to: '/'
+      - text: Quick Start
+        to: '/quick-start'
+      - text: European User Consent
+        to: '/european-user-consent'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android-installation"
+      - text: iOS Installation
+        to: "/ios-installation"
 
 - module: analytics
-  group: Analytics
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-    - text: Reserved Events
-      to: '/reserved-events'
+  groups:
+  - group: Analytics
+    children:
+      - text: Overview
+        to: "/"
+      - text: Quick Start
+        to: "/quick-start"
+      - text: Reserved Events
+        to: '/reserved-events'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android-installation"
+      - text: iOS Installation
+        to: "/ios-installation"
 
 - module: auth
-  group: Authentication
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
-    - text: Social Auth
-      to: '/social-auth'
-    - text: Phone Auth
-      to: '/phone-auth'
+  groups:
+  - group: Authentication
+    children:
+      - text: Overview
+        to: '/'
+      - text: Quick Start
+        to: '/quick-start'
+      - text: Social Auth
+        to: '/social-auth'
+      - text: Phone Auth
+        to: '/phone-auth'
+  - group: Manual Installation
+    children:
+      - text: Android Installation
+        to: "/android-installation"
+      - text: iOS Installation
+        to: "/ios-installation"
 
 - module: firestore
   group: Cloud Firestore
