@@ -240,6 +240,11 @@ export namespace ReactNativeFirebase {
  */
 export namespace Utils {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
+  /**
+   * Logger configuration object you can use to enable internal RNFB logging
+   * for methods and events.
+   */
   type LoggerConfig = { enableMethodLogging: boolean; enableEventLogging: boolean };
 
   /**

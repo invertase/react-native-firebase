@@ -56,7 +56,7 @@ const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 
 ### Enable logging
 
-You can enable logging for native method calls and event streams
+You can enable logging for native method calls and event streams.
 
 ```js
 import firebase from '@react-native-firebase/app';
@@ -73,12 +73,12 @@ const config = firebase.utils().enableLogger({
   enableEventLogging: true,
 });
 
-// config = { enableMethodLogging: true, enableEventLogging: ture }
+// config = { enableMethodLogging: true, enableEventLogging: true }
 ```
 
 ### Log out custom information
 
-You can also use our built in logger to log your custom information
+You can also use our built in logger to log your custom information.
 
 ```js
 import firebase from '@react-native-firebase/app';
