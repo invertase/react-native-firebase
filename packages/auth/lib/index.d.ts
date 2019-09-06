@@ -224,6 +224,16 @@ export namespace Auth {
      */
     GithubAuthProvider: AuthProvider;
     /**
+     * Game Center auth provider implementation.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.GameCenterAuthProvider;
+     * ```
+     */
+    GameCenterAuthProvider: AuthProvider;
+    /**
      * Twitter auth provider implementation.
      *
      * #### Example
@@ -544,8 +554,8 @@ export namespace Auth {
    */
   export interface ActionCodeInfo {
     /**
-    * The data associated with the action code.
-    */
+     * The data associated with the action code.
+     */
     data: ActionCodeInfoData;
     /**
      * The operation from where the action originated.

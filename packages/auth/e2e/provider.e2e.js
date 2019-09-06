@@ -215,4 +215,29 @@ describe('auth() -> Providers', () => {
       });
     });
   });
+
+  describe('GameCenterAuthProvider', () => {
+    describe('constructor', () => {
+      it('should throw an unsupported error', () => {
+        (() => new firebase.auth.GameCenterAuthProvider()).should.throw(
+          '`new GameCenterAuthProvider()` is not supported on the native Firebase SDKs.',
+        );
+      });
+    });
+
+    describe('credential', () => {
+      it('should return a credential object', () => {
+        const credential = firebase.auth.GithubAuthProvider.credential();
+        credential.providerId.should.equal('gameCenter');
+        credential.token.should.equal('');
+        credential.secret.should.equal('');
+      });
+    });
+
+    describe('PROVIDER_ID', () => {
+      it('should return gameCenter', () => {
+        firebase.auth.GameCenterAuthProvider.PROVIDER_ID.should.equal('gameCenter');
+      });
+    });
+  });
 });

@@ -890,6 +890,12 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken verificationCode:authTokenSecret];
   } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIROAuthProvider credentialWithProviderID:@"oauth" IDToken:authToken accessToken:authTokenSecret];
+  } else if ([provider compare:@"gameCenter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+      [FIRGameCenterAuthProvider getCredentialWithCompletion:^(FIRAuthCredential * _Nullable credential, NSError * _Nullable error) {
+          if (error == nil) {
+              credential = credential;
+          }
+      }];
   } else {
     DLog(@"Provider not yet handled: %@", provider);
   }
