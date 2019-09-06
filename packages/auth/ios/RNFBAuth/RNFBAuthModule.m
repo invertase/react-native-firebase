@@ -367,8 +367,11 @@ RCT_EXPORT_METHOD(updatePhoneNumber:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-    FIRPhoneAuthCredential *credential =
-        (FIRPhoneAuthCredential *) [self getCredentialForProvider:provider token:authToken secret:authSecret];
+     FIRPhoneAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+         if (error == nil) {
+             return credential;
+         }
+      }];
 
     if (credential == nil) {
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -494,7 +497,11 @@ RCT_EXPORT_METHOD(signInWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    FIRPhoneAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+        if (error == nil) {
+            return credential;
+        }
+    }];
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -738,7 +745,11 @@ RCT_EXPORT_METHOD(linkWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    FIRPhoneAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+        if (error == nil) {
+            return credential;
+        }
+    }];
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -791,7 +802,11 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    FIRPhoneAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+        if (error == nil) {
+            return credential;
+        }
+    }];
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -870,37 +885,42 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }];
 }
 
-- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
-  FIRAuthCredential *credential;
-
-  if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
-  } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-  } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
-  } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
-  } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIREmailAuthProvider credentialWithEmail:authToken link:authTokenSecret];
-  } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
-  } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential =
+- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret completion:(FIRAuthCredential * (^)(FIRAuthCredential *, NSError *))completion {
+    
+    FIRAuthCredential *credential;
+    NSError *error = nil;
+    
+    if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+    } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+    } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
+    } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
+    } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIREmailAuthProvider credentialWithEmail:authToken link:authTokenSecret];
+    } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
+    } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential =
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken verificationCode:authTokenSecret];
-  } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIROAuthProvider credentialWithProviderID:@"oauth" IDToken:authToken accessToken:authTokenSecret];
-  } else if ([provider compare:@"gameCenter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-      [FIRGameCenterAuthProvider getCredentialWithCompletion:^(FIRAuthCredential * _Nullable credential, NSError * _Nullable error) {
-          if (error == nil) {
-              credential = credential;
-          }
-      }];
-  } else {
-    DLog(@"Provider not yet handled: %@", provider);
-  }
-
-  return credential;
+    } else if ([provider compare:@"oauth" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIROAuthProvider credentialWithProviderID:@"oauth" IDToken:authToken accessToken:authTokenSecret];
+    } else if ([provider compare:@"gameCenter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        [FIRGameCenterAuthProvider getCredentialWithCompletion:^(FIRAuthCredential * _Nullable credential, NSError * _Nullable error) {
+            if (error == nil) {
+                credential = credential;
+            } else {
+                error = error;
+            }
+        }];
+    } else {
+        error = (@"Provider not yet handled: %@", provider);
+        DLog(@"Provider not yet handled: %@", provider);
+    }
+    
+    return completion(credential, error);
 }
 
 // This is here to protect against bugs in the iOS SDK which don't
