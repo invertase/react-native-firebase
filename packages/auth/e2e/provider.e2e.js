@@ -227,10 +227,12 @@ describe('auth() -> Providers', () => {
 
     describe('credential', () => {
       it('should return a credential object', () => {
-        const credential = firebase.auth.GithubAuthProvider.credential();
-        credential.providerId.should.equal('gameCenter');
-        credential.token.should.equal('');
-        credential.secret.should.equal('');
+        if (device.getPlatform() === 'ios') {
+          const credential = firebase.auth.GameCenterAuthProvider.credential();
+          credential.providerId.should.equal('gameCenter');
+          credential.token.should.equal('');
+          credential.secret.should.equal('');
+        }
       });
     });
 
