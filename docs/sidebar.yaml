@@ -58,10 +58,14 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+    - text: Query limitations
+      to: '/query-limitations'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: functions
   group: Cloud Functions
@@ -70,10 +74,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: messaging
   group: Cloud Messaging
@@ -82,10 +88,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: storage
   group: Cloud Storage
@@ -94,10 +102,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: app
   group: App
@@ -106,12 +116,14 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Initialization
-      to: '/android'
-    - text: iOS Initialization
-      to: '/ios'
-    - text: Client Initialization
-      to: '/client'
+  - group: Manual Installation
+    children:
+      - text: Android Initialization
+        to: '/android'
+      - text: iOS Initialization
+        to: '/ios'
+      - text: Client Initialization
+        to: '/client'
 
 - module: crashlytics
   group: Crashlytics
@@ -120,10 +132,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: database
   group: Realtime Database
@@ -132,10 +146,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: dynamic-links
   group: Dynamic DynamicLinks
@@ -144,10 +160,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: in-app-messaging
   group: In-App Messaging
@@ -156,10 +174,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: iid
   group: Instance ID
@@ -168,10 +188,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: invites
   group: Invites
@@ -180,10 +202,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
     - text: Migrate to Dynamic DynamicLinks
       to: '/migrate-to-dynamic-links'
 
@@ -194,10 +218,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: ml-vision
   group: ML Kit Vision
@@ -206,10 +232,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: notifications
   group: Notifications
@@ -218,10 +246,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: remote-config
   group: Remote Config
@@ -230,10 +260,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: perf
   group: Performance Monitoring
@@ -242,10 +274,12 @@
       to: '/'
     - text: Quick Start
       to: '/quick-start'
-    - text: Android Setup
-      to: '/android'
-    - text: iOS Setup
-      to: '/ios'
+  - group: Manual Installation
+    children:
+      - text: Android Setup
+        to: '/android'
+      - text: iOS Setup
+        to: '/ios'
 
 - module: utils
   group: Utils

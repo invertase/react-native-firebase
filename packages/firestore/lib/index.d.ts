@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Cloud Firestore package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `firestore` package:
+ * #### Example: Access the firebase export from the `firestore` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/firestore';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.firestore().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `firestore` package:
+ * #### Example: Using the default export from the `firestore` package:
  *
  * ```js
  * import firestore from '@react-native-firebase/firestore';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firestore().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -529,7 +523,7 @@ export namespace Firestore {
    */
   export class FieldPath {
     /**
-     * Returns a special sentinel FieldPath to refer to the ID of a document. It can be used in queries to sort or filter by the document ID.
+     * Returns a special sentinel `FieldPath` to refer to the ID of a document. It can be used in queries to sort or filter by the document ID.
      */
     static documentId(): FieldPath;
 
@@ -677,7 +671,7 @@ export namespace Firestore {
     static serverTimestamp(): FieldValue;
 
     /**
-     * Returns true if this FieldValue is equal to the provided one.
+     * Returns true if this `FieldValue` is equal to the provided one.
      *
      * #### Example
      *
@@ -689,7 +683,7 @@ export namespace Firestore {
      * increment.isEqual(timestamp);
      * ```
      *
-     * @param other The FieldValue to compare against.
+     * @param other The `FieldValue` to compare against.
      */
     isEqual(other: FieldValue): boolean;
   }
@@ -795,7 +789,7 @@ export namespace Firestore {
      *   .endAt(user);
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to end at.
      */
@@ -836,7 +830,7 @@ export namespace Firestore {
      *   .endBefore(user);
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to end before.
      */
@@ -925,7 +919,7 @@ export namespace Firestore {
     /**
      * Attaches a listener for `QuerySnapshot` events.
      *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -948,7 +942,7 @@ export namespace Firestore {
     /**
      * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
      *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -974,7 +968,7 @@ export namespace Firestore {
     /**
      * Attaches a listener for `QuerySnapshot` events.
      *
-     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -1064,7 +1058,7 @@ export namespace Firestore {
      *   .get();
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to start after.
      */
@@ -1107,7 +1101,7 @@ export namespace Firestore {
      *   .get();
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to start at.
      */
@@ -1233,7 +1227,7 @@ export namespace Firestore {
      * ```
      *
      * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
-     * @param thisArg The this binding for the callback.
+     * @param thisArg The `this` binding for the callback.
      */
     forEach(callback: Function, thisArg?: any): void;
 
@@ -1720,17 +1714,13 @@ export namespace Firestore {
   /**
    * The Firebase Cloud Firestore service is available for the default app or a given app.
    *
-   * #### Example 1
-   *
-   * Get the firestore instance for the **default app**:
+   * #### Example: Get the firestore instance for the **default app**:
    *
    * ```js
    * const firestoreForDefaultApp = firebase.firestore();
    * ```
    *
-   * #### Example 2
-   *
-   * Get the firestore instance for a **secondary app**:
+   * #### Example: Get the firestore instance for a **secondary app**:
    *
    * ```js
    * const otherApp = firebase.app('otherApp');
