@@ -14,7 +14,6 @@
  * limitations under the License.
  *
  */
-
 const providerId = 'gameCenter';
 
 export default class GameCenterAuthProvider {

@@ -25,7 +25,7 @@ import ConfirmationResult from './ConfirmationResult';
 import PhoneAuthListener from './PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
-import GameCenterProvider from './providers/GameCenterAuthProvider';
+import GameCenterAuthProvider from './providers/GameCenterAuthProvider';
 import GithubAuthProvider from './providers/GithubAuthProvider';
 import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
@@ -43,7 +43,7 @@ const statics = {
   TwitterAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
-  GameCenterProvider,
+  GameCenterAuthProvider,
   PhoneAuthState: {
     CODE_SENT: 'sent',
     AUTO_VERIFY_TIMEOUT: 'timeout',

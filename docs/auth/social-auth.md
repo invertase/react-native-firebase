@@ -138,7 +138,7 @@ const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessTo
 await firebase.auth().signInWithCredential(credential);
 ```
 
-## GameCenter
+## GameCenter (iOS Only)
 
 The [react-native-game-center](https://github.com/garrettmac/react-native-game-center) library provides a
 wrapper around Game Center lib, allowing you to authenticate user with it in order to obtain Firebase credential.
