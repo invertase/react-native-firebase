@@ -152,7 +152,7 @@ wrapper around Game Center lib, allowing you to authenticate user with it in ord
 ```js
 import RNGameCenter from 'react-native-game-center';
 
-const player = RNGameCenter.getPlayer();
+const player = await RNGameCenter.getPlayer();
 ```
 
 **Step 2**: Create a Firebase credential.
