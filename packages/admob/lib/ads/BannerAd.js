@@ -31,41 +31,37 @@ function BannerAd({ unitId, size, requestOptions, ...props }) {
 
   useEffect(() => {
     if (!unitId) {
-      throw new Error(
-        "BannerAd: 'unitId' expected a valid string unit ID."
-      );
+      throw new Error("BannerAd: 'unitId' expected a valid string unit ID.");
     }
   }, [unitId]);
 
   useEffect(() => {
     if (!BannerAdSize[size] && !sizeRegex.test(size)) {
-      throw new Error(
-        "BannerAd: 'size' expected a valid BannerAdSize or custom size string."
-      );
+      throw new Error("BannerAd: 'size' expected a valid BannerAdSize or custom size string.");
     }
   }, [size]);
 
   useEffect(() => {
     if (!BannerAdSize[size] && !sizeRegex.test(size)) {
-      throw new Error(
-        "BannerAd: 'size' expected a valid BannerAdSize or custom size string."
-      );
+      throw new Error("BannerAd: 'size' expected a valid BannerAdSize or custom size string.");
     }
   }, [size]);
+
+  const parsedRequestOptions = JSON.stringify(requestOptions);
 
   useEffect(() => {
     if (requestOptions) {
       try {
         validateAdRequestOptions(requestOptions);
       } catch (e) {
-        throw new Error(
-          `BannerAd: ${e.message}`
-        );
+        throw new Error(`BannerAd: ${e.message}`);
       }
     }
-  }, [JSON.stringify(requestOptions)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedRequestOptions]);
 
   function onNativeEvent({ nativeEvent }) {
+    console.log(nativeEvent);
     const { width, height, type } = nativeEvent;
 
     if (type !== 'onSizeChanged' && isFunction(props[type])) {

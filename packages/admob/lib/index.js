@@ -25,6 +25,7 @@ import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 import MaxAdContentRating from './MaxAdContentRating';
 import RewardedAdEventType from './RewardedAdEventType';
+import BannerAdSize from './BannerAdSize';
 import TestIds from './TestIds';
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
 import version from './version';
@@ -36,16 +37,7 @@ const statics = {
   RewardedAdEventType,
   MaxAdContentRating,
   TestIds,
-  BannerSize: {
-    FLUID: 'FLUID',
-    WIDE_SKYSCRAPER: 'WIDE_SKYSCRAPER',
-    BANNER: 'BANNER',
-    FULL_BANNER: 'FULL_BANNER',
-    LARGE_BANNER: 'LARGE_BANNER',
-    LEADERBOARD: 'LEADERBOARD',
-    MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE',
-    SMART_BANNER: 'SMART_BANNER',
-  },
+  BannerAdSize,
 };
 
 const namespace = 'admob';
@@ -102,6 +94,7 @@ export AdsConsentStatus from './AdsConsentStatus';
 export MaxAdContentRating from './MaxAdContentRating';
 export TestIds from './TestIds';
 export AdEventType from './AdEventType';
+export BannerAdSize from './BannerAdSize';
 export RewardedAdEventType from './RewardedAdEventType';
 export AdsConsent from './AdsConsent';
 export InterstitialAd from './ads/InterstitialAd';

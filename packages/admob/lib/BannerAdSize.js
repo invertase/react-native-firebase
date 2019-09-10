@@ -25,4 +25,4 @@ export default {
   SMART_BANNER: 'SMART_BANNER',
   FLUID: 'FLUID',
   WIDE_SKYSCRAPER: 'WIDE_SKYSCRAPER',
-}
+};

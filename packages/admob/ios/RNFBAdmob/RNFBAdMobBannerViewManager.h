@@ -16,8 +16,8 @@
  *
  */
 
-#ifndef RNFBAdMobBannerView_h
-#define RNFBAdMobBannerView_h
+#import <React/RCTViewManager.h>
 
+@interface RNFBAdMobBannerViewManager : RCTViewManager
 
-#endif /* RNFBAdMobBannerView_h */
+@end

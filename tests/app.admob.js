@@ -107,9 +107,9 @@ function Root() {
       style={{ flex: 1, justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
     >
       <BannerAd
-        size={BannerSize.SMART_BANNER}
+        size={firebase.admob.BannerAdSize.LARGE_BANNER}
         request={{}}
-        unitId={'ca-app-pub-3940256099942544/6300978111'}
+        unitId={TestIds.BANNER + '123'}
         onAdLoaded={() => console.log('loaded')}
         onAdFailedToLoad={e => console.log('failed to load', e)}
       />

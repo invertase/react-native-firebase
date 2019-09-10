@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/Admob';
+import defaultExport, { firebase as firebaseFromModule, BannerAdSize } from '@react-native-firebase/Admob';
 
 // checks module exists at root
 console.log(firebase.admob().app.name);
@@ -26,9 +26,11 @@ console.log(firebase.admob(firebase.app()).app.name);
 console.log(defaultExport(firebase.app()).app.name);
 
 // test banner sizes
-console.log(firebase.admob.BannerSize.BANNER);
-console.log(firebase.admob.BannerSize.FULL_BANNER);
-console.log(firebase.admob.BannerSize.LARGE_BANNER);
-console.log(firebase.admob.BannerSize.LEADERBOARD);
-console.log(firebase.admob.BannerSize.MEDIUM_RECTANGLE);
-console.log(firebase.admob.BannerSize.SMART_BANNER);
+console.log(firebase.admob.BannerAdSize.BANNER);
+console.log(firebase.admob.BannerAdSize.FULL_BANNER);
+console.log(firebase.admob.BannerAdSize.LARGE_BANNER);
+console.log(firebase.admob.BannerAdSize.LEADERBOARD);
+console.log(firebase.admob.BannerAdSize.MEDIUM_RECTANGLE);
+console.log(firebase.admob.BannerAdSize.SMART_BANNER);
+
+console.log(BannerAdSize.BANNER);
