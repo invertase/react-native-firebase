@@ -5,8 +5,7 @@ description: Firestore initialization with Android.
 
 # Android Manual Linking
 
-> The following steps are only required if your environment does not have access to React Native
-> auto-linking.
+> The following steps are only required if you are using React Native <= 0.59 or need to manually integrate the library.
 
 #### Add Firestore to Gradle Settings
 
