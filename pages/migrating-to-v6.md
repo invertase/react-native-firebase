@@ -238,7 +238,7 @@ yarn add @react-native-firebas/auth
 
 Install the modules required for your application:
 
-| Module                                                     | Downloads                                | 
+| Module                                                     | NPM Package                              | 
 | ---------------------------------------------------------- | ---------------------------------------- |
 | <Anchor href="/admob">AdMob</Anchor>                       | @react-native-firebase/admob             | 
 | <Anchor href="/analytics">Analytics</Anchor>               | @react-native-firebase/analytics         |

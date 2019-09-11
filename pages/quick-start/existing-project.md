@@ -9,37 +9,40 @@ This guide is for integrating Firebase into an existing React Native project.
 
 Creating a new React Native project? See the [new projects guide](/quick-start/new-project) instead.
 
-## Before you begin
+## Adding the app dependency
 
-// TODO(salakar) React Native version requirements
-
-## Guide
+Every project using React Native Firebase requires the `app` module to be installed. Using Yarn, add the module to your
+project:
 
 ```bash
 yarn add @react-native-firebase/app
 ```
 
-// TODO(salakar): Manual or Automatic linking for Android & ios
+If you are using React Native <= 0.59 you need to manually integrate the `app` module into your project. 
+See the following steps for [Android](/v6/app/android) and [iOS](/v6/app/ios) for more information on manual linking.
+
+For users on React Native >= 0.60, the module will be automatically linked to your project. 
 
 ## Next
 
-Now that you've installed the core Firebase module into your exist project, let's continue to the final step; follow the guides below for the platforms you wish to integrate with.
+Now that you've installed the core Firebase module into your existing project, you now need to setup your project
+with Android & iOS:
 
 <Grid columns="2">
 	<Block
-		title="Adding Firebase credentials to your Android app"
+		title="Android: Setting up Firebase"
 		to="/quick-start/android-firebase-credentials"
 		icon="android"
 		color="#4CAF50"
 	>
-		Creating an Android Firebase app and downloading the credentials from the Firebase console.
+		Adding Firebase credentials to your Android app.
   	</Block>
     <Block
-		title="Adding Firebase credentials to your iOS app"
+		title="iOS: Setting up Firebase"
         to="/quick-start/ios-firebase-credentials"
         icon="phone_iphone"
         color="#2196F3"
     >
-        Creating an iOS Firebase app and downloading the credentials from the Firebase console.
+        Adding Firebase credentials to your iOS app.
     </Block>
 </Grid>

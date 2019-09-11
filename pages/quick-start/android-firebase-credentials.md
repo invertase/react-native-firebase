@@ -13,9 +13,9 @@ We'll quickly walk through the process of retrieving this file and installing it
 
 The credential file can be generated from the Firebase [console](https://console.firebase.google.com/). After selecting your Firebase project, open the project settings by clicking on the gear icon and then navigate to 'Project Settings'.
 
-Under 'Your apps', click on the Android logo to add a new Android app to your Firebase project:
+Under 'Your apps', click on the Android logo (highlighted in orange) to add a new Android app to your Firebase project:
 
-![Add an Android app to the project](https://prismic-io.s3.amazonaws.com/invertase%2F5efac24d-9551-4667-8ce7-2d6d4e5910f3_screenshot+2019-05-07+at+10.43.40.png)
+![Add an Android app to the project](https://prismic-io.s3.amazonaws.com/invertase%2Fd69c0b59-f1eb-4e19-aeed-2c5578dbf8d9_settings-android.png)
 
 Enter your application details then click on 'Register app'. The 'Android package name' must  match your local Android package name.
 
@@ -34,9 +34,9 @@ The step "Add Firebase SDK" on the Firebase console can be skipped - React Nativ
 
 The Firebase SDKs now need to read the config file - this can be achived by applying the `google-services` plugin in our Android project.
 
-Add the `google-services` dependancy inside of your `android/build.gradle` file:
+Add the `google-services` dependency inside of your `android/build.gradle` file:
 
-```groovy{3}
+```groovy
 buildscript {
   dependencies {
     ...
@@ -59,13 +59,13 @@ Once your Android project is setup, you can follow the setup for getting started
 
 <Grid columns="2">
 	<Block
-		title="iOS Firebase Credentials"
-		to="/quick-start/ios-firebase-credentials"
+        title="iOS: Setting up Firebase"
+        to="/quick-start/ios-firebase-credentials"
         icon="phone_iphone"
         color="#2196F3"
-	>
-		Adding Firebase credentials to your iOS app from the Firebase console.
-  	</Block>
+    >
+        Adding Firebase credentials to your iOS app.
+    </Block>
 	<Block
 		title="Integrate additional Firebase services"
 		to="/v6"

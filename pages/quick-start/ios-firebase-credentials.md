@@ -11,70 +11,61 @@ We'll quickly walk through the process of retrieving this file and installing it
 
 ## Generating the credentials
 
-The credential file can be generated from the Firebase [console](https://console.firebase.google.com/):
+The credential file can be generated from the Firebase [console](https://console.firebase.google.com/). 
+After selecting your Firebase project, open the project settings by clicking on the gear icon and then navigate to 'Project Settings'.
 
-- Select your Firebase project.
-- Go to the general project settings by clicking on the gear icon and then 'Project Settings'.
-- Under 'Your apps', click on iOS to add an iOS app to your Firebase project. If you already have an app added, click on 'Add app' first to add another one.
+Under 'Your apps', click on the iOS logo (highlighted in orange) to add a new iiOS app to your Firebase project:
 
-![Add an iOS app](https://prismic-io.s3.amazonaws.com/invertase%2Ffd23f086-ac13-4b31-8c08-8fc6a7c512f4_screenshot+2019-05-07+at+11.11.36.png)
+![iOS Settings](https://prismic-io.s3.amazonaws.com/invertase%2F5056358b-5b0a-4e3d-9314-01ee8b9437d4_settings-ios.png)
 
-- Enter your application details then click on 'Register app':
+Enter your application details then click on 'Register app'. The 'iOS bundle ID' must match your local iOS bundle ID.
 
-![Register app](https://prismic-io.s3.amazonaws.com/invertase%2Fa5074801-2205-4812-99e2-a8b9ddebec74_screenshot+2019-05-07+at+11.12.48.png)
+![iOS Register](https://prismic-io.s3.amazonaws.com/invertase%2Fc7ad084f-d455-4d95-b498-de99bf68742d_register-ios.png)
 
-- Download the config file to your machine:
+Download the config file locally by pressing "Download GoogleService-Info.plist". Using XCode, open the projects
+`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if not available). 
 
-![Download file](https://prismic-io.s3.amazonaws.com/invertase%2Fb5967fd4-7620-4d6b-8c2e-d582a1f66f86_screenshot+2019-05-07+at+11.13.51.png)
-
- Open the React Native iOS project with XCode. 
-
-If using Pods, open the `ios/{projectName}.xcworkspace` file, otherwise open the `ios/{projectName}.xcodeproj` file.
-
-> Do not copy the file manually. XCode must add the file to ensure it is correctly linked to the project.
-
-- Right click your project in XCode and select "Add Files to '{projectName}'".
+Right click on the project name and "Add files" to the project, as demonstrated below:
 
 ![Add files](https://prismic-io.s3.amazonaws.com/invertase%2F140b5f1f-3cfa-4bc5-a5e8-f6f33cc43165_unknown+%281%29.png)
 
-- Select the downloaded `GoogleService-Info.plist` file. Ensure 'Copy items if needed' is enabled:
+Select the downloaded `GoogleService-Info.plist` file and ensure the 'Copy items if needed' checkbox is enabled.
 
 ![Select file](https://prismic-io.s3.amazonaws.com/invertase%2F7d37e0ce-3e79-468d-930c-b7dc7bc2e291_unknown+%282%29.png)
 
-- Initialise Firebase using the credentials:
+Next we need to initialize the Firebase service manually. To do this, open the AppDelegate file within your project
+`/ios/{projectName}/AppDelegate.m`. 
 
-At the top of the following file, add:
+At the top of the file import the Firebase module:
 
-**`ios/{projectName}/AppDelegate.m`**:
 ```objectivec
 @import Firebase;
 ```
 
-Add the following lines to the file:
+Within the `didFinishLaunchingWithOptions` method, add the `configure` method:
 
-```objectivec{4-6}
-@implementation AppDelegate
-// ...
+```objectivec{2-4}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([FIRApp defaultApp] == nil) {
       [FIRApp configure];
     }
-    // ...
-}
-// ...
 ```
 
-## Next
+Once complete, rebuild your iOS project using `react-native run-ios`.
+
+## Next Steps
+
+Once your iOS project is setup, you can follow the setup for getting started with Android, or get started using Firebase services.
 
 <Grid columns="2">
 	<Block
-		title="Android Firebase Credentials"
-		to="/quick-start/android-firebase-credentials"
-		icon="android"
-		color="#4CAF50"
-	>
-		Adding Firebase credentials to your Android app from the Firebase console.
-  	</Block>
+        title="Android: Setting up Firebase"
+        to="/quick-start/android-firebase-credentials"
+        icon="android"
+        color="#4CAF50"
+    >
+        Adding Firebase credentials to your Android app.
+    </Block>
 	<Block
 		title="Integrate additional Firebase services"
 		to="/v6"
