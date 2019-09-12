@@ -7,7 +7,7 @@ description: Create a new React Native project with Firebase pre-integrated
 
 This guide creates a fresh React Native project with React Native Firebase pre-integrated using the [React Native CLI](https://github.com/react-native-community/cli). If you already have a React Native project setup, follow the [existing projects](/quick-start/existing-project) guide instead.
 
-## Initilizing the project
+## Initializing the project
 
 The following npx command will create a new directory on your machine with the `@react-native-firebase/app` package pre-integrated. The `<name>` varible is used to both create the directory name and setup the Android & iOS environments.
 
