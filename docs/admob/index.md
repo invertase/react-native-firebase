@@ -11,20 +11,26 @@ whilst taking advantage of other Firebase service such as Analytics. React Nativ
 [Interstitial Ads](https://developers.google.com/admob/android/interstitial?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)
 and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-video?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob).
 
-_We are currently investigating how to integrate with [Native Ads](https://developers.google.com/admob/android/native/start?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)._
-
 <Youtube id="9qCxo0D-Sak" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="attach_money"
 		color="#2196f3"
 		title="Quick Start"
-		to="quick-start"
+		to="/quick-start"
 	>
     Install & start monetizing your React Native application with AdMob.
+	</Block>
+ 	<Block
+		icon="pan_tool"
+		color="#f44336"
+		title="European User Consent"
+		to="/european-user-consent"
+	>
+    Learn how to request consent from users within the EEA. The AdMob library comes with built in support to help you handle GDPR regulations in your application.
 	</Block>
 	<Block
 		icon="school"

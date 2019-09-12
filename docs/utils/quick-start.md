@@ -5,31 +5,25 @@ description: Getting started with the Utils package in React Native Firebase
 
 # Utils Quick Start
 
-## Installation
-
-Install this module with Yarn:
-
-```bash
-yarn add @react-native-firebase/utils
-```
-
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+> This module automatically comes with the `@react-native-firebase/app` package, there are no additional steps required to install it.
 
 ## Module usage
 
-Import the Performance Monitoring package into your project:
+Import the Utils package into your project:
 
 ```js
-import utils from '@react-native-firebase/utils';
+import { utils } from '@react-native-firebase/app';
+
+// utils().X
+
+import firebase from '@react-native-firebase/app';
+
+// firebase.utils().X
 ```
 
-The package also provides access to the firebase instance:
+## Utilities
 
-```js
-import { firebase } from '@react-native-firebase/utils';
-```
-
-### Detect whether the app is running within TestL Lab
+### Detect whether your app is running within Firebase Test Lab
 
 Firebase [TestLab](https://firebase.google.com/docs/test-lab/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=utils)
 is a cloud-based app-testing infrastructure. With one operation, you can test your Android or iOS app across
@@ -40,7 +34,7 @@ It is useful to change the apps configuration if it is being run in Test Lab, fo
 data collection. Such functionality can be carried out by taking advantage of the `isRunningInTestLab` property:
 
 ```js
-import utils from '@react-native-firebase/utils';
+import { utils } from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 
 async function bootstrap() {
@@ -48,4 +42,14 @@ async function bootstrap() {
     await analytics().setAnalyticsCollectionEnabled(false);
   }
 }
+```
+
+### Access device file paths
+
+Some modules require access to your local device filesystem (such as Storage & ML Kit Vision). The utils module provides paths to common device directory locations.
+
+```js
+import firebase from '@react-native-firebase/app';
+// Access the device pictures directory
+const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 ```

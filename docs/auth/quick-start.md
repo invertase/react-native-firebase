@@ -13,7 +13,7 @@ Install this module with Yarn:
 yarn add @react-native-firebase/auth
 ```
 
-> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
 
 ## Module usage
 
@@ -34,7 +34,7 @@ import { firebase } from '@react-native-firebase/auth';
 ### Subscribe to auth state changes
 
 Whenever a user performs an actions with your application, such as sign-in or signs-out, it is possible to subscribe
-to the events in realtime using the `onAuthStateChanged` method.
+to the events in real time using the `onAuthStateChanged` method.
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -88,14 +88,31 @@ The user is able to clear their state by deleting the apps data/cache from the d
 React Native Firebase provides access to the majority of authentication providers available, including social providers
 including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
 
-_Our [guides](/guides?tags=auth) provide more in-depth explanations on provides and how to integrate them into your application._
+<Grid columns="2">
+	<Block
+		icon="share"
+		color="#4caf50"
+		title="Social Auth"
+		to="/social-auth"
+	>
+    Authenticate your users with popular social providers such as Facebook, Twitter, Google, Github or your own custom provider.
+	</Block>
+	<Block
+		icon="perm_phone_msg"
+		color="#2196f3"
+		title="Phone Auth"
+		to="/phone-auth"
+	>
+    Phone authentication allows users to sign in to Firebase using their phone as the authenticator. 
+	</Block>
+</Grid>
 
 #### Anonymous Sign In
 
 Some applications don't require authentication, which make it tricky to identify what users are doing throughout your app.
 If connecting with external APIs, it is also useful to add an extra layer of security by ensuring the users request is
 from the app. This can be achieved with the `signInAnonymously` method, which creates a new anonymous user which is
-persisted, allowing you to integrate with other services such as Analytics by providing a user id.
+persisted, allowing you to integrate with other services such as Analytics by providing a user ID.
 
 ```js
 import auth from '@react-native-firebase/auth';
@@ -118,8 +135,8 @@ async function bootstrap() {
 
 #### Email/Password Sign In
 
-Email/Password sign in is a common method for user sign in on applications. This requires the user to provide
-an email address and secure password. Users can both register and sign in in one method called
+Email/password sign in is a common method for user sign in on applications. This requires the user to provide
+an email address and secure password. Users can both register and sign in using a method called
 `createUserWithEmailAndPassword`, or sign in to an existing account with `signInWithEmailAndPassword`.
 
 Users must first register using the `createUserWithEmailAndPassword` method
