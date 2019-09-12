@@ -11,8 +11,6 @@ whilst taking advantage of other Firebase service such as Analytics. React Nativ
 [Interstitial Ads](https://developers.google.com/admob/android/interstitial?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)
 and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-video?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob).
 
-_We are currently investigating how to integrate with [Native Ads](https://developers.google.com/admob/android/native/start?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)._
-
 <Youtube id="9qCxo0D-Sak" />
 
 ## Getting Started
