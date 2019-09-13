@@ -14,7 +14,7 @@ We'll quickly walk through the process of retrieving this file and installing it
 The credential file can be generated from the Firebase [console](https://console.firebase.google.com/). 
 After selecting your Firebase project, open the project settings by clicking on the gear icon and then navigate to 'Project Settings'.
 
-Under 'Your apps', click on the iOS logo (highlighted in orange) to add a new iiOS app to your Firebase project:
+Under 'Your apps', click on the iOS logo (highlighted in orange) to add a new iOS app to your Firebase project:
 
 ![iOS Settings](https://prismic-io.s3.amazonaws.com/invertase%2F5056358b-5b0a-4e3d-9314-01ee8b9437d4_settings-ios.png)
 
@@ -23,7 +23,7 @@ Enter your application details then click on 'Register app'. The 'iOS bundle ID'
 ![iOS Register](https://prismic-io.s3.amazonaws.com/invertase%2Fc7ad084f-d455-4d95-b498-de99bf68742d_register-ios.png)
 
 Download the config file locally by pressing "Download GoogleService-Info.plist". Using XCode, open the projects
-`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if not available). 
+`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if using Pods). 
 
 Right click on the project name and "Add files" to the project, as demonstrated below:
 
