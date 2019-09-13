@@ -20,24 +20,93 @@ package io.invertase.firebase.admob;
 
 import android.location.Location;
 import android.os.Bundle;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
-
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Nullable;
-
+import com.google.android.gms.ads.AdSize;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ReactNativeFirebaseAdMobCommon {
+
+  static AdSize stringToAdSize(String value) {
+    Pattern pattern = Pattern.compile("([0-9]+)x([0-9]+)");
+    Matcher matcher = pattern.matcher(value);
+
+    // If size is "valXval"
+    if (matcher.find()) {
+      int width = Integer.parseInt(matcher.group(1));
+      int height = Integer.parseInt(matcher.group(2));
+      return new AdSize(width, height);
+    }
+
+    switch (value.toUpperCase()) {
+      case "FLUID":
+        return AdSize.FLUID;
+      case "WIDE_SKYSCRAPER":
+        return AdSize.WIDE_SKYSCRAPER;
+      case "LARGE_BANNER":
+        return AdSize.LARGE_BANNER;
+      case "MEDIUM_RECTANGLE":
+        return AdSize.MEDIUM_RECTANGLE;
+      case "FULL_BANNER":
+        return AdSize.FULL_BANNER;
+      case "LEADERBOARD":
+        return AdSize.LEADERBOARD;
+      case "SMART_BANNER":
+        return AdSize.SMART_BANNER;
+      default:
+      case "BANNER":
+        return AdSize.BANNER;
+    }
+  }
+
+  /**
+   * Convert common AdMob errors into a standard format
+   */
+  static WritableMap errorCodeToMap(int errorCode) {
+    WritableMap map = Arguments.createMap();
+
+    switch (errorCode) {
+      case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+        map.putString("code", "error-code-internal-error");
+        map.putString(
+          "message",
+          "Something happened internally; for instance, an invalid response was received from the ad server."
+        );
+        break;
+      case AdRequest.ERROR_CODE_INVALID_REQUEST:
+        map.putString("code", "error-code-invalid-request");
+        map.putString(
+          "message",
+          "The ad request was invalid; for instance, the ad unit ID was incorrect."
+        );
+        break;
+      case AdRequest.ERROR_CODE_NETWORK_ERROR:
+        map.putString("code", "error-code-network-error");
+        map.putString("message", "The ad request was unsuccessful due to network connectivity.");
+        break;
+      case AdRequest.ERROR_CODE_NO_FILL:
+        map.putString("code", "error-code-no-fill");
+        map.putString(
+          "message",
+          "The ad request was successful, but no ad was returned due to lack of ad inventory."
+        );
+        break;
+    }
+
+    return map;
+  }
 
   static public AdRequest buildAdRequest(ReadableMap adRequestOptions) {
     AdRequest.Builder builder = new AdRequest.Builder();

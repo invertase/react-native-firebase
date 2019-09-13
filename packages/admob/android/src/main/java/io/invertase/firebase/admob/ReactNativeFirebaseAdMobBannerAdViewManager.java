@@ -17,10 +17,15 @@ package io.invertase.firebase.admob;
  *
  */
 
-import android.util.Log;
-
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.MapBuilder;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -28,11 +33,20 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManager<ReactViewGroup> {
+  private static final String REACT_CLASS = "ReactNativeFirebaseAdMobBannerView";
+  private String EVENT_AD_LOADED = "onAdLoaded";
+  private String EVENT_AD_FAILED_TO_LOAD = "onAdFailedToLoad";
+  private String EVENT_AD_OPENED = "onAdOpened";
+  private String EVENT_AD_CLOSED = "onAdClosed";
+  private String EVENT_AD_LEFT_APPLICATION = "onAdLeftApplication";
 
-  public static final String REACT_CLASS = "RNFBBannerAd";
-  private AdView adView;
+  private Boolean requested = false;
+  private AdRequest request;
+  private AdSize size;
+  private String unitId;
 
   @Nonnull
   @Override
@@ -42,56 +56,161 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
 
   @Nonnull
   @Override
-  protected ReactViewGroup createViewInstance(@Nonnull ThemedReactContext reactContext) {
-    ReactViewGroup viewGroup = new ReactViewGroup(reactContext);
-    adView = new AdView(reactContext);
+  public ReactViewGroup createViewInstance(@Nonnull ThemedReactContext themedReactContext) {
+    ReactViewGroup viewGroup = new ReactViewGroup(themedReactContext);
+    AdView adView = new AdView(themedReactContext);
+    viewGroup.addView(adView);
+    setAdListener(viewGroup);
+    return viewGroup;
+  }
 
-    adView.setAdUnitId("ca-app-pub-3940256099942544/6300978111");
+  private AdView getAdView(ReactViewGroup viewGroup) {
+    return (AdView) viewGroup.getChildAt(0);
+  }
 
-    adView.setAdSize(AdSize.SMART_BANNER);
-    AdRequest adRequest = new AdRequest.Builder().build();
+  private void resetAdView(ReactViewGroup reactViewGroup) {
+    AdView oldAdView = getAdView(reactViewGroup);
+    AdView newAdView = new AdView(reactViewGroup.getContext());
+    reactViewGroup.removeViewAt(0);
+    if (oldAdView != null) oldAdView.destroy();
+    reactViewGroup.addView(newAdView);
+    setAdListener(reactViewGroup);
+  }
+
+  @Override
+  public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    MapBuilder.Builder<String, Object> builder = MapBuilder.builder();
+    builder.put("onNativeEvent", MapBuilder.of("registrationName", "onNativeEvent"));
+    return builder.build();
+  }
+
+  @ReactProp(name = "unitId")
+  public void setUnitId(ReactViewGroup reactViewGroup, String value) {
+    unitId = value;
+    requestAd(reactViewGroup);
+  }
+
+  @ReactProp(name = "request")
+  public void setRequest(ReactViewGroup reactViewGroup, ReadableMap value) {
+    request = ReactNativeFirebaseAdMobCommon.buildAdRequest(value);
+    requestAd(reactViewGroup);
+  }
+
+  @ReactProp(name = "size")
+  public void setSize(ReactViewGroup reactViewGroup, String value) {
+    size = ReactNativeFirebaseAdMobCommon.stringToAdSize(value);
+
+    int width;
+    int height;
+    WritableMap payload = Arguments.createMap();
+
+    if (size == AdSize.SMART_BANNER) {
+      width = (int) PixelUtil.toDIPFromPixel(size.getWidthInPixels(reactViewGroup.getContext()));
+      height = (int) PixelUtil.toDIPFromPixel(size.getHeightInPixels(reactViewGroup.getContext()));
+    } else {
+      width = size.getWidth();
+      height = size.getHeight();
+    }
+
+    payload.putDouble("width", width);
+    payload.putDouble("height", height);
+
+    if (size != AdSize.FLUID) {
+      sendEvent(reactViewGroup, "onSizeChange", payload);
+    }
+    requestAd(reactViewGroup);
+  }
+
+  private void setAdListener(ReactViewGroup reactViewGroup) {
+    final AdView adView = getAdView(reactViewGroup);
 
     adView.setAdListener(new AdListener() {
       @Override
       public void onAdLoaded() {
-        Log.d("ELLIOT", "LOADED");
-        // Code to be executed when an ad finishes loading.
+        int top;
+        int left;
+        int width;
+        int height;
+
+        if (size == AdSize.FLUID) {
+          top = 0;
+          left = 0;
+          width = reactViewGroup.getWidth();
+          height = reactViewGroup.getHeight();
+        } else {
+          top = adView.getTop();
+          left = adView.getLeft();
+          width = adView.getAdSize().getWidthInPixels(reactViewGroup.getContext());
+          height = adView.getAdSize().getHeightInPixels(reactViewGroup.getContext());
+        }
+
+        // TODO size=FLUID not loading ad, height of child FrameLayout incorrect?
+        adView.measure(width, height);
+        adView.layout(left, top, left + width, top + height);
+
+        WritableMap payload = Arguments.createMap();
+
+        if (size != AdSize.FLUID) {
+          payload.putInt("width", (int) PixelUtil.toDIPFromPixel(width) + 1);
+          payload.putInt("height", (int) PixelUtil.toDIPFromPixel(height) + 1);
+        } else {
+          payload.putInt("width", (int) PixelUtil.toDIPFromPixel(width));
+          payload.putInt("height", (int) PixelUtil.toDIPFromPixel(height));
+        }
+
+        sendEvent(reactViewGroup, EVENT_AD_LOADED, payload);
       }
 
       @Override
       public void onAdFailedToLoad(int errorCode) {
-        Log.d("ELLIOT", "ERROR");
-        // Code to be executed when an ad request fails.
+        WritableMap payload = ReactNativeFirebaseAdMobCommon.errorCodeToMap(errorCode);
+        sendEvent(reactViewGroup, EVENT_AD_FAILED_TO_LOAD, payload);
       }
 
       @Override
       public void onAdOpened() {
-        Log.d("ELLIOT", "OPENED");
-        // Code to be executed when an ad opens an overlay that
-        // covers the screen.
-      }
-
-      @Override
-      public void onAdClicked() {
-        // Code to be executed when the user clicks on an ad.
-      }
-
-      @Override
-      public void onAdLeftApplication() {
-        // Code to be executed when the user has left the app.
+        sendEvent(reactViewGroup, EVENT_AD_OPENED, null);
       }
 
       @Override
       public void onAdClosed() {
-        // Code to be executed when the user is about to return
-        // to the app after tapping on an ad.
+        sendEvent(reactViewGroup, EVENT_AD_CLOSED, null);
+      }
+
+      @Override
+      public void onAdLeftApplication() {
+        sendEvent(reactViewGroup, EVENT_AD_LEFT_APPLICATION, null);
       }
     });
+  }
 
-    adView.loadAd(adRequest);
+  private void requestAd(ReactViewGroup reactViewGroup) {
+    if (size == null || unitId == null || request == null) {
+      return;
+    }
 
-    viewGroup.addView(adView);
+    if (requested) {
+      resetAdView(reactViewGroup);
+    }
 
-    return viewGroup;
+    AdView adView = getAdView(reactViewGroup);
+    adView.setAdUnitId(unitId);
+    adView.setAdSize(size);
+    adView.loadAd(request);
+
+    requested = true;
+  }
+
+  private void sendEvent(ReactViewGroup reactViewGroup, String type, WritableMap payload) {
+    WritableMap event = Arguments.createMap();
+    event.putString("type", type);
+
+    if (payload != null) {
+      event.merge(payload);
+    }
+
+    ((ThemedReactContext) reactViewGroup.getContext())
+      .getJSModule(RCTEventEmitter.class)
+      .receiveEvent(reactViewGroup.getId(), "onNativeEvent", event);
   }
 }

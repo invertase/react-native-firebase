@@ -33,91 +33,91 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
 
 @implementation RNFBGADInterstitial : GADInterstitial
 - (void)setRequestId:(NSNumber *)requestId {
-  _requestId = requestId;
+    _requestId = requestId;
 }
 @end
 
 @implementation RNFBGADRewarded : GADRewardedAd
 - (void)setRequestId:(NSNumber *)requestId {
-  _requestId = requestId;
+    _requestId = requestId;
 }
 @end
 
 @implementation RNFBAdMobCommon
 
 + (GADRequest *)buildAdRequest:(NSDictionary *)adRequestOptions {
-  GADRequest *request = [GADRequest request];
-  NSMutableDictionary *extras = [@{} mutableCopy];
+    GADRequest *request = [GADRequest request];
+    NSMutableDictionary *extras = [@{} mutableCopy];
 
-  if (adRequestOptions[@"requestNonPersonalizedAdsOnly"]) {
-    extras[@"npa"] = @"1";
-  }
-
-  if (adRequestOptions[@"networkExtras"]) {
-    for (NSString *key in adRequestOptions[@"networkExtras"]) {
-      NSString *value = adRequestOptions[@"networkExtras"][key];
-      extras[key] = value;
+    if (adRequestOptions[@"requestNonPersonalizedAdsOnly"]) {
+        extras[@"npa"] = @"1";
     }
-  }
 
-  GADExtras *networkExtras = [[GADExtras alloc] init];
-  networkExtras.additionalParameters = extras;
-  [request registerAdNetworkExtras:networkExtras];
-
-  if (adRequestOptions[@"keywords"]) {
-    request.keywords = adRequestOptions[@"keywords"];
-  }
-
-  if (adRequestOptions[@"testDevices"]) {
-    NSMutableArray *devices = [@[] mutableCopy];
-    for (NSString *key in adRequestOptions[@"testDevices"]) {
-      if ([key isEqualToString:@"EMULATOR"]) {
-        [devices addObject:kGADSimulatorID];
-      } else {
-        [devices addObject:key];
-      }
+    if (adRequestOptions[@"networkExtras"]) {
+        for (NSString *key in adRequestOptions[@"networkExtras"]) {
+            NSString *value = adRequestOptions[@"networkExtras"][key];
+            extras[key] = value;
+        }
     }
-    request.testDevices = devices;
-  }
 
-  if (adRequestOptions[@"location"]) {
-    NSArray<NSNumber *> *latLong = adRequestOptions[@"location"];
-    [request setLocationWithLatitude:[latLong[0] doubleValue] longitude:[latLong[1] doubleValue] accuracy:[adRequestOptions[@"locationAccuracy"] doubleValue]];
-  }
+    GADExtras *networkExtras = [[GADExtras alloc] init];
+    networkExtras.additionalParameters = extras;
+    [request registerAdNetworkExtras:networkExtras];
 
-  if (adRequestOptions[@"contentUrl"]) {
-    request.contentURL = adRequestOptions[@"contentUrl"];
-  }
+    if (adRequestOptions[@"keywords"]) {
+        request.keywords = adRequestOptions[@"keywords"];
+    }
 
-  if (adRequestOptions[@"requestAgent"]) {
-    request.requestAgent = adRequestOptions[@"requestAgent"];
-  }
+    if (adRequestOptions[@"testDevices"]) {
+        NSMutableArray *devices = [@[] mutableCopy];
+        for (NSString *key in adRequestOptions[@"testDevices"]) {
+            if ([key isEqualToString:@"EMULATOR"]) {
+                [devices addObject:kGADSimulatorID];
+            } else {
+                [devices addObject:key];
+            }
+        }
+        request.testDevices = devices;
+    }
 
-  return request;
+    if (adRequestOptions[@"location"]) {
+        NSArray<NSNumber *> *latLong = adRequestOptions[@"location"];
+        [request setLocationWithLatitude:[latLong[0] doubleValue] longitude:[latLong[1] doubleValue] accuracy:[adRequestOptions[@"locationAccuracy"] doubleValue]];
+    }
+
+    if (adRequestOptions[@"contentUrl"]) {
+        request.contentURL = adRequestOptions[@"contentUrl"];
+    }
+
+    if (adRequestOptions[@"requestAgent"]) {
+        request.requestAgent = adRequestOptions[@"requestAgent"];
+    }
+
+    return request;
 }
 
 + (NSDictionary *)getCodeAndMessageFromAdError:(GADRequestError *)error {
-  NSString *code = @"unknown";
-  NSString *message = @"An unknown error occurred.";
+    NSString *code = @"unknown";
+    NSString *message = @"An unknown error occurred.";
 
-  if (error.code == kGADErrorInvalidRequest) {
-    code = @"invalid-request";
-    message = @"The ad request was invalid; for instance, the ad unit ID was incorrect.";
-  } else if (error.code == kGADErrorNoFill) {
-    code = @"no-fill";
-    message = @"The ad request was successful, but no ad was returned due to lack of ad inventory.";
-  } else if (error.code == kGADErrorNetworkError) {
-    code = @"network-error";
-    message = @"The ad request was unsuccessful due to network connectivity.";
-  } else if (error.code == kGADErrorInternalError) {
-    code = @"internal-error";
-    message = @"Something happened internally; for instance, an invalid response was received from the ad server.";
-  }
+    if (error.code == kGADErrorInvalidRequest) {
+        code = @"invalid-request";
+        message = @"The ad request was invalid; for instance, the ad unit ID was incorrect.";
+    } else if (error.code == kGADErrorNoFill) {
+        code = @"no-fill";
+        message = @"The ad request was successful, but no ad was returned due to lack of ad inventory.";
+    } else if (error.code == kGADErrorNetworkError) {
+        code = @"network-error";
+        message = @"The ad request was unsuccessful due to network connectivity.";
+    } else if (error.code == kGADErrorInternalError) {
+        code = @"internal-error";
+        message = @"Something happened internally; for instance, an invalid response was received from the ad server.";
+    }
 
-  return @{
-      @"code": code,
-      @"message": message,
-  };
+    return @{
+            @"code": code,
+            @"message": message,
+    };
 }
 
 + (void)sendAdEvent:(NSString *)event
@@ -126,26 +126,64 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
            adUnitId:(NSString *)adUnitId
               error:(nullable NSDictionary *)error
                data:(nullable NSDictionary *)data {
-  NSMutableDictionary *body = [@{
-      @"type": type,
-  } mutableCopy];
+    NSMutableDictionary *body = [@{
+            @"type": type,
+    } mutableCopy];
 
-  if (error != nil) {
-    body[@"error"] = error;
-  }
+    if (error != nil) {
+        body[@"error"] = error;
+    }
 
-  if (data != nil) {
-    body[@"data"] = data;
-  }
+    if (data != nil) {
+        body[@"data"] = data;
+    }
 
-  NSMutableDictionary *payload = [@{
-      @"eventName": type,
-      @"requestId": requestId,
-      @"adUnitId": adUnitId,
-      @"body": body,
-  } mutableCopy];
+    NSMutableDictionary *payload = [@{
+            @"eventName": type,
+            @"requestId": requestId,
+            @"adUnitId": adUnitId,
+            @"body": body,
+    } mutableCopy];
 
-  [[RNFBRCTEventEmitter shared] sendEventWithName:event body:payload];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:event body:payload];
+}
+
++ (GADAdSize)stringToAdSize:(NSString *)value {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"([0-9]+)x([0-9]+)" options:0 error:&error];
+    NSArray *matches = [regex matchesInString:value options:0 range:NSMakeRange(0, [value length])];
+
+    for (NSTextCheckingResult *match in matches) {
+        NSString *matchText = [value substringWithRange:[match range]];
+        if (matchText) {
+            NSArray *values = [matchText componentsSeparatedByString:@"x"];
+            CGFloat width = (CGFloat) [values[0] intValue];
+            CGFloat height = (CGFloat) [values[1] intValue];
+            return GADAdSizeFromCGSize(CGSizeMake(width, height));
+        }
+    }
+
+    value = [value uppercaseString];
+
+    if ([value isEqualToString:@"BANNER"]) {
+        return kGADAdSizeBanner;
+    } else if ([value isEqualToString:@"FLUID"]) {
+        return kGADAdSizeFluid;
+    } else if ([value isEqualToString:@"WIDE_SKYSCRAPER"]) {
+        return kGADAdSizeSkyscraper;
+    } else if ([value isEqualToString:@"LARGE_BANNER"]) {
+        return kGADAdSizeLargeBanner;
+    } else if ([value isEqualToString:@"MEDIUM_RECTANGLE"]) {
+        return kGADAdSizeMediumRectangle;
+    } else if ([value isEqualToString:@"FULL_BANNER"]) {
+        return kGADAdSizeFullBanner;
+    } else if ([value isEqualToString:@"LEADERBOARD"]) {
+        return kGADAdSizeLeaderboard;
+    } else if ([value isEqualToString:@"SMART_BANNER"]) {
+        return kGADAdSizeSmartBannerPortrait;
+    } else {
+        return kGADAdSizeBanner;
+    }
 }
 
 @end

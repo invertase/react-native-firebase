@@ -12,7 +12,7 @@
     "lerna:link": "lerna link && lerna exec -- yarn link",
     "lerna:clean": "lerna clean",
     "gen:reference": "node scripts/generate-typedoc.js",
-    "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --platforms ios,android",
+    "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --platforms ios,android --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start",
     "tests:packager:jet-reset-cache": "cd tests & cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache",
     "tests:android:build": "cd tests && ./node_modules/.bin/detox build --configuration android.emu.debug",

@@ -25,33 +25,32 @@ import {
   RewardedAd,
   BannerAd,
   TestIds,
+  BannerSize,
 } from '@react-native-firebase/admob';
 import firebase from '@react-native-firebase/app';
 
 function Root() {
   async function init() {
-    await AdsConsent.setDebugGeography(1);
-
-    const foo = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
-    console.warn(foo);
-    const r = await AdsConsent.showForm({
-      privacyPolicy: 'https://invertase.io/privacy-policy',
-      // withPersonalizedAds: true,
-      // withNonPersonalizedAds: false,
-      // withAdFree: false,
-    });
-    // console.log(r);
+    // await AdsConsent.setDebugGeography(1);
+    //
+    // const foo = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
+    // console.warn(foo);
+    // const r = await AdsConsent.showForm({
+    //   privacyPolicy: 'https://invertase.io/privacy-policy',
+    //   // withPersonalizedAds: true,
+    //   // withNonPersonalizedAds: false,
+    //   // withAdFree: false,
+    // });
+    // // console.log(r);
     //
     // const p = await AdsConsent.getAdProviders();
     // console.warn('p', p);
-
     // console.log(Interstitial)
     // await Interstitial.request('ca-app-pub-3940256099942544/1033173712', {
     //   listener(event, error) {
     //     console.warn(event, error);
     //   },
     // });
-
     // const options = {
     //   requestNonPersonalizedAdsOnly: true,
     //   networkExtras: {
@@ -104,8 +103,16 @@ function Root() {
   }, []);
 
   return (
-    <View style={[styles.container, styles.horizontal]}>
-      <Text>Hello</Text>
+    <View
+      style={{ flex: 1, justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}
+    >
+      <BannerAd
+        size={firebase.admob.BannerAdSize.LARGE_BANNER}
+        request={{}}
+        unitId={TestIds.BANNER + '123'}
+        onAdLoaded={() => console.log('loaded')}
+        onAdFailedToLoad={e => console.log('failed to load', e)}
+      />
     </View>
   );
 }
