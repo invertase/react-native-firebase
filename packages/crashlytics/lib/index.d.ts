@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Crashlytics package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `crashlytics` package:
+ * #### Example: Access the firebase export from the `crashlytics` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/crashlytics';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.crashlytics().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `crashlytics` package:
+ * #### Example: Using the default export from the `crashlytics` package:
  *
  * ```js
  * import crashlytics from '@react-native-firebase/crashlytics';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // crashlytics().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';

@@ -20,7 +20,7 @@ performance and offline capabilities.
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & start syncing realtime data in minuties with our quick start guide. 
+    Install & start syncing realtime data in minutes with our quick start guide.
 	</Block>
 	<Block
 		icon="school"
