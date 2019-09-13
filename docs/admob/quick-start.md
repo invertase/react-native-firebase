@@ -15,6 +15,8 @@ yarn add @react-native-firebase/admob
 
 Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
 
+> IMPORTANT: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
+
 ## Module usage
 
 The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and

@@ -804,7 +804,7 @@ export namespace Auth {
      *
      * > In order to use this feature, you will need to [whitelist your phone number](https://firebase.google.com/docs/auth/web/phone-auth#test-with-whitelisted-phone-numbers) via the Firebase Console.
      *
-     * @platform iOS
+     * @ios
      * @param disabled Boolean value representing whether app verification should be disabled for testing.
      */
     appVerificationDisabledForTesting: boolean;
@@ -821,7 +821,7 @@ export namespace Auth {
      * await firebase.auth().settings.setAutoRetrievedSmsCodeForPhoneNumber('+4423456789', 'ABCDE');
      * ```
      *
-     * @platform Android
+     * @android
      * @param phoneNumber The users phone number.
      * @param smsCode The pre-set SMS code.
      */
@@ -1194,7 +1194,7 @@ export namespace Auth {
      *
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
-    get currentUser(): User | null;
+    currentUser(): User | null;
 
     /**
      * Listen for changes in the users auth state (logging in and out).
