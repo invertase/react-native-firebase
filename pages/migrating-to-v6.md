@@ -31,9 +31,9 @@ Version 6 also brings support for previously unsupported modules such as [Fireba
 ## NPM dependency changes
 
 Prior to version 6, all modules are installable from the `react-native-firebase` NPM package. With version 6 we are
-now taking advantage of NPM organizations, allowing us to distribute each module as it's own package. This has a number
+now taking advantage of NPM organizations, allowing us to distribute each module as its own package. This has a number
 of advantages such as smaller app bundle sizes (you only install what modules you need), and internally we treat each module
-as it's own package, allowing for easier testing and quality assurance. Every project must install the `@react-native-firebase/app` 
+as its own package, allowing for easier testing and quality assurance. Every project must install the `@react-native-firebase/app` 
 module, replacing the `react-native-firebase` module.
 
 ## Removing `react-native-firebase`
@@ -233,7 +233,7 @@ Depending on which Firebase service your app uses, you now need to install the N
 apps using the Authentication module need to install the `auth` package:
 
 ```bash
-yarn add @react-native-firebas/auth
+yarn add @react-native-firebase/auth
 ```
 
 Install the modules required for your application:
