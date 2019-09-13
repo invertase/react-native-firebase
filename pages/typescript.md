@@ -1,11 +1,11 @@
 ---
 title: TypeScript
-description: Using Typescript with React Native Firebase
+description: Using TypeScript with React Native Firebase
 ---
 
-# Typescript
+# TypeScript
 
-The React Native Firebase project comes with out of the box support for TypeScript. The project provides
+The React Native Firebase project comes with support for TypeScript. The project provides
 Ambient Declarations for each Firebase module, without having to install any additional dependencies.
 
 ## Example
