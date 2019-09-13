@@ -25,6 +25,7 @@ import AdsConsentDebugGeography from './AdsConsentDebugGeography';
 import AdsConsentStatus from './AdsConsentStatus';
 import MaxAdContentRating from './MaxAdContentRating';
 import RewardedAdEventType from './RewardedAdEventType';
+import BannerAdSize from './BannerAdSize';
 import TestIds from './TestIds';
 import validateAdRequestConfiguration from './validateAdRequestConfiguration';
 import version from './version';
@@ -36,6 +37,7 @@ const statics = {
   RewardedAdEventType,
   MaxAdContentRating,
   TestIds,
+  BannerAdSize,
 };
 
 const namespace = 'admob';
@@ -74,8 +76,6 @@ class FirebaseAdMobModule extends FirebaseModule {
 // import { SDK_VERSION } from '@react-native-firebase/admob';
 export const SDK_VERSION = version;
 
-// import admob from '@react-native-firebase/admob';
-// admob().X(...);
 export default createModuleNamespace({
   statics,
   version,
@@ -87,9 +87,6 @@ export default createModuleNamespace({
   ModuleClass: FirebaseAdMobModule,
 });
 
-// import admob, { firebase } from '@react-native-firebase/admob';
-// admob().X(...);
-// firebase.admob().X(...);
 export const firebase = getFirebaseRoot();
 
 export AdsConsentDebugGeography from './AdsConsentDebugGeography';
@@ -97,8 +94,10 @@ export AdsConsentStatus from './AdsConsentStatus';
 export MaxAdContentRating from './MaxAdContentRating';
 export TestIds from './TestIds';
 export AdEventType from './AdEventType';
+export BannerAdSize from './BannerAdSize';
 export RewardedAdEventType from './RewardedAdEventType';
 export AdsConsent from './AdsConsent';
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
 export BannerAd from './ads/BannerAd';
+export const BannerSize = statics.BannerSize;

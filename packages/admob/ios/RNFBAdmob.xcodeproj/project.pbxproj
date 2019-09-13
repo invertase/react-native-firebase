@@ -14,6 +14,7 @@
 		8B4E497823017ED300587275 /* RNFBAdMobRewardedModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E497723017ED300587275 /* RNFBAdMobRewardedModule.m */; };
 		8B4E497E2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */; };
 		8BC10E6223029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */; };
+		994962B72327EA3C003D5C80 /* RNFBAdMobBannerViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 994962B62327EA3C003D5C80 /* RNFBAdMobBannerViewManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +45,8 @@
 		8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobInterstitialDelegate.m; sourceTree = "<group>"; };
 		8BC10E6023029CA500209FF9 /* RNFBAdMobRewardedDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobRewardedDelegate.h; sourceTree = "<group>"; };
 		8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobRewardedDelegate.m; sourceTree = "<group>"; };
+		994962B52327EA31003D5C80 /* RNFBAdMobBannerViewManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBAdMobBannerViewManager.h; sourceTree = "<group>"; };
+		994962B62327EA3C003D5C80 /* RNFBAdMobBannerViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBAdMobBannerViewManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +85,8 @@
 				8B4E497D2301BE2C00587275 /* RNFBAdMobInterstitialDelegate.m */,
 				8BC10E6023029CA500209FF9 /* RNFBAdMobRewardedDelegate.h */,
 				8BC10E6123029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m */,
+				994962B52327EA31003D5C80 /* RNFBAdMobBannerViewManager.h */,
+				994962B62327EA3C003D5C80 /* RNFBAdMobBannerViewManager.m */,
 			);
 			path = RNFBAdmob;
 			sourceTree = "<group>";
@@ -157,6 +162,7 @@
 				8B4E497823017ED300587275 /* RNFBAdMobRewardedModule.m in Sources */,
 				8B06D41B22FEC8B800A5B542 /* RNFBAdMobConsentModule.m in Sources */,
 				8B4E497523017EB400587275 /* RNFBAdMobInterstitialModule.m in Sources */,
+				994962B72327EA3C003D5C80 /* RNFBAdMobBannerViewManager.m in Sources */,
 				8B06D41F230063ED00A5B542 /* RNFBAdMobCommon.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBAdMobModule.m in Sources */,
 				8BC10E6223029CAE00209FF9 /* RNFBAdMobRewardedDelegate.m in Sources */,

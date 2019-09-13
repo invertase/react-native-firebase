@@ -544,8 +544,8 @@ export namespace Auth {
    */
   export interface ActionCodeInfo {
     /**
-    * The data associated with the action code.
-    */
+     * The data associated with the action code.
+     */
     data: ActionCodeInfoData;
     /**
      * The operation from where the action originated.
