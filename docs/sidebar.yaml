@@ -1,290 +1,307 @@
 - module: admob
   groups:
-  - group: AdMob
-    children:
-      - text: Overview
-        to: '/'
-      - text: Quick Start
-        to: '/quick-start'
-      - text: European User Consent
-        to: '/european-user-consent'
-  - group: Manual Installation
-    children:
-      - text: Android Installation
-        to: "/android-installation"
-      - text: iOS Installation
-        to: "/ios-installation"
+    - group: AdMob
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+        - text: European User Consent
+          to: '/european-user-consent'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: '/android-installation'
+        - text: iOS Installation
+          to: '/ios-installation'
 
 - module: analytics
   groups:
-  - group: Analytics
-    children:
-      - text: Overview
-        to: "/"
-      - text: Quick Start
-        to: "/quick-start"
-      - text: Reserved Events
-        to: '/reserved-events'
-  - group: Manual Installation
-    children:
-      - text: Android Installation
-        to: "/android-installation"
-      - text: iOS Installation
-        to: "/ios-installation"
+    - group: Analytics
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+        - text: Reserved Events
+          to: '/reserved-events'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: '/android-installation'
+        - text: iOS Installation
+          to: '/ios-installation'
 
 - module: auth
   groups:
-  - group: Authentication
-    children:
-      - text: Overview
-        to: '/'
-      - text: Quick Start
-        to: '/quick-start'
-      - text: Social Auth
-        to: '/social-auth'
-      - text: Phone Auth
-        to: '/phone-auth'
-  - group: Manual Installation
-    children:
-      - text: Android Installation
-        to: "/android-installation"
-      - text: iOS Installation
-        to: "/ios-installation"
+    - group: Authentication
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+        - text: Social Auth
+          to: '/social-auth'
+        - text: Phone Auth
+          to: '/phone-auth'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: '/android-installation'
+        - text: iOS Installation
+          to: '/ios-installation'
 
 - module: firestore
-  group: Cloud Firestore
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-    - text: Query limitations
-      to: '/query-limitations'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Cloud Firestore
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+        - text: Query limitations
+          to: '/query-limitations'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: functions
-  group: Cloud Functions
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Cloud Functions
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: messaging
-  group: Cloud Messaging
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Cloud Messaging
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: storage
-  group: Cloud Storage
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Cloud Storage
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: app
-  group: App
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Initialization
-        to: '/android'
-      - text: iOS Initialization
-        to: '/ios'
-      - text: Client Initialization
-        to: '/client'
+  groups:
+    - group: App
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Initialization
+          to: '/android'
+        - text: iOS Initialization
+          to: '/ios'
+        - text: Client Initialization
+          to: '/client'
 
 - module: crashlytics
-  group: Crashlytics
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Crashlytics
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: database
-  group: Realtime Database
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Realtime Database
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: dynamic-links
-  group: Dynamic DynamicLinks
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Dynamic DynamicLinks
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: in-app-messaging
-  group: In-App Messaging
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: In-App Messaging
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: iid
-  group: Instance ID
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Instance ID
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: invites
-  group: Invites
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
-    - text: Migrate to Dynamic DynamicLinks
-      to: '/migrate-to-dynamic-links'
+  groups:
+    - group: Invites
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
+        - text: Migrate to Dynamic DynamicLinks
+          to: '/migrate-to-dynamic-links'
 
 - module: ml-natural-language
-  group: ML Kit Natural Language
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: ML Kit Natural Language
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: ml-vision
-  group: ML Kit Vision
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: ML Kit Vision
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: notifications
-  group: Notifications
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Notifications
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: remote-config
-  group: Remote Config
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Remote Config
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: perf
-  group: Performance Monitoring
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
-  - group: Manual Installation
-    children:
-      - text: Android Setup
-        to: '/android'
-      - text: iOS Setup
-        to: '/ios'
+  groups:
+    - group: Performance Monitoring
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
+    - group: Manual Installation
+      children:
+        - text: Android Setup
+          to: '/android'
+        - text: iOS Setup
+          to: '/ios'
 
 - module: utils
-  group: Utils
-  children:
-    - text: Overview
-      to: '/'
-    - text: Quick Start
-      to: '/quick-start'
+  groups:
+    - group: Utils
+      children:
+        - text: Overview
+          to: '/'
+        - text: Quick Start
+          to: '/quick-start'
