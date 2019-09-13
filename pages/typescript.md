@@ -1,17 +1,17 @@
 ---
-title: Typescript
+title: TypeScript
 description: Using Typescript with React Native Firebase
 ---
 
 # Typescript
 
-The React Native Firebase project comes with out of the box support for Typescript. The project provides
+The React Native Firebase project comes with out of the box support for TypeScript. The project provides
 Ambient Declarations for each Firebase module, without having to install any additional dependencies.
 
 ## Example
 
-To demonstrate Typescript usage in a practical example, the following assumes Typescript is already setup on your environment.
-If you are looking to setup a new project or migrate an existing project to Typescript please check out this official [blog post](https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native).
+To demonstrate TypeScript usage in a practical example, the following assumes TypeScript is already setup on your environment.
+If you are looking to setup a new project or migrate an existing project to TypeScript please check out this official [blog post](https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native).
 
 The below example makes use of the <Anchor version="v6" group="admob" href="/">Authentication</Anchor> module, demonstrating 
 how to safely type code using the declarations the module provides.
@@ -32,7 +32,7 @@ function App() {
 export default App;
 ```
 
-This code will produce a Typescript error: `Object is possibly null`. Accessing `currentUser` returns the 
+This code will produce a TypeScript error: `Object is possibly null`. Accessing `currentUser` returns the 
 current <Anchor version="v6" group="auth" href="reference/user">`User`</Anchor> is the user is signed in or `null` if 
 they are signed out. This error prevents our code from compiling and for good reason - without checking the users authentication
 status, accessing the `email` property on `User` will cause the app to crash!
@@ -51,11 +51,11 @@ function App() {
 }
 ```
 
-The Typescript error will remove allowing us to safely continue developing our app crash free.
+The TypeScript error will remove allowing us to safely continue developing our app.
 
 It is also possible to access the module types directly, if you need to locally reference variables within your own codebase.
-For example, we may need to store the `User` in local state. Without manually defining a type to local state, Typescript loses 
-the ability to safety check the code. We can easily access the types manually through the module, for example:
+For example, we may need to store the `User` in local state. Without manually defining a type for local state, TypeScript loses 
+the ability to type check the code. We can easily access the types manually through the module though, for example:
 
 ``` jsx
 import * as React from 'react';
@@ -87,14 +87,14 @@ of `<Auth.User | null>`. As we are unaware of the users authentication state, we
 which is a valid type for this state.
 
  The `onAuthStateChanged` listener triggers with a `User` or `null` parameter whenever the users authentication state changes. The 
- `@react-native-firebase/auth` module provides Typescript with these types automatically. As the returned types match 
+ `@react-native-firebase/auth` module provides TypeScript with these types automatically. As the returned types match 
  the local state type, we are able to set the state immediately without any type check errors.
  
- Attempting to set `user` state to anything other than the `User` or `null` will throw a Typescript error.
+ Attempting to set `user` state to anything other than the `User` or `null` will throw a TypeScript error.
  
  ## Definitions
  
- The full set of Typescript definitions for each module can be found on the [invertase/react-native-firebase](https://github.com/invertase/react-native-firebase)
+ The full set of TypeScript definitions for each module can be found on the [invertase/react-native-firebase](https://github.com/invertase/react-native-firebase)
  repository within each package.
  
- For example, the auth module definitions are located at [`react-native-firebase/packages/auth/lib/index.d.ts`](https://github.com/invertase/react-native-firebase/blob/master/packages/auth/lib/index.d.ts).
+ For example, the `auth` module definitions are located at [`react-native-firebase/packages/auth/lib/index.d.ts`](https://github.com/invertase/react-native-firebase/blob/master/packages/auth/lib/index.d.ts).
