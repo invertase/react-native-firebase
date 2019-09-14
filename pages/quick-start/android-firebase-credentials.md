@@ -17,14 +17,13 @@ Under 'Your apps', click on the Android logo (highlighted in orange) to add a ne
 
 ![Add an Android app to the project](https://prismic-io.s3.amazonaws.com/invertase%2Fd69c0b59-f1eb-4e19-aeed-2c5578dbf8d9_settings-android.png)
 
-Enter your application details then click on 'Register app'. The 'Android package name' must  match your local Android package name.
+Enter your application details then click on 'Register app'. The 'Android package name' must match your local Android package name.
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key.  This generates two variant keys. You can copy the 'SHA1' that belong to the `debugAndroidTest` variant key option.
+> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth. To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key. This generates two variant keys. You can copy the 'SHA1' that belong to the `debugAndroidTest` variant key option.
 
 ![Register app](https://prismic-io.s3.amazonaws.com/invertase%2F3ea8d102-0fa8-4a5e-bbb4-938f5955800e_screenshot+2019-05-07+at+11.00.01.png)
 
-
-Download the config file locally by pressing "Download google-services.json".  Now add the downloaded JSON file to your React Native project at the following location: `/android/app/google-services.json`.
+Download the config file locally by pressing "Download google-services.json". Now add the downloaded JSON file to your React Native project at the following location: `/android/app/google-services.json`.
 
 ![Download](https://prismic-io.s3.amazonaws.com/invertase%2F3bd36734-a2a7-46c7-aca5-a7b007c4ec35_screenshot+2019-05-07+at+10.48.12.png)
 
@@ -39,7 +38,7 @@ Add the `google-services` dependency inside of your `android/build.gradle` file:
 ```groovy
 buildscript {
   dependencies {
-    ...
+    // ...
     classpath 'com.google.gms:google-services:{{ google.services }}'
   }
 }

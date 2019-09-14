@@ -18,10 +18,10 @@ project:
 yarn add @react-native-firebase/app
 ```
 
-If you are using React Native <= 0.59 you need to manually integrate the `app` module into your project. 
+If you are using React Native <= 0.59 you need to manually integrate the `app` module into your project.
 See the following steps for [Android](/v6/app/android) and [iOS](/v6/app/ios) for more information on manual linking.
 
-For users on React Native >= 0.60, the module will be automatically linked to your project. 
+For users on React Native >= 0.60, the module will be automatically linked to your project.
 
 ## Next
 

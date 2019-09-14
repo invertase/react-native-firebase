@@ -1,96 +1,96 @@
 ---
 - group: Library
   children:
-  - text: Introduction
-    to: "/"
-  - text: Quick Start
-    to: "/quick-start"
-  - text: Typescript
-    to: "/typescript"
-  - text: Contributing
-    to: "/contributing"
-  - text: Releases
-    to: "/releases"
-    pill: "v6.0.0"
-  - text: Feedback
-    to: "/feedback"
-  - text: Migrating to v6
-    to: "/migrating-to-v6"
+    - text: Introduction
+      to: '/'
+    - text: Quick Start
+      to: '/quick-start'
+    - text: Typescript
+      to: '/typescript'
+    - text: Contributing
+      to: '/contributing'
+    - text: Releases
+      to: '/releases'
+      pill: 'v6.0.0'
+    - text: Feedback
+      to: '/feedback'
+    - text: Migrating to v6
+      to: '/migrating-to-v6'
 
 - group: Resources
   children:
     - text: MacStadium
-      to: "/macstadium"
-      asset: "//static.invertase.io/assets/social/macstadium-logo-black.png"
+      to: '/macstadium'
+      asset: '//static.invertase.io/assets/social/macstadium-logo-black.png'
     - text: Firebase Documentation
-      to: "https://firebase.google.com/docs/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
-      asset: "//static.invertase.io/assets/social/firebase-logo.png"
+      to: 'https://firebase.google.com/docs/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar'
+      asset: '//static.invertase.io/assets/social/firebase-logo.png'
     - text: React Native
-      to: "https://facebook.github.io/react-native/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar"
-      asset: "//static.invertase.io/assets/social/react-native-logo.png"
+      to: 'https://facebook.github.io/react-native/?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=sidebar'
+      asset: '//static.invertase.io/assets/social/react-native-logo.png'
 
 - group: Modules
   children:
-  - text: Admob
-    to: "/v6/admob"
-    asset: "//static.invertase.io/assets/firebase/google-admob.svg"
-  - text: Analytics
-    to: "/v6/analytics"
-    asset: "//static.invertase.io/assets/firebase/analytics.svg"
-  - text: Authentication
-    to: "/v6/auth"
-    asset: "//static.invertase.io/assets/firebase/authentication.svg"
-  - text: Cloud Firestore
-    to: "/v6/firestore"
-    asset: "//static.invertase.io/assets/firebase/cloud-firestore.svg"
-  - text: Cloud Functions
-    to: "/v6/functions"
-    asset: "//static.invertase.io/assets/firebase/cloud-functions.svg"
-  - text: Cloud Messaging
-    to: "/v6/messaging"
-    asset: "//static.invertase.io/assets/firebase/cloud-messaging.svg"
-  - text: Cloud Storage
-    to: "/v6/storage"
-    asset: "//static.invertase.io/assets/firebase/cloud-storage.svg"
-  - text: Core / App
-    to: "/v6/app"
-    asset: "//static.invertase.io/assets/social/firebase-logo.png"
-  - text: Crashlytics
-    to: "/v6/crashlytics"
-    asset: "//static.invertase.io/assets/firebase/crashlytics.svg"
-  - text: Realtime Database
-    to: "/v6/database"
-    asset: "//static.invertase.io/assets/firebase/realtime-database.svg"
-  - text: Dynamic Links
-    to: "/v6/dynamic-links"
-    asset: "//static.invertase.io/assets/firebase/dynamic-links.svg"
-  - text: App Indexing
-    to: "/v6/indexing"
-    asset: "//static.invertase.io/assets/firebase/app-indexing.svg"
-  - text: Instance ID
-    to: "/v6/iid"
-    asset: "//static.invertase.io/assets/social/firebase-logo.png"
-  - text: In-App Messaging
-    to: "/v6/in-app-messaging"
-    asset: "//static.invertase.io/assets/firebase/in-app-messaging.svg"
-  - text: Invites
-    to: "/v6/invites"
-    asset: "//static.invertase.io/assets/firebase/invites.svg"
-  - text: ML Kit Natural Language
-    to: "/v6/ml-natural-language"
-    asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
-  - text: ML Kit Vision
-    to: "/v6/ml-vision"
-    asset: "//static.invertase.io/assets/firebase/ml-kit.svg"
-  - text: Notifications
-    to: "/v6/notifications"
-    asset: "//static.invertase.io/assets/social/firebase-logo.png"
-  - text: Remote Config
-    to: "/v6/remote-config"
-    asset: "//static.invertase.io/assets/firebase/remote-config.svg"
-  - text: Performance Monitoring
-    to: "/v6/perf"
-    asset: "//static.invertase.io/assets/firebase/performance-monitoring.svg"
-  - text: Utils
-    to: "/v6/utils"
-    asset: "//static.invertase.io/assets/social/firebase-logo.png"
+    - text: Admob
+      to: '/v6/admob'
+      asset: '//static.invertase.io/assets/firebase/google-admob.svg'
+    - text: Analytics
+      to: '/v6/analytics'
+      asset: '//static.invertase.io/assets/firebase/analytics.svg'
+    - text: Authentication
+      to: '/v6/auth'
+      asset: '//static.invertase.io/assets/firebase/authentication.svg'
+    - text: Cloud Firestore
+      to: '/v6/firestore'
+      asset: '//static.invertase.io/assets/firebase/cloud-firestore.svg'
+    - text: Cloud Functions
+      to: '/v6/functions'
+      asset: '//static.invertase.io/assets/firebase/cloud-functions.svg'
+    - text: Cloud Messaging
+      to: '/v6/messaging'
+      asset: '//static.invertase.io/assets/firebase/cloud-messaging.svg'
+    - text: Cloud Storage
+      to: '/v6/storage'
+      asset: '//static.invertase.io/assets/firebase/cloud-storage.svg'
+    - text: Core / App
+      to: '/v6/app'
+      asset: '//static.invertase.io/assets/social/firebase-logo.png'
+    - text: Crashlytics
+      to: '/v6/crashlytics'
+      asset: '//static.invertase.io/assets/firebase/crashlytics.svg'
+    - text: Realtime Database
+      to: '/v6/database'
+      asset: '//static.invertase.io/assets/firebase/realtime-database.svg'
+    - text: Dynamic Links
+      to: '/v6/dynamic-links'
+      asset: '//static.invertase.io/assets/firebase/dynamic-links.svg'
+    - text: App Indexing
+      to: '/v6/indexing'
+      asset: '//static.invertase.io/assets/firebase/app-indexing.svg'
+    - text: Instance ID
+      to: '/v6/iid'
+      asset: '//static.invertase.io/assets/social/firebase-logo.png'
+    - text: In-App Messaging
+      to: '/v6/in-app-messaging'
+      asset: '//static.invertase.io/assets/firebase/in-app-messaging.svg'
+    - text: Invites
+      to: '/v6/invites'
+      asset: '//static.invertase.io/assets/firebase/invites.svg'
+    - text: ML Kit Natural Language
+      to: '/v6/ml-natural-language'
+      asset: '//static.invertase.io/assets/firebase/ml-kit.svg'
+    - text: ML Kit Vision
+      to: '/v6/ml-vision'
+      asset: '//static.invertase.io/assets/firebase/ml-kit.svg'
+    - text: Notifications
+      to: '/v6/notifications'
+      asset: '//static.invertase.io/assets/social/firebase-logo.png'
+    - text: Remote Config
+      to: '/v6/remote-config'
+      asset: '//static.invertase.io/assets/firebase/remote-config.svg'
+    - text: Performance Monitoring
+      to: '/v6/perf'
+      asset: '//static.invertase.io/assets/firebase/performance-monitoring.svg'
+    - text: Utils
+      to: '/v6/utils'
+      asset: '//static.invertase.io/assets/social/firebase-logo.png'

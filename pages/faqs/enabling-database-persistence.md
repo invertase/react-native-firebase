@@ -23,9 +23,9 @@ To enable persistence, changes must be made to the native code on both Android a
 ```java{4}
 package com.mypackage;
 
-...
+// ...
 import com.google.firebase.database.FirebaseDatabase;
-...
+// ...
 ```
 
 3. Add the `setPersistenceEnabled` method to your `onCreate` method:
@@ -35,7 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
     FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-    ...
+    // ...
 }
 ```
 
@@ -49,7 +49,7 @@ Rebuild your Android project.
 ```objectivec{5}
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    ...
+    // ...
     [FIRApp configure];
     [FIRDatabase database].persistenceEnabled = YES;
 }

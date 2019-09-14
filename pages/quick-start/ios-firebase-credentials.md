@@ -5,13 +5,13 @@ description: Firebase provides a GoogleService-Info.plist file containing your F
 
 # Adding Firebase credentials to your iOS app
 
-The Firebase console provides a `GoogleService-Info.plist` file containing a set of credentials for iOS devices to use when authenticating with your Firebase project. 
+The Firebase console provides a `GoogleService-Info.plist` file containing a set of credentials for iOS devices to use when authenticating with your Firebase project.
 
 We'll quickly walk through the process of retrieving this file and installing it into your iOS project.
 
 ## Generating the credentials
 
-The credential file can be generated from the Firebase [console](https://console.firebase.google.com/). 
+The credential file can be generated from the Firebase [console](https://console.firebase.google.com/).
 After selecting your Firebase project, open the project settings by clicking on the gear icon and then navigate to 'Project Settings'.
 
 Under 'Your apps', click on the iOS logo (highlighted in orange) to add a new iOS app to your Firebase project:
@@ -23,7 +23,7 @@ Enter your application details then click on 'Register app'. The 'iOS bundle ID'
 ![iOS Register](https://prismic-io.s3.amazonaws.com/invertase%2Fc7ad084f-d455-4d95-b498-de99bf68742d_register-ios.png)
 
 Download the config file locally by pressing "Download GoogleService-Info.plist". Using XCode, open the projects
-`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if using Pods). 
+`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if using Pods).
 
 Right click on the project name and "Add files" to the project, as demonstrated below:
 
@@ -34,7 +34,7 @@ Select the downloaded `GoogleService-Info.plist` file and ensure the 'Copy items
 ![Select file](https://prismic-io.s3.amazonaws.com/invertase%2F7d37e0ce-3e79-468d-930c-b7dc7bc2e291_unknown+%282%29.png)
 
 Next we need to initialize the Firebase service manually. To do this, open the AppDelegate file within your project
-`/ios/{projectName}/AppDelegate.m`. 
+`/ios/{projectName}/AppDelegate.m`.
 
 At the top of the file import the Firebase module:
 

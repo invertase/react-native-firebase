@@ -7,7 +7,7 @@ description: Migrate to React Native Firebase v6
 
 ## Introduction
 
-This is a reference for upgrading from React Native Firebase v5.x.x to v6.x.x. Even though there is a lot to cover, 
+This is a reference for upgrading from React Native Firebase v5.x.x to v6.x.x. Even though there is a lot to cover,
 each module generally follows similar steps to migrate.
 
 We highly recommend your project is using React Native 0.60+ before upgrading to take advantage of new features to make
@@ -19,26 +19,26 @@ If you're looking to start fresh, check out the [quick start](#) section of the 
 
 ## Why you should migrate
 
-React Native Firebase version 6 has been re-created from the ground up, with a heavy focus on testing, documentation & feature 
-compatibility with the Firebase SDKs. We've also been working closely with the Firebase team to ensure all module APIs have 
+React Native Firebase version 6 has been re-created from the ground up, with a heavy focus on testing, documentation & feature
+compatibility with the Firebase SDKs. We've also been working closely with the Firebase team to ensure all module APIs have
 been approved before being released.
 
-We have also ensured the release is compatible with some of the popular tooling in the React Native community, such as 
+We have also ensured the release is compatible with some of the popular tooling in the React Native community, such as
 [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) & [TypeScript](https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native).
 
-Version 6 also brings support for previously unsupported modules such as [Firebase ML Kit](https://firebase.google.com/docs/ml-kit). 
+Version 6 also brings support for previously unsupported modules such as [Firebase ML Kit](https://firebase.google.com/docs/ml-kit).
 
 ## NPM dependency changes
 
 Prior to version 6, all modules are installable from the `react-native-firebase` NPM package. With version 6 we are
 now taking advantage of NPM organizations, allowing us to distribute each module as its own package. This has a number
 of advantages such as smaller app bundle sizes (you only install what modules you need), and internally we treat each module
-as its own package, allowing for easier testing and quality assurance. Every project must install the `@react-native-firebase/app` 
+as its own package, allowing for easier testing and quality assurance. Every project must install the `@react-native-firebase/app`
 module, replacing the `react-native-firebase` module.
 
 ## Removing `react-native-firebase`
 
-There are a number of steps to carry out to remove the `react-native-firebase` module from your existing app. To help make this process 
+There are a number of steps to carry out to remove the `react-native-firebase` module from your existing app. To help make this process
 easier, we'll break out the process into 3 sections:
 
 - [Removing v5 from JavaScript](#)
@@ -62,14 +62,14 @@ As mentioned above, we need to remove the `react-native-firebase` NPM module fro
 }
 ```
 
-To remove the package from your local environment, delete the `yarn.lock`/`package-json.lock` files and reinstall 
+To remove the package from your local environment, delete the `yarn.lock`/`package-json.lock` files and reinstall
 the project dependencies with `yarn`.
 
 ---
 
 ### Removing v5 from Android
 
-Removing version 5 from your native Android code is a more involved process. We'll go file by file to ensure all references 
+Removing version 5 from your native Android code is a more involved process. We'll go file by file to ensure all references
 to the older version have been removed.
 
 #### Removing from Gradle Settings
@@ -83,12 +83,12 @@ rootProject.name = 'AwesomeApp'
 
 include ':app'
 ```
- 
+
 #### Removing native dependencies
 
 We now need to remove the RNFirebase and Firebase dependencies from your project.
 In version 6, these are automatically installed for us.
- 
+
 Open your projects `/android/app/build.gradle` file. First remove the `react-native-firebase` dependency:
 
 ```diff
@@ -97,10 +97,10 @@ dependencies {
 }
 ```
 
-Next, remove the `firebase-core` and `play-services-base` dependencies. Note, other modules you are using may 
+Next, remove the `firebase-core` and `play-services-base` dependencies. Note, other modules you are using may
 required `play-services-base` to be installed.
 
-*Specific versions listed may be different than your own project*
+_Specific versions listed may be different than your own project_
 
 ```diff
 dependencies {
@@ -109,7 +109,7 @@ dependencies {
 }
 ```
 
-Next we need to remove the module specific Firebase dependencies. The naming convention for these modules is: 
+Next we need to remove the module specific Firebase dependencies. The naming convention for these modules is:
 `implementation "com.google.firebase:firebase-<< module >>:<<version>>"`.
 
 For example, to remove the native Firebase dependency for the Authentication module:
@@ -181,7 +181,7 @@ target 'AwesomeApp' do
 
 #### Remove the Firebase Core Pod
 
-The `Firebase/Core` need to be removed from the project. In version 6, this is automatically installed. Open the 
+The `Firebase/Core` need to be removed from the project. In version 6, this is automatically installed. Open the
 `/ios/Podfile` and remove the Pod:
 
 ```diff
@@ -191,7 +191,7 @@ target 'AwesomeApp' do
 
 #### Remove module specific Pods
 
-Depending on what modules you were using with version 5, we now need to remove the Firebase Pods. For example, if you 
+Depending on what modules you were using with version 5, we now need to remove the Firebase Pods. For example, if you
 are using the Authentication module, remove the `Firebase/Auth` Pod:
 
 ```diff
@@ -213,18 +213,18 @@ $ pod install
 
 ## Installing `@react-native-firebase/app`
 
-As mentioned earlier, version 6 uses the `@react-native-firebase` NPM organization for each module. Every app using 
-version 6 must install the `app` module before installing each specific module. 
+As mentioned earlier, version 6 uses the `@react-native-firebase` NPM organization for each module. Every app using
+version 6 must install the `app` module before installing each specific module.
 
 To get started, install the new dependency with [Yarn](https://yarnpkg.com/lang/en/):
 
 ```bash
 yarn add @react-native-firebase/v6
-```   
+```
 
 If you are using React Native 0.60+, the module will be automatically linked via [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md).
 
-Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/v6/app/android) and 
+Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/v6/app/android) and
 [iOS](/v6/app/ios) for more information on manual linking.
 
 ## Specific module installation
@@ -238,28 +238,28 @@ yarn add @react-native-firebase/auth
 
 Install the modules required for your application:
 
-| Module                                                     | NPM Package                              | 
-| ---------------------------------------------------------- | ---------------------------------------- |
-| <Anchor href="/admob">AdMob</Anchor>                       | @react-native-firebase/admob             | 
-| <Anchor href="/analytics">Analytics</Anchor>               | @react-native-firebase/analytics         |
-| <Anchor href="/app">App</Anchor>                           | @react-native-firebase/app               |
-| <Anchor href="/invites">App Invites</Anchor>               | @react-native-firebase/invites           |
-| <Anchor href="/auth">Authentication</Anchor>               | @react-native-firebase/auth              |
-| <Anchor href="/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore         |
-| <Anchor href="/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions         |
-| <Anchor href="/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging         |
-| <Anchor href="/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage           |
-| <Anchor href="/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics       |
-| <Anchor href="/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links     |
-| <Anchor href="/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging  |
-| <Anchor href="/iid">Instance ID</Anchor>                   | @react-native-firebase/iid               |
+| Module                                                     | NPM Package                                |
+| ---------------------------------------------------------- | ------------------------------------------ |
+| <Anchor href="/admob">AdMob</Anchor>                       | @react-native-firebase/admob               |
+| <Anchor href="/analytics">Analytics</Anchor>               | @react-native-firebase/analytics           |
+| <Anchor href="/app">App</Anchor>                           | @react-native-firebase/app                 |
+| <Anchor href="/invites">App Invites</Anchor>               | @react-native-firebase/invites             |
+| <Anchor href="/auth">Authentication</Anchor>               | @react-native-firebase/auth                |
+| <Anchor href="/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore           |
+| <Anchor href="/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions           |
+| <Anchor href="/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging           |
+| <Anchor href="/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage             |
+| <Anchor href="/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics         |
+| <Anchor href="/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links       |
+| <Anchor href="/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging    |
+| <Anchor href="/iid">Instance ID</Anchor>                   | @react-native-firebase/iid                 |
 | <Anchor href="/mlkit">ML Kit Natural Language</Anchor>     | @react-native-firebase/ml-natural-language |
-| <Anchor href="/mlkit">ML Kit Vision</Anchor>               | @react-native-firebase/ml-vision         |
-| <Anchor href="/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf              |
-| <Anchor href="/database">Realtime Database</Anchor>        | @react-native-firebase/database          |
-| <Anchor href="/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config     |
+| <Anchor href="/mlkit">ML Kit Vision</Anchor>               | @react-native-firebase/ml-vision           |
+| <Anchor href="/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf                |
+| <Anchor href="/database">Realtime Database</Anchor>        | @react-native-firebase/database            |
+| <Anchor href="/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config       |
 
-Users on React Native version 0.60+, the modules will be automatically linked. For users on a lower version, 
+Users on React Native version 0.60+, the modules will be automatically linked. For users on a lower version,
 see the module specific pages for manual installation guides.
 
 ## Updating project code
@@ -274,8 +274,8 @@ import firebase from 'react-native-firebase';
 const user = firebase.auth().currentUser;
 ```
 
-Although it is possible to access specific module functionality from the package imports, if you're coming from v5 the 
-following usage may seem daunting for a large project: 
+Although it is possible to access specific module functionality from the package imports, if you're coming from v5 the
+following usage may seem daunting for a large project:
 
 ```js
 import auth from '@react-native-firebase/auth';
@@ -294,7 +294,7 @@ Find and replace all usages of the import with the new import:
 ```
 
 We now need to import additional packages inside of an entry point file of our project, for example
- to import the Authentication module, add the following to your projects `/App.js` file (or entry file):
+to import the Authentication module, add the following to your projects `/App.js` file (or entry file):
 
 ```js
 import firebase from '@react-native-firebase/app';
@@ -317,8 +317,8 @@ app functionality is tested once migrated to version 6 is complete.
 
 `@react-native-firebase/app`
 
-- `onReady()` removed: Users initializing a secondary app via `app.initializeApp` will need to now remove the `onReady` 
-listener. Instead, `initializeApp` resolves a promise once the secondary app has finished initializing.
+- `onReady()` removed: Users initializing a secondary app via `app.initializeApp` will need to now remove the `onReady`
+  listener. Instead, `initializeApp` resolves a promise once the secondary app has finished initializing.
 - Initializing the `[DEFAULT]` app manually will now throw an error. Previously this only displayed a warning.
 
 ### AdMob
@@ -350,10 +350,10 @@ The recommended approach for handling this deprecation is to use the Dynamic Lin
 - `setBoolValue`, `setFloatValue`, `setIntValue` & `setStringValue` have been removed and replaced with two new methods (the Crashlytics SDK converted all these into strings internally anyway):
   - `setAttribute(key: string, value: string): Promise<null>` - set a singular key value to show alongside any subsequent crash reports
   - `setAttributes(values: { [key: string]: string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
- - All methods except `crash`, `log` & `recordError` now return a Promise that resolve when complete.
- - `recordError` now accepts a JavaScript `Error` instead of a code and message.
- - `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation.
- - `enableCrashlyticsCollection()` has been renamed to `setCrashlyticsCollectionEnabled()`.
+- All methods except `crash`, `log` & `recordError` now return a Promise that resolve when complete.
+- `recordError` now accepts a JavaScript `Error` instead of a code and message.
+- `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation.
+- `enableCrashlyticsCollection()` has been renamed to `setCrashlyticsCollectionEnabled()`.
 
 ### Firestore
 
@@ -371,13 +371,13 @@ The recommended approach for handling this deprecation is to use the Dynamic Lin
 
 - Module usage has been renamed from `links()` to `dynamicLinks()`.
 - The `onLink` and `getInitialLink` methods now return a `DynamicLink` object, rather than the string url.
-- The *builder* syntax has been deprecated in favour of simple objects. See `buildLink()` documentation for an example.
+- The _builder_ syntax has been deprecated in favour of simple objects. See `buildLink()` documentation for an example.
 - Added extra validation. Building a dynamic link with platform specific options will now error if not all required parameters are set.
 
 ### Functions
 
 `@react-native-firebase/functions`
- 
+
 No breaking changes.
 
 ### In-App Messaging
@@ -398,18 +398,18 @@ No breaking changes.
 
 - [android] The manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
 - [ios] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
-- The *builder* syntax has been deprecated in favour of simple objects. See `newRemoteMessage()` documentation for an example.
+- The _builder_ syntax has been deprecated in favour of simple objects. See `newRemoteMessage()` documentation for an example.
 - [ios] The minimum supported iOS version is now 10
- - iOS 9 or lower only accounts for 0.% of all iPhone devices.
- - To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
- - Community contributions that add iOS 9 support are welcome.
+- iOS 9 or lower only accounts for 0.% of all iPhone devices.
+- To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
+- Community contributions that add iOS 9 support are welcome.
 
 ### Performance Monitoring
 
 `@react-native-firebase/perf`
 
-- All `Trace` & `HttpMetric` methods (except for `start` & `stop`) are now synchronous and no longer return a Promise, 
-extra attributes/metrics now only get sent to native when you call stop.
+- All `Trace` & `HttpMetric` methods (except for `start` & `stop`) are now synchronous and no longer return a Promise,
+  extra attributes/metrics now only get sent to native when you call stop.
 - `firebase.perf.Trace.incrementMetric` will now create a metric if it could not be found.
 - `firebase.perf.Trace.getMetric` will now return 0 if a metric could not be found.
 
@@ -457,4 +457,3 @@ This is a new module. See documentation for usage.
 `@react-native-firebase/ml-vision`
 
 This is a new module. See documentation for usage.
-

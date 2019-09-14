@@ -254,7 +254,7 @@ function App() {
         page: 1,
         limit: 15,
       });
-      
+
       // Update component state
       setProducts(data);
       setLoading(false);
@@ -281,22 +281,24 @@ import { FlatList } from 'react-native';
 
 function App() {
   // ...
-  
+
   if (loading) {
     // Show a loading spinner or text here
     return null;
   }
 
   return (
-    <FlatList 
+    <FlatList
       data={products.map((product, i) => {
         return {
           ...product,
           key: `${product.name}-${i}`, // Provide a unique key for FlatList
         };
       })}
-      renderItem={({item}) => (
-        <Text>{item.name} (${item.price})</Text>
+      renderItem={({ item }) => (
+        <Text>
+          {item.name} (${item.price})
+        </Text>
       )}
     />
   );

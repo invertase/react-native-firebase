@@ -28,7 +28,6 @@ To get started with React Native Firebase you must have your React Native enviro
   	</Block>
 </Grid>
 
-
 ## Choose your integration path
 
 React Native Firebase can integrate with a new React Native app or an existing setup.
