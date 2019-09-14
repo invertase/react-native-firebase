@@ -798,7 +798,7 @@ export namespace Analytics {
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
-     * Via: `add_payment_info`
+     * Logged event name: `add_payment_info`
      *
      * #### Example
      *
@@ -814,7 +814,7 @@ export namespace Analytics {
      *
      * If you supply the VALUE parameter, you must also supply the CURRENCY parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `add_to_cart`
+     * Logged event name: `add_to_cart`
      *
      * #### Example
      *
@@ -837,7 +837,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `add_to_wishlist`
+     * Logged event name: `add_to_wishlist`
      *
      * #### Example
      *
@@ -860,7 +860,7 @@ export namespace Analytics {
      * are automatically reported, this event can provide further clarification around the continuous
      * engagement of app-users.
      *
-     * Via: `app_open`
+     * Logged event name: `app_open`
      *
      * #### Example
      *
@@ -877,7 +877,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `begin_checkout`
+     * Logged event name: `begin_checkout`
      *
      * #### Example
      *
@@ -894,7 +894,7 @@ export namespace Analytics {
     /**
      * Log this event to supply the referral details of a re-engagement campaign.
      *
-     * Via: `campaign_details`
+     * Logged event name: `campaign_details`
      *
      * #### Example
      *
@@ -914,7 +914,7 @@ export namespace Analytics {
      * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with
      * {@link analytics.logSpendVirtualCurrency} to better understand your virtual economy.
      *
-     * Via: `earn_virtual_currency`
+     * Logged event name: `earn_virtual_currency`
      *
      * #### Example
      *
@@ -935,7 +935,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `ecommerce_purchase`
+     * Logged event name: `ecommerce_purchase`
      *
      * #### Example
      *
@@ -955,7 +955,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `generate_lead`
+     * Logged event name: `generate_lead`
      *
      * #### Example
      *
@@ -974,7 +974,7 @@ export namespace Analytics {
      * Join Group event. Log this event when a user joins a group such as a guild, team or family.
      * Use this event to analyze how popular certain groups or social features are in your app
      *
-     * Via: `join_group`
+     * Logged event name: `join_group`
      *
      * #### Example
      *
@@ -991,7 +991,7 @@ export namespace Analytics {
     /**
      * Level End event.
      *
-     * Via: `level_end`
+     * Logged event name: `level_end`
      *
      * #### Example
      *
@@ -1009,7 +1009,7 @@ export namespace Analytics {
     /**
      * Level Start event.
      *
-     * Via: `level_start`
+     * Logged event name: `level_start`
      *
      * #### Example
      *
@@ -1027,7 +1027,7 @@ export namespace Analytics {
      * Level Up event. This event signifies that a player has leveled up in your gaming app.
      * It can help you gauge the level distribution of your userbase and help you identify certain levels that are difficult to pass.
      *
-     * Via: `level_up`
+     * Logged event name: `level_up`
      *
      * #### Example
      *
@@ -1045,7 +1045,7 @@ export namespace Analytics {
     /**
      * Login event. Apps with a login feature can report this event to signify that a user has logged in.
      *
-     * Via: `login`
+     * Logged event name: `login`
      *
      * #### Example
      *
@@ -1066,7 +1066,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `present_offer`
+     * Logged event name: `present_offer`
      *
      * #### Example
      *
@@ -1089,7 +1089,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `purchase_refund`
+     * Logged event name: `purchase_refund`
      *
      * #### Example
      *
@@ -1106,7 +1106,7 @@ export namespace Analytics {
     /**
      * Remove from cart event.
      *
-     * Via: `remove_from_cart`
+     * Logged event name: `remove_from_cart`
      *
      * #### Example
      *
@@ -1127,7 +1127,7 @@ export namespace Analytics {
      * operations by supplying the appropriate, corresponding parameters. This event can help you
      * identify the most popular content in your app.
      *
-     * Via: `search`
+     * Logged event name: `search`
      *
      * #### Example
      *
@@ -1146,7 +1146,7 @@ export namespace Analytics {
      * content of a certain type in an app. The content can be any object in your app. This event
      * can help you identify popular content and categories of content in your app.
      *
-     * Via: `select_content`
+     * Logged event name: `select_content`
      *
      * #### Example
      *
@@ -1164,7 +1164,7 @@ export namespace Analytics {
     /**
      * Set checkout option event.
      *
-     * Via: `set_checkout_option`
+     * Logged event name: `set_checkout_option`
      *
      * #### Example
      *
@@ -1182,7 +1182,7 @@ export namespace Analytics {
     /**
      * Share event. Apps with social features can log the Share event to identify the most viral content.
      *
-     * Via: `share`
+     * Logged event name: `share`
      *
      * #### Example
      *
@@ -1203,7 +1203,7 @@ export namespace Analytics {
      * The parameter signifies the method by which the user signed up. Use this event to understand
      * the different behaviors between logged in and logged out users.
      *
-     * Via: `sign_up`
+     * Logged event name: `sign_up`
      *
      * #### Example
      *
@@ -1221,7 +1221,7 @@ export namespace Analytics {
      * Spend Virtual Currency event. This event tracks the sale of virtual goods in your app and can
      * help you identify which virtual goods are the most popular objects of purchase.
      *
-     * Via: `spend_virtual_currency`
+     * Logged event name: `spend_virtual_currency`
      *
      * #### Example
      *
@@ -1242,7 +1242,7 @@ export namespace Analytics {
      * Use this in a funnel with {@link analytics#logTutorialComplete} to understand how many users
      * complete this process and move on to the full app experience.
      *
-     * Via: `tutorial_begin`
+     * Logged event name: `tutorial_begin`
      *
      * #### Example
      *
@@ -1257,7 +1257,7 @@ export namespace Analytics {
      * Add this to a funnel with {@link analytics#logTutorialBegin} to understand how many users
      * complete this process and move on to the full app experience.
      *
-     * Via: `tutorial_complete`
+     * Logged event name: `tutorial_complete`
      *
      * #### Example
      *
@@ -1272,7 +1272,7 @@ export namespace Analytics {
      * Since achievements generally represent the breadth of a gaming experience, this event can help
      * you understand how many users are experiencing all that your game has to offer.
      *
-     * Via: `unlock_achievement`
+     * Logged event name: `unlock_achievement`
      *
      * #### Example
      *
@@ -1293,7 +1293,7 @@ export namespace Analytics {
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
-     * Via: `view_item`
+     * Logged event name: `view_item`
      *
      * #### Example
      *
@@ -1312,7 +1312,7 @@ export namespace Analytics {
     /**
      * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
      *
-     * Via: `view_item_list`
+     * Logged event name: `view_item_list`
      *
      * #### Example
      *
@@ -1329,7 +1329,7 @@ export namespace Analytics {
     /**
      * View Search Results event. Log this event when the user has been presented with the results of a search.
      *
-     * Via: `view_search_results`
+     * Logged event name: `view_search_results`
      *
      * #### Example
      *

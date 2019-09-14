@@ -8106,7 +8106,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Add Payment Info event. This event signifies that a user has submitted their payment information to your app.",
-										"text": "Via: `add_payment_info`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddPaymentInfo();\n```\n"
+										"text": "Logged event name: `add_payment_info`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddPaymentInfo();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -8145,7 +8145,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "E-Commerce Add To Cart event. This event signifies that an item was added to a cart for purchase.\nAdd this event to a funnel with {@link analytics#logEcommercePurchase} to gauge the effectiveness of your checkout process.",
-										"text": "If you supply the VALUE parameter, you must also supply the CURRENCY parameter so that revenue metrics can be computed accurately.\n\nVia: `add_to_cart`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddToCart({\n  item_id: 'abcd',\n  item_name: 't-shirt 1',\n  item_category: 'shirts',\n  quantity: 2,\n});\n```\n"
+										"text": "If you supply the VALUE parameter, you must also supply the CURRENCY parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `add_to_cart`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddToCart({\n  item_id: 'abcd',\n  item_name: 't-shirt 1',\n  item_category: 'shirts',\n  quantity: 2,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8201,7 +8201,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.\nUse this event to identify popular gift items in your app.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `add_to_wishlist`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddToWishlist({\n  item_id: 'abcd',\n  item_name: 't-shirt 1',\n  item_category: 'shirts',\n  quantity: 2,\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `add_to_wishlist`\n\n#### Example\n\n```js\nawait firebase.analytics().logAddToWishlist({\n  item_id: 'abcd',\n  item_name: 't-shirt 1',\n  item_category: 'shirts',\n  quantity: 2,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8257,7 +8257,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "App Open event. By logging this event when an App is moved to the foreground, developers can\nunderstand how often users leave and return during the course of a Session. Although Sessions\nare automatically reported, this event can provide further clarification around the continuous\nengagement of app-users.",
-										"text": "Via: `app_open`\n\n#### Example\n\n```js\nawait firebase.analytics().logAppOpen();\n```\n"
+										"text": "Logged event name: `app_open`\n\n#### Example\n\n```js\nawait firebase.analytics().logAppOpen();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -8296,7 +8296,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "E-Commerce Begin Checkout event. This event signifies that a user has begun the process of\nchecking out. Add this event to a funnel with your {@link analytics#logEcommercePurchase} event to gauge the\neffectiveness of your checkout process.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `begin_checkout`\n\n#### Example\n\n```js\nawait firebase.analytics().logBeginCheckout({\n travel_class: 'business',\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `begin_checkout`\n\n#### Example\n\n```js\nawait firebase.analytics().logBeginCheckout({\n travel_class: 'business',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8354,7 +8354,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Log this event to supply the referral details of a re-engagement campaign.",
-										"text": "Via: `campaign_details`\n\n#### Example\n\n```js\nawait firebase.analytics().logCampaignDetails({\n  source: 'email',\n  medium: 'cta_button',\n  campaign: 'newsletter',\n});\n```\n"
+										"text": "Logged event name: `campaign_details`\n\n#### Example\n\n```js\nawait firebase.analytics().logCampaignDetails({\n  source: 'email',\n  medium: 'cta_button',\n  campaign: 'newsletter',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8410,7 +8410,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with\n{@link analytics.logSpendVirtualCurrency} to better understand your virtual economy.",
-										"text": "Via: `earn_virtual_currency`\n\n#### Example\n\n```js\nawait firebase.analytics().logEarnVirtualCurrency({\n  virtual_currency_name: 'coins',\n  value: 100,\n});\n```\n"
+										"text": "Logged event name: `earn_virtual_currency`\n\n#### Example\n\n```js\nawait firebase.analytics().logEarnVirtualCurrency({\n  virtual_currency_name: 'coins',\n  value: 100,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8466,7 +8466,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "E-Commerce Purchase event. This event signifies that an item was purchased by a user. This is\ndifferent from the in-app purchase event, which is reported automatically for Google Play-based apps.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `ecommerce_purchase`\n\n#### Example\n\n```js\nawait firebase.analytics().logEcommercePurchase({\n  coupon: 'BOGOFF',\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `ecommerce_purchase`\n\n#### Example\n\n```js\nawait firebase.analytics().logEcommercePurchase({\n  coupon: 'BOGOFF',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8645,7 +8645,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Generate Lead event. Log this event when a lead has been generated in the app to understand\nthe efficacy of your install and re-engagement campaigns.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `generate_lead`\n\n#### Example\n\n```js\nawait firebase.analytics().logGenerateLead({\n  currency: 'USD',\n  value: 123,\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `generate_lead`\n\n#### Example\n\n```js\nawait firebase.analytics().logGenerateLead({\n  currency: 'USD',\n  value: 123,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8703,7 +8703,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Join Group event. Log this event when a user joins a group such as a guild, team or family.\nUse this event to analyze how popular certain groups or social features are in your app",
-										"text": "Via: `join_group`\n\n#### Example\n\n```js\nawait firebase.analytics().logJoinGroup({\n  group_id: '12345',\n});\n```\n"
+										"text": "Logged event name: `join_group`\n\n#### Example\n\n```js\nawait firebase.analytics().logJoinGroup({\n  group_id: '12345',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8759,7 +8759,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Level End event.",
-										"text": "Via: `level_end`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelEnd({\n  level: 12,\n  success: 'true'\n});\n```\n"
+										"text": "Logged event name: `level_end`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelEnd({\n  level: 12,\n  success: 'true'\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8815,7 +8815,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Level Start event.",
-										"text": "Via: `level_start`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelStart({\n  level: 12,\n});\n```\n"
+										"text": "Logged event name: `level_start`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelStart({\n  level: 12,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8871,7 +8871,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Level Up event. This event signifies that a player has leveled up in your gaming app.\nIt can help you gauge the level distribution of your userbase and help you identify certain levels that are difficult to pass.",
-										"text": "Via: `level_up`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelUp({\n  level: 12,\n  character: 'Snake',\n});\n```\n"
+										"text": "Logged event name: `level_up`\n\n#### Example\n\n```js\nawait firebase.analytics().logLevelUp({\n  level: 12,\n  character: 'Snake',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8927,7 +8927,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Login event. Apps with a login feature can report this event to signify that a user has logged in.",
-										"text": "Via: `login`\n\n#### Example\n\n```js\nawait firebase.analytics().logLogin({\n  method: 'facebook.com',\n});\n```\n"
+										"text": "Logged event name: `login`\n\n#### Example\n\n```js\nawait firebase.analytics().logLogin({\n  method: 'facebook.com',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -8983,7 +8983,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Present Offer event. This event signifies that the app has presented a purchase offer to a user.\nAdd this event to a funnel with the {@link analytics#logAddToCart} and {@link analytics#logEcommercePurchase}\nto gauge your conversion process.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `present_offer`\n\n#### Example\n\n```js\nawait firebase.analytics().logPresentOffer({\n  item_id: 'abcd',\n  item_name: 't-shirt',\n  item_category: 'shirts',\n  quantity: 1,\n  price: 9.99,\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `present_offer`\n\n#### Example\n\n```js\nawait firebase.analytics().logPresentOffer({\n  item_id: 'abcd',\n  item_name: 't-shirt',\n  item_category: 'shirts',\n  quantity: 1,\n  price: 9.99,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9039,7 +9039,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "E-Commerce Purchase Refund event. This event signifies that an item purchase was refunded.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `purchase_refund`\n\n#### Example\n\n```js\nawait firebase.analytics().logPurchaseRefund({\n transaction_id: 'abcd',\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `purchase_refund`\n\n#### Example\n\n```js\nawait firebase.analytics().logPurchaseRefund({\n transaction_id: 'abcd',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9097,7 +9097,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Remove from cart event.",
-										"text": "Via: `remove_from_cart`\n\n#### Example\n\n```js\nawait firebase.analytics().logRemoveFromCart({\n  item_id: 'abcd',\n  item_name: 't-shirt',\n  item_category: 'shirts',\n});\n```\n"
+										"text": "Logged event name: `remove_from_cart`\n\n#### Example\n\n```js\nawait firebase.analytics().logRemoveFromCart({\n  item_id: 'abcd',\n  item_name: 't-shirt',\n  item_category: 'shirts',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9153,7 +9153,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Search event. Apps that support search features can use this event to contextualize search\noperations by supplying the appropriate, corresponding parameters. This event can help you\nidentify the most popular content in your app.",
-										"text": "Via: `search`\n\n#### Example\n\n```js\nawait firebase.analytics().logSearch({\n search_term: 't-shirts',\n});\n```\n"
+										"text": "Logged event name: `search`\n\n#### Example\n\n```js\nawait firebase.analytics().logSearch({\n search_term: 't-shirts',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9209,7 +9209,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Select Content event. This general purpose event signifies that a user has selected some\ncontent of a certain type in an app. The content can be any object in your app. This event\ncan help you identify popular content and categories of content in your app.",
-										"text": "Via: `select_content`\n\n#### Example\n\n```js\nawait firebase.analytics().logSelectContent({\n content_type: 'clothing',\n item_id: 'abcd',\n});\n```\n"
+										"text": "Logged event name: `select_content`\n\n#### Example\n\n```js\nawait firebase.analytics().logSelectContent({\n content_type: 'clothing',\n item_id: 'abcd',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9265,7 +9265,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Set checkout option event.",
-										"text": "Via: `set_checkout_option`\n\n#### Example\n\n```js\nawait firebase.analytics().logSetCheckoutOption({\n  checkout_step: 2,\n  checkout_option: 'false',\n});\n```\n"
+										"text": "Logged event name: `set_checkout_option`\n\n#### Example\n\n```js\nawait firebase.analytics().logSetCheckoutOption({\n  checkout_step: 2,\n  checkout_option: 'false',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9321,7 +9321,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Share event. Apps with social features can log the Share event to identify the most viral content.",
-										"text": "Via: `share`\n\n#### Example\n\n```js\nawait firebase.analytics().logShare({\n  content_type: 't-shirts',\n  item_id: '12345',\n  method: 'twitter.com',\n});\n```\n"
+										"text": "Logged event name: `share`\n\n#### Example\n\n```js\nawait firebase.analytics().logShare({\n  content_type: 't-shirts',\n  item_id: '12345',\n  method: 'twitter.com',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9377,7 +9377,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Sign Up event. This event indicates that a user has signed up for an account in your app.\nThe parameter signifies the method by which the user signed up. Use this event to understand\nthe different behaviors between logged in and logged out users.",
-										"text": "Via: `sign_up`\n\n#### Example\n\n```js\nawait firebase.analytics().logSignUp({\n  method: 'facebook.com',\n});\n```\n"
+										"text": "Logged event name: `sign_up`\n\n#### Example\n\n```js\nawait firebase.analytics().logSignUp({\n  method: 'facebook.com',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9433,7 +9433,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Spend Virtual Currency event. This event tracks the sale of virtual goods in your app and can\nhelp you identify which virtual goods are the most popular objects of purchase.",
-										"text": "Via: `spend_virtual_currency`\n\n#### Example\n\n```js\nawait firebase.analytics().logSpendVirtualCurrency({\n  item_name: 'battle_pass',\n  virtual_currency_name: 'coins',\n  value: 100,\n});\n```\n"
+										"text": "Logged event name: `spend_virtual_currency`\n\n#### Example\n\n```js\nawait firebase.analytics().logSpendVirtualCurrency({\n  item_name: 'battle_pass',\n  virtual_currency_name: 'coins',\n  value: 100,\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9489,7 +9489,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Tutorial Begin event. This event signifies the start of the on-boarding process in your app.\nUse this in a funnel with {@link analytics#logTutorialComplete} to understand how many users\ncomplete this process and move on to the full app experience.",
-										"text": "Via: `tutorial_begin`\n\n#### Example\n\n```js\nawait firebase.analytics().logTutorialBegin();\n```\n"
+										"text": "Logged event name: `tutorial_begin`\n\n#### Example\n\n```js\nawait firebase.analytics().logTutorialBegin();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9528,7 +9528,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Tutorial End event. Use this event to signify the user's completion of your app's on-boarding process.\nAdd this to a funnel with {@link analytics#logTutorialBegin} to understand how many users\ncomplete this process and move on to the full app experience.",
-										"text": "Via: `tutorial_complete`\n\n#### Example\n\n```js\nawait firebase.analytics().logTutorialComplete();\n```\n"
+										"text": "Logged event name: `tutorial_complete`\n\n#### Example\n\n```js\nawait firebase.analytics().logTutorialComplete();\n```\n"
 									},
 									"type": {
 										"type": "reference",
@@ -9567,7 +9567,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.\nSince achievements generally represent the breadth of a gaming experience, this event can help\nyou understand how many users are experiencing all that your game has to offer.",
-										"text": "Via: `unlock_achievement`\n\n#### Example\n\n```js\nawait firebase.analytics().logUnlockAchievement({\n  achievement_id: '12345',\n});\n```\n"
+										"text": "Logged event name: `unlock_achievement`\n\n#### Example\n\n```js\nawait firebase.analytics().logUnlockAchievement({\n  achievement_id: '12345',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9623,7 +9623,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "View Item event. This event signifies that some content was shown to the user. This content\nmay be a product, a screen or just a simple image or text. Use the appropriate parameters\nto contextualize the event. Use this event to discover the most popular items viewed in your app.",
-										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nVia: `view_item`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewItem({\n item_id: 'abcd',\n item_name: 't-shirt',\n item_category: 'shirts',\n});\n```\n"
+										"text": "If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.\n\nLogged event name: `view_item`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewItem({\n item_id: 'abcd',\n item_name: 't-shirt',\n item_category: 'shirts',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9679,7 +9679,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "View Item List event. Log this event when the user has been presented with a list of items of a certain category.",
-										"text": "Via: `view_item_list`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewItemList({\n  item_category: 't-shirts',\n});\n```\n"
+										"text": "Logged event name: `view_item_list`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewItemList({\n  item_category: 't-shirts',\n});\n```\n"
 									},
 									"parameters": [
 										{
@@ -9735,7 +9735,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "View Search Results event. Log this event when the user has been presented with the results of a search.",
-										"text": "Via: `view_search_results`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewSearchResults({\n  search_term: 'clothing',\n});\n```\n"
+										"text": "Logged event name: `view_search_results`\n\n#### Example\n\n```js\nawait firebase.analytics().logViewSearchResults({\n  search_term: 'clothing',\n});\n```\n"
 									},
 									"parameters": [
 										{
