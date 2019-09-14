@@ -86,7 +86,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.networkExtras' expected a string value for object key "bar"`,
+          '\'options.networkExtras\' expected a string value for object key "bar"',
         );
         return Promise.resolve();
       }
@@ -193,7 +193,7 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.contentUrl' expected a string value`);
+        e.message.should.containEql("'options.contentUrl' expected a string value");
         return Promise.resolve();
       }
     });
@@ -205,7 +205,7 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.contentUrl' expected a valid HTTP or HTTPS url`);
+        e.message.should.containEql("'options.contentUrl' expected a valid HTTP or HTTPS url");
         return Promise.resolve();
       }
     });
@@ -223,7 +223,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.contentUrl' maximum length of a content URL is 512 characters`,
+          "'options.contentUrl' maximum length of a content URL is 512 characters",
         );
         return Promise.resolve();
       }
@@ -247,7 +247,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.location' expected an array value containing a latitude & longitude number value`,
+          "'options.location' expected an array value containing a latitude & longitude number value",
         );
         return Promise.resolve();
       }
@@ -261,7 +261,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.location' expected an array value containing a latitude & longitude number value`,
+          "'options.location' expected an array value containing a latitude & longitude number value",
         );
         return Promise.resolve();
       }
@@ -275,7 +275,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.location' latitude value must be a number between -90 and 90`,
+          "'options.location' latitude value must be a number between -90 and 90",
         );
         return Promise.resolve();
       }
@@ -289,7 +289,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.location' expected an array value containing a latitude & longitude number value`,
+          "'options.location' expected an array value containing a latitude & longitude number value",
         );
         return Promise.resolve();
       }
@@ -303,7 +303,7 @@ describe('admob() requestOptions', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql(
-          `'options.location' longitude value must be a number between -180 and 180`,
+          "'options.location' longitude value must be a number between -180 and 180",
         );
         return Promise.resolve();
       }
@@ -328,7 +328,7 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.locationAccuracy' expected a number value`);
+        e.message.should.containEql("'options.locationAccuracy' expected a number value");
         return Promise.resolve();
       }
     });
@@ -340,7 +340,7 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.locationAccuracy' expected a number greater than 0`);
+        e.message.should.containEql("'options.locationAccuracy' expected a number greater than 0");
         return Promise.resolve();
       }
     });
@@ -366,7 +366,7 @@ describe('admob() requestOptions', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.requestAgent' expected a string value`);
+        e.message.should.containEql("'options.requestAgent' expected a string value");
         return Promise.resolve();
       }
     });
