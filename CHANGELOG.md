@@ -165,6 +165,7 @@ Support for handling an incoming app index URL has been added to React Native Fi
 ## Analytics (analytics)
 
 - [NEW] Added support for `resetAnalyticsData()`
+- [NEW] Added event specific methods for many built-in analytics events, e.g. `logLevelStart`, `logSearch`, `logSignUp` and many more, see the module reference documentation for the full list of methods added.
 - [INTERNAL] `setUserProperties` now iterates properties natively (formerly 1 native call per property)
 - [BREAKING] all analytics methods now return a Promise, rather than formerly being 'fire and forget'
 

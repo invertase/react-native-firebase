@@ -24,13 +24,17 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
+import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
+
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import { isBoolean } from '../../app/lib/common';
+
 import version from './version';
+import * as structs from './structs';
 
 const ReservedEventNames = [
   'app_clear_data',
@@ -200,6 +204,385 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   resetAnalyticsData() {
     return this.native.resetAnalyticsData();
+  }
+
+  /** -------------------
+   *        EVENTS
+   * -------------------- */
+  logAddPaymentInfo() {
+    return this.logEvent('add_payment_info');
+  }
+
+  logAddToCart(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logAddToCart(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddToCart(*):');
+
+    return this.logEvent(
+      'add_payment_info',
+      validateStruct(object, structs.AddToCart, 'firebase.analytics().logAddToCart(*):'),
+    );
+  }
+
+  logAddToWishlist(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logAddToWishlist(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddToWishlist(*):');
+
+    return this.logEvent(
+      'add_to_wishlist',
+      validateStruct(object, structs.AddToWishlist, 'firebase.analytics().logAddToWishlist(*):'),
+    );
+  }
+
+  logAppOpen() {
+    return this.logEvent('app_open');
+  }
+
+  logBeginCheckout(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logBeginCheckout(*):');
+
+    return this.logEvent(
+      'begin_checkout',
+      validateStruct(object, structs.BeginCheckout, 'firebase.analytics().logBeginCheckout(*):'),
+    );
+  }
+
+  logCampaignDetails(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logCampaignDetails(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'campaign_details',
+      validateStruct(
+        object,
+        structs.CampaignDetails,
+        'firebase.analytics().logCampaignDetails(*):',
+      ),
+    );
+  }
+
+  logEarnVirtualCurrency(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logEarnVirtualCurrency(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'earn_virtual_currency',
+      validateStruct(
+        object,
+        structs.EarnVirtualCurrency,
+        'firebase.analytics().logEarnVirtualCurrency(*):',
+      ),
+    );
+  }
+
+  logEcommercePurchase(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logEcommercePurchase(*):');
+
+    return this.logEvent(
+      'ecommerce_purchase',
+      validateStruct(
+        object,
+        structs.EcommercePurchase,
+        'firebase.analytics().logEcommercePurchase(*):',
+      ),
+    );
+  }
+
+  logGenerateLead(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logGenerateLead(*):');
+
+    return this.logEvent(
+      'generate_lead',
+      validateStruct(object, structs.GenerateLead, 'firebase.analytics().logGenerateLead(*):'),
+    );
+  }
+
+  logJoinGroup(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logJoinGroup(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'join_group',
+      validateStruct(object, structs.JoinGroup, 'firebase.analytics().logJoinGroup(*):'),
+    );
+  }
+
+  logLevelEnd(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logLevelEnd(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'level_end',
+      validateStruct(object, structs.LevelEnd, 'firebase.analytics().logLevelEnd(*):'),
+    );
+  }
+
+  logLevelStart(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logLevelStart(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'level_start',
+      validateStruct(object, structs.LevelStart, 'firebase.analytics().logLevelStart(*):'),
+    );
+  }
+
+  logLevelUp(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logLevelUp(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'level_up',
+      validateStruct(object, structs.LevelUp, 'firebase.analytics().logLevelUp(*):'),
+    );
+  }
+
+  logLogin(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logLogin(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'login',
+      validateStruct(object, structs.Login, 'firebase.analytics().logLogin(*):'),
+    );
+  }
+
+  logPostScore(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logPostScore(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'post_score',
+      validateStruct(object, structs.PostScore, 'firebase.analytics().logPostScore(*):'),
+    );
+  }
+
+  logPresentOffer(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logPresentOffer(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
+
+    return this.logEvent(
+      'present_offer',
+      validateStruct(object, structs.PresentOffer, 'firebase.analytics().logPresentOffer(*):'),
+    );
+  }
+
+  logPurchaseRefund(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
+
+    return this.logEvent(
+      'purchase_refund',
+      validateStruct(object, structs.PurchaseRefund, 'firebase.analytics().logPurchaseRefund(*):'),
+    );
+  }
+
+  logRemoveFromCart(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logRemoveFromCart(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logRemoveFromCart(*):');
+
+    return this.logEvent(
+      'remove_from_cart',
+      validateStruct(object, structs.RemoveFromCart, 'firebase.analytics().logRemoveFromCart(*):'),
+    );
+  }
+
+  logSearch(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSearch(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'search',
+      validateStruct(object, structs.Search, 'firebase.analytics().logSearch(*):'),
+    );
+  }
+
+  logSelectContent(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSelectContent(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'select_content',
+      validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectContent(*):'),
+    );
+  }
+
+  logSetCheckoutOption(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSetCheckoutOption(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'set_checkout_option',
+      validateStruct(
+        object,
+        structs.SetCheckoutOption,
+        'firebase.analytics().logSetCheckoutOption(*):',
+      ),
+    );
+  }
+
+  logShare(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logShare(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'share',
+      validateStruct(object, structs.Share, 'firebase.analytics().logShare(*):'),
+    );
+  }
+
+  logSignUp(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSignUp(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'sign_up',
+      validateStruct(object, structs.SignUp, 'firebase.analytics().logSignUp(*):'),
+    );
+  }
+
+  logSpendVirtualCurrency(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSpendVirtualCurrency(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'spend_virtual_currency',
+      validateStruct(
+        object,
+        structs.SpendVirtualCurrency,
+        'firebase.analytics().logSpendVirtualCurrency(*):',
+      ),
+    );
+  }
+
+  logTutorialBegin() {
+    return this.logEvent('tutorial_begin');
+  }
+
+  logTutorialComplete() {
+    return this.logEvent('tutorial_complete');
+  }
+
+  logUnlockAchievement(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logUnlockAchievement(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'unlock_achievement',
+      validateStruct(
+        object,
+        structs.UnlockAchievement,
+        'firebase.analytics().logUnlockAchievement(*):',
+      ),
+    );
+  }
+
+  logViewItem(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logViewItem(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewItem(*):');
+
+    return this.logEvent(
+      'view_item',
+      validateStruct(object, structs.ViewItem, 'firebase.analytics().logViewItem(*):'),
+    );
+  }
+
+  logViewItemList(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logViewItemList(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'view_item_list',
+      validateStruct(object, structs.ViewItemList, 'firebase.analytics().logViewItemList(*):'),
+    );
+  }
+
+  logViewSearchResults(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'view_search_results',
+      validateStruct(
+        object,
+        structs.ViewSearchResults,
+        'firebase.analytics().logViewSearchResults(*):',
+      ),
+    );
   }
 }
 
