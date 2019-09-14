@@ -33,7 +33,7 @@
     "@react-native-firebase/app-types": "0.4.1",
     "stacktrace-js": "^2.0.0"
   },
-  "gitHead": "5b304a4bb5dbf9290db7a48acc477c5db00d73d9",
+  "gitHead": "e86f1c128fc2349a2bf781d136f9f42376531eba",
   "publishConfig": {
     "access": "public"
   }
