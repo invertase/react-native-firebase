@@ -98,7 +98,9 @@
       "**/react-native",
       "**/react-native/**",
       "**/stacktrace-js",
-      "**/stacktrace-js/**"
+      "**/stacktrace-js/**",
+      "**/superstruct",
+      "**/superstruct/**"
     ]
   },
   "dependencies": {
