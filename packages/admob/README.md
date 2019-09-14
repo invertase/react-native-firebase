@@ -2,7 +2,7 @@
   <a href="https://invertase.io/oss/react-native-firebase">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
-  <h2 align="center">React Native Firebase - Admob</h2>
+  <h2 align="center">React Native Firebase - AdMob</h2>
 </p>
 
 <p align="center">
@@ -22,9 +22,9 @@
 
 > This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
-Admob description.
+Google AdMob is a mobile advertising platform that can help you generate revenue from your app. React Native Firebase integrates with AdMob without requiring changes to your existing AdMob configuration.
 
-[> Learn More](https://firebase.google.com/products/admob/)
+[> Learn More](https://firebase.google.com/docs/admob/)
 
 ## Installation
 
@@ -37,9 +37,13 @@ react-native link @react-native-firebase/admob
 
 ## Documentation
 
- - [Guides](#TODO)
- - [Installation](#TODO)
- - [Reference](#TODO)
+ - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=admob)
+ - [Installation](https://invertase.io/oss/react-native-firebase/v6/admob/quick-start)
+ - [Reference](https://invertase.io/oss/react-native-firebase/v6/admob/reference)
+
+### Additional Topics
+
+ - [European User Consent](https://invertase.io/oss/react-native-firebase/v6/admob/european-user-consent)
 
 ## License
 
