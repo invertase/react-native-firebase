@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/in-app-messaging",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - In-App Messaging - Engage active app users with contextual messages.",
   "main": "lib/index.js",
@@ -30,7 +30,7 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.3.0"
+    "@react-native-firebase/app-types": "0.4.0"
   },
   "gitHead": "78b4d9cbef3f0e80eb4e5031f395d80e0c30aa24",
   "publishConfig": {
