@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/remote-config",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Remote Config",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
     "@react-native-firebase/app": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "0.4.0"
+    "@react-native-firebase/app-types": "0.4.1"
   },
   "gitHead": "5b304a4bb5dbf9290db7a48acc477c5db00d73d9",
   "publishConfig": {
