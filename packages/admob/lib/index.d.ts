@@ -1010,7 +1010,7 @@ export namespace Admob {
    *
    * rewarded.onAdEvent((type, error, reward) => {
    *   if (type === RewardedAdEventType.LOADED) {
-   *     interstitial.show();
+   *     rewarded.show();
    *   }
    *   if (type === RewardedAdEventType.EARNED_REWARD) {
    *     console.log('User earned reward of ', reward);
