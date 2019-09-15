@@ -1764,7 +1764,7 @@ export namespace Firestore {
      * #### Example
      *
      * ```js
-     * const collectionGroup = firebase.firestore().collection('orders');
+     * const collectionGroup = firebase.firestore().collectionGroup('orders');
      * ```
      *
      * @param collectionId Identifies the collections to query over. Every collection or subcollection with this ID as the last segment of its path will be included. Cannot contain a slash.
