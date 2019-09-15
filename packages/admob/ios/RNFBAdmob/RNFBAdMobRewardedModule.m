@@ -94,6 +94,7 @@ RCT_EXPORT_METHOD(rewardedShow
   :
   (nonnull
     NSNumber *)requestId
+    :(NSString *)adUnitId
     :(NSDictionary *)showOptions
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
