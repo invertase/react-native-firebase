@@ -27,7 +27,7 @@ export default class RewardedAd extends MobileAd {
   static createForAdRequest(adUnitId, requestOptions) {
     if (!isString(adUnitId)) {
       throw new Error(
-        `firebase.admob() RewardedAd.createForAdRequest(*) 'adUnitId' expected an string value.`,
+        "firebase.admob() RewardedAd.createForAdRequest(*) 'adUnitId' expected an string value.",
       );
     }
 

@@ -27,7 +27,7 @@ export default class InterstitialAd extends MobileAd {
   static createForAdRequest(adUnitId, requestOptions) {
     if (!isString(adUnitId)) {
       throw new Error(
-        `firebase.admob() InterstitialAd.createForAdRequest(*) 'adUnitId' expected an string value.`,
+        "firebase.admob() InterstitialAd.createForAdRequest(*) 'adUnitId' expected an string value.",
       );
     }
 
@@ -56,7 +56,7 @@ export default class InterstitialAd extends MobileAd {
   onAdEvent(handler) {
     if (!isFunction(handler)) {
       throw new Error(
-        `firebase.admob() InterstitialAd.onAdEvent(*) 'handler' expected a function.`,
+        "firebase.admob() InterstitialAd.onAdEvent(*) 'handler' expected a function.",
       );
     }
 
