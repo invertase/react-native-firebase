@@ -25,12 +25,9 @@ console.log(firebase.SDK_VERSION);
 // checks firebase named export exists on module
 console.log(firestore.firebase.SDK_VERSION);
 
-// TODO
-// // checks multi-app support exists
-// console.log(firestore.firebase(firebase.app()).app.name);
-//
-// // checks default export supports app arg
-// console.log(firestore.firebase(firebase.app('foo')).app.name);
+// checks multi-app support exists
+console.log(firebase.firestore(firebase.app()).app.name);
+console.log(firebase.firestore(firebase.app('foo')).app.name);
 
 console.log(firestore.Blob);
 console.log(firestore.FieldPath);

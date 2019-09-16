@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase functions
  */
-export namespace Functions {
+export namespace FirebaseFunctions {
   /**
    * The set of Firebase Functions status codes.
    *
@@ -94,6 +94,7 @@ export namespace Functions {
    *   credentials for the operation.
    */
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export type FunctionsErrorCode =
     | 'ok'
     | 'cancelled'
@@ -338,13 +339,15 @@ declare module '@react-native-firebase/functions' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  // tslint:disable-next-line:variable-name
-  export const HttpsErrorCode: {} & Functions.HttpsErrorCode;
-
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Functions.Module, Functions.Statics>;
+  export const HttpsErrorCode: {} & FirebaseFunctions.HttpsErrorCode;
+
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseFunctions.Module,
+    FirebaseFunctions.Statics
+  >;
   export default module;
 }
 
@@ -355,10 +358,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      functions: FirebaseModuleWithStaticsAndApp<Functions.Module, Functions.Statics>;
+      functions: FirebaseModuleWithStaticsAndApp<
+        FirebaseFunctions.Module,
+        FirebaseFunctions.Statics
+      >;
     }
     interface FirebaseApp {
-      functions(region?: string): Functions.Module;
+      functions(region?: string): FirebaseFunctions.Module;
     }
   }
 }
