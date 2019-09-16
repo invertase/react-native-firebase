@@ -53,11 +53,12 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml-vision
  */
-export namespace MLKitVision {
+export namespace FirebaseVisionTypes {
+// export namespace MLKitVision {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {
-    VisionCloudTextRecognizerModelType: VisionCloudTextRecognizerModelType;
+    VisionCloudTextRecognizerModelType: typeof VisionCloudTextRecognizerModelType;
     VisionFaceDetectorClassificationMode: VisionFaceDetectorClassificationMode;
     VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
     VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
@@ -1204,8 +1205,7 @@ export const VisionFaceDetectorPerformanceMode = MLKitVision.VisionFaceDetectorP
 
 export const VisionDocumentTextRecognizedBreakType =
   MLKitVision.VisionDocumentTextRecognizedBreakType;
-export const VisionCloudLandmarkRecognizerModelType =
-  MLKitVision.VisionCloudLandmarkRecognizerModelType;
+
 
 export const VisionBarcodeFormat = MLKITVision.VisionBarcodeFormat;
 export const VisionBarcodeValueType = MLKITVision.VisionBarcodeValueType;
@@ -1222,6 +1222,9 @@ declare module '@react-native-firebase/ml-vision' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
+  export const VisionCloudLandmarkRecognizerModelType =
+    MLKitVision.VisionCloudLandmarkRecognizerModelType;
+
   const module: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
   export default module;
 }
@@ -1230,6 +1233,7 @@ declare module '@react-native-firebase/ml-vision' {
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
