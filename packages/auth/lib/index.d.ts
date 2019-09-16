@@ -1592,15 +1592,6 @@ declare module '@react-native-firebase/auth' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const EmailAuthProvider: {} & FirebaseAuth.EmailAuthProvider;
-  export const PhoneAuthProvider: {} & FirebaseAuth.PhoneAuthProvider;
-  export const GoogleAuthProvider: {} & FirebaseAuth.GoogleAuthProvider;
-  export const GithubAuthProvider: {} & FirebaseAuth.GithubAuthProvider;
-  export const TwitterAuthProvider: {} & FirebaseAuth.TwitterAuthProvider;
-  export const FacebookAuthProvider: {} & FirebaseAuth.FacebookAuthProvider;
-  export const OAuthProvider: {} & FirebaseAuth.OAuthProvider;
-  export const PhoneAuthState: {} & FirebaseAuth.PhoneAuthState;
-
   const module: FirebaseModuleWithStaticsAndApp<FirebaseAuth.Module, FirebaseAuth.Statics>;
   export default module;
 }
