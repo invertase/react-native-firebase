@@ -8,7 +8,7 @@ description: Getting started with Cloud Firestore in React Native Firebase
 ## Module usage
 
 This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
-visit the projects [quick start](/quick-start) guide. 
+visit the projects <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide. 
 
 The Cloud Firestore module follows the same API as the [Web SDK](https://firebase.google.com/docs/reference/js/firebase.firestore), however takes advantage of the native SDKs. This provides advantages such as improved performance versus using the Web SDK, as all work is carried out natively in separate threads, preventing issues such as [jank](https://facebook.github.io/react-native/docs/performance#js-frame-rate-javascript-thread). The module also works in offline mode, using device storage.
 
