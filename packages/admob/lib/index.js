@@ -100,4 +100,3 @@ export AdsConsent from './AdsConsent';
 export InterstitialAd from './ads/InterstitialAd';
 export RewardedAd from './ads/RewardedAd';
 export BannerAd from './ads/BannerAd';
-export const BannerSize = statics.BannerSize;
