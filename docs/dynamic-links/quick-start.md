@@ -7,6 +7,9 @@ description: Getting started with Dynamic Links in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the projects [quick start](/quick-start) guide. 
+
 Install this module with Yarn:
 
 ```bash
