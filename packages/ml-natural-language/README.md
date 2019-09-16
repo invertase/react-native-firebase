@@ -25,9 +25,12 @@ Bring powerful machine learning features to your mobile app whether you're new o
 
 **This module supports the following APIs:**
 
-- Natural Language
-- Language Identification
-- Smart Reply Generation
+| API                                 | Supported |
+|-------------------------------------|-----------|
+| [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages)             | ✅        |
+| [Smart Reply](https://firebase.google.com/docs/ml-kit/generate-smart-replies)                         | ✅        |
+| [Translate](https://firebase.google.com/docs/ml-kit/translation)                           | ❌        |
+
 
 [> Learn More](https://firebase.google.com/products/ml-kit/)
 
