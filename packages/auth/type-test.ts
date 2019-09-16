@@ -28,14 +28,14 @@ console.log(firebase.auth(firebase.app()).app.name);
 console.log(firebase.auth(firebase.app('foo')).app.name);
 
 // Statics
-console.log(auth.EmailAuthProvider.PROVIDER_ID);
-console.log(auth.PhoneAuthProvider.PROVIDER_ID);
-console.log(auth.GoogleAuthProvider.PROVIDER_ID);
-console.log(auth.GithubAuthProvider.PROVIDER_ID);
-console.log(auth.TwitterAuthProvider.PROVIDER_ID);
-console.log(auth.FacebookAuthProvider.PROVIDER_ID);
-console.log(auth.OAuthProvider.PROVIDER_ID);
-console.log(auth.PhoneAuthState.CODE_SENT);
+console.log(firebase.auth.EmailAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.PhoneAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.GoogleAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.GithubAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.TwitterAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.FacebookAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.OAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.PhoneAuthState.CODE_SENT);
 
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
