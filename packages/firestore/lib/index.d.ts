@@ -1893,13 +1893,6 @@ declare module '@react-native-firebase/firestore' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const Blob: {} & FirebaseFirestore.Blob;
-  export const FieldPath: {} & FirebaseFirestore.FieldPath;
-  export const FieldValue: {} & FirebaseFirestore.FieldValue;
-  export const GeoPoint: {} & FirebaseFirestore.GeoPoint;
-  export const Timestamp: {} & FirebaseFirestore.Timestamp;
-  export const CACHE_SIZE_UNLIMITED: {} & FirebaseFirestore.CACHE_SIZE_UNLIMITED;
-
   const module: FirebaseModuleWithStaticsAndApp<
     FirebaseFirestore.Module,
     FirebaseFirestore.Statics

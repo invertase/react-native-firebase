@@ -539,8 +539,6 @@ declare module '@react-native-firebase/dynamic-links' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const ShortLinkType: {} & FirebaseDynamicLinks.ShortLinkType;
-
   const module: FirebaseModuleWithStatics<
     FirebaseDynamicLinks.Module,
     FirebaseDynamicLinks.Statics

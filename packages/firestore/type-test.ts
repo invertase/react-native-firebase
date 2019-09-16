@@ -29,12 +29,12 @@ console.log(firestore.firebase.SDK_VERSION);
 console.log(firebase.firestore(firebase.app()).app.name);
 console.log(firebase.firestore(firebase.app('foo')).app.name);
 
-console.log(firestore.Blob);
-console.log(firestore.FieldPath);
-console.log(firestore.FieldValue);
-console.log(firestore.GeoPoint);
-console.log(firestore.Timestamp);
-console.log(firestore.CACHE_SIZE_UNLIMITED);
+console.log(firebase.firestore.Blob);
+console.log(firebase.firestore.FieldPath);
+console.log(firebase.firestore.FieldValue);
+console.log(firebase.firestore.GeoPoint);
+console.log(firebase.firestore.Timestamp);
+console.log(firebase.firestore.CACHE_SIZE_UNLIMITED);
 firebase.firestore.setLogLevel('debug');
 
 firebase.firestore().collection('foo');
