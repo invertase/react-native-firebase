@@ -4,6 +4,6 @@
   "rules": {
     "prettier": true,
     "import-name": false,
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+    "variable-name": [false, "ban-keywords", "check-format", "allow-leading-underscore"]
   }
 }

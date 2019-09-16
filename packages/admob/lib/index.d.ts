@@ -816,27 +816,24 @@ export namespace Admob {
 
   /**
    * A callback interface for all ad events.
+   *
+   * @param type The event type, e.g. `AdEventType.LOADED`.
+   * @param error An optional JavaScript Error containing the error code and message.
+   * @param data Optional data for the event, e.g. reward type and amount
    */
-  export interface AdEventListener {
-    /**
-     * @param type The event type, e.g. `AdEventType.LOADED`.
-     * @param error An optional JavaScript Error containing the error code and message.
-     * @param data Optional data for the event, e.g. reward type and amount
-     */
-    (
-      type:
-        | AdEventType.LOADED
-        | AdEventType.ERROR
-        | AdEventType.OPENED
-        | AdEventType.CLICKED
-        | AdEventType.LEFT_APPLICATION
-        | AdEventType.CLOSED
-        | RewardedAdEventType.LOADED
-        | RewardedAdEventType.EARNED_REWARD,
-      error?: Error,
-      data?: any | RewardedAdReward,
-    ): void;
-  }
+  export type AdEventListener = (
+    type:
+      | AdEventType.LOADED
+      | AdEventType.ERROR
+      | AdEventType.OPENED
+      | AdEventType.CLICKED
+      | AdEventType.LEFT_APPLICATION
+      | AdEventType.CLOSED
+      | RewardedAdEventType.LOADED
+      | RewardedAdEventType.EARNED_REWARD,
+    error?: Error,
+    data?: any | RewardedAdReward,
+  ) => void;
 
   /**
    * Base class for InterstitialAd, RewardedAd, NativeAd and BannerAd.
@@ -1164,11 +1161,25 @@ export namespace Admob {
 }
 
 declare module '@react-native-firebase/admob' {
+  import React from 'react';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+  import BannerAd = Admob.BannerAd;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
+
+  export const AdsConsentDebugGeography: {} & Admob.AdsConsentDebugGeography;
+  export const AdsConsentStatus: {} & Admob.AdsConsentStatus;
+  export const MaxAdContentRating: {} & Admob.MaxAdContentRating;
+  export const TestIds: {} & Admob.TestIds;
+  export const AdEventType: {} & Admob.AdEventType;
+  export const BannerAdSize: {} & Admob.BannerAdSize;
+  export const RewardedAdEventType: {} & Admob.RewardedAdEventType;
+  export const AdsConsent: {} & Admob.AdsConsent;
+  export const InterstitialAd: typeof Admob.InterstitialAd;
+  export const RewardedAd: typeof Admob.RewardedAd;
+  export const BannerAd: React.SFC<BannerAd>;
 
   const module: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
   export default module;
