@@ -46,7 +46,9 @@ import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 
 #### Enable multidex
 
-Adding Firestore to your Android app requires [`multiDexEnabled` to be set to `true`](https://developer.android.com/studio/build/multidex) in `android/app/build.gradle`:
+Adding Firestore to your Android app requires [`multidex enabled`](https://developer.android.com/studio/build/multidex).
+
+In **`android/app/build.gradle`** enable multidex and add the multidex library as a dependency:
 
 ```groovy
 //..
@@ -55,8 +57,27 @@ android {
   
   defaultConfig {
     //..
-    multiDexEnabled true  // needed for firestore
+    multiDexEnabled true
   }
   //..
+  dependencies {
+    // ..
+    implementation 'com.android.support:multidex:1.0.3' 
+    //use androidx.multidex:multidex:2.0.1 for AndroidX!
+  }
 }
+```
+
+In **`android/app/src/main/java/{yourApp}/MainApplication.java`** change your **MainApplication** to extend **MultidexApplication**:
+
+
+```java
+// ..
+import android.support.multidex.MultiDexApplication;
+//import androidx.multidex.MultiDexApplication; for AndroidX!
+
+  // ..
+  public class MainApplication extends MultiDexApplication implements ReactApplication {
+      // ..
+  }
 ```
