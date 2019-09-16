@@ -13,7 +13,7 @@ theme:
 social:
   twitter: 'https://twitter.com/rnfirebase'
   discord: 'https://invertase.link/discord'
-  preview: 'https://static.invertase.io/assets/rnfb-v6-splash.png'
+  preview: 'https://static.invertase.io/assets/rnfb-v6-splash_v2.png'
 versions:
   latest: v6
   branches:
