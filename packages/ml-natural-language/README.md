@@ -42,7 +42,7 @@ yarn add @react-native-firebase/ml-natural-language
 ## Documentation
 
 - [Quick Start](https://invertase.io/oss/react-native-firebase/v6/ml-natural-language)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=language)
+- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=ml-language)
 - [Reference](https://invertase.io/oss/react-native-firebase/v6/ml-natural-language/reference)
 
 ## License
