@@ -36,4 +36,4 @@ console.log(
   }),
 );
 
-console.log(dynamicLinks.ShortLinkType.SHORT);
+console.log(firebase.dynamicLinks.ShortLinkType.SHORT);
