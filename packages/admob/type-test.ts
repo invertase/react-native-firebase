@@ -1,19 +1,35 @@
 import firebase from '@react-native-firebase/app';
 import * as admob from '@react-native-firebase/admob';
 
+console.log(firebase.admob.AdsConsentDebugGeography.DISABLED);
+console.log(firebase.admob.AdsConsentDebugGeography.EEA);
+console.log(firebase.admob.AdsConsentDebugGeography.NOT_EEA);
 console.log(admob.AdsConsentDebugGeography.DISABLED);
 console.log(admob.AdsConsentDebugGeography.EEA);
 console.log(admob.AdsConsentDebugGeography.NOT_EEA);
 
+console.log(firebase.admob.AdsConsentStatus.NON_PERSONALIZED);
+console.log(firebase.admob.AdsConsentStatus.PERSONALIZED);
+console.log(firebase.admob.AdsConsentStatus.UNKNOWN);
 console.log(admob.AdsConsentStatus.NON_PERSONALIZED);
 console.log(admob.AdsConsentStatus.PERSONALIZED);
 console.log(admob.AdsConsentStatus.UNKNOWN);
 
+console.log(firebase.admob.MaxAdContentRating.G);
+console.log(firebase.admob.MaxAdContentRating.MA);
+console.log(firebase.admob.MaxAdContentRating.PG);
+console.log(firebase.admob.MaxAdContentRating.T);
 console.log(admob.MaxAdContentRating.G);
 console.log(admob.MaxAdContentRating.MA);
 console.log(admob.MaxAdContentRating.PG);
 console.log(admob.MaxAdContentRating.T);
 
+console.log(firebase.admob.AdEventType.CLICKED);
+console.log(firebase.admob.AdEventType.CLOSED);
+console.log(firebase.admob.AdEventType.ERROR);
+console.log(firebase.admob.AdEventType.LEFT_APPLICATION);
+console.log(firebase.admob.AdEventType.LOADED);
+console.log(firebase.admob.AdEventType.OPENED);
 console.log(admob.AdEventType.CLICKED);
 console.log(admob.AdEventType.CLOSED);
 console.log(admob.AdEventType.ERROR);
@@ -21,11 +37,22 @@ console.log(admob.AdEventType.LEFT_APPLICATION);
 console.log(admob.AdEventType.LOADED);
 console.log(admob.AdEventType.OPENED);
 
+console.log(firebase.admob.RewardedAdEventType.LOADED);
+console.log(firebase.admob.RewardedAdEventType.EARNED_REWARD);
+console.log(admob.RewardedAdEventType.LOADED);
+console.log(admob.RewardedAdEventType.EARNED_REWARD);
+
+console.log(firebase.admob.BannerAdSize.BANNER);
+console.log(firebase.admob.BannerAdSize.FLUID);
+console.log(firebase.admob.BannerAdSize.FULL_BANNER);
 console.log(admob.BannerAd);
 console.log(admob.BannerAdSize.BANNER);
 console.log(admob.BannerAdSize.FLUID);
 console.log(admob.BannerAdSize.FULL_BANNER);
 
+console.log(firebase.admob.TestIds.BANNER);
+console.log(firebase.admob.TestIds.INTERSTITIAL);
+console.log(firebase.admob.TestIds.REWARDED);
 console.log(admob.TestIds.BANNER);
 console.log(admob.TestIds.INTERSTITIAL);
 console.log(admob.TestIds.REWARDED);
