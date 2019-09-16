@@ -342,8 +342,6 @@ declare module '@react-native-firebase/functions' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const HttpsErrorCode: {} & FirebaseFunctions.HttpsErrorCode;
-
   const module: FirebaseModuleWithStaticsAndApp<
     FirebaseFunctions.Module,
     FirebaseFunctions.Statics
