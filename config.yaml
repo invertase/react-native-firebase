@@ -23,5 +23,3 @@ menu:
     to: '/v6'
   - text: Guides
     to: '/guides'
-  - text: FAQ
-    to: '/faqs'
