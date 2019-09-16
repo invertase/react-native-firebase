@@ -32,7 +32,7 @@ To get started with React Native Firebase you must have your React Native enviro
 
 React Native Firebase can integrate with a new React Native app or an existing setup.
 
-<Grid columns="2">
+<Grid columns="3">
 	<Block
 		title="New Project"
 		to="/quick-start/new-project"
@@ -45,8 +45,16 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		title="Existing Projects"
 		to="/quick-start/existing-project"
 		icon="forward"
-		color="##2196f3"
+		color="#0a6ebd"
 	>
 		Integrate Firebase into an existing React Native project.
+  	</Block>
+	<Block
+		title="Upgrade from v5.x.x"
+		to="/migrating-to-v6"
+		icon="build"
+		color="#bd590a"
+	>
+		Upgrading your project from React Native Firebase v5.x.x.
   	</Block>
 </Grid>
