@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/analytics';
+import * as analytics from '@react-native-firebase/analytics';
 
 // checks module exists at root
 console.log(firebase.analytics().app.name);
@@ -11,19 +11,30 @@ console.log(firebase.app().analytics().app.name);
 console.log(firebase.analytics.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(defaultExport.SDK_VERSION);
+console.log(analytics.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebaseFromModule.SDK_VERSION);
+console.log(analytics.firebase.SDK_VERSION);
 
-// checks multi-app support exists
-// console.log(firebase.analytics(firebase.app()).app.name);
-
-// checks default export supports app arg
-// console.log(defaultExport(firebase.app()).app.name);
+firebase
+  .analytics()
+  .logAddPaymentInfo()
+  .then();
+firebase
+  .analytics()
+  .logAddToCart({ item_id: '123', item_category: '123', item_name: '123', quantity: 3 })
+  .then();
+firebase
+  .analytics()
+  .logLogin({ method: 'foo' })
+  .then();
+firebase
+  .analytics()
+  .setUserProperties({ foo: 'bar' })
+  .then();
 
 console.log(firebase.analytics().logAddPaymentInfo);
 console.log(firebase.analytics().logAddToCart);

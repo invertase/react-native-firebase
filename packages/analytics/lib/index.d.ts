@@ -47,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase analytics
  */
-export namespace Analytics {
+export namespace FirebaseAnalytics {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface AddToCartEventParameters {
@@ -1352,7 +1352,7 @@ declare module '@react-native-firebase/analytics' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Analytics.Module, Analytics.Statics>;
+  const module: FirebaseModuleWithStatics<FirebaseAnalytics.Module, FirebaseAnalytics.Statics>;
   export default module;
 }
 
@@ -1363,11 +1363,11 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      analytics: FirebaseModuleWithStatics<Analytics.Module, Analytics.Statics>;
+      analytics: FirebaseModuleWithStatics<FirebaseAnalytics.Module, FirebaseAnalytics.Statics>;
     }
 
     interface FirebaseApp {
-      analytics(): Analytics.Module;
+      analytics(): FirebaseAnalytics.Module;
     }
   }
 }
