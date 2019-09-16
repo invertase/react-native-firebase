@@ -16,11 +16,10 @@
 <p align="center">
   <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
+  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
 ---
-
-> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
 Firebase In-App Messaging helps you engage users who are actively using your app by sending them targeted and contextual messages that nudge them to complete key in-app actions - like beating a game level, buying an item, or subscribing to content.
 
@@ -32,13 +31,12 @@ Requires `@react-native-firebase/app` to be installed.
 
 ```bash
 yarn add @react-native-firebase/in-app-messaging
-react-native link @react-native-firebase/in-app-messaging
 ```
 
 ## Documentation
 
+- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/in-app-messaging/quick-start)
 - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=in-app-messaging)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/in-app-messaging)
 - [Reference](https://invertase.io/oss/react-native-firebase/v6/in-app-messaging/reference)
 
 ## License
