@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase database
  */
-export namespace FirebaseDatabase {
+export namespace FirebaseDatabaseTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -1227,7 +1227,10 @@ declare module '@react-native-firebase/database' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<FirebaseDatabase.Module, FirebaseDatabase.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics
+  >;
   export default module;
 }
 
@@ -1238,11 +1241,14 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      database: FirebaseModuleWithStaticsAndApp<FirebaseDatabase.Module, FirebaseDatabase.Statics>;
+      database: FirebaseModuleWithStaticsAndApp<
+        FirebaseDatabaseTypes.Module,
+        FirebaseDatabaseTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      database(databaseUrl?: string): FirebaseDatabase.Module;
+      database(databaseUrl?: string): FirebaseDatabaseTypes.Module;
     }
   }
 }
