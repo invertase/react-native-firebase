@@ -47,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase crashlytics
  */
-export namespace FirebaseCrashlytics {
+export namespace FirebaseCrashlyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -227,7 +227,10 @@ declare module '@react-native-firebase/crashlytics' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<FirebaseCrashlytics.Module, FirebaseCrashlytics.Statics>;
+  const module: FirebaseModuleWithStatics<
+    FirebaseCrashlyticsTypes.Module,
+    FirebaseCrashlyticsTypes.Statics
+  >;
   export default module;
 }
 
@@ -239,12 +242,12 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
       crashlytics: FirebaseModuleWithStatics<
-        FirebaseCrashlytics.Module,
-        FirebaseCrashlytics.Statics
+        FirebaseCrashlyticsTypes.Module,
+        FirebaseCrashlyticsTypes.Statics
       >;
     }
     interface FirebaseApp {
-      crashlytics(): FirebaseCrashlytics.Module;
+      crashlytics(): FirebaseCrashlyticsTypes.Module;
     }
   }
 }

@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml-natural-language
  */
-export namespace FirebaseMLKitLanguage {
+export namespace FirebaseLanguageTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -215,8 +215,8 @@ declare module '@react-native-firebase/ml-natural-language' {
   export const firebase = firebaseNamedExport;
 
   const module: FirebaseModuleWithStaticsAndApp<
-    FirebaseMLKitLanguage.Module,
-    FirebaseMLKitLanguage.Statics
+    FirebaseLanguageTypes.Module,
+    FirebaseLanguageTypes.Statics
   >;
   export default module;
 }
@@ -230,13 +230,13 @@ declare module '@react-native-firebase/app' {
 
     interface Module {
       naturalLanguage: FirebaseModuleWithStaticsAndApp<
-        FirebaseMLKitLanguage.Module,
-        FirebaseMLKitLanguage.Statics
+        FirebaseLanguageTypes.Module,
+        FirebaseLanguageTypes.Statics
       >;
     }
 
     interface FirebaseApp {
-      naturalLanguage(): FirebaseMLKitLanguage.Module;
+      naturalLanguage(): FirebaseLanguageTypes.Module;
     }
   }
 }
