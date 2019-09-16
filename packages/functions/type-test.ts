@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/functions';
+import * as functions from '@react-native-firebase/functions';
 
 // checks module exists at root
 console.log(firebase.functions().app.name);
@@ -20,16 +20,29 @@ console.log(
 console.log(firebase.functions.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(defaultExport.SDK_VERSION);
+console.log(functions.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
-
-// checks firebase named export exists on module
-console.log(firebaseFromModule.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.functions(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(defaultExport(firebase.app()).app.name);
+console.log(firebase.functions(firebase.app('foo')).app.name);
+
+console.log(firebase.functions.HttpsErrorCode.ABORTED);
+console.log(functions.HttpsErrorCode.ABORTED);
+
+firebase
+  .functions()
+  .httpsCallable('foo')(123)
+  .then(result => {
+    console.log(result.data);
+  })
+  .catch(error => {
+    console.log(error.code);
+    console.log(error.details);
+  });
+
+firebase.functions().useFunctionsEmulator('123');
