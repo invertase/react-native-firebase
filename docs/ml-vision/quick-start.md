@@ -7,6 +7,9 @@ description: Getting started with ML Kit Vision in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the projects [quick start](/quick-start) guide. 
+
 Install this module with Yarn:
 
 ```bash
@@ -17,7 +20,7 @@ yarn add @react-native-firebase/ml-vision
 
 ## Module usage
 
-Import the ML Kit package into your project:
+Import the ML Kit Vision package into your project:
 
 ```js
 import vision from '@react-native-firebase/ml-vision';

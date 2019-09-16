@@ -7,22 +7,25 @@ description: Getting started with AdMob in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the projects [quick start](/quick-start) guide. 
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/admob
 ```
 
-Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
+**IMPORTANT**: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
 
-> IMPORTANT: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
 The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and
 React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR.
 
-Import the Cloud Functions package into your project:
+Import the AdMob package into your project:
 
 ```js
 import admob from '@react-native-firebase/admob';
@@ -111,7 +114,7 @@ interstitialAd.onAdEvent((type, error) => {
 interstitialAd.load();
 ```
 
-Once our interstitial has been loaded from the Google AdMob servers, we will start to receieve events within our handler (e.g. ad loaded). These events also include user based events such as notifying us when the user has closed the ad, or clicked the ad and left the application. For a full list of events, see the `AdEventType` class.
+Once our interstitial has been loaded from the Google AdMob servers, we will start to receive events within our handler (e.g. ad loaded). These events also include user based events such as notifying us when the user has closed the ad, or clicked the ad and left the application. For a full list of events, see the `AdEventType` class.
 
 Once the advert has been loaded, we can show it to the user. Listen out for the loaded event, and once ready, show it to the user:
 

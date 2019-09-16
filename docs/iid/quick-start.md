@@ -7,6 +7,9 @@ description: Using Instance ID in your React Native application.
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the projects [quick start](/quick-start) guide. 
+
 Install this module with Yarn:
 
 ```bash
