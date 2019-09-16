@@ -34,7 +34,7 @@
   "dependencies": {
     "@react-native-firebase/app-types": "0.4.2"
   },
-  "gitHead": "e86f1c128fc2349a2bf781d136f9f42376531eba",
+  "gitHead": "0d2589f43978fa8e8d27fee4157362ef4ccab4b7",
   "publishConfig": {
     "access": "public"
   }
