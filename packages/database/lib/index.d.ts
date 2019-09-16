@@ -1227,8 +1227,6 @@ declare module '@react-native-firebase/database' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const ServerValue: {} & FirebaseDatabase.ServerValue;
-
   const module: FirebaseModuleWithStaticsAndApp<FirebaseDatabase.Module, FirebaseDatabase.Statics>;
   export default module;
 }
