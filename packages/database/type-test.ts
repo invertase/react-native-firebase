@@ -29,7 +29,7 @@ console.log(firebase.database(firebase.app()).app.name);
 // checks default export supports app arg
 console.log(database.firebase(firebase.app('foo')).app.name);
 
-console.log(database.ServerValue.TIMESTAMP);
+console.log(firebase.database.ServerValue.TIMESTAMP);
 
 console.log(
   firebase
