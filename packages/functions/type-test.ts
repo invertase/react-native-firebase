@@ -32,7 +32,6 @@ console.log(firebase.functions(firebase.app()).app.name);
 console.log(firebase.functions(firebase.app('foo')).app.name);
 
 console.log(firebase.functions.HttpsErrorCode.ABORTED);
-console.log(functions.HttpsErrorCode.ABORTED);
 
 firebase
   .functions()
