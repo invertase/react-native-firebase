@@ -25,9 +25,6 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "dependencies": {
-    "@react-native-firebase/app-types": "0.4.3"
-  },
   "gitHead": "2a4d7dfbbf2879244e3c00f4add4d81d6167f74b",
   "publishConfig": {
     "access": "public"
