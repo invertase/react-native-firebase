@@ -9,7 +9,7 @@ if using_custom_firebase_sdk_version
 end
 
 Pod::Spec.new do |s|
-  s.name                = "RNFBAdMob"
+  s.name                = "RNFBAdmob"
   s.version             = package["version"]
   s.description         = package["description"]
   s.summary             = <<-DESC
