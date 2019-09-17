@@ -16,11 +16,10 @@
 <p align="center">
   <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
+  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
 ---
-
-> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
 Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service built for Google scale. The Firebase SDKs for Cloud Storage add Google security to file uploads and downloads for your Firebase apps, regardless of network quality. You can use our SDKs to store images, audio, video, or other user-generated content. On the server, you can use [Google Cloud Storage](https://cloud.google.com/storage), to access the same files.
 
@@ -32,13 +31,12 @@ Requires `@react-native-firebase/app` to be installed.
 
 ```bash
 yarn add @react-native-firebase/storage
-react-native link @react-native-firebase/storage
 ```
 
 ## Documentation
 
+- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/storage/quick-start)
 - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=storage)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/storage)
 - [Reference](https://invertase.io/oss/react-native-firebase/v6/storage/reference)
 
 ## License
