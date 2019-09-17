@@ -219,7 +219,7 @@ version 6 must install the `app` module before installing each specific module.
 To get started, install the new dependency with [Yarn](https://yarnpkg.com/lang/en/):
 
 ```bash
-yarn add @react-native-firebase/v6
+yarn add @react-native-firebase/app
 ```
 
 If you are using React Native 0.60+, the module will be automatically linked via [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md).
