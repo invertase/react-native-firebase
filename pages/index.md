@@ -31,12 +31,12 @@ description: React Native Firebase
     Guides cover both basic and advanced topics for all of the Firebase modules.
   </Block>
   <Block
-    title="Reference"
+    title="Version 6"
     to="/{{ latest_version }}"
     icon="layers"
     color="#9C27B0"
   >
-    Jump straight into the API reference, covering every method, class and more.
+    Start integrating Firebase services with the React Native Firebase v6 packages.
   </Block>
 </Grid>
 
