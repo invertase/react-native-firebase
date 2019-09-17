@@ -11,9 +11,9 @@
     - group: Manual Installation
       children:
         - text: Android Installation
-          to: '/android-installation'
+          to: '/android'
         - text: iOS Installation
-          to: '/ios-installation'
+          to: '/ios'
 
 - module: analytics
   groups:
@@ -28,9 +28,9 @@
     - group: Manual Installation
       children:
         - text: Android Installation
-          to: '/android-installation'
+          to: '/android'
         - text: iOS Installation
-          to: '/ios-installation'
+          to: '/ios'
 
 - module: auth
   groups:
@@ -47,9 +47,9 @@
     - group: Manual Installation
       children:
         - text: Android Installation
-          to: '/android-installation'
+          to: '/android'
         - text: iOS Installation
-          to: '/ios-installation'
+          to: '/ios'
 
 - module: firestore
   groups:
@@ -63,9 +63,9 @@
           to: '/query-limitations'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: functions
@@ -78,9 +78,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: messaging
@@ -93,9 +93,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: storage
@@ -108,9 +108,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: app
@@ -121,14 +121,14 @@
           to: '/'
         - text: Quick Start
           to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Initialization
-          to: '/android'
-        - text: iOS Initialization
-          to: '/ios'
         - text: Client Initialization
           to: '/client'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: '/android'
+        - text: iOS Installation
+          to: '/ios'
 
 - module: crashlytics
   groups:
@@ -140,9 +140,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: database
@@ -155,9 +155,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: dynamic-links
@@ -170,9 +170,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: in-app-messaging
@@ -185,9 +185,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: iid
@@ -200,9 +200,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: invites
@@ -213,14 +213,14 @@
           to: '/'
         - text: Quick Start
           to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Setup
-          to: '/android'
-        - text: iOS Setup
-          to: '/ios'
         - text: Migrate to Dynamic DynamicLinks
           to: '/migrate-to-dynamic-links'
+    - group: Manual Installation
+      children:
+        - text: Android Installation
+          to: '/android'
+        - text: iOS Installation
+          to: '/ios'
 
 - module: ml-natural-language
   groups:
@@ -232,9 +232,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: ml-vision
@@ -247,9 +247,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: notifications
@@ -262,9 +262,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: remote-config
@@ -277,9 +277,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: perf
@@ -292,9 +292,9 @@
           to: '/quick-start'
     - group: Manual Installation
       children:
-        - text: Android Setup
+        - text: Android Installation
           to: '/android'
-        - text: iOS Setup
+        - text: iOS Installation
           to: '/ios'
 
 - module: utils
