@@ -7,13 +7,16 @@ description: Getting started with Analytics in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the projects <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/analytics
 ```
 
-Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
