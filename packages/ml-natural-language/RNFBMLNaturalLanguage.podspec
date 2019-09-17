@@ -2,6 +2,13 @@ require 'json'
 require '../app/firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
+firebase_sdk_version = '~> 6.5.0'
+using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
+if using_custom_firebase_sdk_version
+  Pod::UI.puts "RNFBMLNaturalLanguage: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
+  firebase_sdk_version = $FirebaseSDKVersion
+end
+
 Pod::Spec.new do |s|
   s.name                = "RNFBMLNaturalLanguage"
   s.version             = package["version"]
@@ -18,21 +25,21 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m}'
   s.dependency          'RNFBApp'
   s.dependency          'React'
-  s.dependency          'Firebase/Core', '~> 6.5.0'
+  s.dependency          'Firebase/Core', firebase_sdk_version
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_language_id_model', false)
-    s.dependency          'Firebase/MLNaturalLanguage', '~> 6.5.0'
-    s.dependency          'Firebase/MLNLLanguageID', '~> 6.5.0'
+    s.dependency          'Firebase/MLNaturalLanguage', firebase_sdk_version
+    s.dependency          'Firebase/MLNLLanguageID', firebase_sdk_version
   end
 
   # ignore until after v6 release, add support in a feature release
   # if FirebaseJSON::Config.get_value_or_default('ml_natural_language_translate_model', false)
-  #  s.dependency          'Firebase/MLNLTranslate', '~> 6.5.0'
+  #  s.dependency          'Firebase/MLNLTranslate', firebase_sdk_version
   # end
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_smart_reply_model', false)
-    s.dependency          'Firebase/MLCommon', '~> 6.5.0'
-    s.dependency          'Firebase/MLNLSmartReply', '~> 6.5.0'
+    s.dependency          'Firebase/MLCommon', firebase_sdk_version
+    s.dependency          'Firebase/MLNLSmartReply', firebase_sdk_version
   end
 
   s.static_framework    = false
