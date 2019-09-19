@@ -5,14 +5,11 @@ description: Firebase Dynamic Links are links that work the way you want, whethe
 
 # Dynamic Links
 
-React Native Firebase provides native integration Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a
-cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging
-module provides a simple JavaScript API to interact with FCM.
+Firebase Dynamic Links are a modern alternative to deep links, providing configurable links that provide the user with the
+best available experience according to which platform they are using and whether your app is already installed. Firebase
+Dynamic Links can take users directly to the linked content in your app and even let this info persist through an app install.
 
-The Messaging module is only responsible for handling data-only messages. To learn how to display notifications to
-users, view the <Anchor group="notifications" href="/">Notifications</Anchor> module.
-
-<Youtube id="sioEY4tWmLI" />
+<Youtube id="LvY1JMcrPF8" />
 
 ## Getting Started
 
@@ -23,7 +20,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & start tracking key performance metrics within your application.
+    Install & start providing users with an ideal cross-platform experience as they navigate your platform.
 	</Block>
 	<Block
 		icon="school"
@@ -32,8 +29,8 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 		version={false}
 		to="/guides?tags=messaging"
 	>
-	  Firebase Cloud Messaging is powerful tool to empower your application. Our guides cover various ways it can be integrated
-	  on your application and backend systems.
+	  Learn how to use Firebase Dynamic Links to its full potential to avoid interruptions in user-flow during
+    the navigation of your services.
 	</Block>
   <Block
 		icon="layers"
@@ -41,7 +38,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 		title="Reference"
 		to="/reference"
 	>
-    The API reference covers everything required to successfully integrate Messaging into your apps.
+    The API reference covers everything required to successfully integrate Dynamic Links into your apps.
 	</Block>
 </Grid>
 
@@ -50,6 +47,6 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
-- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-messaging)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Amessaging+)
-- [Firebase Documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=messaging)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-dynamic_links)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Links)
+- [Firebase Documentation](https://firebase.google.com/docs/dynamic-links?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=dynamic-links)

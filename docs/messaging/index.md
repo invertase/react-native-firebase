@@ -32,7 +32,7 @@ users, view the <Anchor group="notifications" href="/">Notifications</Anchor> mo
 		version={false}
 		to="/guides?tags=messaging"
 	>
-	  Firebase Cloud Messaging is powerful tool to empower your application. Our guides cover various ways it can be integrated
+	  Firebase Cloud Messaging is a powerful tool to empower your application. Our guides cover various ways it can be integrated
 	  on your application and backend systems.
 	</Block>
   <Block
@@ -51,5 +51,5 @@ Our documentation is a great place to start, however if you're looking for more 
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-messaging)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Amessaging+)
-- [Firebase Documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=messaging)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Messaging)
+- [Firebase Documentation](https://firebase.google.com/docs/cloud-messaging?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=cloud-messaging)
