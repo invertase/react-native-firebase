@@ -57,6 +57,7 @@ Once changed, rebuild your application with `npx react-native run-android`.
 Open your projects `/ios/Podfile` and add any of the globals show below to the top of the file:
 
 ```ruby
+
 # Override Firebase SDK Version
 $FirebaseSDKVersion = '6.8.1'
 
@@ -66,8 +67,6 @@ $FabricSDKVersion = '1.6.0'
 # Override Crashlytics SDK Version
 $CrashlyticsSDKVersion = '3.1.0'
 
-target 'AwesomeApp' do
-  ...
 ```
 
 Once changed, reinstall your projects pods via `pod install` and rebuild your project with `npx react-native run-ios`.
