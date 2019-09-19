@@ -29,7 +29,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		version={false}
 		to="/guides?tags=perf"
 	>
-	  Our guides walk you through some of the ways Performance Monitoring can be to gain deeper insight into your applications
+	  Our guides walk you through some of the ways Performance Monitoring can be used to gain deeper insight into your applications.
     performance.
 	</Block>
   <Block
