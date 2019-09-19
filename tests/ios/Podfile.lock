@@ -380,65 +380,65 @@ PODS:
   - React-RCTWebSocket (0.60.4):
     - React-Core (= 0.60.4)
     - React-fishhook (= 0.60.4)
-  - RNFBAdmob (0.5.1):
+  - RNFBAdmob (0.5.2):
     - Firebase/AdMob (~> 6.8.1)
     - Firebase/Analytics (~> 6.8.1)
     - Firebase/Core (~> 6.8.1)
     - PersonalizedAdConsent
     - React
     - RNFBApp
-  - RNFBAnalytics (0.5.1):
+  - RNFBAnalytics (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBApp (0.5.1):
+  - RNFBApp (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - React
-  - RNFBAuth (0.5.1):
+  - RNFBAuth (0.5.2):
     - Firebase/Auth (~> 6.8.1)
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBCrashlytics (0.5.1):
+  - RNFBCrashlytics (0.5.2):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBDatabase (0.5.1):
+  - RNFBDatabase (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Database (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBDynamicLinks (0.5.1):
+  - RNFBDynamicLinks (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/DynamicLinks (~> 6.8.1)
     - GoogleUtilities/AppDelegateSwizzler (~> 6.2.3)
     - React
     - RNFBApp
-  - RNFBFirestore (0.5.1):
+  - RNFBFirestore (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Firestore (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBFunctions (0.5.1):
+  - RNFBFunctions (0.5.2):
     - Firebase/Functions (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBIid (0.5.1):
+  - RNFBIid (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBInAppMessaging (0.5.1):
+  - RNFBInAppMessaging (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/InAppMessagingDisplay (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMessaging (0.5.1):
+  - RNFBMessaging (0.5.2):
     - Firebase/Messaging (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMLNaturalLanguage (0.5.1):
+  - RNFBMLNaturalLanguage (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/MLCommon (~> 6.8.1)
     - Firebase/MLNaturalLanguage (~> 6.8.1)
@@ -446,7 +446,7 @@ PODS:
     - Firebase/MLNLSmartReply (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMLVision (0.5.1):
+  - RNFBMLVision (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/MLVision (~> 6.8.1)
     - Firebase/MLVisionBarcodeModel (~> 6.8.1)
@@ -455,17 +455,17 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBPerf (0.5.1):
+  - RNFBPerf (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Performance (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBRemoteConfig (0.5.1):
+  - RNFBRemoteConfig (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/RemoteConfig (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBStorage (0.5.1):
+  - RNFBStorage (0.5.2):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Storage (~> 6.8.1)
     - React
@@ -735,6 +735,6 @@ SPEC CHECKSUMS:
   RNFBStorage: b1bb64ce5a923aecc54bfc36ca2dc1475fb3ddb2
   yoga: 88c514f310aff89b94a14c5fbf44b95735af0cb7
 
-PODFILE CHECKSUM: 818043343774a4e49eae6913134ff148ec42befa
+PODFILE CHECKSUM: 66c573d8141e5d1d6d9bc1d5fe0efc4789438765
 
 COCOAPODS: 1.5.3
