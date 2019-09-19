@@ -16,6 +16,8 @@ project:
 
 ```bash
 yarn add @react-native-firebase/app
+
+cd ios && pod install
 ```
 
 If you are using React Native <= 0.59 you need to manually integrate the `app` module into your project.
