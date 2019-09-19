@@ -28,7 +28,7 @@ device information, location, user actions and more.
 		title="Reserved Events"
 		to="/reserved-events"
 	>
-    Firebase Analytics automatically tracks certain events which cannot be overridden. Understanding 
+    Firebase Analytics automatically tracks certain events which cannot be overridden. Understanding
     what events are provided out of the box is a great place to start.
 	</Block>
 	<Block
@@ -38,7 +38,7 @@ device information, location, user actions and more.
 		version={false}
 		to="/guides?tags=analytics"
 	>
-    Analytics works great out of the box, however provides a powerful API to gain full analytical insight into 
+    Analytics works great out of the box, however provides a powerful API to gain full analytical insight into
     your application. Our guides cover topics from the basics to advanced integration techiques.
 	</Block>
   <Block
@@ -57,5 +57,5 @@ Our documentation is a great place to start, however if you're looking for more 
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-analytics)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aanalytics+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Analytics)
 - [Firebase Documentation](https://firebase.google.com/docs/analytics?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=analytics)

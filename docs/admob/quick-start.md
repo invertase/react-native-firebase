@@ -8,7 +8,7 @@ description: Getting started with AdMob in React Native Firebase
 ## Installation
 
 This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
-visit the projects <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide. 
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
 
 Install this module with Yarn:
 
@@ -92,7 +92,7 @@ The AdMob module supports 3 advert types:
 
 Out of the box, AdMob does not handle any related regulations which you may need to enforce on your application. It is up to the developer to implement and handle this on a user-by-user basis. For example, you must consent to EEA users being served both personalized and non-personalized adverts before showing them. For more information, see [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page for full examples of 
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page for full examples of
 how to integrate the helper into your application.
 
 #### Testing
