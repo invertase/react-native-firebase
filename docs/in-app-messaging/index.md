@@ -20,7 +20,7 @@ messages that encourage them to use key app features. React Native Firebase prov
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & delivering In-App messages to your users.
+    Install & deliver In-App messages to your users.
 	</Block>
   <Block
 		icon="layers"
