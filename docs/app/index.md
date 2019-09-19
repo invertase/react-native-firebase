@@ -13,7 +13,7 @@ app to be installed.
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
