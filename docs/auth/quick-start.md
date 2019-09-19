@@ -8,7 +8,7 @@ description: Getting started with Authentication in React Native Firebase
 ## Installation
 
 This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
-visit the projects <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
 
 Install this module with Yarn:
 
@@ -106,7 +106,7 @@ including Facebook, Google, Twitter and Github, along with phone/SMS authenticat
 		title="Phone Auth"
 		to="/phone-auth"
 	>
-    Phone authentication allows users to sign in to Firebase using their phone as the authenticator. 
+    Phone authentication allows users to sign in to Firebase using their phone as the authenticator.
 	</Block>
 </Grid>
 
