@@ -393,9 +393,20 @@ public class RNFirebaseNotifications extends ReactContextBaseJavaModule implemen
       iconMap.putString("icon", notification.getIcon());
       androidMap.putMap("smallIcon", iconMap);
     }
+    if (notification.getImageUrl() != null) {
+      String imageUrl = notification.getImageUrl().toString();
+      WritableMap bigPictureMap = Arguments.createMap();
+      bigPictureMap.putString("picture", imageUrl);
+      bigPictureMap.putNull("largeIcon");
+      androidMap.putMap("bigPicture", bigPictureMap);
+      androidMap.putString("largeIcon", imageUrl);
+    }
     if (notification.getTag() != null) {
       androidMap.putString("group", notification.getTag());
       androidMap.putString("tag", notification.getTag());
+    }
+    if (notification.getChannelId() != null) {
+      androidMap.putString("channelId", notification.getChannelId());
     }
     notificationMap.putMap("android", androidMap);
 
