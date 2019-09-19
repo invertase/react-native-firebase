@@ -41,7 +41,6 @@ your app's server side managed resources, for example sending FCM messages.
 ## Learn more
 
 Our documentation is a great place to start, however if you're looking for more help or want to help others,
-check out the resources below:
+check out the resource below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-iid)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aiid+)
