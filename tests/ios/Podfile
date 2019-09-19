@@ -1,6 +1,11 @@
 platform :ios, '9.0'
+
+# Version override testing
 # $FirebaseSDKVersion = '6.8.1'
-require_relative '../node_modules/@react-native-firebase/app/pod_config'
+# $FabricSDKVersion = '1.6.0'
+# $CrashlyticsSDKVersion = '3.1.0'
+
+# require_relative '../node_modules/@react-native-firebase/app/pod_config'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 install! 'cocoapods', :deterministic_uuids => false
@@ -34,7 +39,7 @@ target 'testing' do
 
   pod 'Jet', :path => '../node_modules/jet/ios'
 
-  react_native_firebase!
+  # react_native_firebase!
   use_native_modules!
 end
 

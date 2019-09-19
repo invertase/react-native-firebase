@@ -1,11 +1,28 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
+# Firebase SDK Override
 firebase_sdk_version = '~> 6.8.1'
 using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
 if using_custom_firebase_sdk_version
   Pod::UI.puts "RNFBCrashlytics: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
   firebase_sdk_version = $FirebaseSDKVersion
+end
+
+# Fabric SDK Override
+fabric_sdk_version = '~> 1.9.0'
+using_custom_fabric_sdk_version = defined? $FabricSDKVersion
+if using_custom_fabric_sdk_version
+  Pod::UI.puts "RNFBCrashlytics: Using user specified Fabric SDK version '#{$FabricSDKVersion}'"
+  fabric_sdk_version = $FabricSDKVersion
+end
+
+# Crashlytics SDK Override
+crashlytics_sdk_version = '~> 3.12.0'
+using_custom_crashlytics_sdk_version = defined? $CrashlyticsSDKVersion
+if using_custom_crashlytics_sdk_version
+  Pod::UI.puts "RNFBCrashlytics: Using user specified Crashlytics SDK version '#{$CrashlyticsSDKVersion}'"
+  crashlytics_sdk_version = $CrashlyticsSDKVersion
 end
 
 Pod::Spec.new do |s|
@@ -23,9 +40,9 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "9.0"
   s.source_files        = 'ios/**/*.{h,m}'
   s.dependency          'React'
+  s.dependency          'Fabric', fabric_sdk_version
   s.dependency          'Firebase/Core', firebase_sdk_version
-  s.dependency          'Fabric', '~> 1.9.0'
-  s.dependency          'Crashlytics', '~> 3.12.0'
+  s.dependency          'Crashlytics', crashlytics_sdk_version
   s.dependency          'RNFBApp'
   s.static_framework    = false
 end
