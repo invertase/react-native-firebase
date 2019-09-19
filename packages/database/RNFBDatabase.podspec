@@ -1,7 +1,7 @@
 require 'json'
 package = JSON.parse(File.read('./package.json'))
 
-firebase_sdk_version = '~> 6.5.0'
+firebase_sdk_version = '~> 6.8.1'
 using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
 if using_custom_firebase_sdk_version
   Pod::UI.puts "RNFBDatabase: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
