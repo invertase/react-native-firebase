@@ -1176,7 +1176,7 @@ export namespace Auth {
      *
      * @param code An ISO language code.
      */
-    set languageCode(code: string): void;
+    set languageCode(code: string);
 
     /**
      * Returns the current `AuthSettings`.
@@ -1194,7 +1194,7 @@ export namespace Auth {
      *
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
-    currentUser(): User | null;
+    currentUser: User | null;
 
     /**
      * Listen for changes in the users auth state (logging in and out).
