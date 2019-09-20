@@ -1205,13 +1205,26 @@ declare module '@react-native-firebase/app' {
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
     /**
-     * The Google AdMob application App ID.
+     * The Google AdMob application App ID for Android.
      *
      * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
      *
      * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
+     *
+     * @android
      */
-    admob_app_id: string;
+    admob_app_id_android: string;
+
+    /**
+     * The Google AdMob application App ID for iOS.
+     *
+     * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
+     *
+     * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
+     *
+     * @ios
+     */
+    admob_app_id_ios: string;
 
     /**
      * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
