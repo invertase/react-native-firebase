@@ -7,7 +7,7 @@ description: Getting started with Cloud Firestore in React Native Firebase
 
 ## Module usage
 
-This module depends on the `@react-native-firebase/app` & `@react-native-firebase/auth` module. To get started and install `app`:
+This module depends on the `@react-native-firebase/app` & `@react-native-firebase/auth` module:
 
 | Module                        |             |
 |-------------------------------|-------------|
