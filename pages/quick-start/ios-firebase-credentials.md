@@ -51,7 +51,21 @@ Within the `didFinishLaunchingWithOptions` method, add the `configure` method:
     }
 ```
 
-Once complete, rebuild your iOS project using `react-native run-ios`.
+## Rebuilding iOS
+
+Your iOS project now needs to be rebuild to start using Firebase. Before doing so, ensure your projects Pods are up-to-date:
+
+```bash
+$ cd ios/
+$ pod install pod install --repro-update
+```
+
+Once complete, rebuild your iOS project from the project root using the React Native CLI:
+
+```bash
+$ cd ..
+$ npx react-native run-ios
+```
 
 ## Next Steps
 
