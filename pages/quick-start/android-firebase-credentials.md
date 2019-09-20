@@ -50,7 +50,13 @@ Next we need to apply the plugin. Add the following line to the **very bottom** 
 apply plugin: 'com.google.gms.google-services'
 ```
 
-Once complete, rebuild your Android project using `react-native run-android`.
+## Rebuilding Android 
+
+Once complete, rebuild your Android project using the React Native CLI:
+
+```bash
+$ npx react-native run-android
+```
 
 ## Next Steps
 
