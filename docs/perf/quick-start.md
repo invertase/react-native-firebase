@@ -18,6 +18,11 @@ yarn add @react-native-firebase/perf
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
+### Additional Android Steps:
+
+Android requires additional manual installation steps. See the <Anchor version group href="/android">Android</Anchor> 
+installation documentation for more information.
+
 ## Module usage
 
 Once installed, the Performance Monitoring package automatically traces events and metrics which
