@@ -367,24 +367,28 @@ RCT_EXPORT_METHOD(updatePhoneNumber:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-    FIRPhoneAuthCredential *credential =
-        (FIRPhoneAuthCredential *) [self getCredentialForProvider:provider token:authToken secret:authSecret];
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+          
+          if (error) {
+            [self promiseRejectAuthException:reject error:error];
+          }
+          
+          if (credential == nil) {
+            [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+                @"code": @"invalid-credential",
+                @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
+            }];
+          }
 
-    if (credential == nil) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": @"invalid-credential",
-          @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
+          [user updatePhoneNumberCredential:credential completion:^(NSError *_Nullable error) {
+            if (error) {
+              [self promiseRejectAuthException:reject error:error];
+            } else {
+              FIRUser *userAfterUpdate = [FIRAuth authWithApp:firebaseApp].currentUser;
+              [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+            }
+          }];
       }];
-    }
-
-    [user updatePhoneNumberCredential:credential completion:^(NSError *_Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firebaseApp].currentUser;
-        [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
-      }
-    }];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -494,37 +498,30 @@ RCT_EXPORT_METHOD(signInWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = nil;
-    
-    if([provider compare:@"game-center" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        [FIRGameCenterAuthProvider getCredentialWithCompletion:^(FIRAuthCredential *credential,
-                                                                 NSError *error) {
-          if (error == nil) {
-              credential = credential;
-          }
+    [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+        
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+        }
+        
+        if (credential == nil) {
+         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+             @"code": @"invalid-credential",
+             @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
+         }];
+        }
+
+        [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
+           FIRAuthDataResult *authResult,
+           NSError *error
+        ) {
+         if (error) {
+           [self promiseRejectAuthException:reject error:error];
+         } else {
+           [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+         }
         }];
-    } else {
-      credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-    }
-  
-
-  if (credential == nil) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"invalid-credential",
-        @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
     }];
-  }
-
-  [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
-      FIRAuthDataResult *authResult,
-      NSError *error
-  ) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    } else {
-      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-    }
-  }];
 }
 
 RCT_EXPORT_METHOD(confirmPasswordReset:
@@ -750,25 +747,30 @@ RCT_EXPORT_METHOD(linkWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-
-  if (credential == nil) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"invalid-credential",
-        @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
-    }];
-  }
-
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
-    [user linkAndRetrieveDataWithCredential:credential
-                                 completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-                                   if (error) {
-                                     [self promiseRejectAuthException:reject error:error];
-                                   } else {
-                                     [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-                                   }
-                                 }];
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+          
+          if (error) {
+            [self promiseRejectAuthException:reject error:error];
+          }
+          
+          if (credential == nil) {
+            [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+                @"code": @"invalid-credential",
+                @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
+            }];
+          }
+          
+          [user linkAndRetrieveDataWithCredential:credential
+                                       completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+                                         if (error) {
+                                           [self promiseRejectAuthException:reject error:error];
+                                         } else {
+                                           [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+                                         }
+                                       }];
+      }];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -803,28 +805,33 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
-
-  if (credential == nil) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"invalid-credential",
-        @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
-    }];
-  }
-
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-    [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(
-        FIRAuthDataResult *_Nullable authResult,
-        NSError *_Nullable error
-    ) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-      }
-    }];
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+          
+          if (error) {
+            [self promiseRejectAuthException:reject error:error];
+          }
+          
+          if (credential == nil) {
+            [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+                @"code": @"invalid-credential",
+                @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
+            }];
+          }
+          
+          [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(
+              FIRAuthDataResult *_Nullable authResult,
+              NSError *_Nullable error
+          ) {
+            if (error) {
+              [self promiseRejectAuthException:reject error:error];
+            } else {
+              [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+            }
+          }];
+      }];
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
@@ -907,6 +914,25 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }
 
   return credential;
+}
+
+// Checks if provider credential func returns promise or not, returns credential and error in
+// completion block
+- (FIRAuthCredential *)getCredentialForProviderCompletion:(NSString *)provider
+                                          token:(NSString *)authToken
+                                         secret:(NSString *)authTokenSecret
+                                     completion:(FIRAuthCredential * (^)(FIRAuthCredential *,
+                                                                         NSError *))completion {
+  if ([provider compare:@"game-center" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    [FIRGameCenterAuthProvider
+        getCredentialWithCompletion:^(FIRAuthCredential *credential, NSError *error) {
+          completion(credential, error);
+          return;
+        }];
+  } else {
+    return completion(
+        [self getCredentialForProvider:provider token:authToken secret:authTokenSecret], nil);
+  }
 }
 
 // This is here to protect against bugs in the iOS SDK which don't
