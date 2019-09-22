@@ -98,7 +98,7 @@ export namespace Auth {
    * Game Center auth provider implementation
    */
   export interface GameCenterAuthProvider extends AuthProvider {
-    credential: () => Promise<void>;
+    credential: () => AuthCredential;
   }
 
   /**
