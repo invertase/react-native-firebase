@@ -367,13 +367,11 @@ RCT_EXPORT_METHOD(updatePhoneNumber:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^(FIRAuthCredential* credential, NSError* error) {
           
           if (error) {
             [self promiseRejectAuthException:reject error:error];
-          }
-          
-          if (credential == nil) {
+          } else if (credential == nil) {
             [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
                 @"code": @"invalid-credential",
                 @"message": @"The supplied auth credential is malformed, has expired or is not currently supported.",
@@ -498,7 +496,7 @@ RCT_EXPORT_METHOD(signInWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-    [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+    [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^(FIRAuthCredential* credential, NSError* error) {
         
         if (error) {
           [self promiseRejectAuthException:reject error:error];
@@ -749,7 +747,7 @@ RCT_EXPORT_METHOD(linkWithCredential:
 ) {
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
-      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^(FIRAuthCredential* credential, NSError* error) {
           
           if (error) {
             [self promiseRejectAuthException:reject error:error];
@@ -808,7 +806,7 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^FIRAuthCredential *(FIRAuthCredential* credential, NSError* error) {
+      [self getCredentialForProviderCompletion:provider token:authToken secret:authSecret completion:^(FIRAuthCredential* credential, NSError* error) {
           
           if (error) {
             [self promiseRejectAuthException:reject error:error];
@@ -918,20 +916,18 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
 
 // Checks if provider credential func returns promise or not, returns credential and error in
 // completion block
-- (FIRAuthCredential *)getCredentialForProviderCompletion:(NSString *)provider
+- (void)getCredentialForProviderCompletion:(NSString *)provider
                                           token:(NSString *)authToken
                                          secret:(NSString *)authTokenSecret
-                                     completion:(FIRAuthCredential * (^)(FIRAuthCredential *,
+                                     completion:(void (^)(FIRAuthCredential *,
                                                                          NSError *))completion {
   if ([provider compare:@"game-center" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     [FIRGameCenterAuthProvider
         getCredentialWithCompletion:^(FIRAuthCredential *credential, NSError *error) {
-          completion(credential, error);
-          return;
+            completion(credential, error);
         }];
   } else {
-    return completion(
-        [self getCredentialForProvider:provider token:authToken secret:authTokenSecret], nil);
+      completion([self getCredentialForProvider:provider token:authToken secret:authTokenSecret], nil);
   }
 }
 
