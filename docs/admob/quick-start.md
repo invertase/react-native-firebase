@@ -50,8 +50,8 @@ Add the ID to your root level `firebase.json` file under the `react-native` obje
 ```json
 {
   "react-native": {
-    "admob_app_id_android": "ca-app-pub-xxxxxxxx~xxxxxxxx",
-    "admob_app_id_ios": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+    "admob_android_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+    "admob_ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
   }
 }
 ```

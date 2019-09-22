@@ -1213,7 +1213,7 @@ namespace ReactNativeFirebase {
      *
      * @android
      */
-    admob_app_id_android: string;
+    admob_android_app_id: string;
 
     /**
      * The Google AdMob application App ID for iOS.
@@ -1224,7 +1224,7 @@ namespace ReactNativeFirebase {
      *
      * @ios
      */
-    admob_app_id_ios: string;
+    admob_ios_app_id: string;
 
     /**
      * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
