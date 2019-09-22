@@ -95,6 +95,13 @@ export namespace Auth {
   }
 
   /**
+   * Game Center auth provider implementation
+   */
+  export interface GameCenterAuthProvider extends AuthProvider {
+    credential: () => Promise<void>;
+  }
+
+  /**
    * Email and password auth provider implementation.
    */
   export interface EmailAuthProvider {
@@ -223,6 +230,16 @@ export namespace Auth {
      * ```
      */
     GithubAuthProvider: AuthProvider;
+    /**
+     * Game center auth provider implementation.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.GameCenterAuthProvider;
+     * ```
+     */
+    GameCenterAuthProvider: GameCenterAuthProvider;
     /**
      * Twitter auth provider implementation.
      *

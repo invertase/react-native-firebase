@@ -15,21 +15,21 @@
  *
  */
 
-const providerId = 'oauth';
+const providerId = 'game-center';
 
-export default class OAuthProvider {
+export default class GameCenterAuthProvider {
   constructor() {
-    throw new Error('`new OAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new GameCenterAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
     return providerId;
   }
 
-  static credential(idToken, accessToken) {
+  static credential() {
     return {
-      token: idToken,
-      secret: accessToken,
+      token: '',
+      secret: '',
       providerId,
     };
   }

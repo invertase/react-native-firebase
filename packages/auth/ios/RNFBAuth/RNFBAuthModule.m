@@ -494,7 +494,19 @@ RCT_EXPORT_METHOD(signInWithCredential:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  FIRAuthCredential *credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+  FIRAuthCredential *credential = nil;
+    
+    if([provider compare:@"game-center" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        [FIRGameCenterAuthProvider getCredentialWithCompletion:^(FIRAuthCredential *credential,
+                                                                 NSError *error) {
+          if (error == nil) {
+              credential = credential;
+          }
+        }];
+    } else {
+      credential = [self getCredentialForProvider:provider token:authToken secret:authSecret];
+    }
+  
 
   if (credential == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
