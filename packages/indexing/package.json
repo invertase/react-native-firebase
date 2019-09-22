@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/indexing",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Indexing",
   "main": "lib/index.js",
