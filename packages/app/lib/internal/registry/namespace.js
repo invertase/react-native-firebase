@@ -272,12 +272,13 @@ export function createModuleNamespace(options = {}) {
 
   if (!NAMESPACE_REGISTRY[namespace]) {
     // validation only for internal / module dev usage
-    // instanceof does not work in build
+    // TODO instanceof does not work in build
     if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
       throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
     }
 
-    if (version !== SDK_VERSION) {
+    // TODO remove me after notifications ready, temporarily excludes it from this logic
+    if (version !== SDK_VERSION && namespace !== 'notifications') {
       throw new Error(
         [
           `You've attempted to require '@react-native-firebase/${namespace}' version '${version}', ` +
