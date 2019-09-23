@@ -135,6 +135,33 @@ describe('auth() -> Providers', () => {
     });
   });
 
+  describe('GameCenterAuthProvider', () => {
+    describe('constructor', () => {
+      it('should throw an unsupported error', () => {
+        (() => new firebase.auth.GameCenterAuthProvider()).should.throw(
+          '`new GameCenterAuthProvider()` is not supported on the native Firebase SDKs.',
+        );
+      });
+    });
+
+    describe('credential', () => {
+      it('should return a credential object', () => {
+        if (device.getPlatform() === 'ios') {
+          const credential = firebase.auth.GameCenterAuthProvider.credential();
+          credential.providerId.should.equal('game-center');
+          credential.token.should.equal('');
+          credential.secret.should.equal('');
+        }
+      });
+    });
+
+    describe('PROVIDER_ID', () => {
+      it('should return game-center', () => {
+        firebase.auth.GameCenterAuthProvider.PROVIDER_ID.should.equal('game-center');
+      });
+    });
+  });
+
   describe('OAuthProvider', () => {
     describe('constructor', () => {
       it('should throw an unsupported error', () => {
