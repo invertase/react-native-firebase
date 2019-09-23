@@ -33,5 +33,5 @@ $ pod install --repo-update
 Once the Pods have installed locally, rebuild your iOS project:
 
 ```bash
-react-native run-ios
+npx react-native run-ios
 ```
