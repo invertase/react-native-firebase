@@ -52,7 +52,7 @@ protected List<ReactPackage> getPackages() {
 Once the above steps have been completed, rebuild your Android project:
 
 ```bash
-react-native run-android
+npx react-native run-android
 ```
 
 
