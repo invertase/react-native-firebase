@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ml-natural-language",
-  "version": "0.5.2",
+  "version": "0.5.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase ML Kit brings the power of machine learning to your React Native application, supporting both Android & iOS.",
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "gitHead": "e078ebb3eb14bc4242c747ec8f2768d783a1f78b",
+  "gitHead": "27a5ff671cd51d8b159632387e3999b27bc1eb58",
   "publishConfig": {
     "access": "public"
   }

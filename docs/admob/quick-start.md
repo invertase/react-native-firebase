@@ -50,7 +50,8 @@ Add the ID to your root level `firebase.json` file under the `react-native` obje
 ```json
 {
   "react-native": {
-    "admob_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+    "admob_android_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+    "admob_ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
   }
 }
 ```
@@ -172,6 +173,6 @@ import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
 // Create a new instance
 const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
   requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing']
+  keywords: ['fashion', 'clothing'],
 });
 ```

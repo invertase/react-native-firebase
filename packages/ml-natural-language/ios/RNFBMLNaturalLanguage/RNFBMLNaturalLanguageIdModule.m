@@ -15,12 +15,12 @@
  *
  */
 
-
+#import "RNFBMLNaturalLanguageIdModule.h"
 #if __has_include(<FirebaseMLNLLanguageID/FIRLanguageIdentificationOptions.h>)
 
 #import <React/RCTUtils.h>
 #import "RNFBSharedUtils.h"
-#import "RNFBMLNaturalLanguageIdModule.h"
+
 
 #define DEPENDENCY_EXISTS=1
 #endif

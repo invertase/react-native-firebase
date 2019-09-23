@@ -448,14 +448,14 @@
 			]
 		},
 		{
-			"id": 547,
+			"id": 548,
 			"name": "\"@react-native-firebase/analytics\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 549,
+					"id": 550,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -477,7 +477,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 548,
+					"id": 549,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -506,7 +506,7 @@
 					}
 				},
 				{
-					"id": 550,
+					"id": 551,
 					"name": "module",
 					"kind": 32,
 					"kindString": "Variable",
@@ -529,12 +529,12 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 427
+								"id": 428
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 426
+								"id": 427
 							}
 						]
 					}
@@ -545,9 +545,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						550,
 						549,
-						548,
-						550
+						551
 					]
 				}
 			],
@@ -615,14 +615,14 @@
 									]
 								},
 								{
-									"id": 552,
+									"id": 553,
 									"name": "analytics",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 553,
+											"id": 554,
 											"name": "analytics",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -630,7 +630,7 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 427
+												"id": 428
 											}
 										}
 									],
@@ -658,7 +658,7 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 744
+												"id": 745
 											}
 										}
 									],
@@ -1197,7 +1197,7 @@
 									"kind": 2048,
 									"children": [
 										270,
-										552,
+										553,
 										835,
 										877,
 										1199,
@@ -1355,7 +1355,7 @@
 									}
 								},
 								{
-									"id": 551,
+									"id": 552,
 									"name": "analytics",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1375,12 +1375,12 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 427
+												"id": 428
 											},
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 426
+												"id": 427
 											}
 										]
 									}
@@ -1406,12 +1406,12 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 744
+												"id": 745
 											},
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 586
+												"id": 587
 											}
 										]
 									}
@@ -1922,7 +1922,7 @@
 									"kind": 1024,
 									"children": [
 										269,
-										551,
+										552,
 										834,
 										876,
 										1198,
@@ -2423,12 +2423,12 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 744
+								"id": 745
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 586
+								"id": 587
 							}
 						]
 					}
@@ -8389,7 +8389,7 @@
 			]
 		},
 		{
-			"id": 274,
+			"id": 275,
 			"name": "Analytics",
 			"kind": 2,
 			"kindString": "Module",
@@ -8408,7 +8408,7 @@
 			},
 			"children": [
 				{
-					"id": 427,
+					"id": 428,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -8421,7 +8421,7 @@
 					},
 					"children": [
 						{
-							"id": 546,
+							"id": 547,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -8449,7 +8449,7 @@
 							}
 						},
 						{
-							"id": 463,
+							"id": 464,
 							"name": "logAddPaymentInfo",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8458,7 +8458,7 @@
 							},
 							"signatures": [
 								{
-									"id": 464,
+									"id": 465,
 									"name": "logAddPaymentInfo",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8488,7 +8488,7 @@
 							]
 						},
 						{
-							"id": 465,
+							"id": 466,
 							"name": "logAddToCart",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8497,7 +8497,7 @@
 							},
 							"signatures": [
 								{
-									"id": 466,
+									"id": 467,
 									"name": "logAddToCart",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8508,7 +8508,7 @@
 									},
 									"parameters": [
 										{
-											"id": 467,
+											"id": 468,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8519,7 +8519,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AddToCartEventParameters",
-												"id": 275
+												"id": 276
 											}
 										}
 									],
@@ -8544,7 +8544,7 @@
 							]
 						},
 						{
-							"id": 468,
+							"id": 469,
 							"name": "logAddToWishlist",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8553,7 +8553,7 @@
 							},
 							"signatures": [
 								{
-									"id": 469,
+									"id": 470,
 									"name": "logAddToWishlist",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8564,7 +8564,7 @@
 									},
 									"parameters": [
 										{
-											"id": 470,
+											"id": 471,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8575,7 +8575,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AddToWishlistEventParameters",
-												"id": 288
+												"id": 289
 											}
 										}
 									],
@@ -8600,7 +8600,7 @@
 							]
 						},
 						{
-							"id": 471,
+							"id": 472,
 							"name": "logAppOpen",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8609,7 +8609,7 @@
 							},
 							"signatures": [
 								{
-									"id": 472,
+									"id": 473,
 									"name": "logAppOpen",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8639,7 +8639,7 @@
 							]
 						},
 						{
-							"id": 473,
+							"id": 474,
 							"name": "logBeginCheckout",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8648,7 +8648,7 @@
 							},
 							"signatures": [
 								{
-									"id": 474,
+									"id": 475,
 									"name": "logBeginCheckout",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8659,7 +8659,7 @@
 									},
 									"parameters": [
 										{
-											"id": 475,
+											"id": 476,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8672,7 +8672,7 @@
 											"type": {
 												"type": "reference",
 												"name": "BeginCheckoutEventParameters",
-												"id": 297
+												"id": 298
 											}
 										}
 									],
@@ -8697,7 +8697,7 @@
 							]
 						},
 						{
-							"id": 476,
+							"id": 477,
 							"name": "logCampaignDetails",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8706,7 +8706,7 @@
 							},
 							"signatures": [
 								{
-									"id": 477,
+									"id": 478,
 									"name": "logCampaignDetails",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8717,7 +8717,7 @@
 									},
 									"parameters": [
 										{
-											"id": 478,
+											"id": 479,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8728,7 +8728,7 @@
 											"type": {
 												"type": "reference",
 												"name": "CampaignDetailsEventParameters",
-												"id": 309
+												"id": 310
 											}
 										}
 									],
@@ -8753,7 +8753,7 @@
 							]
 						},
 						{
-							"id": 479,
+							"id": 480,
 							"name": "logEarnVirtualCurrency",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8762,7 +8762,7 @@
 							},
 							"signatures": [
 								{
-									"id": 480,
+									"id": 481,
 									"name": "logEarnVirtualCurrency",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8773,7 +8773,7 @@
 									},
 									"parameters": [
 										{
-											"id": 481,
+											"id": 482,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8784,7 +8784,7 @@
 											"type": {
 												"type": "reference",
 												"name": "EarnVirtualCurrencyEventParameters",
-												"id": 317
+												"id": 318
 											}
 										}
 									],
@@ -8809,7 +8809,7 @@
 							]
 						},
 						{
-							"id": 482,
+							"id": 483,
 							"name": "logEcommercePurchase",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8818,7 +8818,7 @@
 							},
 							"signatures": [
 								{
-									"id": 483,
+									"id": 484,
 									"name": "logEcommercePurchase",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8829,7 +8829,7 @@
 									},
 									"parameters": [
 										{
-											"id": 484,
+											"id": 485,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8842,7 +8842,7 @@
 											"type": {
 												"type": "reference",
 												"name": "EcommercePurchaseEventParameters",
-												"id": 320
+												"id": 321
 											}
 										}
 									],
@@ -8867,7 +8867,7 @@
 							]
 						},
 						{
-							"id": 428,
+							"id": 429,
 							"name": "logEvent",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8876,7 +8876,7 @@
 							},
 							"signatures": [
 								{
-									"id": 429,
+									"id": 430,
 									"name": "logEvent",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -8887,7 +8887,7 @@
 									},
 									"parameters": [
 										{
-											"id": 430,
+											"id": 431,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8901,7 +8901,7 @@
 											}
 										},
 										{
-											"id": 431,
+											"id": 432,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -8912,21 +8912,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 432,
+													"id": 433,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"indexSignature": [
 														{
-															"id": 433,
+															"id": 434,
 															"name": "__index",
 															"kind": 8192,
 															"kindString": "Index signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 434,
+																	"id": 435,
 																	"name": "key",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -8988,7 +8988,7 @@
 							]
 						},
 						{
-							"id": 485,
+							"id": 486,
 							"name": "logGenerateLead",
 							"kind": 2048,
 							"kindString": "Method",
@@ -8997,7 +8997,7 @@
 							},
 							"signatures": [
 								{
-									"id": 486,
+									"id": 487,
 									"name": "logGenerateLead",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9008,7 +9008,7 @@
 									},
 									"parameters": [
 										{
-											"id": 487,
+											"id": 488,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9021,7 +9021,7 @@
 											"type": {
 												"type": "reference",
 												"name": "GenerateLeadEventParameters",
-												"id": 336
+												"id": 337
 											}
 										}
 									],
@@ -9046,7 +9046,7 @@
 							]
 						},
 						{
-							"id": 488,
+							"id": 489,
 							"name": "logJoinGroup",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9055,7 +9055,7 @@
 							},
 							"signatures": [
 								{
-									"id": 489,
+									"id": 490,
 									"name": "logJoinGroup",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9066,7 +9066,7 @@
 									},
 									"parameters": [
 										{
-											"id": 490,
+											"id": 491,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9077,7 +9077,7 @@
 											"type": {
 												"type": "reference",
 												"name": "JoinGroupEventParameters",
-												"id": 339
+												"id": 340
 											}
 										}
 									],
@@ -9102,7 +9102,7 @@
 							]
 						},
 						{
-							"id": 491,
+							"id": 492,
 							"name": "logLevelEnd",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9111,7 +9111,7 @@
 							},
 							"signatures": [
 								{
-									"id": 492,
+									"id": 493,
 									"name": "logLevelEnd",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9122,7 +9122,7 @@
 									},
 									"parameters": [
 										{
-											"id": 493,
+											"id": 494,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9133,7 +9133,7 @@
 											"type": {
 												"type": "reference",
 												"name": "LevelEndEventParameters",
-												"id": 341
+												"id": 342
 											}
 										}
 									],
@@ -9158,7 +9158,7 @@
 							]
 						},
 						{
-							"id": 494,
+							"id": 495,
 							"name": "logLevelStart",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9167,7 +9167,7 @@
 							},
 							"signatures": [
 								{
-									"id": 495,
+									"id": 496,
 									"name": "logLevelStart",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9178,7 +9178,7 @@
 									},
 									"parameters": [
 										{
-											"id": 496,
+											"id": 497,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9189,7 +9189,7 @@
 											"type": {
 												"type": "reference",
 												"name": "LevelStartEventParameters",
-												"id": 344
+												"id": 345
 											}
 										}
 									],
@@ -9214,7 +9214,7 @@
 							]
 						},
 						{
-							"id": 497,
+							"id": 498,
 							"name": "logLevelUp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9223,7 +9223,7 @@
 							},
 							"signatures": [
 								{
-									"id": 498,
+									"id": 499,
 									"name": "logLevelUp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9234,7 +9234,7 @@
 									},
 									"parameters": [
 										{
-											"id": 499,
+											"id": 500,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9245,7 +9245,7 @@
 											"type": {
 												"type": "reference",
 												"name": "LevelUpEventParameters",
-												"id": 346
+												"id": 347
 											}
 										}
 									],
@@ -9270,7 +9270,7 @@
 							]
 						},
 						{
-							"id": 500,
+							"id": 501,
 							"name": "logLogin",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9279,7 +9279,7 @@
 							},
 							"signatures": [
 								{
-									"id": 501,
+									"id": 502,
 									"name": "logLogin",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9290,7 +9290,7 @@
 									},
 									"parameters": [
 										{
-											"id": 502,
+											"id": 503,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9301,7 +9301,7 @@
 											"type": {
 												"type": "reference",
 												"name": "LoginEventParameters",
-												"id": 349
+												"id": 350
 											}
 										}
 									],
@@ -9326,7 +9326,7 @@
 							]
 						},
 						{
-							"id": 503,
+							"id": 504,
 							"name": "logPresentOffer",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9335,7 +9335,7 @@
 							},
 							"signatures": [
 								{
-									"id": 504,
+									"id": 505,
 									"name": "logPresentOffer",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9346,7 +9346,7 @@
 									},
 									"parameters": [
 										{
-											"id": 505,
+											"id": 506,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9357,7 +9357,7 @@
 											"type": {
 												"type": "reference",
 												"name": "PresentOfferEventParameters",
-												"id": 355
+												"id": 356
 											}
 										}
 									],
@@ -9382,7 +9382,7 @@
 							]
 						},
 						{
-							"id": 506,
+							"id": 507,
 							"name": "logPurchaseRefund",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9391,7 +9391,7 @@
 							},
 							"signatures": [
 								{
-									"id": 507,
+									"id": 508,
 									"name": "logPurchaseRefund",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9402,7 +9402,7 @@
 									},
 									"parameters": [
 										{
-											"id": 508,
+											"id": 509,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9415,7 +9415,7 @@
 											"type": {
 												"type": "reference",
 												"name": "PurchaseRefundEventParameters",
-												"id": 359
+												"id": 360
 											}
 										}
 									],
@@ -9440,7 +9440,7 @@
 							]
 						},
 						{
-							"id": 509,
+							"id": 510,
 							"name": "logRemoveFromCart",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9449,7 +9449,7 @@
 							},
 							"signatures": [
 								{
-									"id": 510,
+									"id": 511,
 									"name": "logRemoveFromCart",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9460,7 +9460,7 @@
 									},
 									"parameters": [
 										{
-											"id": 511,
+											"id": 512,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9471,7 +9471,7 @@
 											"type": {
 												"type": "reference",
 												"name": "RemoveFromCartEventParameters",
-												"id": 363
+												"id": 364
 											}
 										}
 									],
@@ -9496,7 +9496,7 @@
 							]
 						},
 						{
-							"id": 512,
+							"id": 513,
 							"name": "logSearch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9505,7 +9505,7 @@
 							},
 							"signatures": [
 								{
-									"id": 513,
+									"id": 514,
 									"name": "logSearch",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9516,7 +9516,7 @@
 									},
 									"parameters": [
 										{
-											"id": 514,
+											"id": 515,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9527,7 +9527,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SearchEventParameters",
-												"id": 376
+												"id": 377
 											}
 										}
 									],
@@ -9552,7 +9552,7 @@
 							]
 						},
 						{
-							"id": 515,
+							"id": 516,
 							"name": "logSelectContent",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9561,7 +9561,7 @@
 							},
 							"signatures": [
 								{
-									"id": 516,
+									"id": 517,
 									"name": "logSelectContent",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9572,7 +9572,7 @@
 									},
 									"parameters": [
 										{
-											"id": 517,
+											"id": 518,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9583,7 +9583,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SelectContentEventParameters",
-												"id": 386
+												"id": 387
 											}
 										}
 									],
@@ -9608,7 +9608,7 @@
 							]
 						},
 						{
-							"id": 518,
+							"id": 519,
 							"name": "logSetCheckoutOption",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9617,7 +9617,7 @@
 							},
 							"signatures": [
 								{
-									"id": 519,
+									"id": 520,
 									"name": "logSetCheckoutOption",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9628,7 +9628,7 @@
 									},
 									"parameters": [
 										{
-											"id": 520,
+											"id": 521,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9639,7 +9639,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SetCheckoutOptionEventParameters",
-												"id": 389
+												"id": 390
 											}
 										}
 									],
@@ -9664,7 +9664,7 @@
 							]
 						},
 						{
-							"id": 521,
+							"id": 522,
 							"name": "logShare",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9673,7 +9673,7 @@
 							},
 							"signatures": [
 								{
-									"id": 522,
+									"id": 523,
 									"name": "logShare",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9684,7 +9684,7 @@
 									},
 									"parameters": [
 										{
-											"id": 523,
+											"id": 524,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9695,7 +9695,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ShareEventParameters",
-												"id": 392
+												"id": 393
 											}
 										}
 									],
@@ -9720,7 +9720,7 @@
 							]
 						},
 						{
-							"id": 524,
+							"id": 525,
 							"name": "logSignUp",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9729,7 +9729,7 @@
 							},
 							"signatures": [
 								{
-									"id": 525,
+									"id": 526,
 									"name": "logSignUp",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9740,7 +9740,7 @@
 									},
 									"parameters": [
 										{
-											"id": 526,
+											"id": 527,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9751,7 +9751,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SignUpEventParameters",
-												"id": 395
+												"id": 396
 											}
 										}
 									],
@@ -9776,7 +9776,7 @@
 							]
 						},
 						{
-							"id": 527,
+							"id": 528,
 							"name": "logSpendVirtualCurrency",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9785,7 +9785,7 @@
 							},
 							"signatures": [
 								{
-									"id": 528,
+									"id": 529,
 									"name": "logSpendVirtualCurrency",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9796,7 +9796,7 @@
 									},
 									"parameters": [
 										{
-											"id": 529,
+											"id": 530,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9807,7 +9807,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SpendVirtualCurrencyEventParameters",
-												"id": 397
+												"id": 398
 											}
 										}
 									],
@@ -9832,7 +9832,7 @@
 							]
 						},
 						{
-							"id": 530,
+							"id": 531,
 							"name": "logTutorialBegin",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9841,7 +9841,7 @@
 							},
 							"signatures": [
 								{
-									"id": 531,
+									"id": 532,
 									"name": "logTutorialBegin",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9871,7 +9871,7 @@
 							]
 						},
 						{
-							"id": 532,
+							"id": 533,
 							"name": "logTutorialComplete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9880,7 +9880,7 @@
 							},
 							"signatures": [
 								{
-									"id": 533,
+									"id": 534,
 									"name": "logTutorialComplete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9910,7 +9910,7 @@
 							]
 						},
 						{
-							"id": 534,
+							"id": 535,
 							"name": "logUnlockAchievement",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9919,7 +9919,7 @@
 							},
 							"signatures": [
 								{
-									"id": 535,
+									"id": 536,
 									"name": "logUnlockAchievement",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9930,7 +9930,7 @@
 									},
 									"parameters": [
 										{
-											"id": 536,
+											"id": 537,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9941,7 +9941,7 @@
 											"type": {
 												"type": "reference",
 												"name": "UnlockAchievementEventParameters",
-												"id": 401
+												"id": 402
 											}
 										}
 									],
@@ -9966,7 +9966,7 @@
 							]
 						},
 						{
-							"id": 537,
+							"id": 538,
 							"name": "logViewItem",
 							"kind": 2048,
 							"kindString": "Method",
@@ -9975,7 +9975,7 @@
 							},
 							"signatures": [
 								{
-									"id": 538,
+									"id": 539,
 									"name": "logViewItem",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -9986,7 +9986,7 @@
 									},
 									"parameters": [
 										{
-											"id": 539,
+											"id": 540,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -9997,7 +9997,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ViewItemEventParameters",
-												"id": 403
+												"id": 404
 											}
 										}
 									],
@@ -10022,7 +10022,7 @@
 							]
 						},
 						{
-							"id": 540,
+							"id": 541,
 							"name": "logViewItemList",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10031,7 +10031,7 @@
 							},
 							"signatures": [
 								{
-									"id": 541,
+									"id": 542,
 									"name": "logViewItemList",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10042,7 +10042,7 @@
 									},
 									"parameters": [
 										{
-											"id": 542,
+											"id": 543,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10053,7 +10053,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ViewItemListEventParameters",
-												"id": 422
+												"id": 423
 											}
 										}
 									],
@@ -10078,7 +10078,7 @@
 							]
 						},
 						{
-							"id": 543,
+							"id": 544,
 							"name": "logViewSearchResults",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10087,7 +10087,7 @@
 							},
 							"signatures": [
 								{
-									"id": 544,
+									"id": 545,
 									"name": "logViewSearchResults",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10098,7 +10098,7 @@
 									},
 									"parameters": [
 										{
-											"id": 545,
+											"id": 546,
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10109,7 +10109,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ViewSearchResults",
-												"id": 424
+												"id": 425
 											}
 										}
 									],
@@ -10134,7 +10134,7 @@
 							]
 						},
 						{
-							"id": 461,
+							"id": 462,
 							"name": "resetAnalyticsData",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10143,7 +10143,7 @@
 							},
 							"signatures": [
 								{
-									"id": 462,
+									"id": 463,
 									"name": "resetAnalyticsData",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10173,7 +10173,7 @@
 							]
 						},
 						{
-							"id": 435,
+							"id": 436,
 							"name": "setAnalyticsCollectionEnabled",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10182,7 +10182,7 @@
 							},
 							"signatures": [
 								{
-									"id": 436,
+									"id": 437,
 									"name": "setAnalyticsCollectionEnabled",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10193,7 +10193,7 @@
 									},
 									"parameters": [
 										{
-											"id": 437,
+											"id": 438,
 											"name": "enabled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10228,7 +10228,7 @@
 							]
 						},
 						{
-							"id": 438,
+							"id": 439,
 							"name": "setCurrentScreen",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10237,7 +10237,7 @@
 							},
 							"signatures": [
 								{
-									"id": 439,
+									"id": 440,
 									"name": "setCurrentScreen",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10248,7 +10248,7 @@
 									},
 									"parameters": [
 										{
-											"id": 440,
+											"id": 441,
 											"name": "screenName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10262,7 +10262,7 @@
 											}
 										},
 										{
-											"id": 441,
+											"id": 442,
 											"name": "screenClassOverride",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10308,7 +10308,7 @@
 							]
 						},
 						{
-							"id": 442,
+							"id": 443,
 							"name": "setMinimumSessionDuration",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10317,7 +10317,7 @@
 							},
 							"signatures": [
 								{
-									"id": 443,
+									"id": 444,
 									"name": "setMinimumSessionDuration",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10328,7 +10328,7 @@
 									},
 									"parameters": [
 										{
-											"id": 444,
+											"id": 445,
 											"name": "milliseconds",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10374,7 +10374,7 @@
 							]
 						},
 						{
-							"id": 445,
+							"id": 446,
 							"name": "setSessionTimeoutDuration",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10383,7 +10383,7 @@
 							},
 							"signatures": [
 								{
-									"id": 446,
+									"id": 447,
 									"name": "setSessionTimeoutDuration",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10394,7 +10394,7 @@
 									},
 									"parameters": [
 										{
-											"id": 447,
+											"id": 448,
 											"name": "milliseconds",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10440,7 +10440,7 @@
 							]
 						},
 						{
-							"id": 448,
+							"id": 449,
 							"name": "setUserId",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10449,7 +10449,7 @@
 							},
 							"signatures": [
 								{
-									"id": 449,
+									"id": 450,
 									"name": "setUserId",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10460,7 +10460,7 @@
 									},
 									"parameters": [
 										{
-											"id": 450,
+											"id": 451,
 											"name": "id",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10504,7 +10504,7 @@
 							]
 						},
 						{
-							"id": 455,
+							"id": 456,
 							"name": "setUserProperties",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10513,7 +10513,7 @@
 							},
 							"signatures": [
 								{
-									"id": 456,
+									"id": 457,
 									"name": "setUserProperties",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10530,7 +10530,7 @@
 									},
 									"parameters": [
 										{
-											"id": 457,
+											"id": 458,
 											"name": "properties",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10541,21 +10541,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 458,
+													"id": 459,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"indexSignature": [
 														{
-															"id": 459,
+															"id": 460,
 															"name": "__index",
 															"kind": 8192,
 															"kindString": "Index signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 460,
+																	"id": 461,
 																	"name": "key",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -10613,7 +10613,7 @@
 							]
 						},
 						{
-							"id": 451,
+							"id": 452,
 							"name": "setUserProperty",
 							"kind": 2048,
 							"kindString": "Method",
@@ -10622,7 +10622,7 @@
 							},
 							"signatures": [
 								{
-									"id": 452,
+									"id": 453,
 									"name": "setUserProperty",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -10633,7 +10633,7 @@
 									},
 									"parameters": [
 										{
-											"id": 453,
+											"id": 454,
 											"name": "name",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10647,7 +10647,7 @@
 											}
 										},
 										{
-											"id": 454,
+											"id": 455,
 											"name": "value",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -10696,51 +10696,51 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								546
+								547
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								463,
-								465,
-								468,
-								471,
-								473,
-								476,
-								479,
-								482,
-								428,
-								485,
-								488,
-								491,
-								494,
-								497,
-								500,
-								503,
-								506,
-								509,
-								512,
-								515,
-								518,
-								521,
-								524,
-								527,
-								530,
-								532,
-								534,
-								537,
-								540,
-								543,
-								461,
-								435,
-								438,
-								442,
-								445,
-								448,
-								455,
-								451
+								464,
+								466,
+								469,
+								472,
+								474,
+								477,
+								480,
+								483,
+								429,
+								486,
+								489,
+								492,
+								495,
+								498,
+								501,
+								504,
+								507,
+								510,
+								513,
+								516,
+								519,
+								522,
+								525,
+								528,
+								531,
+								533,
+								535,
+								538,
+								541,
+								544,
+								462,
+								436,
+								439,
+								443,
+								446,
+								449,
+								456,
+								452
 							]
 						}
 					],
@@ -10760,7 +10760,7 @@
 					]
 				},
 				{
-					"id": 275,
+					"id": 276,
 					"name": "AddToCartEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -10769,7 +10769,7 @@
 					},
 					"children": [
 						{
-							"id": 282,
+							"id": 283,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10802,7 +10802,7 @@
 							}
 						},
 						{
-							"id": 285,
+							"id": 286,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10835,7 +10835,7 @@
 							}
 						},
 						{
-							"id": 287,
+							"id": 288,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10868,7 +10868,7 @@
 							}
 						},
 						{
-							"id": 278,
+							"id": 279,
 							"name": "item_category",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10891,7 +10891,7 @@
 							}
 						},
 						{
-							"id": 276,
+							"id": 277,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10914,7 +10914,7 @@
 							}
 						},
 						{
-							"id": 284,
+							"id": 285,
 							"name": "item_location_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10947,7 +10947,7 @@
 							}
 						},
 						{
-							"id": 277,
+							"id": 278,
 							"name": "item_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -10970,7 +10970,7 @@
 							}
 						},
 						{
-							"id": 283,
+							"id": 284,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11003,7 +11003,7 @@
 							}
 						},
 						{
-							"id": 280,
+							"id": 281,
 							"name": "price",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11036,7 +11036,7 @@
 							}
 						},
 						{
-							"id": 279,
+							"id": 280,
 							"name": "quantity",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11059,7 +11059,7 @@
 							}
 						},
 						{
-							"id": 286,
+							"id": 287,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11092,7 +11092,7 @@
 							}
 						},
 						{
-							"id": 281,
+							"id": 282,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11130,18 +11130,18 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								282,
-								285,
-								287,
-								278,
-								276,
-								284,
-								277,
 								283,
-								280,
-								279,
 								286,
-								281
+								288,
+								279,
+								277,
+								285,
+								278,
+								284,
+								281,
+								280,
+								287,
+								282
 							]
 						}
 					],
@@ -11154,7 +11154,7 @@
 					]
 				},
 				{
-					"id": 288,
+					"id": 289,
 					"name": "AddToWishlistEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -11163,7 +11163,7 @@
 					},
 					"children": [
 						{
-							"id": 295,
+							"id": 296,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11196,7 +11196,7 @@
 							}
 						},
 						{
-							"id": 291,
+							"id": 292,
 							"name": "item_category",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11219,7 +11219,7 @@
 							}
 						},
 						{
-							"id": 289,
+							"id": 290,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11242,7 +11242,7 @@
 							}
 						},
 						{
-							"id": 296,
+							"id": 297,
 							"name": "item_location_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11275,7 +11275,7 @@
 							}
 						},
 						{
-							"id": 290,
+							"id": 291,
 							"name": "item_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11298,7 +11298,7 @@
 							}
 						},
 						{
-							"id": 293,
+							"id": 294,
 							"name": "price",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11331,7 +11331,7 @@
 							}
 						},
 						{
-							"id": 292,
+							"id": 293,
 							"name": "quantity",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11354,7 +11354,7 @@
 							}
 						},
 						{
-							"id": 294,
+							"id": 295,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11392,14 +11392,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								295,
-								291,
-								289,
 								296,
-								290,
-								293,
 								292,
-								294
+								290,
+								297,
+								291,
+								294,
+								293,
+								295
 							]
 						}
 					],
@@ -11412,7 +11412,7 @@
 					]
 				},
 				{
-					"id": 297,
+					"id": 298,
 					"name": "BeginCheckoutEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -11421,7 +11421,7 @@
 					},
 					"children": [
 						{
-							"id": 299,
+							"id": 300,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11454,7 +11454,7 @@
 							}
 						},
 						{
-							"id": 305,
+							"id": 306,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11487,7 +11487,7 @@
 							}
 						},
 						{
-							"id": 307,
+							"id": 308,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11520,7 +11520,7 @@
 							}
 						},
 						{
-							"id": 301,
+							"id": 302,
 							"name": "number_of_nights",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11553,7 +11553,7 @@
 							}
 						},
 						{
-							"id": 303,
+							"id": 304,
 							"name": "number_of_passengers",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11586,7 +11586,7 @@
 							}
 						},
 						{
-							"id": 302,
+							"id": 303,
 							"name": "number_of_rooms",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11619,7 +11619,7 @@
 							}
 						},
 						{
-							"id": 304,
+							"id": 305,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11652,7 +11652,7 @@
 							}
 						},
 						{
-							"id": 306,
+							"id": 307,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11685,7 +11685,7 @@
 							}
 						},
 						{
-							"id": 300,
+							"id": 301,
 							"name": "transaction_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11718,7 +11718,7 @@
 							}
 						},
 						{
-							"id": 308,
+							"id": 309,
 							"name": "travel_class",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11751,7 +11751,7 @@
 							}
 						},
 						{
-							"id": 298,
+							"id": 299,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11789,17 +11789,17 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								299,
+								300,
+								306,
+								308,
+								302,
+								304,
+								303,
 								305,
 								307,
 								301,
-								303,
-								302,
-								304,
-								306,
-								300,
-								308,
-								298
+								309,
+								299
 							]
 						}
 					],
@@ -11812,7 +11812,7 @@
 					]
 				},
 				{
-					"id": 309,
+					"id": 310,
 					"name": "CampaignDetailsEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -11821,7 +11821,7 @@
 					},
 					"children": [
 						{
-							"id": 315,
+							"id": 316,
 							"name": "aclid",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11854,7 +11854,7 @@
 							}
 						},
 						{
-							"id": 312,
+							"id": 313,
 							"name": "campaign",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11877,7 +11877,7 @@
 							}
 						},
 						{
-							"id": 314,
+							"id": 315,
 							"name": "content",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11910,7 +11910,7 @@
 							}
 						},
 						{
-							"id": 316,
+							"id": 317,
 							"name": "cp1",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11940,7 +11940,7 @@
 							}
 						},
 						{
-							"id": 311,
+							"id": 312,
 							"name": "medium",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11963,7 +11963,7 @@
 							}
 						},
 						{
-							"id": 310,
+							"id": 311,
 							"name": "source",
 							"kind": 1024,
 							"kindString": "Property",
@@ -11986,7 +11986,7 @@
 							}
 						},
 						{
-							"id": 313,
+							"id": 314,
 							"name": "term",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12024,13 +12024,13 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								315,
-								312,
-								314,
 								316,
+								313,
+								315,
+								317,
+								312,
 								311,
-								310,
-								313
+								314
 							]
 						}
 					],
@@ -12043,7 +12043,7 @@
 					]
 				},
 				{
-					"id": 317,
+					"id": 318,
 					"name": "EarnVirtualCurrencyEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12052,7 +12052,7 @@
 					},
 					"children": [
 						{
-							"id": 319,
+							"id": 320,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12075,7 +12075,7 @@
 							}
 						},
 						{
-							"id": 318,
+							"id": 319,
 							"name": "virtual_currency_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12103,8 +12103,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								319,
-								318
+								320,
+								319
 							]
 						}
 					],
@@ -12117,7 +12117,7 @@
 					]
 				},
 				{
-					"id": 320,
+					"id": 321,
 					"name": "EcommercePurchaseEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12126,7 +12126,7 @@
 					},
 					"children": [
 						{
-							"id": 326,
+							"id": 327,
 							"name": "coupon",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12159,7 +12159,7 @@
 							}
 						},
 						{
-							"id": 321,
+							"id": 322,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12192,7 +12192,7 @@
 							}
 						},
 						{
-							"id": 332,
+							"id": 333,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12225,7 +12225,7 @@
 							}
 						},
 						{
-							"id": 334,
+							"id": 335,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12258,7 +12258,7 @@
 							}
 						},
 						{
-							"id": 327,
+							"id": 328,
 							"name": "location",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12291,7 +12291,7 @@
 							}
 						},
 						{
-							"id": 328,
+							"id": 329,
 							"name": "number_of_nights",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12324,7 +12324,7 @@
 							}
 						},
 						{
-							"id": 330,
+							"id": 331,
 							"name": "number_of_passengers",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12357,7 +12357,7 @@
 							}
 						},
 						{
-							"id": 329,
+							"id": 330,
 							"name": "number_of_rooms",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12390,7 +12390,7 @@
 							}
 						},
 						{
-							"id": 331,
+							"id": 332,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12423,7 +12423,7 @@
 							}
 						},
 						{
-							"id": 325,
+							"id": 326,
 							"name": "shipping",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12456,7 +12456,7 @@
 							}
 						},
 						{
-							"id": 333,
+							"id": 334,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12489,7 +12489,7 @@
 							}
 						},
 						{
-							"id": 324,
+							"id": 325,
 							"name": "tax",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12522,7 +12522,7 @@
 							}
 						},
 						{
-							"id": 323,
+							"id": 324,
 							"name": "transaction_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12555,7 +12555,7 @@
 							}
 						},
 						{
-							"id": 335,
+							"id": 336,
 							"name": "travel_class",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12588,7 +12588,7 @@
 							}
 						},
 						{
-							"id": 322,
+							"id": 323,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12626,21 +12626,21 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								326,
-								321,
-								332,
-								334,
 								327,
+								322,
+								333,
+								335,
 								328,
-								330,
 								329,
 								331,
+								330,
+								332,
+								326,
+								334,
 								325,
-								333,
 								324,
-								323,
-								335,
-								322
+								336,
+								323
 							]
 						}
 					],
@@ -12653,7 +12653,7 @@
 					]
 				},
 				{
-					"id": 336,
+					"id": 337,
 					"name": "GenerateLeadEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12662,7 +12662,7 @@
 					},
 					"children": [
 						{
-							"id": 337,
+							"id": 338,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12695,7 +12695,7 @@
 							}
 						},
 						{
-							"id": 338,
+							"id": 339,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12733,8 +12733,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								337,
-								338
+								338,
+								339
 							]
 						}
 					],
@@ -12747,7 +12747,7 @@
 					]
 				},
 				{
-					"id": 339,
+					"id": 340,
 					"name": "JoinGroupEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12756,7 +12756,7 @@
 					},
 					"children": [
 						{
-							"id": 340,
+							"id": 341,
 							"name": "group_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12784,7 +12784,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								340
+								341
 							]
 						}
 					],
@@ -12797,7 +12797,7 @@
 					]
 				},
 				{
-					"id": 341,
+					"id": 342,
 					"name": "LevelEndEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12806,7 +12806,7 @@
 					},
 					"children": [
 						{
-							"id": 342,
+							"id": 343,
 							"name": "level",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12829,7 +12829,7 @@
 							}
 						},
 						{
-							"id": 343,
+							"id": 344,
 							"name": "success",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12867,8 +12867,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								342,
-								343
+								343,
+								344
 							]
 						}
 					],
@@ -12881,7 +12881,7 @@
 					]
 				},
 				{
-					"id": 344,
+					"id": 345,
 					"name": "LevelStartEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12890,7 +12890,7 @@
 					},
 					"children": [
 						{
-							"id": 345,
+							"id": 346,
 							"name": "level",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12918,7 +12918,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								345
+								346
 							]
 						}
 					],
@@ -12931,7 +12931,7 @@
 					]
 				},
 				{
-					"id": 346,
+					"id": 347,
 					"name": "LevelUpEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -12940,7 +12940,7 @@
 					},
 					"children": [
 						{
-							"id": 348,
+							"id": 349,
 							"name": "character",
 							"kind": 1024,
 							"kindString": "Property",
@@ -12973,7 +12973,7 @@
 							}
 						},
 						{
-							"id": 347,
+							"id": 348,
 							"name": "level",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13001,8 +13001,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								348,
-								347
+								349,
+								348
 							]
 						}
 					],
@@ -13015,7 +13015,7 @@
 					]
 				},
 				{
-					"id": 349,
+					"id": 350,
 					"name": "LoginEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13024,7 +13024,7 @@
 					},
 					"children": [
 						{
-							"id": 350,
+							"id": 351,
 							"name": "method",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13052,7 +13052,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								350
+								351
 							]
 						}
 					],
@@ -13065,7 +13065,7 @@
 					]
 				},
 				{
-					"id": 351,
+					"id": 352,
 					"name": "PostScoreEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13074,7 +13074,7 @@
 					},
 					"children": [
 						{
-							"id": 354,
+							"id": 355,
 							"name": "character",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13107,7 +13107,7 @@
 							}
 						},
 						{
-							"id": 353,
+							"id": 354,
 							"name": "level",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13131,7 +13131,7 @@
 							}
 						},
 						{
-							"id": 352,
+							"id": 353,
 							"name": "score",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13159,9 +13159,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
+								355,
 								354,
-								353,
-								352
+								353
 							]
 						}
 					],
@@ -13174,7 +13174,7 @@
 					]
 				},
 				{
-					"id": 355,
+					"id": 356,
 					"name": "PresentOfferEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13183,7 +13183,7 @@
 					},
 					"children": [
 						{
-							"id": 358,
+							"id": 359,
 							"name": "character",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13216,7 +13216,7 @@
 							}
 						},
 						{
-							"id": 357,
+							"id": 358,
 							"name": "level",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13240,7 +13240,7 @@
 							}
 						},
 						{
-							"id": 356,
+							"id": 357,
 							"name": "score",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13268,9 +13268,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
+								359,
 								358,
-								357,
-								356
+								357
 							]
 						}
 					],
@@ -13283,7 +13283,7 @@
 					]
 				},
 				{
-					"id": 359,
+					"id": 360,
 					"name": "PurchaseRefundEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13292,7 +13292,7 @@
 					},
 					"children": [
 						{
-							"id": 360,
+							"id": 361,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13325,7 +13325,7 @@
 							}
 						},
 						{
-							"id": 362,
+							"id": 363,
 							"name": "transaction_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13358,7 +13358,7 @@
 							}
 						},
 						{
-							"id": 361,
+							"id": 362,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13396,9 +13396,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								360,
-								362,
-								361
+								361,
+								363,
+								362
 							]
 						}
 					],
@@ -13411,7 +13411,7 @@
 					]
 				},
 				{
-					"id": 363,
+					"id": 364,
 					"name": "RemoveFromCartEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13420,7 +13420,7 @@
 					},
 					"children": [
 						{
-							"id": 370,
+							"id": 371,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13453,7 +13453,7 @@
 							}
 						},
 						{
-							"id": 375,
+							"id": 376,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13486,7 +13486,7 @@
 							}
 						},
 						{
-							"id": 373,
+							"id": 374,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13519,7 +13519,7 @@
 							}
 						},
 						{
-							"id": 366,
+							"id": 367,
 							"name": "item_category",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13542,7 +13542,7 @@
 							}
 						},
 						{
-							"id": 364,
+							"id": 365,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13565,7 +13565,7 @@
 							}
 						},
 						{
-							"id": 371,
+							"id": 372,
 							"name": "item_location_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13598,7 +13598,7 @@
 							}
 						},
 						{
-							"id": 365,
+							"id": 366,
 							"name": "item_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13621,7 +13621,7 @@
 							}
 						},
 						{
-							"id": 374,
+							"id": 375,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13654,7 +13654,7 @@
 							}
 						},
 						{
-							"id": 369,
+							"id": 370,
 							"name": "price",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13687,7 +13687,7 @@
 							}
 						},
 						{
-							"id": 367,
+							"id": 368,
 							"name": "quantity",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13720,7 +13720,7 @@
 							}
 						},
 						{
-							"id": 372,
+							"id": 373,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13753,7 +13753,7 @@
 							}
 						},
 						{
-							"id": 368,
+							"id": 369,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13791,18 +13791,18 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								370,
-								375,
-								373,
-								366,
-								364,
 								371,
-								365,
+								376,
 								374,
-								369,
 								367,
+								365,
 								372,
-								368
+								366,
+								375,
+								370,
+								368,
+								373,
+								369
 							]
 						}
 					],
@@ -13815,7 +13815,7 @@
 					]
 				},
 				{
-					"id": 376,
+					"id": 377,
 					"name": "SearchEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -13824,7 +13824,7 @@
 					},
 					"children": [
 						{
-							"id": 382,
+							"id": 383,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13857,7 +13857,7 @@
 							}
 						},
 						{
-							"id": 384,
+							"id": 385,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13890,7 +13890,7 @@
 							}
 						},
 						{
-							"id": 378,
+							"id": 379,
 							"name": "number_of_nights",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13923,7 +13923,7 @@
 							}
 						},
 						{
-							"id": 380,
+							"id": 381,
 							"name": "number_of_passengers",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13956,7 +13956,7 @@
 							}
 						},
 						{
-							"id": 379,
+							"id": 380,
 							"name": "number_of_rooms",
 							"kind": 1024,
 							"kindString": "Property",
@@ -13989,7 +13989,7 @@
 							}
 						},
 						{
-							"id": 381,
+							"id": 382,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14022,7 +14022,7 @@
 							}
 						},
 						{
-							"id": 377,
+							"id": 378,
 							"name": "search_term",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14042,7 +14042,7 @@
 							}
 						},
 						{
-							"id": 383,
+							"id": 384,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14075,7 +14075,7 @@
 							}
 						},
 						{
-							"id": 385,
+							"id": 386,
 							"name": "travel_class",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14113,15 +14113,15 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								382,
-								384,
-								378,
-								380,
+								383,
+								385,
 								379,
 								381,
-								377,
-								383,
-								385
+								380,
+								382,
+								378,
+								384,
+								386
 							]
 						}
 					],
@@ -14134,7 +14134,7 @@
 					]
 				},
 				{
-					"id": 386,
+					"id": 387,
 					"name": "SelectContentEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14143,7 +14143,7 @@
 					},
 					"children": [
 						{
-							"id": 387,
+							"id": 388,
 							"name": "content_type",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14163,7 +14163,7 @@
 							}
 						},
 						{
-							"id": 388,
+							"id": 389,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14191,8 +14191,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								387,
-								388
+								388,
+								389
 							]
 						}
 					],
@@ -14205,7 +14205,7 @@
 					]
 				},
 				{
-					"id": 389,
+					"id": 390,
 					"name": "SetCheckoutOptionEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14214,7 +14214,7 @@
 					},
 					"children": [
 						{
-							"id": 391,
+							"id": 392,
 							"name": "checkout_option",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14237,7 +14237,7 @@
 							}
 						},
 						{
-							"id": 390,
+							"id": 391,
 							"name": "checkout_step",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14265,8 +14265,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								391,
-								390
+								392,
+								391
 							]
 						}
 					],
@@ -14279,7 +14279,7 @@
 					]
 				},
 				{
-					"id": 392,
+					"id": 393,
 					"name": "ShareEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14288,7 +14288,7 @@
 					},
 					"children": [
 						{
-							"id": 393,
+							"id": 394,
 							"name": "content_type",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14311,7 +14311,7 @@
 							}
 						},
 						{
-							"id": 394,
+							"id": 395,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14339,8 +14339,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								393,
-								394
+								394,
+								395
 							]
 						}
 					],
@@ -14353,7 +14353,7 @@
 					]
 				},
 				{
-					"id": 395,
+					"id": 396,
 					"name": "SignUpEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14362,7 +14362,7 @@
 					},
 					"children": [
 						{
-							"id": 396,
+							"id": 397,
 							"name": "method",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14390,7 +14390,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								396
+								397
 							]
 						}
 					],
@@ -14403,7 +14403,7 @@
 					]
 				},
 				{
-					"id": 397,
+					"id": 398,
 					"name": "SpendVirtualCurrencyEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14412,7 +14412,7 @@
 					},
 					"children": [
 						{
-							"id": 398,
+							"id": 399,
 							"name": "item_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14435,7 +14435,7 @@
 							}
 						},
 						{
-							"id": 400,
+							"id": 401,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14458,7 +14458,7 @@
 							}
 						},
 						{
-							"id": 399,
+							"id": 400,
 							"name": "virtual_currency_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14486,9 +14486,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								398,
-								400,
-								399
+								399,
+								401,
+								400
 							]
 						}
 					],
@@ -14501,7 +14501,7 @@
 					]
 				},
 				{
-					"id": 426,
+					"id": 427,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14517,7 +14517,7 @@
 					]
 				},
 				{
-					"id": 401,
+					"id": 402,
 					"name": "UnlockAchievementEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14526,7 +14526,7 @@
 					},
 					"children": [
 						{
-							"id": 402,
+							"id": 403,
 							"name": "achievement_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14554,7 +14554,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								402
+								403
 							]
 						}
 					],
@@ -14567,7 +14567,7 @@
 					]
 				},
 				{
-					"id": 403,
+					"id": 404,
 					"name": "ViewItemEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -14576,7 +14576,7 @@
 					},
 					"children": [
 						{
-							"id": 410,
+							"id": 411,
 							"name": "currency",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14609,7 +14609,7 @@
 							}
 						},
 						{
-							"id": 417,
+							"id": 418,
 							"name": "destination",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14642,7 +14642,7 @@
 							}
 						},
 						{
-							"id": 419,
+							"id": 420,
 							"name": "end_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14675,7 +14675,7 @@
 							}
 						},
 						{
-							"id": 412,
+							"id": 413,
 							"name": "flight_number",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14708,7 +14708,7 @@
 							}
 						},
 						{
-							"id": 406,
+							"id": 407,
 							"name": "item_category",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14731,7 +14731,7 @@
 							}
 						},
 						{
-							"id": 404,
+							"id": 405,
 							"name": "item_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14754,7 +14754,7 @@
 							}
 						},
 						{
-							"id": 407,
+							"id": 408,
 							"name": "item_location_id",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14787,7 +14787,7 @@
 							}
 						},
 						{
-							"id": 405,
+							"id": 406,
 							"name": "item_name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14810,7 +14810,7 @@
 							}
 						},
 						{
-							"id": 414,
+							"id": 415,
 							"name": "number_of_nights",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14843,7 +14843,7 @@
 							}
 						},
 						{
-							"id": 413,
+							"id": 414,
 							"name": "number_of_passengers",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14876,7 +14876,7 @@
 							}
 						},
 						{
-							"id": 415,
+							"id": 416,
 							"name": "number_of_rooms",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14909,7 +14909,7 @@
 							}
 						},
 						{
-							"id": 416,
+							"id": 417,
 							"name": "origin",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14942,7 +14942,7 @@
 							}
 						},
 						{
-							"id": 408,
+							"id": 409,
 							"name": "price",
 							"kind": 1024,
 							"kindString": "Property",
@@ -14975,7 +14975,7 @@
 							}
 						},
 						{
-							"id": 409,
+							"id": 410,
 							"name": "quantity",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15008,7 +15008,7 @@
 							}
 						},
 						{
-							"id": 420,
+							"id": 421,
 							"name": "search_term",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15041,7 +15041,7 @@
 							}
 						},
 						{
-							"id": 418,
+							"id": 419,
 							"name": "start_date",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15074,7 +15074,7 @@
 							}
 						},
 						{
-							"id": 421,
+							"id": 422,
 							"name": "travel_class",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15107,7 +15107,7 @@
 							}
 						},
 						{
-							"id": 411,
+							"id": 412,
 							"name": "value",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15145,24 +15145,24 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								410,
-								417,
-								419,
-								412,
-								406,
-								404,
+								411,
+								418,
+								420,
+								413,
 								407,
 								405,
-								414,
-								413,
-								415,
-								416,
 								408,
+								406,
+								415,
+								414,
+								416,
+								417,
 								409,
-								420,
-								418,
+								410,
 								421,
-								411
+								419,
+								422,
+								412
 							]
 						}
 					],
@@ -15175,7 +15175,7 @@
 					]
 				},
 				{
-					"id": 422,
+					"id": 423,
 					"name": "ViewItemListEventParameters",
 					"kind": 256,
 					"kindString": "Interface",
@@ -15184,7 +15184,7 @@
 					},
 					"children": [
 						{
-							"id": 423,
+							"id": 424,
 							"name": "item_category",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15212,7 +15212,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								423
+								424
 							]
 						}
 					],
@@ -15225,7 +15225,7 @@
 					]
 				},
 				{
-					"id": 424,
+					"id": 425,
 					"name": "ViewSearchResults",
 					"kind": 256,
 					"kindString": "Interface",
@@ -15234,7 +15234,7 @@
 					},
 					"children": [
 						{
-							"id": 425,
+							"id": 426,
 							"name": "search_term",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15262,7 +15262,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								425
+								426
 							]
 						}
 					],
@@ -15280,40 +15280,40 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						427
+						428
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						275,
-						288,
-						297,
-						309,
-						317,
-						320,
-						336,
-						339,
-						341,
-						344,
-						346,
-						349,
-						351,
-						355,
-						359,
-						363,
-						376,
-						386,
-						389,
-						392,
-						395,
-						397,
-						426,
-						401,
-						403,
-						422,
-						424
+						276,
+						289,
+						298,
+						310,
+						318,
+						321,
+						337,
+						340,
+						342,
+						345,
+						347,
+						350,
+						352,
+						356,
+						360,
+						364,
+						377,
+						387,
+						390,
+						393,
+						396,
+						398,
+						427,
+						402,
+						404,
+						423,
+						425
 					]
 				}
 			],
@@ -15326,7 +15326,7 @@
 			]
 		},
 		{
-			"id": 555,
+			"id": 556,
 			"name": "Auth",
 			"kind": 2,
 			"kindString": "Module",
@@ -15345,7 +15345,7 @@
 			},
 			"children": [
 				{
-					"id": 744,
+					"id": 745,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -15386,7 +15386,41 @@
 							}
 						},
 						{
-							"id": 749,
+							"id": 751,
+							"name": "currentUser",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Returns the currently signed-in user (or null if no user signed in). See the User interface documentation for detailed usage.",
+								"text": "#### Example\n\n```js\nconst user = firebase.auth().currentUser;\n```\n\n> It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.\n"
+							},
+							"sources": [
+								{
+									"fileName": "auth/lib/index.d.ts",
+									"line": 1197,
+									"character": 15
+								}
+							],
+							"type": {
+								"type": "union",
+								"types": [
+									{
+										"type": "reference",
+										"name": "User",
+										"id": 698
+									},
+									{
+										"type": "intrinsic",
+										"name": "null"
+									}
+								]
+							}
+						},
+						{
+							"id": 750,
 							"name": "settings",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15406,11 +15440,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthSettings",
-								"id": 691
+								"id": 692
 							}
 						},
 						{
-							"id": 745,
+							"id": 746,
 							"name": "languageCode",
 							"kind": 262144,
 							"kindString": "Accessor",
@@ -15423,7 +15457,7 @@
 							},
 							"getSignature": [
 								{
-									"id": 746,
+									"id": 747,
 									"name": "__get",
 									"kind": 524288,
 									"kindString": "Get signature",
@@ -15440,7 +15474,7 @@
 							],
 							"setSignature": [
 								{
-									"id": 747,
+									"id": 748,
 									"name": "__set",
 									"kind": 1048576,
 									"kindString": "Set signature",
@@ -15451,7 +15485,7 @@
 									},
 									"parameters": [
 										{
-											"id": 748,
+											"id": 749,
 											"name": "code",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -15467,7 +15501,7 @@
 									],
 									"type": {
 										"type": "intrinsic",
-										"name": "void"
+										"name": "any"
 									}
 								}
 							],
@@ -15617,7 +15651,7 @@
 											{
 												"type": "reference",
 												"name": "ActionCodeInfo",
-												"id": 638
+												"id": 639
 											}
 										]
 									}
@@ -15796,7 +15830,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -15807,49 +15841,6 @@
 									"fileName": "auth/lib/index.d.ts",
 									"line": 1360,
 									"character": 34
-								}
-							]
-						},
-						{
-							"id": 750,
-							"name": "currentUser",
-							"kind": 2048,
-							"kindString": "Method",
-							"flags": {
-								"isExported": true
-							},
-							"signatures": [
-								{
-									"id": 751,
-									"name": "currentUser",
-									"kind": 4096,
-									"kindString": "Call signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Returns the currently signed-in user (or null if no user signed in). See the User interface documentation for detailed usage.",
-										"text": "#### Example\n\n```js\nconst user = firebase.auth().currentUser;\n```\n\n> It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.\n"
-									},
-									"type": {
-										"type": "union",
-										"types": [
-											{
-												"type": "reference",
-												"name": "User",
-												"id": 697
-											},
-											{
-												"type": "intrinsic",
-												"name": "null"
-											}
-										]
-									}
-								}
-							],
-							"sources": [
-								{
-									"fileName": "auth/lib/index.d.ts",
-									"line": 1197,
-									"character": 15
 								}
 							]
 						},
@@ -16278,7 +16269,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ActionCodeSettings",
-												"id": 643
+												"id": 644
 											}
 										}
 									],
@@ -16380,7 +16371,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ActionCodeSettings",
-												"id": 643
+												"id": 644
 											}
 										}
 									],
@@ -16436,7 +16427,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -16516,7 +16507,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -16527,7 +16518,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -16593,7 +16584,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -16681,7 +16672,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -16765,7 +16756,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -16872,7 +16863,7 @@
 											{
 												"type": "reference",
 												"name": "ConfirmationResult",
-												"id": 626
+												"id": 627
 											}
 										]
 									}
@@ -17090,7 +17081,7 @@
 									"type": {
 										"type": "reference",
 										"name": "PhoneAuthListener",
-										"id": 659
+										"id": 660
 									}
 								}
 							],
@@ -17109,14 +17100,15 @@
 							"kind": 1024,
 							"children": [
 								825,
-								749
+								751,
+								750
 							]
 						},
 						{
 							"title": "Accessors",
 							"kind": 262144,
 							"children": [
-								745
+								746
 							]
 						},
 						{
@@ -17127,7 +17119,6 @@
 								816,
 								809,
 								780,
-								750,
 								819,
 								802,
 								752,
@@ -17163,7 +17154,7 @@
 					]
 				},
 				{
-					"id": 638,
+					"id": 639,
 					"name": "ActionCodeInfo",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17176,7 +17167,7 @@
 					},
 					"children": [
 						{
-							"id": 639,
+							"id": 640,
 							"name": "data",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17196,11 +17187,11 @@
 							"type": {
 								"type": "reference",
 								"name": "ActionCodeInfoData",
-								"id": 635
+								"id": 636
 							}
 						},
 						{
-							"id": 640,
+							"id": 641,
 							"name": "operation",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17249,8 +17240,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								639,
-								640
+								640,
+								641
 							]
 						}
 					],
@@ -17263,7 +17254,7 @@
 					]
 				},
 				{
-					"id": 635,
+					"id": 636,
 					"name": "ActionCodeInfoData",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17276,7 +17267,7 @@
 					},
 					"children": [
 						{
-							"id": 636,
+							"id": 637,
 							"name": "email",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17309,7 +17300,7 @@
 							}
 						},
 						{
-							"id": 637,
+							"id": 638,
 							"name": "fromEmail",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17347,8 +17338,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								636,
-								637
+								637,
+								638
 							]
 						}
 					],
@@ -17361,7 +17352,7 @@
 					]
 				},
 				{
-					"id": 643,
+					"id": 644,
 					"name": "ActionCodeSettings",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17374,7 +17365,7 @@
 					},
 					"children": [
 						{
-							"id": 644,
+							"id": 645,
 							"name": "android",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17395,11 +17386,11 @@
 							"type": {
 								"type": "reference",
 								"name": "ActionCodeSettingsAndroid",
-								"id": 631
+								"id": 632
 							}
 						},
 						{
-							"id": 647,
+							"id": 648,
 							"name": "dynamicLinkDomain",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17432,7 +17423,7 @@
 							}
 						},
 						{
-							"id": 645,
+							"id": 646,
 							"name": "handleCodeInApp",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17469,7 +17460,7 @@
 							}
 						},
 						{
-							"id": 646,
+							"id": 647,
 							"name": "iOS",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17490,11 +17481,11 @@
 							"type": {
 								"type": "reference",
 								"name": "ActionCodeSettingsIos",
-								"id": 641
+								"id": 642
 							}
 						},
 						{
-							"id": 648,
+							"id": 649,
 							"name": "url",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17522,11 +17513,11 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								644,
-								647,
 								645,
+								648,
 								646,
-								648
+								647,
+								649
 							]
 						}
 					],
@@ -17539,7 +17530,7 @@
 					]
 				},
 				{
-					"id": 631,
+					"id": 632,
 					"name": "ActionCodeSettingsAndroid",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17552,7 +17543,7 @@
 					},
 					"children": [
 						{
-							"id": 633,
+							"id": 634,
 							"name": "installApp",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17589,7 +17580,7 @@
 							}
 						},
 						{
-							"id": 634,
+							"id": 635,
 							"name": "minimumVersion",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17622,7 +17613,7 @@
 							}
 						},
 						{
-							"id": 632,
+							"id": 633,
 							"name": "packageName",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17650,9 +17641,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								633,
 								634,
-								632
+								635,
+								633
 							]
 						}
 					],
@@ -17665,7 +17656,7 @@
 					]
 				},
 				{
-					"id": 641,
+					"id": 642,
 					"name": "ActionCodeSettingsIos",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17678,7 +17669,7 @@
 					},
 					"children": [
 						{
-							"id": 642,
+							"id": 643,
 							"name": "bundleId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17716,7 +17707,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								642
+								643
 							]
 						}
 					],
@@ -17729,7 +17720,7 @@
 					]
 				},
 				{
-					"id": 595,
+					"id": 596,
 					"name": "AdditionalUserInfo",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17748,7 +17739,7 @@
 					},
 					"children": [
 						{
-							"id": 596,
+							"id": 597,
 							"name": "isNewUser",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17771,7 +17762,7 @@
 							}
 						},
 						{
-							"id": 597,
+							"id": 598,
 							"name": "profile",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17795,7 +17786,7 @@
 							}
 						},
 						{
-							"id": 598,
+							"id": 599,
 							"name": "providerId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17818,7 +17809,7 @@
 							}
 						},
 						{
-							"id": 599,
+							"id": 600,
 							"name": "username",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17856,10 +17847,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								596,
 								597,
 								598,
-								599
+								599,
+								600
 							]
 						}
 					],
@@ -17872,7 +17863,7 @@
 					]
 				},
 				{
-					"id": 556,
+					"id": 557,
 					"name": "AuthCredential",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17885,7 +17876,7 @@
 					},
 					"children": [
 						{
-							"id": 557,
+							"id": 558,
 							"name": "providerId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17908,7 +17899,7 @@
 							}
 						},
 						{
-							"id": 559,
+							"id": 560,
 							"name": "secret",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17928,7 +17919,7 @@
 							}
 						},
 						{
-							"id": 558,
+							"id": 559,
 							"name": "token",
 							"kind": 1024,
 							"kindString": "Property",
@@ -17953,9 +17944,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								557,
-								559,
-								558
+								558,
+								560,
+								559
 							]
 						}
 					],
@@ -17968,7 +17959,7 @@
 					]
 				},
 				{
-					"id": 560,
+					"id": 561,
 					"name": "AuthProvider",
 					"kind": 256,
 					"kindString": "Interface",
@@ -17980,7 +17971,7 @@
 					},
 					"children": [
 						{
-							"id": 561,
+							"id": 562,
 							"name": "PROVIDER_ID",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18003,7 +17994,7 @@
 							}
 						},
 						{
-							"id": 562,
+							"id": 563,
 							"name": "credential",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18039,21 +18030,21 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 563,
+									"id": 564,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 564,
+											"id": 565,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 565,
+													"id": 566,
 													"name": "token",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18073,7 +18064,7 @@
 													}
 												},
 												{
-													"id": 566,
+													"id": 567,
 													"name": "secret",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18098,7 +18089,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -18118,8 +18109,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								561,
-								562
+								562,
+								563
 							]
 						}
 					],
@@ -18132,7 +18123,7 @@
 					]
 				},
 				{
-					"id": 691,
+					"id": 692,
 					"name": "AuthSettings",
 					"kind": 256,
 					"kindString": "Interface",
@@ -18145,7 +18136,7 @@
 					},
 					"children": [
 						{
-							"id": 692,
+							"id": 693,
 							"name": "appVerificationDisabledForTesting",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18180,7 +18171,7 @@
 							}
 						},
 						{
-							"id": 693,
+							"id": 694,
 							"name": "setAutoRetrievedSmsCodeForPhoneNumber",
 							"kind": 2048,
 							"kindString": "Method",
@@ -18189,7 +18180,7 @@
 							},
 							"signatures": [
 								{
-									"id": 694,
+									"id": 695,
 									"name": "setAutoRetrievedSmsCodeForPhoneNumber",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -18206,7 +18197,7 @@
 									},
 									"parameters": [
 										{
-											"id": 695,
+											"id": 696,
 											"name": "phoneNumber",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -18220,7 +18211,7 @@
 											}
 										},
 										{
-											"id": 696,
+											"id": 697,
 											"name": "smsCode",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -18260,14 +18251,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								692
+								693
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								693
+								694
 							]
 						}
 					],
@@ -18280,7 +18271,7 @@
 					]
 				},
 				{
-					"id": 626,
+					"id": 627,
 					"name": "ConfirmationResult",
 					"kind": 256,
 					"kindString": "Interface",
@@ -18293,7 +18284,7 @@
 					},
 					"children": [
 						{
-							"id": 627,
+							"id": 628,
 							"name": "verificationId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18325,7 +18316,7 @@
 							}
 						},
 						{
-							"id": 628,
+							"id": 629,
 							"name": "confirm",
 							"kind": 2048,
 							"kindString": "Method",
@@ -18334,7 +18325,7 @@
 							},
 							"signatures": [
 								{
-									"id": 629,
+									"id": 630,
 									"name": "confirm",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -18344,7 +18335,7 @@
 									},
 									"parameters": [
 										{
-											"id": 630,
+											"id": 631,
 											"name": "verificationCode",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -18368,7 +18359,7 @@
 													{
 														"type": "reference",
 														"name": "User",
-														"id": 697
+														"id": 698
 													},
 													{
 														"type": "intrinsic",
@@ -18394,14 +18385,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								627
+								628
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								628
+								629
 							]
 						}
 					],
@@ -18414,7 +18405,7 @@
 					]
 				},
 				{
-					"id": 567,
+					"id": 568,
 					"name": "EmailAuthProvider",
 					"kind": 256,
 					"kindString": "Interface",
@@ -18426,7 +18417,7 @@
 					},
 					"children": [
 						{
-							"id": 569,
+							"id": 570,
 							"name": "EMAIL_LINK_SIGN_IN_METHOD",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18450,7 +18441,7 @@
 							}
 						},
 						{
-							"id": 570,
+							"id": 571,
 							"name": "EMAIL_PASSWORD_SIGN_IN_METHOD",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18474,7 +18465,7 @@
 							}
 						},
 						{
-							"id": 568,
+							"id": 569,
 							"name": "PROVIDER_ID",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18497,7 +18488,7 @@
 							}
 						},
 						{
-							"id": 571,
+							"id": 572,
 							"name": "credential",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18534,21 +18525,21 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 572,
+									"id": 573,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 573,
+											"id": 574,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 574,
+													"id": 575,
 													"name": "email",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18559,7 +18550,7 @@
 													}
 												},
 												{
-													"id": 575,
+													"id": 576,
 													"name": "password",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18573,7 +18564,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -18588,7 +18579,7 @@
 							}
 						},
 						{
-							"id": 576,
+							"id": 577,
 							"name": "credentialWithLink",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18621,21 +18612,21 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 577,
+									"id": 578,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 578,
+											"id": 579,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 579,
+													"id": 580,
 													"name": "email",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18646,7 +18637,7 @@
 													}
 												},
 												{
-													"id": 580,
+													"id": 581,
 													"name": "emailLink",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18660,7 +18651,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -18680,11 +18671,11 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								569,
 								570,
-								568,
 								571,
-								576
+								569,
+								572,
+								577
 							]
 						}
 					],
@@ -18697,7 +18688,7 @@
 					]
 				},
 				{
-					"id": 613,
+					"id": 614,
 					"name": "IdTokenResult",
 					"kind": 256,
 					"kindString": "Interface",
@@ -18710,7 +18701,7 @@
 					},
 					"children": [
 						{
-							"id": 615,
+							"id": 616,
 							"name": "authTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18733,7 +18724,7 @@
 							}
 						},
 						{
-							"id": 619,
+							"id": 620,
 							"name": "claims",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18753,21 +18744,21 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 620,
+									"id": 621,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"indexSignature": [
 										{
-											"id": 621,
+											"id": 622,
 											"name": "__index",
 											"kind": 8192,
 											"kindString": "Index signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 622,
+													"id": 623,
 													"name": "key",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -18795,7 +18786,7 @@
 							}
 						},
 						{
-							"id": 617,
+							"id": 618,
 							"name": "expirationTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18818,7 +18809,7 @@
 							}
 						},
 						{
-							"id": 616,
+							"id": 617,
 							"name": "issuedAtTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18841,7 +18832,7 @@
 							}
 						},
 						{
-							"id": 618,
+							"id": 619,
 							"name": "signInProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18873,7 +18864,7 @@
 							}
 						},
 						{
-							"id": 614,
+							"id": 615,
 							"name": "token",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18901,12 +18892,12 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								615,
-								619,
-								617,
 								616,
+								620,
 								618,
-								614
+								617,
+								619,
+								615
 							]
 						}
 					],
@@ -18919,7 +18910,7 @@
 					]
 				},
 				{
-					"id": 654,
+					"id": 655,
 					"name": "PhoneAuthError",
 					"kind": 256,
 					"kindString": "Interface",
@@ -18932,7 +18923,7 @@
 					},
 					"children": [
 						{
-							"id": 655,
+							"id": 656,
 							"name": "code",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18964,7 +18955,7 @@
 							}
 						},
 						{
-							"id": 657,
+							"id": 658,
 							"name": "message",
 							"kind": 1024,
 							"kindString": "Property",
@@ -18996,7 +18987,7 @@
 							}
 						},
 						{
-							"id": 658,
+							"id": 659,
 							"name": "stack",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19028,7 +19019,7 @@
 							}
 						},
 						{
-							"id": 656,
+							"id": 657,
 							"name": "verificationId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19056,10 +19047,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								655,
-								657,
+								656,
 								658,
-								656
+								659,
+								657
 							]
 						}
 					],
@@ -19072,7 +19063,7 @@
 					]
 				},
 				{
-					"id": 659,
+					"id": 660,
 					"name": "PhoneAuthListener",
 					"kind": 256,
 					"kindString": "Interface",
@@ -19084,7 +19075,7 @@
 					},
 					"children": [
 						{
-							"id": 685,
+							"id": 686,
 							"name": "catch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -19093,7 +19084,7 @@
 							},
 							"signatures": [
 								{
-									"id": 686,
+									"id": 687,
 									"name": "catch",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -19104,7 +19095,7 @@
 									},
 									"parameters": [
 										{
-											"id": 687,
+											"id": 688,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19115,21 +19106,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 688,
+													"id": 689,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 689,
+															"id": 690,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 690,
+																	"id": 691,
 																	"name": "a",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -19179,7 +19170,7 @@
 							]
 						},
 						{
-							"id": 660,
+							"id": 661,
 							"name": "on",
 							"kind": 2048,
 							"kindString": "Method",
@@ -19188,7 +19179,7 @@
 							},
 							"signatures": [
 								{
-									"id": 661,
+									"id": 662,
 									"name": "on",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -19199,7 +19190,7 @@
 									},
 									"parameters": [
 										{
-											"id": 662,
+											"id": 663,
 											"name": "event",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19213,7 +19204,7 @@
 											}
 										},
 										{
-											"id": 663,
+											"id": 664,
 											"name": "observer",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19224,21 +19215,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 664,
+													"id": 665,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 665,
+															"id": 666,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 666,
+																	"id": 667,
 																	"name": "snapshot",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -19246,7 +19237,7 @@
 																	"type": {
 																		"type": "reference",
 																		"name": "PhoneAuthSnapshot",
-																		"id": 649
+																		"id": 650
 																	}
 																}
 															],
@@ -19267,7 +19258,7 @@
 											}
 										},
 										{
-											"id": 667,
+											"id": 668,
 											"name": "errorCb",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19287,21 +19278,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 668,
+															"id": 669,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 669,
+																	"id": 670,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 670,
+																			"id": 671,
 																			"name": "error",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -19309,7 +19300,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "PhoneAuthError",
-																				"id": 654
+																				"id": 655
 																			}
 																		}
 																	],
@@ -19325,7 +19316,7 @@
 											}
 										},
 										{
-											"id": 671,
+											"id": 672,
 											"name": "successCb",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19345,21 +19336,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 672,
+															"id": 673,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 673,
+																	"id": 674,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 674,
+																			"id": 675,
 																			"name": "snapshot",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -19367,7 +19358,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "PhoneAuthSnapshot",
-																				"id": 649
+																				"id": 650
 																			}
 																		}
 																	],
@@ -19386,7 +19377,7 @@
 									"type": {
 										"type": "reference",
 										"name": "PhoneAuthListener",
-										"id": 659
+										"id": 660
 									}
 								}
 							],
@@ -19399,7 +19390,7 @@
 							]
 						},
 						{
-							"id": 675,
+							"id": 676,
 							"name": "then",
 							"kind": 2048,
 							"kindString": "Method",
@@ -19408,7 +19399,7 @@
 							},
 							"signatures": [
 								{
-									"id": 676,
+									"id": 677,
 									"name": "then",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -19419,7 +19410,7 @@
 									},
 									"parameters": [
 										{
-											"id": 677,
+											"id": 678,
 											"name": "onFulfilled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19435,21 +19426,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 678,
+															"id": 679,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 679,
+																	"id": 680,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 680,
+																			"id": 681,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -19457,7 +19448,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "PhoneAuthSnapshot",
-																				"id": 649
+																				"id": 650
 																			}
 																		}
 																	],
@@ -19484,7 +19475,7 @@
 											}
 										},
 										{
-											"id": 681,
+											"id": 682,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -19500,21 +19491,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 682,
+															"id": 683,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 683,
+																	"id": 684,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 684,
+																			"id": 685,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -19575,9 +19566,9 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								685,
-								660,
-								675
+								686,
+								661,
+								676
 							]
 						}
 					],
@@ -19590,7 +19581,7 @@
 					]
 				},
 				{
-					"id": 649,
+					"id": 650,
 					"name": "PhoneAuthSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -19603,7 +19594,7 @@
 					},
 					"children": [
 						{
-							"id": 652,
+							"id": 653,
 							"name": "code",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19635,7 +19626,7 @@
 							}
 						},
 						{
-							"id": 653,
+							"id": 654,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19668,7 +19659,7 @@
 							}
 						},
 						{
-							"id": 650,
+							"id": 651,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19709,7 +19700,7 @@
 							}
 						},
 						{
-							"id": 651,
+							"id": 652,
 							"name": "verificationId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19737,10 +19728,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								652,
 								653,
-								650,
-								651
+								654,
+								651,
+								652
 							]
 						}
 					],
@@ -19753,7 +19744,7 @@
 					]
 				},
 				{
-					"id": 581,
+					"id": 582,
 					"name": "PhoneAuthState",
 					"kind": 256,
 					"kindString": "Interface",
@@ -19763,7 +19754,7 @@
 					"comment": {},
 					"children": [
 						{
-							"id": 584,
+							"id": 585,
 							"name": "AUTO_VERIFIED",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19786,7 +19777,7 @@
 							}
 						},
 						{
-							"id": 583,
+							"id": 584,
 							"name": "AUTO_VERIFY_TIMEOUT",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19809,7 +19800,7 @@
 							}
 						},
 						{
-							"id": 582,
+							"id": 583,
 							"name": "CODE_SENT",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19832,7 +19823,7 @@
 							}
 						},
 						{
-							"id": 585,
+							"id": 586,
 							"name": "ERROR",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19860,10 +19851,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
+								585,
 								584,
 								583,
-								582,
-								585
+								586
 							]
 						}
 					],
@@ -19876,7 +19867,7 @@
 					]
 				},
 				{
-					"id": 586,
+					"id": 587,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -19888,7 +19879,7 @@
 					},
 					"children": [
 						{
-							"id": 587,
+							"id": 588,
 							"name": "EmailAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19909,11 +19900,11 @@
 							"type": {
 								"type": "reference",
 								"name": "EmailAuthProvider",
-								"id": 567
+								"id": 568
 							}
 						},
 						{
-							"id": 592,
+							"id": 593,
 							"name": "FacebookAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19934,11 +19925,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						},
 						{
-							"id": 590,
+							"id": 591,
 							"name": "GithubAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19959,11 +19950,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						},
 						{
-							"id": 589,
+							"id": 590,
 							"name": "GoogleAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -19984,11 +19975,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						},
 						{
-							"id": 593,
+							"id": 594,
 							"name": "OAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20009,11 +20000,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						},
 						{
-							"id": 588,
+							"id": 589,
 							"name": "PhoneAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20034,11 +20025,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						},
 						{
-							"id": 594,
+							"id": 595,
 							"name": "PhoneAuthState",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20059,11 +20050,11 @@
 							"type": {
 								"type": "reference",
 								"name": "PhoneAuthState",
-								"id": 581
+								"id": 582
 							}
 						},
 						{
-							"id": 591,
+							"id": 592,
 							"name": "TwitterAuthProvider",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20084,7 +20075,7 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthProvider",
-								"id": 560
+								"id": 561
 							}
 						}
 					],
@@ -20093,14 +20084,14 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								587,
-								592,
-								590,
-								589,
-								593,
 								588,
+								593,
+								591,
+								590,
 								594,
-								591
+								589,
+								595,
+								592
 							]
 						}
 					],
@@ -20113,7 +20104,7 @@
 					]
 				},
 				{
-					"id": 623,
+					"id": 624,
 					"name": "UpdateProfile",
 					"kind": 256,
 					"kindString": "Interface",
@@ -20126,7 +20117,7 @@
 					},
 					"children": [
 						{
-							"id": 624,
+							"id": 625,
 							"name": "displayName",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20159,7 +20150,7 @@
 							}
 						},
 						{
-							"id": 625,
+							"id": 626,
 							"name": "photoURL",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20197,8 +20188,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								624,
-								625
+								625,
+								626
 							]
 						}
 					],
@@ -20211,7 +20202,7 @@
 					]
 				},
 				{
-					"id": 697,
+					"id": 698,
 					"name": "User",
 					"kind": 256,
 					"kindString": "Interface",
@@ -20224,7 +20215,7 @@
 					},
 					"children": [
 						{
-							"id": 698,
+							"id": 699,
 							"name": "displayName",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20256,7 +20247,7 @@
 							}
 						},
 						{
-							"id": 699,
+							"id": 700,
 							"name": "email",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20288,7 +20279,7 @@
 							}
 						},
 						{
-							"id": 700,
+							"id": 701,
 							"name": "emailVerified",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20311,7 +20302,7 @@
 							}
 						},
 						{
-							"id": 701,
+							"id": 702,
 							"name": "isAnonymous",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20334,7 +20325,7 @@
 							}
 						},
 						{
-							"id": 702,
+							"id": 703,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20354,11 +20345,11 @@
 							"type": {
 								"type": "reference",
 								"name": "UserMetadata",
-								"id": 603
+								"id": 604
 							}
 						},
 						{
-							"id": 703,
+							"id": 704,
 							"name": "phoneNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20390,7 +20381,7 @@
 							}
 						},
 						{
-							"id": 704,
+							"id": 705,
 							"name": "photoURL",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20422,7 +20413,7 @@
 							}
 						},
 						{
-							"id": 705,
+							"id": 706,
 							"name": "providerData",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20444,12 +20435,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "UserInfo",
-									"id": 606
+									"id": 607
 								}
 							}
 						},
 						{
-							"id": 706,
+							"id": 707,
 							"name": "providerId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20472,7 +20463,7 @@
 							}
 						},
 						{
-							"id": 707,
+							"id": 708,
 							"name": "uid",
 							"kind": 1024,
 							"kindString": "Property",
@@ -20495,7 +20486,7 @@
 							}
 						},
 						{
-							"id": 708,
+							"id": 709,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20504,7 +20495,7 @@
 							},
 							"signatures": [
 								{
-									"id": 709,
+									"id": 710,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20540,7 +20531,7 @@
 							]
 						},
 						{
-							"id": 710,
+							"id": 711,
 							"name": "getIdToken",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20549,7 +20540,7 @@
 							},
 							"signatures": [
 								{
-									"id": 711,
+									"id": 712,
 									"name": "getIdToken",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20560,7 +20551,7 @@
 									},
 									"parameters": [
 										{
-											"id": 712,
+											"id": 713,
 											"name": "forceRefresh",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -20610,7 +20601,7 @@
 							]
 						},
 						{
-							"id": 713,
+							"id": 714,
 							"name": "getIdTokenResult",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20619,7 +20610,7 @@
 							},
 							"signatures": [
 								{
-									"id": 714,
+									"id": 715,
 									"name": "getIdTokenResult",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20630,7 +20621,7 @@
 									},
 									"parameters": [
 										{
-											"id": 715,
+											"id": 716,
 											"name": "forceRefresh",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -20666,7 +20657,7 @@
 											{
 												"type": "reference",
 												"name": "IdTokenResult",
-												"id": 613
+												"id": 614
 											}
 										]
 									}
@@ -20681,7 +20672,7 @@
 							]
 						},
 						{
-							"id": 716,
+							"id": 717,
 							"name": "linkWithCredential",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20690,7 +20681,7 @@
 							},
 							"signatures": [
 								{
-									"id": 717,
+									"id": 718,
 									"name": "linkWithCredential",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20739,7 +20730,7 @@
 									},
 									"parameters": [
 										{
-											"id": 718,
+											"id": 719,
 											"name": "credential",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -20750,7 +20741,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -20761,7 +20752,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -20776,7 +20767,7 @@
 							]
 						},
 						{
-							"id": 719,
+							"id": 720,
 							"name": "reauthenticateWithCredential",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20785,7 +20776,7 @@
 							},
 							"signatures": [
 								{
-									"id": 720,
+									"id": 721,
 									"name": "reauthenticateWithCredential",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20826,7 +20817,7 @@
 									},
 									"parameters": [
 										{
-											"id": 721,
+											"id": 722,
 											"name": "credential",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -20837,7 +20828,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -20848,7 +20839,7 @@
 											{
 												"type": "reference",
 												"name": "UserCredential",
-												"id": 600
+												"id": 601
 											}
 										]
 									}
@@ -20863,7 +20854,7 @@
 							]
 						},
 						{
-							"id": 722,
+							"id": 723,
 							"name": "reload",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20872,7 +20863,7 @@
 							},
 							"signatures": [
 								{
-									"id": 723,
+									"id": 724,
 									"name": "reload",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20902,7 +20893,7 @@
 							]
 						},
 						{
-							"id": 724,
+							"id": 725,
 							"name": "sendEmailVerification",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20911,7 +20902,7 @@
 							},
 							"signatures": [
 								{
-									"id": 725,
+									"id": 726,
 									"name": "sendEmailVerification",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -20944,7 +20935,7 @@
 									},
 									"parameters": [
 										{
-											"id": 726,
+											"id": 727,
 											"name": "actionCodeSettings",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -20957,7 +20948,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ActionCodeSettings",
-												"id": 643
+												"id": 644
 											}
 										}
 									],
@@ -20982,7 +20973,7 @@
 							]
 						},
 						{
-							"id": 727,
+							"id": 728,
 							"name": "toJSON",
 							"kind": 2048,
 							"kindString": "Method",
@@ -20991,7 +20982,7 @@
 							},
 							"signatures": [
 								{
-									"id": 728,
+									"id": 729,
 									"name": "toJSON",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21015,7 +21006,7 @@
 							]
 						},
 						{
-							"id": 729,
+							"id": 730,
 							"name": "unlink",
 							"kind": 2048,
 							"kindString": "Method",
@@ -21024,7 +21015,7 @@
 							},
 							"signatures": [
 								{
-									"id": 730,
+									"id": 731,
 									"name": "unlink",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21041,7 +21032,7 @@
 									},
 									"parameters": [
 										{
-											"id": 731,
+											"id": 732,
 											"name": "providerId",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -21062,7 +21053,7 @@
 											{
 												"type": "reference",
 												"name": "User",
-												"id": 697
+												"id": 698
 											}
 										]
 									}
@@ -21077,7 +21068,7 @@
 							]
 						},
 						{
-							"id": 732,
+							"id": 733,
 							"name": "updateEmail",
 							"kind": 2048,
 							"kindString": "Method",
@@ -21086,7 +21077,7 @@
 							},
 							"signatures": [
 								{
-									"id": 733,
+									"id": 734,
 									"name": "updateEmail",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21111,7 +21102,7 @@
 									},
 									"parameters": [
 										{
-											"id": 734,
+											"id": 735,
 											"name": "email",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -21146,7 +21137,7 @@
 							]
 						},
 						{
-							"id": 735,
+							"id": 736,
 							"name": "updatePassword",
 							"kind": 2048,
 							"kindString": "Method",
@@ -21155,7 +21146,7 @@
 							},
 							"signatures": [
 								{
-									"id": 736,
+									"id": 737,
 									"name": "updatePassword",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21176,7 +21167,7 @@
 									},
 									"parameters": [
 										{
-											"id": 737,
+											"id": 738,
 											"name": "password",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -21211,7 +21202,7 @@
 							]
 						},
 						{
-							"id": 738,
+							"id": 739,
 							"name": "updatePhoneNumber",
 							"kind": 2048,
 							"kindString": "Method",
@@ -21220,7 +21211,7 @@
 							},
 							"signatures": [
 								{
-									"id": 739,
+									"id": 740,
 									"name": "updatePhoneNumber",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21241,7 +21232,7 @@
 									},
 									"parameters": [
 										{
-											"id": 740,
+											"id": 741,
 											"name": "credential",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -21252,7 +21243,7 @@
 											"type": {
 												"type": "reference",
 												"name": "AuthCredential",
-												"id": 556
+												"id": 557
 											}
 										}
 									],
@@ -21277,7 +21268,7 @@
 							]
 						},
 						{
-							"id": 741,
+							"id": 742,
 							"name": "updateProfile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -21286,7 +21277,7 @@
 							},
 							"signatures": [
 								{
-									"id": 742,
+									"id": 743,
 									"name": "updateProfile",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -21297,7 +21288,7 @@
 									},
 									"parameters": [
 										{
-											"id": 743,
+											"id": 744,
 											"name": "updates",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -21305,7 +21296,7 @@
 											"type": {
 												"type": "reference",
 												"name": "UpdateProfile",
-												"id": 623
+												"id": 624
 											}
 										}
 									],
@@ -21335,7 +21326,6 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								698,
 								699,
 								700,
 								701,
@@ -21344,26 +21334,27 @@
 								704,
 								705,
 								706,
-								707
+								707,
+								708
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								708,
-								710,
-								713,
-								716,
-								719,
-								722,
-								724,
-								727,
-								729,
-								732,
-								735,
-								738,
-								741
+								709,
+								711,
+								714,
+								717,
+								720,
+								723,
+								725,
+								728,
+								730,
+								733,
+								736,
+								739,
+								742
 							]
 						}
 					],
@@ -21376,7 +21367,7 @@
 					]
 				},
 				{
-					"id": 600,
+					"id": 601,
 					"name": "UserCredential",
 					"kind": 256,
 					"kindString": "Interface",
@@ -21389,7 +21380,7 @@
 					},
 					"children": [
 						{
-							"id": 601,
+							"id": 602,
 							"name": "additionalUserInfo",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21410,11 +21401,11 @@
 							"type": {
 								"type": "reference",
 								"name": "AdditionalUserInfo",
-								"id": 595
+								"id": 596
 							}
 						},
 						{
-							"id": 602,
+							"id": 603,
 							"name": "user",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21434,7 +21425,7 @@
 							"type": {
 								"type": "reference",
 								"name": "User",
-								"id": 697
+								"id": 698
 							}
 						}
 					],
@@ -21443,8 +21434,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								601,
-								602
+								602,
+								603
 							]
 						}
 					],
@@ -21457,7 +21448,7 @@
 					]
 				},
 				{
-					"id": 606,
+					"id": 607,
 					"name": "UserInfo",
 					"kind": 256,
 					"kindString": "Interface",
@@ -21470,7 +21461,7 @@
 					},
 					"children": [
 						{
-							"id": 607,
+							"id": 608,
 							"name": "displayName",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21503,7 +21494,7 @@
 							}
 						},
 						{
-							"id": 608,
+							"id": 609,
 							"name": "email",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21536,7 +21527,7 @@
 							}
 						},
 						{
-							"id": 609,
+							"id": 610,
 							"name": "phoneNumber",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21569,7 +21560,7 @@
 							}
 						},
 						{
-							"id": 610,
+							"id": 611,
 							"name": "photoURL",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21602,7 +21593,7 @@
 							}
 						},
 						{
-							"id": 611,
+							"id": 612,
 							"name": "providerId",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21625,7 +21616,7 @@
 							}
 						},
 						{
-							"id": 612,
+							"id": 613,
 							"name": "uid",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21653,12 +21644,12 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								607,
 								608,
 								609,
 								610,
 								611,
-								612
+								612,
+								613
 							]
 						}
 					],
@@ -21671,7 +21662,7 @@
 					]
 				},
 				{
-					"id": 603,
+					"id": 604,
 					"name": "UserMetadata",
 					"kind": 256,
 					"kindString": "Interface",
@@ -21684,7 +21675,7 @@
 					},
 					"children": [
 						{
-							"id": 604,
+							"id": 605,
 							"name": "creationTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21717,7 +21708,7 @@
 							}
 						},
 						{
-							"id": 605,
+							"id": 606,
 							"name": "lastSignInTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -21755,8 +21746,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								604,
-								605
+								605,
+								606
 							]
 						}
 					],
@@ -21815,7 +21806,7 @@
 													{
 														"type": "reference",
 														"name": "User",
-														"id": 697
+														"id": 698
 													},
 													{
 														"type": "intrinsic",
@@ -21847,35 +21838,35 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						744
+						745
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						638,
-						635,
-						643,
-						631,
-						641,
-						595,
-						556,
-						560,
-						691,
-						626,
-						567,
-						613,
-						654,
-						659,
-						649,
-						581,
-						586,
-						623,
-						697,
-						600,
-						606,
-						603
+						639,
+						636,
+						644,
+						632,
+						642,
+						596,
+						557,
+						561,
+						692,
+						627,
+						568,
+						614,
+						655,
+						660,
+						650,
+						582,
+						587,
+						624,
+						698,
+						601,
+						607,
+						604
 					]
 				},
 				{
@@ -55428,12 +55419,12 @@
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 427
+							"id": 428
 						},
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 744
+							"id": 745
 						},
 						{
 							"type": "reference",
@@ -56152,21 +56143,27 @@
 					"children": [
 						{
 							"id": 272,
-							"name": "admob_app_id",
+							"name": "admob_android_app_id",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "The Google AdMob application App ID.",
-								"text": "This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.\n\nFor testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.\n"
+								"shortText": "The Google AdMob application App ID for Android.",
+								"text": "This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.\n\nFor testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.\n",
+								"tags": [
+									{
+										"tag": "android",
+										"text": "\n"
+									}
+								]
 							},
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1214,
-									"character": 16
+									"line": 1216,
+									"character": 24
 								}
 							],
 							"type": {
@@ -56175,7 +56172,7 @@
 							}
 						},
 						{
-							"id": 273,
+							"id": 274,
 							"name": "admob_delay_app_measurement_init",
 							"kind": 1024,
 							"kindString": "Property",
@@ -56189,7 +56186,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1224,
+									"line": 1237,
 									"character": 36
 								}
 							],
@@ -56199,7 +56196,37 @@
 							}
 						},
 						{
-							"id": 554,
+							"id": 273,
+							"name": "admob_ios_app_id",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "The Google AdMob application App ID for iOS.",
+								"text": "This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.\n\nFor testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.\n",
+								"tags": [
+									{
+										"tag": "ios",
+										"text": "\n"
+									}
+								]
+							},
+							"sources": [
+								{
+									"fileName": "admob/lib/index.d.ts",
+									"line": 1227,
+									"character": 20
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 555,
 							"name": "analytics_auto_collection_enabled",
 							"kind": 1024,
 							"kindString": "Property",
@@ -56541,8 +56568,9 @@
 							"kind": 1024,
 							"children": [
 								272,
+								274,
 								273,
-								554,
+								555,
 								881,
 								880,
 								879,
@@ -63633,7 +63661,7 @@
 			"kind": 2,
 			"children": [
 				254,
-				547,
+				548,
 				80,
 				830,
 				872,
@@ -63652,8 +63680,8 @@
 				2480,
 				2660,
 				89,
-				274,
-				555,
+				275,
+				556,
 				837,
 				882,
 				1203,

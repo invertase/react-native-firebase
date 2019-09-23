@@ -35,7 +35,7 @@ Import and apply the React Native Firebase module package to your `/android/app/
 Import the package:
 
 ```java
-import io.invertase.firebase.analytics.ReactNativeFirebaseDynamicLinksPackage;
+import io.invertase.firebase.dynamiclinks.ReactNativeFirebaseDynamicLinksPackage;
 ```
 
 Add the package to the registry:
