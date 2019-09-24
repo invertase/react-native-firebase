@@ -31,5 +31,3 @@ The package also provides access to the firebase instance:
 ```js
 import { firebase } from '@react-native-firebase/dynamic-links';
 ```
-
-### TODO
