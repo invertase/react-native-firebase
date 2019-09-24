@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase database
  */
-export namespace Database {
+export namespace FirebaseDatabaseTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -242,7 +242,7 @@ export namespace Database {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -887,7 +887,7 @@ export namespace Database {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
   }
 
   export type EventType =
@@ -1227,7 +1227,10 @@ declare module '@react-native-firebase/database' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseDatabaseTypes.Module,
+    FirebaseDatabaseTypes.Statics
+  >;
   export default module;
 }
 
@@ -1238,11 +1241,14 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      database: FirebaseModuleWithStaticsAndApp<Database.Module, Database.Statics>;
+      database: FirebaseModuleWithStaticsAndApp<
+        FirebaseDatabaseTypes.Module,
+        FirebaseDatabaseTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      database(databaseUrl?: string): Database.Module;
+      database(databaseUrl?: string): FirebaseDatabaseTypes.Module;
     }
   }
 }
