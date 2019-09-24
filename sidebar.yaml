@@ -19,6 +19,9 @@
 
 - group: Resources
   children:
+    - text: React Native Market
+      to: 'https://react-native.market/?utm_source=react-native-firebase&utm_medium=sidebar&utm_campaign=documentation'
+      asset: 'http://static.invertase.io/assets/rnm-icon-logo.png'
     - text: MacStadium
       to: '/macstadium'
       asset: '//static.invertase.io/assets/social/macstadium-logo-black.png'
