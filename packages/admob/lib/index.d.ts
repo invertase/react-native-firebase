@@ -47,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase admob
  */
-export namespace Admob {
+export namespace FirebaseAdMobTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -1164,24 +1164,27 @@ declare module '@react-native-firebase/admob' {
   import React from 'react';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-  import BannerAd = Admob.BannerAd;
+  import BannerAd = FirebaseAdMobTypes.BannerAd;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  export const AdsConsentDebugGeography: {} & Admob.AdsConsentDebugGeography;
-  export const AdsConsentStatus: {} & Admob.AdsConsentStatus;
-  export const MaxAdContentRating: {} & Admob.MaxAdContentRating;
-  export const TestIds: {} & Admob.TestIds;
-  export const AdEventType: {} & Admob.AdEventType;
-  export const BannerAdSize: {} & Admob.BannerAdSize;
-  export const RewardedAdEventType: {} & Admob.RewardedAdEventType;
-  export const AdsConsent: {} & Admob.AdsConsent;
-  export const InterstitialAd: typeof Admob.InterstitialAd;
-  export const RewardedAd: typeof Admob.RewardedAd;
+  export const AdsConsentDebugGeography: {} & FirebaseAdMobTypes.AdsConsentDebugGeography;
+  export const AdsConsentStatus: {} & FirebaseAdMobTypes.AdsConsentStatus;
+  export const MaxAdContentRating: {} & FirebaseAdMobTypes.MaxAdContentRating;
+  export const TestIds: {} & FirebaseAdMobTypes.TestIds;
+  export const AdEventType: {} & FirebaseAdMobTypes.AdEventType;
+  export const BannerAdSize: {} & FirebaseAdMobTypes.BannerAdSize;
+  export const RewardedAdEventType: {} & FirebaseAdMobTypes.RewardedAdEventType;
+  export const AdsConsent: {} & FirebaseAdMobTypes.AdsConsent;
+  export const InterstitialAd: typeof FirebaseAdMobTypes.InterstitialAd;
+  export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
   export const BannerAd: React.SFC<BannerAd>;
 
-  const module: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseAdMobTypes.Module,
+    FirebaseAdMobTypes.Statics
+  >;
   export default module;
 }
 
@@ -1193,11 +1196,11 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      admob: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
+      admob: FirebaseModuleWithStaticsAndApp<FirebaseAdMobTypes.Module, FirebaseAdMobTypes.Statics>;
     }
 
     interface FirebaseApp {
-      admob(): Admob.Module;
+      admob(): FirebaseAdMobTypes.Module;
     }
   }
 }

@@ -48,7 +48,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase auth
  */
-export namespace Auth {
+export namespace FirebaseAuthTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
@@ -1592,7 +1592,10 @@ declare module '@react-native-firebase/auth' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
   export default module;
 }
 
@@ -1603,10 +1606,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      auth: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
+      auth: FirebaseModuleWithStaticsAndApp<FirebaseAuthTypes.Module, FirebaseAuthTypes.Statics>;
     }
     interface FirebaseApp {
-      auth(): Auth.Module;
+      auth(): FirebaseAuthTypes.Module;
     }
   }
 }
