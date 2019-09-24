@@ -25,8 +25,6 @@
           to: '/quick-start'
         - text: Reserved Events
           to: '/reserved-events'
-        - text: Firebase Authentication Kit
-          to: 'https://react-native.market/?utm_source=react-native-firebase&utm_medium=auth_sidebar&utm_campaign=documentation'
     - group: Manual Installation
       children:
         - text: Android Installation
@@ -42,6 +40,8 @@
           to: '/'
         - text: Quick Start
           to: '/quick-start'
+        - text: Firebase Authentication Kit
+          to: 'https://react-native.market/?utm_source=react-native-firebase&utm_medium=auth_sidebar&utm_campaign=documentation'
         - text: Social Auth
           to: '/social-auth'
         - text: Phone Auth
