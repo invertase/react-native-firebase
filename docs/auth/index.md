@@ -22,13 +22,13 @@ React Native Firebase provides access to all Firebase authentication methods and
     Install & start authenticating your users with Firebase.
 	</Block>
 	<Block
-		icon="school"
-		color="#4CAF50"
-		title="Guides"
+		icon="build"
+		color="#285E61"
+		title="Firebase Authentication Kit"
 		version={false}
-		to="/guides?tags=auth"
+		to="https://react-native.market/products/firebase-authentication-kit"
 	>
-    Looking for advanced authentication help? Our indepth guides cover topics such as social integration.
+    The Firebase Authentication Kit for React Native is a great way to start your next project, on both Android & iOS. The kit integrates with Facebook, Google & Phone SMS providers.
 	</Block>
   <Block
 		icon="layers"
