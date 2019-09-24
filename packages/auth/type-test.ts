@@ -44,7 +44,7 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-const u = firebase.auth().currentUser();
+const u = firebase.auth().currentUser;
 console.log(u ? u.displayName : '');
 console.log(u ? u.email : '');
 console.log(u ? u.toJSON() : '');
