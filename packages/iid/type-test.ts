@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/iid';
+import * as iid from '@react-native-firebase/iid';
 
 // checks module exists at root
 console.log(firebase.iid().app.name);
@@ -11,16 +11,18 @@ console.log(firebase.app().iid().app.name);
 console.log(firebase.iid.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(defaultExport.SDK_VERSION);
+console.log(iid.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
-// checks firebase named export exists on module
-console.log(firebaseFromModule.SDK_VERSION);
-
 // checks multi-app support exists
 console.log(firebase.iid(firebase.app()).app.name);
-
-// checks default export supports app arg
-console.log(defaultExport(firebase.app()).app.name);
+firebase
+  .iid()
+  .get()
+  .then(str => str.length);
+firebase
+  .iid()
+  .getToken('foo', 'bar')
+  .then(str => str.length);
