@@ -29,7 +29,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		version={false}
 		to="/guides?tags=perf"
 	>
-	  Our guides walk you through some of the ways Performance Monitoring can be to gain deeper insight into your applications 
+	  Our guides walk you through some of the ways Performance Monitoring can be used to gain deeper insight into your applications.
     performance.
 	</Block>
   <Block
@@ -48,5 +48,5 @@ Our documentation is a great place to start, however if you're looking for more 
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-perf)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aperf+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Perf)
 - [Firebase Documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=perf-mon)

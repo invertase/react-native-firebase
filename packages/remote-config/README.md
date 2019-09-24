@@ -16,11 +16,10 @@
 <p align="center">
   <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
+  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
 ---
-
-> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
 With Firebase Remote Config, you can change the behavior and appearance of your app on the fly from the Firebase console, and then track performance in Google Analytics for Firebase. Customize by audience segment, release new content, and split test to validate improvements, all without waiting for app store approval.
 
@@ -32,13 +31,12 @@ Requires `@react-native-firebase/app` to be installed.
 
 ```bash
 yarn add @react-native-firebase/remote-config
-react-native link @react-native-firebase/remote-config
 ```
 
 ## Documentation
 
+- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/remote-config/quick-start)
 - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=remote-config)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/remote-config)
 - [Reference](https://invertase.io/oss/react-native-firebase/v6/remote-config/reference)
 
 ## License
