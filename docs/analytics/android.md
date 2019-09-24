@@ -1,6 +1,6 @@
 ---
 title: Android Installation
-description: Manually integrate AdMob into your Android application.
+description: Manually integrate Analytics into your Android application.
 ---
 
 # Android Manual Installation
@@ -12,8 +12,8 @@ The following steps are only required if you are using React Native <= 0.59 or n
 Add the following to your projects `/android/settings.gradle` file:
 
 ```groovy
-include ':@react-native-firebase_admob'
-project(':@react-native-firebase_admob').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/admob/android')
+include ':@react-native-firebase_analytics'
+project(':@react-native-firebase_analytics').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/analytics/android')
 ```
 
 #### Update Gradle Dependencies
@@ -23,7 +23,7 @@ Add the React Native Firebase module dependency to your `/android/app/build.grad
 ```groovy{3}
 dependencies {
   ...
-  implementation project(path: ":@react-native-firebase_admob")
+  implementation project(path: ":@react-native-firebase_analytics")
 }
 ```
 
@@ -34,7 +34,7 @@ Import and apply the React Native Firebase module package to your `/android/app/
 Import the package:
 
 ```java
-import io.invertase.firebase.analytics.ReactNativeFirebaseAdMobPackage;
+import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 ```
 
 Add the package to the registry:
@@ -43,7 +43,7 @@ Add the package to the registry:
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
-    new ReactNativeFirebaseAdMobPackage(),
+    new ReactNativeFirebaseAnalyticsPackage(),
 ```
 
 #### Rebuild the project
@@ -51,6 +51,6 @@ protected List<ReactPackage> getPackages() {
 Once the above steps have been completed, rebuild your Android project:
 
 ```bash
-react-native run-android
+npx react-native run-android
 ```
 

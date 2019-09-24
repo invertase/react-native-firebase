@@ -13,6 +13,8 @@ Install this module with Yarn:
 yarn add @react-native-firebase/app
 ```
 
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+
 ### Initializing Firebase
 
 React Native Firebase provides two methods for initializing your with Firebase.

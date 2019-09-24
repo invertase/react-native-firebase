@@ -7,22 +7,25 @@ description: Getting started with AdMob in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/admob
 ```
 
-Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
+**IMPORTANT**: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
 
-> IMPORTANT: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
 The AdMob package provides a JavaScript API for integrating event based adverts such as Interstitial Ads and
 React component view adverts such as Banner Ads. It also provides functionality for requesting consent from those users within the EEA, specified by EU ePrivacy Directive & GDPR.
 
-Import the Cloud Functions package into your project:
+Import the AdMob package into your project:
 
 ```js
 import admob from '@react-native-firebase/admob';
@@ -47,7 +50,8 @@ Add the ID to your root level `firebase.json` file under the `react-native` obje
 ```json
 {
   "react-native": {
-    "admob_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+    "admob_android_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+    "admob_ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
   }
 }
 ```
@@ -89,7 +93,7 @@ The AdMob module supports 3 advert types:
 
 Out of the box, AdMob does not handle any related regulations which you may need to enforce on your application. It is up to the developer to implement and handle this on a user-by-user basis. For example, you must consent to EEA users being served both personalized and non-personalized adverts before showing them. For more information, see [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page for full examples of 
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application. See the <Anchor version group href="/european-user-consent">European User Consent</Anchor> page for full examples of
 how to integrate the helper into your application.
 
 #### Testing
@@ -111,7 +115,7 @@ interstitialAd.onAdEvent((type, error) => {
 interstitialAd.load();
 ```
 
-Once our interstitial has been loaded from the Google AdMob servers, we will start to receieve events within our handler (e.g. ad loaded). These events also include user based events such as notifying us when the user has closed the ad, or clicked the ad and left the application. For a full list of events, see the `AdEventType` class.
+Once our interstitial has been loaded from the Google AdMob servers, we will start to receive events within our handler (e.g. ad loaded). These events also include user based events such as notifying us when the user has closed the ad, or clicked the ad and left the application. For a full list of events, see the `AdEventType` class.
 
 Once the advert has been loaded, we can show it to the user. Listen out for the loaded event, and once ready, show it to the user:
 
@@ -169,6 +173,6 @@ import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
 // Create a new instance
 const interstitialAd = InterstitialAd.createForAdRequest(TestIds.INTERSTITIAL, {
   requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing']
+  keywords: ['fashion', 'clothing'],
 });
 ```

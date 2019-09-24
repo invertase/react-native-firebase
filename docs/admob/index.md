@@ -50,3 +50,12 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
     The reference API for AdMob covers all aspects of the package, from component props to advert lifecycle events.
 	</Block>
 </Grid>
+
+## Learn more
+
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
+check out the resources below:
+
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-admob)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Admob)
+- [Firebase Documentation](https://firebase.google.com/docs/admob?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)
