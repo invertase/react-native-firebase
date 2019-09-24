@@ -60,11 +60,11 @@ the ability to type check the code. We can easily access the types manually thro
 ```jsx
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import auth, { Auth } from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
   const [loading, setLoading] = useState < boolean > true;
-  const [user, setUser] = (useState < Auth.User) | (null > null);
+  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {
@@ -83,7 +83,7 @@ export default App;
 ```
 
 We firstly initialize a local state variable called `user`, and manually provide a type definition of that state item
-of `<Auth.User | null>`. As we are unaware of the users authentication state, we initialize state with a value of `null`
+of `<FirebaseAuthTypes.User | null>`. As we are unaware of the users authentication state, we initialize state with a value of `null`
 which is a valid type for this state.
 
 The `onAuthStateChanged` listener triggers with a `User` or `null` parameter whenever the users authentication state changes. The
