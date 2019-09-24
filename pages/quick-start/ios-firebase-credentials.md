@@ -57,7 +57,7 @@ Your iOS project now needs to be rebuild to start using Firebase. Before doing s
 
 ```bash
 $ cd ios/
-$ pod install pod install --repro-update
+$ pod install pod install --repo-update
 ```
 
 Once complete, rebuild your iOS project from the project root using the React Native CLI:
