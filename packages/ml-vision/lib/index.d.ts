@@ -53,25 +53,25 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml-vision
  */
-export namespace MLKitVision {
+export namespace FirebaseVisionTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {
-    VisionCloudTextRecognizerModelType: VisionCloudTextRecognizerModelType;
-    VisionFaceDetectorClassificationMode: VisionFaceDetectorClassificationMode;
-    VisionFaceDetectorContourMode: VisionFaceDetectorContourMode;
-    VisionFaceDetectorLandmarkMode: VisionFaceDetectorLandmarkMode;
-    VisionFaceDetectorPerformanceMode: VisionFaceDetectorPerformanceMode;
-    VisionFaceLandmarkType: VisionFaceLandmarkType;
-    VisionFaceContourType: VisionFaceContourType;
-    VisionCloudLandmarkRecognizerModelType: VisionCloudLandmarkRecognizerModelType;
-    VisionDocumentTextRecognizedBreakType: VisionDocumentTextRecognizedBreakType;
-    VisionBarcodeFormat: VisionBarcodeFormat;
-    VisionBarcodeValueType: VisionBarcodeValueType;
-    VisionBarcodeAddressType: VisionBarcodeAddressType;
-    VisionBarcodeEmailType: VisionBarcodeEmailType;
-    VisionBarcodePhoneType: VisionBarcodePhoneType;
-    VisionBarcodeWifiEncryptionType: VisionBarcodeWifiEncryptionType;
+    VisionCloudTextRecognizerModelType: typeof VisionCloudTextRecognizerModelType;
+    VisionFaceDetectorClassificationMode: typeof VisionFaceDetectorClassificationMode;
+    VisionFaceDetectorContourMode: typeof VisionFaceDetectorContourMode;
+    VisionFaceDetectorLandmarkMode: typeof VisionFaceDetectorLandmarkMode;
+    VisionFaceDetectorPerformanceMode: typeof VisionFaceDetectorPerformanceMode;
+    VisionFaceLandmarkType: typeof VisionFaceLandmarkType;
+    VisionFaceContourType: typeof VisionFaceContourType;
+    VisionCloudLandmarkRecognizerModelType: typeof VisionCloudLandmarkRecognizerModelType;
+    VisionDocumentTextRecognizedBreakType: typeof VisionDocumentTextRecognizedBreakType;
+    VisionBarcodeFormat: typeof VisionBarcodeFormat;
+    VisionBarcodeValueType: typeof VisionBarcodeValueType;
+    VisionBarcodeAddressType: typeof VisionBarcodeAddressType;
+    VisionBarcodeEmailType: typeof VisionBarcodeEmailType;
+    VisionBarcodePhoneType: typeof VisionBarcodePhoneType;
+    VisionBarcodeWifiEncryptionType: typeof VisionBarcodeWifiEncryptionType;
   }
 
   /**
@@ -1179,42 +1179,6 @@ export namespace MLKitVision {
   }
 }
 
-export const VisionPoint = MLKitVision.VisionPoint;
-export const VisionRectangle = MLKitVision.VisionRectangle;
-export const VisionFaceDetectorOptions = MLKitVision.VisionFaceDetectorOptions;
-export const VisionFaceLandmarkType = MLKitVision.VisionFaceLandmarkType;
-export const VisionFaceContourType = MLKitVision.VisionFaceContourType;
-
-export const VisionImageLabelerOptions = MLKitVision.VisionImageLabelerOptions;
-export const VisionBarcodeDetectorOptions = VisionBarcodeDetectorOptions;
-export const VisionCloudImageLabelerOptions = MLKitVision.VisionCloudImageLabelerOptions;
-export const VisionCloudTextRecognizerOptions = MLKitVision.VisionCloudTextRecognizerOptions;
-
-export const VisionCloudTextRecognizerModelType = MLKitVision.VisionCloudTextRecognizerModelType;
-export const VisionCloudLandmarkRecognizerOptions =
-  MLKitVision.VisionCloudLandmarkRecognizerOptions;
-export const VisionCloudDocumentTextRecognizerOptions =
-  MLKitVision.VisionCloudDocumentTextRecognizerOptions;
-
-export const VisionFaceDetectorClassificationMode =
-  MLKitVision.VisionFaceDetectorClassificationMode;
-export const VisionFaceDetectorContourMode = MLKitVision.VisionFaceDetectorContourMode;
-export const VisionFaceDetectorLandmarkMode = MLKitVision.VisionFaceDetectorLandmarkMode;
-export const VisionFaceDetectorPerformanceMode = MLKitVision.VisionFaceDetectorPerformanceMode;
-
-export const VisionDocumentTextRecognizedBreakType =
-  MLKitVision.VisionDocumentTextRecognizedBreakType;
-export const VisionCloudLandmarkRecognizerModelType =
-  MLKitVision.VisionCloudLandmarkRecognizerModelType;
-
-export const VisionBarcodeFormat = MLKITVision.VisionBarcodeFormat;
-export const VisionBarcodeValueType = MLKITVision.VisionBarcodeValueType;
-export const VisionBarcodeAddressType = MLKITVision.VisionBarcodeAddressType;
-export const VisionBarcodeEmailType = MLKITVision.VisionBarcodeEmailType;
-export const VisionBarcodePhoneType = MLKITVision.VisionBarcodePhoneType;
-export const VisionBarcodeWifiEncryptionType = MLKITVision.VisionBarcodeWifiEncryptionType;
-export const VisionBarcodeDetectorOptions = MLKITVision.VisionBarcodeDetectorOptions;
-
 declare module '@react-native-firebase/ml-vision' {
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
@@ -1222,7 +1186,26 @@ declare module '@react-native-firebase/ml-vision' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
+  export const VisionBarcodeFormat: {} & typeof FirebaseVisionTypes.VisionBarcodeFormat;
+  export const VisionFaceContourType: {} & typeof FirebaseVisionTypes.VisionFaceContourType;
+  export const VisionFaceLandmarkType: {} & typeof FirebaseVisionTypes.VisionFaceLandmarkType;
+  export const VisionBarcodeValueType: {} & typeof FirebaseVisionTypes.VisionBarcodeValueType;
+  export const VisionBarcodeEmailType: {} & typeof FirebaseVisionTypes.VisionBarcodeEmailType;
+  export const VisionBarcodePhoneType: {} & typeof FirebaseVisionTypes.VisionBarcodePhoneType;
+  export const VisionBarcodeAddressType: {} & typeof FirebaseVisionTypes.VisionBarcodeAddressType;
+  export const VisionFaceDetectorContourMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorContourMode;
+  export const VisionFaceDetectorLandmarkMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorLandmarkMode;
+  export const VisionBarcodeWifiEncryptionType: {} & FirebaseVisionTypes.VisionBarcodeWifiEncryptionType;
+  export const VisionFaceDetectorPerformanceMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorPerformanceMode;
+  export const VisionCloudTextRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudTextRecognizerModelType;
+  export const VisionFaceDetectorClassificationMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorClassificationMode;
+  export const VisionDocumentTextRecognizedBreakType: {} & typeof FirebaseVisionTypes.VisionDocumentTextRecognizedBreakType;
+  export const VisionCloudLandmarkRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudLandmarkRecognizerModelType;
+
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseVisionTypes.Module,
+    FirebaseVisionTypes.Statics
+  >;
   export default module;
 }
 
@@ -1233,11 +1216,14 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      vision: FirebaseModuleWithStaticsAndApp<MLKitVision.Module, MLKitVision.Statics>;
+      vision: FirebaseModuleWithStaticsAndApp<
+        FirebaseVisionTypes.Module,
+        FirebaseVisionTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      vision(): MLKitVision.Module;
+      vision(): FirebaseVisionTypes.Module;
     }
   }
 }

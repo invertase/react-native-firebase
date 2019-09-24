@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase iid
  */
-export namespace Iid {
+export namespace FirebaseIidTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -137,7 +137,7 @@ declare module '@react-native-firebase/iid' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<FirebaseIidTypes.Module, FirebaseIidTypes.Statics>;
   export default module;
 }
 
@@ -148,10 +148,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      iid: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
+      iid: FirebaseModuleWithStaticsAndApp<FirebaseIidTypes.Module, FirebaseIidTypes.Statics>;
     }
     interface FirebaseApp {
-      iid(): Iid.Module;
+      iid(): FirebaseIidTypes.Module;
     }
   }
 }

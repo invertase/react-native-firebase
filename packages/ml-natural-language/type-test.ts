@@ -1,7 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, {
-  firebase as firebaseFromModule,
-} from '@react-native-firebase/ml-natural-language';
+import * as language from '@react-native-firebase/ml-natural-language';
 
 // checks module exists at root
 console.log(firebase.naturalLanguage().app.name);
@@ -13,16 +11,41 @@ console.log(firebase.app().naturalLanguage().app.name);
 console.log(firebase.naturalLanguage.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(defaultExport.SDK_VERSION);
+console.log(firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebaseFromModule.SDK_VERSION);
+console.log(language.firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.naturalLanguage(firebase.app()).app.name);
 
-// checks default export supports app arg
-console.log(defaultExport(firebase.app()).app.name);
+firebase
+  .naturalLanguage()
+  .identifyLanguage('foo', {
+    confidenceThreshold: 0.3,
+  })
+  .then(str => str.replace);
+
+firebase
+  .naturalLanguage()
+  .identifyPossibleLanguages('foo', {
+    confidenceThreshold: 0.3,
+  })
+  .then(languages => languages.forEach($ => $.confidence));
+
+firebase
+  .naturalLanguage()
+  .suggestReplies([
+    {
+      text: 'foo',
+      isLocalUser: true,
+      userId: '123',
+      timestamp: 123,
+    },
+  ])
+  .then(replies => {
+    replies.forEach($ => $.text);
+  });
