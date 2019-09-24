@@ -13,7 +13,7 @@ Ambient Declarations for each Firebase module, without having to install any add
 To demonstrate TypeScript usage in a practical example, the following assumes TypeScript is already setup on your environment.
 If you are looking to setup a new project or migrate an existing project to TypeScript please check out this official [blog post](https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native).
 
-The below example makes use of the <Anchor version="v6" group="admob" href="/">Authentication</Anchor> module, demonstrating
+The below example makes use of the <Anchor version="v6" group="auth" href="/">Authentication</Anchor> module, demonstrating
 how to safely type code using the declarations the module provides.
 
 Lets go ahead and create a new `App.tsx` component:
@@ -33,9 +33,8 @@ export default App;
 ```
 
 This code will produce a TypeScript error: `Object is possibly null`. Accessing `currentUser` returns the
-current <Anchor version="v6" group="auth" href="reference/user">`User`</Anchor> is the user is signed in or `null` if
-they are signed out. This error prevents our code from compiling and for good reason - without checking the users authentication
-status, accessing the `email` property on `User` will cause the app to crash!
+current <Anchor version="v6" group="auth" href="reference/user">`User`</Anchor> if the user is signed in or `null` if
+they are signed out. This error prevents our code from compiling and for good reason - without checking the users authentication status, accessing the `email` property on `User` will cause the app to crash!
 
 To rectify our unsafe code, we can check the existence of the `user` before accessing it:
 
@@ -51,11 +50,10 @@ function App() {
 }
 ```
 
-The TypeScript error will remove allowing us to safely continue developing our app.
+TypeScript will no longer errors, allowing us to safely continue developing our app.
 
 It is also possible to access the module types directly, if you need to locally reference variables within your own codebase.
-For example, we may need to store the `User` in local state. Without manually defining a type for local state, TypeScript loses
-the ability to type check the code. We can easily access the types manually through the module though, for example:
+For example, we may need to store the `User` in local state. Without manually defining a type for local state, TypeScript loses the ability to type check the code. We can easily access the types manually through the module though, for example:
 
 ```jsx
 import * as React from 'react';
@@ -63,8 +61,8 @@ import { useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
-  const [loading, setLoading] = useState < boolean > true;
-  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {
