@@ -50,11 +50,21 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		Integrate Firebase into an existing React Native project.
   	</Block>
 	<Block
+		title="React Native Market"
+		to="https://react-native.market/?utm_source=react-native-firebase&utm_medium=quick_start&utm_campaign=documentation"
+		icon="build"
+		color="#285E61"
+	>
+		Upgrading your project from React Native Firebase v5.x.x.
+  	</Block>
+</Grid>
+<Grid columns="1">
+	<Block
 		title="Upgrade from v5.x.x"
 		to="/migrating-to-v6"
 		icon="build"
 		color="#bd590a"
 	>
-		Upgrading your project from React Native Firebase v5.x.x.
-  	</Block>
+		Looking to upgrade your React Native app from an older version of React Native Firebase? Our migration guide explains every step needed to getting up and running with v6.
+	</Block>
 </Grid>
