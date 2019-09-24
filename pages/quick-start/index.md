@@ -50,14 +50,17 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		Integrate Firebase into an existing React Native project.
   	</Block>
 	<Block
-		title="React Native Market"
-		to="https://react-native.market/?utm_source=react-native-firebase&utm_medium=quick_start&utm_campaign=documentation"
+		title="Firebase Authentication Kit"
+		to="https://react-native.market/products/firebase-authentication-kit?utm_source=react-native-firebase&utm_medium=quick_start&utm_campaign=documentation"
 		icon="build"
 		color="#285E61"
 	>
-		Upgrading your project from React Native Firebase v5.x.x.
+		The Firebase Authentication Kit for React Native is a great way to start your next project, on both Android & iOS. The kit integrates with Facebook, Google & Phone SMS providers.
   	</Block>
 </Grid>
+
+## Upgrade
+
 <Grid columns="1">
 	<Block
 		title="Upgrade from v5.x.x"
