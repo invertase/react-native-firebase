@@ -14,6 +14,11 @@ The following npx command will create a new directory on your machine with the `
 ```bash
 npx @react-native-community/cli init --template=@react-native-firebase/template <name>
 ```
+> In case `cli init` script fails while performing `pod install`, follow next step:
+>```bash
+>$ cd ./<name>/ios
+>$ pod update (or pod install --repo-update)
+>```
 
 For example, to install a new `TodoApp` on your machine and start the Android app:
 
