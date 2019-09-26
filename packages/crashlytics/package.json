@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/crashlytics",
-  "version": "0.5.4",
+  "version": "6.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.",
   "main": "lib/index.js",
@@ -32,7 +32,7 @@
   "dependencies": {
     "stacktrace-js": "^2.0.0"
   },
-  "gitHead": "27a5ff671cd51d8b159632387e3999b27bc1eb58",
+  "gitHead": "f28f34a47a2d7a40aa9ee5c96081f62272395d8c",
   "publishConfig": {
     "access": "public"
   }
