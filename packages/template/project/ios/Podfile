@@ -1,12 +1,16 @@
 platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
+# To override the React Native Firebase iOS SDK versions used uncomment any of the below and change the version
+# $FirebaseSDKVersion = '6.8.1'
+# $FabricSDKVersion = '1.6.0'
+# $CrashlyticsSDKVersion = '3.1.0'
+
 target 'HelloWorld' do
   # Pods for HelloWorld
   pod 'React', :path => '../node_modules/react-native/'
   pod 'React-Core', :path => '../node_modules/react-native/React'
   pod 'React-DevSupport', :path => '../node_modules/react-native/React'
-  pod 'React-fishhook', :path => '../node_modules/react-native/Libraries/fishhook'
   pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
   pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
   pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'
