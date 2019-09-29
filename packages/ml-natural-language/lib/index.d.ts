@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml-natural-language
  */
-export namespace MLKitLanguage {
+export namespace FirebaseLanguageTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -214,7 +214,10 @@ declare module '@react-native-firebase/ml-natural-language' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
+  const module: FirebaseModuleWithStaticsAndApp<
+    FirebaseLanguageTypes.Module,
+    FirebaseLanguageTypes.Statics
+  >;
   export default module;
 }
 
@@ -226,18 +229,28 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      naturalLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
+      naturalLanguage: FirebaseModuleWithStaticsAndApp<
+        FirebaseLanguageTypes.Module,
+        FirebaseLanguageTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      naturalLanguage(): MLKitLanguage.Module;
+      naturalLanguage(): FirebaseLanguageTypes.Module;
     }
   }
 }
 
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
+    /**
+     * If `true`, the Language ID Model will be installed onto the device.
+     */
     ml_natural_language_language_id_model: boolean;
+
+    /**
+     * If `true`, the Smart Reply Model will be installed onto the device.
+     */
     ml_natural_language_smart_reply_model: boolean;
   }
 }

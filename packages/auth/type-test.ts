@@ -1,5 +1,5 @@
 import firebase from '@react-native-firebase/app';
-import defaultExport, { firebase as firebaseFromModule } from '@react-native-firebase/auth';
+import * as auth from '@react-native-firebase/auth';
 
 // checks module exists at root
 console.log(firebase.auth().app.name);
@@ -13,16 +13,48 @@ console.log(firebase.app().auth().currentUser);
 console.log(firebase.auth.SDK_VERSION);
 
 // checks statics exist on defaultExport
-console.log(defaultExport.SDK_VERSION);
+console.log(auth.firebase.SDK_VERSION);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
 
 // checks firebase named export exists on module
-console.log(firebaseFromModule.SDK_VERSION);
+console.log(auth.firebase.SDK_VERSION);
 
 // checks multi-app support exists
 console.log(firebase.auth(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(defaultExport(firebase.app()).app.name);
+console.log(firebase.auth(firebase.app('foo')).app.name);
+
+// Statics
+console.log(firebase.auth.EmailAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.PhoneAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.GoogleAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.GithubAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.TwitterAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.FacebookAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.OAuthProvider.PROVIDER_ID);
+console.log(firebase.auth.PhoneAuthState.CODE_SENT);
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    console.log(user.email);
+    console.log(user.displayName);
+  }
+});
+
+const u = firebase.auth().currentUser;
+console.log(u ? u.displayName : '');
+console.log(u ? u.email : '');
+console.log(u ? u.toJSON() : '');
+
+firebase
+  .auth()
+  .signInAnonymously()
+  .then();
+
+firebase
+  .auth()
+  .signInWithEmailAndPassword('', '')
+  .then();
