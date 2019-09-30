@@ -890,9 +890,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
 
-  if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
-  } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+  if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
@@ -926,6 +924,12 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
         getCredentialWithCompletion:^(FIRAuthCredential *credential, NSError *error) {
             completion(credential, error);
         }];
+  } else if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+      FIROAuthProvider *provider = [FIROAuthProvider providerWithProviderID:@"twitter.com"];
+      [provider getCredentialWithUIDelegate:nil
+                                 completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
+          completion(credential, error);
+      }];
   } else {
       completion([self getCredentialForProvider:provider token:authToken secret:authTokenSecret], nil);
   }
