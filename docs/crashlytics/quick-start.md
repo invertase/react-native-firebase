@@ -48,8 +48,8 @@ sending a crash report and sent with the crash report.
 import crashlytics from '@react-native-firebase/crashlytics';
 
 function forceCrash() {
-  crashlytics.log('Testing crash');
-  crashlytics.crash();
+  crashlytics().log('Testing crash');
+  crashlytics().crash();
 }
 ```
 
@@ -90,6 +90,6 @@ async function onSignIn(user) {
 
 ### Disabling Crashlytics
 
-To disable Crashlytics, set the `<VALUE>` to `false` in the `firebase.json` file.
+To disable Crashlytics, set the `crashlytics_auto_collection_enabled` to `false` in the `firebase.json` file.
 
 To learn more, view the <Anchor version group="app" href="/firebase-json">App documentation</Anchor>.
