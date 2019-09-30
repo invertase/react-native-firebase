@@ -26,10 +26,10 @@ export default class TwitterAuthProvider {
     return providerId;
   }
 
-  static credential(token, secret) {
+  static credential() {
     return {
-      token,
-      secret,
+      token: '',
+      secret: '',
       providerId,
     };
   }

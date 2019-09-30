@@ -60,32 +60,15 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Twitter
 
-The [react-native-twitter-signin](https://github.com/GoldenOwlAsia/react-native-twitter-signin) library provides a
-wrapper around the official Twitter SDKs, providing access to the users `authToken` and `authTokenSecret` which are
-required to create a Firebase credential.
+Twitter relies on oAuth authentification to provide user credentials, we utalise firebase SDK to present users
+with necessary views to retrieve their oAuth credentials.
 
-**Step 1**: Initialize the Twitter SDK.
-
-```js
-import { NativeModules } from 'react-native';
-const { RNTwitterSignIn } = NativeModules;
-
-await RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET');
-```
-
-**Step 2**: Login to Twitter and read tokens
-
-```js
-// Also returns: name, userID & userName
-const { authToken, authTokenSecret } = await RNTwitterSignIn.logIn();
-```
-
-**Step 3**: Create a Firebase credential with the tokens.
+**Step 3**: Create a Firebase credential.
 
 ```js
 import { firebase } from '@react-native-firebase/auth';
 
-const credential = firebase.auth.TwitterAuthProvider.credential(authToken, authTokenSecret);
+const credential = firebase.auth.TwitterAuthProvider.credential();
 ```
 
 **Step 4**: Sign in to Firebase with the created credential.

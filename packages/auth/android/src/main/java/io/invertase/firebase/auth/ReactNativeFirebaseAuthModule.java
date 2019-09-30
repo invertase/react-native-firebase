@@ -30,6 +30,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
@@ -51,10 +52,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -1344,8 +1345,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         return FacebookAuthProvider.getCredential(authToken);
       case "google.com":
         return GoogleAuthProvider.getCredential(authToken, authSecret);
-      case "twitter.com":
-        return TwitterAuthProvider.getCredential(authToken, authSecret);
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
       case "oauth":
@@ -1364,6 +1363,30 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         return null;
     }
   }
+
+  /**
+   * Returns an async instance of AuthCredential for the specified provider
+   */
+  Task<AuthResult> signInWithOAuth(
+    String appName,
+    String provider) {
+    OAuthProvider.Builder oAuthProvider = OAuthProvider.newBuilder(provider);
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    String[] providers = new String[]{"twitter.com", "github.com"};
+
+    if (!Arrays.asList(providers).contains(provider)) {
+      return null;
+    }
+
+    if (pendingResultTask != null) {
+      return pendingResultTask;
+    }
+
+    return firebaseAuth.startActivityForSignInWithProvider(getReactApplicationContext().getCurrentActivity(), oAuthProvider.build());
+  }
+
 
   /**
    * Returns an instance of PhoneAuthCredential, potentially cached
@@ -1910,7 +1933,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
-    
+
     // Required
     String url = actionCodeSettings.getString("url");
     builder = builder.setUrl(Objects.requireNonNull(url));

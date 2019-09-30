@@ -227,12 +227,8 @@ describe('auth() -> Providers', () => {
 
     describe('credential', () => {
       it('should return a credential object', () => {
-        const token = '123456';
-        const secret = '654321';
         const credential = firebase.auth.TwitterAuthProvider.credential(token, secret);
         credential.providerId.should.equal('twitter.com');
-        credential.token.should.equal(token);
-        credential.secret.should.equal(secret);
       });
     });
 

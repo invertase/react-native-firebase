@@ -97,7 +97,7 @@ export namespace FirebaseAuthTypes {
   /**
    * Game Center auth provider implementation
    */
-  export interface GameCenterAuthProvider extends AuthProvider {
+  export interface SimpleAuthProvider extends AuthProvider {
     credential: () => AuthCredential;
   }
 
@@ -239,7 +239,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.GameCenterAuthProvider;
      * ```
      */
-    GameCenterAuthProvider: GameCenterAuthProvider;
+    GameCenterAuthProvider: SimpleAuthProvider;
     /**
      * Twitter auth provider implementation.
      *
@@ -249,7 +249,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.TwitterAuthProvider;
      * ```
      */
-    TwitterAuthProvider: AuthProvider;
+    TwitterAuthProvider: SimpleAuthProvider;
     /**
      * Facebook auth provider implementation.
      *
