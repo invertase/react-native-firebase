@@ -140,11 +140,11 @@
           to: '/'
         - text: Quick Start
           to: '/quick-start'
-    - group: Manual Installation
+    - group: Additional Steps
       children:
-        - text: Android Installation
+        - text: Android Steps
           to: '/android'
-        - text: iOS Installation
+        - text: iOS Steps
           to: '/ios'
 
 - module: database
