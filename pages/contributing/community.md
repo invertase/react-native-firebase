@@ -19,20 +19,20 @@ We'd love to help promote the event via:
 
 Please send as many details of the event as possible:
 
-<Form 
+<Form
     name="community"
     success="Thanks, we aim to respond to all enquiries within 48 hours."
     required={['name', 'email', 'type', 'event', 'details']}
 >
-    <FormInput 
+    <FormInput
         name="name"
         label="Name"
     />
-    <FormInput 
+    <FormInput
         name="email"
         label="Email Address"
     />
-    <FormSelect 
+    <FormSelect
         name="type"
         label="Your role"
     >
@@ -40,11 +40,11 @@ Please send as many details of the event as possible:
         <FormSelectOption value="speaker" label="Event Speaker" />
         <FormSelectOption value="attendee" label="Event Attendee" />
     </FormSelect>
-    <FormInput 
+    <FormInput
         name="event"
         label="Event Name"
     />
-    <FormTextArea 
+    <FormTextArea
         name="details"
         label="Event Details"
         placeholder="Please include details such as location, date, time, talk and anything else related to the event"

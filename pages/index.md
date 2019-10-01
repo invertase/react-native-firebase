@@ -20,7 +20,7 @@ description: React Native Firebase
     icon="done"
     color="#2196F3"
   >
-    Get up and running in less than 5 minutes with the quick start tutorial. 
+    Get up and running in less than 5 minutes with the quick start tutorial.
   </Block>
   <Block
     title="Guides"
@@ -54,12 +54,12 @@ The React Native Firebase documentation is a great place to get started, however
     View the step by step guide to migrating your project to the latest version of React Native Firebase.
   </Block>
   <Block
-    title="Github"
+    title="GitHub"
     to="https://github.com/invertase/react-native-firebase"
     icon="code"
     color="#24292e"
   >
-    The Github repository contains all of the source code, current issues and pull requests for the library.
+    The GitHub repository contains all of the source code, current issues and pull requests for the library.
   </Block>
   <Block
     title="FAQs"

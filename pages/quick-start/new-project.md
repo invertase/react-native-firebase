@@ -36,13 +36,13 @@ Now that you have a new project with the core Firebase module integrated, you ha
 		color="#4CAF50"
 	>
 		Creating an Android Firebase app and downloading the credentials from the Firebase console.
-  	</Block>
-    <Block
+	</Block>
+	<Block
 		title="Adding Firebase credentials to your iOS app"
-        to="/quick-start/ios-firebase-credentials"
-        icon="phone_iphone"
-        color="#2196F3"
-    >
-        Creating an iOS Firebase app and downloading the credentials from the Firebase console.
-    </Block>
+		to="/quick-start/ios-firebase-credentials"
+		icon="phone_iphone"
+		color="#2196F3"
+	>
+		Creating an iOS Firebase app and downloading the credentials from the Firebase console.
+	</Block>
 </Grid>

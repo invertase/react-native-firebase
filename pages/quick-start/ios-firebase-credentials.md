@@ -22,7 +22,7 @@ Enter your application details then click on 'Register app'. The 'iOS bundle ID'
 
 ![iOS Register](https://prismic-io.s3.amazonaws.com/invertase%2Fc7ad084f-d455-4d95-b498-de99bf68742d_register-ios.png)
 
-Download the config file locally by pressing "Download GoogleService-Info.plist". Using XCode, open the projects
+Download the config file locally by pressing "Download GoogleService-Info.plist". Using Xcode, open the projects
 `/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if using Pods).
 
 Right click on the project name and "Add files" to the project, as demonstrated below:
@@ -73,13 +73,13 @@ Once your iOS project is setup, you can follow the setup for getting started wit
 
 <Grid columns="2">
 	<Block
-        title="Android: Setting up Firebase"
-        to="/quick-start/android-firebase-credentials"
-        icon="android"
-        color="#4CAF50"
-    >
-        Adding Firebase credentials to your Android app.
-    </Block>
+		title="Android: Setting up Firebase"
+		to="/quick-start/android-firebase-credentials"
+		icon="android"
+		color="#4CAF50"
+	>
+		Adding Firebase credentials to your Android app.
+	</Block>
 	<Block
 		title="Integrate additional Firebase services"
 		to="/v6"
@@ -88,5 +88,5 @@ Once your iOS project is setup, you can follow the setup for getting started wit
 	>
 		Integrate additional Firebase services by following the quick start guides for
 		the services you require.
-  	</Block>
+	</Block>
 </Grid>
