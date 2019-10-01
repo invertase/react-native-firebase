@@ -50,7 +50,7 @@ Next we need to apply the plugin. Add the following line to the **very bottom** 
 apply plugin: 'com.google.gms.google-services'
 ```
 
-## Rebuilding Android 
+## Rebuilding Android
 
 Once complete, rebuild your Android project using the React Native CLI:
 
@@ -64,13 +64,13 @@ Once your Android project is setup, you can follow the setup for getting started
 
 <Grid columns="2">
 	<Block
-        title="iOS: Setting up Firebase"
-        to="/quick-start/ios-firebase-credentials"
-        icon="phone_iphone"
-        color="#2196F3"
-    >
-        Adding Firebase credentials to your iOS app.
-    </Block>
+		title="iOS: Setting up Firebase"
+		to="/quick-start/ios-firebase-credentials"
+		icon="phone_iphone"
+		color="#2196F3"
+	>
+		Adding Firebase credentials to your iOS app.
+	</Block>
 	<Block
 		title="Integrate additional Firebase services"
 		to="/v6"
@@ -79,5 +79,5 @@ Once your Android project is setup, you can follow the setup for getting started
 	>
 		Integrate additional Firebase services by following the quick start guides for
 		the services you require.
-  	</Block>
+	</Block>
 </Grid>

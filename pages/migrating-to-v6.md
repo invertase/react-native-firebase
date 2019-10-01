@@ -168,7 +168,7 @@ $ ./gradlew clean
 
 ### Removing v5 from iOS
 
-The following steps assume you have used Cocoapods to manage your projects iOS dependencies.
+The following steps assume you have used CocoaPods to manage your projects iOS dependencies.
 
 #### Remove the RNFirebase Pod
 

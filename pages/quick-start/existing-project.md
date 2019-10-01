@@ -36,13 +36,13 @@ with Android & iOS:
 		color="#4CAF50"
 	>
 		Adding Firebase credentials to your Android app.
-  	</Block>
-    <Block
+	</Block>
+	<Block
 		title="iOS: Setting up Firebase"
-        to="/quick-start/ios-firebase-credentials"
-        icon="phone_iphone"
-        color="#2196F3"
-    >
-        Adding Firebase credentials to your iOS app.
-    </Block>
+		to="/quick-start/ios-firebase-credentials"
+		icon="phone_iphone"
+		color="#2196F3"
+	>
+		Adding Firebase credentials to your iOS app.
+	</Block>
 </Grid>

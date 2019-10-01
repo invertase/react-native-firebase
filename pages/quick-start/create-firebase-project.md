@@ -40,7 +40,7 @@ You can get started with Firebase in React Native using one of the following opt
 		color="#4CAF50"
 	>
 		Start a new React Native project with Firebase pre-integrated.
-  	</Block>
+	</Block>
 	<Block
 		title="Existing Projects"
 		to="/quick-start/existing-project"
@@ -48,5 +48,5 @@ You can get started with Firebase in React Native using one of the following opt
 		color="#ffc107"
 	>
 		Integrate Firebase into an existing React Native project.
-  	</Block>
+	</Block>
 </Grid>

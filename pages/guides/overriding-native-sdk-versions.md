@@ -9,7 +9,7 @@ tags:
 
 # Overriding Native SDK Versions
 
-React Native Firebase internally sets the versions of the native SDKs which each module uses. Each release of the library is tested against a fixed set of SDK versions (e.g. Firebase SDKS), allowing us to be confident that every feature the library supports is working as expected.
+React Native Firebase internally sets the versions of the native SDKs which each module uses. Each release of the library is tested against a fixed set of SDK versions (e.g. Firebase SDKs), allowing us to be confident that every feature the library supports is working as expected.
 
 Sometimes it's required to change these versions to play nicely with other React Native libraries; therefore we allow manually overriding these native SDK versions.
 
@@ -26,22 +26,19 @@ project.ext {
       // Overriding Build/Android SDK Versions
       android : [
         minSdk    : 16,
-        
         targetSdk : 28,
-        
         compileSdk: 28,
-        
         buildTools: "28.0.3"
       ],
-    
+
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
         bom           : "21.1.0",
-        
+
         // Override Crashlytics SDK Version
         crashlytics   : "2.10.0",
-        
+
         // Override Crashlytics SDK Version
         crashlyticsNdk: "2.1.0"
       ],

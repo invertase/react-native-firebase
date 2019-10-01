@@ -16,25 +16,25 @@ hosted sites or 3rd party hosted sites such as Medium.
 Please send us a link to your content. After successful review, we'll add this to our website in
 the appropriate sections. Content will be 301 directed from the website to the external content.
 
-<Form 
+<Form
     name="content-submission"
     success="Thank you for your submission. We'll let you know via email if your content has been accepted."
     required={['name', 'email', 'github', 'url']}
 >
-    <FormInput 
+    <FormInput
         name="name"
         label="Name"
     />
-    <FormInput 
+    <FormInput
         name="email"
         label="Email Address"
     />
-    <FormInput 
+    <FormInput
         name="github"
-        label="Github Profile"
+        label="GitHub Profile"
         placeholder="https://github.com"
     />
-    <FormInput 
+    <FormInput
         name="url"
         label="Content URL"
         placeholder="https://"

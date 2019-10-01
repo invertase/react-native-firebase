@@ -5,7 +5,7 @@ description: MacStadium allows you to build iOS apps without needing to own a Ma
 
 # MacStadium
 
-Building React Native apps for iOS requires access to a Mac to be able to use XCode and the iOS device
+Building React Native apps for iOS requires access to a Mac to be able to use Xcode and the iOS device
 simulators.
 
 We've teamed up with [MacStadium](https://www.macstadium.com/invertase), the leading provider in cloud hosted Mac infrastructure, so we can provide a discount offer:

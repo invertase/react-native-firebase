@@ -17,7 +17,7 @@ To get started with React Native Firebase you must have your React Native enviro
 		color="#61dafb"
 	>
 		Visit the React Native documentation to get started on setting up your first application.
-  	</Block>
+	</Block>
 	<Block
 		title="Creating a Firebase Project"
 		to="/quick-start/create-firebase-project"
@@ -25,7 +25,7 @@ To get started with React Native Firebase you must have your React Native enviro
 		color="#FBC02D"
 	>
 		New to Firebase? Learn how to setup a new project using the Firebase console.
-  	</Block>
+	</Block>
 </Grid>
 
 ## Choose your integration path
@@ -40,7 +40,7 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		color="#4CAF50"
 	>
 		Create a new React Native app with React Native Firebase pre-integrated.
-  	</Block>
+	</Block>
 	<Block
 		title="Existing Projects"
 		to="/quick-start/existing-project"
@@ -48,7 +48,7 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		color="#0a6ebd"
 	>
 		Integrate Firebase into an existing React Native project.
-  	</Block>
+	</Block>
 	<Block
 		title="Firebase Authentication Kit"
 		to="https://react-native.market/products/firebase-authentication-kit?utm_source=react-native-firebase&utm_medium=quick_start&utm_campaign=documentation"
@@ -56,7 +56,7 @@ React Native Firebase can integrate with a new React Native app or an existing s
 		color="#285E61"
 	>
 		The Firebase Authentication Kit for React Native is a great way to start your next project, on both Android & iOS. The kit integrates with Facebook, Google & Phone SMS providers.
-  	</Block>
+	</Block>
 </Grid>
 
 ## Upgrade
