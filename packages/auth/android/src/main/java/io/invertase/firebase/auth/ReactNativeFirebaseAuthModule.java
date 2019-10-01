@@ -31,6 +31,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.ActionCodeResult;
@@ -81,6 +82,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
+  String[] oAuthProviders = new String[]{"twitter.com"};
 
 
   ReactNativeFirebaseAuthModule(ReactApplicationContext reactContext) {
@@ -778,28 +780,40 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
-
-    if (credential == null) {
-      rejectPromiseWithCodeAndMessage(
-        promise,
-        "invalid-credential",
-        "The supplied auth credential is malformed, has expired or is not currently supported."
-      );
+    // Sign in using oAuth flow
+    if (Arrays.asList(oAuthProviders).contains(provider)) {
+      signInWithOAuth(appName, provider).addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promiseWithAuthResult(task.getResult(), promise);
+        } else {
+          rejectPromiseWithCodeAndMessage(promise, "oauth-error", "oAuth sign in failed");
+        }
+      });
+    // Sign in using custom credential flow
     } else {
-      Log.d(TAG, "signInWithCredential");
-      firebaseAuth
-        .signInWithCredential(credential)
-        .addOnCompleteListener(getExecutor(), task -> {
-          if (task.isSuccessful()) {
-            Log.d(TAG, "signInWithCredential:onComplete:success");
-            promiseWithAuthResult(task.getResult(), promise);
-          } else {
-            Exception exception = task.getException();
-            Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
-            promiseRejectAuthException(promise, exception);
-          }
-        });
+      AuthCredential credential = getCredentialForProvider(provider, authToken, authSecret);
+
+      if (credential == null) {
+        rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-credential",
+          "The supplied auth credential is malformed, has expired or is not currently supported."
+        );
+      } else {
+        Log.d(TAG, "signInWithCredential");
+        firebaseAuth
+          .signInWithCredential(credential)
+          .addOnCompleteListener(getExecutor(), task -> {
+            if (task.isSuccessful()) {
+              Log.d(TAG, "signInWithCredential:onComplete:success");
+              promiseWithAuthResult(task.getResult(), promise);
+            } else {
+              Exception exception = task.getException();
+              Log.e(TAG, "signInWithCredential:onComplete:failure", exception);
+              promiseRejectAuthException(promise, exception);
+            }
+          });
+      }
     }
   }
 
@@ -1374,17 +1388,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
-    String[] providers = new String[]{"twitter.com", "github.com"};
 
-    if (!Arrays.asList(providers).contains(provider)) {
-      return null;
-    }
+    Tasks.call(() -> {
+      if (pendingResultTask != null) {
+        return pendingResultTask;
+      }
 
-    if (pendingResultTask != null) {
-      return pendingResultTask;
-    }
+      return firebaseAuth.startActivityForSignInWithProvider(getReactApplicationContext().getCurrentActivity(), oAuthProvider.build());
+    });
 
-    return firebaseAuth.startActivityForSignInWithProvider(getReactApplicationContext().getCurrentActivity(), oAuthProvider.build());
+    return null;
   }
 
 
