@@ -898,8 +898,6 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
     credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
   } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIREmailAuthProvider credentialWithEmail:authToken link:authTokenSecret];
-  } else if ([provider compare:@"github.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-    credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
   } else if ([provider compare:@"phone" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential =
         [[FIRPhoneAuthProvider provider] credentialWithVerificationID:authToken verificationCode:authTokenSecret];
@@ -919,12 +917,13 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
                                          secret:(NSString *)authTokenSecret
                                      completion:(void (^)(FIRAuthCredential *,
                                                                          NSError *))completion {
+  NSArray *oAuthProviders = @[@"twitter.com", @"github.com"];
   if ([provider compare:@"game-center" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     [FIRGameCenterAuthProvider
         getCredentialWithCompletion:^(FIRAuthCredential *credential, NSError *error) {
             completion(credential, error);
         }];
-  } else if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+  } else if ([oAuthProviders containsObject:provider]) {
       FIROAuthProvider *provider = [FIROAuthProvider providerWithProviderID:@"twitter.com"];
       [provider getCredentialWithUIDelegate:nil
                                  completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {

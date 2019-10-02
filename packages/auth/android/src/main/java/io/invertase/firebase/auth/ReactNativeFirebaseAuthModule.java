@@ -82,7 +82,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
-  private String[] oAuthProviders = new String[]{"twitter.com"};
+  private String[] oAuthProviders = new String[]{"twitter.com", "github.com"};
 
 
   ReactNativeFirebaseAuthModule(ReactApplicationContext reactContext) {
@@ -1403,7 +1403,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
-    oAuthProvider.addCustomParameters()
 
     if (pendingResultTask != null) {
       return pendingResultTask;
