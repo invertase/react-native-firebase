@@ -18,6 +18,27 @@ yarn add @react-native-firebase/crashlytics
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
+Both platforms require additional steps to complete installation:
+
+<Grid columns="2">
+	<Block
+		title="Android: Additional Steps"
+		to="/android-setup"
+		icon="android"
+		color="#4CAF50"
+	>
+		Follow the Android steps to complete Crashlytics integration.
+  	</Block>
+    <Block
+		title="iOS: Additional Steps"
+        to="/ios-setup"
+        icon="phone_iphone"
+        color="#2196F3"
+    >
+        Follow the iOS steps to complete Crashlytics integration.
+    </Block>
+</Grid>
+
 ## Module usage
 
 The Crashlytics package will automatically report on any fatal application crash. Both native and JavaScript
@@ -48,8 +69,8 @@ sending a crash report and sent with the crash report.
 import crashlytics from '@react-native-firebase/crashlytics';
 
 function forceCrash() {
-  crashlytics.log('Testing crash');
-  crashlytics.crash();
+  crashlytics().log('Testing crash');
+  crashlytics().crash();
 }
 ```
 
@@ -90,6 +111,6 @@ async function onSignIn(user) {
 
 ### Disabling Crashlytics
 
-To disable Crashlytics, set the `<VALUE>` to `false` in the `firebase.json` file.
+To disable Crashlytics, set the `crashlytics_auto_collection_enabled` to `false` in the `firebase.json` file.
 
 To learn more, view the <Anchor version group="app" href="/firebase-json">App documentation</Anchor>.
