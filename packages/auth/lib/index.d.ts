@@ -95,7 +95,9 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
-   * Game Center auth provider implementation
+   * Simplified interface of AuthProvider that does not require token or secret
+   * It just returns provider id that is used in native code to perform relevant oAuth or
+   * Game Center authentication
    */
   export interface SimpleAuthProvider extends AuthProvider {
     credential: () => AuthCredential;
