@@ -26,9 +26,9 @@ export default class GithubAuthProvider {
     return providerId;
   }
 
-  static credential(token) {
+  static credential() {
     return {
-      token,
+      token: '',
       secret: '',
       providerId,
     };

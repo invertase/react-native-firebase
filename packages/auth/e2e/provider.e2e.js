@@ -93,10 +93,9 @@ describe('auth() -> Providers', () => {
 
     describe('credential', () => {
       it('should return a credential object', () => {
-        const token = '123456';
-        const credential = firebase.auth.GithubAuthProvider.credential(token);
+        const credential = firebase.auth.GithubAuthProvider.credential();
         credential.providerId.should.equal('github.com');
-        credential.token.should.equal(token);
+        credential.token.should.equal('');
         credential.secret.should.equal('');
       });
     });

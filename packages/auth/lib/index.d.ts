@@ -229,7 +229,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.GithubAuthProvider;
      * ```
      */
-    GithubAuthProvider: AuthProvider;
+    GithubAuthProvider: SimpleAuthProvider;
     /**
      * Game center auth provider implementation.
      *
