@@ -60,7 +60,7 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Twitter
 
-Twitter relies on oAuth authentification to provide user credentials, we utalise firebase SDK to present users
+Twitter relies on oAuth authentification to provide user credentials, we utilize firebase SDK to present users
 with necessary views to retrieve their oAuth credentials.
 
 **Step 3**: Create a Firebase credential.
@@ -124,12 +124,13 @@ await firebase.auth().signInWithCredential(credential);
 ## GameCenter (iOS Only)
 
 The [react-native-game-center](https://github.com/garrettmac/react-native-game-center) library provides a
-wrapper around Game Center lib, allowing you to authenticate user with it in order to obtain Firebase credential.
+wrapper around Game Center lib, allowing you to authenticate users with it in order to obtain Firebase credential.
 
 > NOTE: To use game center you need to enable it for your app in app store connect.
 > [react-native-game-center](https://github.com/garrettmac/react-native-game-center) provides an in depth
 > guide to all pre-requisites.
-> **Step 1**: Authenticate user with GameCenter
+
+**Step 1**: Authenticate user with GameCenter
 
 ```js
 import RNGameCenter from 'react-native-game-center';
