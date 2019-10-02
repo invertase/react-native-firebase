@@ -358,9 +358,6 @@ export namespace FirebaseVisionTypes {
      * #### Example
      *
      * ```js
-     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
-     * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
-     *
      * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   languageHints: ['fr', 'de'],
      * });
@@ -1102,10 +1099,9 @@ export namespace FirebaseVisionTypes {
      * #### Example
      *
      * ```js
-     * const options = new firebase.vision.VisionImageLabelerOptions();
-     * options.setConfidenceThreshold(0.8);
-     *
-     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, options);
+     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, {
+     *   confidenceThreshold: 0.8,
+     * });
      * ```
      *
      * @param imageFilePath A local image file path.
