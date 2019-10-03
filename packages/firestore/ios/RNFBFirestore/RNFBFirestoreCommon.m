@@ -142,7 +142,11 @@ static __strong NSMutableDictionary *settingsLock;
       break;
     case FIRFirestoreErrorCodeFailedPrecondition:
       code = @"failed-precondition";
-      message = @"Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+      if ([error.localizedDescription containsString:@"query requires an index"]) {
+        message = error.localizedDescription;
+      } else {
+        message = @"Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+      }
       break;
     case FIRFirestoreErrorCodeInternal:
       code = @"internal";
