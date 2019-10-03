@@ -15,7 +15,7 @@ Add the `RNFBPerf` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf/ios'
+  pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf'
 end
 ```
 

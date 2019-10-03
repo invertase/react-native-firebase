@@ -15,7 +15,7 @@ Add the `RNFBConfig` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBConfig', :path => '../node_modules/@react-native-firebase/remote-config/ios'
+  pod 'RNFBConfig', :path => '../node_modules/@react-native-firebase/remote-config'
 end
 ```
 

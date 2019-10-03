@@ -20,7 +20,7 @@ platform :ios, '9.0'
 
 target 'yourApp' do
     //...
-    pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app/ios' 
+    pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app' 
 end
 
 
