@@ -78,6 +78,7 @@ static __strong NSMutableDictionary *settingsLock;
   firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
 
   settingsLock[appName] = @(YES);
+  firestore.settings = firestoreSettings;
 
   return;
 }
