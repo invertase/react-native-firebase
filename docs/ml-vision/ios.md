@@ -15,7 +15,7 @@ Add the `RNFBMLVision` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBMLVision', :path => '../node_modules/@react-native-firebase/ml-vision/ios'
+  pod 'RNFBMLVision', :path => '../node_modules/@react-native-firebase/ml-vision'
 end
 ```
 

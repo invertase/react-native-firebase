@@ -15,7 +15,7 @@ Add the `RNFBFiam` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBFiam', :path => '../node_modules/@react-native-firebase/in-app-messaging/ios'
+  pod 'RNFBFiam', :path => '../node_modules/@react-native-firebase/in-app-messaging'
 end
 ```
 

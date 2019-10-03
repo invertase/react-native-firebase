@@ -18,7 +18,7 @@ Add the `RNFBAnalytics` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics/ios'
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
 end
 ```
 
@@ -49,7 +49,7 @@ The way to do this using Cocoapods is to add this to your Podfile (though please
 // ..
 target 'app' do
   // ..
-  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics/ios'
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
   pod 'GoogleIDFASupport', '~> 3.14.0'
 end
 ```

@@ -16,7 +16,7 @@ Add the `RNFBAdMob` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBAdMob', :path => '../node_modules/@react-native-firebase/admob/ios'
+  pod 'RNFBAdMob', :path => '../node_modules/@react-native-firebase/admob'
 end
 ```
 

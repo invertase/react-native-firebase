@@ -17,7 +17,7 @@ Add the `RNFBIid` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBIid', :path => '../node_modules/@react-native-firebase/iid/ios'
+  pod 'RNFBIid', :path => '../node_modules/@react-native-firebase/iid'
 end
 ```
 
