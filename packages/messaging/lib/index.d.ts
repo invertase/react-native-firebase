@@ -242,10 +242,10 @@ export namespace FirebaseMessagingTypes {
      *   console.log('FCM Message Data:', remoteMessage.data);
      *
      *    // Update a users messages list using AsyncStorage
-     *    const currentMessages = await AsyncStorage.get('messages');
+     *    const currentMessages = await AsyncStorage.getItem('messages');
      *    const messageArray = JSON.parse(currentMessages);
      *    messageArray.push(remoteMessage.data);
-     *    await AsyncStorage.set('messages', JSON.stringify(messageArray));
+     *    await AsyncStorage.setItem('messages', JSON.stringify(messageArray));
      * });
      *
      * // Unsubscribe from further message events
@@ -480,10 +480,10 @@ export namespace FirebaseMessagingTypes {
      * ```js
      * firebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {
      *    // Update a users messages list using AsyncStorage
-     *    const currentMessages = await AsyncStorage.get('messages');
+     *    const currentMessages = await AsyncStorage.getItem('messages');
      *    const messageArray = JSON.parse(currentMessages);
      *    messageArray.push(remoteMessage.data);
-     *    await AsyncStorage.set('messages', JSON.stringify(messageArray));
+     *    await AsyncStorage.setItem('messages', JSON.stringify(messageArray));
      * });
      * ```
      *
