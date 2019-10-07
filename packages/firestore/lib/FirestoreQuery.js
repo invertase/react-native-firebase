@@ -36,6 +36,8 @@ export default class FirestoreQuery {
   }
 
   _handleQueryCursor(cursor, docOrField, fields) {
+    const modifiers = this._modifiers._copy();
+
     if (isUndefined(docOrField)) {
       throw new Error(
         `firebase.firestore().collection().${cursor}(*) Expected a DocumentSnapshot or list of field values but got undefined.`,
@@ -58,7 +60,7 @@ export default class FirestoreQuery {
         );
       }
 
-      const currentOrders = this._modifiers.orders;
+      const currentOrders = modifiers.orders;
 
       const values = [];
 
@@ -77,14 +79,14 @@ export default class FirestoreQuery {
         values.push(value);
       }
 
-      this._modifiers._orders.push({
+      modifiers._orders.push({
         fieldPath: '__name__',
         direction: 'ASCENDING',
       });
 
       values.push(documentSnapshot.id);
 
-      return this._modifiers.setFieldsCursor(cursor, values);
+      return modifiers.setFieldsCursor(cursor, values);
     }
 
     /**
@@ -93,13 +95,13 @@ export default class FirestoreQuery {
 
     const allFields = [docOrField].concat(fields);
 
-    if (allFields.length > this._modifiers.orders.length) {
+    if (allFields.length > modifiers.orders.length) {
       throw new Error(
         `firebase.firestore().collection().${cursor}(*) Too many arguments provided. The number of arguments must be less than or equal to the number of orderBy() clauses.`,
       );
     }
 
-    return this._modifiers.setFieldsCursor(cursor, allFields);
+    return modifiers.setFieldsCursor(cursor, allFields);
   }
 
   endAt(docOrField, ...fields) {
@@ -187,7 +189,7 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.limit(limit);
+    const modifiers = this._modifiers._copy().limit(limit);
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
   }
@@ -291,7 +293,7 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.orderBy(path, directionStr);
+    const modifiers = this._modifiers._copy().orderBy(path, directionStr);
 
     try {
       modifiers.validateOrderBy();
@@ -355,7 +357,7 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.where(path, opStr, value);
+    const modifiers = this._modifiers._copy().where(path, opStr, value);
 
     try {
       modifiers.validateWhere();
