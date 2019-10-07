@@ -180,11 +180,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(
-      this._database,
-      this.path,
-      this._modifiers._copy().limitToLast(limit),
-    );
+    return new DatabaseQuery(this._database, this.path, this._modifiers._copy().limitToLast(limit));
   }
 
   /**
