@@ -28,12 +28,12 @@ public class UniversalFirebaseFirestoreException extends Exception {
   private final String message;
 
   UniversalFirebaseFirestoreException(FirebaseFirestoreException nativeException, Throwable cause) {
-    super(nativeException.getMessage(), cause);
+    super(nativeException != null ? nativeException.getMessage() : "", cause);
 
-    String code = null;
-    String message = null;
+    String code = "unknown";
+    String message = "An unknown error occurred";
 
-    if (cause.getMessage() != null && cause.getMessage().contains(":")) {
+    if (cause != null && cause.getMessage() != null && cause.getMessage().contains(":")) {
       String causeMessage = cause.getMessage();
       Matcher matcher = Pattern.compile("([A-Z_]{3,25}):\\s(.*)").matcher(causeMessage);
       if (matcher.find()) {
@@ -112,7 +112,7 @@ public class UniversalFirebaseFirestoreException extends Exception {
       }
     }
 
-    if (code == null) {
+    if (code == null && nativeException != null) {
       switch (nativeException.getCode()) {
         case ABORTED:
           code = "aborted";
