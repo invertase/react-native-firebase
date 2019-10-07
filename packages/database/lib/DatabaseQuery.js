@@ -80,7 +80,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.endAt(value, key);
+    const modifiers = this._modifiers._copy().endAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().endAt()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
@@ -155,7 +155,11 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, this.path, this._modifiers.limitToFirst(limit));
+    return new DatabaseQuery(
+      this._database,
+      this.path,
+      this._modifiers._copy().limitToFirst(limit),
+    );
   }
 
   /**
@@ -176,7 +180,11 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    return new DatabaseQuery(this._database, this.path, this._modifiers.limitToLast(limit));
+    return new DatabaseQuery(
+      this._database,
+      this.path,
+      this._modifiers._copy().limitToLast(limit),
+    );
   }
 
   /**
@@ -369,7 +377,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.toArray();
+    const modifiers = this._modifiers._copy().toArray();
 
     return this._database.native
       .once(this.path, modifiers, eventType)
@@ -425,7 +433,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.orderByChild(path);
+    const modifiers = this._modifiers._copy().orderByChild(path);
     modifiers.validateModifiers('firebase.database().ref().orderByChild()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
@@ -441,7 +449,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.orderByKey();
+    const modifiers = this._modifiers._copy().orderByKey();
     modifiers.validateModifiers('firebase.database().ref().orderByKey()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
@@ -457,7 +465,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.orderByPriority();
+    const modifiers = this._modifiers._copy().orderByPriority();
     modifiers.validateModifiers('firebase.database().ref().orderByPriority()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
@@ -473,7 +481,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.orderByValue();
+    const modifiers = this._modifiers._copy().orderByValue();
     modifiers.validateModifiers('firebase.database().ref().orderByValue()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
@@ -498,7 +506,7 @@ export default class DatabaseQuery extends ReferenceBase {
       );
     }
 
-    const modifiers = this._modifiers.startAt(value, key);
+    const modifiers = this._modifiers._copy().startAt(value, key);
     modifiers.validateModifiers('firebase.database().ref().startAt()');
 
     return new DatabaseQuery(this._database, this.path, modifiers);
