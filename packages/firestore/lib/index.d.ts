@@ -149,7 +149,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The document affected by this change.
      */
-    doc: DocumentSnapshot;
+    doc: QueryDocumentSnapshot;
 
     /**
      * The index of the changed document in the result set immediately after this `DocumentChange`
@@ -517,6 +517,35 @@ export namespace FirebaseFirestoreTypes {
      * @param other The `DocumentSnapshot` to compare against.
      */
     isEqual(other: DocumentSnapshot): boolean;
+  }
+
+  /**
+   * A QueryDocumentSnapshot contains data read from a document in your Firestore database as part of a query.
+   * The document is guaranteed to exist and its data can be extracted with .data() or .get(<field>) to get a specific field.
+   *
+   * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
+   * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
+   */
+  export interface QueryDocumentSnapshot extends DocumentSnapshot {
+    /**
+     * A QueryDocumentSnapshot is always guaranteed to exist.
+     */
+    exists: true;
+
+    /**
+     * Retrieves all fields in the document as an Object.
+     *
+     * #### Example
+     *
+     * ```js
+     * const users = await firebase.firestore().collection('users').get();
+     *
+     * for (const user of users.docs) {
+     *   console.log('User', user.data());
+     * }
+     * ```
+     */
+    data(): { [key: string]: value };
   }
 
   /**
@@ -1177,7 +1206,7 @@ export namespace FirebaseFirestoreTypes {
   export type WhereFilterOp = '<' | '<=' | '==' | '>' | '>=' | 'array-contains';
 
   /**
-   * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
+   * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
    * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
    * can be determined via the `empty` and `size` properties.
    */
@@ -1185,7 +1214,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * An array of all the documents in the `QuerySnapshot`.
      */
-    docs: DocumentSnapshot[];
+    docs: QueryDocumentSnapshot[];
 
     /**
      * True if there are no documents in the `QuerySnapshot`.
@@ -1245,15 +1274,15 @@ export namespace FirebaseFirestoreTypes {
      * ```js
      * const querySnapshot = await firebase.firestore().collection('users').get();
      *
-     * querySnapshot.forEach((documentSnapshot) => {
-     *   console.log('User', documentSnapshot.data());
+     * querySnapshot.forEach((queryDocumentSnapshot) => {
+     *   console.log('User', queryDocumentSnapshot.data());
      * })
      * ```
      *
-     * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
+     * @param callback A callback to be called with a `QueryDocumentSnapshot` for each document in the snapshot.
      * @param thisArg The `this` binding for the callback.
      */
-    forEach(callback: (snapshot: DocumentSnapshot) => void, thisArg?: any): void;
+    forEach(callback: (snapshot: QueryDocumentSnapshot) => void, thisArg?: any): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
