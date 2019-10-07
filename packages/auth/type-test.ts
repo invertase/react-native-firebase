@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as auth from '@react-native-firebase/auth';
 
+console.log(auth.default().currentUser);
+
 // checks module exists at root
 console.log(firebase.auth().app.name);
 console.log(firebase.auth().currentUser);

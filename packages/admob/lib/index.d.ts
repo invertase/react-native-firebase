@@ -1161,6 +1161,8 @@ export namespace FirebaseAdMobTypes {
 }
 
 declare module '@react-native-firebase/admob' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import React from 'react';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
@@ -1181,11 +1183,11 @@ declare module '@react-native-firebase/admob' {
   export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
   export const BannerAd: React.SFC<BannerAd>;
 
-  const module: FirebaseModuleWithStaticsAndApp<
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
     FirebaseAdMobTypes.Module,
     FirebaseAdMobTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

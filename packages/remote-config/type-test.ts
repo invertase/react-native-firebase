@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as config from '@react-native-firebase/remote-config';
 
+console.log(config.default().app);
+
 // checks module exists at root
 console.log(firebase.remoteConfig().app.name);
 

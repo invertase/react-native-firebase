@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as inAppMessaging from '@react-native-firebase/in-app-messaging';
 
+console.log(inAppMessaging.default().app);
+
 // checks module exists at root
 console.log(firebase.inAppMessaging().app.name);
 console.log(firebase.inAppMessaging().isMessagesDisplaySuppressed);
@@ -16,7 +18,7 @@ console.log(firebase.inAppMessaging.SDK_VERSION);
 console.log(firebase.SDK_VERSION);
 
 // check module correctly exported
-console.log(inAppMessaging.firebase().isMessagesDisplaySuppressed);
+console.log(inAppMessaging.default().isMessagesDisplaySuppressed);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);

@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as crashlytics from '@react-native-firebase/crashlytics';
 
+crashlytics.default().crash();
+
 // checks module exists at root
 console.log(firebase.crashlytics().app.name);
 console.log(firebase.crashlytics().isCrashlyticsCollectionEnabled);
