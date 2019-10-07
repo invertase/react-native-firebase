@@ -310,134 +310,132 @@ PODS:
   - nanopb/encode (0.3.901)
   - PersonalizedAdConsent (1.0.3)
   - Protobuf (3.9.2)
-  - React (0.60.4):
-    - React-Core (= 0.60.4)
-    - React-DevSupport (= 0.60.4)
-    - React-RCTActionSheet (= 0.60.4)
-    - React-RCTAnimation (= 0.60.4)
-    - React-RCTBlob (= 0.60.4)
-    - React-RCTImage (= 0.60.4)
-    - React-RCTLinking (= 0.60.4)
-    - React-RCTNetwork (= 0.60.4)
-    - React-RCTSettings (= 0.60.4)
-    - React-RCTText (= 0.60.4)
-    - React-RCTVibration (= 0.60.4)
-    - React-RCTWebSocket (= 0.60.4)
-  - React-Core (0.60.4):
+  - React (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-DevSupport (= 0.60.5)
+    - React-RCTActionSheet (= 0.60.5)
+    - React-RCTAnimation (= 0.60.5)
+    - React-RCTBlob (= 0.60.5)
+    - React-RCTImage (= 0.60.5)
+    - React-RCTLinking (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+    - React-RCTSettings (= 0.60.5)
+    - React-RCTText (= 0.60.5)
+    - React-RCTVibration (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-Core (0.60.5):
     - Folly (= 2018.10.22.00)
-    - React-cxxreact (= 0.60.4)
-    - React-jsiexecutor (= 0.60.4)
-    - yoga (= 0.60.4.React)
-  - React-cxxreact (0.60.4):
+    - React-cxxreact (= 0.60.5)
+    - React-jsiexecutor (= 0.60.5)
+    - yoga (= 0.60.5.React)
+  - React-cxxreact (0.60.5):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsinspector (= 0.60.4)
-  - React-DevSupport (0.60.4):
-    - React-Core (= 0.60.4)
-    - React-RCTWebSocket (= 0.60.4)
-  - React-fishhook (0.60.4)
-  - React-jsi (0.60.4):
+    - React-jsinspector (= 0.60.5)
+  - React-DevSupport (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-jsi (0.60.5):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-jsi/Default (= 0.60.4)
-  - React-jsi/Default (0.60.4):
+    - React-jsi/Default (= 0.60.5)
+  - React-jsi/Default (0.60.5):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-  - React-jsiexecutor (0.60.4):
+  - React-jsiexecutor (0.60.5):
     - DoubleConversion
     - Folly (= 2018.10.22.00)
     - glog
-    - React-cxxreact (= 0.60.4)
-    - React-jsi (= 0.60.4)
-  - React-jsinspector (0.60.4)
-  - React-RCTActionSheet (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTAnimation (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTBlob (0.60.4):
-    - React-Core (= 0.60.4)
-    - React-RCTNetwork (= 0.60.4)
-    - React-RCTWebSocket (= 0.60.4)
-  - React-RCTImage (0.60.4):
-    - React-Core (= 0.60.4)
-    - React-RCTNetwork (= 0.60.4)
-  - React-RCTLinking (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTNetwork (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTSettings (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTText (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTVibration (0.60.4):
-    - React-Core (= 0.60.4)
-  - React-RCTWebSocket (0.60.4):
-    - React-Core (= 0.60.4)
-    - React-fishhook (= 0.60.4)
-  - RNFBAdmob (6.0.0):
+    - React-cxxreact (= 0.60.5)
+    - React-jsi (= 0.60.5)
+  - React-jsinspector (0.60.5)
+  - React-RCTActionSheet (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTAnimation (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTBlob (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+    - React-RCTWebSocket (= 0.60.5)
+  - React-RCTImage (0.60.5):
+    - React-Core (= 0.60.5)
+    - React-RCTNetwork (= 0.60.5)
+  - React-RCTLinking (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTNetwork (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTSettings (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTText (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTVibration (0.60.5):
+    - React-Core (= 0.60.5)
+  - React-RCTWebSocket (0.60.5):
+    - React-Core (= 0.60.5)
+  - RNFBAdmob (6.0.1):
     - Firebase/AdMob (~> 6.8.1)
     - Firebase/Analytics (~> 6.8.1)
     - Firebase/Core (~> 6.8.1)
     - PersonalizedAdConsent
     - React
     - RNFBApp
-  - RNFBAnalytics (6.0.0):
+  - RNFBAnalytics (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBApp (6.0.0):
+  - RNFBApp (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - React
-  - RNFBAuth (6.0.0):
+  - RNFBAuth (6.0.1):
     - Firebase/Auth (~> 6.8.1)
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.0.0):
+  - RNFBCrashlytics (6.0.1):
     - Crashlytics (~> 3.12.0)
     - Fabric (~> 1.9.0)
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBDatabase (6.0.0):
+  - RNFBDatabase (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Database (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBDynamicLinks (6.0.0):
+  - RNFBDynamicLinks (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/DynamicLinks (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBFirestore (6.0.0):
+  - RNFBFirestore (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Firestore (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBFunctions (6.0.0):
+  - RNFBFunctions (6.0.1):
     - Firebase/Functions (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBIid (6.0.0):
+  - RNFBIid (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBInAppMessaging (6.0.0):
+  - RNFBInAppMessaging (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/InAppMessagingDisplay (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMessaging (6.0.0):
+  - RNFBMessaging (6.0.1):
     - Firebase/Messaging (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMLNaturalLanguage (6.0.0):
+  - RNFBMLNaturalLanguage (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/MLCommon (~> 6.8.1)
     - Firebase/MLNaturalLanguage (~> 6.8.1)
@@ -445,7 +443,7 @@ PODS:
     - Firebase/MLNLSmartReply (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBMLVision (6.0.0):
+  - RNFBMLVision (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/MLVision (~> 6.8.1)
     - Firebase/MLVisionBarcodeModel (~> 6.8.1)
@@ -454,22 +452,22 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBPerf (6.0.0):
+  - RNFBPerf (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Performance (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBRemoteConfig (6.0.0):
+  - RNFBRemoteConfig (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/RemoteConfig (~> 6.8.1)
     - React
     - RNFBApp
-  - RNFBStorage (6.0.0):
+  - RNFBStorage (6.0.1):
     - Firebase/Core (~> 6.8.1)
     - Firebase/Storage (~> 6.8.1)
     - React
     - RNFBApp
-  - yoga (0.60.4.React)
+  - yoga (0.60.5.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -480,7 +478,6 @@ DEPENDENCIES:
   - React-Core (from `../node_modules/react-native/React`)
   - React-cxxreact (from `../node_modules/react-native/ReactCommon/cxxreact`)
   - React-DevSupport (from `../node_modules/react-native/React`)
-  - React-fishhook (from `../node_modules/react-native/Libraries/fishhook`)
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
@@ -580,8 +577,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/cxxreact"
   React-DevSupport:
     :path: "../node_modules/react-native/React"
-  React-fishhook:
-    :path: "../node_modules/react-native/Libraries/fishhook"
   React-jsi:
     :path: "../node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -697,43 +692,42 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   PersonalizedAdConsent: b50a8a5d6065b6db23121e8fcc0dce2ae983f6ea
   Protobuf: 67fb42ba613def994e61854de2b3164f13790cc4
-  React: ff7ee2ae5ee1c1d9ae2183b4111045b25294bb01
-  React-Core: 8e0ea421cae5609d2562850f98421b15030476fa
-  React-cxxreact: 326880209990151a7182a813311054e9772ba510
-  React-DevSupport: e9f10e6721e78e87622fc985db695c0c0168db8a
-  React-fishhook: 1f0e5b08449403fa75c3fb3881a0beefbada14af
-  React-jsi: 21d3153b1153fbf6510a92b6b11e33e725cb7432
-  React-jsiexecutor: 7549641e48bafae7bfee3f3ea19bf4901639c5de
-  React-jsinspector: 73f24a02fa684ed6a2b828ba116874a2191ded88
-  React-RCTActionSheet: 9f71d7ae3e8fb10e08d162cbf14c621349dbfab3
-  React-RCTAnimation: 981d8c95b0e30918a9832ccac32af83562a27fae
-  React-RCTBlob: 21e73d1020a302a75fed30dbaee9f15287b80baa
-  React-RCTImage: c0bc6ac0926517b6fb7e4c279b04843113e99d1d
-  React-RCTLinking: 1af3f3c59114bed3deec0107c62e7efad0932ee5
-  React-RCTNetwork: 35df9de46e19cda5c56380be1a7759b9b8cb2fcd
-  React-RCTSettings: f580504c2cd1f44e25add10fb9ed3954f67f8ac5
-  React-RCTText: e0f224898b13af9aa036ea7cb3d438daa68c1044
-  React-RCTVibration: 0bea40cd51bd089bd591a8f74c86e91fdf2666c5
-  React-RCTWebSocket: 163873f4cdd5f1058a9483443404fc3801581cb6
-  RNFBAdmob: 583c37eeb074983fbf217c2a1117a2cb47cbcc27
-  RNFBAnalytics: 59455683fffccd7397b2d7aa209e0e59ee8a6619
-  RNFBApp: e1c06de70f28dd38981756e6b6ae51e38623e3a8
-  RNFBAuth: b47d6e4a09d17cba63322fde6246f4fc99832798
-  RNFBCrashlytics: f27da03b4233f37998673bdbb2a4df06b6aead75
-  RNFBDatabase: d5089b03b292e740af96b0ad1262e9933148c613
-  RNFBDynamicLinks: 16cfc6f66bdcd6658759b1753f3ee3e080a4b3be
-  RNFBFirestore: 6809a69ad7367ca84a43dfe40639e7a77a175b8d
-  RNFBFunctions: e0b39dabb6802af2db85072408e0f138cda2ec77
-  RNFBIid: ded1a408752013e16cd29f76468762f6f443b180
-  RNFBInAppMessaging: 76cf9904e495917f66a4c0690c040c1083a0e046
-  RNFBMessaging: c2bdf374f0c49ac6a612bc0c6a1ff58f9321f0eb
-  RNFBMLNaturalLanguage: 3bcbcdd8fb195e743ba8f3f319d487edafd707df
-  RNFBMLVision: 0cd15dc92b1f59c5bd6307aea8beea3e44474696
-  RNFBPerf: 38656aefdd83d9efbbcd026280ee99235a2f445a
-  RNFBRemoteConfig: d2f7d213694dfff0bcaeae7b222ab94b66d4030f
-  RNFBStorage: 4511ca5e45e5e987b2c54fd07a45eb5ab3f3cd7a
-  yoga: c2c050f6ae6e222534760cc82f559b89214b67e2
+  React: 53c53c4d99097af47cf60594b8706b4e3321e722
+  React-Core: ba421f6b4f4cbe2fb17c0b6fc675f87622e78a64
+  React-cxxreact: 8384287780c4999351ad9b6e7a149d9ed10a2395
+  React-DevSupport: 197fb409737cff2c4f9986e77c220d7452cb9f9f
+  React-jsi: 4d8c9efb6312a9725b18d6fc818ffc103f60fec2
+  React-jsiexecutor: 90ad2f9db09513fc763bc757fdc3c4ff8bde2a30
+  React-jsinspector: e08662d1bf5b129a3d556eb9ea343a3f40353ae4
+  React-RCTActionSheet: b0f1ea83f4bf75fb966eae9bfc47b78c8d3efd90
+  React-RCTAnimation: 359ba1b5690b1e87cc173558a78e82d35919333e
+  React-RCTBlob: 5e2b55f76e9a1c7ae52b826923502ddc3238df24
+  React-RCTImage: f5f1c50922164e89bdda67bcd0153952a5cfe719
+  React-RCTLinking: d0ecbd791e9ddddc41fa1f66b0255de90e8ee1e9
+  React-RCTNetwork: e26946300b0ab7bb6c4a6348090e93fa21f33a9d
+  React-RCTSettings: d0d37cb521b7470c998595a44f05847777cc3f42
+  React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
+  React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
+  React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
+  RNFBAdmob: 7b67bef618c68404fd131a30d4192daee2e27aba
+  RNFBAnalytics: f1e488fb6ff33d82a06e76af3d1c797da6719dcd
+  RNFBApp: 5dd12fdb688ddd25aa756d8cd2780abaadf15709
+  RNFBAuth: 7011c2d87c84bac55b5feb414cf1b0b92169f4b9
+  RNFBCrashlytics: 7a2e88557f8bf4b9c4c37dd787ad38da4c0c10ba
+  RNFBDatabase: e5c2bd3bfb20af7ee07c17ecc607d7a1ac941e72
+  RNFBDynamicLinks: 1d499cc50b99e61be7ef1c545fbafe49a25c1eed
+  RNFBFirestore: c30508d379f35c55db2854ba621737872de8c52d
+  RNFBFunctions: da4c5ef411a0c77d4c4a2de0ea2ad9063e96d7a3
+  RNFBIid: 8322a18bc826ed6c15424c5fac6ef087d954cd08
+  RNFBInAppMessaging: 02656bb0ec1841d64cb60eb297b2161576b2567d
+  RNFBMessaging: f47ff44a2d40958fecdb19f113a7f9d1985799d2
+  RNFBMLNaturalLanguage: 6a40980d3ed4b0a5c8faa98d3467edabaff326e1
+  RNFBMLVision: 1644bb43a2d6de56d3d962081d23de2074655097
+  RNFBPerf: da917556988c0200e15bf7c2af1b67f5be1dabf9
+  RNFBRemoteConfig: 8292cef6683b6a1970470521dce8eae5ff80deab
+  RNFBStorage: 7bde147a5039116d1c419c0eb609c36a0d259066
+  yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 
-PODFILE CHECKSUM: 66c573d8141e5d1d6d9bc1d5fe0efc4789438765
+PODFILE CHECKSUM: 4ceb34e93fa1dd96bcca7e61934b407531c8e96e
 
 COCOAPODS: 1.7.5
