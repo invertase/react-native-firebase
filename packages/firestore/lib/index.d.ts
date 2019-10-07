@@ -1039,9 +1039,9 @@ export namespace FirebaseFirestoreTypes {
      */
     onSnapshot(
       options: SnapshotListenOptions,
-      onNext: Function,
-      onError?: Function,
-      onCompletion?: Function,
+      onNext: (snapshot: QuerySnapshot) => void,
+      onError?: (error: Error) => void,
+      onCompletion?: () => void,
     ): () => void;
 
     /**
@@ -1253,7 +1253,7 @@ export namespace FirebaseFirestoreTypes {
      * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
      * @param thisArg The `this` binding for the callback.
      */
-    forEach(callback: Function, thisArg?: any): void;
+    forEach(callback: (snapshot: DocumentSnapshot) => void, thisArg?: any): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
