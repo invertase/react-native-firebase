@@ -139,7 +139,10 @@ declare module '@react-native-firebase/iid' {
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<FirebaseIidTypes.Module, FirebaseIidTypes.Statics>;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseIidTypes.Module,
+    FirebaseIidTypes.Statics
+  >;
   export default defaultExport;
 }
 
