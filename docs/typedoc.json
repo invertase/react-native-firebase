@@ -23,7 +23,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1176,
+							"line": 1178,
 							"character": 26
 						}
 					],
@@ -54,7 +54,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1179,
+							"line": 1181,
 							"character": 25
 						}
 					],
@@ -85,7 +85,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1172,
+							"line": 1174,
 							"character": 39
 						}
 					],
@@ -116,7 +116,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1173,
+							"line": 1175,
 							"character": 31
 						}
 					],
@@ -147,7 +147,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1182,
+							"line": 1184,
 							"character": 23
 						}
 					],
@@ -175,7 +175,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1177,
+							"line": 1179,
 							"character": 27
 						}
 					],
@@ -206,7 +206,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1180,
+							"line": 1182,
 							"character": 29
 						}
 					],
@@ -228,7 +228,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1174,
+							"line": 1176,
 							"character": 33
 						}
 					],
@@ -259,7 +259,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1181,
+							"line": 1183,
 							"character": 25
 						}
 					],
@@ -281,7 +281,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1178,
+							"line": 1180,
 							"character": 34
 						}
 					],
@@ -312,7 +312,7 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1175,
+							"line": 1177,
 							"character": 22
 						}
 					],
@@ -332,59 +332,8 @@
 					}
 				},
 				{
-					"id": 256,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "admob/lib/index.d.ts",
-							"line": 1170,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 255,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "admob/lib/index.d.ts",
-							"line": 1169,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 268,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -394,8 +343,8 @@
 					"sources": [
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1184,
-							"character": 14
+							"line": 1186,
+							"character": 21
 						}
 					],
 					"type": {
@@ -412,6 +361,57 @@
 								"type": "reference",
 								"name": "Statics",
 								"id": 90
+							}
+						]
+					}
+				},
+				{
+					"id": 256,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "admob/lib/index.d.ts",
+							"line": 1172,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 255,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "admob/lib/index.d.ts",
+							"line": 1171,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
 							}
 						]
 					}
@@ -433,9 +433,9 @@
 						266,
 						263,
 						260,
+						268,
 						256,
-						255,
-						268
+						255
 					]
 				}
 			],
@@ -455,59 +455,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 550,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "analytics/lib/index.d.ts",
-							"line": 1353,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 549,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "analytics/lib/index.d.ts",
-							"line": 1352,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 551,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -517,8 +466,8 @@
 					"sources": [
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 1355,
-							"character": 14
+							"line": 1357,
+							"character": 21
 						}
 					],
 					"type": {
@@ -538,6 +487,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 550,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 1355,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 549,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "analytics/lib/index.d.ts",
+							"line": 1354,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -545,9 +545,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						551,
 						550,
-						549,
-						551
+						549
 					]
 				}
 			],
@@ -609,7 +609,7 @@
 									"sources": [
 										{
 											"fileName": "admob/lib/index.d.ts",
-											"line": 1203,
+											"line": 1205,
 											"character": 11
 										}
 									]
@@ -637,7 +637,7 @@
 									"sources": [
 										{
 											"fileName": "analytics/lib/index.d.ts",
-											"line": 1376,
+											"line": 1378,
 											"character": 15
 										}
 									]
@@ -665,7 +665,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 1612,
+											"line": 1614,
 											"character": 10
 										}
 									]
@@ -693,7 +693,7 @@
 									"sources": [
 										{
 											"fileName": "crashlytics/lib/index.d.ts",
-											"line": 250,
+											"line": 252,
 											"character": 17
 										}
 									]
@@ -745,7 +745,7 @@
 									"sources": [
 										{
 											"fileName": "database/lib/index.d.ts",
-											"line": 1251,
+											"line": 1253,
 											"character": 14
 										}
 									]
@@ -773,7 +773,7 @@
 									"sources": [
 										{
 											"fileName": "dynamic-links/lib/index.d.ts",
-											"line": 564,
+											"line": 566,
 											"character": 18
 										}
 									]
@@ -801,7 +801,7 @@
 									"sources": [
 										{
 											"fileName": "firestore/lib/index.d.ts",
-											"line": 1916,
+											"line": 1918,
 											"character": 15
 										}
 									]
@@ -853,7 +853,7 @@
 									"sources": [
 										{
 											"fileName": "functions/lib/index.d.ts",
-											"line": 365,
+											"line": 367,
 											"character": 15
 										}
 									]
@@ -881,7 +881,7 @@
 									"sources": [
 										{
 											"fileName": "iid/lib/index.d.ts",
-											"line": 154,
+											"line": 156,
 											"character": 9
 										}
 									]
@@ -909,7 +909,7 @@
 									"sources": [
 										{
 											"fileName": "in-app-messaging/lib/index.d.ts",
-											"line": 163,
+											"line": 165,
 											"character": 20
 										}
 									]
@@ -937,7 +937,7 @@
 									"sources": [
 										{
 											"fileName": "indexing/lib/index.d.ts",
-											"line": 115,
+											"line": 117,
 											"character": 14
 										}
 									]
@@ -993,7 +993,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 572,
+											"line": 574,
 											"character": 15
 										}
 									]
@@ -1021,7 +1021,7 @@
 									"sources": [
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
-											"line": 239,
+											"line": 241,
 											"character": 21
 										}
 									]
@@ -1049,7 +1049,7 @@
 									"sources": [
 										{
 											"fileName": "perf/lib/index.d.ts",
-											"line": 472,
+											"line": 474,
 											"character": 10
 										}
 									]
@@ -1077,7 +1077,7 @@
 									"sources": [
 										{
 											"fileName": "remote-config/lib/index.d.ts",
-											"line": 452,
+											"line": 454,
 											"character": 18
 										}
 									]
@@ -1129,7 +1129,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1121,
+											"line": 1123,
 											"character": 13
 										}
 									]
@@ -1185,7 +1185,7 @@
 									"sources": [
 										{
 											"fileName": "ml-vision/lib/index.d.ts",
-											"line": 1222,
+											"line": 1224,
 											"character": 12
 										}
 									]
@@ -1226,57 +1226,57 @@
 								},
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1202,
+									"line": 1204,
 									"character": 25
 								},
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 1375,
+									"line": 1377,
 									"character": 25
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1611,
+									"line": 1613,
 									"character": 25
 								},
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 249,
+									"line": 251,
 									"character": 25
 								},
 								{
 									"fileName": "database/lib/index.d.ts",
-									"line": 1250,
+									"line": 1252,
 									"character": 25
 								},
 								{
 									"fileName": "dynamic-links/lib/index.d.ts",
-									"line": 563,
+									"line": 565,
 									"character": 25
 								},
 								{
 									"fileName": "firestore/lib/index.d.ts",
-									"line": 1915,
+									"line": 1917,
 									"character": 25
 								},
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 364,
+									"line": 366,
 									"character": 25
 								},
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 153,
+									"line": 155,
 									"character": 25
 								},
 								{
 									"fileName": "in-app-messaging/lib/index.d.ts",
-									"line": 162,
+									"line": 164,
 									"character": 25
 								},
 								{
 									"fileName": "indexing/lib/index.d.ts",
-									"line": 114,
+									"line": 116,
 									"character": 25
 								},
 								{
@@ -1286,32 +1286,32 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 571,
+									"line": 573,
 									"character": 25
 								},
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 238,
+									"line": 240,
 									"character": 25
 								},
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1221,
+									"line": 1223,
 									"character": 25
 								},
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 471,
+									"line": 473,
 									"character": 25
 								},
 								{
 									"fileName": "remote-config/lib/index.d.ts",
-									"line": 451,
+									"line": 453,
 									"character": 25
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1120,
+									"line": 1122,
 									"character": 25
 								}
 							]
@@ -1332,7 +1332,7 @@
 									"sources": [
 										{
 											"fileName": "admob/lib/index.d.ts",
-											"line": 1199,
+											"line": 1201,
 											"character": 11
 										}
 									],
@@ -1363,7 +1363,7 @@
 									"sources": [
 										{
 											"fileName": "analytics/lib/index.d.ts",
-											"line": 1369,
+											"line": 1371,
 											"character": 15
 										}
 									],
@@ -1394,7 +1394,7 @@
 									"sources": [
 										{
 											"fileName": "auth/lib/index.d.ts",
-											"line": 1609,
+											"line": 1611,
 											"character": 10
 										}
 									],
@@ -1425,7 +1425,7 @@
 									"sources": [
 										{
 											"fileName": "crashlytics/lib/index.d.ts",
-											"line": 244,
+											"line": 246,
 											"character": 17
 										}
 									],
@@ -1456,7 +1456,7 @@
 									"sources": [
 										{
 											"fileName": "database/lib/index.d.ts",
-											"line": 1244,
+											"line": 1246,
 											"character": 14
 										}
 									],
@@ -1487,7 +1487,7 @@
 									"sources": [
 										{
 											"fileName": "dynamic-links/lib/index.d.ts",
-											"line": 557,
+											"line": 559,
 											"character": 18
 										}
 									],
@@ -1518,7 +1518,7 @@
 									"sources": [
 										{
 											"fileName": "firestore/lib/index.d.ts",
-											"line": 1910,
+											"line": 1912,
 											"character": 15
 										}
 									],
@@ -1549,7 +1549,7 @@
 									"sources": [
 										{
 											"fileName": "functions/lib/index.d.ts",
-											"line": 359,
+											"line": 361,
 											"character": 15
 										}
 									],
@@ -1580,7 +1580,7 @@
 									"sources": [
 										{
 											"fileName": "iid/lib/index.d.ts",
-											"line": 151,
+											"line": 153,
 											"character": 9
 										}
 									],
@@ -1611,7 +1611,7 @@
 									"sources": [
 										{
 											"fileName": "in-app-messaging/lib/index.d.ts",
-											"line": 156,
+											"line": 158,
 											"character": 20
 										}
 									],
@@ -1642,7 +1642,7 @@
 									"sources": [
 										{
 											"fileName": "indexing/lib/index.d.ts",
-											"line": 112,
+											"line": 114,
 											"character": 14
 										}
 									],
@@ -1704,7 +1704,7 @@
 									"sources": [
 										{
 											"fileName": "messaging/lib/index.d.ts",
-											"line": 565,
+											"line": 567,
 											"character": 15
 										}
 									],
@@ -1735,7 +1735,7 @@
 									"sources": [
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
-											"line": 232,
+											"line": 234,
 											"character": 21
 										}
 									],
@@ -1766,7 +1766,7 @@
 									"sources": [
 										{
 											"fileName": "perf/lib/index.d.ts",
-											"line": 466,
+											"line": 468,
 											"character": 10
 										}
 									],
@@ -1797,7 +1797,7 @@
 									"sources": [
 										{
 											"fileName": "remote-config/lib/index.d.ts",
-											"line": 446,
+											"line": 448,
 											"character": 18
 										}
 									],
@@ -1828,7 +1828,7 @@
 									"sources": [
 										{
 											"fileName": "storage/lib/index.d.ts",
-											"line": 1115,
+											"line": 1117,
 											"character": 13
 										}
 									],
@@ -1893,7 +1893,7 @@
 									"sources": [
 										{
 											"fileName": "ml-vision/lib/index.d.ts",
-											"line": 1215,
+											"line": 1217,
 											"character": 12
 										}
 									],
@@ -1951,57 +1951,57 @@
 								},
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1198,
+									"line": 1200,
 									"character": 20
 								},
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 1368,
+									"line": 1370,
 									"character": 20
 								},
 								{
 									"fileName": "auth/lib/index.d.ts",
-									"line": 1608,
+									"line": 1610,
 									"character": 20
 								},
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 243,
+									"line": 245,
 									"character": 20
 								},
 								{
 									"fileName": "database/lib/index.d.ts",
-									"line": 1243,
+									"line": 1245,
 									"character": 20
 								},
 								{
 									"fileName": "dynamic-links/lib/index.d.ts",
-									"line": 556,
+									"line": 558,
 									"character": 20
 								},
 								{
 									"fileName": "firestore/lib/index.d.ts",
-									"line": 1909,
+									"line": 1911,
 									"character": 20
 								},
 								{
 									"fileName": "functions/lib/index.d.ts",
-									"line": 358,
+									"line": 360,
 									"character": 20
 								},
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 150,
+									"line": 152,
 									"character": 20
 								},
 								{
 									"fileName": "in-app-messaging/lib/index.d.ts",
-									"line": 155,
+									"line": 157,
 									"character": 20
 								},
 								{
 									"fileName": "indexing/lib/index.d.ts",
-									"line": 111,
+									"line": 113,
 									"character": 20
 								},
 								{
@@ -2011,32 +2011,32 @@
 								},
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 564,
+									"line": 566,
 									"character": 20
 								},
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 231,
+									"line": 233,
 									"character": 20
 								},
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1214,
+									"line": 1216,
 									"character": 20
 								},
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 465,
+									"line": 467,
 									"character": 20
 								},
 								{
 									"fileName": "remote-config/lib/index.d.ts",
-									"line": 445,
+									"line": 447,
 									"character": 20
 								},
 								{
 									"fileName": "storage/lib/index.d.ts",
-									"line": 1114,
+									"line": 1116,
 									"character": 20
 								}
 							]
@@ -2060,57 +2060,57 @@
 						},
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1195,
+							"line": 1197,
 							"character": 31
 						},
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 1366,
+							"line": 1368,
 							"character": 31
 						},
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1606,
+							"line": 1608,
 							"character": 31
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 241,
+							"line": 243,
 							"character": 31
 						},
 						{
 							"fileName": "database/lib/index.d.ts",
-							"line": 1241,
+							"line": 1243,
 							"character": 31
 						},
 						{
 							"fileName": "dynamic-links/lib/index.d.ts",
-							"line": 553,
+							"line": 555,
 							"character": 31
 						},
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 1907,
+							"line": 1909,
 							"character": 31
 						},
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 356,
+							"line": 358,
 							"character": 31
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 148,
+							"line": 150,
 							"character": 31
 						},
 						{
 							"fileName": "in-app-messaging/lib/index.d.ts",
-							"line": 153,
+							"line": 155,
 							"character": 31
 						},
 						{
 							"fileName": "indexing/lib/index.d.ts",
-							"line": 109,
+							"line": 111,
 							"character": 31
 						},
 						{
@@ -2120,32 +2120,32 @@
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 562,
+							"line": 564,
 							"character": 31
 						},
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 228,
+							"line": 230,
 							"character": 31
 						},
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1212,
+							"line": 1214,
 							"character": 31
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 463,
+							"line": 465,
 							"character": 31
 						},
 						{
 							"fileName": "remote-config/lib/index.d.ts",
-							"line": 443,
+							"line": 445,
 							"character": 31
 						},
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1112,
+							"line": 1114,
 							"character": 31
 						}
 					]
@@ -2251,57 +2251,57 @@
 				},
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 1194,
+					"line": 1196,
 					"character": 43
 				},
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 1365,
+					"line": 1367,
 					"character": 43
 				},
 				{
 					"fileName": "auth/lib/index.d.ts",
-					"line": 1605,
+					"line": 1607,
 					"character": 43
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 240,
+					"line": 242,
 					"character": 43
 				},
 				{
 					"fileName": "database/lib/index.d.ts",
-					"line": 1240,
+					"line": 1242,
 					"character": 43
 				},
 				{
 					"fileName": "dynamic-links/lib/index.d.ts",
-					"line": 552,
+					"line": 554,
 					"character": 43
 				},
 				{
 					"fileName": "firestore/lib/index.d.ts",
-					"line": 1906,
+					"line": 1908,
 					"character": 43
 				},
 				{
 					"fileName": "functions/lib/index.d.ts",
-					"line": 355,
+					"line": 357,
 					"character": 43
 				},
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 147,
+					"line": 149,
 					"character": 43
 				},
 				{
 					"fileName": "in-app-messaging/lib/index.d.ts",
-					"line": 152,
+					"line": 154,
 					"character": 43
 				},
 				{
 					"fileName": "indexing/lib/index.d.ts",
-					"line": 108,
+					"line": 110,
 					"character": 43
 				},
 				{
@@ -2311,32 +2311,32 @@
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 561,
+					"line": 563,
 					"character": 43
 				},
 				{
 					"fileName": "ml-natural-language/lib/index.d.ts",
-					"line": 227,
+					"line": 229,
 					"character": 43
 				},
 				{
 					"fileName": "ml-vision/lib/index.d.ts",
-					"line": 1211,
+					"line": 1213,
 					"character": 43
 				},
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 462,
+					"line": 464,
 					"character": 43
 				},
 				{
 					"fileName": "remote-config/lib/index.d.ts",
-					"line": 442,
+					"line": 444,
 					"character": 43
 				},
 				{
 					"fileName": "storage/lib/index.d.ts",
-					"line": 1111,
+					"line": 1113,
 					"character": 43
 				}
 			]
@@ -2349,6 +2349,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 833,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "auth/lib/index.d.ts",
+							"line": 1597,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStaticsAndApp",
+						"id": 57,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 745
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 587
+							}
+						]
+					}
+				},
+				{
 					"id": 832,
 					"name": "firebase",
 					"kind": 32,
@@ -2360,7 +2394,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1593,
+							"line": 1595,
 							"character": 23
 						}
 					],
@@ -2381,7 +2415,7 @@
 					"sources": [
 						{
 							"fileName": "auth/lib/index.d.ts",
-							"line": 1592,
+							"line": 1594,
 							"character": 27
 						}
 					],
@@ -2398,40 +2432,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 833,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "auth/lib/index.d.ts",
-							"line": 1595,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStaticsAndApp",
-						"id": 57,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 745
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 587
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -2439,9 +2439,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						833,
 						832,
-						831,
-						833
+						831
 					]
 				}
 			],
@@ -2461,59 +2461,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 874,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 228,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 873,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 227,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 875,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -2523,8 +2472,8 @@
 					"sources": [
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 230,
-							"character": 14
+							"line": 232,
+							"character": 21
 						}
 					],
 					"type": {
@@ -2544,6 +2493,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 874,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 230,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 873,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "crashlytics/lib/index.d.ts",
+							"line": 229,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -2551,9 +2551,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						875,
 						874,
-						873,
-						875
+						873
 					]
 				}
 			],
@@ -2573,59 +2573,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 1205,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "database/lib/index.d.ts",
-							"line": 1228,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 1204,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "database/lib/index.d.ts",
-							"line": 1227,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 1206,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -2635,8 +2584,8 @@
 					"sources": [
 						{
 							"fileName": "database/lib/index.d.ts",
-							"line": 1230,
-							"character": 14
+							"line": 1232,
+							"character": 21
 						}
 					],
 					"type": {
@@ -2656,6 +2605,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 1205,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "database/lib/index.d.ts",
+							"line": 1230,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 1204,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "database/lib/index.d.ts",
+							"line": 1229,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -2663,9 +2663,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						1206,
 						1205,
-						1204,
-						1206
+						1204
 					]
 				}
 			],
@@ -2685,6 +2685,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 1283,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "dynamic-links/lib/index.d.ts",
+							"line": 544,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStatics",
+						"id": 51,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 1259
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 1257
+							}
+						]
+					}
+				},
+				{
 					"id": 1282,
 					"name": "firebase",
 					"kind": 32,
@@ -2696,7 +2730,7 @@
 					"sources": [
 						{
 							"fileName": "dynamic-links/lib/index.d.ts",
-							"line": 540,
+							"line": 542,
 							"character": 23
 						}
 					],
@@ -2717,7 +2751,7 @@
 					"sources": [
 						{
 							"fileName": "dynamic-links/lib/index.d.ts",
-							"line": 539,
+							"line": 541,
 							"character": 27
 						}
 					],
@@ -2734,40 +2768,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 1283,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "dynamic-links/lib/index.d.ts",
-							"line": 542,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStatics",
-						"id": 51,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 1259
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 1257
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -2775,9 +2775,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						1283,
 						1282,
-						1281,
-						1283
+						1281
 					]
 				}
 			],
@@ -2797,6 +2797,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 1805,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "firestore/lib/index.d.ts",
+							"line": 1898,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStaticsAndApp",
+						"id": 57,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 1774
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 1764
+							}
+						]
+					}
+				},
+				{
 					"id": 1804,
 					"name": "firebase",
 					"kind": 32,
@@ -2808,7 +2842,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 1894,
+							"line": 1896,
 							"character": 23
 						}
 					],
@@ -2829,7 +2863,7 @@
 					"sources": [
 						{
 							"fileName": "firestore/lib/index.d.ts",
-							"line": 1893,
+							"line": 1895,
 							"character": 27
 						}
 					],
@@ -2846,40 +2880,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 1805,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "firestore/lib/index.d.ts",
-							"line": 1896,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStaticsAndApp",
-						"id": 57,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 1774
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 1764
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -2887,9 +2887,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						1805,
 						1804,
-						1803,
-						1805
+						1803
 					]
 				}
 			],
@@ -2909,6 +2909,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 1854,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "functions/lib/index.d.ts",
+							"line": 347,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStaticsAndApp",
+						"id": 57,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 1842
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 1840
+							}
+						]
+					}
+				},
+				{
 					"id": 1853,
 					"name": "firebase",
 					"kind": 32,
@@ -2920,7 +2954,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 343,
+							"line": 345,
 							"character": 23
 						}
 					],
@@ -2941,7 +2975,7 @@
 					"sources": [
 						{
 							"fileName": "functions/lib/index.d.ts",
-							"line": 342,
+							"line": 344,
 							"character": 27
 						}
 					],
@@ -2958,40 +2992,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 1854,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "functions/lib/index.d.ts",
-							"line": 345,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStaticsAndApp",
-						"id": 57,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 1842
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 1840
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -2999,9 +2999,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						1854,
 						1853,
-						1852,
-						1854
+						1852
 					]
 				}
 			],
@@ -3021,6 +3021,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 1878,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "iid/lib/index.d.ts",
+							"line": 142,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStaticsAndApp",
+						"id": 57,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 1861
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 1860
+							}
+						]
+					}
+				},
+				{
 					"id": 1877,
 					"name": "firebase",
 					"kind": 32,
@@ -3032,7 +3066,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 138,
+							"line": 140,
 							"character": 23
 						}
 					],
@@ -3053,7 +3087,7 @@
 					"sources": [
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 137,
+							"line": 139,
 							"character": 27
 						}
 					],
@@ -3070,40 +3104,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 1878,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "iid/lib/index.d.ts",
-							"line": 140,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStaticsAndApp",
-						"id": 57,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 1861
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 1860
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -3111,9 +3111,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						1878,
 						1877,
-						1876,
-						1878
+						1876
 					]
 				}
 			],
@@ -3144,13 +3144,13 @@
 					"sources": [
 						{
 							"fileName": "in-app-messaging/lib/index.d.ts",
-							"line": 140,
+							"line": 142,
 							"character": 23
 						}
 					],
 					"type": {
-						"type": "intrinsic",
-						"name": "any"
+						"type": "reference",
+						"name": "Module"
 					},
 					"defaultValue": " firebaseNamedExport"
 				},
@@ -3165,7 +3165,7 @@
 					"sources": [
 						{
 							"fileName": "in-app-messaging/lib/index.d.ts",
-							"line": 139,
+							"line": 141,
 							"character": 27
 						}
 					],
@@ -3195,7 +3195,7 @@
 					"sources": [
 						{
 							"fileName": "in-app-messaging/lib/index.d.ts",
-							"line": 142,
+							"line": 144,
 							"character": 14
 						}
 					],
@@ -3256,7 +3256,7 @@
 					"sources": [
 						{
 							"fileName": "indexing/lib/index.d.ts",
-							"line": 99,
+							"line": 101,
 							"character": 23
 						}
 					],
@@ -3277,7 +3277,7 @@
 					"sources": [
 						{
 							"fileName": "indexing/lib/index.d.ts",
-							"line": 98,
+							"line": 100,
 							"character": 27
 						}
 					],
@@ -3307,7 +3307,7 @@
 					"sources": [
 						{
 							"fileName": "indexing/lib/index.d.ts",
-							"line": 101,
+							"line": 103,
 							"character": 14
 						}
 					],
@@ -3469,59 +3469,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 2081,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "messaging/lib/index.d.ts",
-							"line": 549,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 2080,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "messaging/lib/index.d.ts",
-							"line": 548,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 2082,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -3531,8 +3480,8 @@
 					"sources": [
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 551,
-							"character": 14
+							"line": 553,
+							"character": 21
 						}
 					],
 					"type": {
@@ -3552,6 +3501,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 2081,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "messaging/lib/index.d.ts",
+							"line": 551,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 2080,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "messaging/lib/index.d.ts",
+							"line": 550,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -3559,9 +3559,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						2082,
 						2081,
-						2080,
-						2082
+						2080
 					]
 				}
 			],
@@ -3581,59 +3581,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 2117,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 215,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 2116,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 214,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 2118,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -3643,8 +3592,8 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 217,
-							"character": 14
+							"line": 219,
+							"character": 21
 						}
 					],
 					"type": {
@@ -3664,6 +3613,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 2117,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "ml-natural-language/lib/index.d.ts",
+							"line": 217,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 2116,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "ml-natural-language/lib/index.d.ts",
+							"line": 216,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -3671,9 +3671,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						2118,
 						2117,
-						2116,
-						2118
+						2116
 					]
 				}
 			],
@@ -3704,7 +3704,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1191,
+							"line": 1193,
 							"character": 39
 						}
 					],
@@ -3734,7 +3734,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1189,
+							"line": 1191,
 							"character": 37
 						}
 					],
@@ -3764,7 +3764,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1185,
+							"line": 1187,
 							"character": 34
 						}
 					],
@@ -3794,7 +3794,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1190,
+							"line": 1192,
 							"character": 37
 						}
 					],
@@ -3824,7 +3824,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1188,
+							"line": 1190,
 							"character": 37
 						}
 					],
@@ -3854,7 +3854,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1194,
+							"line": 1196,
 							"character": 46
 						}
 					],
@@ -3884,7 +3884,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1199,
+							"line": 1201,
 							"character": 53
 						}
 					],
@@ -3915,7 +3915,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1196,
+							"line": 1198,
 							"character": 49
 						}
 					],
@@ -3946,7 +3946,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1198,
+							"line": 1200,
 							"character": 52
 						}
 					],
@@ -3977,7 +3977,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1186,
+							"line": 1188,
 							"character": 36
 						}
 					],
@@ -4008,7 +4008,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1197,
+							"line": 1199,
 							"character": 51
 						}
 					],
@@ -4039,7 +4039,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1192,
+							"line": 1194,
 							"character": 44
 						}
 					],
@@ -4070,7 +4070,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1193,
+							"line": 1195,
 							"character": 45
 						}
 					],
@@ -4101,7 +4101,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1195,
+							"line": 1197,
 							"character": 48
 						}
 					],
@@ -4132,7 +4132,7 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1187,
+							"line": 1189,
 							"character": 37
 						}
 					],
@@ -4152,59 +4152,8 @@
 					}
 				},
 				{
-					"id": 2475,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1183,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 2474,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1182,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 2491,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -4214,8 +4163,8 @@
 					"sources": [
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1201,
-							"character": 14
+							"line": 1203,
+							"character": 21
 						}
 					],
 					"type": {
@@ -4232,6 +4181,57 @@
 								"type": "reference",
 								"name": "Statics",
 								"id": 2251
+							}
+						]
+					}
+				},
+				{
+					"id": 2475,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "ml-vision/lib/index.d.ts",
+							"line": 1185,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 2474,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "ml-vision/lib/index.d.ts",
+							"line": 1184,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
 							}
 						]
 					}
@@ -4257,9 +4257,9 @@
 						2484,
 						2486,
 						2478,
+						2491,
 						2475,
-						2474,
-						2491
+						2474
 					]
 				}
 			],
@@ -4279,59 +4279,8 @@
 			"flags": {},
 			"children": [
 				{
-					"id": 2584,
-					"name": "firebase",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "perf/lib/index.d.ts",
-							"line": 450,
-							"character": 23
-						}
-					],
-					"type": {
-						"type": "intrinsic",
-						"name": "any"
-					},
-					"defaultValue": " firebaseNamedExport"
-				},
-				{
-					"id": 2583,
-					"name": "firebaseNamedExport",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "perf/lib/index.d.ts",
-							"line": 449,
-							"character": 27
-						}
-					],
-					"type": {
-						"type": "intersection",
-						"types": [
-							{
-								"type": "reference",
-								"name": "__type"
-							},
-							{
-								"type": "reference",
-								"name": "ReactNativeFirebaseModule"
-							}
-						]
-					}
-				},
-				{
 					"id": 2585,
-					"name": "module",
+					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
 					"flags": {
@@ -4341,8 +4290,8 @@
 					"sources": [
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 452,
-							"character": 14
+							"line": 454,
+							"character": 21
 						}
 					],
 					"type": {
@@ -4362,6 +4311,57 @@
 							}
 						]
 					}
+				},
+				{
+					"id": 2584,
+					"name": "firebase",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 452,
+							"character": 23
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "Module"
+					},
+					"defaultValue": " firebaseNamedExport"
+				},
+				{
+					"id": 2583,
+					"name": "firebaseNamedExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "perf/lib/index.d.ts",
+							"line": 451,
+							"character": 27
+						}
+					],
+					"type": {
+						"type": "intersection",
+						"types": [
+							{
+								"type": "reference",
+								"name": "__type"
+							},
+							{
+								"type": "reference",
+								"name": "ReactNativeFirebaseModule"
+							}
+						]
+					}
 				}
 			],
 			"groups": [
@@ -4369,9 +4369,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						2585,
 						2584,
-						2583,
-						2585
+						2583
 					]
 				}
 			],
@@ -4391,6 +4391,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 2643,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "remote-config/lib/index.d.ts",
+							"line": 434,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStatics",
+						"id": 51,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 2614
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 2600
+							}
+						]
+					}
+				},
+				{
 					"id": 2642,
 					"name": "firebase",
 					"kind": 32,
@@ -4402,7 +4436,7 @@
 					"sources": [
 						{
 							"fileName": "remote-config/lib/index.d.ts",
-							"line": 430,
+							"line": 432,
 							"character": 23
 						}
 					],
@@ -4423,7 +4457,7 @@
 					"sources": [
 						{
 							"fileName": "remote-config/lib/index.d.ts",
-							"line": 429,
+							"line": 431,
 							"character": 27
 						}
 					],
@@ -4440,40 +4474,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 2643,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "remote-config/lib/index.d.ts",
-							"line": 432,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStatics",
-						"id": 51,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 2614
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 2600
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -4481,9 +4481,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						2643,
 						2642,
-						2641,
-						2643
+						2641
 					]
 				}
 			],
@@ -4503,6 +4503,40 @@
 			"flags": {},
 			"children": [
 				{
+					"id": 2825,
+					"name": "defaultExport",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true,
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "storage/lib/index.d.ts",
+							"line": 1103,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "FirebaseModuleWithStaticsAndApp",
+						"id": 57,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Module",
+								"id": 2802
+							},
+							{
+								"type": "reference",
+								"name": "Statics",
+								"id": 2661
+							}
+						]
+					}
+				},
+				{
 					"id": 2824,
 					"name": "firebase",
 					"kind": 32,
@@ -4514,7 +4548,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1099,
+							"line": 1101,
 							"character": 23
 						}
 					],
@@ -4535,7 +4569,7 @@
 					"sources": [
 						{
 							"fileName": "storage/lib/index.d.ts",
-							"line": 1098,
+							"line": 1100,
 							"character": 27
 						}
 					],
@@ -4552,40 +4586,6 @@
 							}
 						]
 					}
-				},
-				{
-					"id": 2825,
-					"name": "module",
-					"kind": 32,
-					"kindString": "Variable",
-					"flags": {
-						"isExported": true,
-						"isConst": true
-					},
-					"sources": [
-						{
-							"fileName": "storage/lib/index.d.ts",
-							"line": 1101,
-							"character": 14
-						}
-					],
-					"type": {
-						"type": "reference",
-						"name": "FirebaseModuleWithStaticsAndApp",
-						"id": 57,
-						"typeArguments": [
-							{
-								"type": "reference",
-								"name": "Module",
-								"id": 2802
-							},
-							{
-								"type": "reference",
-								"name": "Statics",
-								"id": 2661
-							}
-						]
-					}
 				}
 			],
 			"groups": [
@@ -4593,9 +4593,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
+						2825,
 						2824,
-						2823,
-						2825
+						2823
 					]
 				}
 			],
@@ -41607,7 +41607,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 984,
 									"character": 17
 								}
@@ -41677,7 +41677,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 11
 								}
@@ -41701,7 +41701,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 973,
 									"character": 8
 								}
@@ -41726,7 +41726,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 975,
 									"character": 9
 								}
@@ -44255,7 +44255,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "When any FCM payload is received, the listener callback is called with a `RemoteMessage`.",
-										"text": "Returns an unsubscribe function to stop listening for new messages.\n\n#### Example\n\n```js\nconst unsubscribe = firebase.messaging().onMessage(async (remoteMessage) => {\n  console.log('FCM Message Data:', remoteMessage.data);\n\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n\n// Unsubscribe from further message events\nunsubscribe();\n```\n\n> This subscriber method is only called when the app is active (in the foreground).\n"
+										"text": "Returns an unsubscribe function to stop listening for new messages.\n\n#### Example\n\n```js\nconst unsubscribe = firebase.messaging().onMessage(async (remoteMessage) => {\n  console.log('FCM Message Data:', remoteMessage.data);\n\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.getItem('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.setItem('messages', JSON.stringify(messageArray));\n});\n\n// Unsubscribe from further message events\nunsubscribe();\n```\n\n> This subscriber method is only called when the app is active (in the foreground).\n"
 									},
 									"parameters": [
 										{
@@ -44914,7 +44914,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On Android, set a message handler function which is called when the app is in the background\nor terminated. A headless task is created, allowing you to access the React Native environment\nto perform tasks such as updating local storage, or sending a network request.",
-										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> You can safely call this method on iOS without platform checks. It's a no-op on iOS.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.get('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.set('messages', JSON.stringify(messageArray));\n});\n```\n",
+										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> You can safely call this method on iOS without platform checks. It's a no-op on iOS.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.getItem('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.setItem('messages', JSON.stringify(messageArray));\n});\n```\n",
 										"tags": [
 											{
 												"tag": "android",
@@ -64230,7 +64230,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1219,
+									"line": 1221,
 									"character": 24
 								}
 							],
@@ -64254,7 +64254,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1240,
+									"line": 1242,
 									"character": 36
 								}
 							],
@@ -64284,7 +64284,7 @@
 							"sources": [
 								{
 									"fileName": "admob/lib/index.d.ts",
-									"line": 1230,
+									"line": 1232,
 									"character": 20
 								}
 							],
@@ -64308,7 +64308,7 @@
 							"sources": [
 								{
 									"fileName": "analytics/lib/index.d.ts",
-									"line": 1405,
+									"line": 1407,
 									"character": 37
 								}
 							],
@@ -64328,7 +64328,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 259,
+									"line": 261,
 									"character": 39
 								}
 							],
@@ -64348,7 +64348,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 258,
+									"line": 260,
 									"character": 29
 								}
 							],
@@ -64368,7 +64368,7 @@
 							"sources": [
 								{
 									"fileName": "crashlytics/lib/index.d.ts",
-									"line": 257,
+									"line": 259,
 									"character": 27
 								}
 							],
@@ -64392,7 +64392,7 @@
 							"sources": [
 								{
 									"fileName": "database/lib/index.d.ts",
-									"line": 1279,
+									"line": 1281,
 									"character": 32
 								}
 							],
@@ -64416,7 +64416,7 @@
 							"sources": [
 								{
 									"fileName": "in-app-messaging/lib/index.d.ts",
-									"line": 192,
+									"line": 194,
 									"character": 44
 								}
 							],
@@ -64436,7 +64436,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 580,
+									"line": 582,
 									"character": 43
 								}
 							],
@@ -64456,7 +64456,7 @@
 							"sources": [
 								{
 									"fileName": "messaging/lib/index.d.ts",
-									"line": 579,
+									"line": 581,
 									"character": 31
 								}
 							],
@@ -64479,7 +64479,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 249,
+									"line": 251,
 									"character": 41
 								}
 							],
@@ -64502,7 +64502,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 254,
+									"line": 256,
 									"character": 41
 								}
 							],
@@ -64522,7 +64522,7 @@
 							"sources": [
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1231,
+									"line": 1233,
 									"character": 27
 								}
 							],
@@ -64542,7 +64542,7 @@
 							"sources": [
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1229,
+									"line": 1231,
 									"character": 24
 								}
 							],
@@ -64562,7 +64562,7 @@
 							"sources": [
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1233,
+									"line": 1235,
 									"character": 31
 								}
 							],
@@ -64582,7 +64582,7 @@
 							"sources": [
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1232,
+									"line": 1234,
 									"character": 25
 								}
 							],
@@ -64602,7 +64602,7 @@
 							"sources": [
 								{
 									"fileName": "ml-vision/lib/index.d.ts",
-									"line": 1230,
+									"line": 1232,
 									"character": 23
 								}
 							],
@@ -64626,7 +64626,7 @@
 							"sources": [
 								{
 									"fileName": "perf/lib/index.d.ts",
-									"line": 501,
+									"line": 503,
 									"character": 32
 								}
 							],
@@ -64671,47 +64671,47 @@
 						},
 						{
 							"fileName": "admob/lib/index.d.ts",
-							"line": 1209,
+							"line": 1211,
 							"character": 30
 						},
 						{
 							"fileName": "analytics/lib/index.d.ts",
-							"line": 1382,
+							"line": 1384,
 							"character": 30
 						},
 						{
 							"fileName": "crashlytics/lib/index.d.ts",
-							"line": 256,
+							"line": 258,
 							"character": 30
 						},
 						{
 							"fileName": "database/lib/index.d.ts",
-							"line": 1257,
+							"line": 1259,
 							"character": 30
 						},
 						{
 							"fileName": "in-app-messaging/lib/index.d.ts",
-							"line": 169,
+							"line": 171,
 							"character": 30
 						},
 						{
 							"fileName": "messaging/lib/index.d.ts",
-							"line": 578,
+							"line": 580,
 							"character": 30
 						},
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 245,
+							"line": 247,
 							"character": 30
 						},
 						{
 							"fileName": "ml-vision/lib/index.d.ts",
-							"line": 1228,
+							"line": 1230,
 							"character": 30
 						},
 						{
 							"fileName": "perf/lib/index.d.ts",
-							"line": 478,
+							"line": 480,
 							"character": 30
 						}
 					]
@@ -65012,7 +65012,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 984,
 									"character": 17
 								}
@@ -65082,7 +65082,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 973,
 									"character": 8
 								}
@@ -65185,7 +65185,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Users/elliothesp/Documents/Code/react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 975,
 									"character": 9
 								}
@@ -65503,47 +65503,47 @@
 				},
 				{
 					"fileName": "admob/lib/index.d.ts",
-					"line": 1208,
+					"line": 1210,
 					"character": 29
 				},
 				{
 					"fileName": "analytics/lib/index.d.ts",
-					"line": 1381,
+					"line": 1383,
 					"character": 29
 				},
 				{
 					"fileName": "crashlytics/lib/index.d.ts",
-					"line": 255,
+					"line": 257,
 					"character": 29
 				},
 				{
 					"fileName": "database/lib/index.d.ts",
-					"line": 1256,
+					"line": 1258,
 					"character": 29
 				},
 				{
 					"fileName": "in-app-messaging/lib/index.d.ts",
-					"line": 168,
+					"line": 170,
 					"character": 29
 				},
 				{
 					"fileName": "messaging/lib/index.d.ts",
-					"line": 577,
+					"line": 579,
 					"character": 29
 				},
 				{
 					"fileName": "ml-natural-language/lib/index.d.ts",
-					"line": 244,
+					"line": 246,
 					"character": 29
 				},
 				{
 					"fileName": "ml-vision/lib/index.d.ts",
-					"line": 1227,
+					"line": 1229,
 					"character": 29
 				},
 				{
 					"fileName": "perf/lib/index.d.ts",
-					"line": 477,
+					"line": 479,
 					"character": 29
 				}
 			]
@@ -66051,7 +66051,7 @@
 			"sources": [
 				{
 					"fileName": "perf/type-test.ts",
-					"line": 44,
+					"line": 46,
 					"character": 12
 				}
 			],
@@ -66073,7 +66073,7 @@
 			"sources": [
 				{
 					"fileName": "database/type-test.ts",
-					"line": 53,
+					"line": 55,
 					"character": 7
 				}
 			],
@@ -66095,7 +66095,7 @@
 			"sources": [
 				{
 					"fileName": "storage/type-test.ts",
-					"line": 36,
+					"line": 41,
 					"character": 9
 				}
 			],
@@ -66139,7 +66139,7 @@
 			"sources": [
 				{
 					"fileName": "storage/type-test.ts",
-					"line": 49,
+					"line": 54,
 					"character": 10
 				}
 			],
@@ -66161,7 +66161,7 @@
 			"sources": [
 				{
 					"fileName": "perf/type-test.ts",
-					"line": 34,
+					"line": 36,
 					"character": 11
 				}
 			],
@@ -66183,7 +66183,7 @@
 			"sources": [
 				{
 					"fileName": "auth/type-test.ts",
-					"line": 47,
+					"line": 49,
 					"character": 7
 				}
 			],
