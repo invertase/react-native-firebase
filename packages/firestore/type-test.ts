@@ -1,5 +1,9 @@
 import firebase from '@react-native-firebase/app';
 import * as firestore from '@react-native-firebase/firestore';
+// tslint:disable-next-line:no-duplicate-imports
+import firestoreExport from '@react-native-firebase/firestore';
+
+console.log(firestoreExport().collection);
 
 // checks module exists at root
 console.log(firebase.firestore().app.name);

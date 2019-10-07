@@ -1092,17 +1092,19 @@ export namespace FirebaseStorageTypes {
 }
 
 declare module '@react-native-firebase/storage' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
     FirebaseStorageTypes.Module,
     FirebaseStorageTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

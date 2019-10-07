@@ -1,6 +1,7 @@
-import firebase from '@react-native-firebase/app';
-import * as analytics from '@react-native-firebase/analytics';
+import analytics, { firebase } from '@react-native-firebase/analytics';
 
+analytics.SDK_VERSION;
+analytics().app.name;
 // checks module exists at root
 console.log(firebase.analytics().app.name);
 
@@ -10,14 +11,8 @@ console.log(firebase.app().analytics().app.name);
 // checks statics exist
 console.log(firebase.analytics.SDK_VERSION);
 
-// checks statics exist on defaultExport
-console.log(analytics.firebase.SDK_VERSION);
-
 // checks root exists
 console.log(firebase.SDK_VERSION);
-
-// checks firebase named export exists on module
-console.log(analytics.firebase.SDK_VERSION);
 
 firebase
   .analytics()
@@ -74,3 +69,42 @@ console.log(firebase.analytics().setSessionTimeoutDuration);
 console.log(firebase.analytics().setUserId);
 console.log(firebase.analytics().setUserProperties);
 console.log(firebase.analytics().setUserProperty);
+
+console.log(analytics().logAddPaymentInfo);
+console.log(analytics().logAddToCart);
+console.log(analytics().logAddToWishlist);
+console.log(analytics().logAppOpen);
+console.log(analytics().logBeginCheckout);
+console.log(analytics().logCampaignDetails);
+console.log(analytics().logEarnVirtualCurrency);
+console.log(analytics().logEcommercePurchase);
+console.log(analytics().logEvent);
+console.log(analytics().logGenerateLead);
+console.log(analytics().logJoinGroup);
+console.log(analytics().logLevelEnd);
+console.log(analytics().logLevelStart);
+console.log(analytics().logLevelUp);
+console.log(analytics().logLogin);
+console.log(analytics().logPresentOffer);
+console.log(analytics().logPurchaseRefund);
+console.log(analytics().logRemoveFromCart);
+console.log(analytics().logSearch);
+console.log(analytics().logSelectContent);
+console.log(analytics().logSetCheckoutOption);
+console.log(analytics().logShare);
+console.log(analytics().logSignUp);
+console.log(analytics().logSpendVirtualCurrency);
+console.log(analytics().logTutorialBegin);
+console.log(analytics().logTutorialComplete);
+console.log(analytics().logUnlockAchievement);
+console.log(analytics().logViewItem);
+console.log(analytics().logViewItemList);
+console.log(analytics().logViewSearchResults);
+console.log(analytics().resetAnalyticsData);
+console.log(analytics().setAnalyticsCollectionEnabled);
+console.log(analytics().setCurrentScreen);
+console.log(analytics().setMinimumSessionDuration);
+console.log(analytics().setSessionTimeoutDuration);
+console.log(analytics().setUserId);
+console.log(analytics().setUserProperties);
+console.log(analytics().setUserProperty);

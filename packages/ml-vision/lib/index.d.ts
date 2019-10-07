@@ -1176,6 +1176,8 @@ export namespace FirebaseVisionTypes {
 }
 
 declare module '@react-native-firebase/ml-vision' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
@@ -1198,11 +1200,11 @@ declare module '@react-native-firebase/ml-vision' {
   export const VisionDocumentTextRecognizedBreakType: {} & typeof FirebaseVisionTypes.VisionDocumentTextRecognizedBreakType;
   export const VisionCloudLandmarkRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudLandmarkRecognizerModelType;
 
-  const module: FirebaseModuleWithStaticsAndApp<
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
     FirebaseVisionTypes.Module,
     FirebaseVisionTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

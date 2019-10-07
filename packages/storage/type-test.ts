@@ -1,5 +1,10 @@
 import firebase from '@react-native-firebase/app';
 import * as storage from '@react-native-firebase/storage';
+// tslint:disable-next-line:no-duplicate-imports
+import storageExport from '@react-native-firebase/storage';
+
+console.log(storageExport().app);
+console.log(storage.default().app);
 
 // checks module exists at root
 console.log(firebase.storage().app.name);

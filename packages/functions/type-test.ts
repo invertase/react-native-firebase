@@ -1,5 +1,9 @@
 import firebase from '@react-native-firebase/app';
 import * as functions from '@react-native-firebase/functions';
+// tslint:disable-next-line:no-duplicate-imports
+import functionsExport from '@react-native-firebase/functions';
+
+console.log(functionsExport().app);
 
 // checks module exists at root
 console.log(firebase.functions().app.name);
