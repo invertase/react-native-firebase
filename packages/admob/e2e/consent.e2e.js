@@ -48,7 +48,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.requestInfoUpdate(['foo', 123]);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'publisherIds[1]' expected a string value`);
+        e.message.should.containEql("'publisherIds[1]' expected a string value");
         return Promise.resolve();
       }
     });
@@ -66,7 +66,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.showForm('foo');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options' expected an object value`);
+        e.message.should.containEql("'options' expected an object value");
         return Promise.resolve();
       }
     });
@@ -78,7 +78,7 @@ describe('admob() AdsConsent', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.privacyPolicy' expected a valid HTTP or HTTPS URL`);
+        e.message.should.containEql("'options.privacyPolicy' expected a valid HTTP or HTTPS URL");
         return Promise.resolve();
       }
     });
@@ -91,7 +91,7 @@ describe('admob() AdsConsent', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.withPersonalizedAds' expected a boolean value`);
+        e.message.should.containEql("'options.withPersonalizedAds' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -104,7 +104,7 @@ describe('admob() AdsConsent', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.withNonPersonalizedAds' expected a boolean value`);
+        e.message.should.containEql("'options.withNonPersonalizedAds' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -117,7 +117,7 @@ describe('admob() AdsConsent', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options.withAdFree' expected a boolean value`);
+        e.message.should.containEql("'options.withAdFree' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -129,7 +129,7 @@ describe('admob() AdsConsent', () => {
         });
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'options' form requires at least one option to be enabled`);
+        e.message.should.containEql("'options' form requires at least one option to be enabled");
         return Promise.resolve();
       }
     });
@@ -158,7 +158,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.setDebugGeography(3);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'geography' expected one of `);
+        e.message.should.containEql("'geography' expected one of ");
         return Promise.resolve();
       }
     });
@@ -184,7 +184,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.setStatus(4);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'status' expected one of `);
+        e.message.should.containEql("'status' expected one of ");
         return Promise.resolve();
       }
     });
@@ -214,7 +214,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.setTagForUnderAgeOfConsent('true');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'tag' expected a boolean value`);
+        e.message.should.containEql("'tag' expected a boolean value");
         return Promise.resolve();
       }
     });
@@ -230,7 +230,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.addTestDevices(12345);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'deviceIds' expected an array of string values`);
+        e.message.should.containEql("'deviceIds' expected an array of string values");
         return Promise.resolve();
       }
     });
@@ -240,7 +240,7 @@ describe('admob() AdsConsent', () => {
         AdsConsent.addTestDevices(['foo', 123]);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.message.should.containEql(`'deviceIds' expected an array of string values`);
+        e.message.should.containEql("'deviceIds' expected an array of string values");
         return Promise.resolve();
       }
     });

@@ -46,5 +46,5 @@ Our documentation is a great place to start, however if you're looking for more 
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-storage)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Astorage+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Storage)
 - [Firebase Documentation](https://firebase.google.com/docs/storage?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=storage)

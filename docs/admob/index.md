@@ -11,8 +11,6 @@ whilst taking advantage of other Firebase service such as Analytics. React Nativ
 [Interstitial Ads](https://developers.google.com/admob/android/interstitial?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)
 and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-video?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob).
 
-_We are currently investigating how to integrate with [Native Ads](https://developers.google.com/admob/android/native/start?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)._
-
 <Youtube id="9qCxo0D-Sak" />
 
 ## Getting Started
@@ -52,3 +50,12 @@ _We are currently investigating how to integrate with [Native Ads](https://devel
     The reference API for AdMob covers all aspects of the package, from component props to advert lifecycle events.
 	</Block>
 </Grid>
+
+## Learn more
+
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
+check out the resources below:
+
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-admob)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Admob)
+- [Firebase Documentation](https://firebase.google.com/docs/admob?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)

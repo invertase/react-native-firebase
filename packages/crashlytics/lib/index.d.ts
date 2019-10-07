@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Crashlytics package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `crashlytics` package:
+ * #### Example: Access the firebase export from the `crashlytics` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/crashlytics';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.crashlytics().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `crashlytics` package:
+ * #### Example: Using the default export from the `crashlytics` package:
  *
  * ```js
  * import crashlytics from '@react-native-firebase/crashlytics';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // crashlytics().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -53,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase crashlytics
  */
-export namespace Crashlytics {
+export namespace FirebaseCrashlyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -227,14 +221,19 @@ export namespace Crashlytics {
 }
 
 declare module '@react-native-firebase/crashlytics' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseCrashlyticsTypes.Module,
+    FirebaseCrashlyticsTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -244,10 +243,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      crashlytics: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
+      crashlytics: FirebaseModuleWithStatics<
+        FirebaseCrashlyticsTypes.Module,
+        FirebaseCrashlyticsTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      crashlytics(): Crashlytics.Module;
+      crashlytics(): FirebaseCrashlyticsTypes.Module;
     }
   }
 }

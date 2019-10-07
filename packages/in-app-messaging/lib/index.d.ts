@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase in-app-messaging
  */
-export namespace InAppMessaging {
+export namespace FirebaseInAppMessagingTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -133,13 +133,18 @@ export namespace InAppMessaging {
 }
 
 declare module '@react-native-firebase/in-app-messaging' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<InAppMessaging.Module, InAppMessaging.Statics>;
+  const module: FirebaseModuleWithStatics<
+    FirebaseInAppMessagingTypes.Module,
+    FirebaseInAppMessagingTypes.Statics
+  >;
   export default module;
 }
 
@@ -150,11 +155,14 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      inAppMessaging: FirebaseModuleWithStatics<InAppMessaging.Module, InAppMessaging.Statics>;
+      inAppMessaging: FirebaseModuleWithStatics<
+        FirebaseInAppMessagingTypes.Module,
+        FirebaseInAppMessagingTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      inAppMessaging(): InAppMessaging.Module;
+      inAppMessaging(): FirebaseInAppMessagingTypes.Module;
     }
   }
 }

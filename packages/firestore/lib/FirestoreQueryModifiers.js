@@ -52,6 +52,19 @@ export default class FirestoreQueryModifiers {
     this._endBefore = undefined;
   }
 
+  _copy() {
+    const newInstance = new FirestoreQueryModifiers();
+    newInstance._limit = this._limit;
+    newInstance._filters = [...this._filters];
+    newInstance._orders = [...this._orders];
+    newInstance._type = this._type;
+    newInstance._startAt = this._startAt;
+    newInstance._startAfter = this._startAfter;
+    newInstance._endAt = this._endAt;
+    newInstance._endBefore = this._endBefore;
+    return newInstance;
+  }
+
   get filters() {
     return this._filters;
   }

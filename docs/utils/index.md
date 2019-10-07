@@ -29,3 +29,11 @@ The Utils package exports several utilities that assist with using React Native 
     The API reference documentation for the Utils module.
   </Block>
 </Grid>
+
+## Learn more
+
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
+check out the resources below:
+
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-utils)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/API%3A%20Utils)

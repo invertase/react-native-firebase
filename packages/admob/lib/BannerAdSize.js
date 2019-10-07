@@ -13,4 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ *
  */
+
+export default {
+  BANNER: 'BANNER',
+  FULL_BANNER: 'FULL_BANNER',
+  LARGE_BANNER: 'LARGE_BANNER',
+  LEADERBOARD: 'LEADERBOARD',
+  MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE',
+  SMART_BANNER: 'SMART_BANNER',
+  FLUID: 'FLUID',
+  WIDE_SKYSCRAPER: 'WIDE_SKYSCRAPER',
+};

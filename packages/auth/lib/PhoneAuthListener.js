@@ -16,6 +16,7 @@
  */
 
 import { isAndroid, isFunction, isIOS, promiseDefer } from '@react-native-firebase/app/lib/common';
+import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 
 let REQUEST_ID = 0;
 
@@ -50,14 +51,14 @@ export default class PhoneAuthListener {
     if (isAndroid) {
       this._auth.native.verifyPhoneNumber(
         phoneNumber,
-        this._phoneAuthRequestId,
+        this._phoneAuthRequestId + '',
         this._timeout,
         this._forceResending,
       );
     }
 
     if (isIOS) {
-      this._auth.native.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestId);
+      this._auth.native.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestId + '');
     }
   }
 

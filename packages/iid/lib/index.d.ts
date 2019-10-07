@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase iid
  */
-export namespace Iid {
+export namespace FirebaseIidTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -131,14 +131,19 @@ export namespace Iid {
 }
 
 declare module '@react-native-firebase/iid' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseIidTypes.Module,
+    FirebaseIidTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -148,10 +153,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      iid: FirebaseModuleWithStaticsAndApp<Iid.Module, Iid.Statics>;
+      iid: FirebaseModuleWithStaticsAndApp<FirebaseIidTypes.Module, FirebaseIidTypes.Statics>;
     }
     interface FirebaseApp {
-      iid(): Iid.Module;
+      iid(): FirebaseIidTypes.Module;
     }
   }
 }

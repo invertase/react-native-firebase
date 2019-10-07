@@ -22,7 +22,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase dynamic-links
  */
-export namespace DynamicLinks {
+export namespace FirebaseDynamicLinksTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -533,14 +533,19 @@ export namespace DynamicLinks {
 }
 
 declare module '@react-native-firebase/dynamic-links' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseDynamicLinksTypes.Module,
+    FirebaseDynamicLinksTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -551,11 +556,14 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
     interface Module {
-      dynamicLinks: FirebaseModuleWithStatics<DynamicLinks.Module, DynamicLinks.Statics>;
+      dynamicLinks: FirebaseModuleWithStatics<
+        FirebaseDynamicLinksTypes.Module,
+        FirebaseDynamicLinksTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      dynamicLinks(): DynamicLinks.Module;
+      dynamicLinks(): FirebaseDynamicLinksTypes.Module;
     }
   }
 }

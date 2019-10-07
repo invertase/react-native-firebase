@@ -16,36 +16,26 @@
 <p align="center">
   <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
+  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
 ---
-
-> This is for the upcoming v6.0.0 release of React Native Firebase, please use the [react-native-firebase](https://www.npmjs.com/package/react-native-firebase) package instead, unless you're early adopting/testing the new packages - in which case please use the `latest` tagged patch-only release for this package.
 
 Bring powerful machine learning vision APIs to your mobile app whether you're new or experienced in ML. Get started easily by using ready-to-use APIs from Firebase for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
 
 This module currently supports the following Firebase ML Kit Vision APIs:
 
-- [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [x] Cloud
-  - [x] On Device
-- [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)
-  - [x] Cloud
-- [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)
-  - [x] On Device
-- [Barcode Detection](https://firebase.google.com/docs/ml-kit/read-barcodes)
-  - [x] On Device
-- [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)
-  - [x] Cloud
-  - [x] On Device
-- [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)
-  - [x] Cloud
-
-The following APIs are **unsupported**, with support coming in a future release;
-
-- AutoML Vision Edge
-- Object detection & tracking
-- Image Labeling with a custom model
+| API                                 | Cloud Model | On Device |
+|-------------------------------------|-------------|-----------|
+| [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)                    | ✅          | ✅        |
+| [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))           | ✅          |           |
+| [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                      |             | ✅        |
+| [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)                   |             | ✅        |
+| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)                     | ✅          | ✅        |
+| [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)                |             | ✅        |
+| [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)                  | ❌          | ❌        |
+| [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)           | ❌          | ❌        |
+| Image Labelling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
 
 [> Learn More](https://firebase.google.com/products/ml-kit/)
 
@@ -55,13 +45,12 @@ Requires `@react-native-firebase/app` to be installed.
 
 ```bash
 yarn add @react-native-firebase/ml-vision
-react-native link @react-native-firebase/ml-vision
 ```
 
 ## Documentation
 
+- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/ml-vision/quick-start)
 - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=ml-vision)
-- [Installation](https://invertase.io/oss/react-native-firebase/v6/ml-vision)
 - [Reference](https://invertase.io/oss/react-native-firebase/v6/ml-vision/reference)
 
 ## License

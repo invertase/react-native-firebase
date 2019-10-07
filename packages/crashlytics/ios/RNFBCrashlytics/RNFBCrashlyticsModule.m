@@ -44,7 +44,9 @@ RCT_EXPORT_MODULE();
 #pragma mark Firebase Crashlytics Methods
 
 RCT_EXPORT_METHOD(crash) {
-  [[Crashlytics sharedInstance] crash];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [[Crashlytics sharedInstance] crash];
+  }
 }
 
 RCT_EXPORT_METHOD(log:
@@ -70,7 +72,9 @@ RCT_EXPORT_METHOD(setAttribute:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  [[Crashlytics sharedInstance] setObjectValue:value forKey:key];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [[Crashlytics sharedInstance] setObjectValue:value forKey:key];
+  }
   resolve([NSNull null]);
 }
 
@@ -80,12 +84,13 @@ RCT_EXPORT_METHOD(setAttributes:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  NSArray *keys = [attributes allKeys];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    NSArray *keys = [attributes allKeys];
 
-  for (NSString *key in keys) {
-    [[Crashlytics sharedInstance] setObjectValue:attributes[key] forKey:key];
+    for (NSString *key in keys) {
+      [[Crashlytics sharedInstance] setObjectValue:attributes[key] forKey:key];
+    }
   }
-
   resolve([NSNull null]);
 }
 
@@ -95,7 +100,9 @@ RCT_EXPORT_METHOD(setUserId:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  [[Crashlytics sharedInstance] setUserIdentifier:userId];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [[Crashlytics sharedInstance] setUserIdentifier:userId];
+  }
   resolve([NSNull null]);
 }
 
@@ -105,7 +112,9 @@ RCT_EXPORT_METHOD(setUserName:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  [[Crashlytics sharedInstance] setUserName:userName];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [[Crashlytics sharedInstance] setUserName:userName];
+  }
   resolve([NSNull null]);
 }
 
@@ -115,13 +124,17 @@ RCT_EXPORT_METHOD(setUserEmail:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  [[Crashlytics sharedInstance] setUserEmail:userEmail];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [[Crashlytics sharedInstance] setUserEmail:userEmail];
+  }
   resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(recordError:
   (NSDictionary *) jsErrorDict) {
-  [self recordJavaScriptError:jsErrorDict];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [self recordJavaScriptError:jsErrorDict];
+  }
 }
 
 RCT_EXPORT_METHOD(recordErrorPromise:
@@ -130,7 +143,9 @@ RCT_EXPORT_METHOD(recordErrorPromise:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  [self recordJavaScriptError:jsErrorDict];
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    [self recordJavaScriptError:jsErrorDict];
+  }
   resolve([NSNull null]);
 }
 

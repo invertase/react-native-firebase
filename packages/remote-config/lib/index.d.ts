@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase remote-config
  */
-export namespace RemoteConfig {
+export namespace FirebaseRemoteConfigTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -423,14 +423,19 @@ export namespace RemoteConfig {
 }
 
 declare module '@react-native-firebase/remote-config' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<RemoteConfig.Module, RemoteConfig.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseRemoteConfigTypes.Module,
+    FirebaseRemoteConfigTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -440,10 +445,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      remoteConfig: FirebaseModuleWithStatics<RemoteConfig.Module, RemoteConfig.Statics>;
+      remoteConfig: FirebaseModuleWithStatics<
+        FirebaseRemoteConfigTypes.Module,
+        FirebaseRemoteConfigTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      remoteConfig(): RemoteConfig.Module;
+      remoteConfig(): FirebaseRemoteConfigTypes.Module;
     }
   }
 }

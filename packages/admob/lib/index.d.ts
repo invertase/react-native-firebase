@@ -47,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase admob
  */
-export namespace Admob {
+export namespace FirebaseAdMobTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -83,12 +83,17 @@ export namespace Admob {
      * TestIds interface
      */
     TestIds: TestIds;
+
+    /**
+     * Used to sets the size of an Advert.
+     */
+    BannerAdSize: BannerAdSize;
   }
 
   /**
    * Common event types for ads.
    */
-  export enum AdEventType {
+  export interface AdEventType {
     /**
      * When an ad has loaded. At this point, the ad is ready to be shown to the user.
      *
@@ -104,7 +109,7 @@ export namespace Admob {
      * });
      * ```
      */
-    LOADED = 'loaded',
+    LOADED: 'loaded';
 
     /**
      * The ad has thrown an error. See the error parameter the listener callback for more information.
@@ -121,36 +126,36 @@ export namespace Admob {
      * });
      * ```
      */
-    ERROR = 'error',
+    ERROR: 'error';
 
     /**
      * The ad opened and is currently visible to the user. This event is fired after the `show()`
      * method has been called.
      */
-    OPENED = 'opened',
+    OPENED: 'opened';
 
     /**
      * The user clicked the advert.
      */
-    CLICKED = 'clicked',
+    CLICKED: 'clicked';
 
     /**
      * The user has left your application (e.g. following the ad).
      *
      * Be sure to pause any tasks on this event (such as music or memory intensive tasks).
      */
-    LEFT_APPLICATION = 'left_application',
+    LEFT_APPLICATION: 'left_application';
 
     /**
      * The user closed the ad and has returned back to your application.
      */
-    CLOSED = 'closed',
+    CLOSED: 'closed';
   }
 
   /**
    * Ad event types specially for `RewardedAd`.
    */
-  export enum RewardedAdEventType {
+  export interface RewardedAdEventType {
     /**
      * An event fired when a rewarded ad has loaded.
      *
@@ -174,7 +179,7 @@ export namespace Admob {
      * });
      * ```
      */
-    LOADED = 'rewarded_loaded',
+    LOADED: 'rewarded_loaded';
 
     /**
      * An event fired when the user earned the reward for the video. If the user does not earn a reward,
@@ -195,7 +200,52 @@ export namespace Admob {
      * });
      * ```
      */
-    EARNED_REWARD = 'rewarded_earned_reward',
+    EARNED_REWARD: 'rewarded_earned_reward';
+  }
+
+  /**
+   * Used to sets the size of an Advert.
+   */
+  export interface BannerAdSize {
+    /**
+     * Mobile Marketing Association (MMA) banner ad size (320x50 density-independent pixels).
+     */
+    BANNER: 'BANNER';
+
+    /**
+     * Interactive Advertising Bureau (IAB) full banner ad size (468x60 density-independent pixels).
+     */
+    FULL_BANNER: 'FULL_BANNER';
+
+    /**
+     * Large banner ad size (320x100 density-independent pixels).
+     */
+    LARGE_BANNER: 'LARGE_BANNER';
+
+    /**
+     * Interactive Advertising Bureau (IAB) leaderboard ad size (728x90 density-independent pixels).
+     */
+    LEADERBOARD: 'LEADERBOARD';
+
+    /**
+     * Interactive Advertising Bureau (IAB) medium rectangle ad size (300x250 density-independent pixels).
+     */
+    MEDIUM_RECTANGLE: 'MEDIUM_RECTANGLE';
+
+    /**
+     * A dynamically sized banner that is full-width and auto-height.
+     */
+    SMART_BANNER: 'SMART_BANNER';
+
+    /**
+     * A dynamically sized banner that matches its parent's width and expands/contracts its height to match the ad's content after loading completes.
+     */
+    FLUID: 'FLUID';
+
+    /**
+     * IAB wide skyscraper ad size (160x600 density-independent pixels). This size is currently not supported by the Google Mobile Ads network; this is intended for mediation ad networks only.
+     */
+    WIDE_SKYSCRAPER: 'WIDE_SKYSCRAPER';
   }
 
   /**
@@ -257,6 +307,7 @@ export namespace Admob {
      *
      * The Google-rendered consent form is a full-screen configurable form that displays over your app content. The form
      * allows the following configuration options:
+     *
      *
      * 1. Consent to view personalized ads (via `withPersonalizedAds`).
      * 2. Consent to view non-personalized ads (via `withNonPersonalizedAds`).
@@ -765,15 +816,24 @@ export namespace Admob {
 
   /**
    * A callback interface for all ad events.
+   *
+   * @param type The event type, e.g. `AdEventType.LOADED`.
+   * @param error An optional JavaScript Error containing the error code and message.
+   * @param data Optional data for the event, e.g. reward type and amount
    */
-  export interface AdEventListener {
-    /**
-     * @param type The event type, e.g. `AdEventType.LOADED`.
-     * @param error An optional JavaScript Error containing the error code and message.
-     * @param data Optional data for the event, e.g. reward type and amount
-     */
-    (type: AdEventType | RewardedAdEventType, error?: Error, data?: any | RewardedAdReward): void;
-  }
+  export type AdEventListener = (
+    type:
+      | AdEventType.LOADED
+      | AdEventType.ERROR
+      | AdEventType.OPENED
+      | AdEventType.CLICKED
+      | AdEventType.LEFT_APPLICATION
+      | AdEventType.CLOSED
+      | RewardedAdEventType.LOADED
+      | RewardedAdEventType.EARNED_REWARD,
+    error?: Error,
+    data?: any | RewardedAdReward,
+  ) => void;
 
   /**
    * Base class for InterstitialAd, RewardedAd, NativeAd and BannerAd.
@@ -947,7 +1007,7 @@ export namespace Admob {
    *
    * rewarded.onAdEvent((type, error, reward) => {
    *   if (type === RewardedAdEventType.LOADED) {
-   *     interstitial.show();
+   *     rewarded.show();
    *   }
    *   if (type === RewardedAdEventType.EARNED_REWARD) {
    *     console.log('User earned reward of ', reward);
@@ -991,6 +1051,82 @@ export namespace Admob {
   }
 
   /**
+   * An interface for a Banner advert component.
+   *
+   * #### Example
+   *
+   * The `BannerAd` interface is exposed as a React component, allowing you to integrate ads within your existing React
+   * Native code base. The component itself is isolated, meaning any standard `View` props (e.g. `style`) are not
+   * forwarded on. It is recommended you wrap the `BannerAd` within your own `View` if you wish to apply custom props for use-cases
+   * such as positioning.
+   *
+   * ```js
+   * import { BannerAd, BannerAdSize, TestIds } from '@react-native-firebase/admob';
+   *
+   * function HomeScreen() {
+   *   return (
+   *     <BannerAd
+   *       unitId={TestIds.BANNER}
+   *       size={BannerAdSize.FULL_BANNER}
+   *       requestOptions={{
+   *         requestNonPersonalizedAdsOnly: true,
+   *       }}
+   *       onAdLoaded={() => {
+   *         console.log('Advert loaded');
+   *       }}
+   *       onAdFailedToLoad((error) => {
+   *         console.error('Advert failed to load: ', error);
+   *       })
+   *     />
+   *   );
+   * }
+   * ```
+   */
+  export interface BannerAd {
+    /**
+     * The AdMob unit ID for the banner.
+     */
+    unitId: string;
+
+    /**
+     * The size of the banner. Can be a predefined size via `BannerAdSize` or custom dimensions, e.g. `300x200`.
+     *
+     * Inventory must be available for the banner size specified, otherwise a no-fill error will be sent to `onAdFailedToLoad`.
+     */
+    size: BannerAdSize | string;
+
+    /**
+     * The request options for this banner.
+     */
+    requestOptions?: RequestOptions;
+
+    /**
+     * When an ad has finished loading.
+     */
+    onAdLoaded: Function;
+
+    /**
+     * When an ad has failed to load. Callback contains an Error.
+     */
+    onAdFailedToLoad: Function;
+
+    /**
+     * The ad is now visible to the user.
+     */
+    onAdOpened: Function;
+
+    /**
+     * Called when the user is about to return to the app after tapping on an ad.
+     */
+    onAdClosed: Function;
+
+    /**
+     * Called when the user has left the application (e.g. clicking an advert).
+     */
+    onAdLeftApplication: Function;
+  }
+
+  /**
    * The Firebase Admob service interface.
    *
    * > This module is available for the default app only.
@@ -1012,7 +1148,7 @@ export namespace Admob {
      * ```js
      * import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
      *
-     * await admob.setRequestConfiguration({
+     * await admob().setRequestConfiguration({
      *   // Update all future requests suitable for parental guidance
      *   maxAdContentRating: MaxAdContentRating.PG,
      * });
@@ -1025,14 +1161,33 @@ export namespace Admob {
 }
 
 declare module '@react-native-firebase/admob' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import React from 'react';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+  import BannerAd = FirebaseAdMobTypes.BannerAd;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
-  export default module;
+  export const AdsConsentDebugGeography: {} & FirebaseAdMobTypes.AdsConsentDebugGeography;
+  export const AdsConsentStatus: {} & FirebaseAdMobTypes.AdsConsentStatus;
+  export const MaxAdContentRating: {} & FirebaseAdMobTypes.MaxAdContentRating;
+  export const TestIds: {} & FirebaseAdMobTypes.TestIds;
+  export const AdEventType: {} & FirebaseAdMobTypes.AdEventType;
+  export const BannerAdSize: {} & FirebaseAdMobTypes.BannerAdSize;
+  export const RewardedAdEventType: {} & FirebaseAdMobTypes.RewardedAdEventType;
+  export const AdsConsent: {} & FirebaseAdMobTypes.AdsConsent;
+  export const InterstitialAd: typeof FirebaseAdMobTypes.InterstitialAd;
+  export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
+  export const BannerAd: React.SFC<BannerAd>;
+
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseAdMobTypes.Module,
+    FirebaseAdMobTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -1043,11 +1198,11 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      admob: FirebaseModuleWithStaticsAndApp<Admob.Module, Admob.Statics>;
+      admob: FirebaseModuleWithStaticsAndApp<FirebaseAdMobTypes.Module, FirebaseAdMobTypes.Statics>;
     }
 
     interface FirebaseApp {
-      admob(): Admob.Module;
+      admob(): FirebaseAdMobTypes.Module;
     }
   }
 }
@@ -1055,13 +1210,26 @@ declare module '@react-native-firebase/app' {
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
     /**
-     * The Google AdMob application App ID.
+     * The Google AdMob application App ID for Android.
      *
      * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
      *
      * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
+     *
+     * @android
      */
-    admob_app_id: string;
+    admob_android_app_id: string;
+
+    /**
+     * The Google AdMob application App ID for iOS.
+     *
+     * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
+     *
+     * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
+     *
+     * @ios
+     */
+    admob_ios_app_id: string;
 
     /**
      * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to

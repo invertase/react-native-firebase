@@ -32,6 +32,8 @@
               error:(nullable NSDictionary *)error
                data:(nullable NSDictionary *)data;
 
++ (GADAdSize)stringToAdSize:(NSString *)value;
+
 @end
 
 @interface RNFBGADInterstitial : GADInterstitial

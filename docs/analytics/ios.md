@@ -9,7 +9,7 @@ The following steps are only required if you are using React Native <= 0.59 or n
 
 Installation can be done via CocoaPods (recommended) or via Frameworks:
 
-## 1. CocoaPods Installation
+## CocoaPods Installation
 
 ### Add the RNFBAnalytics Pod
 
@@ -18,7 +18,7 @@ Add the `RNFBAnalytics` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics/ios'
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
 end
 ```
 
@@ -34,15 +34,8 @@ $ pod install --repo-update
 Once the Pods have installed locally, rebuild your iOS project:
 
 ```bash
-react-native run-ios
+npx react-native run-ios
 ```
-
-## 2. Manual Framework Installation
-
-If your environment does not have access to Cocopods, it is still possible to install the project
-via Frameworks. 
-
-TODO
 
 ## Device Identification
 
@@ -56,7 +49,7 @@ The way to do this using Cocoapods is to add this to your Podfile (though please
 // ..
 target 'app' do
   // ..
-  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics/ios'
+  pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
   pod 'GoogleIDFASupport', '~> 3.14.0'
 end
 ```
