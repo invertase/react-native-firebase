@@ -108,7 +108,7 @@ required to create a Firebase credential.
 ```js
 import { GoogleSignin } from 'react-native-google-signin';
 
-async funtion bootstrap() {
+async function bootstrap() {
   await GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     webClientId: '', // required
