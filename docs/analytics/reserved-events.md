@@ -17,7 +17,6 @@ with any of the following event names will throw an error.
 - `error`
 - `first_open`
 - `first_visit`
-- `first_visit`
 - `first_open_time`
 - `first_visit_time`
 - `in_app_purchase`
