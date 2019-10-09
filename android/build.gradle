@@ -189,7 +189,7 @@ dependencies {
   def supportLibVersion = safeExtGet('supportLibVersion', '28.0.0')
   def supportLibMajorVersion = supportLibVersion.split('\\.')[0] as int
   def supportV4LibName =  (supportLibMajorVersion < 20) ? "androidx.legacy:legacy-support-v4" : "com.android.support:support-v4"
-  def supportV4Version = safeExtGet('supportV4Version', safeExtGet('supportLibVersion', '$supportVersion'))
+  def supportV4Version = safeExtGet('supportV4Version', supportLibVersion)
   api "$supportV4LibName:$supportV4Version"
 
   // For React Native Firebase Notifications
