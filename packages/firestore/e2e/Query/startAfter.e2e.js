@@ -162,9 +162,9 @@ describe('firestore().collection().startAfter()', () => {
 
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc3');
-    let data = qs.data()
+    let data = qs.docs[0].data()
     data.bar.should.eql(3);
-    let arrayData = aqs.data()
+    let arrayData = aqs.docs[0].data()
     arrayData.array[0].should.eql('blah');
   });
 });
