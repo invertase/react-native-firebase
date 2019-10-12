@@ -153,13 +153,18 @@ describe('firestore().collection().startAfter()', () => {
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
 
-    await Promise.all([doc1.set({ foo: 1 }), doc2.set({ foo: 1 }), doc3.set({ foo: 1 })]);
+    await Promise.all([doc1.set({ foo: 1, bar: 1, array: ['blah'] }), doc2.set({ foo: 2, bar: 2, array: ['blah'] }), doc3.set({ foo: 1, bar: 3, array: ['blah'] })]);
 
     const startAfter = await doc2.get();
 
-    const qs = await colRef.startAfter(startAfter).get();
+    const qs = await colRef.where('foo', '==', 1).startAfter(startAfter).get();
+    const aqs = await colRef.where('array', '==', blah).startAfter(startAfter).get();
 
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc3');
+    let data = qs.data()
+    data.bar.should.eql(3);
+    let arrayData = aqs.data()
+    arrayData.array[0].should.eql('blah');
   });
 });
