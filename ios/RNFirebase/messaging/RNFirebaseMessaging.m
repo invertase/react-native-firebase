@@ -187,8 +187,10 @@ RCT_EXPORT_METHOD(requestPermission:(RCTPromiseResolveBlock)resolve rejecter:(RC
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
-    [RCTSharedApplication() registerForRemoteNotifications];
-    resolve(nil);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [RCTSharedApplication() registerForRemoteNotifications];
+        resolve(nil);
+    });
 }
 
 // Non Web SDK methods
