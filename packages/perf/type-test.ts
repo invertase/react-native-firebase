@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as perf from '@react-native-firebase/perf';
 
+console.log(perf.default().app);
+
 // checks module exists at root
 console.log(firebase.perf().app.name);
 

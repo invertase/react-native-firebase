@@ -18,21 +18,16 @@ package io.invertase.firebase.crashlytics;
  */
 
 import android.util.Log;
-
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.crashlytics.android.ndk.CrashlyticsNdk;
-
 import io.fabric.sdk.android.Fabric;
 import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
 import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
-import static io.invertase.firebase.crashlytics.Constants.EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY;
-import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED;
-import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_DEBUG_ENABLED;
-import static io.invertase.firebase.crashlytics.Constants.KEY_CRASHLYTICS_NDK_ENABLED;
+import static io.invertase.firebase.crashlytics.Constants.*;
 
 public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFirebaseInitProvider {
   private static final String TAG = "RNFBCrashlyticsInit";
@@ -85,7 +80,7 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
 
         Fabric.with(builder.build());
 
-         Log.i(TAG, "initialization successful");
+        Log.i(TAG, "initialization successful");
       } catch (IllegalStateException exception) {
         Log.e(TAG, "initialization failed", exception);
         return false;

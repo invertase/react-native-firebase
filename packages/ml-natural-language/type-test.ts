@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as language from '@react-native-firebase/ml-natural-language';
 
+console.log(language.default().app);
+
 // checks module exists at root
 console.log(firebase.naturalLanguage().app.name);
 

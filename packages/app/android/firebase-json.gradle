@@ -8,6 +8,7 @@ File jsonFile = null
 File parentDir = rootProject.projectDir
 
 for (int i = 0; i <= 3; i++) {
+  if (parentDir == null) break
   parentDir = parentDir.parentFile
   if (parentDir != null) {
     jsonFile = new File(parentDir, fileName)

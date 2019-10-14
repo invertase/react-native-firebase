@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as vision from '@react-native-firebase/ml-vision';
 
+console.log(vision.default().app);
+
 // checks module exists at root
 console.log(firebase.vision().app.name);
 
