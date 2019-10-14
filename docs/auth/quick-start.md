@@ -22,7 +22,7 @@ yarn add @react-native-firebase/auth
 
 The Authentication package provides a JavaScript API which mimics the Firebase Web SDK.
 
-Import the Analytics package into your project:
+Import the Authentication package into your project:
 
 ```js
 import auth from '@react-native-firebase/auth';
