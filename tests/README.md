@@ -6,8 +6,7 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 
 ## Requirements
 
-- Make sure you have Xcode installed (tested with Xcode 9.2+).
-- With Xcode 10+ ensure build mode is set to `Legacy Build`
+- Make sure you have Xcode installed (tested with Xcode 10+).
 - Make sure you have NodeJS installed (Node 8.4.0 and up is required).
 - Make sure you have all required dependencies installed:
 
@@ -18,18 +17,26 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
     brew install wix/brew/applesimutils
     ```
 
+> **Note**: If Homebrew complains about a conflict in the `wix/brew` tap, run `brew untap wix/brew && brew tap wix/brew` and try installing again
+
+---
+
+## Cleaning dependencies
+
+You might find yourself in a situation where you want to start from a clean slate. The following will delete all `node_modules` and project `build` folders.
+
+```bash
+yarn lerna:clean
+yarn build:all:clean
+```
+
 ---
 
 ### Step 1: Install test project dependencies
 
-Yarn install at project root and also inside tests directory.
-
-Also install tests project iOS Pods.
-
 ```bash
 yarn
-cd tests/ && yarn
-cd tests/ios && pod install --repo-update
+yarn tests:ios:pod:install
 ```
 
 ---
@@ -39,7 +46,7 @@ cd tests/ios && pod install --repo-update
 Start the React Native packager using the script provided;
 
 ```bash
-cd tests/ && yarn run packager-jet
+yarn tests:packager:jet
 ```
 
 > ⚠️ It must be this script only that starts the RN Packager, using the default RN packager command will not work.
@@ -59,18 +66,27 @@ As always; the first build for each platform will take a while. Subsequent build
 #### Android
 
 ```bash
-cd tests/ && yarn run build-android
+yarn tests:android:build
 ```
 
 #### iOS
 
 ```bash
-cd tests/ && yarn run build-ios
+yarn tests:ios:build
 ```
 
 ---
 
-### Step 4: Finally, run the tests
+### Step 4: Setting up android emulator and iOS simulator
+
+To run android tests you will need to create a new emulator and name it `TestingAVD` (You can't rename existing one).
+This emulator will need to be up and running before you start your android tests from Step 5.
+
+With iOS Detox will start a simulator for you by default or run tests in an open one.
+
+---
+
+### Step 5: Finally, run the tests
 
 This action will launch a new simulator (if not already open) and run the tests on it.
 
@@ -85,21 +101,21 @@ This action will launch a new simulator (if not already open) and run the tests 
 #### Android
 
 ```bash
-cd tests/ && yarn run test-android
+yarn tests:android:test
 ```
 
 #### iOS
 
 ```bash
-cd tests/ && yarn run test-ios
+yarn tests:ios:test
 ```
 
-The `test-${platform}` commands uninstall any existing app and installs a fresh copy. You can
-run `test-${platform}-reuse` instead if you don't need to re-install the app (i.e only making JS code changes).
+The `tests:${platform}:test` commands uninstall any existing app and installs a fresh copy. You can
+run `tests:${platform}:test-reuse` instead if you don't need to re-install the app (i.e only making JS code changes).
 Just remember to use `test-${platform}` if you made native code changes and rebuilt - after installing once you can
 go back to using the `reuse` variant.
 
-The `cover` variant of the yarn scripts will additionally run tests with coverage.
+The `tests:${platform}:cover` variant of the yarn scripts will additionally run tests with coverage.
 Coverage is output to the root directory of the project: `react-native-firebase/coverage`,
 open `react-native-firebase/coverage/lcov-report/index.html` in your browser after running tests
 to view detailed coverage output.
@@ -116,7 +132,19 @@ Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e
 
 For more Mocha options see https://mochajs.org/#usage
 
-----
+---
+
+### Linting & Typechecking files
+
+Runs eslint and respective type checks on project files
+
+```bash
+yarn validate:all:js
+yarn validate:all:ts
+yarn validate:all:flow
+```
+
+---
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
@@ -130,4 +158,4 @@ For more Mocha options see https://mochajs.org/#usage
   </p>
 </p>
 
-----
+---

@@ -15,19 +15,12 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-  NativeFirebaseError,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Authentication package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `auth` package:
+ * #### Example: Access the firebase export from the `auth` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/auth';
@@ -35,9 +28,7 @@ import {
  * // firebase.auth().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `auth` package:
+ * #### Example: Using the default export from the `auth` package:
  *
  * ```js
  * import auth from '@react-native-firebase/auth';
@@ -45,9 +36,7 @@ import {
  * // auth().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -59,7 +48,10 @@ import {
  *
  * @firebase auth
  */
-export namespace Auth {
+export namespace FirebaseAuthTypes {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
   /**
    * Interface that represents the credentials returned by an auth provider. Implementations specify the details
    * about each auth provider's credential requirements.
@@ -169,9 +161,21 @@ export namespace Auth {
    *
    */
   export interface PhoneAuthState {
+    /**
+     * The timeout specified in {@link auth#verifyPhoneNumber} has expired.
+     */
     CODE_SENT: 'sent';
+    /**
+     * SMS message with verification code sent to phone number.
+     */
     AUTO_VERIFY_TIMEOUT: 'timeout';
+    /**
+     * Phone number auto-verification succeeded.
+     */
     AUTO_VERIFIED: 'verified';
+    /**
+     * Phone number verification failed with an error.
+     */
     ERROR: 'error';
   }
 
@@ -279,7 +283,7 @@ export namespace Auth {
      */
     isNewUser: boolean;
     /**
-     * Returns a Object containing IDP-specific user data if the provider is one of Facebook,
+     * Returns an Object containing IDP-specific user data if the provider is one of Facebook,
      * GitHub, Google, Twitter, Microsoft, or Yahoo.
      */
     profile?: Object;
@@ -490,33 +494,41 @@ export namespace Auth {
    */
   export interface ActionCodeSettingsAndroid {
     /**
-     * The Android Package Name.
+     * Sets the Android package name. This will try to open the link in an android app if it is installed.
      */
     packageName: string;
     /**
-     * The preference for whether to attempt to install the app if it is not present.
+     * If installApp is passed, it specifies whether to install the Android app if the device supports it and the app is not already installed. If this field is provided without a packageName, an error is thrown explaining that the packageName must be provided in conjunction with this field.
      */
     installApp?: boolean;
     /**
-     * The minimum Android app version.
+     * If minimumVersion is specified, and an older version of the app is installed, the user is taken to the Play Store to upgrade the app. The Android app needs to be registered in the Console.
      */
     minimumVersion?: string;
   }
 
   /**
    * Additional data returned from a {@link auth#checkActionCode} call.
+   * For the PASSWORD_RESET, VERIFY_EMAIL, and RECOVER_EMAIL actions, this object contains an email field with the address the email was sent to.
+   * For the RECOVER_EMAIL action, which allows a user to undo an email address change, this object also contains a fromEmail field with the user account's new email address. After the action completes, the user's email address will revert to the value in the email field from the value in fromEmail field.
    *
    * #### Example
    *
    * ```js
    * const actionCodeInfo = await firebase.auth().checkActionCode('ABCD');
-   *
+   *Data
    * console.log('Action code email: ', actionCodeInfo.data.email);
    * console.log('Action code from email: ', actionCodeInfo.data.fromEmail);
    * ```
    */
   export interface ActionCodeInfoData {
+    /**
+     * This signifies the email before the call was made.
+     */
     email?: string;
+    /**
+     * This signifies the current email associated with the account, which may have changed as a result of the {@link auth#checkActionCode} call performed.
+     */
     fromEmail?: string;
   }
 
@@ -532,7 +544,7 @@ export namespace Auth {
    */
   export interface ActionCodeInfo {
     /**
-     * Additional action code data.
+     * The data associated with the action code.
      */
     data: ActionCodeInfoData;
     /**
@@ -557,7 +569,7 @@ export namespace Auth {
    */
   export interface ActionCodeSettingsIos {
     /**
-     * An iOS build ID.
+     * Sets the iOS bundle ID. This will try to open the link in an iOS app if it is installed. The iOS app needs to be registered in the Console.
      */
     bundleId?: string;
   }
@@ -578,17 +590,25 @@ export namespace Auth {
     /**
      * Android specific settings.
      */
-    android: ActionCodeSettingsAndroid;
+    android?: ActionCodeSettingsAndroid;
+
     /**
-     * Whether the code should be handled by the app.
+     * Whether the email action link will be opened in a mobile app or a web link first. The default is false. When set to true, the action code link will be be sent as a Universal Link or Android App Link and will be opened by the app if installed. In the false case, the code will be sent to the web widget first and then on continue will redirect to the app if installed.
      */
     handleCodeInApp?: boolean;
+
     /**
      * iOS specific settings.
      */
-    iOS: ActionCodeSettingsIos;
+    iOS?: ActionCodeSettingsIos;
+
     /**
-     * Sets the URL for the action.
+     * Sets the dynamic link domain (or subdomain) to use for the current link if it is to be opened using Firebase Dynamic Links. As multiple dynamic link domains can be configured per project, this field provides the ability to explicitly choose one. If none is provided, the first domain is used by default.
+     */
+    dynamicLinkDomain?: string;
+
+    /**
+     * This URL represents the state/Continue URL in the form of a universal link. This URL can should be constructed as a universal link that would either directly open the app where the action code would be handled or continue to the app after the action code is handled by Firebase.
      */
     url: string;
   }
@@ -761,7 +781,7 @@ export namespace Auth {
      *  });
      * ```
      *
-     * > Used when no `onRejected` handler is passed to the `then`.
+     * > Used when no `onRejected` handler is passed to {@link auth.PhoneAuthListener#then}.
      *
      * @param onRejected Rejected promise handler.
      */
@@ -780,19 +800,20 @@ export namespace Auth {
    */
   export interface AuthSettings {
     /**
-     * iOS only flag to determine whether app verification should be disabled for testing or not.
+     * iOS only flag to disable app verification for the purpose of testing phone authentication. For this property to take effect, it needs to be set before rendering a reCAPTCHA app verifier. When this is disabled, a mock reCAPTCHA is rendered instead. This is useful for manual testing during development or for automated integration tests.
      *
-     * @platform iOS
+     * > In order to use this feature, you will need to [whitelist your phone number](https://firebase.google.com/docs/auth/web/phone-auth#test-with-whitelisted-phone-numbers) via the Firebase Console.
+     *
+     * @ios
      * @param disabled Boolean value representing whether app verification should be disabled for testing.
      */
     appVerificationDisabledForTesting: boolean;
 
     /**
-     * The phone number and SMS code here must have been configured in the
-     * Firebase Console (Authentication > Sign In Method > Phone).
-     *
      * Calling this method a second time will overwrite the previously passed parameters.
      * Only one number can be configured at a given time.
+     *
+     * > The phone number and SMS code here must have been configured in the Firebase Console (Authentication > Sign In Method > Phone).
      *
      * #### Example
      *
@@ -800,7 +821,7 @@ export namespace Auth {
      * await firebase.auth().settings.setAutoRetrievedSmsCodeForPhoneNumber('+4423456789', 'ABCDE');
      * ```
      *
-     * @platform Android
+     * @android
      * @param phoneNumber The users phone number.
      * @param smsCode The pre-set SMS code.
      */
@@ -872,7 +893,7 @@ export namespace Auth {
     /**
      * Additional provider-specific information about the user.
      */
-    providerData: Array<UserInfo>;
+    providerData: UserInfo[];
 
     /**
      *  The authentication provider ID for the current user.
@@ -1131,7 +1152,7 @@ export namespace Auth {
    *
    * TODO @salakar missing updateCurrentUser
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Gets the current language code.
      *
@@ -1155,7 +1176,7 @@ export namespace Auth {
      *
      * @param code An ISO language code.
      */
-    set languageCode(code: string): void;
+    set languageCode(code: string);
 
     /**
      * Returns the current `AuthSettings`.
@@ -1173,7 +1194,7 @@ export namespace Auth {
      *
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
-    get currentUser(): User | null;
+    currentUser: User | null;
 
     /**
      * Listen for changes in the users auth state (logging in and out).
@@ -1200,7 +1221,7 @@ export namespace Auth {
     onAuthStateChanged(listener: AuthListenerCallback): () => void;
 
     /**
-     * Listen for changes in id token.
+     * Listen for changes in ID token.
      * This method returns a unsubscribe function to stop listening to events.
      * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
      *
@@ -1308,7 +1329,7 @@ export namespace Auth {
      *  });
      * ```
      *
-     * @param phoneNumber The user's phone number in E.164 format (e.g. +16505550101).
+     * @param phoneNumber The phone number identifier supplied by the user. Its format is normalized on the server, so it can be in any format here. (e.g. +16505550101).
      * @param autoVerifyTimeoutOrForceResend If a number, sets in seconds how to to wait until auto verification times out. If boolean, sets the `forceResend` parameter.
      * @param forceResend If true, resend the verification message even if it was recently sent.
      */
@@ -1542,7 +1563,7 @@ export namespace Auth {
      * @error auth/invalid-email Thrown if the email address is not valid.
      * @param email The users email address.
      */
-    fetchSignInMethodsForEmail(email: string): Promise<Array<string>>;
+    fetchSignInMethodsForEmail(email: string): Promise<string[]>;
 
     /**
      * Checks a password reset code sent to the user by email or other out-of-band mechanism.
@@ -1565,45 +1586,32 @@ export namespace Auth {
 }
 
 declare module '@react-native-firebase/auth' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/auth';
-   * firebase.auth().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const AuthDefaultExport: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
-  /**
-   * @example
-   * ```js
-   * import auth from '@react-native-firebase/auth';
-   * auth().X(...);
-   * ```
-   */
-  export default AuthDefaultExport;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Auth
-     */
-    auth: ReactNativeFirebaseModuleAndStatics<Auth.Module, Auth.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * Auth
-     */
-    auth(): Auth.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      auth: FirebaseModuleWithStaticsAndApp<FirebaseAuthTypes.Module, FirebaseAuthTypes.Statics>;
+    }
+    interface FirebaseApp {
+      auth(): FirebaseAuthTypes.Module;
+    }
   }
 }

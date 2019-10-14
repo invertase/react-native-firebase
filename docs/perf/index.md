@@ -1,19 +1,19 @@
 ---
 title: Performance Monitoring
-description: Firebase Performance Monitoring is a service that helps you to gain insight into the performance characteristics of your iOS and Android apps. 
+description: Firebase Performance Monitoring is a service that helps you to gain insight into the performance characteristics of your iOS and Android apps.
 ---
 
 # Performance Monitoring
 
-React Native Firebase provides native integration with Performance Monitoring to gain insight into 
-key performance characteristics within your React Native application. The library works out of the box, 
+React Native Firebase provides native integration with Performance Monitoring to gain insight into
+key performance characteristics within your React Native application. The library works out of the box,
 however provides a simple API to track custom trace and HTTP request metrics.
 
 <Youtube id="0EHSPFvH7vk" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
@@ -29,7 +29,7 @@ however provides a simple API to track custom trace and HTTP request metrics.
 		version={false}
 		to="/guides?tags=perf"
 	>
-	  Our guides walk you through some of the ways Performance Monitoring can be to gain deeper insight into your applications 
+	  Our guides walk you through some of the ways Performance Monitoring can be used to gain deeper insight into your applications.
     performance.
 	</Block>
   <Block
@@ -44,9 +44,9 @@ however provides a simple API to track custom trace and HTTP request metrics.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-perf)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aperf+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Perf)
 - [Firebase Documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=perf-mon)

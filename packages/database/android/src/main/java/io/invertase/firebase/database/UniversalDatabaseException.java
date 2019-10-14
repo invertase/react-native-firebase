@@ -24,15 +24,6 @@ public class UniversalDatabaseException extends Exception {
   private final String code;
   private final String message;
 
-  public String getCode() {
-    return code;
-  }
-
-  @Override
-  public String getMessage() {
-    return message;
-  }
-
   // TODO error message already set?
   UniversalDatabaseException(int errorCode, String errorMessage, Throwable cause) {
     super(errorMessage, cause);
@@ -89,5 +80,14 @@ public class UniversalDatabaseException extends Exception {
 
     this.code = code;
     this.message = message;
+  }
+
+  public String getCode() {
+    return code;
+  }
+
+  @Override
+  public String getMessage() {
+    return message;
   }
 }

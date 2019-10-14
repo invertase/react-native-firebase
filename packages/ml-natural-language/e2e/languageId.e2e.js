@@ -15,20 +15,20 @@
  *
  */
 
-describe('mlKitLanguage() -> Language ID', () => {
+describe('naturalLanguage() -> Language ID', () => {
   describe('identifyLanguage()', () => {
     it('returns a string of the identified language', async () => {
-      const languageDe = await firebase.mlKitLanguage().identifyLanguage('Hallo welt');
-      const languageEn = await firebase.mlKitLanguage().identifyLanguage('Hello world');
-      const languageFr = await firebase.mlKitLanguage().identifyLanguage('Bonjour le monde');
+      const languageDe = await firebase.naturalLanguage().identifyLanguage('Hallo welt');
+      const languageEn = await firebase.naturalLanguage().identifyLanguage('Hello world');
+      const languageFr = await firebase.naturalLanguage().identifyLanguage('Bonjour le monde');
       should.equal(languageDe, 'de');
       should.equal(languageEn, 'en');
       should.equal(languageFr, 'fr');
     });
 
     it('accepts a `confidenceThreshold` option', async () => {
-      const languageDeDefault = await firebase.mlKitLanguage().identifyLanguage('Hallo');
-      const languageDeLowConfidence = await firebase.mlKitLanguage().identifyLanguage('Hallo', {
+      const languageDeDefault = await firebase.naturalLanguage().identifyLanguage('Hallo');
+      const languageDeLowConfidence = await firebase.naturalLanguage().identifyLanguage('Hallo', {
         confidenceThreshold: 0.2,
       });
       should.equal(languageDeDefault, 'und');
@@ -37,7 +37,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
     it('throws an error if text is not a string', async () => {
       try {
-        firebase.mlKitLanguage().identifyLanguage(false);
+        firebase.naturalLanguage().identifyLanguage(false);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a string value');
@@ -47,7 +47,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
     it('throws an error if options is not an object', async () => {
       try {
-        firebase.mlKitLanguage().identifyLanguage('hello', false);
+        firebase.naturalLanguage().identifyLanguage('hello', false);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be an object');
@@ -57,7 +57,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
     it('throws an error if options.confidenceThreshold is not a float value', async () => {
       try {
-        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: 'boop' });
+        firebase.naturalLanguage().identifyLanguage('hello', { confidenceThreshold: 'boop' });
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a float value between 0 and 1');
@@ -67,7 +67,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
     it('throws an error if options.confidenceThreshold is greater than 1', async () => {
       try {
-        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: 1.2 });
+        firebase.naturalLanguage().identifyLanguage('hello', { confidenceThreshold: 1.2 });
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a float value between 0 and 1');
@@ -77,7 +77,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
     it('throws an error if options.confidenceThreshold is less than 0', async () => {
       try {
-        firebase.mlKitLanguage().identifyLanguage('hello', { confidenceThreshold: -1.2 });
+        firebase.naturalLanguage().identifyLanguage('hello', { confidenceThreshold: -1.2 });
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
         e.message.should.containEql('must be a float value between 0 and 1');
@@ -88,7 +88,7 @@ describe('mlKitLanguage() -> Language ID', () => {
 
   describe('identifyPossibleLanguages()', () => {
     it('returns an array of the identified languages and their confidence', async () => {
-      const languages = await firebase.mlKitLanguage().identifyPossibleLanguages('hello');
+      const languages = await firebase.naturalLanguage().identifyPossibleLanguages('hello');
       languages.should.be.an.Array();
       languages.length.should.be.greaterThan(3);
       languages[0].language.should.equal('en');
@@ -97,7 +97,7 @@ describe('mlKitLanguage() -> Language ID', () => {
     });
 
     it('accepts a `confidenceThreshold` option', async () => {
-      const languages = await firebase.mlKitLanguage().identifyPossibleLanguages('hello', {
+      const languages = await firebase.naturalLanguage().identifyPossibleLanguages('hello', {
         confidenceThreshold: 0.7,
       });
       languages.should.be.an.Array();

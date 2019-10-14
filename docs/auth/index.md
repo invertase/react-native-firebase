@@ -6,13 +6,13 @@ description: Authenticate users with your application. React Native Firebase int
 # Authentication
 
 The authentication module provides an easy-to-use API to integrate an authentication workflow into new and existing applications.
-React Native Firebase provides access to all Firebase authentication methods and idenity providers.
+React Native Firebase provides access to all Firebase authentication methods and identity providers.
 
 <Youtube id="8sGY55yxicA" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
@@ -22,13 +22,13 @@ React Native Firebase provides access to all Firebase authentication methods and
     Install & start authenticating your users with Firebase.
 	</Block>
 	<Block
-		icon="school"
-		color="#4CAF50"
-		title="Guides"
+		icon="build"
+		color="#285E61"
+		title="Firebase Authentication Kit"
 		version={false}
-		to="/guides?tags=auth"
+		to="https://react-native.market/?utm_source=react-native-firebase&utm_medium=auth_index&utm_campaign=documentation"
 	>
-    Looking for advanced authentication help? Our indepth guides cover topics such as social integration.
+    The Firebase Authentication Kit for React Native is a great way to start your next project, on both Android & iOS. The kit integrates with Facebook, Google & Phone SMS providers.
 	</Block>
   <Block
 		icon="layers"
@@ -42,9 +42,9 @@ React Native Firebase provides access to all Firebase authentication methods and
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-auth)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aauth+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Authentication)
 - [Firebase Documentation](https://firebase.google.com/docs/auth?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=auth)

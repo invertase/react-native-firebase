@@ -35,7 +35,7 @@ describe('database().ref().update()', () => {
         .update('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'values' must be an object`);
+      error.message.should.containEql("'values' must be an object");
       return Promise.resolve();
     }
   });
@@ -48,7 +48,7 @@ describe('database().ref().update()', () => {
         .update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'values' must be an object containing multiple values`);
+      error.message.should.containEql("'values' must be an object containing multiple values");
       return Promise.resolve();
     }
   });
@@ -63,7 +63,7 @@ describe('database().ref().update()', () => {
         });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'values' contains an invalid path.`);
+      error.message.should.containEql("'values' contains an invalid path.");
       return Promise.resolve();
     }
   });
@@ -81,7 +81,7 @@ describe('database().ref().update()', () => {
         );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

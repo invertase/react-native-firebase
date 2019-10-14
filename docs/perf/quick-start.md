@@ -1,11 +1,14 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Performance Monitoring in React Native Firebase
+description: Getting started with Performance Monitoring in React Native Firebase
 ---
 
 # Performance Monitoring Quick Start
 
 ## Installation
+
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
 
 Install this module with Yarn:
 
@@ -14,6 +17,11 @@ yarn add @react-native-firebase/perf
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+
+### Additional Android Steps:
+
+Android requires additional manual installation steps. See the <Anchor version group href="/android">Android</Anchor> 
+installation documentation for more information.
 
 ## Module usage
 
@@ -37,52 +45,52 @@ import { firebase } from '@react-native-firebase/perf';
 
 ### Custom Tracing
 
-Defining a custom trace provides greater insight into actions a user may carry out with your application. 
+Defining a custom trace provides greater insight into actions a user may carry out with your application.
 
- ```js
+```js
 import perf from '@react-native-firebase/perf';
 
 async function customTrace() {
   // Define & start a trace
   const trace = await perf().startTrace('custom_trace');
-  
+
   // Define trace meta details
-  trace.putAttribute('user',  'abcd');
+  trace.putAttribute('user', 'abcd');
   trace.putMetric('credits', 30);
-  
+
   // Stop the trace
   await trace.stop();
 }
- ```
+```
 
 ### HTTP Request Tracing
 
 Performance Monitoring provides an API to trace HTTP network requests.
 
- ```js
+```js
 import perf from '@react-native-firebase/perf';
 
 async function getRequest(url) {
   // Define the network metric
   const metric = await perf().newHttpMetric(url, 'GET');
-  
+
   // Define meta details
-  metric.putAttribute('user',  'abcd');
-  
+  metric.putAttribute('user', 'abcd');
+
   // Perform a HTTP request and provide response information
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
-  
+
   // Stop the trace
   await metric.stop();
-  
+
   return response.json();
 }
 
 // Call API
-getRequest('https://api.com').then((json) => {
+getRequest('https://api.com').then(json => {
   console.log(json);
 });
- ```
+```

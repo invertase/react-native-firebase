@@ -1,27 +1,39 @@
 ---
 title: iOS Setup
-description: Manually integrate Realtime Database into your iOS application. 
+description: Manually integrate Realtime Database into your iOS application.
 ---
 
-# iOS Setup
+# iOS Manual Linking
 
 ## Manual iOS Integration via CocoaPods
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> auto-linking.
 
-#### Add Realtime Database Pod
+## CocoaPods Installation
 
-**`ios/Podfile`**:
-```ruby{4}
-// ..
+### Add the RNFBAnalytics Pod
+
+Add the `RNFBDatabase` Pod to your projects `/ios/Podfile`:
+
+```ruby{3}
 target 'app' do
-  // ..
-  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database/ios'
+  ...
+  pod 'RNFBDatabase', :path => '../node_modules/@react-native-firebase/database'
 end
 ```
 
-## Manual iOS Integration via Frameworks
+### Update Pods & rebuild the project
 
-*TODO*
+You may need to update your local Pods in order for the `RNFBDatabase` Pod to be installed in your project:
 
+```bash
+$ cd /ios/
+$ pod install --repo-update
+```
+
+Once the Pods have installed locally, rebuild your iOS project:
+
+```bash
+npx react-native run-ios
+```

@@ -1,26 +1,35 @@
 ---
 title: iOS Setup
-description: Manually integrate Performance Monitoring into your iOS application. 
+description: Manually integrate Performance Monitoring into your iOS application.
 ---
 
-# iOS Setup
-
-## Manual iOS Integration via CocoaPods
+# iOS Manual Linking
 
 > The following steps are only required if your environment does not have access to React Native
-auto-linking.
+> auto-linking.
 
-#### Add Performance Monitoring Pod
+### Add the RNFBPerf Pod
 
-**`ios/Podfile`**:
-```ruby{4}
-// ..
+Add the `RNFBPerf` Pod to your projects `/ios/Podfile`:
+
+```ruby{3}
 target 'app' do
-  // ..
-  pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf/ios'
+  ...
+  pod 'RNFBPerf', :path => '../node_modules/@react-native-firebase/perf'
 end
 ```
 
-## Manual iOS Integration via Frameworks
+### Update Pods & rebuild the project
 
-*TODO*
+You may need to update your local Pods in order for the `RNFBPerf` Pod to be installed in your project:
+
+```bash
+$ cd /ios/
+$ pod install --repo-update
+```
+
+Once the Pods have installed locally, rebuild your iOS project:
+
+```bash
+npx react-native run-ios
+```

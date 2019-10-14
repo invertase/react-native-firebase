@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Invites package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase invites
  */
 export namespace Invites {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   /**
    * firebase.invites.X
    */
@@ -335,7 +333,7 @@ export namespace Invites {
    * const defaultAppInvites = firebase.invites();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Create an invitation via an InvitationBuilder instance.
      *
@@ -408,50 +406,27 @@ export namespace Invites {
 }
 
 declare module '@react-native-firebase/invites' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/invites';
-   * firebase.invites().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const InvitesDefaultExport: ReactNativeFirebaseModuleAndStatics<Invites.Module, Invites.Statics>;
-  /**
-   * @example
-   * ```js
-   * import invites from '@react-native-firebase/invites';
-   * invites().X(...);
-   * ```
-   */
-  export default InvitesDefaultExport;
+  const module: FirebaseModuleWithStatics<Invites.Module, Invites.Statics>;
+  export default module;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
-     * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
-     * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
-     */
-    invites: ReactNativeFirebaseModuleAndStatics<Invites.Module, Invites.Statics>;
-  }
-
-  interface FirebaseApp {
-    /**
-     * <b>Firebase Invites is deprecated</b>. You can create cross-platform invitation links that survive app installation using Firebase Dynamic Links instead.
-     * Firebase Invites are an out-of-the-box solution for app referrals and sharing via email or SMS.
-     * To customize the invitation user experience, or to generate links programmatically, use Firebase Dynamic Links.
-     *
-     */
-    invites(): Invites.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      invites: FirebaseModuleWithStatics<Invites.Module, Invites.Statics>;
+    }
+    interface FirebaseApp {
+      invites(): Invites.Module;
+    }
   }
 }

@@ -31,7 +31,7 @@ describe('database().ref().equalTo()', () => {
         .equalTo({ foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' must be a number, string, boolean or null value`);
+      error.message.should.containEql("'value' must be a number, string, boolean or null value");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().equalTo()', () => {
         .equalTo('bar', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'key' must be a string value if defined`);
+      error.message.should.containEql("'key' must be a string value if defined");
       return Promise.resolve();
     }
   });
@@ -59,7 +59,7 @@ describe('database().ref().equalTo()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `Starting point was already set (by another call to startAt or equalTo)`,
+        'Starting point was already set (by another call to startAt or equalTo)',
       );
       return Promise.resolve();
     }
@@ -75,7 +75,7 @@ describe('database().ref().equalTo()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `Ending point was already set (by another call to endAt or equalTo)`,
+        'Ending point was already set (by another call to endAt or equalTo)',
       );
       return Promise.resolve();
     }

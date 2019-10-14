@@ -5,7 +5,7 @@ description: Analytics works out of the box, however automatically reserved a nu
 
 # Reserved Events
 
-The Analytics package works out of the box, however a number of events are automatically reported to Firebase. 
+The Analytics package works out of the box, however a number of events are automatically reported to Firebase.
 These event names are called as 'Reserved Events'. Attempting to send any custom event using the `logEvent` method
 with any of the following event names will throw an error.
 
@@ -17,10 +17,8 @@ with any of the following event names will throw an error.
 - `error`
 - `first_open`
 - `first_visit`
-- `first_visit`
 - `first_open_time`
 - `first_visit_time`
-- `in_app_purchase`
 - `in_app_purchase`
 - `notification_dismiss`
 - `notification_foreground`

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -117,7 +116,9 @@ export default class DatabaseTransaction {
 
     try {
       const transaction = this._getTransaction(id);
-      if (!transaction) return;
+      if (!transaction) {
+        return;
+      }
       newValue = transaction.transactionUpdater(value);
     } finally {
       let abort = false;

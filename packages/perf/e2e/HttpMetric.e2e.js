@@ -17,7 +17,7 @@
 
 const aCoolUrl = 'https://invertase.io';
 
-describe('perf()', () => {
+android.describe('perf()', () => {
   describe('HttpMetric', () => {
     describe('start()', () => {
       it('correctly starts with internal flag ', async () => {

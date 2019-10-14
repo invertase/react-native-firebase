@@ -1,6 +1,6 @@
 ---
 title: AdMob with Firebase
-description: Google AdMob makes it easy for developers to earn money from their mobile apps with high-quality ads. 
+description: Google AdMob makes it easy for developers to earn money from their mobile apps with high-quality ads.
 ---
 
 # AdMob with Firebase
@@ -11,20 +11,26 @@ whilst taking advantage of other Firebase service such as Analytics. React Nativ
 [Interstitial Ads](https://developers.google.com/admob/android/interstitial?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)
 and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-video?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob).
 
-*We are currently investigating how to integrate with [Native Ads](https://developers.google.com/admob/android/native/start?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob).*
-
 <Youtube id="9qCxo0D-Sak" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="2">
 	<Block
 		icon="attach_money"
 		color="#2196f3"
 		title="Quick Start"
-		to="quick-start"
+		to="/quick-start"
 	>
     Install & start monetizing your React Native application with AdMob.
+	</Block>
+ 	<Block
+		icon="pan_tool"
+		color="#f44336"
+		title="European User Consent"
+		to="/european-user-consent"
+	>
+    Learn how to request consent from users within the EEA. The AdMob library comes with built in support to help you handle GDPR regulations in your application.
 	</Block>
 	<Block
 		icon="school"
@@ -44,3 +50,12 @@ and [Rewarded Video Ads](https://developers.google.com/admob/android/rewarded-vi
     The reference API for AdMob covers all aspects of the package, from component props to advert lifecycle events.
 	</Block>
 </Grid>
+
+## Learn more
+
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
+check out the resources below:
+
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-admob)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Admob)
+- [Firebase Documentation](https://firebase.google.com/docs/admob?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=admob)

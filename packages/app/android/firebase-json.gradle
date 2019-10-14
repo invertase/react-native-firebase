@@ -8,9 +8,12 @@ File jsonFile = null
 File parentDir = rootProject.projectDir
 
 for (int i = 0; i <= 3; i++) {
+  if (parentDir == null) break
   parentDir = parentDir.parentFile
-  jsonFile = new File(parentDir, fileName)
-  if (jsonFile.exists()) break
+  if (parentDir != null) {
+    jsonFile = new File(parentDir, fileName)
+    if (jsonFile.exists()) break
+  }
 }
 
 if (jsonFile != null && jsonFile.exists()) {
@@ -31,6 +34,10 @@ if (jsonFile != null && jsonFile.exists()) {
       raw: json[jsonRoot],
       isFlagEnabled: { key ->
         return json[jsonRoot] != null && json[jsonRoot][key] == true
+      },
+      getStringValue: { key, defaultValue ->
+        if (json[jsonRoot] == null) return defaultValue
+        return json[jsonRoot][key] ? json[jsonRoot][key] : defaultValue
       }
     ]
 
@@ -41,6 +48,7 @@ if (jsonFile != null && jsonFile.exists()) {
       }
     }
   } else {
+    rootProject.ext.firebaseJson = false
     rootProject.logger.info ":${project.name} firebase.json found with no react-native config, skipping"
     android {
       defaultConfig {
@@ -49,6 +57,7 @@ if (jsonFile != null && jsonFile.exists()) {
     }
   }
 } else {
+  rootProject.ext.firebaseJson = false
   rootProject.logger.info ":${project.name} no firebase.json found, skipping"
   android {
     defaultConfig {

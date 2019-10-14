@@ -1,11 +1,14 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Cloud Functions in React Native Firebase
+description: Getting started with Cloud Functions in React Native Firebase
 ---
 
 # Cloud Functions Quick Start
 
 ## Installation
+
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
 
 Install this module with Yarn:
 
@@ -42,7 +45,7 @@ async function order() {
       id: '12345678',
       size: 'large',
     });
-    
+
     if (success) {
       console.log('Pizza is on the way!');
     } else {
@@ -58,7 +61,7 @@ Looking for a more in-depth explanations? Our [Cloud Functions](/guides?tags=fun
 
 ### Local emulator
 
-Cloud Functions can be emulated to run locally, or using your own custom domain. To switch the 
+Cloud Functions can be emulated to run locally, or using your own custom domain. To switch the
 emulator location, use the `useFunctionsEmulator` method:
 
 ```js
@@ -71,7 +74,7 @@ if (__DEV__) {
 
 ### Cloud Functions Region
 
-Cloud functions can be deployed to multiple regions across the globe. To change the region, 
+Cloud functions can be deployed to multiple regions across the globe. To change the region,
 initialize the functions instance with the region (note the default region is us-central1):
 
 ```js

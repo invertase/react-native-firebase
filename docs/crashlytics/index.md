@@ -1,6 +1,6 @@
 ---
 title: Crashlytics
-description: Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality. 
+description: Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality.
 ---
 
 # Crashlytics
@@ -8,13 +8,13 @@ description: Firebase Crashlytics is a lightweight, realtime crash reporter that
 Firebase Crashlytics is a lightweight, realtime crash reporter that helps you track, prioritize, and fix stability issues that erode your app quality.
 React Native Firebase provides automatic crash reporting for both native and JavaScript errors, including unhandled promise rejections.
 The JavaScript API also allows for full custom crash reporting and supports sending additional attributes to help debug crashes within your
-application. 
+application.
 
 <Youtube id="k_mdNRZzd30" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
@@ -46,9 +46,9 @@ application.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-crashlytics)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Acrashlytics+)
-- [Firebase Documentation](https://firebase.google.com/docs/functions?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=crashlytics)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Crashlytics)
+- [Firebase Documentation](https://firebase.google.com/docs/crashlytics?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=crashlytics)

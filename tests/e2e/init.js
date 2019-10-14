@@ -20,6 +20,8 @@
 // BEEN WARNED 🙃
 require('@react-native-firebase/private-tests-helpers');
 
+global.TestAdminApi = new TestingApi();
+
 const detox = require('detox');
 const jet = require('jet/platform/node');
 
@@ -33,26 +35,22 @@ console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
 
 const PACKAGES = [
   'app',
-  'links',
+  'admob',
+  'dynamic-links',
   'iid',
   'perf',
-  'fiam',
   'functions',
   'analytics',
-  'config',
+  'remote-config',
   'crashlytics',
-  'utils',
   'ml-natural-language',
-  'invites',
-  'fiam',
+  'ml-vision',
+  'in-app-messaging',
   'auth',
   'database',
   'storage',
-  'indexing',
-  // 'firestore',
-  // 'messaging',
-  // 'ml-vision',
-  // 'ml-automl',
+  'messaging',
+  'firestore',
 ];
 
 for (let i = 0; i < PACKAGES.length; i++) {
@@ -85,7 +83,7 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
-    await Utils.sleep(1000 * retry);
+    await Utils.sleep(2000 * retry);
   }
 });
 

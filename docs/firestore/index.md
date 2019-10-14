@@ -6,21 +6,21 @@ description: Cloud Firestore is a scalable NoSQL cloud database to store and syn
 # Cloud Firestore
 
 Cloud Firestore is a NoSQL cloud database to store and sync data between your React Native application
-and Firebase's database. The API matches the Firebase Web SDK whilst taking advantage of the native SDKs 
+and Firebase's database. The API matches the Firebase Web SDK whilst taking advantage of the native SDKs
 performance and offline capabilities.
 
 <Youtube id="QcsAb2RR52c" />
 
 ## Getting Started
 
-<Grid>
+<Grid columns="3">
 	<Block
 		icon="build"
 		color="#ffc107"
 		title="Quick Start"
 		to="/quick-start"
 	>
-    Install & start syncing realtime data in minuties with our quick start guide. 
+    Install & start syncing realtime data in minutes with our quick start guide.
 	</Block>
 	<Block
 		icon="school"
@@ -45,9 +45,9 @@ performance and offline capabilities.
 
 ## Learn more
 
-Our documentation is a great place to start, however if you're looking for more help or want to help others, 
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-firestore)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Afirestore+)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Firestore)
 - [Firebase Documentation](https://firebase.google.com/docs/firestore?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=firestore)

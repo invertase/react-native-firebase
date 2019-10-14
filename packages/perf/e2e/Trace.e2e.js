@@ -15,7 +15,7 @@
  *
  */
 
-describe('perf()', () => {
+android.describe('perf()', () => {
   describe('Trace', () => {
     describe('start()', () => {
       it('correctly starts with internal flag ', async () => {

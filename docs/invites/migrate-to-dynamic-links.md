@@ -10,5 +10,3 @@ invites backend service will start returning error responses when making calls t
 learn more about this, see the [Firebase documentation](https://firebase.google.com/docs/invites/deprecation).
 
 ## TODO
-
- 

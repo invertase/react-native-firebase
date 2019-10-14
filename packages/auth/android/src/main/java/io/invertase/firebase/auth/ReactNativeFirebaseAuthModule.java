@@ -1910,27 +1910,35 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
-    ReadableMap android = actionCodeSettings.getMap("android");
-    ReadableMap ios = actionCodeSettings.getMap("iOS");
+    
+    // Required
     String url = actionCodeSettings.getString("url");
-    if (android != null) {
-      boolean installApp = android.hasKey("installApp") && android.getBoolean("installApp");
+    builder = builder.setUrl(Objects.requireNonNull(url));
+
+    if (actionCodeSettings.hasKey("handleCodeInApp")) {
+      builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
+    }
+
+    if (actionCodeSettings.hasKey("dynamicLinkDomain")) {
+      builder = builder.setDynamicLinkDomain(actionCodeSettings.getString("dynamicLinkDomain"));
+    }
+
+    if (actionCodeSettings.hasKey("android")) {
+      ReadableMap android = actionCodeSettings.getMap("android");
+      boolean installApp = Objects.requireNonNull(android).hasKey("installApp") && android.getBoolean("installApp");
       String minimumVersion = android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
       String packageName = android.getString("packageName");
+
       builder = builder.setAndroidPackageName(
         Objects.requireNonNull(packageName),
         installApp,
         minimumVersion
       );
     }
-    if (actionCodeSettings.hasKey("handleCodeInApp")) {
-      builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
-    }
-    if (ios != null && ios.hasKey("bundleId")) {
+
+    if (actionCodeSettings.hasKey("iOS")) {
+      ReadableMap ios = actionCodeSettings.getMap("iOS");
       builder = builder.setIOSBundleId(Objects.requireNonNull(ios.getString("bundleId")));
-    }
-    if (url != null) {
-      builder = builder.setUrl(url);
     }
 
     return builder.build();

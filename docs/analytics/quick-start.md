@@ -1,11 +1,14 @@
 ---
 title: Quick Start
-description: Get to grips with the basics of Analytics in React Native Firebase
+description: Getting started with Analytics in React Native Firebase
 ---
 
 # Analytics Quick Start
 
 ## Installation
+
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
 
 Install this module with Yarn:
 
@@ -18,7 +21,7 @@ yarn add @react-native-firebase/analytics
 ## Module usage
 
 The Analytics package will automatically start tracking events such as when users clear app data, dismiss notifications and more.
-To view the full list of automatic events, see <Anchor version group href="/reserved-events">Reserved Events</Anchor>.
+To view the full list of automatic events, see [this page](https://support.google.com/firebase/answer/6317485) of the official Firebase documentation.
 
 The package also provides a JavaScript API to allow for logging custom events and metrics throughout your application.
 
@@ -52,23 +55,25 @@ async function onProductView() {
 
 ### Attaching user data
 
-User data can be attached to analytical events via the `setUser*` methods:
+User data can be attached to analytical events via the [`setUserId`](reference/module#setUserId), [`setUserProperties`](reference/module#setUserProperties) and [`setUserProperty`](reference/module#setUserProperty) methods. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
 
 ```js
 import analytics from '@react-native-firebase/analytics';
 
 async function onSignIn(user) {
   await Promise.all([
-     analytics().setUserId(user.uid),
-     analytics().setUserProperty('account_balance', user.balance),
+    analytics().setUserId(user.uid),
+    analytics().setUserProperty('account_balance', user.balance),
   ]);
 }
 ```
 
+> When you set user properties, be sure to never include personally identifiable information such as names, social security numbers, or email addresses, even in hashed form.
+
 ### Tracking screen names
 
-Similar to Analytics on the web, it's important to understand the user journey within your application, for example
-tracking drop off points during a e-commerce transaction flow. The Analytics package provides a method called 
+Similar to Analytics on the web, it's important to understand the user's journey within your application, for example
+tracking drop off points during a e-commerce transaction flow. The Analytics package provides a method called
 `setCurrentScreen` to help track this.
 
 ```js
@@ -81,12 +86,12 @@ function BasketScreen() {
     // Set & override the MainActivity screen name
     await analytics().setCurrentScreen(screen, screen);
   }
-  
+
   // Track a screen view once the component has mounted
   useEffect(() => {
     trackScreenView('BasketScreen');
   }, []);
-  
+
   return <View />;
 }
 ```
@@ -96,10 +101,10 @@ function BasketScreen() {
 In some cases, resetting all analytics data is required on certain events such as signing out of the application.
 To achieve this call the `resetAnalyticsData` method.
 
- ```js
- import analytics from '@react-native-firebase/analytics';
- 
+```js
+import analytics from '@react-native-firebase/analytics';
+
 async function onSignOut() {
   await analytics().resetAnalyticsData();
 }
- ```
+```

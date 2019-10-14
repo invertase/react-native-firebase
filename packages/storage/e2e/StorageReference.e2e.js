@@ -33,11 +33,11 @@ describe('storage() -> StorageReference', () => {
         firebase
           .storage()
           .ref('/foo/uploadNope.jpeg')
-          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+          .fullPath.should.equal('foo/uploadNope.jpeg');
         firebase
           .storage()
           .ref('foo/uploadNope.jpeg')
-          .fullPath.should.equal(`foo/uploadNope.jpeg`);
+          .fullPath.should.equal('foo/uploadNope.jpeg');
       });
     });
 
@@ -104,11 +104,11 @@ describe('storage() -> StorageReference', () => {
       await firebase
         .storage()
         .ref('/ok.jpeg')
-        .getFile(`${firebase.storage.Path.DocumentDirectory}/deleteMe.jpeg`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/deleteMe.jpeg`);
       await firebase
         .storage()
         .ref('/deleteMe.jpeg')
-        .putFile(`${firebase.storage.Path.DocumentDirectory}/deleteMe.jpeg`);
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/deleteMe.jpeg`);
     });
 
     it('should delete a file', async () => {
@@ -221,6 +221,133 @@ describe('storage() -> StorageReference', () => {
     });
   });
 
+  describe('list', () => {
+    it('should return list results', async () => {
+      const storageReference = firebase.storage().ref('/list');
+      const result = await storageReference.list();
+
+      result.constructor.name.should.eql('StorageListResult');
+      result.should.have.property('nextPageToken');
+
+      result.items.should.be.Array();
+      result.items.length.should.be.greaterThan(0);
+      result.items[0].constructor.name.should.eql('StorageReference');
+
+      result.prefixes.should.be.Array();
+      result.prefixes.length.should.be.greaterThan(0);
+      result.prefixes[0].constructor.name.should.eql('StorageReference');
+    });
+
+    it('throws if options is not an object', () => {
+      try {
+        const storageReference = firebase.storage().ref('/');
+        storageReference.list(123);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql("'options' expected an object value");
+        return Promise.resolve();
+      }
+    });
+
+    describe('maxResults', () => {
+      it('should limit with maxResults are passed', async () => {
+        const storageReference = firebase.storage().ref('/list');
+        const result = await storageReference.list({
+          maxResults: 1,
+        });
+
+        result.nextPageToken.should.be.String();
+
+        result.items.should.be.Array();
+        result.items.length.should.eql(1);
+        result.items[0].constructor.name.should.eql('StorageReference');
+
+        result.prefixes.should.be.Array();
+        // todo length?
+      });
+
+      it('throws if maxResults is not a number', () => {
+        try {
+          const storageReference = firebase.storage().ref('/list');
+          storageReference.list({
+            maxResults: '123',
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql("'options.maxResults' expected a number value");
+          return Promise.resolve();
+        }
+      });
+
+      it('throws if maxResults is not a valid number', () => {
+        try {
+          const storageReference = firebase.storage().ref('/list');
+          storageReference.list({
+            maxResults: 2000,
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql(
+            "'options.maxResults' expected a number value between 1-1000",
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
+    describe('pageToken', () => {
+      it('throws if pageToken is not a string', () => {
+        try {
+          const storageReference = firebase.storage().ref('/list');
+          storageReference.list({
+            pageToken: 123,
+          });
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.message.should.containEql("'options.pageToken' expected a string value");
+          return Promise.resolve();
+        }
+      });
+
+      it('should return and use a page token', async () => {
+        const storageReference = firebase.storage().ref('/list');
+        const result1 = await storageReference.list({
+          maxResults: 1,
+        });
+
+        const item1 = result1.items[0].fullPath;
+
+        const result2 = await storageReference.list({
+          maxResults: 1,
+          pageToken: result1.nextPageToken,
+        });
+
+        const item2 = result2.items[0].fullPath;
+
+        if (item1 === item2) {
+          throw new Error('Expected item results to be different.');
+        }
+      });
+    });
+  });
+
+  describe('listAll', () => {
+    it('should return all results', async () => {
+      const storageReference = firebase.storage().ref('/list');
+      const result = await storageReference.listAll();
+
+      should.equal(result.nextPageToken, null);
+
+      result.items.should.be.Array();
+      result.items.length.should.be.greaterThan(0);
+      result.items[0].constructor.name.should.eql('StorageReference');
+
+      result.prefixes.should.be.Array();
+      result.prefixes.length.should.be.greaterThan(0);
+      result.prefixes[0].constructor.name.should.eql('StorageReference');
+    });
+  });
+
   describe('updateMetadata', () => {
     it('should return the updated metadata for a file', async () => {
       const storageReference = firebase.storage().ref('/writeOnly.jpeg');
@@ -301,7 +428,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putFile('foo', { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -312,7 +439,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putFile('foo', { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -324,7 +451,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }
@@ -349,7 +476,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putString('foo', 'raw', { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -360,7 +487,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.putString('foo', 'raw', { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -372,7 +499,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }
@@ -397,7 +524,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`unknown property 'foo'`);
+        error.message.should.containEql("unknown property 'foo'");
         return Promise.resolve();
       }
     });
@@ -408,7 +535,7 @@ describe('storage() -> StorageReference', () => {
         storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
-        error.message.should.containEql(`should be a string or null value`);
+        error.message.should.containEql('should be a string or null value');
         return Promise.resolve();
       }
     });
@@ -420,7 +547,7 @@ describe('storage() -> StorageReference', () => {
         return Promise.reject(new Error('Did not error!'));
       } catch (error) {
         error.message.should.containEql(
-          `customMetadata must be an object of keys and string values`,
+          'customMetadata must be an object of keys and string values',
         );
         return Promise.resolve();
       }

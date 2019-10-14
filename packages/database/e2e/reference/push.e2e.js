@@ -28,7 +28,7 @@ describe('database().ref().push()', () => {
         .push('foo', 'bar');
       return Promise.reject(new Error('Did not throw Error'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });
@@ -77,7 +77,7 @@ describe('database().ref().push()', () => {
   it('throws if push errors', async () => {
     const ref = firebase.database().ref('nope');
     return ref.push('foo').catch(error => {
-      error.message.should.containEql(`doesn't have permission to access`);
+      error.message.should.containEql("doesn't have permission to access");
       return Promise.resolve();
     });
   });
@@ -86,7 +86,7 @@ describe('database().ref().push()', () => {
     const callback = sinon.spy();
     const ref = firebase.database().ref('nope');
     ref.push('foo', error => {
-      error.message.should.containEql(`doesn't have permission to access`);
+      error.message.should.containEql("doesn't have permission to access");
       callback();
     });
     await Utils.sleep(1000);

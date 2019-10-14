@@ -1,30 +1,39 @@
 ---
 title: Utils
-description: The Utils package provides public access to internal methods to aide with development  
+description: The Utils package exports several utilities that assist with using React Native Firebase in your app.
 ---
 
 # Utils
 
-The Utils package provides a public JavaScript interface to internal functionality that has been created as part of the
-development of the React Native Firebase library. 
+The Utils package exports several utilities that assist with using React Native Firebase in your app.
 
 ## Getting Started
 
-<Grid>
-	<Block
-		icon="build"
-		color="#ffc107"
-		title="Quick Start"
-		to="/quick-start"
-	>
-    Install & integrate the utils functionality into your app or tests.
-	</Block>
+> This module automatically comes with the `@react-native-firebase/app` package, there are no additional steps required to install it.
+
+<Grid columns="2">
   <Block
-		icon="layers"
-		color="#03A9F4"
-		title="Reference"
-		to="/reference"
-	>
-    The API reference covers everything required to successfully monitor your apps performance.
-	</Block>
+	icon="build"
+	color="#ffc107"
+	title="Quick Start"
+	to="/quick-start"
+  >
+    Quick guide to using the utilities in your own application.
+  </Block>
+  <Block
+	icon="layers"
+	color="#03A9F4"
+	title="Reference"
+	to="/reference"
+  >
+    The API reference documentation for the Utils module.
+  </Block>
 </Grid>
+
+## Learn more
+
+Our documentation is a great place to start, however if you're looking for more help or want to help others,
+check out the resources below:
+
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-utils)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/API%3A%20Utils)
