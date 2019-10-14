@@ -26,6 +26,7 @@ export default class PhoneAuthListener {
     this._reject = null;
     this._resolve = null;
     this._promise = null;
+    this._jsStack = new Error().stack;
 
     this._timeout = timeout || 20;
     this._phoneAuthRequestId = REQUEST_ID++;
@@ -172,7 +173,7 @@ export default class PhoneAuthListener {
       state: 'error',
     };
 
-    snapshot.error = new NativeFirebaseError({ userInfo: state.error }, null, 'auth');
+    snapshot.error = new NativeFirebaseError({ userInfo: state.error }, this._jsStack, 'auth');
 
     this._emitToObservers(snapshot);
     this._emitToErrorCb(snapshot);
