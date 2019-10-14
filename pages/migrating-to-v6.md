@@ -238,26 +238,26 @@ yarn add @react-native-firebase/auth
 
 Install the modules required for your application:
 
-| Module                                                     | NPM Package                                |
-| ---------------------------------------------------------- | ------------------------------------------ |
-| <Anchor href="/admob">AdMob</Anchor>                       | @react-native-firebase/admob               |
-| <Anchor href="/analytics">Analytics</Anchor>               | @react-native-firebase/analytics           |
-| <Anchor href="/app">App</Anchor>                           | @react-native-firebase/app                 |
-| <Anchor href="/invites">App Invites</Anchor>               | @react-native-firebase/invites             |
-| <Anchor href="/auth">Authentication</Anchor>               | @react-native-firebase/auth                |
-| <Anchor href="/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore           |
-| <Anchor href="/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions           |
-| <Anchor href="/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging           |
-| <Anchor href="/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage             |
-| <Anchor href="/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics         |
-| <Anchor href="/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links       |
-| <Anchor href="/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging    |
-| <Anchor href="/iid">Instance ID</Anchor>                   | @react-native-firebase/iid                 |
-| <Anchor href="/mlkit">ML Kit Natural Language</Anchor>     | @react-native-firebase/ml-natural-language |
-| <Anchor href="/mlkit">ML Kit Vision</Anchor>               | @react-native-firebase/ml-vision           |
-| <Anchor href="/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf                |
-| <Anchor href="/database">Realtime Database</Anchor>        | @react-native-firebase/database            |
-| <Anchor href="/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config       |
+| Module                                                       | NPM Package                                |
+| ------------------------------------------------------------ | ------------------------------------------ |
+| <Anchor href="v6/admob">AdMob</Anchor>                       | @react-native-firebase/admob               |
+| <Anchor href="v6/analytics">Analytics</Anchor>               | @react-native-firebase/analytics           |
+| <Anchor href="v6/app">App</Anchor>                           | @react-native-firebase/app                 |
+| <Anchor href="v6/invites">App Invites</Anchor>               | @react-native-firebase/invites             |
+| <Anchor href="v6/auth">Authentication</Anchor>               | @react-native-firebase/auth                |
+| <Anchor href="v6/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore           |
+| <Anchor href="v6/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions           |
+| <Anchor href="v6/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging           |
+| <Anchor href="v6/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage             |
+| <Anchor href="v6/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics         |
+| <Anchor href="v6/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links       |
+| <Anchor href="v6/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging    |
+| <Anchor href="v6/iid">Instance ID</Anchor>                   | @react-native-firebase/iid                 |
+| <Anchor href="v6/mlkit">ML Kit Natural Language</Anchor>     | @react-native-firebase/ml-natural-language |
+| <Anchor href="v6/mlkit">ML Kit Vision</Anchor>               | @react-native-firebase/ml-vision           |
+| <Anchor href="v6/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf                |
+| <Anchor href="v6/database">Realtime Database</Anchor>        | @react-native-firebase/database            |
+| <Anchor href="v6/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config       |
 
 Users on React Native version 0.60+, the modules will be automatically linked. For users on a lower version,
 see the module specific pages for manual installation guides.
