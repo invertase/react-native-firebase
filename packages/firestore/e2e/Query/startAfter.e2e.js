@@ -153,18 +153,28 @@ describe('firestore().collection().startAfter()', () => {
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
 
-    await Promise.all([doc1.set({ foo: 1, bar: 1, array: ['blah'] }), doc2.set({ foo: 2, bar: 2, array: ['blah'] }), doc3.set({ foo: 1, bar: 3, array: ['blah'] })]);
+    await Promise.all([
+                  doc1.set({ foo: 1, bar: 1, items: ['item0', 'item1'], createdDate: new Date(0) }), 
+                  doc2.set({ foo: 2, bar: 2, items: ['item1', 'item2'], createdDate: new Date(1000000) }), 
+                  doc3.set({ foo: 1, bar: 3, items: ['item1', 'item2', 'item3', 'item4'], createdDate: new Date(10000000) })
+                ]);
 
     const startAfter = await doc2.get();
 
     const qs = await colRef.where('foo', '==', 1).startAfter(startAfter).get();
-    const aqs = await colRef.where('array', '==', blah).startAfter(startAfter).get();
+    const aqs = await colRef.where('items', 'array-contains', 'item1').startAfter(startAfter).get();
+
+    const orderByTest = await colRef.orderBy('createdDate', 'desc').startAfter(startAfter).get();
 
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc3');
     let data = qs.docs[0].data()
     data.bar.should.eql(3);
+
     let arrayData = aqs.docs[0].data()
-    arrayData.array[0].should.eql('blah');
+    arrayData.items[1].should.eql('item2');
+
+    let orderByData = orderByTest.docs[0].data()
+    orderByData.bar.should.eql(3);
   });
 });
