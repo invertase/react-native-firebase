@@ -1,7 +1,7 @@
 describe('firestore()', () => {
   describe('Query', () => {
     describe('isEqual()', () => {
-      it(`returns true if two Queries have the same .where and .orderBy calls`, () => {
+      it(`returns true if two Queries for the same collection have the same .where and .orderBy calls`, () => {
         const ref1 = firebase
           .firestore()
           .collection('foo')
@@ -15,6 +15,18 @@ describe('firestore()', () => {
           .where('baz', '!=', false)
           .orderBy('date', 'DESC');
         should.equal(ref1.isEqual(ref2), true);
+      });
+
+      it(`returns false if the two Queries are for different collections`, () => {
+        const ref1 = firebase
+          .firestore()
+          .collection('foo')
+          .where('bar', '==', true);
+        const ref2 = firebase
+          .firestore()
+          .collection('baz')
+          .where('bar', '==', true);
+        should.equal(ref1.isEqual(ref2), false);
       });
 
       it(`returns false if two Queries have different number of .where calls`, () => {

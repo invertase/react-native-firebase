@@ -199,6 +199,13 @@ export default class Query {
       return false;
     }
 
+    if (
+      this._referencePath.relativeName !==
+      otherQuery._referencePath.relativeName
+    ) {
+      return false;
+    }
+
     if (this._fieldFilters.length !== otherQuery._fieldFilters.length) {
       return false;
     }
