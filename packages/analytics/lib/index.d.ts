@@ -354,11 +354,11 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * Score in game.
      */
-    score: int;
+    score: number;
     /**
      * Level in game.
      */
-    level?: int;
+    level?: number;
     /**
      * Character used in game.
      */
@@ -369,11 +369,11 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * Score in game.
      */
-    score: int;
+    score: number;
     /**
      * Level in game.
      */
-    level?: int;
+    level?: number;
     /**
      * Character used in game.
      */
