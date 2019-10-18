@@ -1,5 +1,5 @@
 ---
-name: ⚠️ Bug/Issue report
+name: ⚠️ Bug/Issue report - React Native
 about:
   Please provide as much detail as possible to help us with a bug or issue. Issues
   are likely to be closed and locked if they do not follow the template.

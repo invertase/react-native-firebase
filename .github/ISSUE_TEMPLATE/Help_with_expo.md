@@ -1,5 +1,5 @@
 ---
-name: 🐞 Issue using with Expo
+name: ⚠️ Bug/Issue report - Expo
 labels: 
   - Platform: Expo
   - Resolution: Invalid
