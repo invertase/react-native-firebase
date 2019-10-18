@@ -9,6 +9,8 @@ This guide is for integrating Firebase into an existing React Native project.
 
 Creating a new React Native project? See the [new projects guide](/quick-start/new-project) instead.
 
+> **Expo Users**: Support will not be provided when using the library in Expo applications (ejected or otherwise). For support on how to use Firebase with Expo, you should contact the Expo team or the Expo community.
+
 ## Adding the app dependency
 
 Every project using React Native Firebase requires the `app` module to be installed. Using Yarn, add the module to your
