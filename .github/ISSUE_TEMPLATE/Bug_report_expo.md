@@ -8,13 +8,10 @@ about:
 ---
 
 <!---
-Note: We have no support in place for using React Native Firebase in Expo applications (ejected or otherwise).
-
+NOTE: We have no support in place for using React Native Firebase in Expo applications (ejected or otherwise).
 If you are seeing an issue, it may most likely not be an issue with React Native Firebase itself, but with the Expo runtime or with an incorrect React Native Firebase setup. For support on how to use Firebase with Expo, you should contact the Expo team or the Expo community.
-
 General Expo issues are no longer be allowed on the React Native Firebase issue tracker. If you've investigated the Expo runtime or your app and found a genuine issue with React Native Firebase, please continue to open an issue.
 --->
-
 
 <!---
 1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
