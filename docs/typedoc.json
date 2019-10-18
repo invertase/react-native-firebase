@@ -881,7 +881,7 @@
 									"sources": [
 										{
 											"fileName": "iid/lib/index.d.ts",
-											"line": 156,
+											"line": 159,
 											"character": 9
 										}
 									]
@@ -1266,7 +1266,7 @@
 								},
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 155,
+									"line": 158,
 									"character": 25
 								},
 								{
@@ -1580,7 +1580,7 @@
 									"sources": [
 										{
 											"fileName": "iid/lib/index.d.ts",
-											"line": 153,
+											"line": 156,
 											"character": 9
 										}
 									],
@@ -1991,7 +1991,7 @@
 								},
 								{
 									"fileName": "iid/lib/index.d.ts",
-									"line": 152,
+									"line": 155,
 									"character": 20
 								},
 								{
@@ -2100,7 +2100,7 @@
 						},
 						{
 							"fileName": "iid/lib/index.d.ts",
-							"line": 150,
+							"line": 153,
 							"character": 31
 						},
 						{
@@ -2291,7 +2291,7 @@
 				},
 				{
 					"fileName": "iid/lib/index.d.ts",
-					"line": 149,
+					"line": 152,
 					"character": 43
 				},
 				{
@@ -13568,8 +13568,17 @@
 								}
 							],
 							"type": {
-								"type": "reference",
-								"name": "int"
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "number"
+									}
+								]
 							}
 						},
 						{
@@ -13591,8 +13600,8 @@
 								}
 							],
 							"type": {
-								"type": "reference",
-								"name": "int"
+								"type": "intrinsic",
+								"name": "number"
 							}
 						}
 					],
@@ -13677,8 +13686,17 @@
 								}
 							],
 							"type": {
-								"type": "reference",
-								"name": "int"
+								"type": "union",
+								"types": [
+									{
+										"type": "intrinsic",
+										"name": "undefined"
+									},
+									{
+										"type": "intrinsic",
+										"name": "number"
+									}
+								]
 							}
 						},
 						{
@@ -13700,8 +13718,8 @@
 								}
 							],
 							"type": {
-								"type": "reference",
-								"name": "int"
+								"type": "intrinsic",
+								"name": "number"
 							}
 						}
 					],
