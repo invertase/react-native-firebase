@@ -37,6 +37,11 @@
 + (RNFBRCTEventEmitter *)shared;
 
 /**
+ * Invalidate
+ */
+- (void)invalidate;
+
+/**
  * Add an event listener
  *
  * @param eventName NSString event name.
