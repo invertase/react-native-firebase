@@ -79,12 +79,14 @@ export default class FirestoreQuery {
         values.push(value);
       }
 
-      modifiers._orders.push({
-        fieldPath: '__name__',
-        direction: 'ASCENDING',
-      });
+      if (currentOrders.length === 0) {
+        modifiers._orders.push({
+          fieldPath: '__name__',
+          direction: 'ASCENDING',
+        });
 
-      values.push(documentSnapshot.id);
+        values.push(documentSnapshot.id);
+      }
 
       return modifiers.setFieldsCursor(cursor, values);
     }
