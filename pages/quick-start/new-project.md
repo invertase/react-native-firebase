@@ -9,7 +9,7 @@ This guide creates a fresh React Native project with React Native Firebase pre-i
 
 ## Initializing the project
 
-The following npx command will create a new directory on your machine with the `@react-native-firebase/app` package pre-integrated. The `<name>` varible is used to both create the directory name and setup the Android & iOS environments.
+The following npx command will create a new directory on your machine with the `@react-native-firebase/app` package pre-integrated. The `<name>` variable is used to both create the directory name and setup the Android & iOS environments.
 
 ```bash
 npx @react-native-community/cli init --template=@react-native-firebase/template <name>
