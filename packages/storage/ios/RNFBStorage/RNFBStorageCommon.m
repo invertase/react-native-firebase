@@ -189,7 +189,7 @@
             exportSession.outputFileType = resource.uniformTypeIdentifier;
           }
         } else {
-            exportSession.outputFileType = resource.uniformTypeIdentifier;
+          exportSession.outputFileType = resource.uniformTypeIdentifier;
         }
 
         if (exportSession.outputFileType != nil) break;
