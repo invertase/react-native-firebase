@@ -186,7 +186,7 @@
           if (resource.type != PHAssetResourceTypeVideo) {
             continue;
           } else {
-              exportSession.outputFileType = resource.uniformTypeIdentifier;
+            exportSession.outputFileType = resource.uniformTypeIdentifier;
           }
         } else {
             exportSession.outputFileType = resource.uniformTypeIdentifier;
