@@ -21,7 +21,7 @@ To integrate FCM for iOS, the following integration steps must be followed;
 <Grid>
 	<Block
 		title="Configure Xcode Project notification capabilities"
-		to="/messaging/ios-xcode-project-capabilities"
+		to="/ios-xcode-project-capabilities"
 		icon="tool"
 		color="#2196F3"
 	>
@@ -29,7 +29,7 @@ To integrate FCM for iOS, the following integration steps must be followed;
   	</Block>
 	<Block
 		title="Configure Apple Push Notification service for FCM"
-		to="/messaging/ios-configure-apns"
+		to="/ios-configure-apns"
 		icon="tool"
 		color="#2196F3"
 	>
