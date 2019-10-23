@@ -51,7 +51,7 @@ Once changed, rebuild your application with `npx react-native run-android`.
 
 ## iOS
 
-Open your projects `/ios/Podfile` and add any of the globals show below to the top of the file:
+Open your projects `/ios/Podfile` and add any of the globals shown below to the top of the file:
 
 ```ruby
 
