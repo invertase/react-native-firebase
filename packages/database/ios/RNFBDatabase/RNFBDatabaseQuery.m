@@ -130,7 +130,7 @@
 }
 
 - (void)removeAllEventListeners {
-  NSDictionary *listeners = [_listeners copy];
+  NSArray *listeners = [_listeners allKeys];
 
   for (NSString *eventRegistrationKey in listeners) {
     [self removeEventListener:eventRegistrationKey];
