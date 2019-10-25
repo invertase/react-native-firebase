@@ -808,8 +808,9 @@ export namespace FirebaseStorageTypes {
      *
      * task.on('state_changed', (taskSnapshot) => {
      *   console.log(taskSnapshot.state);
-     * })
-     * .then(() => {]
+     * });
+     *
+     * task.then(() => {]
      *   console.log('Task complete');
      * })
      * .catch((error) => {
