@@ -34,7 +34,7 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "gitHead": "be543f49114fde96d67b62ca1514aa4e5e43b935",
+  "gitHead": "e720c0be64600af9c5d838b3abd65a00cd17fd97",
   "publishConfig": {
     "access": "public"
   }
