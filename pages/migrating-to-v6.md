@@ -397,12 +397,14 @@ No breaking changes.
 `@react-native-firebase/messaging`
 
 - [android] The manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
+- [android] For background messages, the registered background headless task name has been changed.  You will need to change `RNFirebaseBackgroundMessage` to `ReactNativeFirebaseMessagingHeadlessTask` when you call `AppRegistry.registerHeadlessTask(` in your `index.js`
 - [ios] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
 - The _builder_ syntax has been deprecated in favour of simple objects. See `newRemoteMessage()` documentation for an example.
 - [ios] The minimum supported iOS version is now 10
 - iOS 9 or lower only accounts for 0.% of all iPhone devices.
 - To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
 - Community contributions that add iOS 9 support are welcome.
+
 
 ### Performance Monitoring
 
