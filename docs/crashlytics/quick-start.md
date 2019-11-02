@@ -109,8 +109,14 @@ async function onSignIn(user) {
 }
 ```
 
-### Disabling Crashlytics
+### Disabling Crashlytics automatic collection 
 
-To disable Crashlytics, set the `crashlytics_auto_collection_enabled` to `false` in the `firebase.json` file.
+To disable Crashlytics so you can manually opt-in your app users, set the `crashlytics_auto_collection_enabled` to `false` in the `firebase.json` file.
 
-To learn more, view the <Anchor version group="app" href="/firebase-json">App documentation</Anchor>.
+Once your user has consented, enable Crashlytics collection via the JavaScript API:
+
+```js
+await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
+```
+
+To learn more about all the `firebase.json` options, view the <Anchor version group="app" href="/reference/firebasejsonconfig">documentation here</Anchor>.
