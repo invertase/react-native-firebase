@@ -14,7 +14,7 @@ To get started with React Native Firebase you must have your React Native enviro
 		title="Getting started with React Native"
 		to="https://facebook.github.io/react-native/docs/getting-started"
 		icon="code"
-		color="#61dafb"
+		color="#306d7d"
 	>
 		Visit the React Native documentation to get started on setting up your first application.
 	</Block>
@@ -22,7 +22,7 @@ To get started with React Native Firebase you must have your React Native enviro
 		title="Creating a Firebase Project"
 		to="/quick-start/create-firebase-project"
 		icon="forward"
-		color="#FBC02D"
+		color="#c89924"
 	>
 		New to Firebase? Learn how to setup a new project using the Firebase console.
 	</Block>
