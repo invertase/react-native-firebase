@@ -14,6 +14,9 @@ Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/admob
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 **IMPORTANT**: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
