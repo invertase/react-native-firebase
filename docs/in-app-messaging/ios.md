@@ -8,9 +8,9 @@ description: Manually integrateFirebase In-App Messaging into your iOS applicati
 > The following steps are only required if your environment does not have access to React Native
 > auto-linking.
 
-### Add the RNFBFiam Pod
+### Add the RNFBInAppMessaging Pod
 
-Add the `RNFBFiam` Pod to your projects `/ios/Podfile`:
+Add the `RNFBInAppMessaging` Pod to your projects `/ios/Podfile`:
 
 ```ruby{3}
 target 'app' do
@@ -21,7 +21,7 @@ end
 
 ### Update Pods & rebuild the project
 
-You may need to update your local Pods in order for the `RNFBFiam` Pod to be installed in your project:
+You may need to update your local Pods in order for the `RNFBInAppMessaging` Pod to be installed in your project:
 
 ```bash
 $ cd /ios/
