@@ -115,7 +115,7 @@ export namespace FirebaseInAppMessagingTypes {
      * Enable or disable automatic data collection for Firebase In-App Messaging.
      *
      * When enabled, generates a registration token on app startup if there is no valid one and generates a new token
-     * when it is deleted (which prevents deleteInstanceId() from stopping the periodic sending of data).
+     * when it is deleted (which prevents `deleteInstanceId()` from stopping the periodic sending of data).
      *
      * This setting is persisted across app restarts and overrides the setting specified in your manifest/plist file.
      *
