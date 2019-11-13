@@ -15,16 +15,9 @@
  *
  */
 
-const { wipe } = require('./helpers');
-
 describe('firestore()', () => {
-  before(() => {
-    wipe();
-  });
-
   describe('issue2854', () => {
     before(async () => {
-      firebase.firestore().doc('issue2854/wbXwyLJheRfYXXWlY46j');
       await Promise.all([
         firebase
           .firestore()
