@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -29,11 +28,9 @@ __strong NSMutableDictionary *settingsLock;
 
 @implementation RNFBFirestoreCommon
 
-+ (FIRFirestore *)getFirestoreForApp
-    :(FIRApp *)app {
++ (FIRFirestore *)getFirestoreForApp:(FIRApp *)app {
   FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
   [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
-
   return instance;
 }
 
@@ -87,16 +84,11 @@ __strong NSMutableDictionary *settingsLock;
   }
 }
 
-+ (FIRDocumentReference *)getDocumentForFirestore
-    :(FIRFirestore *)firestore
-                                             path:(NSString *)path {
++ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore:(NSString *)path {
   return [firestore documentWithPath:path];
 }
 
-+ (FIRQuery *)getQueryForFirestore
-    :(FIRFirestore *)firestore
-                              path:(NSString *)path
-                              type:(NSString *)type {
++ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore path:(NSString *)path type:(NSString *)type {
   if ([type isEqualToString:@"collectionGroup"]) {
     return [firestore collectionGroupWithID:path];
   }
@@ -104,9 +96,7 @@ __strong NSMutableDictionary *settingsLock;
   return [firestore collectionWithPath:path];
 }
 
-+ (void)promiseRejectFirestoreException
-    :(RCTPromiseRejectBlock)reject
-                                  error:(NSError *)error {
++ (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSArray *codeAndMessage = [self getCodeAndMessage:error];
   [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
       @"code": (NSString *) codeAndMessage[0],
