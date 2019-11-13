@@ -196,20 +196,48 @@ export default class FirestoreQueryModifiers {
     }
 
     let hasArrayContains;
+    let hasArrayContainsAny;
+    let hasIn;
 
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
-      // Skip if no array-contains
-      if (filter.operator !== OPERATORS['array-contains']) {
-        continue;
-      }
 
-      if (!hasArrayContains) {
+      if (filter.operator === OPERATORS['array-contains']) {
+        if (hasArrayContains) {
+          throw new Error('Invalid query. Queries only support a single array-contains filter.');
+        }
         hasArrayContains = true;
-        continue;
       }
 
-      throw new Error('Invalid query. Queries only support a single array-contains filter.');
+      if (filter.operator === OPERATORS['array-contains-any']) {
+        if (hasArrayContainsAny) {
+          throw new Error(
+            "Invalid query. You cannot use more than one 'array-contains-any' filter.",
+          );
+        }
+
+        if (hasIn) {
+          throw new Error(
+            "Invalid query. You cannot use 'array-contains-any' filters with 'in' filters.",
+          );
+        }
+
+        hasArrayContainsAny = true;
+      }
+
+      if (filter.operator === OPERATORS.in) {
+        if (hasIn) {
+          throw new Error("Invalid query. You cannot use more than one 'in' filter.");
+        }
+
+        if (hasArrayContainsAny) {
+          throw new Error(
+            "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
+          );
+        }
+
+        hasIn = true;
+      }
     }
   }
 
