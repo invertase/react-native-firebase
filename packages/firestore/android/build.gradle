@@ -25,7 +25,7 @@ project.ext {
       ],
 
       firebase: [
-        bom: "21.1.0",
+        bom: "21.3.0",
       ],
     ],
   ])

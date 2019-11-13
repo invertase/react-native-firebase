@@ -25,6 +25,8 @@ const OPERATORS = {
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
   'array-contains': 'ARRAY_CONTAINS',
+  'array-contains-any': 'ARRAY_CONTAINS_ANY',
+  in: 'IN',
 };
 
 const INEQUALITY = {
@@ -148,6 +150,10 @@ export default class FirestoreQueryModifiers {
 
   isEqualOperator(operator) {
     return OPERATORS[operator] === 'EQUAL';
+  }
+
+  isInOperator(operator) {
+    return OPERATORS[operator] === 'IN' || OPERATORS[operator] === 'ARRAY_CONTAINS_ANY';
   }
 
   where(fieldPath, opStr, value) {
