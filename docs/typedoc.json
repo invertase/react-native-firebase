@@ -1021,7 +1021,7 @@
 									"sources": [
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
-											"line": 241,
+											"line": 257,
 											"character": 21
 										}
 									]
@@ -1291,7 +1291,7 @@
 								},
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 240,
+									"line": 256,
 									"character": 25
 								},
 								{
@@ -1735,7 +1735,7 @@
 									"sources": [
 										{
 											"fileName": "ml-natural-language/lib/index.d.ts",
-											"line": 234,
+											"line": 250,
 											"character": 21
 										}
 									],
@@ -2016,7 +2016,7 @@
 								},
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 233,
+									"line": 249,
 									"character": 20
 								},
 								{
@@ -2125,7 +2125,7 @@
 						},
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 230,
+							"line": 246,
 							"character": 31
 						},
 						{
@@ -2316,7 +2316,7 @@
 				},
 				{
 					"fileName": "ml-natural-language/lib/index.d.ts",
-					"line": 229,
+					"line": 245,
 					"character": 43
 				},
 				{
@@ -3592,7 +3592,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 219,
+							"line": 235,
 							"character": 21
 						}
 					],
@@ -3626,7 +3626,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 217,
+							"line": 233,
 							"character": 23
 						}
 					],
@@ -3647,7 +3647,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 216,
+							"line": 232,
 							"character": 27
 						}
 					],
@@ -3680,7 +3680,7 @@
 			"sources": [
 				{
 					"fileName": "ml-natural-language/lib/index.d.ts",
-					"line": 210,
+					"line": 226,
 					"character": 59
 				}
 			]
@@ -41676,7 +41676,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 984,
 									"character": 17
 								}
@@ -41746,7 +41746,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 974,
 									"character": 11
 								}
@@ -41770,7 +41770,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 973,
 									"character": 8
 								}
@@ -41795,7 +41795,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 975,
 									"character": 9
 								}
@@ -43235,7 +43235,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 137,
+									"line": 153,
 									"character": 20
 								}
 							]
@@ -43311,7 +43311,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 152,
+									"line": 168,
 									"character": 29
 								}
 							]
@@ -43374,7 +43374,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 173,
+									"line": 189,
 									"character": 18
 								}
 							]
@@ -43401,7 +43401,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 116,
+							"line": 132,
 							"character": 21
 						}
 					],
@@ -43579,7 +43579,8 @@
 						"isExported": true
 					},
 					"comment": {
-						"shortText": "An interface representing a suggest reply, an array of these are returned from `suggestReplies`"
+						"shortText": "An interface representing a suggested reply, an array of these are returned from `suggestReplies`.",
+						"text": "#### Example\n\n```js\nconst replies = await firebase.naturalLanguage().suggestReplies([\n  { text: \"Hey, long time no speak!\", },\n  { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },\n  { text: 'We should catchup some time!', },\n  { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },\n]);\n\nreplies.forEach(reply => {\n  console.log(reply.text);\n});\n\n```\n\n"
 					},
 					"children": [
 						{
@@ -43596,7 +43597,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 100,
+									"line": 116,
 									"character": 8
 								}
 							],
@@ -43618,7 +43619,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 96,
+							"line": 112,
 							"character": 33
 						}
 					]
@@ -43651,7 +43652,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 192,
+									"line": 208,
 									"character": 15
 								}
 							],
@@ -43688,7 +43689,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 185,
+									"line": 201,
 									"character": 8
 								}
 							],
@@ -43713,7 +43714,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 206,
+									"line": 222,
 									"character": 13
 								}
 							],
@@ -43747,7 +43748,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 199,
+									"line": 215,
 									"character": 10
 								}
 							],
@@ -43781,7 +43782,7 @@
 					"sources": [
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 179,
+							"line": 195,
 							"character": 30
 						}
 					]
@@ -64548,7 +64549,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 251,
+									"line": 267,
 									"character": 41
 								}
 							],
@@ -64571,7 +64572,7 @@
 							"sources": [
 								{
 									"fileName": "ml-natural-language/lib/index.d.ts",
-									"line": 256,
+									"line": 272,
 									"character": 41
 								}
 							],
@@ -64770,7 +64771,7 @@
 						},
 						{
 							"fileName": "ml-natural-language/lib/index.d.ts",
-							"line": 247,
+							"line": 263,
 							"character": 30
 						},
 						{
@@ -65081,7 +65082,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 984,
 									"character": 17
 								}
@@ -65151,7 +65152,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 973,
 									"character": 8
 								}
@@ -65254,7 +65255,7 @@
 							},
 							"sources": [
 								{
-									"fileName": "/Volumes/Projects/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
+									"fileName": "/Users/mike/Documents/Projects/@react-native-firebase/node_modules/typedoc/node_modules/typescript/lib/lib.es5.d.ts",
 									"line": 975,
 									"character": 9
 								}
@@ -65602,7 +65603,7 @@
 				},
 				{
 					"fileName": "ml-natural-language/lib/index.d.ts",
-					"line": 246,
+					"line": 262,
 					"character": 29
 				},
 				{
