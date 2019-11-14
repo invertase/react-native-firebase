@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -25,15 +24,13 @@ NSString *const FIRESTORE_HOST = @"firebase_firestore_host";
 NSString *const FIRESTORE_PERSISTENCE = @"firebase_firestore_persistence";
 NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
 
-static __strong NSMutableDictionary *settingsLock;
+__strong NSMutableDictionary *settingsLock;
 
 @implementation RNFBFirestoreCommon
 
-+ (FIRFirestore *)getFirestoreForApp
-    :(FIRApp *)app {
++ (FIRFirestore *)getFirestoreForApp:(FIRApp *)app {
   FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
   [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
-
   return instance;
 }
 
@@ -47,52 +44,51 @@ static __strong NSMutableDictionary *settingsLock;
 }
 
 + (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName {
-  // Prevent setting if already set
-  if (settingsLock[appName]) {
-    return;
+  @synchronized(settingsLock) {
+    if (settingsLock == nil) {
+      settingsLock = [[NSMutableDictionary alloc] init];
+    }
+
+    // Prevent setting if already set
+    if (settingsLock[appName]) {
+      return;
+    }
+
+    FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+    RNFBPreferences *preferences = [RNFBPreferences shared];
+
+    firestoreSettings.dispatchQueue = [self getFirestoreQueue];
+
+    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+    NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
+
+    if (size == (NSInteger *) -1) {
+      firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
+    } else if (size == 0) {
+      firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
+    } else {
+      firestoreSettings.cacheSizeBytes = (int64_t) size;
+    }
+
+    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+    firestoreSettings.host = [preferences getStringValue:hostKey defaultValue:firestore.settings.host];
+
+    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+    firestoreSettings.persistenceEnabled = (BOOL) [preferences getBooleanValue:persistenceKey defaultValue:firestore.settings.persistenceEnabled];
+
+    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+    firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
+
+    settingsLock[appName] = @(YES);
+    firestore.settings = firestoreSettings;
   }
-
-  FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
-  RNFBPreferences *preferences = [RNFBPreferences shared];
-
-  firestoreSettings.dispatchQueue = [self getFirestoreQueue];
-
-  NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
-  NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
-
-  if (size == (NSInteger *) -1) {
-    firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
-  } else if (size == 0) {
-    firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
-  } else {
-    firestoreSettings.cacheSizeBytes = (int64_t) size;
-  }
-
-  NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
-  firestoreSettings.host = [preferences getStringValue:hostKey defaultValue:firestore.settings.host];
-
-  NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
-  firestoreSettings.persistenceEnabled = (BOOL) [preferences getBooleanValue:persistenceKey defaultValue:firestore.settings.persistenceEnabled];
-
-  NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
-  firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
-
-  settingsLock[appName] = @(YES);
-  firestore.settings = firestoreSettings;
-
-  return;
 }
 
-+ (FIRDocumentReference *)getDocumentForFirestore
-    :(FIRFirestore *)firestore
-                                             path:(NSString *)path {
++ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore:(NSString *)path {
   return [firestore documentWithPath:path];
 }
 
-+ (FIRQuery *)getQueryForFirestore
-    :(FIRFirestore *)firestore
-                              path:(NSString *)path
-                              type:(NSString *)type {
++ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore path:(NSString *)path type:(NSString *)type {
   if ([type isEqualToString:@"collectionGroup"]) {
     return [firestore collectionGroupWithID:path];
   }
@@ -100,9 +96,7 @@ static __strong NSMutableDictionary *settingsLock;
   return [firestore collectionWithPath:path];
 }
 
-+ (void)promiseRejectFirestoreException
-    :(RCTPromiseRejectBlock)reject
-                                  error:(NSError *)error {
++ (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSArray *codeAndMessage = [self getCodeAndMessage:error];
   [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
       @"code": (NSString *) codeAndMessage[0],

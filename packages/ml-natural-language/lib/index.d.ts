@@ -90,7 +90,23 @@ export namespace FirebaseLanguageTypes {
   }
 
   /**
-   * An interface representing a suggest reply, an array of these are returned from `suggestReplies`
+   * An interface representing a suggested reply, an array of these are returned from `suggestReplies`.
+   *
+   * #### Example
+   *
+   * ```js
+   * const replies = await firebase.naturalLanguage().suggestReplies([
+   *   { text: "Hey, long time no speak!", },
+   *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
+   *   { text: 'We should catchup some time!', },
+   *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
+   * ]);
+   *
+   * replies.forEach(reply => {
+   *   console.log(reply.text);
+   * });
+   *
+   * ```
    *
    */
   export interface SuggestedReply {
