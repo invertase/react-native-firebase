@@ -41,9 +41,9 @@ module, replacing the `react-native-firebase` module.
 There are a number of steps to carry out to remove the `react-native-firebase` module from your existing app. To help make this process
 easier, we'll break out the process into 3 sections:
 
-- [Removing v5 from JavaScript](#)
-- [Removing v5 from Android](#)
-- [Removing v5 from iOS](#)
+- [Removing v5 from JavaScript](#removing-v5-from-javascript)
+- [Removing v5 from Android](#removing-v5-from-android)
+- [Removing v5 from iOS](#removing-v5-from-ios)
 
 ---
 
