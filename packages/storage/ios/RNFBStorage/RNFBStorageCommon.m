@@ -308,7 +308,7 @@
 
   return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
-      @"metadata": storageMetadata,
+      @"metadata": storageMetadata ? storageMetadata : [NSNull null],
       @"state": state,
       @"totalBytes": @(task.progress.totalUnitCount)
   } mutableCopy];
