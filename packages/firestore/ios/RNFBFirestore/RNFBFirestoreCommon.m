@@ -84,7 +84,7 @@ __strong NSMutableDictionary *settingsLock;
   }
 }
 
-+ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore:(NSString *)path {
++ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path; {
   return [firestore documentWithPath:path];
 }
 
