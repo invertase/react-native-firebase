@@ -1074,9 +1074,9 @@ export namespace FirebaseAdMobTypes {
    *       onAdLoaded={() => {
    *         console.log('Advert loaded');
    *       }}
-   *       onAdFailedToLoad((error) => {
+   *       onAdFailedToLoad={(error) => {
    *         console.error('Advert failed to load: ', error);
-   *       })
+   *       }}
    *     />
    *   );
    * }
