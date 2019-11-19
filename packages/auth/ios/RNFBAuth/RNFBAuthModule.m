@@ -80,14 +80,14 @@ RCT_EXPORT_MODULE();
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
 
     [[FIRAuth authWithApp:firebaseApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
-    [authStateHandlers removeObjectForKey:key];
   }
+  [authStateHandlers removeAllObjects];
 
   for (NSString *key in idTokenHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
-    [idTokenHandlers removeObjectForKey:key];
   }
+  [idTokenHandlers removeAllObjects];
 }
 
 #pragma mark -
