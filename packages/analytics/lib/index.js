@@ -223,7 +223,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddToCart(*):');
 
     return this.logEvent(
-      'add_payment_info',
+      'add_to_cart',
       validateStruct(object, structs.AddToCart, 'firebase.analytics().logAddToCart(*):'),
     );
   }

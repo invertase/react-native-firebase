@@ -35,7 +35,7 @@ for installation instructions on each individual module page.
 | <Anchor href="/messaging">Cloud Messaging</Anchor>         | <Badge type="downloads">@react-native-firebase/messaging</Badge>           | <Badge type="coverage">messaging</Badge>           |
 | <Anchor href="/storage">Cloud Storage</Anchor>             | <Badge type="downloads">@react-native-firebase/storage</Badge>             | <Badge type="coverage">storage</Badge>             |
 | <Anchor href="/crashlytics">Crashlytics</Anchor>           | <Badge type="downloads">@react-native-firebase/crashlytics</Badge>         | <Badge type="coverage">crashlytics</Badge>         |
-| <Anchor href="/links">Dynamic Links</Anchor>               | <Badge type="downloads">@react-native-firebase/dynamic-links</Badge>       | <Badge type="coverage">dynamic-links</Badge>       |
+| <Anchor href="/dynamic-links">Dynamic Links</Anchor>               | <Badge type="downloads">@react-native-firebase/dynamic-links</Badge>       | <Badge type="coverage">dynamic-links</Badge>       |
 | <Anchor href="/in-app-messaging">In-app Messaging</Anchor> | <Badge type="downloads">@react-native-firebase/in-app-messaging</Badge>    | <Badge type="coverage">in-app-messaging</Badge>    |
 | <Anchor href="/iid">Instance ID</Anchor>                   | <Badge type="downloads">@react-native-firebase/iid</Badge>                 | <Badge type="coverage">iid</Badge>                 |
 | <Anchor href="/mlkit">ML Kit Natural Language</Anchor>     | <Badge type="downloads">@react-native-firebase/ml-natural-language</Badge> | <Badge type="coverage">ml-natural-language</Badge> |
