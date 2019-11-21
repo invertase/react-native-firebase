@@ -72,13 +72,13 @@ function App() {
 
 ## Link persistence
 
-When your app had to launched or even installed first, as a result of following a dynamic link, the information of the link is still available.
+When your app was launched (or even installed first) as a result of following a dynamic link, the initial link is still available.
 
 ```js
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 async function bootstrapApp() {
-   await initialLink = await firebase.dynamicLinks().getInitialLink();
+   const initialLink = await dynamicLinks().getInitialLink();
 
    if (initialLink) {
      if (initialLink.url === 'https://invertase.io/offer') return navigateTo('/offers')
