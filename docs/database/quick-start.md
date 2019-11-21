@@ -23,7 +23,7 @@ cd ios/ && pod install
 
 ## Module usage
 
-Once installed, import the Cloud Functions package into your project:
+Once installed, import the Database package into your project:
 
 ```js
 import database from '@react-native-firebase/database';
