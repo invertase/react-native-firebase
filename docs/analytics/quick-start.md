@@ -28,7 +28,7 @@ To view the full list of automatic events, see [this page](https://support.googl
 
 The package also provides a JavaScript API to allow for logging custom events and metrics throughout your application.
 
-Import the Cloud Functions package into your project:
+Import the Analytics package into your project:
 
 ```js
 import analytics from '@react-native-firebase/analytics';
