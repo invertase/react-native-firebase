@@ -58,6 +58,8 @@ Once complete, rebuild your Android project using the React Native CLI:
 $ npx react-native run-android
 ```
 
+> Firebase's verification that your Android application connects to Firebase requires the Analytics module to be installed in your project. This verification is not necessary. You can click "Skip this step" to finish adding your project and return to the Firebase console.
+
 ## Next Steps
 
 Once your Android project is setup, you can follow the setup for getting started with iOS, or get started using Firebase services.
