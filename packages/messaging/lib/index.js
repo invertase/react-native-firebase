@@ -41,8 +41,8 @@ const nativeModuleName = 'RNFBMessagingModule';
 class FirebaseMessagingModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    this._isAutoInitEnabled = this.native.isAutoInitEnabled || true;
-    this._isRegisteredForRemoteNotifcations = this.native.isRegisteredForRemoteNotifcations || true;
+    this._isAutoInitEnabled = this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
+    this._isRegisteredForRemoteNotifications = this.native.isRegisteredForRemoteNotifications != null ? this.native.isRegisteredForRemoteNotifications : true;
   }
 
   get isAutoInitEnabled() {
@@ -56,7 +56,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isAndroid) {
       return true;
     }
-    return this._isRegisteredForRemoteNotifcations;
+    return this._isRegisteredForRemoteNotifications;
   }
 
   setAutoInitEnabled(enabled) {
@@ -145,7 +145,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isAndroid) {
       return Promise.resolve();
     }
-    this._isRegisteredForRemoteNotifcations = true;
+    this._isRegisteredForRemoteNotifications = true;
     return this.native.registerForRemoteNotifications();
   }
 
@@ -156,7 +156,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isAndroid) {
       return Promise.resolve();
     }
-    this._isRegisteredForRemoteNotifcations = false;
+    this._isRegisteredForRemoteNotifications = false;
     return this.native.unregisterForRemoteNotifications();
   }
 

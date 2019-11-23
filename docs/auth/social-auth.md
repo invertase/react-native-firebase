@@ -96,7 +96,7 @@ await firebase.auth().signInWithCredential(credential);
 
 ## Google
 
-The [react-native-google-signin](https://github.com/react-native-community/react-native-google-signin) provides a
+The [@react-native-community/google-signin](https://github.com/react-native-community/react-native-google-signin) library provides a
 wrapper around the official Google login library, providing access to the users `accessToken` and `idToken` which are
 required to create a Firebase credential.
 
@@ -106,7 +106,7 @@ required to create a Firebase credential.
 - Configuration settings can be obtained from [here](https://github.com/react-native-community/react-native-google-signin/blob/master/docs/get-config-file.md);
 
 ```js
-import { GoogleSignin } from 'react-native-google-signin';
+import { GoogleSignin } from '@react-native-community/google-signin';
 
 async function bootstrap() {
   await GoogleSignin.configure({
@@ -119,7 +119,7 @@ async function bootstrap() {
 **Step 2**: Login with Google
 
 ```js
-import { GoogleSignin } from 'react-native-google-signin';
+import { GoogleSignin } from '@react-native-community/google-signin';
 
 const { accessToken, idToken } = await GoogleSignin.signIn();
 ```

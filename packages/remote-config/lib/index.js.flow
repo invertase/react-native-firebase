@@ -204,6 +204,10 @@ export interface ConfigSettings {
    * experience.
    */
   isDeveloperModeEnabled: boolean;
+  /**
+   * The time that remote config should cache flags for.
+   */
+  minimumFetchInterval?: number;
 }
 
 /**

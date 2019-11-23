@@ -141,6 +141,11 @@ RCT_EXPORT_METHOD(setConfigSettings:
 ) {
   FIRRemoteConfigSettings *remoteConfigSettings =
       [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:[configSettings[@"isDeveloperModeEnabled"] boolValue]];
+
+  if ([configSettings objectForKey:@"minimumFetchInterval"]) {
+    remoteConfigSettings.minimumFetchInterval = [configSettings[@"minimumFetchInterval"] doubleValue];
+  }
+
   [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
   resolve([self resultWithConstants:[NSNull null]]);
 }
@@ -184,6 +189,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   NSDate *lastFetchTime = remoteConfig.lastFetchTime;
   BOOL isDeveloperModeEnabled = [RCTConvert BOOL:@([remoteConfig configSettings].isDeveloperModeEnabled)];
   NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
+  double minimumFetchInterval = [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
 
   NSMutableDictionary *values = [NSMutableDictionary new];
   NSSet *keys = [[FIRRemoteConfig remoteConfig] keysWithPrefix:nil];
@@ -205,6 +211,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
       @"lastFetchStatus": lastFetchStatus,
       @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
       @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
+      @"minimumFetchInterval": @(minimumFetchInterval)
   };
 }
 

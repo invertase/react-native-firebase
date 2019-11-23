@@ -79,14 +79,20 @@ export default class FirestoreQuery {
         values.push(value);
       }
 
-      if (currentOrders.length === 0) {
+      // Based on https://github.com/invertase/react-native-firebase/issues/2854#issuecomment-552986650
+      if (modifiers._orders.length) {
+        modifiers._orders.push({
+          fieldPath: '__name__',
+          direction: modifiers._orders[modifiers._orders.length - 1].direction,
+        });
+      } else {
         modifiers._orders.push({
           fieldPath: '__name__',
           direction: 'ASCENDING',
         });
-
-        values.push(documentSnapshot.id);
       }
+
+      values.push(documentSnapshot.id);
 
       return modifiers.setFieldsCursor(cursor, values);
     }
