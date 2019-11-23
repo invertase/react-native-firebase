@@ -14,13 +14,16 @@ Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/database
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
-Once installed, import the Cloud Functions package into your project:
+Once installed, import the Database package into your project:
 
 ```js
 import database from '@react-native-firebase/database';
@@ -89,7 +92,7 @@ import { Text } from 'react-native';
 import database from '@react-native-firebase/database';
 
 function Role({ uid }) {
-  const [initilizing, setInitilizing] = useState(true);
+  const [initializing, setInitializing] = useState(true);
   const [role, setRole] = useState(null);
 
   // Subscriber handler
@@ -98,7 +101,7 @@ function Role({ uid }) {
     setRole(snapshot.val());
 
     // Connection established
-    if (initilizing) setInitilizing(false);
+    if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
@@ -113,7 +116,7 @@ function Role({ uid }) {
   }, [uid]);
 
   // Wait for first connection
-  if (initilizing) return null;
+  if (initializing) return null;
 
   return <Text>{role}</Text>;
 }

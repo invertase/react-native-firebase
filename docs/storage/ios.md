@@ -15,7 +15,7 @@ Add the `RNFBStorage` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBStorage', :path => '../node_modules/@react-native-firebase/storage/ios'
+  pod 'RNFBStorage', :path => '../node_modules/@react-native-firebase/storage'
 end
 ```
 

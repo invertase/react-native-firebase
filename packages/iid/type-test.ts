@@ -1,5 +1,9 @@
 import firebase from '@react-native-firebase/app';
 import * as iid from '@react-native-firebase/iid';
+// tslint:disable-next-line:no-duplicate-imports
+import iidExport from '@react-native-firebase/iid';
+
+console.log(iidExport().app);
 
 // checks module exists at root
 console.log(firebase.iid().app.name);

@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(hasPermission:
 ) {
   if (@available(iOS 10.0, *)) {
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-      BOOL hasPermission = [RCTConvert BOOL:@(settings.alertSetting == UNNotificationSettingEnabled)];
+      BOOL hasPermission = [RCTConvert BOOL:@(settings.authorizationStatus >= UNAuthorizationStatusAuthorized)];
       resolve(@(hasPermission));
     }];
   } else {

@@ -242,6 +242,10 @@ export namespace FirebaseRemoteConfigTypes {
      * experience.
      */
     isDeveloperModeEnabled: boolean;
+    /**
+     * The time that remote config should cache flags for.
+     */
+    minimumFetchInterval?: number;
   }
 
   /**
@@ -423,17 +427,19 @@ export namespace FirebaseRemoteConfigTypes {
 }
 
 declare module '@react-native-firebase/remote-config' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<
+  const defaultExport: FirebaseModuleWithStatics<
     FirebaseRemoteConfigTypes.Module,
     FirebaseRemoteConfigTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

@@ -358,9 +358,6 @@ export namespace FirebaseVisionTypes {
      * #### Example
      *
      * ```js
-     * const textRecognizerOptions = new VisionCloudTextRecognizerOptions();
-     * textRecognizerOptions.setHintedLanguages(['fr', 'de']);
-     *
      * await firebase.vision().cloudTextRecognizerProcessImage(filePath, {
      *   languageHints: ['fr', 'de'],
      * });
@@ -1102,10 +1099,9 @@ export namespace FirebaseVisionTypes {
      * #### Example
      *
      * ```js
-     * const options = new firebase.vision.VisionImageLabelerOptions();
-     * options.setConfidenceThreshold(0.8);
-     *
-     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, options);
+     * const labels = await firebase.vision().imageLabelerProcessImage(filePath, {
+     *   confidenceThreshold: 0.8,
+     * });
      * ```
      *
      * @param imageFilePath A local image file path.
@@ -1180,6 +1176,8 @@ export namespace FirebaseVisionTypes {
 }
 
 declare module '@react-native-firebase/ml-vision' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
@@ -1202,11 +1200,11 @@ declare module '@react-native-firebase/ml-vision' {
   export const VisionDocumentTextRecognizedBreakType: {} & typeof FirebaseVisionTypes.VisionDocumentTextRecognizedBreakType;
   export const VisionCloudLandmarkRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudLandmarkRecognizerModelType;
 
-  const module: FirebaseModuleWithStaticsAndApp<
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
     FirebaseVisionTypes.Module,
     FirebaseVisionTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

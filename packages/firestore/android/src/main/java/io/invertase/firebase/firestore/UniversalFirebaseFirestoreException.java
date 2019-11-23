@@ -28,15 +28,17 @@ public class UniversalFirebaseFirestoreException extends Exception {
   private final String message;
 
   UniversalFirebaseFirestoreException(FirebaseFirestoreException nativeException, Throwable cause) {
-    super(nativeException.getMessage(), cause);
+    super(nativeException != null ? nativeException.getMessage() : "", cause);
 
-    String code = null;
-    String message = null;
-    if (cause.getMessage() != null && cause.getMessage().contains(":")) {
+    String code = "unknown";
+    String message = "An unknown error occurred";
+
+    if (cause != null && cause.getMessage() != null && cause.getMessage().contains(":")) {
       String causeMessage = cause.getMessage();
-      Matcher matcher = Pattern.compile("([A-Z_]{3,25}):").matcher(causeMessage);
+      Matcher matcher = Pattern.compile("([A-Z_]{3,25}):\\s(.*)").matcher(causeMessage);
       if (matcher.find()) {
         String foundCode = matcher.group(1).trim();
+        String foundMessage = matcher.group(2).trim();
         switch (foundCode) {
           case "ABORTED":
             code = "aborted";
@@ -60,7 +62,11 @@ public class UniversalFirebaseFirestoreException extends Exception {
             break;
           case "FAILED_PRECONDITION":
             code = "failed-precondition";
-            message = "Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+            if (foundMessage.contains("query requires an index")) {
+              message = foundMessage;
+            } else {
+              message = "Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+            }
             break;
           case "INTERNAL":
             code = "internal";
@@ -106,7 +112,7 @@ public class UniversalFirebaseFirestoreException extends Exception {
       }
     }
 
-    if (code == null) {
+    if (code == null && nativeException != null) {
       switch (nativeException.getCode()) {
         case ABORTED:
           code = "aborted";
@@ -130,7 +136,11 @@ public class UniversalFirebaseFirestoreException extends Exception {
           break;
         case FAILED_PRECONDITION:
           code = "failed-precondition";
-          message = "Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+          if (nativeException.getMessage() != null && nativeException.getMessage().contains("query requires an index")) {
+            message = nativeException.getMessage();
+          } else {
+            message = "Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+          }
           break;
         case INTERNAL:
           code = "internal";

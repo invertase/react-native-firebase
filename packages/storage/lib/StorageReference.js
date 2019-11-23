@@ -28,6 +28,7 @@ import {
   pathLastComponent,
   pathParent,
   ReferenceBase,
+  toFilePath,
 } from '@react-native-firebase/app/lib/common';
 import StorageDownloadTask from './StorageDownloadTask';
 import StorageListResult, { provideStorageReferenceClass } from './StorageListResult';
@@ -266,9 +267,14 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
   writeToFile(filePath) {
-    // TODO(salakar) validate arg?
+    if (!isString(filePath)) {
+      throw new Error(
+        "firebase.storage.StorageReference.writeToFile(*) 'filePath' expects a string value.",
+      );
+    }
+
     return new StorageDownloadTask(this, task =>
-      this._storage.native.writeToFile(this.toString(), filePath, task._id),
+      this._storage.native.writeToFile(this.toString(), toFilePath(filePath), task._id),
     );
   }
 
@@ -280,7 +286,7 @@ export default class StorageReference extends ReferenceBase {
     console.warn(
       "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'writeToFile()'",
     );
-    return this.writeToFile(filePath);
+    return this.writeToFile(toFilePath(filePath));
   }
 
   /**
@@ -297,12 +303,8 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    let _filePath = filePath.replace('file://', '');
-    if (_filePath.includes('%')) {
-      _filePath = decodeURIComponent(_filePath);
-    }
     return new StorageUploadTask(this, task =>
-      this._storage.native.putFile(this.toString(), _filePath, metadata, task._id),
+      this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
     );
   }
 }

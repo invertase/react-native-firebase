@@ -15,7 +15,7 @@ Add the `RNFBMLNaturalLanguage` Pod to your projects `/ios/Podfile`:
 ```ruby{3}
 target 'app' do
   ...
-  pod 'RNFBMLNaturalLanguage', :path => '../node_modules/@react-native-firebase/ml-natural-language/ios'
+  pod 'RNFBMLNaturalLanguage', :path => '../node_modules/@react-native-firebase/ml-natural-language'
 end
 ```
 

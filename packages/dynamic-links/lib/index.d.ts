@@ -18,7 +18,38 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
- * Dynamic Links
+ * Firebase Dynamic Links package for React Native.
+ *
+ * #### Example 1
+ *
+ * Access the firebase export from the `dynamicLinks` package:
+ *
+ * ```js
+ * import { firebase } from '@react-native-firebase/dynamic-links';
+ *
+ * // firebase.dynamicLinks().X
+ * ```
+ *
+ * #### Example 2
+ *
+ * Using the default export from the `dynamic-links` package:
+ *
+ * ```js
+ * import dynamicLinks from '@react-native-firebase/dynamic-links';
+ *
+ * // dynamicLinks().X
+ * ```
+ *
+ * #### Example 3
+ *
+ * Using the default export from the `app` package:
+ *
+ * ```js
+ * import firebase from '@react-native-firebase/app';
+ * import '@react-native-firebase/dynamic-links';
+ *
+ * // firebase.dynamicLinks().X
+ * ```
  *
  * @firebase dynamic-links
  */
@@ -533,17 +564,19 @@ export namespace FirebaseDynamicLinksTypes {
 }
 
 declare module '@react-native-firebase/dynamic-links' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<
+  const defaultExport: FirebaseModuleWithStatics<
     FirebaseDynamicLinksTypes.Module,
     FirebaseDynamicLinksTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

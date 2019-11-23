@@ -31,6 +31,16 @@ export default class DatabaseQueryModifiers {
     this._modifiers = [];
   }
 
+  _copy() {
+    const newInstance = new DatabaseQueryModifiers();
+    newInstance._limit = this._limit;
+    newInstance._orderBy = this._orderBy;
+    newInstance._startAt = this._startAt;
+    newInstance._endAt = this._endAt;
+    newInstance._modifiers = [...this._modifiers];
+    return newInstance;
+  }
+
   /**
    *
    * LIMIT

@@ -1253,7 +1253,7 @@ export namespace FirebaseFirestoreTypes {
      * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
      * @param thisArg The `this` binding for the callback.
      */
-    forEach(callback: Function, thisArg?: any): void;
+    forEach(callback: (result: DocumentSnapshot, index: number) => void, thisArg?: any): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
@@ -1887,17 +1887,19 @@ export namespace FirebaseFirestoreTypes {
 }
 
 declare module '@react-native-firebase/firestore' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
     FirebaseFirestoreTypes.Module,
     FirebaseFirestoreTypes.Statics
   >;
-  export default module;
+  export default defaultExport;
 }
 
 /**

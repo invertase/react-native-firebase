@@ -80,14 +80,14 @@ RCT_EXPORT_MODULE();
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
 
     [[FIRAuth authWithApp:firebaseApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
-    [authStateHandlers removeObjectForKey:key];
   }
+  [authStateHandlers removeAllObjects];
 
   for (NSString *key in idTokenHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
-    [idTokenHandlers removeObjectForKey:key];
   }
+  [idTokenHandlers removeAllObjects];
 }
 
 #pragma mark -
@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(addAuthStateListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_STATE_CHANGED_EVENT body:@{}];
           }
         }];
-    authStateHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    authStateHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 
@@ -139,8 +139,7 @@ RCT_EXPORT_METHOD(addIdTokenListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{}];
           }
         }];
-
-    idTokenHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    idTokenHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 

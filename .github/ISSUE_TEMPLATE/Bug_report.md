@@ -1,5 +1,5 @@
 ---
-name: ⚠️ Bug/Issue report
+name: ⚠️ Bug/Issue report - React Native
 about:
   Please provide as much detail as possible to help us with a bug or issue. Issues
   are likely to be closed and locked if they do not follow the template.
@@ -141,7 +141,7 @@ Describe your issue here
 - **`Firebase` module(s) you're using that has the issue:**
   - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
-  - `Y/N`
+  - `Y/N` & `VERSION`
   
 </p>
 </details>

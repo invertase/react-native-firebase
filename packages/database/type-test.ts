@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as database from '@react-native-firebase/database';
 
+console.log(database.default().ref().parent);
+
 // checks module exists at root
 console.log(firebase.database().app.name);
 console.log(firebase.database().ref('foo/bar'));
@@ -27,7 +29,7 @@ console.log(database.firebase.SDK_VERSION);
 console.log(firebase.database(firebase.app()).app.name);
 
 // checks default export supports app arg
-console.log(database.firebase(firebase.app('foo')).app.name);
+console.log(database.default(firebase.app('foo')).app.name);
 
 console.log(firebase.database.ServerValue.TIMESTAMP);
 

@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as messaging from '@react-native-firebase/messaging';
 
+console.log(messaging.default().app);
+
 // checks module exists at root
 console.log(firebase.messaging().app.name);
 

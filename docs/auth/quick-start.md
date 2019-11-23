@@ -14,6 +14,9 @@ Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/auth
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
@@ -22,7 +25,7 @@ yarn add @react-native-firebase/auth
 
 The Authentication package provides a JavaScript API which mimics the Firebase Web SDK.
 
-Import the Analytics package into your project:
+Import the Authentication package into your project:
 
 ```js
 import auth from '@react-native-firebase/auth';

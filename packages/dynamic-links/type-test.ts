@@ -1,6 +1,8 @@
 import firebase from '@react-native-firebase/app';
 import * as dynamicLinks from '@react-native-firebase/dynamic-links';
 
+console.log(dynamicLinks.default().getInitialLink);
+
 // checks module exists at root
 console.log(firebase.dynamicLinks().app.name);
 

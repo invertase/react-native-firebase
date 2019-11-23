@@ -32,7 +32,7 @@ automatically.
 ```js
 import auth from '@react-native-firebase/auth';
 
-const { confirm } = await auth().signInWithPhoneNumber('+1 650-555-3434');
+const confirmation = await auth().signInWithPhoneNumber('+1 650-555-3434');
 ```
 
 **Step 2**: Confirm code
@@ -41,7 +41,7 @@ Once the message has been received, the user will need to input it manually with
 
 ```js
 try {
-  await confirm('12345'); // User entered code
+  await confirmation.confirm('12345'); // User entered code
   // Successful login - onAuthStateChanged is triggered
 } catch (e) {
   console.error(e); // Invalid code
