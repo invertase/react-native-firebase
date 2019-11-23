@@ -242,6 +242,10 @@ export namespace FirebaseRemoteConfigTypes {
      * experience.
      */
     isDeveloperModeEnabled: boolean;
+    /**
+     * The time that remote config should cache flags for.
+     */
+    minimumFetchInterval?: number;
   }
 
   /**
