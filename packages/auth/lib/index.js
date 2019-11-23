@@ -134,7 +134,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -146,7 +148,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -154,7 +158,9 @@ class FirebaseAuthModule extends FirebaseModule {
   onUserChanged(listener) {
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
 
     return () => {
