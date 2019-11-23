@@ -28,7 +28,7 @@ To view the full list of automatic events, see [this page](https://support.googl
 
 The package also provides a JavaScript API to allow for logging custom events and metrics throughout your application.
 
-Import the Cloud Functions package into your project:
+Import the Analytics package into your project:
 
 ```js
 import analytics from '@react-native-firebase/analytics';
@@ -111,3 +111,17 @@ async function onSignOut() {
   await analytics().resetAnalyticsData();
 }
 ```
+
+### Ignore analytics events when running in TestLab (Pre-launch report)
+
+When submitting to the Google Play Store, analytics events are triggered while the app is being tested in TestLab in order to generate pre-launch reports. Typically you want to ignore those events, which you can achieve via the following utility functions:
+
+```js
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/analytics';
+
+if (firebase.app().utils().isRunningInTestLab) {
+	firebase.analytics().setAnalyticsCollectionEnabled(false);
+}
+```
+

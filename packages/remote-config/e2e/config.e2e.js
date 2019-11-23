@@ -120,6 +120,14 @@ describe('remoteConfig()', () => {
       firebase.remoteConfig().isDeveloperModeEnabled.should.equal(false);
     });
 
+    it('minimumFetchInterval sets correctly', async () => {
+      await firebase
+        .remoteConfig()
+        .setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 300 });
+
+      firebase.remoteConfig().minimumFetchInterval.should.be.equal(300);
+    });
+
     it('it throws if no args', async () => {
       try {
         await firebase.remoteConfig().setConfigSettings();
@@ -148,6 +156,18 @@ describe('remoteConfig()', () => {
         error.message.should.containEql(
           "'settings.isDeveloperModeEnabled' must be a boolean value",
         );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if minimumFetchInterval is not a number', async () => {
+      try {
+        await firebase
+          .remoteConfig()
+          .setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 'potato' });
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql("'settings.minimumFetchInterval' must be a number value");
         return Promise.resolve();
       }
     });
