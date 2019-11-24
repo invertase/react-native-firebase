@@ -112,7 +112,10 @@ export default class PhoneAuthListener {
 
   _promiseDeferred() {
     if (!this._promise) {
-      this._promise = promiseDefer();
+      const { promise, resolve, reject } = promiseDefer();
+      this._promise = promise;
+      this._resolve = resolve;
+      this._reject = reject;
     }
   }
 
