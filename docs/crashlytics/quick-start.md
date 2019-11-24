@@ -53,7 +53,7 @@ Once installed, import the Crashlytics package into your project:
 import crashlytics from '@react-native-firebase/crashlytics';
 ```
 
-**You need to import the library even if you're not using any functions of the Crashlytics SDK. By doing this, you enable the listener that get the JS stacktrace into the Crash Reporting console in Firebase**
+You need to import the library even if you're not using any functions of the Crashlytics SDK. By doing this, you enable the listener that get the JS stacktrace into the Crash Reporting console in Firebase
 
 Consider putting this in `index.js` file.
 
