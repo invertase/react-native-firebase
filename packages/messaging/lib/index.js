@@ -41,8 +41,12 @@ const nativeModuleName = 'RNFBMessagingModule';
 class FirebaseMessagingModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    this._isAutoInitEnabled = this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
-    this._isRegisteredForRemoteNotifications = this.native.isRegisteredForRemoteNotifications != null ? this.native.isRegisteredForRemoteNotifications : true;
+    this._isAutoInitEnabled =
+      this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
+    this._isRegisteredForRemoteNotifications =
+      this.native.isRegisteredForRemoteNotifications != null
+        ? this.native.isRegisteredForRemoteNotifications
+        : true;
   }
 
   get isAutoInitEnabled() {
