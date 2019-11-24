@@ -15,7 +15,13 @@
  *
  */
 
-import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import {
+  isArray,
+  isNull,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
@@ -349,7 +355,7 @@ export default class FirestoreQuery {
 
     if (!this._modifiers.isValidOperator(opStr)) {
       throw new Error(
-        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=' or 'array-contains'.",
+        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', 'array-contains', 'array-contains-any' or 'in'.",
       );
     }
 
@@ -363,6 +369,20 @@ export default class FirestoreQuery {
       throw new Error(
         "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
       );
+    }
+
+    if (this._modifiers.isInOperator(opStr)) {
+      if (!isArray(value) || !value.length) {
+        throw new Error(
+          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. A non-empty array is required for '${opStr}' filters.`,
+        );
+      }
+
+      if (value.length > 10) {
+        throw new Error(
+          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 10 elements in the value array.`,
+        );
+      }
     }
 
     const modifiers = this._modifiers._copy().where(path, opStr, value);

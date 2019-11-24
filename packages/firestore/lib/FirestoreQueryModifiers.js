@@ -25,6 +25,8 @@ const OPERATORS = {
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
   'array-contains': 'ARRAY_CONTAINS',
+  'array-contains-any': 'ARRAY_CONTAINS_ANY',
+  in: 'IN',
 };
 
 const INEQUALITY = {
@@ -150,6 +152,10 @@ export default class FirestoreQueryModifiers {
     return OPERATORS[operator] === 'EQUAL';
   }
 
+  isInOperator(operator) {
+    return OPERATORS[operator] === 'IN' || OPERATORS[operator] === 'ARRAY_CONTAINS_ANY';
+  }
+
   where(fieldPath, opStr, value) {
     const filter = {
       fieldPath: fieldPath._toPath(),
@@ -190,20 +196,48 @@ export default class FirestoreQueryModifiers {
     }
 
     let hasArrayContains;
+    let hasArrayContainsAny;
+    let hasIn;
 
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
-      // Skip if no array-contains
-      if (filter.operator !== OPERATORS['array-contains']) {
-        continue;
-      }
 
-      if (!hasArrayContains) {
+      if (filter.operator === OPERATORS['array-contains']) {
+        if (hasArrayContains) {
+          throw new Error('Invalid query. Queries only support a single array-contains filter.');
+        }
         hasArrayContains = true;
-        continue;
       }
 
-      throw new Error('Invalid query. Queries only support a single array-contains filter.');
+      if (filter.operator === OPERATORS['array-contains-any']) {
+        if (hasArrayContainsAny) {
+          throw new Error(
+            "Invalid query. You cannot use more than one 'array-contains-any' filter.",
+          );
+        }
+
+        if (hasIn) {
+          throw new Error(
+            "Invalid query. You cannot use 'array-contains-any' filters with 'in' filters.",
+          );
+        }
+
+        hasArrayContainsAny = true;
+      }
+
+      if (filter.operator === OPERATORS.in) {
+        if (hasIn) {
+          throw new Error("Invalid query. You cannot use more than one 'in' filter.");
+        }
+
+        if (hasArrayContainsAny) {
+          throw new Error(
+            "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
+          );
+        }
+
+        hasIn = true;
+      }
     }
   }
 
