@@ -670,7 +670,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
      */
-    logEvent(name: string, params: { [key: string]: string | number | boolean }): Promise<void>;
+    logEvent(name: string, params?: { [key: string]: string | number | boolean } | {} ): Promise<void>;
 
     /**
      * If true, allows the device to collect analytical data and send it to
