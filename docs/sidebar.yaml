@@ -241,21 +241,6 @@
         - text: iOS Installation
           to: '/ios'
 
-- module: notifications
-  groups:
-    - group: Notifications
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
 - module: remote-config
   groups:
     - group: Remote Config
