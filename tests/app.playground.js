@@ -31,8 +31,7 @@ class Root extends Component {
     }
   }
 
-  async runSingleTest() {
-  }
+  async runSingleTest() {}
 
   render() {
     return (
