@@ -39,7 +39,6 @@ for installation instructions on each individual module page.
 | <Anchor href="/iid">Instance ID</Anchor>                   | <Badge type="downloads">@react-native-firebase/iid</Badge>                 | <Badge type="coverage">iid</Badge>                 |
 | <Anchor href="/mlkit">ML Kit Natural Language</Anchor>     | <Badge type="downloads">@react-native-firebase/ml-natural-language</Badge> | <Badge type="coverage">ml-natural-language</Badge> |
 | <Anchor href="/mlkit">ML Kit Vision</Anchor>               | <Badge type="downloads">@react-native-firebase/ml-vision</Badge>           | <Badge type="coverage">ml-vision</Badge>           |
-| <Anchor href="/notifications">Notifications</Anchor>       | <Badge type="downloads">@react-native-firebase/notifications</Badge>       | <Badge type="coverage">notifications</Badge>       |
 | <Anchor href="/perf">Performance Monitoring</Anchor>       | <Badge type="downloads">@react-native-firebase/perf</Badge>                | <Badge type="coverage">perf</Badge>                |
 | <Anchor href="/database">Realtime Database</Anchor>        | <Badge type="downloads">@react-native-firebase/database</Badge>            | <Badge type="coverage">database</Badge>            |
 | <Anchor href="/remote-config">Remote Config</Anchor>       | <Badge type="downloads">@react-native-firebase/remote-config</Badge>       | <Badge type="coverage">remote-config</Badge>       |
