@@ -466,7 +466,7 @@
 					"sources": [
 						{
 							"fileName": "packages/analytics/lib/index.d.ts",
-							"line": 1357,
+							"line": 1360,
 							"character": 21
 						}
 					],
@@ -500,7 +500,7 @@
 					"sources": [
 						{
 							"fileName": "packages/analytics/lib/index.d.ts",
-							"line": 1355,
+							"line": 1358,
 							"character": 23
 						}
 					],
@@ -521,7 +521,7 @@
 					"sources": [
 						{
 							"fileName": "packages/analytics/lib/index.d.ts",
-							"line": 1354,
+							"line": 1357,
 							"character": 27
 						}
 					],
@@ -554,7 +554,7 @@
 			"sources": [
 				{
 					"fileName": "packages/analytics/lib/index.d.ts",
-					"line": 1348,
+					"line": 1351,
 					"character": 49
 				}
 			]
@@ -637,7 +637,7 @@
 									"sources": [
 										{
 											"fileName": "packages/analytics/lib/index.d.ts",
-											"line": 1378,
+											"line": 1381,
 											"character": 15
 										}
 									]
@@ -1202,7 +1202,7 @@
 								},
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1377,
+									"line": 1380,
 									"character": 25
 								},
 								{
@@ -1329,7 +1329,7 @@
 									"sources": [
 										{
 											"fileName": "packages/analytics/lib/index.d.ts",
-											"line": 1371,
+											"line": 1374,
 											"character": 15
 										}
 									],
@@ -1890,7 +1890,7 @@
 								},
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1370,
+									"line": 1373,
 									"character": 20
 								},
 								{
@@ -1994,7 +1994,7 @@
 						},
 						{
 							"fileName": "packages/analytics/lib/index.d.ts",
-							"line": 1368,
+							"line": 1371,
 							"character": 31
 						},
 						{
@@ -2180,7 +2180,7 @@
 				},
 				{
 					"fileName": "packages/analytics/lib/index.d.ts",
-					"line": 1367,
+					"line": 1370,
 					"character": 43
 				},
 				{
@@ -8731,7 +8731,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 809,
+									"line": 812,
 									"character": 21
 								}
 							]
@@ -8787,7 +8787,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 832,
+									"line": 835,
 									"character": 16
 								}
 							]
@@ -8843,7 +8843,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 855,
+									"line": 858,
 									"character": 20
 								}
 							]
@@ -8882,7 +8882,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 871,
+									"line": 874,
 									"character": 14
 								}
 							]
@@ -8940,7 +8940,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 892,
+									"line": 895,
 									"character": 20
 								}
 							]
@@ -8996,7 +8996,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 911,
+									"line": 914,
 									"character": 22
 								}
 							]
@@ -9052,7 +9052,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 930,
+									"line": 933,
 									"character": 26
 								}
 							]
@@ -9110,7 +9110,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 950,
+									"line": 953,
 									"character": 24
 								}
 							]
@@ -9154,65 +9154,76 @@
 											"name": "params",
 											"kind": 32768,
 											"kindString": "Parameter",
-											"flags": {},
+											"flags": {
+												"isOptional": true
+											},
 											"comment": {
 												"text": "Parameters to be sent and displayed with the event.\n"
 											},
 											"type": {
-												"type": "reflection",
-												"declaration": {
-													"id": 433,
-													"name": "__type",
-													"kind": 65536,
-													"kindString": "Type literal",
-													"flags": {},
-													"indexSignature": [
-														{
-															"id": 434,
-															"name": "__index",
-															"kind": 8192,
-															"kindString": "Index signature",
+												"type": "union",
+												"types": [
+													{
+														"type": "reflection",
+														"declaration": {
+															"id": 433,
+															"name": "__type",
+															"kind": 65536,
+															"kindString": "Type literal",
 															"flags": {},
-															"parameters": [
+															"indexSignature": [
 																{
-																	"id": 435,
-																	"name": "key",
-																	"kind": 32768,
-																	"kindString": "Parameter",
+																	"id": 434,
+																	"name": "__index",
+																	"kind": 8192,
+																	"kindString": "Index signature",
 																	"flags": {},
+																	"parameters": [
+																		{
+																			"id": 435,
+																			"name": "key",
+																			"kind": 32768,
+																			"kindString": "Parameter",
+																			"flags": {},
+																			"type": {
+																				"type": "intrinsic",
+																				"name": "string"
+																			}
+																		}
+																	],
 																	"type": {
-																		"type": "intrinsic",
-																		"name": "string"
+																		"type": "union",
+																		"types": [
+																			{
+																				"type": "intrinsic",
+																				"name": "string"
+																			},
+																			{
+																				"type": "intrinsic",
+																				"name": "number"
+																			},
+																			{
+																				"type": "intrinsic",
+																				"name": "boolean"
+																			}
+																		]
 																	}
 																}
 															],
-															"type": {
-																"type": "union",
-																"types": [
-																	{
-																		"type": "intrinsic",
-																		"name": "string"
-																	},
-																	{
-																		"type": "intrinsic",
-																		"name": "number"
-																	},
-																	{
-																		"type": "intrinsic",
-																		"name": "boolean"
-																	}
-																]
-															}
+															"sources": [
+																{
+																	"fileName": "packages/analytics/lib/index.d.ts",
+																	"line": 675,
+																	"character": 14
+																}
+															]
 														}
-													],
-													"sources": [
-														{
-															"fileName": "packages/analytics/lib/index.d.ts",
-															"line": 673,
-															"character": 34
-														}
-													]
-												}
+													},
+													{
+														"type": "reference",
+														"name": "__type"
+													}
+												]
 											}
 										}
 									],
@@ -9289,7 +9300,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 971,
+									"line": 974,
 									"character": 19
 								}
 							]
@@ -9345,7 +9356,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 989,
+									"line": 992,
 									"character": 16
 								}
 							]
@@ -9401,7 +9412,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1007,
+									"line": 1010,
 									"character": 15
 								}
 							]
@@ -9457,7 +9468,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1024,
+									"line": 1027,
 									"character": 17
 								}
 							]
@@ -9513,7 +9524,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1043,
+									"line": 1046,
 									"character": 14
 								}
 							]
@@ -9569,7 +9580,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1060,
+									"line": 1063,
 									"character": 12
 								}
 							]
@@ -9625,7 +9636,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1085,
+									"line": 1088,
 									"character": 19
 								}
 							]
@@ -9683,7 +9694,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1104,
+									"line": 1107,
 									"character": 21
 								}
 							]
@@ -9739,7 +9750,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1123,
+									"line": 1126,
 									"character": 21
 								}
 							]
@@ -9795,7 +9806,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1142,
+									"line": 1145,
 									"character": 13
 								}
 							]
@@ -9851,7 +9862,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1162,
+									"line": 1165,
 									"character": 20
 								}
 							]
@@ -9907,7 +9918,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1180,
+									"line": 1183,
 									"character": 24
 								}
 							]
@@ -9963,7 +9974,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1199,
+									"line": 1202,
 									"character": 12
 								}
 							]
@@ -10019,7 +10030,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1218,
+									"line": 1221,
 									"character": 13
 								}
 							]
@@ -10075,7 +10086,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1238,
+									"line": 1241,
 									"character": 27
 								}
 							]
@@ -10114,7 +10125,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1253,
+									"line": 1256,
 									"character": 20
 								}
 							]
@@ -10153,7 +10164,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1268,
+									"line": 1271,
 									"character": 23
 								}
 							]
@@ -10209,7 +10220,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1287,
+									"line": 1290,
 									"character": 24
 								}
 							]
@@ -10265,7 +10276,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1310,
+									"line": 1313,
 									"character": 15
 								}
 							]
@@ -10321,7 +10332,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1327,
+									"line": 1330,
 									"character": 19
 								}
 							]
@@ -10377,7 +10388,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1344,
+									"line": 1347,
 									"character": 24
 								}
 							]
@@ -10416,7 +10427,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 796,
+									"line": 799,
 									"character": 22
 								}
 							]
@@ -10471,7 +10482,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 688,
+									"line": 691,
 									"character": 33
 								}
 							]
@@ -10551,7 +10562,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 707,
+									"line": 710,
 									"character": 20
 								}
 							]
@@ -10617,7 +10628,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 721,
+									"line": 724,
 									"character": 29
 								}
 							]
@@ -10683,7 +10694,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 735,
+									"line": 738,
 									"character": 29
 								}
 							]
@@ -10747,7 +10758,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 752,
+									"line": 755,
 									"character": 13
 								}
 							]
@@ -10833,7 +10844,7 @@
 													"sources": [
 														{
 															"fileName": "packages/analytics/lib/index.d.ts",
-															"line": 785,
+															"line": 788,
 															"character": 33
 														}
 													]
@@ -10856,7 +10867,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 785,
+									"line": 788,
 									"character": 21
 								}
 							]
@@ -10934,7 +10945,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 766,
+									"line": 769,
 									"character": 19
 								}
 							]
@@ -63032,7 +63043,7 @@
 							"sources": [
 								{
 									"fileName": "packages/analytics/lib/index.d.ts",
-									"line": 1407,
+									"line": 1410,
 									"character": 37
 								}
 							],
@@ -63400,7 +63411,7 @@
 						},
 						{
 							"fileName": "packages/analytics/lib/index.d.ts",
-							"line": 1384,
+							"line": 1387,
 							"character": 30
 						},
 						{
@@ -64232,7 +64243,7 @@
 				},
 				{
 					"fileName": "packages/analytics/lib/index.d.ts",
-					"line": 1383,
+					"line": 1386,
 					"character": 29
 				},
 				{
