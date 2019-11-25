@@ -69,7 +69,8 @@ function textBaseElementValidate(textBase, cloud = false) {
 
 let testImageFile;
 
-describe('mlkit.vision.text', () => {
+// TODO allow android testing once ML model download manager support implemented
+ios.describe('mlkit.vision.text', () => {
   before(async () => {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
@@ -78,8 +79,7 @@ describe('mlkit.vision.text', () => {
       .writeToFile(testImageFile);
   });
 
-  // TODO allow android testing once ML model download manager support implemented
-  ios.describe('textRecognizerProcessImage()', () => {
+  describe('textRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
         firebase.vision().textRecognizerProcessImage(123);
