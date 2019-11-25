@@ -130,16 +130,16 @@ export function parseSetOptions(options) {
   return out;
 }
 
-function buildFieldPathData(segments, value) {
-  if (segments.length === 1) {
-    return {
-      [segments[0]]: value,
-    };
-  }
-  return {
-    [segments[0]]: buildFieldPathData(segments.slice(1), value),
-  };
-}
+// function buildFieldPathData(segments, value) {
+//   if (segments.length === 1) {
+//     return {
+//       [segments[0]]: value,
+//     };
+//   }
+//   return {
+//     [segments[0]]: buildFieldPathData(segments.slice(1), value),
+//   };
+// }
 
 export function parseSnapshotArgs(args) {
   if (args.length === 0) {
