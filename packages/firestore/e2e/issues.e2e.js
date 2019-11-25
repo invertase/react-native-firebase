@@ -51,12 +51,24 @@ describe('firestore()', () => {
       const ref = db.collection('issue2854').orderBy('number', 'desc');
       const allResultsSnapshot = await ref.get();
       allResultsSnapshot.forEach((doc, i) => {
-        if (i === 0) doc.id.should.equal('wbXwyLJheRfYXXWlY46j');
-        if (i === 1) doc.id.should.equal('kGC5cYPN1nKnZCcAb9oQ');
-        if (i === 2) doc.id.should.equal('8Ek8iWCDQPPJ5s2n8PiQ');
-        if (i === 3) doc.id.should.equal('mr7MdAygvuheF6AUtWma');
-        if (i === 4) doc.id.should.equal('RCO5SvNn4fdoE49OKrIV');
-        if (i === 5) doc.id.should.equal('CvVG7VP1hXTtcfdUaeNl');
+        if (i === 0) {
+          doc.id.should.equal('wbXwyLJheRfYXXWlY46j');
+        }
+        if (i === 1) {
+          doc.id.should.equal('kGC5cYPN1nKnZCcAb9oQ');
+        }
+        if (i === 2) {
+          doc.id.should.equal('8Ek8iWCDQPPJ5s2n8PiQ');
+        }
+        if (i === 3) {
+          doc.id.should.equal('mr7MdAygvuheF6AUtWma');
+        }
+        if (i === 4) {
+          doc.id.should.equal('RCO5SvNn4fdoE49OKrIV');
+        }
+        if (i === 5) {
+          doc.id.should.equal('CvVG7VP1hXTtcfdUaeNl');
+        }
       });
     });
 
@@ -66,8 +78,12 @@ describe('firestore()', () => {
       const firstPageSnapshot = await ref.limit(2).get();
       should.equal(firstPageSnapshot.docs.length, 2);
       firstPageSnapshot.forEach((doc, i) => {
-        if (i === 0) doc.id.should.equal('wbXwyLJheRfYXXWlY46j');
-        if (i === 1) doc.id.should.equal('kGC5cYPN1nKnZCcAb9oQ');
+        if (i === 0) {
+          doc.id.should.equal('wbXwyLJheRfYXXWlY46j');
+        }
+        if (i === 1) {
+          doc.id.should.equal('kGC5cYPN1nKnZCcAb9oQ');
+        }
       });
     });
 
@@ -86,8 +102,12 @@ describe('firestore()', () => {
         .get();
       should.equal(secondPageSnapshot.docs.length, 2);
       secondPageSnapshot.forEach((doc, i) => {
-        if (i === 0) doc.id.should.equal('8Ek8iWCDQPPJ5s2n8PiQ');
-        if (i === 1) doc.id.should.equal('mr7MdAygvuheF6AUtWma');
+        if (i === 0) {
+          doc.id.should.equal('8Ek8iWCDQPPJ5s2n8PiQ');
+        }
+        if (i === 1) {
+          doc.id.should.equal('mr7MdAygvuheF6AUtWma');
+        }
       });
     });
   });
