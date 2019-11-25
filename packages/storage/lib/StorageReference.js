@@ -20,6 +20,7 @@ import {
   Base64,
   getDataUrlParts,
   hasOwnProperty,
+  isInteger,
   isNumber,
   isObject,
   isString,
@@ -133,13 +134,11 @@ export default class StorageReference extends ReferenceBase {
 
     if (options) {
       if (hasOwnProperty(options, 'maxResults')) {
-        if (!isNumber(options.maxResults)) {
+        if (!isNumber(options.maxResults) || !isInteger(options.maxResults)) {
           throw new Error(
             "firebase.storage.StorageReference.list(*) 'options.maxResults' expected a number value.",
           );
         }
-
-        // todo integer check
 
         if (options.maxResults < 1 || options.maxResults > 1000) {
           throw new Error(
