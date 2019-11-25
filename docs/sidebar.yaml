@@ -211,23 +211,6 @@
         - text: iOS Installation
           to: '/ios'
 
-- module: invites
-  groups:
-    - group: Invites
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Migrate to Dynamic DynamicLinks
-          to: '/migrate-to-dynamic-links'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
 - module: ml-natural-language
   groups:
     - group: ML Kit Natural Language

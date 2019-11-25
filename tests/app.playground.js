@@ -20,8 +20,6 @@ import React, { Component } from 'react';
 import { AppRegistry, Image, StyleSheet, View } from 'react-native';
 
 import '@react-native-firebase/dynamic-links';
-import '@react-native-firebase/invites';
-import firebase from '@react-native-firebase/app';
 
 class Root extends Component {
   constructor(props) {
@@ -34,47 +32,6 @@ class Root extends Component {
   }
 
   async runSingleTest() {
-    const invite = firebase.invites().createInvitation('foo', 'bar');
-    const androidInvite = invite.android;
-    const inviteParams = {
-      android: undefined,
-      androidClientId: 'androidClientId',
-      androidMinimumVersionCode: 1337,
-      callToActionText: 'callToActionText',
-      iosClientId: 'iosClientId',
-    };
-    const androidInviteParams = {
-      additionalReferralParameters: {
-        a: 'b',
-        c: 'd',
-      },
-      emailHtmlContent: 'emailHtmlContent',
-      emailSubject: 'emailSubject',
-      googleAnalyticsTrackingId: 'googleAnalyticsTrackingId',
-    };
-
-    invite.setAndroidClientId(inviteParams.androidClientId);
-    invite.setAndroidMinimumVersionCode(inviteParams.androidMinimumVersionCode);
-
-    // invite.setCustomImage(inviteParams.customImage);
-    // invite.setDeepLink(inviteParams.deepLink);
-    invite.setIOSClientId(inviteParams.iosClientId);
-
-    androidInvite.setAdditionalReferralParameters(androidInviteParams.additionalReferralParameters);
-
-    androidInvite.setEmailHtmlContent(androidInviteParams.emailHtmlContent);
-    androidInvite.setEmailSubject(androidInviteParams.emailSubject);
-    androidInvite.setGoogleAnalyticsTrackingId(androidInviteParams.googleAnalyticsTrackingId);
-
-    const ids = await firebase.invites().sendInvitation(invite);
-    console.warn(ids);
-    console.warn('FOOO');
-    await firebase
-      .links()
-      .getInitialLink()
-      .then(link => {
-        console.warn(`outer${link}`);
-      });
   }
 
   render() {
