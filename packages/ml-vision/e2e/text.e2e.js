@@ -78,7 +78,8 @@ describe('mlkit.vision.text', () => {
       .writeToFile(testImageFile);
   });
 
-  describe('textRecognizerProcessImage()', () => {
+  // TODO allow android testing once ML model download manager support implemented
+  ios.describe('textRecognizerProcessImage()', () => {
     it('should throw if image path is not a string', () => {
       try {
         firebase.vision().textRecognizerProcessImage(123);
