@@ -67,27 +67,18 @@
     - text: Dynamic Links
       to: '/v6/dynamic-links'
       asset: '//static.invertase.io/assets/firebase/dynamic-links.svg'
-    - text: App Indexing
-      to: '/v6/indexing'
-      asset: '//static.invertase.io/assets/firebase/app-indexing.svg'
     - text: Instance ID
       to: '/v6/iid'
       asset: '//static.invertase.io/assets/social/firebase-logo.png'
     - text: In-App Messaging
       to: '/v6/in-app-messaging'
       asset: '//static.invertase.io/assets/firebase/in-app-messaging.svg'
-    - text: Invites
-      to: '/v6/invites'
-      asset: '//static.invertase.io/assets/firebase/invites.svg'
     - text: ML Kit Natural Language
       to: '/v6/ml-natural-language'
       asset: '//static.invertase.io/assets/firebase/ml-kit.svg'
     - text: ML Kit Vision
       to: '/v6/ml-vision'
       asset: '//static.invertase.io/assets/firebase/ml-kit.svg'
-    - text: Notifications
-      to: '/v6/notifications'
-      asset: '//static.invertase.io/assets/social/firebase-logo.png'
     - text: Remote Config
       to: '/v6/remote-config'
       asset: '//static.invertase.io/assets/firebase/remote-config.svg'
