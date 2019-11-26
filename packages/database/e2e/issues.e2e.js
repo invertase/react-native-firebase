@@ -22,6 +22,12 @@ const TEST_PATH = `${PATH}/issues`;
 describe('database issues', () => {
   after(() => wipe(TEST_PATH));
 
+  it('#2813 should return a null snapshot key if path is root', async () => {
+    const ref = firebase.database().ref();
+    const snapshot = await ref.once('value');
+    should.equal(snapshot.key, null);
+  });
+
   it('#100 array should return null where key is missing', async () => {
     const ref = firebase.database().ref(`${TEST_PATH}/issue_100`);
 
