@@ -965,7 +965,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 574,
+											"line": 582,
 											"character": 15
 										}
 									]
@@ -1252,7 +1252,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 573,
+									"line": 581,
 									"character": 25
 								},
 								{
@@ -1639,7 +1639,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 567,
+											"line": 575,
 											"character": 15
 										}
 									],
@@ -1940,7 +1940,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 566,
+									"line": 574,
 									"character": 20
 								},
 								{
@@ -2044,7 +2044,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 564,
+							"line": 572,
 							"character": 31
 						},
 						{
@@ -2230,7 +2230,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 563,
+					"line": 571,
 					"character": 43
 				},
 				{
@@ -3287,7 +3287,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 553,
+							"line": 561,
 							"character": 21
 						}
 					],
@@ -3321,7 +3321,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 551,
+							"line": 559,
 							"character": 23
 						}
 					],
@@ -3342,7 +3342,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 550,
+							"line": 558,
 							"character": 27
 						}
 					],
@@ -3375,7 +3375,7 @@
 			"sources": [
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 544,
+					"line": 552,
 					"character": 49
 				}
 			]
@@ -43748,7 +43748,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 348,
+									"line": 356,
 									"character": 38
 								}
 							],
@@ -43844,7 +43844,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 231,
+									"line": 237,
 									"character": 15
 								}
 							]
@@ -43898,7 +43898,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 385,
+									"line": 393,
 									"character": 16
 								}
 							]
@@ -43920,7 +43920,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns an FCM token for this device. Optionally you can specify a custom authorized entity\nor scope to tailor tokens to your own use-case.",
-										"text": "It is recommended you call this method on app start and update your backend with the new token.\n\n#### Example - Default token\n\n```js\nconst fcmToken = await firebase.messaging().getToken();\n\n// Update backend (e.g. Firestore) with our scoped token for the user\nconst uid = firebase.auth().currentUser.uid;\nawait firebase.firestore().doc(`users/${uid}`)\n  .update({\n    fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),\n  });\n```\n\n#### Example - Scoped Token\n\nThe below example creates a new token for a specific notification scope (in this case, ALARM).\nYour server can specifically send messages to 'ALARM' tokens. By default, all notification scopes\nwill be received.\n\n```js\n// Get a token for 'ALARM' notifications\nconst alarmFcmToken = await firebase.messaging().getToken(\n  firebase.app().options.messagingSenderId, // default to this app\n  'ALARM', // defaults to 'FCM'\n);\n\n// Update backend (e.g. Firestore) with our scoped token for the user\nconst uid = firebase.auth().currentUser.uid;\nawait firebase.firestore().doc(`users/${uid}`)\n  .update({\n    alarmFcmTokens: firebase.firestore.FieldValues.arrayUnion(alarmFcmToken),\n  });\n```\n"
+										"text": "It is recommended you call this method on app start and update your backend with the new token.\n\nOn iOS you'll need to register for remote notifications before calling this method, you can do\nthis by calling `registerForRemoteNotifications` or `requestPermission` as part of your app\nstartup. If you have not registered and you call this method you will receive an 'unregistered'\nerror code.\n\n#### Example - Default token\n\n```js\nawait firebase.messaging().registerForRemoteNotifications();\nconst fcmToken = await firebase.messaging().getToken();\n\n// Update backend (e.g. Firestore) with our scoped token for the user\nconst uid = firebase.auth().currentUser.uid;\nawait firebase.firestore().doc(`users/${uid}`)\n  .update({\n    fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),\n  });\n```\n\n#### Example - Scoped Token\n\nThe below example creates a new token for a specific notification scope (in this case, ALARM).\nYour server can specifically send messages to 'ALARM' tokens. By default, all notification scopes\nwill be received.\n\n```js\n// Get a token for 'ALARM' notifications\nconst alarmFcmToken = await firebase.messaging().getToken(\n  firebase.app().options.messagingSenderId, // default to this app\n  'ALARM', // defaults to 'FCM'\n);\n\n// Update backend (e.g. Firestore) with our scoped token for the user\nconst uid = firebase.auth().currentUser.uid;\nawait firebase.firestore().doc(`users/${uid}`)\n  .update({\n    alarmFcmTokens: firebase.firestore.FieldValues.arrayUnion(alarmFcmToken),\n  });\n```\n"
 									},
 									"parameters": [
 										{
@@ -43990,7 +43990,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 216,
+									"line": 222,
 									"character": 12
 								}
 							]
@@ -44029,7 +44029,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 396,
+									"line": 404,
 									"character": 17
 								}
 							]
@@ -44087,7 +44087,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 425,
+															"line": 433,
 															"character": 31
 														}
 													]
@@ -44119,7 +44119,7 @@
 											"sources": [
 												{
 													"fileName": "packages/messaging/lib/index.d.ts",
-													"line": 425,
+													"line": 433,
 													"character": 44
 												}
 											]
@@ -44130,7 +44130,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 425,
+									"line": 433,
 									"character": 21
 								}
 							]
@@ -44202,7 +44202,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 259,
+															"line": 265,
 															"character": 23
 														}
 													]
@@ -44234,7 +44234,7 @@
 											"sources": [
 												{
 													"fileName": "packages/messaging/lib/index.d.ts",
-													"line": 259,
+													"line": 265,
 													"character": 57
 												}
 											]
@@ -44245,7 +44245,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 259,
+									"line": 265,
 									"character": 13
 								}
 							]
@@ -44316,7 +44316,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 445,
+															"line": 453,
 															"character": 27
 														}
 													]
@@ -44348,7 +44348,7 @@
 											"sources": [
 												{
 													"fileName": "packages/messaging/lib/index.d.ts",
-													"line": 445,
+													"line": 453,
 													"character": 56
 												}
 											]
@@ -44359,7 +44359,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 445,
+									"line": 453,
 									"character": 17
 								}
 							]
@@ -44431,7 +44431,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 466,
+															"line": 474,
 															"character": 25
 														}
 													]
@@ -44463,7 +44463,7 @@
 											"sources": [
 												{
 													"fileName": "packages/messaging/lib/index.d.ts",
-													"line": 466,
+													"line": 474,
 													"character": 56
 												}
 											]
@@ -44474,7 +44474,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 466,
+									"line": 474,
 									"character": 15
 								}
 							]
@@ -44545,7 +44545,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 290,
+															"line": 296,
 															"character": 28
 														}
 													]
@@ -44577,7 +44577,7 @@
 											"sources": [
 												{
 													"fileName": "packages/messaging/lib/index.d.ts",
-													"line": 290,
+													"line": 296,
 													"character": 53
 												}
 											]
@@ -44588,7 +44588,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 290,
+									"line": 296,
 									"character": 18
 								}
 							]
@@ -44610,7 +44610,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register\nthis request with APNS. For example if you want to display alerts, play sounds\nor perform other user-facing actions (via the Notification library), you must call this method.",
-										"text": "> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.\n\n#### Example\n\n```js\nif (!firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
+										"text": "> You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.\n\n> You can safely call this method multiple times, if the app is already registered then this method resolves immediately.\n\n#### Example\n\n```js\nif (!firebase.messaging().isRegisteredForRemoteNotifications) {\n  await firebase.messaging().registerForRemoteNotifications();\n}\n```\n",
 										"tags": [
 											{
 												"tag": "ios",
@@ -44633,7 +44633,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 332,
+									"line": 340,
 									"character": 34
 								}
 							]
@@ -44678,7 +44678,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 313,
+									"line": 319,
 									"character": 21
 								}
 							]
@@ -44734,7 +44734,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 513,
+									"line": 521,
 									"character": 15
 								}
 							]
@@ -44864,7 +44864,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 492,
+															"line": 500,
 															"character": 40
 														}
 													]
@@ -44881,7 +44881,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 492,
+									"line": 500,
 									"character": 31
 								}
 							]
@@ -44936,7 +44936,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 527,
+									"line": 535,
 									"character": 20
 								}
 							]
@@ -44981,7 +44981,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 365,
+									"line": 373,
 									"character": 36
 								}
 							]
@@ -45036,7 +45036,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 540,
+									"line": 548,
 									"character": 24
 								}
 							]
@@ -63171,7 +63171,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 582,
+									"line": 590,
 									"character": 43
 								}
 							],
@@ -63191,7 +63191,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 581,
+									"line": 589,
 									"character": 31
 								}
 							],
@@ -63431,7 +63431,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 580,
+							"line": 588,
 							"character": 30
 						},
 						{
@@ -64263,7 +64263,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 579,
+					"line": 587,
 					"character": 29
 				},
 				{
