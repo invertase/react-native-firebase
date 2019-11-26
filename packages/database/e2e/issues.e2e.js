@@ -23,7 +23,10 @@ describe('database issues', () => {
   after(() => wipe(TEST_PATH));
 
   it('#2813 should return a null snapshot key if path is root', async () => {
-    const ref = firebase.database().ref();
+    const ref = firebase
+      .app()
+      .database('https://react-native-firebase-testing-db2.firebaseio.com')
+      .ref();
     const snapshot = await ref.once('value');
     should.equal(snapshot.key, null);
   });
