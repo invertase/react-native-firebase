@@ -197,7 +197,7 @@ export default class DatabaseQueryModifiers {
 
   // Converts the modifier list to a string representation
   toString() {
-    const sorted = this._modifiers.sort((a, b) => {
+    const sorted = [].concat(this._modifiers).sort((a, b) => {
       if (a.id < b.id) {
         return -1;
       }
