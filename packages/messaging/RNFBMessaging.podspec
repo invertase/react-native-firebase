@@ -25,5 +25,5 @@ Pod::Spec.new do |s|
   s.dependency          'React'
   s.dependency          'Firebase/Messaging', firebase_sdk_version
   s.dependency          'RNFBApp'
-  s.static_framework    = false
+  s.static_framework    = true
 end

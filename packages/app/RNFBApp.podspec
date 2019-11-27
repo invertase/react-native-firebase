@@ -25,5 +25,5 @@ Pod::Spec.new do |s|
   s.source_files        = "ios/**/*.{h,m}"
   s.dependency          'React'
   s.dependency          'Firebase/Core', firebase_sdk_version
-  s.static_framework    = false
+  s.static_framework    = true
 end
