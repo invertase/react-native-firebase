@@ -63,7 +63,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = firebase.dynamicLinks().onLink(handleDynamicLink);
     // When the component unmounts, remove the listener
-    return unsubscribe;
+    return () =>  unsubscribe();
   }, []);
 
   return <YourApp />;
