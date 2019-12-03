@@ -26,7 +26,7 @@ const OPERATORS = {
   '<=': 'LESS_THAN_OR_EQUAL',
   'array-contains': 'ARRAY_CONTAINS',
   'array-contains-any': 'ARRAY_CONTAINS_ANY',
-  in: 'IN',
+  'in': 'IN',
 };
 
 const INEQUALITY = {
