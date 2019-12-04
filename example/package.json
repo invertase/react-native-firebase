@@ -1,0 +1,20 @@
+{
+  "name": "react-native-apple-authentication-example",
+  "version": "6.1.0",
+  "private": true,
+  "scripts": {
+    "build:clean": "rimraf ios/build",
+    "prepare": "patch-package",
+    "start": "react-native start --reset-cache",
+    "run:android": "react-native run-android",
+    "run:ios": "react-native run-ios --simulator=\"iPhone 11\""
+  },
+  "dependencies": {
+    "react": "16.9.0",
+    "react-native": "0.61.5"
+  },
+  "devDependencies": {
+    "patch-package": "^6.1.0",
+    "@react-native-community/cli": "^3.0.4"
+  }
+}
