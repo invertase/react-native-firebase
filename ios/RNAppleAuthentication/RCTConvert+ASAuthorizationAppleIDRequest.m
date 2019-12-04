@@ -44,7 +44,7 @@
   if ([requestOptions valueForKey:@"nonce"] != nil) {
     appleIdRequest.nonce = [requestOptions valueForKey:@"nonce"];
   } else {
-    appleIdRequest.nonce = [RNAppleAuthUtils stringBySha256HashingString:[RNAppleAuthUtils randomNonce:32]];
+    appleIdRequest.nonce = [RNAppleAuthUtils randomNonce:32];
   }
 
   return appleIdRequest;
