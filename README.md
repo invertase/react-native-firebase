@@ -20,6 +20,8 @@
 
 A well typed React Native library providing support for Apple Authentication on iOS, including support for all `AppleButton` variants.
 
+![apple-auth](https://static.invertase.io/assets/apple-auth.png)
+
 ## Installation
 
 ```bash
