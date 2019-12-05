@@ -146,11 +146,7 @@ RCT_EXPORT_METHOD(requestPermission:
   RCTPromiseResolveBlock customResolver = ^(id result) {
     if (@available(iOS 10.0, *)) {
       UNAuthorizationOptions authOptions;
-      if (@available(iOS 12.0, *)) {
-        authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      } else {
         authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      }
 
       [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
         if (error) {
@@ -203,8 +199,13 @@ RCT_EXPORT_METHOD(hasPermission:
 ) {
   if (@available(iOS 10.0, *)) {
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-      BOOL hasPermission = [RCTConvert BOOL:@(settings.authorizationStatus >= UNAuthorizationStatusAuthorized)];
-      resolve(@(hasPermission));
+
+        if (settings.authorizationStatus = UNAuthorizationStatusNotDetermined){
+            resolve(nil);
+        } else {
+            BOOL hasPermission = [RCTConvert BOOL:@(settings.authorizationStatus >= UNAuthorizationStatusAuthorized)];
+            resolve(@(hasPermission));
+        }
     }];
   } else {
     // TODO community iOS 9 support could be added here via application `currentUserNotificationSettings`.types != UIUserNotificationTypeNone
