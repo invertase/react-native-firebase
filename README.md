@@ -32,7 +32,7 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 
 * You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
 
-* Once you're sure you've met the above, please follow the [Initial development environment setup](INITIAL_SETUP.md).
+* **Once you're sure you've met the above, please follow our [Initial development environment setup](INITIAL_SETUP.md) guide.**
 
 
 ## Installation
@@ -43,9 +43,14 @@ yarn add @invertase/react-native-apple-authentication
 
 This module supports React Native auto-linking.
 
-## Documentation
+## Usage Documentation
 
-> Documentation is still todo, PRs welcome, full api usage can be seen in the [example app](example/app.js)
+Usage documentation is still in progress, however we have two full example integrations using the APIs and `AppleButton`:
+
+ - [React Hooks based example](example/app.js)
+ - [React Class based example](example/classVersion.js)
+ 
+Additionally, we offer type documentation below.
 
 ### Types
 
