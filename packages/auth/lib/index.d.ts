@@ -64,7 +64,7 @@ export namespace FirebaseAuthTypes {
    * const provider = firebase.auth.EmailAuthProvider;
    * const authCredential = provider.credential('foo@bar.com', '123456');
    *
-   * await firebase.auth().linkWithCredential(authCredential);
+   * await firebase.auth().signInWithCredential(authCredential);
    * ```
    */
   export interface AuthCredential {
