@@ -16,3 +16,9 @@
  */
 
 require('./app');
+
+/**
+ * If you want to play with the class implementation (React version 16.7 or less),
+ * comment out require('./app'); & uncomment require('./classVersion');
+ */
+// require('./classVersion');

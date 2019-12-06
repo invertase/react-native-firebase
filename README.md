@@ -22,6 +22,19 @@ A well typed React Native library providing support for Apple Authentication on 
 
 ![apple-auth](https://static.invertase.io/assets/apple-auth.png)
 
+## Prerequisites to using this library
+
+The `@invertase/react-native-apple-authentication` library will not work if you do not ensure the following:
+
+* You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting  started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
+
+* You are using React Native version `0.60` or higher.
+
+* You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
+
+* Once you're sure you've met the above, please follow the [Initial development environment setup](INITIAL_SETUP.md).
+
+
 ## Installation
 
 ```bash
@@ -62,13 +75,13 @@ This module supports React Native auto-linking.
 ----
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
   </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+  <p align="left">
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> |
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> |
     <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
