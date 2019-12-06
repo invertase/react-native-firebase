@@ -87,7 +87,7 @@ Additionally, we offer type documentation below.
   <p align="left">
     <a href="https://invertase.io/hire-us">💼 Hire Us</a> |
     <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> |
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
+    <a href="https://invertase.io/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 
