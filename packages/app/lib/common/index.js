@@ -23,8 +23,8 @@ export * from './path';
 export * from './promise';
 export * from './validate';
 
-export Base64 from './Base64';
-export ReferenceBase from './ReferenceBase';
+export { default as Base64 } from './Base64';
+export { default as ReferenceBase } from './ReferenceBase';
 
 export function getDataUrlParts(dataUrlString) {
   const isBase64 = dataUrlString.includes(';base64');
