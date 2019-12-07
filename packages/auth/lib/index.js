@@ -30,11 +30,13 @@ import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import AppleAuthProvider from './providers/AppleAuthProvider';
 import Settings from './Settings';
 import User from './User';
 import version from './version';
 
 const statics = {
+  AppleAuthProvider,
   EmailAuthProvider,
   PhoneAuthProvider,
   GoogleAuthProvider,

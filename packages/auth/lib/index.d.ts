@@ -214,6 +214,16 @@ export namespace FirebaseAuthTypes {
      */
     GoogleAuthProvider: AuthProvider;
     /**
+     * Apple auth provider implementation.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.AppleAuthProvider;
+     * ```
+     */
+    AppleAuthProvider: AuthProvider;
+    /**
      * Github auth provider implementation.
      *
      * #### Example
