@@ -216,6 +216,8 @@ export namespace FirebaseAuthTypes {
     /**
      * Apple auth provider implementation.
      *
+     * For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+     *
      * #### Example
      *
      * ```js
