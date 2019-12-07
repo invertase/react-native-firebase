@@ -48,14 +48,14 @@ import { View, Text } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 function App() {
-  // Set an initilizing state whilst Firebase connects
-  const [initilizing, setInitilizing] = useState(true);
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
-    if (initilizing) setInitilizing(false);
+    if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
@@ -63,7 +63,7 @@ function App() {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  if (initilizing) return null;
+  if (initializing) return null;
 
   if (!user) {
     return (
