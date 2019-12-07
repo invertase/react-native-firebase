@@ -92,7 +92,9 @@ The user is able to clear their state by deleting the apps data/cache from the d
 ### Auth providers
 
 React Native Firebase provides access to the majority of authentication providers available, including social providers
-including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
+including Apple, Facebook, Google, Twitter and Github, along with phone/SMS authentication.
+
+For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
 
 <Grid columns="2">
 	<Block
@@ -101,7 +103,7 @@ including Facebook, Google, Twitter and Github, along with phone/SMS authenticat
 		title="Social Auth"
 		to="/social-auth"
 	>
-    Authenticate your users with popular social providers such as Facebook, Twitter, Google, Github or your own custom provider.
+    Authenticate your users with popular social providers such as Apple, Facebook, Twitter, Google, Github or your own custom provider.
 	</Block>
 	<Block
 		icon="perm_phone_msg"
