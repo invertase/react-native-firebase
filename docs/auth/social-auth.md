@@ -11,6 +11,10 @@ oAuth APIs.
 
 Below are our recommended approaches for integrating with each social platform.
 
+## Apple
+
+For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+
 ## Facebook
 
 The recommended library of choice is the official [react-native-fbsdk](https://github.com/facebook/react-native-fbsdk)
