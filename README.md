@@ -16,7 +16,7 @@
   <a href="https://twitter.com/invertaseio"><img src="https://img.shields.io/twitter/follow/invertaseio.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
 </p>
 
-----
+---
 
 A well typed React Native library providing support for Apple Authentication on iOS, including support for all `AppleButton` variants.
 
@@ -26,14 +26,13 @@ A well typed React Native library providing support for Apple Authentication on 
 
 The `@invertase/react-native-apple-authentication` library will not work if you do not ensure the following:
 
-* You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting  started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
+- You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
 
-* You are using React Native version `0.60` or higher.
+- You are using React Native version `0.60` or higher.
 
-* You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
+- You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
 
-* **Once you're sure you've met the above, please follow our [Initial development environment setup](INITIAL_SETUP.md) guide.**
-
+- **Once you're sure you've met the above, please follow our [Initial development environment setup](docs/INITIAL_SETUP.md) guide.**
 
 ## Installation
 
@@ -43,41 +42,42 @@ yarn add @invertase/react-native-apple-authentication
 
 This module supports React Native auto-linking.
 
-## Usage Documentation
+## Usage
 
-Usage documentation is still in progress, however we have two full example integrations using the APIs and `AppleButton`:
+#### Examples
 
- - [React Hooks based example](example/app.js)
- - [React Class based example](example/classVersion.js)
- 
-Additionally, we offer type documentation below.
+- [React Hooks example](example/app.js)
+- [React Class example](example/classVersion.js)
 
-### Types
+#### Firebase
 
-#### Enumerations
+If you're using `React Native Firebase` and want to sign-in your users into Firebase via Apple Authentication; see our [Firebase guide](docs/FIREBASE.md).
 
-* [AppleAuthCredentialState](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md)
-* [AppleAuthError](docs/enums/_lib_index_d_.rnappleauth.appleautherror.md)
-* [AppleAuthRealUserStatus](docs/enums/_lib_index_d_.rnappleauth.appleauthrealuserstatus.md)
-* [AppleAuthRequestOperation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)
-* [AppleAuthRequestScope](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md)
-* [AppleButtonStyle](docs/enums/_lib_index_d_.rnappleauth.applebuttonstyle.md)
-* [AppleButtonType](docs/enums/_lib_index_d_.rnappleauth.applebuttontype.md)
+## Reference Documentation
 
-#### Interfaces
+### Interfaces
 
-* [AppleAuthRequestOptions](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestoptions.md)
-* [AppleAuthRequestResponse](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponse.md)
-* [AppleAuthRequestResponseFullName](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponsefullname.md)
-* [AppleButtonProps](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)
-* [Module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
+- [AppleAuthRequestOptions](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestoptions.md)
+- [AppleAuthRequestResponse](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponse.md)
+- [AppleAuthRequestResponseFullName](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponsefullname.md)
+- [AppleButtonProps](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)
+- [Module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
 
+### Enumerations
+
+- [AppleAuthCredentialState](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md)
+- [AppleAuthError](docs/enums/_lib_index_d_.rnappleauth.appleautherror.md)
+- [AppleAuthRealUserStatus](docs/enums/_lib_index_d_.rnappleauth.appleauthrealuserstatus.md)
+- [AppleAuthRequestOperation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)
+- [AppleAuthRequestScope](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md)
+- [AppleButtonStyle](docs/enums/_lib_index_d_.rnappleauth.applebuttonstyle.md)
+- [AppleButtonType](docs/enums/_lib_index_d_.rnappleauth.applebuttontype.md)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
@@ -91,4 +91,4 @@ Additionally, we offer type documentation below.
   </p>
 </p>
 
-----
+---
