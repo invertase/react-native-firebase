@@ -1180,6 +1180,8 @@ RCT_EXPORT_METHOD(fetchSignInMethodsForEmail:
     credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
   } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+  } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider credentialWithProviderID:@"apple.com" IDToken:authToken rawNonce:authTokenSecret];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {

@@ -1206,6 +1206,7 @@ declare module 'react-native-firebase' {
         OAuthProvider: AuthProvider;
         TwitterAuthProvider: AuthProvider;
         FacebookAuthProvider: AuthProvider;
+        AppleAuthProvider: AuthProvider;
         PhoneAuthState: {
           CODE_SENT: string;
           AUTO_VERIFY_TIMEOUT: string;
