@@ -23,9 +23,7 @@ export type {
   UserInfo,
   UserMetadata,
 } from './modules/auth/types';
-export type {
-  default as ConfirmationResult,
-} from './modules/auth/phone/ConfirmationResult';
+export type { default as ConfirmationResult } from './modules/auth/phone/ConfirmationResult';
 export type { default as User } from './modules/auth/User';
 
 /*
@@ -44,33 +42,21 @@ export type {
   SetOptions,
   SnapshotMetadata,
 } from './modules/firestore/firestoreTypes.flow';
-export type {
-  default as CollectionReference,
-} from './modules/firestore/CollectionReference';
-export type {
-  default as DocumentChange,
-} from './modules/firestore/DocumentChange';
-export type {
-  default as DocumentReference,
-} from './modules/firestore/DocumentReference';
-export type {
-  default as DocumentSnapshot,
-} from './modules/firestore/DocumentSnapshot';
+export type { default as CollectionReference } from './modules/firestore/CollectionReference';
+export type { default as DocumentChange } from './modules/firestore/DocumentChange';
+export type { default as DocumentReference } from './modules/firestore/DocumentReference';
+export type { default as DocumentSnapshot } from './modules/firestore/DocumentSnapshot';
 export type { default as FieldPath } from './modules/firestore/FieldPath';
 export type { default as FieldValue } from './modules/firestore/FieldValue';
 export type { default as GeoPoint } from './modules/firestore/GeoPoint';
 export type { default as Query } from './modules/firestore/Query';
-export type {
-  default as QuerySnapshot,
-} from './modules/firestore/QuerySnapshot';
+export type { default as QuerySnapshot } from './modules/firestore/QuerySnapshot';
 export type { default as WriteBatch } from './modules/firestore/WriteBatch';
 
 /*
  * Export Messaging types
  */
-export type {
-  default as RemoteMessage,
-} from './modules/messaging/RemoteMessage';
+export type { default as RemoteMessage } from './modules/messaging/RemoteMessage';
 
 /*
  * Export Notifications types
