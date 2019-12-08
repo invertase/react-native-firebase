@@ -1,6 +1,6 @@
 # Usage with React Native Firebase
 
-This library integrates well with the [`@react-native-firebase/auth`](https://www.npmjs.com/package/@react-native-firebase/auth) package to Apple Authentication for Firebase.
+This library integrates well with the [`@react-native-firebase/auth`](https://www.npmjs.com/package/@react-native-firebase/auth) package to provide Apple Authentication for Firebase Auth.
 
 ## Prerequisites to using this library
 
