@@ -1,10 +1,30 @@
 
 # Enumeration: AppleAuthRequestScope
 
-The contact information to be requested from the user.  Only scopes for which this app was
+A property on the `requestOptions` to indicate the contact information to be requested from the user.  Only scopes for which this app was
 authorized for will be returned.
 
-Scopes used as part of `AppleAuthRequestOptions` `requestedScopes`
+## What is it?
+
+This is an exported module, `AppleAuthRequestScope` from the `react-native-apple-authentication` library. It is used to populate the `requestedScopes` property on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
+
+```js
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  } from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  };
+  const responseObject = await appleAuth.performRequest(requestOptions);
+
+  }
+}
+```
 
 ## Index
 
