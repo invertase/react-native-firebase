@@ -1,4 +1,3 @@
-
 # Enumeration: AppleAuthError
 
 Errors that can occur during authorization.
@@ -16,33 +15,31 @@ import appleAuth, {
   AppleAuthRequestScope,
   AppleAuthCredentialState,
   AppleAuthError,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
+
   const { user } = await appleAuth.performRequest(requestOptions);
 
   try {
-    const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
-  } catch(error){
+    const credentialState = await appleAuth.getCredentialStateForUser(user);
+    if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+      // authorized
+    }
+  } catch (error) {
     if (error.code === AppleAuthError.CANCELED) {
-
     }
     if (error.code === AppleAuthError.FAILED) {
-
     }
     if (error.code === AppleAuthError.INVALID_RESPONSE) {
-
     }
     if (error.code === AppleAuthError.NOT_HANDLED) {
-
     }
     if (error.code === AppleAuthError.UNKNOWN) {
-
     }
   }
 }
@@ -52,58 +49,58 @@ function onPressAppleButton(){
 
 ### Enumeration members
 
-* [CANCELED](_lib_index_d_.rnappleauth.appleautherror.md#canceled)
-* [FAILED](_lib_index_d_.rnappleauth.appleautherror.md#failed)
-* [INVALID_RESPONSE](_lib_index_d_.rnappleauth.appleautherror.md#invalid_response)
-* [NOT_HANDLED](_lib_index_d_.rnappleauth.appleautherror.md#not_handled)
-* [UNKNOWN](_lib_index_d_.rnappleauth.appleautherror.md#unknown)
+- [CANCELED](_lib_index_d_.rnappleauth.appleautherror.md#canceled)
+- [FAILED](_lib_index_d_.rnappleauth.appleautherror.md#failed)
+- [INVALID_RESPONSE](_lib_index_d_.rnappleauth.appleautherror.md#invalid_response)
+- [NOT_HANDLED](_lib_index_d_.rnappleauth.appleautherror.md#not_handled)
+- [UNKNOWN](_lib_index_d_.rnappleauth.appleautherror.md#unknown)
 
 ## Enumeration members
 
-###  CANCELED
+### CANCELED
 
 • **CANCELED**: = "1001"
 
-*Defined in [lib/index.d.ts:406](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L406)*
+_Defined in [lib/index.d.ts:406](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L406)_
 
 The user canceled the authorization attempt.
 
-___
+---
 
-###  FAILED
+### FAILED
 
 • **FAILED**: = "1004"
 
-*Defined in [lib/index.d.ts:421](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L421)*
+_Defined in [lib/index.d.ts:421](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L421)_
 
 The authorization attempt failed.
 
-___
+---
 
-###  INVALID_RESPONSE
+### INVALID_RESPONSE
 
 • **INVALID_RESPONSE**: = "1002"
 
-*Defined in [lib/index.d.ts:411](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L411)*
+_Defined in [lib/index.d.ts:411](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L411)_
 
 The authorization request received an invalid response.
 
-___
+---
 
-###  NOT_HANDLED
+### NOT_HANDLED
 
 • **NOT_HANDLED**: = "1003"
 
-*Defined in [lib/index.d.ts:416](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L416)*
+_Defined in [lib/index.d.ts:416](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L416)_
 
 The authorization request wasn't handled.
 
-___
+---
 
-###  UNKNOWN
+### UNKNOWN
 
 • **UNKNOWN**: = "1000"
 
-*Defined in [lib/index.d.ts:401](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L401)*
+_Defined in [lib/index.d.ts:401](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L401)_
 
 The authorization attempt failed for an unknown reason.

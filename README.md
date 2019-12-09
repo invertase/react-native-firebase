@@ -70,7 +70,7 @@ function App(){
         onPress={() => onAppleButtonPress()}
       />
     </View>
-  )
+  );
 }
 ```
 
@@ -90,7 +90,6 @@ async function onAppleButtonPress(){
 }
 
 ```
-
 
 #### Examples
 

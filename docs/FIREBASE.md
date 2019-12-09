@@ -6,13 +6,13 @@ This library integrates well with the [`@react-native-firebase/auth`](https://ww
 
 The `@invertase/react-native-apple-authentication` library will not work if you do not ensure the following:
 
-* You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting  started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
+- You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
 
-* You are using React Native version `0.60` or higher.
+- You are using React Native version `0.60` or higher.
 
-* You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
+- You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
 
-* **Once you're sure you've met the above, please follow our [Initial development environment setup](docs/INITIAL_SETUP.md) guide.**
+- **Once you're sure you've met the above, please follow our [Initial development environment setup](docs/INITIAL_SETUP.md) guide.**
 
 # v6 example
 
