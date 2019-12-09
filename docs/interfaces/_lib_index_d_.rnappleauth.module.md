@@ -10,7 +10,7 @@ This module contains the methods you will use to perform sign in requests, and t
 ```js
 import React from 'react';
 import { View, Button } from 'react-native';
-import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+import appleAuth, { AppleButton, AppleAuthCredentialState } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress(){
   //sign in request
@@ -18,6 +18,13 @@ async function onAppleButtonPress(){
       requestedOperation: AppleAuthRequestOperation.LOGIN,
       requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   });
+
+  //authorization state request
+  const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
+
+  if(credentialState === AppleAuthCredentialState.AUTHORIZED){
+    //user is authorized
+  }
 }
 
 async onLogoutPress(){
