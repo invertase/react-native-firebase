@@ -40,9 +40,138 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 yarn add @invertase/react-native-apple-authentication
 ```
 
-This module supports React Native auto-linking.
+You will not have to manually link this module as it supports React Native auto-linking.
 
 ## Usage
+
+Below are simple steps to help you get up and running. Please skip and head to the full code examples noted below if you prefer to see a more complete implementation:
+
+- [React Hooks example](example/app.js)
+- [React Class example](example/classVersion.js)
+
+1. Initial set-up. Import the `appleAuth` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.module.md)) module and the `AppleButton` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)) exported member element from the `@invertase/react-native-apple-authentication` library. Setup an event handler (`onPress`) to kick start the authentication request.
+
+```js
+//App.js
+
+import React from 'react';
+import { View } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+
+
+async function onAppleButtonPress(){
+
+}
+
+function App(){
+  return(
+    <View>
+      <AppleButton
+        buttonStyle={AppleButton.Style.WHITE}
+        buttonType={AppleButton.Type.SIGN_IN}
+        onPress={() => onAppleButtonPress()}
+      />
+    </View>
+  );
+}
+```
+
+2. Implement the login process. Import exported members `AppleAuthRequestOperation` ([API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)), `AppleAuthRequestScope` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md) & `AppleAuthCredentialState` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md).
+
+```js
+//App.js
+
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+  } from '@invertase/react-native-apple-authentication';
+
+async function onAppleButtonPress(){
+  //performs login request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    });
+
+  //get current authentication state for user
+  const credentialState = await appleAuth
+  .getCredentialStateForUser(appleAuthRequestResponse.user);
+
+  //use credentialState response to ensure the user is authenticated
+   if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+      //user is authenticated
+    }
+}
+```
+
+3. Set up event listener for when user's credentials have been revoked.
+
+```js
+
+//App.js
+
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+
+function App(){
+
+   useEffect(() => {
+     //onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
+    return appleAuth.onCredentialRevoked(async () => {
+      console.warn('If this function executes, User Credentials have been Revoked');
+    });
+  }, []);//passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
+
+  return(
+    <View>
+      <AppleButton
+        onPress={() => onAppleButtonPress()}
+      />
+    </View>
+  );
+}
+```
+
+4. Logout user.
+
+```js
+//App.js
+
+import React, { useEffect } from 'react';
+import { View, Button } from 'react-native';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestOperation,
+  AppleAuthCredentialState,
+  } from '@invertase/react-native-apple-authentication';
+
+async function onLogout(){
+  //performs logout request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGOUT,
+    });
+
+  //get current authentication state for user
+  const credentialState = await appleAuth
+  .getCredentialStateForUser(appleAuthRequestResponse.user);
+
+  //use credentialState response to ensure the user credential's have been revoked
+   if (credentialState === AppleAuthCredentialState.REVOKED) {
+      //user is unauthenticated
+    }
+}
+
+function App(){
+  return(
+    <View>
+      <Button onPress={() => onLogout()}>log out</Button>
+    </View>
+  );
+}
+```
 
 #### Examples
 
@@ -53,15 +182,15 @@ This module supports React Native auto-linking.
 
 If you're using `React Native Firebase` and want to sign-in your users into Firebase via Apple Authentication; see our [Firebase guide](docs/FIREBASE.md).
 
-## Reference Documentation
+## API Reference Documentation
 
 ### Interfaces
 
+- [appleAuth module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
 - [AppleAuthRequestOptions](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestoptions.md)
 - [AppleAuthRequestResponse](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponse.md)
 - [AppleAuthRequestResponseFullName](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponsefullname.md)
 - [AppleButtonProps](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)
-- [Module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
 
 ### Enumerations
 

@@ -18,7 +18,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AppRegistry, StyleSheet, View, Text } from 'react-native';
-import auth, {
+import appleAuth, {
   AppleButton,
   AppleAuthError,
   AppleAuthRequestScope,
@@ -39,7 +39,7 @@ async function fetchAndUpdateCredentialState(updateCredentialStateForUser) {
   if (user === null) {
     updateCredentialStateForUser('N/A');
   } else {
-    const credentialState = await auth.getCredentialStateForUser(user);
+    const credentialState = await appleAuth.getCredentialStateForUser(user);
     if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
       updateCredentialStateForUser('AUTHORIZED');
     } else {
@@ -56,7 +56,7 @@ async function onAppleButtonPress(updateCredentialStateForUser) {
 
   // start a login request
   try {
-    const appleAuthRequestResponse = await auth.performRequest({
+    const appleAuthRequestResponse = await appleAuth.performRequest({
       requestedOperation: AppleAuthRequestOperation.LOGIN,
       requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
     });
@@ -99,7 +99,7 @@ async function onAppleButtonPress(updateCredentialStateForUser) {
 }
 
 function RootComponent() {
-  if (!auth.isSupported) {
+  if (!appleAuth.isSupported) {
     return (
       <View style={[styles.container, styles.horizontal]}>
         <Text>Apple Authentication is not supported on this device.</Text>
@@ -116,7 +116,7 @@ function RootComponent() {
   }, []);
 
   useEffect(() => {
-    return auth.onCredentialRevoked(async () => {
+    return appleAuth.onCredentialRevoked(async () => {
       console.warn('Credential Revoked');
       fetchAndUpdateCredentialState(updateCredentialStateForUser).catch(error =>
         updateCredentialStateForUser(`Error: ${error.code}`),
