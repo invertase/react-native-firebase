@@ -5,6 +5,40 @@ Possible values for the real user indicator.
 
 **`url`** https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus
 
+## What is it?
+
+This is an exported module, `AppleAuthRealUserStatus` from the `react-native-apple-authentication` library. This is used to
+check the likelihood that a `appleAuth.performRequest(requestObject)` was made by the actual user.
+
+```js
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthRealUserStatus,
+  } from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  };
+  const { realUserStatus } = await appleAuth.performRequest(requestOptions);
+
+  if(realUserStatus === AppleAuthRealUserStatus.LIKELY_REAL) {
+      console.log("I'm probably a real person!");
+  }
+  if(realUserStatus === AppleAuthRealUserStatus.UNKNOWN) {
+
+  }
+  if(realUserStatus === AppleAuthRealUserStatus.UNSUPPORTED) {
+      
+  }
+
+  }
+}
+```
+
 ## Index
 
 ### Enumeration members
