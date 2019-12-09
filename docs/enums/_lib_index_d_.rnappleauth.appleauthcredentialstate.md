@@ -3,8 +3,6 @@
 
 The current Apple Authorization state.
 
-Apple Authentication Request options to be used with `appleAuth.performRequest(requestOptions)`.
-
 ## What is it?
 
 This is an exported module, `AppleAuthCredentialState` from the `react-native-apple-authentication` library. This is used to
@@ -36,7 +34,7 @@ function onPressAppleButton(){
   }
 
   if(credentialState === AppleAuthCredentialState.AUTHTRANSFERREDORIZED){
-    
+
   }
 }
 ```
