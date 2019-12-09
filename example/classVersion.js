@@ -18,7 +18,7 @@
 
 import React from 'react';
 import { AppRegistry, StyleSheet, View, Text } from 'react-native';
-import auth, {
+import appleAuth, {
   AppleButton,
   AppleAuthError,
   AppleAuthRequestScope,
@@ -42,7 +42,7 @@ class Tester extends React.Component {
      * subscribe to credential updates.This returns a function which can be used to remove the event listener
      * when the component unmounts.
      */
-    this.authCredentialListener = auth.onCredentialRevoked(async () => {
+    this.authCredentialListener = appleAuth.onCredentialRevoked(async () => {
       console.warn('Credential Revoked');
       this.fetchAndUpdateCredentialState().catch(error =>
         this.setState({ credentialStateForUser: `Error: ${error.code}` }),
@@ -66,7 +66,7 @@ class Tester extends React.Component {
 
     // start a login request
     try {
-      const appleAuthRequestResponse = await auth.performRequest({
+      const appleAuthRequestResponse = await appleAuth.performRequest({
         requestedOperation: AppleAuthRequestOperation.LOGIN,
         requestedScopes: [
           AppleAuthRequestScope.EMAIL,
@@ -117,7 +117,7 @@ class Tester extends React.Component {
     if (this.user === null) {
       this.setState({ credentialStateForUser: 'N/A' });
     } else {
-      const credentialState = await auth.getCredentialStateForUser(this.user);
+      const credentialState = await appleAuth.getCredentialStateForUser(this.user);
       if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
         this.setState({ credentialStateForUser: 'AUTHORIZED' });
       } else {

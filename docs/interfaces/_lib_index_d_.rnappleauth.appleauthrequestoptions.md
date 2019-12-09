@@ -1,11 +1,23 @@
 
 # Interface: AppleAuthRequestOptions
 
-Apple Authentication Request options to be used with `performRequest(requestOptions)`.
+Apple Authentication Request options to be used with `appleAuth.performRequest(requestOptions)`.
 
-## Hierarchy
+## What is it?
 
-* **AppleAuthRequestOptions**
+The request options passed to apple as the credential provider.
+
+```js
+import appleAuth from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+    // your implementation
+  };
+  appleAuth.performRequest(requestOptions);
+}
+```
 
 ## Index
 

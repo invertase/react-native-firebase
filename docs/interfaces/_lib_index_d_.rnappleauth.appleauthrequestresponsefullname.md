@@ -5,10 +5,6 @@ An optional full name shared by the user.
 
 These fields are populated with values that the user authorized.
 
-## Hierarchy
-
-* **AppleAuthRequestResponseFullName**
-
 ## Index
 
 ### Properties

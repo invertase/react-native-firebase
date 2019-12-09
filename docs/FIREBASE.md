@@ -22,7 +22,7 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 import React from 'react';
 import { View } from 'react-native';
 import { firebase } from '@react-native-firebase/auth';
-import apple, { AppleButton } from '@invertase/react-native-apple-authentication';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
 
 /**
  * Note the sign in request can error, e.g. if the user cancels the sign-in.
@@ -30,7 +30,7 @@ import apple, { AppleButton } from '@invertase/react-native-apple-authentication
  */
 async function onAppleButtonPress() {
   // 1). start a apple sign-in request
-  const appleAuthRequestResponse = await apple.performRequest({
+  const appleAuthRequestResponse = await appleAuth.performRequest({
     requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   });
 
@@ -59,7 +59,7 @@ function SocialAuthButtons() {
   return (
     <View>
       {/* Render your other social provider buttons here */}
-      {apple.isSupported && (
+      {appleAuth.isSupported && (
         <AppleButton
           cornerRadius={5}
           style={{ width: 200, height: 60 }}

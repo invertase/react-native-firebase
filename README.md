@@ -40,9 +40,36 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 yarn add @invertase/react-native-apple-authentication
 ```
 
-This module supports React Native auto-linking.
+You will not have to manually link this module as it supports React Native auto-linking.
 
 ## Usage
+
+If you do not want to look at a step by step guide to using this library, please skip this step and head to the full code examples:
+
+- [React Hooks example](example/app.js)
+- [React Class example](example/classVersion.js)
+
+1. Import the `appleAuth` module and the `AppleButton` element from the library.
+
+```js
+//App.js
+
+import React from 'react';
+import { View } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+
+
+
+function App(){
+  return(
+    <View>
+      <AppleButton
+
+      />
+    </View>
+  )
+}
+```
 
 #### Examples
 
@@ -53,15 +80,15 @@ This module supports React Native auto-linking.
 
 If you're using `React Native Firebase` and want to sign-in your users into Firebase via Apple Authentication; see our [Firebase guide](docs/FIREBASE.md).
 
-## Reference Documentation
+## API Reference Documentation
 
 ### Interfaces
 
+- [appleAuth module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
 - [AppleAuthRequestOptions](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestoptions.md)
 - [AppleAuthRequestResponse](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponse.md)
 - [AppleAuthRequestResponseFullName](docs/interfaces/_lib_index_d_.rnappleauth.appleauthrequestresponsefullname.md)
 - [AppleButtonProps](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)
-- [Module](docs/interfaces/_lib_index_d_.rnappleauth.module.md)
 
 ### Enumerations
 

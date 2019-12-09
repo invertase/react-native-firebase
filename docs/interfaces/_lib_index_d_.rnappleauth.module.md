@@ -1,10 +1,6 @@
 
 # Interface: Module
 
-## Hierarchy
-
-* **Module**
-
 ## Index
 
 ### Properties

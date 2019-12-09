@@ -1,11 +1,20 @@
 
 # Interface: AppleAuthRequestResponse
 
-A response from `performRequest(requestOptions)`.
+A response from `appleAuth.performRequest()`.
 
-## Hierarchy
+## What is it?
 
-* **AppleAuthRequestResponse**
+The response object (`responseObject`) passed back from apple as the credential provider.
+
+```js
+import appleAuth from '@invertase/react-native-apple-authentication';
+
+async function onPressAppleButton(){
+
+  const responseObject = await appleAuth.performRequest();
+}
+```
 
 ## Index
 

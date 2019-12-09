@@ -1,11 +1,30 @@
 
-# Interface: AppleButtonProps
+# Interface: AppleButton
 
-The available props for the AppleButton view component.
+The available props for the `AppleButton` react component.
 
-## Hierarchy
+## What is it?
 
-* **AppleButtonProps**
+```js
+import React from 'react';
+import { View } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+
+function App(){
+  return(
+    <View>
+      <AppleButton
+        style={styles.appleButton}
+        cornerRadius={5}
+        buttonStyle={AppleButton.Style.BLACK}
+        buttonType={AppleButton.Type.SIGN_IN}
+        onPress={() => onAppleButtonPress()}
+      />
+    </View>
+  )
+}
+```
+
 
 ## Index
 
