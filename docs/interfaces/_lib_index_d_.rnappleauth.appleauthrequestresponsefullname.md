@@ -5,6 +5,30 @@ An optional full name shared by the user.
 
 These fields are populated with values that the user authorized.
 
+## What is it?
+
+The response object (`responseObject.fullname`) passed back from apple as the credential provider.
+
+```js
+import appleAuth from '@invertase/react-native-apple-authentication';
+
+async function onPressAppleButton(){
+
+/**
+ * responseObject may contain the following depending on the user's input when authenticating:
+ * responseObject.fullname.familyName
+ * responseObject.fullname.givenName
+ * responseObject.fullname.middleName
+ * responseObject.fullname.namePrefix
+ * responseObject.fullname.nameSuffix
+ * responseObject.fullname.nickname
+ */
+
+  const responseObject = await appleAuth.performRequest();
+
+}
+```
+
 ## Index
 
 ### Properties
