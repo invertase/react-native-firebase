@@ -3,6 +3,44 @@
 
 The current Apple Authorization state.
 
+Apple Authentication Request options to be used with `appleAuth.performRequest(requestOptions)`.
+
+## What is it?
+
+This is an exported module, `AppleAuthCredentialState` from the `react-native-apple-authentication` library. This is used to
+check the user's current authorization state after a `appleAuth.getCredentialStateForUser(user)` has been made.
+
+```js
+import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  };
+  const { user } = await appleAuth.performRequest(requestOptions);
+
+  const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
+
+  if(credentialState === AppleAuthCredentialState.AUTHORIZED){
+    //user is authorized
+  }
+
+  if(credentialState === AppleAuthCredentialState.NOT_FOUND){
+
+  }
+
+  if(credentialState === AppleAuthCredentialState.REVOKED){
+
+  }
+
+  if(credentialState === AppleAuthCredentialState.AUTHTRANSFERREDORIZED){
+    
+  }
+}
+```
+
 ## Index
 
 ### Enumeration members
