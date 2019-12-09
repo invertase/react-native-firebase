@@ -48,6 +48,8 @@ Below are simple steps to help you get up and running. Please skip and head to t
 
 - [React Hooks example](example/app.js)
 - [React Class example](example/classVersion.js)
+- If you're authenticating users via `React Native Firebase`; see our [Firebase guide](docs/FIREBASE.md)
+
 
 1. Initial set-up. Import the `appleAuth` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.module.md)) module and the `AppleButton` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)) exported member element from the `@invertase/react-native-apple-authentication` library. Setup an event handler (`onPress`) to kick start the authentication request.
 
@@ -163,15 +165,6 @@ function App() {
   );
 }
 ```
-
-#### Examples
-
-- [React Hooks example](example/app.js)
-- [React Class example](example/classVersion.js)
-
-#### Firebase
-
-If you're using `React Native Firebase` and want to sign-in your users into Firebase via Apple Authentication; see our [Firebase guide](docs/FIREBASE.md).
 
 ## API Reference Documentation
 
