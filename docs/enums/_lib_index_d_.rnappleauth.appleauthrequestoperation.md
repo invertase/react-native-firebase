@@ -1,9 +1,45 @@
 
 # Enumeration: AppleAuthRequestOperation
 
-Operation to be executed by the request.
+A property on the `requestOptions` to indicate the type of request operation.
 
-Request option used as part of `AppleAuthRequestOptions` `requestedOperation`
+## What is it?
+
+This is an exported module, `AppleAuthRequestOperation` from the `react-native-apple-authentication` library. This is a property
+on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
+
+```js
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthRealUserStatus,
+  } from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  };
+  const responseObject = await appleAuth.performRequest(requestOptions);
+
+  }
+
+function logout(){
+   const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGOUT,
+  };
+  const responseObject = await appleAuth.performRequest(requestOptions);
+}
+
+function refreshUserCredentials(){
+   const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.REFRESH,
+  };
+  const responseObject = await appleAuth.performRequest(requestOptions);
+}
+}
+```
 
 ## Index
 
