@@ -14,25 +14,25 @@ import appleAuth, {
   AppleAuthRequestOperation,
   AppleAuthRequestScope,
   AppleAuthRealUserStatus,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
+
   const { realUserStatus } = await appleAuth.performRequest(requestOptions);
 
-  if(realUserStatus === AppleAuthRealUserStatus.LIKELY_REAL) {
-      console.log("I'm probably a real person!");
+  if (realUserStatus === AppleAuthRealUserStatus.LIKELY_REAL) {
+    console.log("I'm probably a real person!");
   }
-  if(realUserStatus === AppleAuthRealUserStatus.UNKNOWN) {
+
+  if (realUserStatus === AppleAuthRealUserStatus.UNKNOWN) {
 
   }
-  if(realUserStatus === AppleAuthRealUserStatus.UNSUPPORTED) {
 
-  }
+  if (realUserStatus === AppleAuthRealUserStatus.UNSUPPORTED) {
 
   }
 }

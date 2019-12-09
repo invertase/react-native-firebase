@@ -11,31 +11,28 @@ import appleAuth, {
   AppleAuthRequestOperation,
   AppleAuthRequestScope,
   AppleAuthRealUserStatus,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
-  };
-  const responseObject = await appleAuth.performRequest(requestOptions);
-
-  }
-
-function logout(){
-   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGOUT,
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
   const responseObject = await appleAuth.performRequest(requestOptions);
 }
 
-function refreshUserCredentials(){
-   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.REFRESH,
+async function logout() {
+  const requestOptions = {
+    requestedOperation: AppleAuthRequestOperation.LOGOUT,
   };
   const responseObject = await appleAuth.performRequest(requestOptions);
 }
+
+async function refreshUserCredentials() {
+  const requestOptions = {
+    requestedOperation: AppleAuthRequestOperation.REFRESH,
+  };
+  const responseObject = await appleAuth.performRequest(requestOptions);
 }
 ```
 

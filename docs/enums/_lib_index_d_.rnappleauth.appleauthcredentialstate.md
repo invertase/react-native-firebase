@@ -12,32 +12,31 @@ import appleAuth, {
   AppleAuthRequestOperation,
   AppleAuthRequestScope,
   AppleAuthCredentialState,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
+
   const { user } = await appleAuth.performRequest(requestOptions);
 
-  const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
+  const credentialState = await appleAuth.getCredentialStateForUser(user);
 
-  if(credentialState === AppleAuthCredentialState.AUTHORIZED){
+  if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
     //user is authorized
   }
 
-  if(credentialState === AppleAuthCredentialState.NOT_FOUND){
+  if (credentialState === AppleAuthCredentialState.NOT_FOUND) {
 
   }
 
-  if(credentialState === AppleAuthCredentialState.REVOKED){
+  if (credentialState === AppleAuthCredentialState.REVOKED) {
 
   }
 
-  if(credentialState === AppleAuthCredentialState.AUTHTRANSFERREDORIZED){
-
+  if (credentialState === AppleAuthCredentialState.TRANSFERRED) {
   }
 }
 ```

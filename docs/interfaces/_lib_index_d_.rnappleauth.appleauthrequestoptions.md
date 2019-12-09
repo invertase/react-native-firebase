@@ -12,12 +12,12 @@ import appleAuth, {
   AppleAuthRequestScope,
 } from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton() {
+async function onPressAppleButton() {
   const requestOptions = {
     requestedOperation: AppleAuthRequestOperation.LOGIN,
     requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
-  appleAuth.performRequest(requestOptions);
+  const responseObject = await appleAuth.performRequest(requestOptions);
 }
 ```
 
@@ -52,7 +52,7 @@ the request execution.
 
 ### `Optional` requestedOperation
 
-• **requestedOperation**? : _[AppleAuthRequestOperation](../enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)_
+• **requestedOperation**? : _[AppleAuthRequestOperation](../enums/\_lib_index_d_.rnappleauth.appleauthrequestoperation.md)\_
 
 _Defined in [lib/index.d.ts:204](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L204)_
 
@@ -64,7 +64,7 @@ Operation which should be executed.
 
 ### `Optional` requestedScopes
 
-• **requestedScopes**? : _[AppleAuthRequestScope](../enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md)[]_
+• **requestedScopes**? : _[AppleAuthRequestScope](../enums/\_lib_index_d_.rnappleauth.appleauthrequestscope.md)[]\_
 
 _Defined in [lib/index.d.ts:197](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L197)_
 

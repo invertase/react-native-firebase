@@ -15,33 +15,31 @@ import appleAuth, {
   AppleAuthRequestScope,
   AppleAuthCredentialState,
   AppleAuthError,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
+
   const { user } = await appleAuth.performRequest(requestOptions);
 
   try {
-    const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
-  } catch(error){
+    const credentialState = await appleAuth.getCredentialStateForUser(user);
+    if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+      // authorized
+    }
+  } catch (error) {
     if (error.code === AppleAuthError.CANCELED) {
-
     }
     if (error.code === AppleAuthError.FAILED) {
-
     }
     if (error.code === AppleAuthError.INVALID_RESPONSE) {
-
     }
     if (error.code === AppleAuthError.NOT_HANDLED) {
-
     }
     if (error.code === AppleAuthError.UNKNOWN) {
-
     }
   }
 }

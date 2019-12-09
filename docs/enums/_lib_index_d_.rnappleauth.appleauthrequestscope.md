@@ -11,17 +11,15 @@ This is an exported module, `AppleAuthRequestScope` from the `react-native-apple
 import appleAuth, {
   AppleAuthRequestOperation,
   AppleAuthRequestScope,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-function onPressAppleButton(){
-
+async function onPressAppleButton() {
   const requestOptions = {
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   };
-  const responseObject = await appleAuth.performRequest(requestOptions);
 
-  }
+  const responseObject = await appleAuth.performRequest(requestOptions);
 }
 ```
 
