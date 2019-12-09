@@ -5,7 +5,7 @@ A response from `appleAuth.performRequest()`.
 
 ## What is it?
 
-The response object (`responseObject`) passed back from apple as the credential provider.
+The response object (`responseObject`) passed back from the credential provider (apple).
 
 ```js
 import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';

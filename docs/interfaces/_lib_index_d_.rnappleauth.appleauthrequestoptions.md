@@ -5,7 +5,7 @@ Apple Authentication Request options to be used with `appleAuth.performRequest(r
 
 ## What is it?
 
-The request options (`requestOptions`) passed to apple as the credential provider.
+The request options (`requestOptions`) passed to the credential provider (apple).
 
 ```js
 import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';
