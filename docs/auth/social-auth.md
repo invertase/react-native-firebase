@@ -13,9 +13,59 @@ Below are our recommended approaches for integrating with each social platform.
 
 ## Apple
 
-For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+The [@invertase/react-native-apple-authentication](https://github.com/invertase/react-native-apple-authentication) provides a library that helps manage Apple authentication easily.
 
-Currently this is iOS only.
+**Step 1**: Login with Apple.
+
+```js
+import React from 'react';
+import { View } from 'react-native';
+import { firebase } from '@react-native-firebase/auth';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestScope,
+  AppleAuthRequestOperation
+  } from '@invertase/react-native-apple-authentication';
+
+/**
+ * Note the sign in request can error, e.g. if the user cancels the sign-in.
+ * Use `AppleAuthError` to determine the type of error, e.g. `error.code === AppleAuthError.CANCELED`
+ */
+async function onAppleButtonPress() {
+  // 1). start a apple sign-in request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  });
+
+  // 2). if the request was successful, extract the token and nonce
+  const { identityToken, nonce } = appleAuthRequestResponse;
+}
+
+```
+
+**Step 2**: Create a Firebase credential with the `identityToken` & `nonce`.
+
+```js
+// can be null in some scenarios
+if (identityToken) {
+  // 3). create a Firebase `AppleAuthProvider` credential
+  const appleCredential = firebase.auth.AppleAuthProvider.credential(identityToken, nonce);
+}
+```
+
+**Step 3**: Sign in to Firebase with the created credential.
+
+```js
+// 4). use the created `AppleAuthProvider` credential to start a Firebase auth request,
+//     in this example `signInWithCredential` is used, but you could also call `linkWithCredential`
+//     to link the account to an existing user
+const userCredential = await firebase.auth().signInWithCredential(appleCredential);
+
+// user is now signed in, any Firebase `onAuthStateChanged` listeners you have will trigger
+console.warn(`Firebase authenticated via Apple, UID: ${userCredential.user.uid}`);
+```
+
 
 ## Facebook
 
