@@ -5,8 +5,7 @@ The Button style (mainly color) to render.
 
 ## What is it?
 
-It is a property on the exported module, `AppleButton` from the `react-native-apple-authentication` library. It is used indicate the
-type of styling you prefer for your button
+It is a property on the exported module, `AppleButton` from the `react-native-apple-authentication` library.
 
 ```js
 import { AppleButton } from '@invertase/react-native-apple-authentication';

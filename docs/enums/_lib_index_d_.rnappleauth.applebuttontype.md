@@ -1,7 +1,34 @@
 
 # Enumeration: AppleButtonType
 
-THe Apple Button type to render, this controls the button text.
+The Apple Button type to render, this controls the button text.
+
+## What is it?
+
+It is a property on the exported module, `AppleButton` from the `react-native-apple-authentication` library.
+
+```js
+import { AppleButton } from '@invertase/react-native-apple-authentication';
+
+function AppleButton(){
+  return (
+    <View>
+      <AppleButton
+        buttonType={AppleButton.Type.CONTINUE}
+      />
+      <AppleButton
+        buttonType={AppleButton.Type.DEFAULT}
+      />
+      <AppleButton
+        buttonType={AppleButton.Type.SIGN_IN}
+      />
+      <AppleButton
+        buttonType={AppleButton.Type.SIGN_UP}
+      />
+    </View>
+  )
+}
+```
 
 ## Index
 
