@@ -1,4 +1,3 @@
-
 # Enumeration: AppleAuthRequestOperation
 
 A property on the `requestOptions` to indicate the type of request operation.
@@ -44,47 +43,47 @@ function refreshUserCredentials(){
 
 ### Enumeration members
 
-* [IMPLICIT](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#implicit)
-* [LOGIN](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#login)
-* [LOGOUT](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#logout)
-* [REFRESH](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#refresh)
+- [IMPLICIT](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#implicit)
+- [LOGIN](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#login)
+- [LOGOUT](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#logout)
+- [REFRESH](_lib_index_d_.rnappleauth.appleauthrequestoperation.md#refresh)
 
 ## Enumeration members
 
-###  IMPLICIT
+### IMPLICIT
 
 • **IMPLICIT**:
 
-*Defined in [lib/index.d.ts:107](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L107)*
+_Defined in [lib/index.d.ts:107](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L107)_
 
 An operation that depends on the particular kind of credential provider.
 
-___
+---
 
-###  LOGIN
+### LOGIN
 
 • **LOGIN**:
 
-*Defined in [lib/index.d.ts:112](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L112)*
+_Defined in [lib/index.d.ts:112](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L112)_
 
 An operation used to authenticate a user.
 
-___
+---
 
-###  LOGOUT
+### LOGOUT
 
 • **LOGOUT**:
 
-*Defined in [lib/index.d.ts:122](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L122)*
+_Defined in [lib/index.d.ts:122](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L122)_
 
 An operation that ends an authenticated session.
 
-___
+---
 
-###  REFRESH
+### REFRESH
 
 • **REFRESH**:
 
-*Defined in [lib/index.d.ts:117](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L117)*
+_Defined in [lib/index.d.ts:117](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L117)_
 
 An operation that refreshes the logged-in user’s credentials.

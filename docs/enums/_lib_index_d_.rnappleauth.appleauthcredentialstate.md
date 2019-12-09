@@ -1,4 +1,3 @@
-
 # Enumeration: AppleAuthCredentialState
 
 The current Apple Authorization state.
@@ -47,48 +46,48 @@ function onPressAppleButton(){
 
 ### Enumeration members
 
-* [AUTHORIZED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#authorized)
-* [NOT_FOUND](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#not_found)
-* [REVOKED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#revoked)
-* [TRANSFERRED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#transferred)
+- [AUTHORIZED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#authorized)
+- [NOT_FOUND](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#not_found)
+- [REVOKED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#revoked)
+- [TRANSFERRED](_lib_index_d_.rnappleauth.appleauthcredentialstate.md#transferred)
 
 ## Enumeration members
 
-###  AUTHORIZED
+### AUTHORIZED
 
 • **AUTHORIZED**:
 
-*Defined in [lib/index.d.ts:83](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L83)*
+_Defined in [lib/index.d.ts:83](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L83)_
 
 The Opaque user ID is in good state.
 
-___
+---
 
-###  NOT_FOUND
+### NOT_FOUND
 
 • **NOT_FOUND**:
 
-*Defined in [lib/index.d.ts:88](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L88)*
+_Defined in [lib/index.d.ts:88](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L88)_
 
 The Opaque user ID was not found.
 
-___
+---
 
-###  REVOKED
+### REVOKED
 
 • **REVOKED**:
 
-*Defined in [lib/index.d.ts:78](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L78)*
+_Defined in [lib/index.d.ts:78](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L78)_
 
 The Opaque user ID was revoked by the user.
 
-___
+---
 
-###  TRANSFERRED
+### TRANSFERRED
 
 • **TRANSFERRED**:
 
-*Defined in [lib/index.d.ts:95](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L95)*
+_Defined in [lib/index.d.ts:95](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L95)_
 
 N/A
 

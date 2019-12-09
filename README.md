@@ -58,16 +58,12 @@ import React from 'react';
 import { View } from 'react-native';
 import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
 
-
-
-function App(){
-  return(
+function App() {
+  return (
     <View>
-      <AppleButton
-
-      />
+      <AppleButton />
     </View>
-  )
+  );
 }
 ```
 
