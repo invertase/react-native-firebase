@@ -5,6 +5,49 @@ Errors that can occur during authorization.
 
 **`url`** https://developer.apple.com/documentation/authenticationservices/asauthorizationerror/code
 
+## What is it?
+
+This is an exported module, `AppleAuthError` from the `react-native-apple-authentication` library. This is used to
+check the error code after a `appleAuth.getCredentialStateForUser(user)` request has been made.
+
+```js
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+  AppleAuthError,
+  } from '@invertase/react-native-apple-authentication';
+
+function onPressAppleButton(){
+
+  const requestOptions = {
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  };
+  const { user } = await appleAuth.performRequest(requestOptions);
+
+  try {
+    const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
+  } catch(error){
+    if (error.code === AppleAuthError.CANCELED) {
+
+    }
+    if (error.code === AppleAuthError.FAILED) {
+
+    }
+    if (error.code === AppleAuthError.INVALID_RESPONSE) {
+
+    }
+    if (error.code === AppleAuthError.NOT_HANDLED) {
+
+    }
+    if (error.code === AppleAuthError.UNKNOWN) {
+
+    }
+  }
+}
+```
+
 ## Index
 
 ### Enumeration members

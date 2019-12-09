@@ -6,10 +6,14 @@ The current Apple Authorization state.
 ## What is it?
 
 This is an exported module, `AppleAuthCredentialState` from the `react-native-apple-authentication` library. This is used to
-check the user's current authorization state after a `appleAuth.getCredentialStateForUser(user)` has been made.
+check the user's current authorization state after a `appleAuth.getCredentialStateForUser(user)` request has been made.
 
 ```js
-import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+  } from '@invertase/react-native-apple-authentication';
 
 function onPressAppleButton(){
 
