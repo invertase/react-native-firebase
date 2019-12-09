@@ -10,7 +10,7 @@ These fields are populated with values that the user authorized.
 The response object (`responseObject.fullname`) passed back from apple as the credential provider.
 
 ```js
-import appleAuth from '@invertase/react-native-apple-authentication';
+import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';
 
 async function onPressAppleButton(){
 
@@ -24,7 +24,10 @@ async function onPressAppleButton(){
  * responseObject.fullname.nickname
  */
 
-  const responseObject = await appleAuth.performRequest();
+  const responseObject = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  });
 
 }
 ```

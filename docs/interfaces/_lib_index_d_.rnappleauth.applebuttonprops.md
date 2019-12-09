@@ -8,7 +8,7 @@ The available props for the `AppleButton` react component.
 ```js
 import React from 'react';
 import { View } from 'react-native';
-import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+import { AppleButton } from '@invertase/react-native-apple-authentication';
 
 function App(){
   return(
@@ -23,6 +23,14 @@ function App(){
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  appleButton: {
+    width: 200,
+    height: 60,
+    margin: 10,
+  },
+});
 ```
 
 

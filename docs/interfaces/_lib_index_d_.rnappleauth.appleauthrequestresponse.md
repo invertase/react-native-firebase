@@ -8,11 +8,16 @@ A response from `appleAuth.performRequest()`.
 The response object (`responseObject`) passed back from apple as the credential provider.
 
 ```js
-import appleAuth from '@invertase/react-native-apple-authentication';
+import appleAuth, { AppleAuthRequestOperation, AppleAuthRequestScope } from '@invertase/react-native-apple-authentication';
 
 async function onPressAppleButton(){
-
-  const responseObject = await appleAuth.performRequest();
+  /**
+   * responseObject contains the below noted properties
+  */
+  const responseObject = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  });
 }
 ```
 

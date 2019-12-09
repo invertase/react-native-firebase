@@ -1,5 +1,46 @@
 
-# Interface: Module
+# Interface: appleAuth Module
+
+This is the default module provided by `react-native-apple-authentication`.
+
+## What is it?
+
+This module contains the methods you will use to perform sign in requests, and to revoke authorization access.
+
+```js
+import React from 'react';
+import { View, Button } from 'react-native';
+import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+
+async function onAppleButtonPress(){
+  //sign in request
+  const responseObject = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGIN,
+      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  });
+}
+
+async onLogoutPress(){
+  //logout request
+  const responseObject = await appleAuth.performRequest({
+      requestedOperation: AppleAuthRequestOperation.LOGOUT,
+  });
+}
+
+function App(){
+  return(
+    <View>
+      <AppleButton
+        cornerRadius={5}
+        buttonStyle={AppleButton.Style.BLACK}
+        buttonType={AppleButton.Type.SIGN_IN}
+        onPress={() => onAppleButtonPress()}
+      />
+      <Button onPress={() => onLogoutPress()}>Log me out</Button>
+    </View>
+  )
+}
+```
 
 ## Index
 
