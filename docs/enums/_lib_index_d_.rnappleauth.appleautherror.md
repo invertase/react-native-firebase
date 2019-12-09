@@ -6,7 +6,7 @@ Errors that can occur during authorization.
 
 ## What is it?
 
-This is an exported module, `AppleAuthError` from the `react-native-apple-authentication` library. This is used to
+This is an exported member, `AppleAuthError` from the `react-native-apple-authentication` library. This is used to
 check the error code after a `appleAuth.getCredentialStateForUser(user)` request has been made.
 
 ```js

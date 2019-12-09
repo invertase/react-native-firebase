@@ -5,7 +5,7 @@ authorized for will be returned.
 
 ## What is it?
 
-This is an exported module, `AppleAuthRequestScope` from the `react-native-apple-authentication` library. It is used to populate the `requestedScopes` property on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
+This is an exported member, `AppleAuthRequestScope` from the `react-native-apple-authentication` library. It is used to populate the `requestedScopes` property on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
 
 ```js
 import appleAuth, {

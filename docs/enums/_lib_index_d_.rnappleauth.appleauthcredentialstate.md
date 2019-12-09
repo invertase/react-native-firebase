@@ -4,7 +4,7 @@ The current Apple Authorization state.
 
 ## What is it?
 
-This is an exported module, `AppleAuthCredentialState` from the `react-native-apple-authentication` library. This is used to
+This is an exported member, `AppleAuthCredentialState` from the `react-native-apple-authentication` library. This is used to
 check the user's current authorization state after a `appleAuth.getCredentialStateForUser(user)` request has been made.
 
 ```js

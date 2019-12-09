@@ -6,7 +6,7 @@ Possible values for the real user indicator.
 
 ## What is it?
 
-This is an exported module, `AppleAuthRealUserStatus` from the `react-native-apple-authentication` library. This is used to
+This is an exported member, `AppleAuthRealUserStatus` from the `react-native-apple-authentication` library. This is used to
 check the likelihood that a `appleAuth.performRequest(requestObject)` was made by the actual user.
 
 ```js

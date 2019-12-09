@@ -4,7 +4,7 @@ A property on the `requestOptions` to indicate the type of request operation.
 
 ## What is it?
 
-This is an exported module, `AppleAuthRequestOperation` from the `react-native-apple-authentication` library. It is used to populate the `requestedOperation` property on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
+This is an exported member, `AppleAuthRequestOperation` from the `react-native-apple-authentication` library. It is used to populate the `requestedOperation` property on the `requestOptions` passed to this method `appleAuth.performRequest(requestOptions)`.
 
 ```js
 import appleAuth, {
