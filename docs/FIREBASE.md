@@ -25,8 +25,8 @@ import { firebase } from '@react-native-firebase/auth';
 import appleAuth, {
   AppleButton,
   AppleAuthRequestScope,
-  AppleAuthRequestOperation
-  } from '@invertase/react-native-apple-authentication';
+  AppleAuthRequestOperation,
+} from '@invertase/react-native-apple-authentication';
 
 /**
  * Note the sign in request can error, e.g. if the user cancels the sign-in.

@@ -52,19 +52,18 @@ Below are simple steps to help you get up and running. Please skip and head to t
 1. Initial set-up. Import the `appleAuth` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.module.md)) module and the `AppleButton` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)) exported member element from the `@invertase/react-native-apple-authentication` library. Setup an event handler (`onPress`) to kick start the authentication request.
 
 ```js
-//App.js
+// App.js
 
 import React from 'react';
 import { View } from 'react-native';
-import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+import { AppleButton } from '@invertase/react-native-apple-authentication';
 
-
-async function onAppleButtonPress(){
-
+async function onAppleButtonPress() {
+  
 }
 
-function App(){
-  return(
+function App() {
+  return (
     <View>
       <AppleButton
         buttonStyle={AppleButton.Style.WHITE}
@@ -79,57 +78,52 @@ function App(){
 2. Implement the login process. Import exported members `AppleAuthRequestOperation` ([API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)), `AppleAuthRequestScope` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md) & `AppleAuthCredentialState` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md).
 
 ```js
-//App.js
+// App.js
 
 import appleAuth, {
   AppleButton,
   AppleAuthRequestOperation,
   AppleAuthRequestScope,
   AppleAuthCredentialState,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-async function onAppleButtonPress(){
-  //performs login request
+async function onAppleButtonPress() {
+  // performs login request
   const appleAuthRequestResponse = await appleAuth.performRequest({
-      requestedOperation: AppleAuthRequestOperation.LOGIN,
-      requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
-    });
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
+    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+  });
 
-  //get current authentication state for user
-  const credentialState = await appleAuth
-  .getCredentialStateForUser(appleAuthRequestResponse.user);
+  // get current authentication state for user
+  const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
 
-  //use credentialState response to ensure the user is authenticated
-   if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
-      //user is authenticated
-    }
+  // use credentialState response to ensure the user is authenticated
+  if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+    // user is authenticated
+  }
 }
 ```
 
 3. Set up event listener for when user's credentials have been revoked.
 
 ```js
-
-//App.js
+// App.js
 
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
 
-function App(){
-
-   useEffect(() => {
-     //onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
+function App() {
+  useEffect(() => {
+    // onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
     return appleAuth.onCredentialRevoked(async () => {
       console.warn('If this function executes, User Credentials have been Revoked');
     });
-  }, []);//passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
+  }, []); // passing in an empty array as the second argument ensures this is only ran once when component mounts initially.
 
-  return(
+  return (
     <View>
-      <AppleButton
-        onPress={() => onAppleButtonPress()}
-      />
+      <AppleButton onPress={() => onAppleButtonPress()} />
     </View>
   );
 }
@@ -138,34 +132,31 @@ function App(){
 4. Logout user.
 
 ```js
-//App.js
+// App.js
 
-import React, { useEffect } from 'react';
 import { View, Button } from 'react-native';
 import appleAuth, {
-  AppleButton,
   AppleAuthRequestOperation,
   AppleAuthCredentialState,
-  } from '@invertase/react-native-apple-authentication';
+} from '@invertase/react-native-apple-authentication';
 
-async function onLogout(){
-  //performs logout request
+async function onLogout() {
+  // performs logout request
   const appleAuthRequestResponse = await appleAuth.performRequest({
-      requestedOperation: AppleAuthRequestOperation.LOGOUT,
-    });
+    requestedOperation: AppleAuthRequestOperation.LOGOUT,
+  });
 
-  //get current authentication state for user
-  const credentialState = await appleAuth
-  .getCredentialStateForUser(appleAuthRequestResponse.user);
+  // get current authentication state for user
+  const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
 
-  //use credentialState response to ensure the user credential's have been revoked
-   if (credentialState === AppleAuthCredentialState.REVOKED) {
-      //user is unauthenticated
-    }
+  // use credentialState response to ensure the user credential's have been revoked
+  if (credentialState === AppleAuthCredentialState.REVOKED) {
+    // user is unauthenticated
+  }
 }
 
-function App(){
-  return(
+function App() {
+  return (
     <View>
       <Button onPress={() => onLogout()}>log out</Button>
     </View>
