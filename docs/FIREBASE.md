@@ -22,7 +22,11 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 import React from 'react';
 import { View } from 'react-native';
 import { firebase } from '@react-native-firebase/auth';
-import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentication';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestScope,
+  AppleAuthRequestOperation
+  } from '@invertase/react-native-apple-authentication';
 
 /**
  * Note the sign in request can error, e.g. if the user cancels the sign-in.
@@ -31,6 +35,7 @@ import appleAuth, { AppleButton } from '@invertase/react-native-apple-authentica
 async function onAppleButtonPress() {
   // 1). start a apple sign-in request
   const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: AppleAuthRequestOperation.LOGIN,
     requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   });
 
