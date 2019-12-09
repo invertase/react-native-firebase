@@ -51,7 +51,9 @@ Below are simple steps to help you get up and running. Please skip and head to t
 - If you're authenticating users via `React Native Firebase`; see our [Firebase guide](docs/FIREBASE.md)
 
 
-1. Initial set-up. Import the `appleAuth` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.module.md)) module and the `AppleButton` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)) exported member element from the `@invertase/react-native-apple-authentication` library. Setup an event handler (`onPress`) to kick start the authentication request.
+#### 1. Initial set-up 
+
+Import the `appleAuth` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.module.md)) module and the `AppleButton` ([API documentation](docs/interfaces/_lib_index_d_.rnappleauth.applebuttonprops.md)) exported member element from the `@invertase/react-native-apple-authentication` library. Setup an event handler (`onPress`) to kick start the authentication request.
 
 ```js
 // App.js
@@ -77,7 +79,9 @@ function App() {
 }
 ```
 
-2. Implement the login process. Import exported members `AppleAuthRequestOperation` ([API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)), `AppleAuthRequestScope` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md) & `AppleAuthCredentialState` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md).
+#### 2. Implement the login process
+
+Import exported members `AppleAuthRequestOperation` ([API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestoperation.md)), `AppleAuthRequestScope` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthrequestscope.md) & `AppleAuthCredentialState` [API documentation](docs/enums/_lib_index_d_.rnappleauth.appleauthcredentialstate.md).
 
 ```js
 // App.js
@@ -106,7 +110,9 @@ async function onAppleButtonPress() {
 }
 ```
 
-3. Set up event listener for when user's credentials have been revoked.
+#### 3. Event Listener
+
+Set up event listener for when user's credentials have been revoked.
 
 ```js
 // App.js
@@ -131,7 +137,7 @@ function App() {
 }
 ```
 
-4. Logout user.
+#### 4. Implement the logout process
 
 ```js
 // App.js
