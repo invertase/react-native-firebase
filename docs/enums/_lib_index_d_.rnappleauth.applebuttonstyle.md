@@ -10,7 +10,7 @@ It is a property on the exported module, `AppleButton` from the `react-native-ap
 ```js
 import { AppleButton } from '@invertase/react-native-apple-authentication';
 
-function AppleButton(){
+function AppleButtonComponent(){
   return (
     <View>
       <AppleButton
