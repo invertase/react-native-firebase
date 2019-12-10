@@ -15,6 +15,12 @@
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=social&label=Follow" alt="Follow on Twitter"></a>
 </p>
 
+## Version 6 of React Native Firebase
+
+**React Native Firebase v6 is out!** It lives under a different package namespace. Want upgrade information? Head to <https://invertase.io/oss/react-native-firebase/>
+
+All the information in this README is for **Version 5** of React Native Firebase, which is on life-support only. Please consider upgrading. Thanks!
+
 ## Introduction
 
 **React Native Firebase** is a _light-weight_ javascript layer connecting you to the native Firebase SDKs for both iOS and Android which aims to mirror the official Firebase Web SDK as closely as possible.
@@ -59,11 +65,14 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 
 > The table below shows the supported versions of React Native and the Firebase SDKs for different versions of `react-native-firebase`.
 
-|                           |  3.3.x   |      5.2.x       |       5.3.x       |
-| ------------------------- | :------: | :--------------: | :---------------: |
-| React Native              | 0.50-52  |     0.52-58      |      ^0.59.3      |
-| Play Services Android SDK | 11.8.0 + |     ^16.1.0      |      ^16.1.0      |
-| Firebase iOS SDK          | 4.7.0 +  | ^5.10.x -^5.18.x | ^5.19.x - ^5.20.x |
+|                           |  3.3.x   |      5.2.x       |       5.4.x       |                                  5.5.x                                   |
+| ------------------------- | :------: | :--------------: | :---------------: | :----------------------------------------------------------------------: |
+| React Native              | 0.50-52  |     0.52-58      |      ^0.59.3      |                             ^0.59.3-^0.61.x                              |
+| Play Services Android SDK | 11.8.0 + |     ^16.1.0      |      ^16.1.0      | ^16.1.0 (or ^17.x via [jetifier](https://github.com/mikehardy/jetifier)) |
+| Firebase iOS SDK          | 4.7.0 +  | ^5.10.x -^5.18.x | ^5.19.x - ^5.20.x |                              ^5.19.x - ^6.x                              |
+
+⚠ The Hermes VM availble with react-native 0.60.3 and higher is **not currectly supported**. Some initial testing has been done and it appears that valid code in this library does not function correctly with Hermes. Use the standard ('JSC') VM.
+⚠ For **iOS 13** you must use Firebase iOS SDK at version `^6.5.x`. Otherwise your app may crash, for more information [take a look on this issue](https://github.com/invertase/react-native-firebase/issues/2409)
 
 ---
 
