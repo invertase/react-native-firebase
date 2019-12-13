@@ -22,12 +22,12 @@ import {
   isIOS,
   isString,
   isUndefined,
-} from '@react-native-firebase/app/lib/common';
+} from '@uphold/firebase-app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+} from '@uphold/firebase-app/lib/internal';
 import { AppRegistry } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
