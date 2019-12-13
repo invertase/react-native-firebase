@@ -57,13 +57,15 @@ And you can setup your app to handle dynamic links opened from anywhere.
 function App() {
   const handleDynamicLink = link => {
     // Handle dynamic link inside your own application
-    if (link.url === 'https://invertase.io/offer') return navigateTo('/offers');
+    if (link.url === 'https://invertase.io/offer') {
+      // ... navigate to your offers page?
+    }
   };
 
   useEffect(() => {
     const unsubscribe = firebase.dynamicLinks().onLink(handleDynamicLink);
-    // When the component unmounts, remove the listener
-    return unsubscribe;
+    // When the is component unmounted, remove the listener
+    return () => unsubscribe();
   }, []);
 
   return <YourApp />;
@@ -78,10 +80,12 @@ When your app was launched (or even installed first) as a result of following a 
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 async function bootstrapApp() {
-   const initialLink = await dynamicLinks().getInitialLink();
+  const initialLink = await dynamicLinks().getInitialLink();
 
-   if (initialLink) {
-     if (initialLink.url === 'https://invertase.io/offer') return navigateTo('/offers')
-   }
+  if (initialLink) {
+    if (initialLink.url === 'https://invertase.io/offer') {
+      // ... navigate to your offers page?
+    }
+  }
 }
 ```

@@ -41,8 +41,12 @@ const nativeModuleName = 'RNFBMessagingModule';
 class FirebaseMessagingModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    this._isAutoInitEnabled = this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
-    this._isRegisteredForRemoteNotifications = this.native.isRegisteredForRemoteNotifications != null ? this.native.isRegisteredForRemoteNotifications : true;
+    this._isAutoInitEnabled =
+      this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
+    this._isRegisteredForRemoteNotifications =
+      this.native.isRegisteredForRemoteNotifications != null
+        ? this.native.isRegisteredForRemoteNotifications
+        : true;
   }
 
   get isAutoInitEnabled() {
@@ -124,7 +128,21 @@ class FirebaseMessagingModule extends FirebaseModule {
     // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
     this.native;
 
-    const subscription = this.emitter.addListener('messaging_token_refresh', listener);
+    const subscription = this.emitter.addListener('messaging_token_refresh', event => {
+      // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
+      const { token } = event;
+      const tokenStringWithTokenAccessor = new String(token);
+      Object.defineProperty(tokenStringWithTokenAccessor, 'token', {
+        enumerable: false,
+        get() {
+          console.warn(
+            'firebase.messaging().onTokenRefresh(event => event.token) is deprecated, use onTokenRefresh(token => token) or call getToken() instead',
+          );
+          return token;
+        },
+      });
+      listener(tokenStringWithTokenAccessor);
+    });
     return () => subscription.remove();
   }
 
