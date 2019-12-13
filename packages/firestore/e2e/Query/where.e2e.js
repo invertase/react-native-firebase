@@ -128,6 +128,107 @@ describe('firestore().collection().where()', () => {
       .where(new firebase.firestore.FieldPath('foo', 'bar'), '>', 1234);
   });
 
+  it('throws if in query with no array value', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'in', '123');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('A non-empty array is required');
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if array-contains-any query with no array value', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'array-contains-any', '123');
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('A non-empty array is required');
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if in query array length is greater than 10', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('maximum of 10 elements in the value');
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if query has multiple array-contains-any filter', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'array-contains-any', [1])
+        .where('foo.bar', 'array-contains-any', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one 'array-contains-any' filter");
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if query has array-contains-any & in filter', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'array-contains-any', [1])
+        .where('foo.bar', 'in', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'in' filters with 'array-contains-any' filters",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if query has multiple in filter', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'in', [1])
+        .where('foo.bar', 'in', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one 'in' filter");
+      return Promise.resolve();
+    }
+  });
+
+  it('throws if query has in & array-contains-any filter', () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo.bar', 'in', [1])
+        .where('foo.bar', 'array-contains-any', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'array-contains-any' filters with 'in' filters",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  /* Queries */
+
   it('returns with where equal filter', async () => {
     const colRef = firebase.firestore().collection('v6/filter/equal');
 
@@ -222,7 +323,7 @@ describe('firestore().collection().where()', () => {
   });
 
   it('returns with where array-contains filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/arraycontains');
+    const colRef = firebase.firestore().collection('v6/filter/array-contains');
 
     const match = Date.now();
     await Promise.all([
@@ -238,5 +339,39 @@ describe('firestore().collection().where()', () => {
     snapshot.forEach(s => {
       s.data().foo.should.eql(jet.contextify(expected));
     });
+  });
+
+  it('returns with in filter', async () => {
+    const colRef = firebase.firestore().collection('v6/filter/in');
+
+    await Promise.all([
+      colRef.add({ status: 'Ordered' }),
+      colRef.add({ status: 'Ready to Ship' }),
+      colRef.add({ status: 'Ready to Ship' }),
+      colRef.add({ status: 'Incomplete' }),
+    ]);
+
+    const expect = ['Ready to Ship', 'Ordered'];
+    const snapshot = await colRef.where('status', 'in', expect).get();
+    snapshot.size.should.eql(3);
+
+    snapshot.forEach(s => {
+      s.data().status.should.equalOneOf(...expect);
+    });
+  });
+
+  it('returns with array-contains-any filter', async () => {
+    const colRef = firebase.firestore().collection('v6/filter/array-contains-any');
+
+    await Promise.all([
+      colRef.add({ category: ['Appliances', 'Housewares', 'Cooking'] }),
+      colRef.add({ category: ['Appliances', 'Electronics', 'Nursery'] }),
+      colRef.add({ category: ['Audio/Video', 'Electronics'] }),
+      colRef.add({ category: ['Beauty'] }),
+    ]);
+
+    const expect = ['Appliances', 'Electronics'];
+    const snapshot = await colRef.where('category', 'array-contains-any', expect).get();
+    snapshot.size.should.eql(3); // 2nd record should only be returned once
   });
 });

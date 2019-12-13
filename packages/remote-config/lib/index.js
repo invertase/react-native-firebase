@@ -119,6 +119,10 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._isDeveloperModeEnabled;
   }
 
+  get minimumFetchInterval() {
+    return this._minimumFetchInterval;
+  }
+
   setConfigSettings(settings = {}) {
     if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
       throw new Error(
@@ -129,6 +133,15 @@ class FirebaseConfigModule extends FirebaseModule {
     if (!isBoolean(settings.isDeveloperModeEnabled)) {
       throw new Error(
         "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
+      );
+    }
+
+    if (
+      hasOwnProperty(settings, 'minimumFetchInterval') &&
+      !isNumber(settings.minimumFetchInterval)
+    ) {
+      throw new Error(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' must be a number value.",
       );
     }
 
@@ -197,6 +210,7 @@ class FirebaseConfigModule extends FirebaseModule {
     this._lastFetchStatus = constants.lastFetchStatus;
     this._values = convertNativeConfigValues(constants.values);
     this._isDeveloperModeEnabled = constants.isDeveloperModeEnabled;
+    this._minimumFetchInterval = constants.minimumFetchInterval;
   }
 
   _promiseWithConstants(promise) {

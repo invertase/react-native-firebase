@@ -30,11 +30,13 @@ import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import AppleAuthProvider from './providers/AppleAuthProvider';
 import Settings from './Settings';
 import User from './User';
 import version from './version';
 
 const statics = {
+  AppleAuthProvider,
   EmailAuthProvider,
   PhoneAuthProvider,
   GoogleAuthProvider,
@@ -134,7 +136,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -146,7 +150,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -154,7 +160,9 @@ class FirebaseAuthModule extends FirebaseModule {
   onUserChanged(listener) {
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
 
     return () => {

@@ -31,7 +31,7 @@ React Native Firebase is built with four key principals in mind;
 - 🧪 **Well tested**
   - every module is extensively tested to >95% coverage
 - 👁 **Well typed**
-  - first class support for both Flow & Typescript included
+  - first class support for Typescript included
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🔥 **Mirrors official Firebase Web SDK**
@@ -60,7 +60,6 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 | [Instance ID](/packages/iid)                             |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
 | [ML Kit Vision](/packages/ml-vision)                     |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-vision)           |           [![badge](https://api.rnfirebase.io/coverage/ml-vision/badge)](https://api.rnfirebase.io/coverage/ml-vision/detail)           |
-| [Notifications](/packages/notifications)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/notifications.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/notifications)       |       [![badge](https://api.rnfirebase.io/coverage/notifications/badge)](https://api.rnfirebase.io/coverage/notifications/detail)       |
 | [Performance Monitoring](/packages/perf)                 |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
 | [Realtime Database](/packages/database)                  |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |            [![badge](https://api.rnfirebase.io/coverage/database/badge)](https://api.rnfirebase.io/coverage/database/detail)            |
 | [Remote Config](/packages/remote-config)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/remote-config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/remote-config)       |       [![badge](https://api.rnfirebase.io/coverage/remote-config/badge)](https://api.rnfirebase.io/coverage/remote-config/detail)       |

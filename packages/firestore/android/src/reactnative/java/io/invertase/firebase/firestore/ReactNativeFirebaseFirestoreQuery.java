@@ -84,6 +84,12 @@ public class ReactNativeFirebaseFirestoreQuery {
         case "ARRAY_CONTAINS":
           query = query.whereArrayContains(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
+        case "ARRAY_CONTAINS_ANY":
+          query = query.whereArrayContainsAny(Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+          break;
+        case "IN":
+          query = query.whereIn(Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+          break;
       }
     }
   }
