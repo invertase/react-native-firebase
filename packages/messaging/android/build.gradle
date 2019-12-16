@@ -37,7 +37,7 @@ project.ext {
   ])
 }
 
-apply from: file("./../../app/android/firebase-json.gradle")
+apply from: file("./../../firebase-app/android/firebase-json.gradle")
 def autoInitEnabled = "true"
 if (rootProject.ext && rootProject.ext.firebaseJson) {
   if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled") == false) {
@@ -68,7 +68,7 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase_app')
+  api project(':@uphold_firebase-app')
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-messaging"
 }

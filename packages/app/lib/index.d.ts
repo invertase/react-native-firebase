@@ -382,7 +382,7 @@ export namespace Utils {
   }
 }
 
-declare module '@react-native-firebase/app' {
+declare module '@uphold/firebase-app' {
   /**
    * Add Utils module as a named export for `app`.
    */
@@ -395,7 +395,7 @@ declare module '@react-native-firebase/app' {
   export default module;
 }
 
-declare module '@react-native-firebase/app' {
+declare module '@uphold/firebase-app' {
   /**
    * Attach Utils namespace to `firebase.` and `FirebaseApp.`.
    */

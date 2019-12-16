@@ -15,7 +15,7 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { ReactNativeFirebase } from '@uphold/firebase-app';
 
 /**
  * Firebase Messaging package for React Native.
@@ -549,9 +549,9 @@ export namespace FirebaseMessagingTypes {
   }
 }
 
-declare module '@react-native-firebase/messaging' {
+declare module '@uphold/firebase-messaging' {
   // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import { ReactNativeFirebase } from '@uphold/firebase-app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
@@ -568,7 +568,7 @@ declare module '@react-native-firebase/messaging' {
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app' {
+declare module '@uphold/firebase-app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
