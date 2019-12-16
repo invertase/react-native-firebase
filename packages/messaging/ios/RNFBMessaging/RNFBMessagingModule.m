@@ -145,12 +145,7 @@ RCT_EXPORT_METHOD(requestPermission:
 
   RCTPromiseResolveBlock customResolver = ^(id result) {
     if (@available(iOS 10.0, *)) {
-      UNAuthorizationOptions authOptions;
-      if (@available(iOS 12.0, *)) {
-        authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      } else {
-        authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      }
+      UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
 
       [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
         if (error) {
