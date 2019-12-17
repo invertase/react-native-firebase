@@ -10,7 +10,7 @@ if using_custom_firebase_sdk_version
 end
 
 # Fabric SDK Override
-fabric_sdk_version = '~> 1.9.0'
+fabric_sdk_version = '~> 1.10.2'
 using_custom_fabric_sdk_version = defined? $FabricSDKVersion
 if using_custom_fabric_sdk_version
   Pod::UI.puts "RNFBCrashlytics: Using user specified Fabric SDK version '#{$FabricSDKVersion}'"
@@ -18,7 +18,7 @@ if using_custom_fabric_sdk_version
 end
 
 # Crashlytics SDK Override
-crashlytics_sdk_version = '~> 3.12.0'
+crashlytics_sdk_version = '~> 3.14.0'
 using_custom_crashlytics_sdk_version = defined? $CrashlyticsSDKVersion
 if using_custom_crashlytics_sdk_version
   Pod::UI.puts "RNFBCrashlytics: Using user specified Crashlytics SDK version '#{$CrashlyticsSDKVersion}'"
