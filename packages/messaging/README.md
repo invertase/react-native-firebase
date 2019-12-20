@@ -26,7 +26,7 @@ cost free service, allowing for server-device and device-device communication.
 The React Native Firebase Messaging module provides a simple JavaScript API to 
 interact with FCM.
 
-[> Learn More](https://firebase.google.com/products/messaging/)
+[> Learn More](https://firebase.google.com/products/cloud-messaging/)
 
 ## Installation
 
