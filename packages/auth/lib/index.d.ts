@@ -320,7 +320,7 @@ export namespace FirebaseAuthTypes {
     /**
      * Any additional user information assigned to the user.
      */
-    additionalUserInfo?: AdditionalUserInfo;
+    additionalUserInfo?: null | AdditionalUserInfo;
     /**
      * Returns the {@link auth.User} interface of this credential.
      */
@@ -342,12 +342,12 @@ export namespace FirebaseAuthTypes {
      * Returns the timestamp at which this account was created as dictated by the server clock
      * as an ISO Date string.
      */
-    creationTime?: string;
+    creationTime?: number;
     /**
      * Returns the last signin timestamp as dictated by the server clock as an ISO Date string.
      * This is only accurate up to a granularity of 2 minutes for consecutive sign-in attempts.
      */
-    lastSignInTime?: string;
+    lastSignInTime?: number;
   }
 
   /**
@@ -912,6 +912,11 @@ export namespace FirebaseAuthTypes {
      *  For example, 'facebook.com', or 'google.com'.
      */
     providerId: string;
+
+    /**
+     *  The refresh token for the current user.
+     */
+    refreshToken: string;
 
     /**
      *  - The user's unique ID.
