@@ -159,6 +159,16 @@ class FirebaseMessagingModule extends FirebaseModule {
   /**
    * @platform ios
    */
+  requestPermissionWithoutProvisional() {
+    if (isAndroid) {
+      return Promise.resolve(true);
+    }
+    return this.native.requestPermissionWithoutProvisional();
+  }
+
+  /**
+   * @platform ios
+   */
   registerForRemoteNotifications() {
     if (isAndroid) {
       return Promise.resolve();

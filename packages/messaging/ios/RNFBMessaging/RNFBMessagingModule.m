@@ -132,49 +132,60 @@ RCT_EXPORT_METHOD(getAPNSToken:
   }
 }
 
+- (void)requestPermission:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject andAddProvisionalFlag:(BOOL)addProvisionalFlag {
+    if (RCTRunningInAppExtension()) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+          @"code": @"unavailable-in-extension",
+          @"message": @"requestPermission can not be called in App Extensions"} mutableCopy]];
+      return;
+    }
+
+    RCTPromiseResolveBlock customResolver = ^(id result) {
+      if (@available(iOS 10.0, *)) {
+          UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+          if (addProvisionalFlag) {
+              if (@available(iOS 12.0, *)) {
+                  authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+              }
+          }
+
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
+          if (error) {
+            [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+          } else {
+            resolve(@([RCTConvert BOOL:@(granted)]));
+          }
+        }];
+      } else {
+        // TODO community iOS 9 support could be added here with `registerUserNotificationSettings:settings` & `didRegisterUserNotificationSettings`
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+            @"code": @"unsupported-platform-version",
+            @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
+      }
+    };
+
+    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+      customResolver(nil);
+    } else {
+      [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:customResolver andPromiseReject:reject];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] registerForRemoteNotifications];
+      });
+    }
+}
+
 RCT_EXPORT_METHOD(requestPermission:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  if (RCTRunningInAppExtension()) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-        @"code": @"unavailable-in-extension",
-        @"message": @"requestPermission can not be called in App Extensions"} mutableCopy]];
-    return;
-  }
+  [self requestPermission:resolve andPromiseReject:reject andAddProvisionalFlag:YES];
+}
 
-  RCTPromiseResolveBlock customResolver = ^(id result) {
-    if (@available(iOS 10.0, *)) {
-      UNAuthorizationOptions authOptions;
-      if (@available(iOS 12.0, *)) {
-        authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      } else {
-        authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      }
-
-      [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-          resolve(@([RCTConvert BOOL:@(granted)]));
-        }
-      }];
-    } else {
-      // TODO community iOS 9 support could be added here with `registerUserNotificationSettings:settings` & `didRegisterUserNotificationSettings`
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": @"unsupported-platform-version",
-          @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
-    }
-  };
-
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    customResolver(nil);
-  } else {
-    [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:customResolver andPromiseReject:reject];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication] registerForRemoteNotifications];
-    });
-  }
+RCT_EXPORT_METHOD(requestPermissionWithoutProvisional:
+  (RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    [self requestPermission:resolve andPromiseReject:reject andAddProvisionalFlag:NO];
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:

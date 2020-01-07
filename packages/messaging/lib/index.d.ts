@@ -319,6 +319,19 @@ export namespace FirebaseMessagingTypes {
     requestPermission(): Promise<boolean>;
 
     /**
+     * Same as `requestPermission()` but leaves out the `UNAuthorizationOptionProvisional` auth option when requesting permission, showing the native permission alert to the user.
+     *
+     * #### Example
+     *
+     * ```js
+     * const permissionGranted = await firebase.messaging().requestPermissionWithoutProvisional();
+     * ```
+     *
+     * @ios
+     */
+    requestPermissionWithoutProvisional(): Promise<boolean>;
+
+    /**
      * On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register
      * this request with APNS. For example if you want to display alerts, play sounds
      * or perform other user-facing actions (via the Notification library), you must call this method.
