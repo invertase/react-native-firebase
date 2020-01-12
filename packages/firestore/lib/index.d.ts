@@ -499,7 +499,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
      */
-    get(fieldPath: string | FieldPath): any;
+    get<fieldType>(fieldPath: string | FieldPath): fieldType;
 
     /**
      * Returns true if this `DocumentSnapshot` is equal to the provided one.
