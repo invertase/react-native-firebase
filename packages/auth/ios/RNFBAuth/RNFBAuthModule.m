@@ -1145,7 +1145,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }
 
   if (actionCodeSettings[keyDynamicLinkDomain]) {
-    NSString *dynamicLinkDomain = [actionCodeSettings[keyDynamicLinkDomain] stringValue];
+    NSString *dynamicLinkDomain = actionCodeSettings[keyDynamicLinkDomain];
     [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 
