@@ -40,6 +40,14 @@ directly from your device and from your Firebase Cloud Storage bucket.
 	</Block>
 </Grid>
 
+## Errors
+The functions in this module can throw two different types of errors. If ill-formed urls are passed into them, they will throw
+[generic Errors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) with messages 
+explaining the problem that caused them.
+
+If error was thrown by Firebase itself, then the function will throw a [NativeFirebaseError](https://invertase.io/oss/react-native-firebase/v6/app/reference/nativefirebaseerror). The codes for these errors are the same as the codes for [Firebase Cloud Storage Web errors](https://firebase.google.com/docs/storage/web/handle-errors).
+
+
 ## Learn more
 
 Our documentation is a great place to start, however if you're looking for more help or want to help others,
