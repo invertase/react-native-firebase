@@ -878,6 +878,8 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
+  } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider credentialWithProviderID:provider IDToken:authToken rawNonce:authTokenSecret];
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
   } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
@@ -1143,7 +1145,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }
 
   if (actionCodeSettings[keyDynamicLinkDomain]) {
-    NSString *dynamicLinkDomain = [actionCodeSettings[keyDynamicLinkDomain] stringValue];
+    NSString *dynamicLinkDomain = actionCodeSettings[keyDynamicLinkDomain];
     [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 

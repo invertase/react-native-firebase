@@ -176,9 +176,15 @@ export namespace FirebaseMessagingTypes {
      *
      * It is recommended you call this method on app start and update your backend with the new token.
      *
+     * On iOS you'll need to register for remote notifications before calling this method, you can do
+     * this by calling `registerForRemoteNotifications` or `requestPermission` as part of your app
+     * startup. If you have not registered and you call this method you will receive an 'unregistered'
+     * error code.
+     *
      * #### Example - Default token
      *
      * ```js
+     * await firebase.messaging().registerForRemoteNotifications();
      * const fcmToken = await firebase.messaging().getToken();
      *
      * // Update backend (e.g. Firestore) with our scoped token for the user
@@ -318,6 +324,8 @@ export namespace FirebaseMessagingTypes {
      * or perform other user-facing actions (via the Notification library), you must call this method.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
+     *
+     * > You can safely call this method multiple times, if the app is already registered then this method resolves immediately.
      *
      * #### Example
      *

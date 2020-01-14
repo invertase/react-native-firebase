@@ -64,7 +64,7 @@ export namespace FirebaseAuthTypes {
    * const provider = firebase.auth.EmailAuthProvider;
    * const authCredential = provider.credential('foo@bar.com', '123456');
    *
-   * await firebase.auth().linkWithCredential(authCredential);
+   * await firebase.auth().signInWithCredential(authCredential);
    * ```
    */
   export interface AuthCredential {
@@ -213,6 +213,18 @@ export namespace FirebaseAuthTypes {
      * ```
      */
     GoogleAuthProvider: AuthProvider;
+    /**
+     * Apple auth provider implementation. Currently this is iOS only.
+     *
+     * For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.AppleAuthProvider;
+     * ```
+     */
+    AppleAuthProvider: AuthProvider;
     /**
      * Github auth provider implementation.
      *

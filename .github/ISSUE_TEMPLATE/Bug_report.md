@@ -42,6 +42,23 @@ Describe your issue here
 
 <!-- ADD THE CONTENTS OF THE FILES IN THE PROVIDED CODE BLOCKS BELOW -->
 
+### Javascript
+
+<details><summary>Click To Expand</summary>
+<p>
+
+#### `package.json`:
+
+```json
+# N/A
+```
+
+#### `firebase.json` for react-native-firebase v6:
+
+```json
+# N/A
+```
+
 ### iOS
 
 <details><summary>Click To Expand</summary>

@@ -150,8 +150,13 @@ RCT_EXPORT_METHOD(recordErrorPromise:
 }
 
 RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
-  (BOOL) enabled) {
+  (BOOL) enabled
+      resolver:
+      (RCTPromiseResolveBlock) resolve
+      rejecter:
+      (RCTPromiseRejectBlock) reject) {
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled" boolValue:enabled];
+  resolve([NSNull null]);
 }
 
 - (void)recordJavaScriptError:(NSDictionary *)jsErrorDict {

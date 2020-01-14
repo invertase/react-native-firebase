@@ -1,5 +1,3 @@
-package io.invertase.firebase.invites;
-
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,26 +15,22 @@ package io.invertase.firebase.invites;
  *
  */
 
-import com.facebook.react.bridge.WritableMap;
+const providerId = 'apple.com';
 
-import io.invertase.firebase.interfaces.NativeEvent;
-
-public class ReactNativeFirebaseLinksOnLinkEvent implements NativeEvent {
-  private WritableMap linkMap;
-
-  ReactNativeFirebaseLinksOnLinkEvent(WritableMap linkMap) {
-    this.linkMap = linkMap;
+export default class AppleAuthProvider {
+  constructor() {
+    throw new Error('`new AppleAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
-  public String getEventName() {
-    return "invites_invitation_received";
+  static get PROVIDER_ID() {
+    return providerId;
   }
 
-  public WritableMap getEventBody() {
-    return this.linkMap;
-  }
-
-  public String getFirebaseAppName() {
-    return "[DEFAULT]";
+  static credential(token, secret) {
+    return {
+      token,
+      secret,
+      providerId,
+    };
   }
 }
