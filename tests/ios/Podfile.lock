@@ -165,10 +165,10 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.3):
     - BoringSSL-GRPC/Interface (= 0.0.3)
   - BoringSSL-GRPC/Interface (0.0.3)
-  - Crashlytics (3.12.0):
-    - Fabric (~> 1.9.0)
+  - Crashlytics (3.14.0):
+    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
-  - Fabric (1.9.0)
+  - Fabric (1.10.2)
   - Firebase/AdMob (6.13.0):
     - Firebase/CoreOnly
     - Google-Mobile-Ads-SDK (~> 7.50)
@@ -556,8 +556,8 @@ PODS:
     - React
     - RNFBApp
   - RNFBCrashlytics (6.2.0):
-    - Crashlytics (~> 3.12.0)
-    - Fabric (~> 1.9.0)
+    - Crashlytics (~> 3.14.0)
+    - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
@@ -803,9 +803,9 @@ SPEC CHECKSUMS:
   abseil: 18063d773f5366ff8736a050fe035a28f635fd27
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
-  Crashlytics: 07fb167b1694128c1c9a5a5cc319b0e9c3ca0933
+  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  Fabric: f988e33c97f08930a413e08123064d2e5f68d655
+  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   Firebase: 458d109512200d1aca2e1b9b6cf7d68a869a4a46
   FirebaseABTesting: 0d10f3cdc3fa00f3f175b5b56c1003c8e888299f
   FirebaseAnalytics: 45f36d9c429fc91d206283900ab75390cd05ee8a
@@ -873,7 +873,7 @@ SPEC CHECKSUMS:
   RNFBAnalytics: 57dc0bfad4e40f68779757653676699072651218
   RNFBApp: 5b215aacc09105a1761de31b9a0eb2abcce06253
   RNFBAuth: 61673c0d38ce225c315e7be13a1b494904baedd2
-  RNFBCrashlytics: 0469cb96b00904e0c9604b9636d8eeab31115b08
+  RNFBCrashlytics: 63bb6e8c450075e2b01b98865911ece999da8ac9
   RNFBDatabase: 267f476097111054553ecb99208201945961efa5
   RNFBDynamicLinks: fc6a123aaa86dc8745dcb3050ecc9c8e199f64df
   RNFBFirestore: 5de4ae898df51a3ecc16a45db15019836c5cec87
