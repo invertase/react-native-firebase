@@ -79,7 +79,7 @@ export namespace FirebaseCrashlyticsTypes {
     isCrashlyticsCollectionEnabled: true;
 
     /**
-     * Cause your app to crash for testing purposes.
+     * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
      *
      * #### Example
      *
@@ -107,7 +107,9 @@ export namespace FirebaseCrashlyticsTypes {
     /**
      * Record a JavaScript Error.
      *
-     * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
+     * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission. 
+     * The line numbers in the stack trace (if available) will be relative to the javascript bundle built by your packager,
+     * after whatever transpilation or minimization steps happen. You will need to maintain sourcemaps to decode them if desired.
      *
      * #### Example
      *
