@@ -32,7 +32,7 @@ import iid from '@react-native-firebase/iid';
 The package also provides access to the firebase instance:
 
 ```js
-import { firebase } from '@react-native-firebase/perf';
+import { firebase } from '@react-native-firebase/iid';
 ```
 
 ### Retrieving the instance token
