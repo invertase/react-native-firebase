@@ -23,7 +23,7 @@ Enter your application details then click on 'Register app'. The 'iOS bundle ID'
 ![iOS Register](https://prismic-io.s3.amazonaws.com/invertase%2Fc7ad084f-d455-4d95-b498-de99bf68742d_register-ios.png)
 
 Download the config file locally by pressing "Download GoogleService-Info.plist". Using Xcode, open the projects
-`/ios/{projectName}.xcworkspace` file (or `/ios/{projectName}.xcodeproj` if using Pods).
+`/ios/{projectName}.xcodeproj` file (or `/ios/{projectName}.xcworkspace` if using Pods).
 
 Right click on the project name and "Add files" to the project, as demonstrated below:
 
