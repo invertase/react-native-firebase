@@ -119,4 +119,8 @@ Once your user has consented, enable Crashlytics collection via the JavaScript A
 await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
 ```
 
-To learn more about all the `firebase.json` options, view the <Anchor version group="app" href="/reference/firebasejsonconfig">documentation here</Anchor>.
+
+### Enabling Debug Reports
+By default, Crashlytics won't report crashes and logs from builds in debug mode. To enable it, set the `crashlytics_debug_enabled` option to `true` in the `react-native` section of your `firebase.json` config file.
+
+To learn more about all the `firebase.json` options, view the <Anchor version group="app" href="/reference/firebasejsonconfig">documentation here</Anchor>. 
