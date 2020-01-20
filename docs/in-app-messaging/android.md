@@ -13,8 +13,8 @@ description: Manually integrate Firebase In-App Messaging into your Android appl
 Add the following to your projects `/android/settings.gradle` file:
 
 ```groovy
-include ':@react-native-firebase_inAppMessaging'
-project(':@react-native-firebase_inAppMessaging').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/in-app-messaging/android')
+include ':@react-native-firebase_in-app-messaging'
+project(':@react-native-firebase_in-app-messaging').projectDir = new File(rootProject.projectDir, './../node_modules/@react-native-firebase/in-app-messaging/android')
 ```
 
 #### Update Gradle Dependencies
