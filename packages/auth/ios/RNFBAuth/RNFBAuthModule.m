@@ -159,6 +159,17 @@ RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting:
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
 }
 
+RCT_EXPORT_METHOD(useUserAccessGroup:
+  (FIRApp *) firebaseApp
+    :(NSString *) userAccessGroup
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+
+  [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:nil];
+    [self promiseNoUser:resolve rejecter:reject  isError:NO];
+}
+
 RCT_EXPORT_METHOD(signOut:
   (FIRApp *) firebaseApp
     :(RCTPromiseResolveBlock) resolve

@@ -1594,6 +1594,19 @@ export namespace FirebaseAuthTypes {
      * @param code A password reset code.
      */
     verifyPasswordResetCode(code: string): Promise<void>;
+    /**
+     * Switch userAccessGroup and current user to the given accessGroup and the user stored in it.
+     * Sign in a user with any sign in method, and the same current user is available in all
+     * apps in the access group.
+     *
+     * Set the access group to nil to remove user's auth state, and the user state will not be
+     * available to any other apps.
+     *
+     * @platform ios
+     *
+     * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
+     */
+    useUserAccessGroup(userAccessGroup: string): Promise<null>;
   }
 }
 
