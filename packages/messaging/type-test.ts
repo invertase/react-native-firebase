@@ -42,4 +42,5 @@ firebase
   .then();
 firebase.messaging().setBackgroundMessageHandler(msg => {
   console.log(msg.data);
+  return Promise.resolve();
 });
