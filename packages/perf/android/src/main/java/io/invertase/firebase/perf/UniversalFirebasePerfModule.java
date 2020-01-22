@@ -53,9 +53,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put(
-      "isPerformanceCollectionEnabled",
-      FirebasePerformance.getInstance().isPerformanceCollectionEnabled()
-    );
+        "isPerformanceCollectionEnabled", 
+        FirebasePerformance.getInstance().isPerformanceCollectionEnabled()
+      );
     return constants;
   }
 
@@ -91,9 +91,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
       for (String attributeKey : attributeKeys) {
         trace.putAttribute(
-          attributeKey,
-          (String) Objects.requireNonNull(attributes.get(attributeKey))
-        );
+            attributeKey, 
+            (String) Objects.requireNonNull(attributes.get(attributeKey))
+          );
       }
 
       trace.stop();
@@ -117,15 +117,15 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
       HttpMetric httpMetric = httpMetrics.get(id);
 
       if (httpMetricConfig.containsKey("httpResponseCode")) {
-        httpMetric.setHttpResponseCode(httpMetricConfig.getInt("httpResponseCode"));
+        httpMetric.setHttpResponseCode((int) httpMetricConfig.getDouble("httpResponseCode"));
       }
 
       if (httpMetricConfig.containsKey("requestPayloadSize")) {
-        httpMetric.setRequestPayloadSize(httpMetricConfig.getInt("requestPayloadSize"));
+        httpMetric.setRequestPayloadSize((int) httpMetricConfig.getDouble("requestPayloadSize"));
       }
 
       if (httpMetricConfig.containsKey("responsePayloadSize")) {
-        httpMetric.setResponsePayloadSize(httpMetricConfig.getInt("responsePayloadSize"));
+        httpMetric.setResponsePayloadSize((int) httpMetricConfig.getDouble("responsePayloadSize"));
       }
 
       if (httpMetricConfig.containsKey("responseContentType")) {
@@ -136,9 +136,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
       for (String attributeKey : attributeKeys) {
         httpMetric.putAttribute(
-          attributeKey,
-          Objects.requireNonNull(attributes.getString(attributeKey))
-        );
+            attributeKey, 
+            Objects.requireNonNull(attributes.getString(attributeKey))
+          );
       }
 
       httpMetric.stop();
