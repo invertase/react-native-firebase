@@ -497,7 +497,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @android
      */
-    setBackgroundMessageHandler(handler: (message: RemoteMessage) => any);
+    setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
     /**
      * Send a new `RemoteMessage` to the FCM server.
