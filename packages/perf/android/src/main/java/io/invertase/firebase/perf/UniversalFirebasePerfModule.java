@@ -53,9 +53,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put(
-        "isPerformanceCollectionEnabled", 
-        FirebasePerformance.getInstance().isPerformanceCollectionEnabled()
-      );
+      "isPerformanceCollectionEnabled",
+      FirebasePerformance.getInstance().isPerformanceCollectionEnabled()
+    );
     return constants;
   }
 
@@ -91,9 +91,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
       for (String attributeKey : attributeKeys) {
         trace.putAttribute(
-            attributeKey, 
-            (String) Objects.requireNonNull(attributes.get(attributeKey))
-          );
+          attributeKey,
+          (String) Objects.requireNonNull(attributes.get(attributeKey))
+        );
       }
 
       trace.stop();
@@ -136,9 +136,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
       for (String attributeKey : attributeKeys) {
         httpMetric.putAttribute(
-            attributeKey, 
-            Objects.requireNonNull(attributes.getString(attributeKey))
-          );
+          attributeKey,
+          Objects.requireNonNull(attributes.getString(attributeKey))
+        );
       }
 
       httpMetric.stop();
