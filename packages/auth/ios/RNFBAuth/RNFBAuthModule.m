@@ -165,9 +165,15 @@ RCT_EXPORT_METHOD(useUserAccessGroup:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
+  NSError *error;
+  [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:&error];
 
-  [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:nil];
+  if(!error){
     [self promiseNoUser:resolve rejecter:reject  isError:NO];
+  } else {
+    [self promiseRejectAuthException:reject error:error];
+  }
+  return;
 }
 
 RCT_EXPORT_METHOD(signOut:
