@@ -1599,7 +1599,7 @@ export namespace FirebaseAuthTypes {
      * Sign in a user with any sign in method, and the same current user is available in all
      * apps in the access group.
      *
-     * Set the access group to nil to remove user's auth state, and the user state will not be
+     * Set the `useAccessGroup` argument to `null` to stop sharing the auth state (default behaviour), the user state will no longer be
      * available to any other apps.
      *
      * @platform ios
