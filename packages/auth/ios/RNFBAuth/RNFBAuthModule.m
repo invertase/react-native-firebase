@@ -169,7 +169,7 @@ RCT_EXPORT_METHOD(useUserAccessGroup:
   [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:&error];
 
   if(!error){
-    [self promiseNoUser:resolve rejecter:reject  isError:NO];
+    [self promiseNoUser:resolve rejecter:reject isError:NO];
   } else {
     [self promiseRejectAuthException:reject error:error];
   }
