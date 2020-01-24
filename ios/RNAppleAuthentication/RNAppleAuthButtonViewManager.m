@@ -72,7 +72,7 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
 
 - (UIView *)view {
     ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
-    if (@available(iOS 13.2, *)){
+    if (@available(iOS 13.2, *)) {
         type = ASAuthorizationAppleIDButtonTypeSignUp;
     }
     return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhite];
@@ -132,7 +132,7 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
 
   - (UIView *)view {
       ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
-      if (@available(iOS 13.2, *)){
+      if (@available(iOS 13.2, *)) {
           type = ASAuthorizationAppleIDButtonTypeSignUp;
       }
       return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhiteOutline];
@@ -193,7 +193,7 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
   }
   - (UIView *)view {
       ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
-      if (@available(iOS 13.2, *)){
+      if (@available(iOS 13.2, *)) {
           type = ASAuthorizationAppleIDButtonTypeSignUp;
       }
       return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleBlack];
