@@ -62,7 +62,6 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
 
 
 #pragma mark - White - SignUp
-#if defined(__IPHONE_13_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_2
 @interface RNAppleAuthButtonViewManagerWhiteSignUp : RCTViewManager @end
 @implementation RNAppleAuthButtonViewManagerWhiteSignUp
 RCT_EXPORT_MODULE(RNAppleAuthButtonViewManagerWhiteSignUp)
@@ -70,11 +69,15 @@ RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
   view.cornerRadius = [json floatValue];
 }
+
 - (UIView *)view {
-  return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:ASAuthorizationAppleIDButtonTypeSignUp authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhite];
+    ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
+    if (@available(iOS 13.2, *)){
+        type = ASAuthorizationAppleIDButtonTypeSignUp;
+    }
+    return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhite];
 }
 @end
-#endif
 
 /* -------------------------
  *       WhiteOutline
@@ -119,19 +122,23 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
 @end
 
 #pragma mark - WhiteOutline - SignUp
-#if defined(__IPHONE_13_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_2
-@interface RNAppleAuthButtonViewManagerWhiteSignUp : RCTViewManager @end
-  @implementation RNAppleAuthButtonViewManagerWhiteSignUp
-  RCT_EXPORT_MODULE(RNAppleAuthButtonViewManagerWhiteSignUp)
+@interface RNAppleAuthButtonViewManagerWhiteOutlineSignUp : RCTViewManager @end
+@implementation RNAppleAuthButtonViewManagerWhiteOutlineSignUp
+  RCT_EXPORT_MODULE(RNAppleAuthButtonViewManagerWhiteOutlineSignUp)
   RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
   RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
     view.cornerRadius = [json floatValue];
   }
+
   - (UIView *)view {
-    return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:ASAuthorizationAppleIDButtonTypeSignUp authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhiteOutline];
+      ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
+      if (@available(iOS 13.2, *)){
+          type = ASAuthorizationAppleIDButtonTypeSignUp;
+      }
+      return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleWhiteOutline];
   }
-  @end
-#endif
+@end
+
 
 /* -------------------------
  *         Black
@@ -176,16 +183,20 @@ RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
 @end
 
 #pragma mark - Black - SignUp
-#if defined(__IPHONE_13_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_2
 @interface RNAppleAuthButtonViewManagerBlackSignUp : RCTViewManager @end
-  @implementation RNAppleAuthButtonViewManagerBlackSignUp
+
+@implementation RNAppleAuthButtonViewManagerBlackSignUp
   RCT_EXPORT_MODULE(RNAppleAuthButtonViewManagerBlackSignUp)
   RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
   RCT_CUSTOM_VIEW_PROPERTY(cornerRadius, NSNumber *, RNAppleAuthButtonView) {
     view.cornerRadius = [json floatValue];
   }
   - (UIView *)view {
-    return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:ASAuthorizationAppleIDButtonTypeSignUp authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleBlack];
+      ASAuthorizationAppleIDButtonType type = ASAuthorizationAppleIDButtonTypeDefault;
+      if (@available(iOS 13.2, *)){
+          type = ASAuthorizationAppleIDButtonTypeSignUp;
+      }
+      return [[RNAppleAuthButtonView alloc] initWithAuthorizationButtonType:type authorizationButtonStyle:ASAuthorizationAppleIDButtonStyleBlack];
   }
-  @end
-#endif
+@end
+
