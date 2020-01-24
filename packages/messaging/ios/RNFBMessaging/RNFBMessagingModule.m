@@ -96,11 +96,11 @@ RCT_EXPORT_METHOD(getToken:
     options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
   }
 
-  [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
+  [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
     } else {
-      resolve(identity);
+      resolve(result.token);
     }
   }];
 }
