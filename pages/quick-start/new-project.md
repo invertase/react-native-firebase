@@ -15,13 +15,11 @@ The following npx command will create a new directory on your machine with the `
 npx @react-native-community/cli init --template=@react-native-firebase/template <name>
 ```
 
-For example, to install a new `TodoApp` on your machine and start the Android app:
+For example, to install a new `TodoApp` on your machine:
 
 ```bash
 $ cd /Users/admin/Documents/
 $ npx @react-native-community/cli init --template=@react-native-firebase/template TodoApp
-$ cd /TodoApp/
-$ react-native run-android
 ```
 
 ## Next
