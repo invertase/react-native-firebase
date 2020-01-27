@@ -158,7 +158,7 @@ Using the `setRequestConfiguration` method, all future ad requests will comply w
 import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
 
 await admob().setRequestConfiguration({
-  setRequestConfiguration: MaxAdContentRating.PG,
+  maxAdContentRating: MaxAdContentRating.PG,
   tagForChildDirectedTreatment: true,
   tagForUnderAgeOfConsent: true,
 });
