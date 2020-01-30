@@ -135,15 +135,24 @@ done
 
 for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
   if [[ -f "${plist}" ]]; then
+
+    # paths with spaces break the call to setPlistValue. temporarily modify
+    # the shell internal field separator variable (IFS), which normally 
+    # includes spaces, to consist only of line breaks
+    oldifs=$IFS
+    IFS="
+"
+
     for i in "${!_PLIST_ENTRY_KEYS[@]}"; do
       setPlistValue "${_PLIST_ENTRY_KEYS[$i]}" "${_PLIST_ENTRY_TYPES[$i]}" "${_PLIST_ENTRY_VALUES[$i]}" "${plist}"
     done
+
+    # restore the original internal field separator value
+    IFS=$oldifs
   else
     echo "warning:   A Info.plist build output file was not found (${plist})"
   fi
 done
 
 echo "info: <- RNFB build script finished"
-
-
 
