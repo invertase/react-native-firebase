@@ -1,6 +1,6 @@
 ---
 title: Firestore Android Initialization
-description: Firestore initialization with Android.
+description: Manually integrate Cloud Firestore into your Android application.
 ---
 
 # Android Manual Linking
