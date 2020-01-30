@@ -11,18 +11,18 @@ The following steps are only required if your environment does not have access t
 
 ### Add the RNFBCrashlytics Pod
 
-Add the `RNFBCrashlytics`, `Fabric` & `Crashlytics` Pod to your projects `/ios/Podfile`:
+Add the `RNFBCrashlytics` Pod to your projects `/ios/Podfile`:
 
 ```ruby{3}
 target 'app' do
-  ...
+  # Add the RNFBCrashlytics podspec to your app target:
   pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
 end
 ```
 
 ### Update Pods & rebuild the project
 
-You may need to update your local Pods in order for the Pods to be installed in your project:
+You may need to update your local Pods repo in order for the Pods to be installed in your project:
 
 ```bash
 $ cd /ios/
@@ -34,4 +34,3 @@ Once the Pods have installed locally, rebuild your iOS project:
 ```bash
 npx react-native run-ios
 ```
-
