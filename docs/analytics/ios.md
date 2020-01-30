@@ -46,9 +46,9 @@ The way to do this using Cocoapods is to add this to your Podfile (though please
 **`ios/Podfile`**:
 
 ```ruby{5}
-// ..
+# ...
 target 'app' do
-  // ..
+  # ...
   pod 'RNFBAnalytics', :path => '../node_modules/@react-native-firebase/analytics'
   pod 'GoogleIDFASupport', '~> 3.14.0'
 end
