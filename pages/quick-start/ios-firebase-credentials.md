@@ -39,7 +39,7 @@ Next we need to initialize the Firebase service manually. To do this, open the A
 At the top of the file import the Firebase module:
 
 ```objectivec
-@import Firebase;
+#import <Firebase.h>
 ```
 
 Within the `didFinishLaunchingWithOptions` method, add the `configure` method:
