@@ -40,7 +40,7 @@ Register your key, ensure you download it & keep safe.
 
 Congratulations. You've setup the authentication key necessary for push notifications. You now need to create an App ID for your app via the Apple developer console.
 
-###Create an App ID
+### Create an App ID
 
 #### Step 1:
 
@@ -76,7 +76,7 @@ Select `Push Notifications` from the list and press `continue`. Then click `Regi
 Congratulations. You've registered your App ID. You now need to create a provisioning profile via the Apple developer console. This is needed to test your app whilst under development and 
 not yet published on the App Store.
 
-### Create an App ID
+### Create a Provisioning Profile
 
 #### Step 1:
 
