@@ -96,7 +96,7 @@ export namespace FirebaseCrashlyticsTypes {
      * #### Example
      *
      * ```js
-     * firebase.crashlytics().logEvent('Testing a crash');
+     * firebase.crashlytics().log('Testing a crash');
      * firebase.crashlytics().crash();
      * ```
      *
