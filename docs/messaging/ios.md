@@ -34,7 +34,7 @@ To integrate FCM for iOS, the following integration steps must be followed;
   <Block
 		title="Configure Apple Push Notification service for FCM"
 		to="/ios-configure-apns"
-		icon="tool"
+		icon="important_devices"
 		color="#2196F3"
 	>
 		Create an Apple Push Notification authentication key, a provisioning profile and an App ID to use with FCM on iOS.
@@ -42,7 +42,7 @@ To integrate FCM for iOS, the following integration steps must be followed;
 	<Block
 		title="Configure Xcode Project notification capabilities"
 		to="/ios-xcode-project-capabilities"
-		icon="tool"
+		icon="add_alert"
 		color="#2196F3"
 	>
 		Configure your Xcode Project capabilities to support Remote Notifications for FCM.
