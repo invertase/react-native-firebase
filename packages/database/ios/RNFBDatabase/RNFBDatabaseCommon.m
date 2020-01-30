@@ -224,7 +224,11 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
     :(FIRDataSnapshot *)dataSnapshot {
   NSMutableDictionary *snapshot = [[NSMutableDictionary alloc] init];
 
-  [snapshot setValue:dataSnapshot.key forKey:@"key"];
+  if (dataSnapshot.key != nil) {
+    [snapshot setValue:dataSnapshot.key forKey:@"key"];
+  } else {
+    [snapshot setValue:[NSNull null] forKey:@"key"];
+  }
   [snapshot setValue:@(dataSnapshot.exists) forKey:@"exists"];
   [snapshot setValue:@(dataSnapshot.hasChildren) forKey:@"hasChildren"];
   [snapshot setValue:@(dataSnapshot.childrenCount) forKey:@"childrenCount"];

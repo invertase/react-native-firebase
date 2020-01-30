@@ -18,8 +18,8 @@ set -e
 
 if [[ ${PODS_ROOT} ]]; then
   echo "info: Exec Fabric Run from Pods"
-  ${PODS_ROOT}/Fabric/run
+  "${PODS_ROOT}/Fabric/run"
 else
   echo "info: Exec Fabric Run from framework"
-  ${PROJECT_DIR}/Fabric.framework/run
+  "${PROJECT_DIR}/Fabric.framework/run"
 fi

@@ -34,7 +34,7 @@ Import and apply the React Native Firebase module package to your `/android/app/
 Import the package:
 
 ```java
-import io.invertase.firebase.admob.ReactNativeFirebaseAdMobPackage;
+import io.invertase.firebase.admob.ReactNativeFirebaseAdmobPackage;
 ```
 
 Add the package to the registry:
@@ -43,7 +43,7 @@ Add the package to the registry:
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
-    new ReactNativeFirebaseAdMobPackage(),
+    new ReactNativeFirebaseAdmobPackage(),
 ```
 
 #### Rebuild the project

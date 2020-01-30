@@ -30,11 +30,13 @@ import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import AppleAuthProvider from './providers/AppleAuthProvider';
 import Settings from './Settings';
 import User from './User';
 import version from './version';
 
 const statics = {
+  AppleAuthProvider,
   EmailAuthProvider,
   PhoneAuthProvider,
   GoogleAuthProvider,
@@ -134,7 +136,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -146,7 +150,9 @@ class FirebaseAuthModule extends FirebaseModule {
     );
 
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
     return () => subscription.remove();
   }
@@ -154,7 +160,9 @@ class FirebaseAuthModule extends FirebaseModule {
   onUserChanged(listener) {
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
-      listener(this._user || null);
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
     }
 
     return () => {
@@ -223,11 +231,11 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  sendPasswordResetEmail(email, actionCodeSettings) {
+  sendPasswordResetEmail(email, actionCodeSettings = {}) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
-  sendSignInLinkToEmail(email, actionCodeSettings) {
+  sendSignInLinkToEmail(email, actionCodeSettings = {}) {
     return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 
@@ -265,6 +273,13 @@ class FirebaseAuthModule extends FirebaseModule {
 
   verifyPasswordResetCode(code) {
     return this.native.verifyPasswordResetCode(code);
+  }
+
+  useUserAccessGroup(userAccessGroup) {
+    if (isAndroid) {
+      return Promise.resolve();
+    }
+    return this.native.useUserAccessGroup(userAccessGroup);
   }
 
   getRedirectResult() {

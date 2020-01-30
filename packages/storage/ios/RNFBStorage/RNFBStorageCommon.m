@@ -182,9 +182,17 @@
 
       NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
       for (PHAssetResource *resource in resources) {
-        exportSession.outputFileType = resource.uniformTypeIdentifier;
-        if (exportSession.outputFileType != nil)
-          break;
+        if (resources.count > 1) {
+          if (resource.type != PHAssetResourceTypeVideo) {
+            continue;
+          } else {
+            exportSession.outputFileType = resource.uniformTypeIdentifier;
+          }
+        } else {
+          exportSession.outputFileType = resource.uniformTypeIdentifier;
+        }
+
+        if (exportSession.outputFileType != nil) break;
       }
 
       [exportSession exportAsynchronouslyWithCompletionHandler:^{
@@ -308,7 +316,7 @@
 
   return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
-      @"metadata": storageMetadata,
+      @"metadata": storageMetadata != nil ? storageMetadata : [NSNull null],
       @"state": state,
       @"totalBytes": @(task.progress.totalUnitCount)
   } mutableCopy];

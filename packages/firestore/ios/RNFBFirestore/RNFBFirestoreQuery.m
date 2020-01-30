@@ -67,6 +67,10 @@
       _query = [_query queryWhereField:fieldPath isLessThanOrEqualTo:value];
     } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
       _query = [_query queryWhereField:fieldPath arrayContains:value];
+    } else if ([operator isEqualToString:@"IN"]) {
+      _query = [_query queryWhereField:fieldPath in:value];
+    } else if ([operator isEqualToString:@"ARRAY_CONTAINS_ANY"]) {
+      _query = [_query queryWhereField:fieldPath arrayContainsAny:value];
     }
   }
 }

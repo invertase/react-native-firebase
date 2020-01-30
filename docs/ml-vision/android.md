@@ -35,7 +35,7 @@ dependencies {
 
 ```java{2,8}
 // ..
-import io.invertase.firebase.ml.naturallanguage.ReactNativeFirebaseMLVisionPackage;
+import io.invertase.firebase.ml.vision.ReactNativeFirebaseMLVisionPackage;
 
   // ..
   protected List<ReactPackage> getPackages() {

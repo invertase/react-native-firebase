@@ -164,15 +164,14 @@ RCT_EXPORT_METHOD(list:
     : (RCTPromiseRejectBlock) reject
 ) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
-  long *maxResults = [listOptions[@"maxResults"] pointerValue];
+  long maxResults = [listOptions[@"maxResults"] longValue];
 
   id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
-      NSDictionary * dick = [RNFBStorageCommon listResultToDict:result];
-      // so we can see the result
-      resolve(dick);
+      NSDictionary *listResultDict = [RNFBStorageCommon listResultToDict:result];
+      resolve(listResultDict);
     }
   };
 
