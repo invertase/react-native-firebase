@@ -16,6 +16,7 @@
  */
 
 import { isAndroid, isFunction, isIOS, promiseDefer } from '@react-native-firebase/app/lib/common';
+import NativeFirebaseError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 
 let REQUEST_ID = 0;
 
@@ -25,6 +26,7 @@ export default class PhoneAuthListener {
     this._reject = null;
     this._resolve = null;
     this._promise = null;
+    this._jsStack = new Error().stack;
 
     this._timeout = timeout || 20;
     this._phoneAuthRequestId = REQUEST_ID++;
@@ -50,14 +52,14 @@ export default class PhoneAuthListener {
     if (isAndroid) {
       this._auth.native.verifyPhoneNumber(
         phoneNumber,
-        this._phoneAuthRequestId,
+        this._phoneAuthRequestId + '',
         this._timeout,
         this._forceResending,
       );
     }
 
     if (isIOS) {
-      this._auth.native.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestId);
+      this._auth.native.verifyPhoneNumber(phoneNumber, this._phoneAuthRequestId + '');
     }
   }
 
@@ -110,7 +112,10 @@ export default class PhoneAuthListener {
 
   _promiseDeferred() {
     if (!this._promise) {
-      this._promise = promiseDefer();
+      const { promise, resolve, reject } = promiseDefer();
+      this._promise = promise;
+      this._resolve = resolve;
+      this._reject = reject;
     }
   }
 
@@ -171,7 +176,7 @@ export default class PhoneAuthListener {
       state: 'error',
     };
 
-    snapshot.error = new NativeFirebaseError({ userInfo: state.error }, null, 'auth');
+    snapshot.error = new NativeFirebaseError({ userInfo: state.error }, this._jsStack, 'auth');
 
     this._emitToObservers(snapshot);
     this._emitToErrorCb(snapshot);

@@ -22,6 +22,36 @@ const TEST_PATH = `${PATH}/issues`;
 describe('database issues', () => {
   after(() => wipe(TEST_PATH));
 
+  it('#2813 should return a null snapshot key if path is root', async () => {
+    const ref = firebase
+      .app()
+      .database('https://react-native-firebase-testing-db2.firebaseio.com')
+      .ref();
+    const snapshot = await ref.once('value');
+    should.equal(snapshot.key, null);
+  });
+
+  it('#2833 should not mutate modifiers ordering', async () => {
+    const callback = sinon.spy();
+    const testRef = firebase
+      .database()
+      .ref()
+      .child('/test')
+      .orderByChild('disabled')
+      .equalTo(false);
+
+    testRef._modifiers.toString().should.be.a.String();
+    testRef._modifiers.toArray()[0].name.should.equal('orderByChild');
+
+    testRef.on('value', snapshot => {
+      callback(snapshot.val());
+    });
+
+    await Utils.spyToBeCalledOnceAsync(callback, 3000);
+
+    testRef.off('value');
+  });
+
   it('#100 array should return null where key is missing', async () => {
     const ref = firebase.database().ref(`${TEST_PATH}/issue_100`);
 

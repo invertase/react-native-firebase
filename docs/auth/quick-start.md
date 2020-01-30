@@ -7,19 +7,25 @@ description: Getting started with Authentication in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/auth
+
+# Using iOS
+cd ios/ && pod install
 ```
 
-Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
 The Authentication package provides a JavaScript API which mimics the Firebase Web SDK.
 
-Import the Analytics package into your project:
+Import the Authentication package into your project:
 
 ```js
 import auth from '@react-native-firebase/auth';
@@ -42,14 +48,14 @@ import { View, Text } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 function App() {
-  // Set an initilizing state whilst Firebase connects
-  const [initilizing, setInitilizing] = useState(true);
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
   // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
-    if (initilizing) setInitilizing(false);
+    if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
@@ -57,7 +63,7 @@ function App() {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  if (initilizing) return null;
+  if (initializing) return null;
 
   if (!user) {
     return (
@@ -86,7 +92,9 @@ The user is able to clear their state by deleting the apps data/cache from the d
 ### Auth providers
 
 React Native Firebase provides access to the majority of authentication providers available, including social providers
-including Facebook, Google, Twitter and Github, along with phone/SMS authentication.
+including Apple, Facebook, Google, Twitter and Github, along with phone/SMS authentication.
+
+For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
 
 <Grid columns="2">
 	<Block
@@ -95,7 +103,7 @@ including Facebook, Google, Twitter and Github, along with phone/SMS authenticat
 		title="Social Auth"
 		to="/social-auth"
 	>
-    Authenticate your users with popular social providers such as Facebook, Twitter, Google, Github or your own custom provider.
+    Authenticate your users with popular social providers such as Apple, Facebook, Twitter, Google, Github or your own custom provider.
 	</Block>
 	<Block
 		icon="perm_phone_msg"
@@ -103,7 +111,7 @@ including Facebook, Google, Twitter and Github, along with phone/SMS authenticat
 		title="Phone Auth"
 		to="/phone-auth"
 	>
-    Phone authentication allows users to sign in to Firebase using their phone as the authenticator. 
+    Phone authentication allows users to sign in to Firebase using their phone as the authenticator.
 	</Block>
 </Grid>
 

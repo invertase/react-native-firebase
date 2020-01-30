@@ -7,13 +7,24 @@ description: Getting started with Performance Monitoring in React Native Firebas
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/perf
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
+
+### Additional Android Steps:
+
+Android requires additional manual installation steps. See the <Anchor version group href="/android">Android</Anchor> 
+installation documentation for more information.
 
 ## Module usage
 
@@ -69,13 +80,16 @@ async function getRequest(url) {
   // Define meta details
   metric.putAttribute('user', 'abcd');
 
+  // Start the metric
+  await metric.start();
+
   // Perform a HTTP request and provide response information
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
 
-  // Stop the trace
+  // Stop the metric
   await metric.stop();
 
   return response.json();

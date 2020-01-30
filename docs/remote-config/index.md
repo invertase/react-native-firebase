@@ -49,5 +49,5 @@ Our documentation is a great place to start, however if you're looking for more 
 check out the resources below:
 
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native-firebase-config)
-- [Github Issues](https://github.com/invertase/react-native-firebase/issues?utf8=%E2%9C%93&q=is%3Aissue+sort%3Aupdated-desc+label%3Aconfig+)
-- [Firebase Documentation](https://firebase.google.com/docs/perf-mon?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=config)
+- [Github Issues](https://github.com/invertase/react-native-firebase/labels/Service%3A%20Remote%20Config)
+- [Firebase Documentation](https://firebase.google.com/docs/remote-config?utm_source=invertase&utm_medium=react-native-firebase&utm_campaign=config)

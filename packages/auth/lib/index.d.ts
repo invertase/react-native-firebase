@@ -48,7 +48,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase auth
  */
-export namespace Auth {
+export namespace FirebaseAuthTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
@@ -64,7 +64,7 @@ export namespace Auth {
    * const provider = firebase.auth.EmailAuthProvider;
    * const authCredential = provider.credential('foo@bar.com', '123456');
    *
-   * await firebase.auth().linkWithCredential(authCredential);
+   * await firebase.auth().signInWithCredential(authCredential);
    * ```
    */
   export interface AuthCredential {
@@ -213,6 +213,18 @@ export namespace Auth {
      * ```
      */
     GoogleAuthProvider: AuthProvider;
+    /**
+     * Apple auth provider implementation. Currently this is iOS only.
+     *
+     * For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.AppleAuthProvider;
+     * ```
+     */
+    AppleAuthProvider: AuthProvider;
     /**
      * Github auth provider implementation.
      *
@@ -544,8 +556,8 @@ export namespace Auth {
    */
   export interface ActionCodeInfo {
     /**
-    * The data associated with the action code.
-    */
+     * The data associated with the action code.
+     */
     data: ActionCodeInfoData;
     /**
      * The operation from where the action originated.
@@ -1176,7 +1188,7 @@ export namespace Auth {
      *
      * @param code An ISO language code.
      */
-    set languageCode(code: string): void;
+    set languageCode(code: string);
 
     /**
      * Returns the current `AuthSettings`.
@@ -1194,7 +1206,7 @@ export namespace Auth {
      *
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
-    currentUser(): User | null;
+    currentUser: User | null;
 
     /**
      * Listen for changes in the users auth state (logging in and out).
@@ -1582,18 +1594,36 @@ export namespace Auth {
      * @param code A password reset code.
      */
     verifyPasswordResetCode(code: string): Promise<void>;
+    /**
+     * Switch userAccessGroup and current user to the given accessGroup and the user stored in it.
+     * Sign in a user with any sign in method, and the same current user is available in all
+     * apps in the access group.
+     *
+     * Set the `useAccessGroup` argument to `null` to stop sharing the auth state (default behaviour), the user state will no longer be
+     * available to any other apps.
+     *
+     * @platform ios
+     *
+     * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
+     */
+    useUserAccessGroup(userAccessGroup: string): Promise<null>;
   }
 }
 
 declare module '@react-native-firebase/auth' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseAuthTypes.Module,
+    FirebaseAuthTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -1603,10 +1633,10 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      auth: FirebaseModuleWithStaticsAndApp<Auth.Module, Auth.Statics>;
+      auth: FirebaseModuleWithStaticsAndApp<FirebaseAuthTypes.Module, FirebaseAuthTypes.Statics>;
     }
     interface FirebaseApp {
-      auth(): Auth.Module;
+      auth(): FirebaseAuthTypes.Module;
     }
   }
 }

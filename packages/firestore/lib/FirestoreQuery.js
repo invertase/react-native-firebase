@@ -15,7 +15,13 @@
  *
  */
 
-import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import {
+  isArray,
+  isNull,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
@@ -36,6 +42,8 @@ export default class FirestoreQuery {
   }
 
   _handleQueryCursor(cursor, docOrField, fields) {
+    const modifiers = this._modifiers._copy();
+
     if (isUndefined(docOrField)) {
       throw new Error(
         `firebase.firestore().collection().${cursor}(*) Expected a DocumentSnapshot or list of field values but got undefined.`,
@@ -58,7 +66,7 @@ export default class FirestoreQuery {
         );
       }
 
-      const currentOrders = this._modifiers.orders;
+      const currentOrders = modifiers.orders;
 
       const values = [];
 
@@ -77,14 +85,22 @@ export default class FirestoreQuery {
         values.push(value);
       }
 
-      this._modifiers._orders.push({
-        fieldPath: '__name__',
-        direction: 'ASCENDING',
-      });
+      // Based on https://github.com/invertase/react-native-firebase/issues/2854#issuecomment-552986650
+      if (modifiers._orders.length) {
+        modifiers._orders.push({
+          fieldPath: '__name__',
+          direction: modifiers._orders[modifiers._orders.length - 1].direction,
+        });
+      } else {
+        modifiers._orders.push({
+          fieldPath: '__name__',
+          direction: 'ASCENDING',
+        });
+      }
 
       values.push(documentSnapshot.id);
 
-      return this._modifiers.setFieldsCursor(cursor, values);
+      return modifiers.setFieldsCursor(cursor, values);
     }
 
     /**
@@ -93,13 +109,13 @@ export default class FirestoreQuery {
 
     const allFields = [docOrField].concat(fields);
 
-    if (allFields.length > this._modifiers.orders.length) {
+    if (allFields.length > modifiers.orders.length) {
       throw new Error(
         `firebase.firestore().collection().${cursor}(*) Too many arguments provided. The number of arguments must be less than or equal to the number of orderBy() clauses.`,
       );
     }
 
-    return this._modifiers.setFieldsCursor(cursor, allFields);
+    return modifiers.setFieldsCursor(cursor, allFields);
   }
 
   endAt(docOrField, ...fields) {
@@ -187,7 +203,7 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.limit(limit);
+    const modifiers = this._modifiers._copy().limit(limit);
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
   }
@@ -291,7 +307,7 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.orderBy(path, directionStr);
+    const modifiers = this._modifiers._copy().orderBy(path, directionStr);
 
     try {
       modifiers.validateOrderBy();
@@ -339,7 +355,7 @@ export default class FirestoreQuery {
 
     if (!this._modifiers.isValidOperator(opStr)) {
       throw new Error(
-        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=' or 'array-contains'.",
+        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', 'array-contains', 'array-contains-any' or 'in'.",
       );
     }
 
@@ -355,7 +371,21 @@ export default class FirestoreQuery {
       );
     }
 
-    const modifiers = this._modifiers.where(path, opStr, value);
+    if (this._modifiers.isInOperator(opStr)) {
+      if (!isArray(value) || !value.length) {
+        throw new Error(
+          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. A non-empty array is required for '${opStr}' filters.`,
+        );
+      }
+
+      if (value.length > 10) {
+        throw new Error(
+          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 10 elements in the value array.`,
+        );
+      }
+    }
+
+    const modifiers = this._modifiers._copy().where(path, opStr, value);
 
     try {
       modifiers.validateWhere();

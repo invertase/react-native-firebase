@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase ml-natural-language
  */
-export namespace MLKitLanguage {
+export namespace FirebaseLanguageTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -90,7 +90,23 @@ export namespace MLKitLanguage {
   }
 
   /**
-   * An interface representing a suggest reply, an array of these are returned from `suggestReplies`
+   * An interface representing a suggested reply, an array of these are returned from `suggestReplies`.
+   *
+   * #### Example
+   *
+   * ```js
+   * const replies = await firebase.naturalLanguage().suggestReplies([
+   *   { text: "Hey, long time no speak!", },
+   *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
+   *   { text: 'We should catchup some time!', },
+   *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
+   * ]);
+   *
+   * replies.forEach(reply => {
+   *   console.log(reply.text);
+   * });
+   *
+   * ```
    *
    */
   export interface SuggestedReply {
@@ -208,14 +224,19 @@ export namespace MLKitLanguage {
 }
 
 declare module '@react-native-firebase/ml-natural-language' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseLanguageTypes.Module,
+    FirebaseLanguageTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -226,18 +247,28 @@ declare module '@react-native-firebase/app' {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
     interface Module {
-      naturalLanguage: FirebaseModuleWithStaticsAndApp<MLKitLanguage.Module, MLKitLanguage.Statics>;
+      naturalLanguage: FirebaseModuleWithStaticsAndApp<
+        FirebaseLanguageTypes.Module,
+        FirebaseLanguageTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      naturalLanguage(): MLKitLanguage.Module;
+      naturalLanguage(): FirebaseLanguageTypes.Module;
     }
   }
 }
 
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
+    /**
+     * If `true`, the Language ID Model will be installed onto the device.
+     */
     ml_natural_language_language_id_model: boolean;
+
+    /**
+     * If `true`, the Smart Reply Model will be installed onto the device.
+     */
     ml_natural_language_smart_reply_model: boolean;
   }
 }

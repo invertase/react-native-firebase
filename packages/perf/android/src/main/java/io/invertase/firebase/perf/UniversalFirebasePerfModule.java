@@ -117,15 +117,15 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
       HttpMetric httpMetric = httpMetrics.get(id);
 
       if (httpMetricConfig.containsKey("httpResponseCode")) {
-        httpMetric.setHttpResponseCode(httpMetricConfig.getInt("httpResponseCode"));
+        httpMetric.setHttpResponseCode((int) httpMetricConfig.getDouble("httpResponseCode"));
       }
 
       if (httpMetricConfig.containsKey("requestPayloadSize")) {
-        httpMetric.setRequestPayloadSize(httpMetricConfig.getInt("requestPayloadSize"));
+        httpMetric.setRequestPayloadSize((int) httpMetricConfig.getDouble("requestPayloadSize"));
       }
 
       if (httpMetricConfig.containsKey("responsePayloadSize")) {
-        httpMetric.setResponsePayloadSize(httpMetricConfig.getInt("responsePayloadSize"));
+        httpMetric.setResponsePayloadSize((int) httpMetricConfig.getDouble("responsePayloadSize"));
       }
 
       if (httpMetricConfig.containsKey("responseContentType")) {

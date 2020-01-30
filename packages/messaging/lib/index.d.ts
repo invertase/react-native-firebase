@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase messaging
  */
-export namespace Messaging {
+export namespace FirebaseMessagingTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
@@ -176,9 +176,15 @@ export namespace Messaging {
      *
      * It is recommended you call this method on app start and update your backend with the new token.
      *
+     * On iOS you'll need to register for remote notifications before calling this method, you can do
+     * this by calling `registerForRemoteNotifications` or `requestPermission` as part of your app
+     * startup. If you have not registered and you call this method you will receive an 'unregistered'
+     * error code.
+     *
      * #### Example - Default token
      *
      * ```js
+     * await firebase.messaging().registerForRemoteNotifications();
      * const fcmToken = await firebase.messaging().getToken();
      *
      * // Update backend (e.g. Firestore) with our scoped token for the user
@@ -242,10 +248,10 @@ export namespace Messaging {
      *   console.log('FCM Message Data:', remoteMessage.data);
      *
      *    // Update a users messages list using AsyncStorage
-     *    const currentMessages = await AsyncStorage.get('messages');
+     *    const currentMessages = await AsyncStorage.getItem('messages');
      *    const messageArray = JSON.parse(currentMessages);
      *    messageArray.push(remoteMessage.data);
-     *    await AsyncStorage.set('messages', JSON.stringify(messageArray));
+     *    await AsyncStorage.setItem('messages', JSON.stringify(messageArray));
      * });
      *
      * // Unsubscribe from further message events
@@ -256,7 +262,7 @@ export namespace Messaging {
      *
      * @param listener Called with a `RemoteMessage` when a new FCM payload is received from the server.
      */
-    onMessage(listener: (message: RemoteMessage) => any): Function;
+    onMessage(listener: (message: RemoteMessage) => any): () => void;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
@@ -287,7 +293,7 @@ export namespace Messaging {
      *
      * @param listener Called with a FCM token when the token is refreshed.
      */
-    onTokenRefresh(listener: (token: string) => any): Function;
+    onTokenRefresh(listener: (token: string) => any): () => void;
 
     /**
      * On iOS, messaging permission must be requested by the current application before messages can
@@ -318,6 +324,8 @@ export namespace Messaging {
      * or perform other user-facing actions (via the Notification library), you must call this method.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
+     *
+     * > You can safely call this method multiple times, if the app is already registered then this method resolves immediately.
      *
      * #### Example
      *
@@ -422,7 +430,7 @@ export namespace Messaging {
      *
      * @param listener Called when the FCM deletes pending messages.
      */
-    onDeletedMessages(listener: Function): Function;
+    onDeletedMessages(listener: () => void): () => void;
 
     /**
      * When sending a `RemoteMessage`, this listener is called when the message has been sent to FCM.
@@ -442,7 +450,7 @@ export namespace Messaging {
      *
      * @param listener Called when the FCM sends the remote message to FCM.
      */
-    onMessageSent(listener: (messageId: string) => any): Function;
+    onMessageSent(listener: (messageId: string) => any): () => void;
 
     /**
      * When sending a `RemoteMessage`, this listener is called when an error is thrown and the
@@ -463,7 +471,7 @@ export namespace Messaging {
      *
      * @param listener
      */
-    onSendError(listener: (evt: SendErrorEvent) => any): Function;
+    onSendError(listener: (evt: SendErrorEvent) => any): () => void;
 
     /**
      * On Android, set a message handler function which is called when the app is in the background
@@ -480,16 +488,16 @@ export namespace Messaging {
      * ```js
      * firebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {
      *    // Update a users messages list using AsyncStorage
-     *    const currentMessages = await AsyncStorage.get('messages');
+     *    const currentMessages = await AsyncStorage.getItem('messages');
      *    const messageArray = JSON.parse(currentMessages);
      *    messageArray.push(remoteMessage.data);
-     *    await AsyncStorage.set('messages', JSON.stringify(messageArray));
+     *    await AsyncStorage.setItem('messages', JSON.stringify(messageArray));
      * });
      * ```
      *
      * @android
      */
-    setBackgroundMessageHandler(handler: (message: RemoteMessage) => any);
+    setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
     /**
      * Send a new `RemoteMessage` to the FCM server.
@@ -542,14 +550,19 @@ export namespace Messaging {
 }
 
 declare module '@react-native-firebase/messaging' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Messaging.Module, Messaging.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseMessagingTypes.Module,
+    FirebaseMessagingTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -559,11 +572,14 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      messaging: FirebaseModuleWithStatics<Messaging.Module, Messaging.Statics>;
+      messaging: FirebaseModuleWithStatics<
+        FirebaseMessagingTypes.Module,
+        FirebaseMessagingTypes.Statics
+      >;
     }
 
     interface FirebaseApp {
-      messaging(): Messaging.Module;
+      messaging(): FirebaseMessagingTypes.Module;
     }
   }
 }

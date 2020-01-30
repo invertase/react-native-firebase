@@ -1,34 +1,33 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "0.3.0",
+  "version": "6.2.0",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/admob": "0.3.0",
-    "@react-native-firebase/analytics": "0.3.0",
-    "@react-native-firebase/app": "0.3.0",
-    "@react-native-firebase/app-types": "0.3.0",
-    "@react-native-firebase/auth": "0.3.0",
-    "@react-native-firebase/crashlytics": "0.3.0",
-    "@react-native-firebase/database": "0.3.0",
-    "@react-native-firebase/dynamic-links": "0.3.0",
-    "@react-native-firebase/firestore": "0.3.0",
-    "@react-native-firebase/functions": "0.3.0",
-    "@react-native-firebase/iid": "0.3.0",
-    "@react-native-firebase/in-app-messaging": "0.3.0",
-    "@react-native-firebase/indexing": "0.3.0",
-    "@react-native-firebase/invites": "0.3.0",
-    "@react-native-firebase/messaging": "0.3.0",
-    "@react-native-firebase/ml-natural-language": "0.3.0",
-    "@react-native-firebase/ml-vision": "0.3.0",
-    "@react-native-firebase/perf": "0.3.0",
-    "@react-native-firebase/remote-config": "0.3.0",
-    "@react-native-firebase/storage": "0.3.0",
+    "@react-native-firebase/admob": "6.2.0",
+    "@react-native-firebase/analytics": "6.2.0",
+    "@react-native-firebase/app": "6.2.0",
+    "@react-native-firebase/app-types": "6.2.0",
+    "@react-native-firebase/auth": "6.2.0",
+    "@react-native-firebase/crashlytics": "6.2.0",
+    "@react-native-firebase/database": "6.2.0",
+    "@react-native-firebase/dynamic-links": "6.2.0",
+    "@react-native-firebase/firestore": "6.2.0",
+    "@react-native-firebase/functions": "6.2.0",
+    "@react-native-firebase/iid": "6.2.0",
+    "@react-native-firebase/in-app-messaging": "6.2.0",
+    "@react-native-firebase/indexing": "6.2.0",
+    "@react-native-firebase/messaging": "6.2.0",
+    "@react-native-firebase/ml-natural-language": "6.2.0",
+    "@react-native-firebase/ml-vision": "6.2.0",
+    "@react-native-firebase/perf": "6.2.0",
+    "@react-native-firebase/remote-config": "6.2.0",
+    "@react-native-firebase/storage": "6.2.0",
     "react": "16.8.6",
-    "react-native": "0.60.4"
+    "react-native": "0.60.5"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "^0.0.13",
@@ -81,13 +80,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone X, iOS 12.2"
       },
       "ios.ci": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X"
+        "name": "iPhone X, iOS 12.2"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",

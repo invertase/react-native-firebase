@@ -45,7 +45,7 @@ export default class MobileAd {
     }
 
     if (this._onAdEventHandler) {
-      let nativeError = undefined;
+      let nativeError;
       if (error) {
         nativeError = NativeError.fromEvent(error, 'admob');
       }

@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase storage
  */
-export namespace Storage {
+export namespace FirebaseStorageTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
@@ -808,8 +808,9 @@ export namespace Storage {
      *
      * task.on('state_changed', (taskSnapshot) => {
      *   console.log(taskSnapshot.state);
-     * })
-     * .then(() => {]
+     * });
+     *
+     * task.then(() => {]
      *   console.log('Task complete');
      * })
      * .catch((error) => {
@@ -827,7 +828,7 @@ export namespace Storage {
       nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
       error?: ((a: NativeFirebaseError) => any) | null,
       complete?: (() => void) | null,
-    ): Function;
+    ): () => void;
 
     // /**
     //  * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
@@ -1092,14 +1093,19 @@ export namespace Storage {
 }
 
 declare module '@react-native-firebase/storage' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Storage.Module, Storage.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseStorageTypes.Module,
+    FirebaseStorageTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -1109,10 +1115,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      storage: FirebaseModuleWithStaticsAndApp<Storage.Module, Storage.Statics>;
+      storage: FirebaseModuleWithStaticsAndApp<
+        FirebaseStorageTypes.Module,
+        FirebaseStorageTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      storage(bucket?: string): Storage.Module;
+      storage(bucket?: string): FirebaseStorageTypes.Module;
     }
   }
 }

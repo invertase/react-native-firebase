@@ -2,8 +2,6 @@
 <!-- If this PR fixes an issue, type "Fixes #issueNumber" to automatically close the issue when the PR is merged. -->
 
 
-<!-- 🚨 PLEASE SEND PRs TO THE v5.x.x BRANCH AND NOT MASTER - THANKS 🚨 -->
-
 ### Summary
 
 <!-- Explain the **motivation** for making this change e.g. what existing problem does the pull request solve? -->
@@ -12,9 +10,7 @@
 
 - [ ] Supports `Android`
 - [ ] Supports `iOS`
-- [ ] `e2e` tests added or updated in [/tests/e2e/\*](/tests/e2e)
-- [ ] Updated the documentation in the [docs repo](https://github.com/invertase/react-native-firebase-docs)
-  - **LINK TO DOCS PR HERE**
+- [ ] `e2e` tests added or updated in packages/**/e2e
 - [ ] Flow types updated
 - [ ] Typescript types updated
 

@@ -58,7 +58,7 @@ export function parseUpdateArgs(args) {
       if (isString(key)) {
         data[key] = value;
       } else if (key instanceof FirestoreFieldPath) {
-        data = mergeFieldPathData(data, key._segments, value);
+        data[key._toPath()] = value;
       } else {
         throw new Error(`argument at index ${i} must be a string or FieldPath`);
       }
@@ -130,35 +130,16 @@ export function parseSetOptions(options) {
   return out;
 }
 
-function buildFieldPathData(segments, value) {
-  if (segments.length === 1) {
-    return {
-      [segments[0]]: value,
-    };
-  }
-  return {
-    [segments[0]]: buildFieldPathData(segments.slice(1), value),
-  };
-}
-
-export function mergeFieldPathData(data, segments, value) {
-  if (segments.length === 1) {
-    return {
-      ...data,
-      [segments[0]]: value,
-    };
-  }
-  if (data[segments[0]]) {
-    return {
-      ...data,
-      [segments[0]]: mergeFieldPathData(data[segments[0]], segments.slice(1), value),
-    };
-  }
-  return {
-    ...data,
-    [segments[0]]: buildFieldPathData(segments.slice(1), value),
-  };
-}
+// function buildFieldPathData(segments, value) {
+//   if (segments.length === 1) {
+//     return {
+//       [segments[0]]: value,
+//     };
+//   }
+//   return {
+//     [segments[0]]: buildFieldPathData(segments.slice(1), value),
+//   };
+// }
 
 export function parseSnapshotArgs(args) {
   if (args.length === 0) {

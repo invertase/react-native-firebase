@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Crashlytics package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `crashlytics` package:
+ * #### Example: Access the firebase export from the `crashlytics` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/crashlytics';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.crashlytics().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `crashlytics` package:
+ * #### Example: Using the default export from the `crashlytics` package:
  *
  * ```js
  * import crashlytics from '@react-native-firebase/crashlytics';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // crashlytics().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -53,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase crashlytics
  */
-export namespace Crashlytics {
+export namespace FirebaseCrashlyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   export interface Statics {}
@@ -85,7 +79,7 @@ export namespace Crashlytics {
     isCrashlyticsCollectionEnabled: true;
 
     /**
-     * Cause your app to crash for testing purposes.
+     * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
      *
      * #### Example
      *
@@ -102,7 +96,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * firebase.crashlytics().logEvent('Testing a crash');
+     * firebase.crashlytics().log('Testing a crash');
      * firebase.crashlytics().crash();
      * ```
      *
@@ -114,6 +108,8 @@ export namespace Crashlytics {
      * Record a JavaScript Error.
      *
      * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
+     * The line numbers in the stack trace (if available) will be relative to the javascript bundle built by your packager,
+     * after whatever transpilation or minimization steps happen. You will need to maintain sourcemaps to decode them if desired.
      *
      * #### Example
      *
@@ -227,14 +223,19 @@ export namespace Crashlytics {
 }
 
 declare module '@react-native-firebase/crashlytics' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseCrashlyticsTypes.Module,
+    FirebaseCrashlyticsTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -244,10 +245,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      crashlytics: FirebaseModuleWithStatics<Crashlytics.Module, Crashlytics.Statics>;
+      crashlytics: FirebaseModuleWithStatics<
+        FirebaseCrashlyticsTypes.Module,
+        FirebaseCrashlyticsTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      crashlytics(): Crashlytics.Module;
+      crashlytics(): FirebaseCrashlyticsTypes.Module;
     }
   }
 }

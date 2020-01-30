@@ -31,6 +31,16 @@ export default class DatabaseQueryModifiers {
     this._modifiers = [];
   }
 
+  _copy() {
+    const newInstance = new DatabaseQueryModifiers();
+    newInstance._limit = this._limit;
+    newInstance._orderBy = this._orderBy;
+    newInstance._startAt = this._startAt;
+    newInstance._endAt = this._endAt;
+    newInstance._modifiers = [...this._modifiers];
+    return newInstance;
+  }
+
   /**
    *
    * LIMIT
@@ -187,7 +197,7 @@ export default class DatabaseQueryModifiers {
 
   // Converts the modifier list to a string representation
   toString() {
-    const sorted = this._modifiers.sort((a, b) => {
+    const sorted = [].concat(this._modifiers).sort((a, b) => {
       if (a.id < b.id) {
         return -1;
       }

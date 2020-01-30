@@ -1,8 +1,8 @@
 {
   "name": "@react-native-firebase/admob",
-  "version": "0.3.0",
+  "version": "6.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Admob",
+  "description": "React Native Firebase - Google AdMob is an easy way to monetize mobile apps with targeted, in-app advertising.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -19,15 +19,17 @@
     "react",
     "react-native",
     "firebase",
-    "admob"
+    "admob",
+    "gdpr",
+    "banner ad",
+    "rewarded ad",
+    "interstitial",
+    "ad consent"
   ],
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "dependencies": {
-    "@react-native-firebase/app-types": "0.3.0"
-  },
-  "gitHead": "78b4d9cbef3f0e80eb4e5031f395d80e0c30aa24",
+  "gitHead": "8ae094a2d5f6f03064da24a2f4bb7ed1a7f6b647",
   "publishConfig": {
     "access": "public"
   }
