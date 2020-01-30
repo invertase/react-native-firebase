@@ -14,26 +14,38 @@ These guides makes the following assumptions:
 - you have a physical device to test your integration on
   - Firebase Cloud Messaging uses the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/) to send messages; therefore to test FCM on iOS you'll need **a real device** - FCM will not work on a iOS simulator
 
+Add the following to your `Podfile`:
+
+```ruby{3}
+$ pod 'Firebase/Messaging', '~> 6.13.0'
+```
+
+Run this from the command line in the `ios` directory of your project:
+
+```bash
+$ pod update
+```
+
 ### Integration steps
 
 To integrate FCM for iOS, the following integration steps must be followed;
 
 <Grid>
-	<Block
-		title="Configure Xcode Project notification capabilities"
-		to="/ios-xcode-project-capabilities"
-		icon="tool"
-		color="#2196F3"
-	>
-		Configure your Xcode Project capabilities to support Remote Notifications for FCM.
-  	</Block>
-	<Block
+  <Block
 		title="Configure Apple Push Notification service for FCM"
 		to="/ios-configure-apns"
-		icon="tool"
+		icon="important_devices"
 		color="#2196F3"
 	>
 		Create an Apple Push Notification authentication key, a provisioning profile and an App ID to use with FCM on iOS.
+  	</Block>
+	<Block
+		title="Configure Xcode Project notification capabilities"
+		to="/ios-xcode-project-capabilities"
+		icon="add_alert"
+		color="#2196F3"
+	>
+		Configure your Xcode Project capabilities to support Remote Notifications for FCM.
   	</Block>
 </Grid>
 
@@ -69,4 +81,3 @@ Once the Pods have installed locally, rebuild your iOS project:
 ```bash
 npx react-native run-ios
 ```
-
