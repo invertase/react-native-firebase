@@ -173,7 +173,7 @@ export function initializeApp(options = {}, configOrName) {
   return getAppModule()
     .initializeApp(options, { name })
     .then(() => {
-      app._intialized = true;
+      app._initialized = true;
       return app;
     });
 }

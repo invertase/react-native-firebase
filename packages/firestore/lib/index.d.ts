@@ -1194,16 +1194,24 @@ export namespace FirebaseFirestoreTypes {
      * ```
      *
      * @param fieldPath The path to compare.
-     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains").
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains", "array-contains-any", "in").
      * @param value The comparison value.
      */
     where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
   }
 
   /**
-   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', and 'array-contains'.
+   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', 'array-contains', 'array-contains-any' or 'in'.
    */
-  export type WhereFilterOp = '<' | '<=' | '==' | '>' | '>=' | 'array-contains';
+  export type WhereFilterOp =
+    | '<'
+    | '<='
+    | '=='
+    | '>'
+    | '>='
+    | 'array-contains'
+    | 'array-contains-any'
+    | 'in';
 
   /**
    * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
@@ -1282,7 +1290,8 @@ export namespace FirebaseFirestoreTypes {
      * @param callback A callback to be called with a `QueryDocumentSnapshot` for each document in the snapshot.
      * @param thisArg The `this` binding for the callback.
      */
-    forEach(callback: (snapshot: QueryDocumentSnapshot) => void, thisArg?: any): void;
+
+    forEach(callback: (result: QueryDocumentSnapshot, index: number) => void, thisArg?: any): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.

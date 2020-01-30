@@ -50,6 +50,13 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
   @ReactMethod
   public void rewardedLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
+    if (getCurrentActivity() == null) {
+      WritableMap error = Arguments.createMap();
+      error.putString("code", "null-activity");
+      error.putString("message", "Rewarded ad attempted to load but the current Activity was null.");
+      sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
+      return;
+    }
     getCurrentActivity().runOnUiThread(() -> {
       RewardedAd rewardedAd = new RewardedAd(getApplicationContext(), adUnitId);
 
@@ -80,6 +87,10 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
   @ReactMethod
   public void rewardedShow(int requestId, String adUnitId, ReadableMap showOptions, Promise promise) {
+    if (getCurrentActivity() == null) {
+      rejectPromiseWithCodeAndMessage(promise, "null-activity", "Rewarded ad attempted to show but the current Activity was null.");
+      return;
+    }
     getCurrentActivity().runOnUiThread(() -> {
       RewardedAd rewardedAd = rewardedAdArray.get(requestId);
 

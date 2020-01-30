@@ -891,4 +891,17 @@ describe('auth()', () => {
       );
     });
   });
+
+  describe('useUserAccessGroup()', () => {
+    it('should return "null" on successful keychain implementation', async () => {
+      const successfulKeychain = await firebase.auth().useUserAccessGroup('mysecretkeychain');
+
+      should.not.exist(successfulKeychain);
+
+      //clean up
+      const resetKeychain = await firebase.auth().useUserAccessGroup(null);
+
+      should.not.exist(resetKeychain);
+    });
+  });
 });

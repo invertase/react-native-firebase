@@ -64,7 +64,7 @@ export namespace FirebaseAuthTypes {
    * const provider = firebase.auth.EmailAuthProvider;
    * const authCredential = provider.credential('foo@bar.com', '123456');
    *
-   * await firebase.auth().linkWithCredential(authCredential);
+   * await firebase.auth().signInWithCredential(authCredential);
    * ```
    */
   export interface AuthCredential {
@@ -213,6 +213,18 @@ export namespace FirebaseAuthTypes {
      * ```
      */
     GoogleAuthProvider: AuthProvider;
+    /**
+     * Apple auth provider implementation. Currently this is iOS only.
+     *
+     * For Apple Authentication please see our [`@invertase/react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication) library which integrates well with Firebase and provides Firebase + Apple Auth examples.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.AppleAuthProvider;
+     * ```
+     */
+    AppleAuthProvider: AuthProvider;
     /**
      * Github auth provider implementation.
      *
@@ -1582,6 +1594,19 @@ export namespace FirebaseAuthTypes {
      * @param code A password reset code.
      */
     verifyPasswordResetCode(code: string): Promise<void>;
+    /**
+     * Switch userAccessGroup and current user to the given accessGroup and the user stored in it.
+     * Sign in a user with any sign in method, and the same current user is available in all
+     * apps in the access group.
+     *
+     * Set the `useAccessGroup` argument to `null` to stop sharing the auth state (default behaviour), the user state will no longer be
+     * available to any other apps.
+     *
+     * @platform ios
+     *
+     * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
+     */
+    useUserAccessGroup(userAccessGroup: string): Promise<null>;
   }
 }
 

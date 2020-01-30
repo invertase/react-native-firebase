@@ -69,6 +69,10 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return Tasks.call(getExecutor(), () -> {
       FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
       configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
+      if (configSettings.containsKey("minimumFetchInterval")) {
+        double fetchInterval = configSettings.getDouble("minimumFetchInterval");
+        configSettingsBuilder.setMinimumFetchIntervalInSeconds((long)fetchInterval);
+      }
       FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
       return null;
     });
@@ -174,6 +178,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     appConstants.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
     appConstants.put("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
     appConstants.put("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
+    appConstants.put("minimumFetchInterval", remoteConfigSettings.getMinimumFetchIntervalInSeconds());
 
     return appConstants;
   }

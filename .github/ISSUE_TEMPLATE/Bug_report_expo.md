@@ -1,13 +1,19 @@
+---
+name: ⚠️ Bug/Issue report - Expo
+labels: 
+  - Platform: Expo
+  - Resolution: Invalid
+about:
+  Report an issue with using React Native Firebase in Expo.
+---
+
 <!---
-EXPO USERS: We have no support in place for using React Native Firebase in Expo applications (ejected or otherwise).
+NOTE: We have no support in place for using React Native Firebase in Expo applications (ejected or otherwise).
 If you are seeing an issue, it may most likely not be an issue with React Native Firebase itself, but with the Expo runtime or with an incorrect React Native Firebase setup. For support on how to use Firebase with Expo, you should contact the Expo team or the Expo community.
 General Expo issues are no longer be allowed on the React Native Firebase issue tracker. If you've investigated the Expo runtime or your app and found a genuine issue with React Native Firebase, please continue to open an issue.
 --->
 
 <!---
-Hello there you awesome person;
-Please note that the issue list of this repo is exclusively for bug reports;
-
 1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
 2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
 3) If this is a setup issue then please make sure you've correctly followed the setup guides, most setup issues such as 'duplicate dex files', 'default app has not been initialized' etc are all down to an incorrect setup as the guides haven't been correctly followed.
@@ -71,6 +77,13 @@ Describe your issue here
 <details><summary>Click To Expand</summary>
 <p>
 
+#### Have you converted to AndroidX?
+
+<!--- Mark any options that apply below -->
+- [ ] my application is an AndroidX application?
+- [ ] I am using `android/gradle.settings` `jetifier=true` for Android compatibility?
+- [ ] I am using the NPM package `jetifier` for react-native compatibility?
+
 #### `android/build.gradle`:
 
 ```groovy
@@ -128,10 +141,14 @@ Describe your issue here
   - [ ] **iOS** but have not tested behavior on Android
   - [ ] **Android** but have not tested behavior on iOS
   - [ ] Both
+- **`react-native-firebase` version you're using that has this issue:**
+  - `e.g. 5.4.3`
 - **`Firebase` module(s) you're using that has the issue:**
   - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
-  - `Y/N`
+  - `Y/N` & `VERSION`
+- **Are you using `Expo`?**
+  - `Y` & `SDK VERSION`
   
 </p>
 </details>

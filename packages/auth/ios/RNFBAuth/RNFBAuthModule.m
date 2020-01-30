@@ -80,14 +80,14 @@ RCT_EXPORT_MODULE();
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
 
     [[FIRAuth authWithApp:firebaseApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
-    [authStateHandlers removeObjectForKey:key];
   }
+  [authStateHandlers removeAllObjects];
 
   for (NSString *key in idTokenHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
-    [idTokenHandlers removeObjectForKey:key];
   }
+  [idTokenHandlers removeAllObjects];
 }
 
 #pragma mark -
@@ -110,7 +110,7 @@ RCT_EXPORT_METHOD(addAuthStateListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_STATE_CHANGED_EVENT body:@{}];
           }
         }];
-    authStateHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    authStateHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 
@@ -139,8 +139,7 @@ RCT_EXPORT_METHOD(addIdTokenListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{}];
           }
         }];
-
-    idTokenHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    idTokenHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 
@@ -158,6 +157,23 @@ RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting:
     :(BOOL) disabled
 ) {
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
+}
+
+RCT_EXPORT_METHOD(useUserAccessGroup:
+  (FIRApp *) firebaseApp
+    :(NSString *) userAccessGroup
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  NSError *error;
+  [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:&error];
+
+  if(!error){
+    [self promiseNoUser:resolve rejecter:reject isError:NO];
+  } else {
+    [self promiseRejectAuthException:reject error:error];
+  }
+  return;
 }
 
 RCT_EXPORT_METHOD(signOut:
@@ -879,6 +895,8 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
+  } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider credentialWithProviderID:provider IDToken:authToken rawNonce:authTokenSecret];
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
   } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
@@ -1144,7 +1162,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }
 
   if (actionCodeSettings[keyDynamicLinkDomain]) {
-    NSString *dynamicLinkDomain = [actionCodeSettings[keyDynamicLinkDomain] stringValue];
+    NSString *dynamicLinkDomain = actionCodeSettings[keyDynamicLinkDomain];
     [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 

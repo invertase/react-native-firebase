@@ -180,7 +180,6 @@ describe('auth().currentUser', () => {
         handleCodeInApp: true,
         url: 'https://react-native-firebase-testing.firebaseapp.com/foo',
       };
-      await Utils.sleep(3000);
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);

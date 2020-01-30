@@ -63,6 +63,13 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
   @ReactMethod
   public void interstitialLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
+    if (getCurrentActivity() == null) {
+      WritableMap error = Arguments.createMap();
+      error.putString("code", "null-activity");
+      error.putString("message", "Interstitial ad attempted to load but the current Activity was null.");
+      sendInterstitialEvent(AD_ERROR, requestId, adUnitId, error);
+      return;
+    }
     getCurrentActivity().runOnUiThread(() -> {
       InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
       interstitialAd.setAdUnitId(adUnitId);
@@ -112,6 +119,10 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
   @ReactMethod
   public void interstitialShow(int requestId, ReadableMap showOptions, Promise promise) {
+    if (getCurrentActivity() == null) {
+      rejectPromiseWithCodeAndMessage(promise, "null-activity", "Interstitial ad attempted to show but the current Activity was null.");
+      return;
+    }
     getCurrentActivity().runOnUiThread(() -> {
       InterstitialAd interstitialAd = interstitialAdArray.get(requestId);
 
