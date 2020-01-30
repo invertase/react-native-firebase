@@ -153,11 +153,9 @@ export namespace FirebaseDatabaseTypes {
 
     /**
      * The last part of the Reference's path.
-
      * For example, "ada" is the key for https://<DATABASE_NAME>.firebaseio.com/users/ada.
-
+     * 
      * The key of a root Reference is null.
-    
      */
     key: string | null;
 
