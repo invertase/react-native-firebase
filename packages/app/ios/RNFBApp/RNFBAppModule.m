@@ -63,6 +63,9 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
+- (void)invalidate {
+  [[RNFBRCTEventEmitter shared] invalidate];
+}
 
 #pragma mark -
 #pragma mark META Methods

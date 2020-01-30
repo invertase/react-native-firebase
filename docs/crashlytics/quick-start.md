@@ -53,6 +53,14 @@ Once installed, import the Crashlytics package into your project:
 import crashlytics from '@react-native-firebase/crashlytics';
 ```
 
+You need to import the library even if you're not using any functions of the Crashlytics SDK. By doing this, you enable the listener that get the JS stacktrace into the Crash Reporting console in Firebase
+
+Consider putting this in `index.js` file.
+
+```js
+import '@react-native-firebase/crashlytics';
+```
+
 The package also provides access to the firebase instance:
 
 ```js
@@ -109,8 +117,18 @@ async function onSignIn(user) {
 }
 ```
 
-### Disabling Crashlytics
+### Disabling Crashlytics automatic collection 
 
-To disable Crashlytics, set the `crashlytics_auto_collection_enabled` to `false` in the `firebase.json` file.
+To disable Crashlytics so you can manually opt-in your app users, set the `crashlytics_auto_collection_enabled` option to `false` in the `firebase.json` file.
 
-To learn more, view the <Anchor version group="app" href="/firebase-json">App documentation</Anchor>.
+Once your user has consented, enable Crashlytics collection via the JavaScript API:
+
+```js
+await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
+```
+
+
+### Enabling Debug Reports
+By default, Crashlytics won't report crashes and logs from builds in debug mode. To enable it, set the `crashlytics_debug_enabled` option to `true` in the `react-native` section of your `firebase.json` config file.
+
+To learn more about all the `firebase.json` options, view the <Anchor version group="app" href="/reference/firebasejsonconfig">documentation here</Anchor>. 

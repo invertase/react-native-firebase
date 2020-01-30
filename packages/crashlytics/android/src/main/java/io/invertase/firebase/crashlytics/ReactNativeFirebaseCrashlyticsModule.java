@@ -110,10 +110,11 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
-  public void setCrashlyticsCollectionEnabled(Boolean enabled) {
+  public void setCrashlyticsCollectionEnabled(Boolean enabled, Promise promise) {
     ReactNativeFirebasePreferences
       .getSharedInstance()
       .setBooleanValue(Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, enabled);
+    promise.resolve(null);
   }
 
   @ReactMethod

@@ -1,7 +1,7 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
-firebase_sdk_version = '~> 6.8.1'
+firebase_sdk_version = '~> 6.13.0'
 using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
 if using_custom_firebase_sdk_version
   Pod::UI.puts "RNFBAdMob: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
@@ -9,7 +9,7 @@ if using_custom_firebase_sdk_version
 end
 
 Pod::Spec.new do |s|
-  s.name                = "RNFBAdmob"
+  s.name                = "RNFBAdMob"
   s.version             = package["version"]
   s.description         = package["description"]
   s.summary             = <<-DESC

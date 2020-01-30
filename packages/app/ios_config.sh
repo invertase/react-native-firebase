@@ -133,8 +133,8 @@ for i in "${!_PLIST_ENTRY_KEYS[@]}"; do
   echo "    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}" "${_PLIST_ENTRY_TYPES[$i]}" "${_PLIST_ENTRY_VALUES[$i]}"
 done
 
-for plist in ${_TARGET_PLIST} ${_DSYM_PLIST} ; do
-  if [[ -f ${plist} ]]; then
+for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
+  if [[ -f "${plist}" ]]; then
     for i in "${!_PLIST_ENTRY_KEYS[@]}"; do
       setPlistValue "${_PLIST_ENTRY_KEYS[$i]}" "${_PLIST_ENTRY_TYPES[$i]}" "${_PLIST_ENTRY_VALUES[$i]}" "${plist}"
     done

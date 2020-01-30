@@ -14,6 +14,9 @@ Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/admob
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 **IMPORTANT**: Ensure you update the "Contains ads" settings in the Google Play Store (via Pricing & Distribution tab).
@@ -155,7 +158,7 @@ Using the `setRequestConfiguration` method, all future ad requests will comply w
 import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
 
 await admob().setRequestConfiguration({
-  setRequestConfiguration: MaxAdContentRating.PG,
+  maxAdContentRating: MaxAdContentRating.PG,
   tagForChildDirectedTreatment: true,
   tagForUnderAgeOfConsent: true,
 });

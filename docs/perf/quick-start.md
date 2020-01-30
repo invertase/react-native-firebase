@@ -14,6 +14,9 @@ Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/perf
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
@@ -77,13 +80,16 @@ async function getRequest(url) {
   // Define meta details
   metric.putAttribute('user', 'abcd');
 
+  // Start the metric
+  await metric.start();
+
   // Perform a HTTP request and provide response information
   const response = await fetch(url);
   metric.setHttpResponseCode(response.status);
   metric.setResponseContentType(response.headers.get('Content-Type'));
   metric.setResponsePayloadSize(response.headers.get('Content-Length'));
 
-  // Stop the trace
+  // Stop the metric
   await metric.stop();
 
   return response.json();
