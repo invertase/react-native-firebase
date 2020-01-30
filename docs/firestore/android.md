@@ -1,5 +1,5 @@
 ---
-title: Firestore Android Initialization
+title: Cloud Firestore Android Integration
 description: Manually integrate Cloud Firestore into your Android application.
 ---
 
