@@ -1,6 +1,6 @@
 ---
 title: Cloud Firestore iOS Integration
-description: Firestore initialization with iOS.
+description: Manually integrate Cloud Firestore into your iOS application.
 ---
 
 # iOS Manual Linking
