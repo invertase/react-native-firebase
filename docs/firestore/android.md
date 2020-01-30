@@ -5,7 +5,7 @@ description: Manually integrate Cloud Firestore into your Android application.
 
 # Android Manual Linking
 
-> The following steps are only required if you are using React Native without auto-linking (<= 0.59) or need to manually integrate the library.
+> The following steps are only required if you are using React Native without auto-linking (<= 0.59) or you need to manually integrate the library.
 
 ### Add Firestore to Gradle Settings
 
