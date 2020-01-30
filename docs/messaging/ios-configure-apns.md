@@ -125,7 +125,7 @@ Congratulations. You have now completed configuring Apple Push Notification serv
 	<Block
 		title="Configure Xcode Project notification capabilities"
 		to="/ios-xcode-project-capabilities"
-		icon="tool"
+		icon="add_alert"
 		color="#2196F3"
 	>
 		Configure your Xcode Project capabilities to support Remote Notifications for FCM.
