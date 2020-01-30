@@ -17,8 +17,6 @@ Add the `RNFBCrashlytics`, `Fabric` & `Crashlytics` Pod to your projects `/ios/P
 target 'app' do
   ...
   pod 'RNFBCrashlytics', :path => '../node_modules/@react-native-firebase/crashlytics'
-  pod 'Fabric', '~> 1.10.2'
-  pod 'Crashlytics', '~> 3.13.2'
 end
 ```
 
