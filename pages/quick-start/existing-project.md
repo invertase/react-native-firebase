@@ -17,6 +17,7 @@ project:
 ```bash
 yarn add @react-native-firebase/app
 
+# For iOS
 cd ios && pod install
 ```
 
