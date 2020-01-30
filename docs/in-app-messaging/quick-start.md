@@ -7,10 +7,16 @@ description: Getting started with Firebase In-App Messaging in React Native Fire
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/in-app-messaging
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.

@@ -131,7 +131,6 @@ RCT_EXPORT_MODULE();
                registration:(NSDictionary *)registration
                    snapshot:(FIRDataSnapshot *)dataSnapshot
           previousChildName:(NSString *)previousChildName {
-  NSLog(@"HANDLE DB EVENT");
   NSDictionary *data;
   if ([eventType isEqualToString:@"value"]) {
     data = [RNFBDatabaseCommon snapshotToDictionary:dataSnapshot];
@@ -152,7 +151,6 @@ RCT_EXPORT_MODULE();
 - (void)handleDatabaseEventError:(NSString *)key
                     registration:(NSDictionary *)registration
                            error:(NSError *)error {
-  NSLog(@"HANDLE DB ERROR");
   NSArray *codeAndMessage = [RNFBDatabaseCommon getCodeAndMessage:error];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_SYNC body:@{
       @"body": @{

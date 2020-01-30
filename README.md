@@ -6,20 +6,21 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/dm/react-native-firebase.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/react-native-firebase"><img src="https://img.shields.io/npm/v/react-native-firebase.svg?style=flat-square" alt="NPM version"></a>
-  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/app"><img src="https://img.shields.io/npm/dm/@react-native-firebase/app.svg?style=flat-square" alt="NPM downloads"></a>
+  <a href="https://www.npmjs.com/package/@react-native-firebase/app"><img src="https://img.shields.io/npm/v/@react-native-firebase/app.svg?style=flat-square" alt="NPM version"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/@react-native-firebase/app.svg?style=flat-square" alt="License"></a>
   <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
 </p>
 
 <p align="center">
   <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
   <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
+  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
 ---
 
-> **WARNING**: Master branch is the work in progress v6.0.0 version of React Native Firebase, you're probably looking for the current [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x) instead, please send all PRs for the live version to that branch. You can [learn more about this here](https://invertase.io/blog/react-native-firebase-2019).
+> Looking for the legacy version of React Native Firebase? See the [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x).
 
 ---
 
@@ -30,7 +31,7 @@ React Native Firebase is built with four key principals in mind;
 - 🧪 **Well tested**
   - every module is extensively tested to >95% coverage
 - 👁 **Well typed**
-  - first class support for both Flow & Typescript included
+  - first class support for Typescript included
 - 📄 **Well documented**
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🔥 **Mirrors official Firebase Web SDK**
@@ -59,7 +60,6 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 | [Instance ID](/packages/iid)                             |                 [![badge](https://img.shields.io/npm/dm/@react-native-firebase/iid.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/iid)                 |                 [![badge](https://api.rnfirebase.io/coverage/iid/badge)](https://api.rnfirebase.io/coverage/iid/detail)                 |
 | [ML Kit Natural Language](/packages/ml-natural-language) | [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-natural-language) | [![badge](https://api.rnfirebase.io/coverage/ml-natural-language/badge)](https://api.rnfirebase.io/coverage/ml-natural-language/detail) |
 | [ML Kit Vision](/packages/ml-vision)                     |           [![badge](https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/ml-vision)           |           [![badge](https://api.rnfirebase.io/coverage/ml-vision/badge)](https://api.rnfirebase.io/coverage/ml-vision/detail)           |
-| [Notifications](/packages/notifications)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/notifications.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/notifications)       |       [![badge](https://api.rnfirebase.io/coverage/notifications/badge)](https://api.rnfirebase.io/coverage/notifications/detail)       |
 | [Performance Monitoring](/packages/perf)                 |                [![badge](https://img.shields.io/npm/dm/@react-native-firebase/perf.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/perf)                |                [![badge](https://api.rnfirebase.io/coverage/perf/badge)](https://api.rnfirebase.io/coverage/perf/detail)                |
 | [Realtime Database](/packages/database)                  |            [![badge](https://img.shields.io/npm/dm/@react-native-firebase/database.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/database)            |            [![badge](https://api.rnfirebase.io/coverage/database/badge)](https://api.rnfirebase.io/coverage/database/detail)            |
 | [Remote Config](/packages/remote-config)                 |       [![badge](https://img.shields.io/npm/dm/@react-native-firebase/remote-config.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/@react-native-firebase/remote-config)       |       [![badge](https://api.rnfirebase.io/coverage/remote-config/badge)](https://api.rnfirebase.io/coverage/remote-config/detail)       |

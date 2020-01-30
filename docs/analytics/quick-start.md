@@ -7,13 +7,19 @@ description: Getting started with Analytics in React Native Firebase
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/analytics
+
+# Using iOS
+cd ios/ && pod install
 ```
 
-Need to install the module manually? Follow the <Anchor href="/android-installation">Android</Anchor> or <Anchor href="/ios-installation">iOS</Anchor> manual installation guides.
+> Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
@@ -22,7 +28,7 @@ To view the full list of automatic events, see [this page](https://support.googl
 
 The package also provides a JavaScript API to allow for logging custom events and metrics throughout your application.
 
-Import the Cloud Functions package into your project:
+Import the Analytics package into your project:
 
 ```js
 import analytics from '@react-native-firebase/analytics';
@@ -105,3 +111,17 @@ async function onSignOut() {
   await analytics().resetAnalyticsData();
 }
 ```
+
+### Ignore analytics events when running in TestLab (Pre-launch report)
+
+When submitting to the Google Play Store, analytics events are triggered while the app is being tested in TestLab in order to generate pre-launch reports. Typically you want to ignore those events, which you can achieve via the following utility functions:
+
+```js
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/analytics';
+
+if (firebase.app().utils().isRunningInTestLab) {
+	firebase.analytics().setAnalyticsCollectionEnabled(false);
+}
+```
+

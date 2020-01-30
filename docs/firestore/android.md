@@ -5,9 +5,9 @@ description: Firestore initialization with Android.
 
 # Android Manual Linking
 
-> The following steps are only required if you are using React Native <= 0.59 or need to manually integrate the library.
+> The following steps are only required if you are using React Native without auto-linking (<= 0.59) or need to manually integrate the library.
 
-#### Add Firestore to Gradle Settings
+### Add Firestore to Gradle Settings
 
 **`android/settings.gradle`**:
 
@@ -16,7 +16,7 @@ include ':@react-native-firebase_firestore'
 project(':@react-native-firebase_firestore').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/firestore/android')
 ```
 
-#### Add Firestore to App Gradle Dependencies
+### Add Firestore to App Gradle Dependencies
 
 **`android/app/build.gradle`**:
 
@@ -28,7 +28,7 @@ dependencies {
 }
 ```
 
-#### Add Firestore to Main Android Application:
+### Add Firestore to Main Android Application:
 
 **`android/app/src/main/java/{yourApp}/MainApplication.java`**:
 
@@ -44,7 +44,7 @@ import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
       // ..
 ```
 
-#### Enable multidex
+### Enable multidex
 
 Adding Firestore to your Android app requires [`multidex enabled`](https://developer.android.com/studio/build/multidex).
 
@@ -80,4 +80,12 @@ import android.support.multidex.MultiDexApplication;
   public class MainApplication extends MultiDexApplication implements ReactApplication {
       // ..
   }
+```
+
+### Rebuild your project
+
+Once the above steps have been completed, rebuild your Android project:
+
+```bash
+npx react-native run-android
 ```

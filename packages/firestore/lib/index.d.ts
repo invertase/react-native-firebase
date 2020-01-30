@@ -20,9 +20,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 /**
  * Firebase Cloud Firestore package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `firestore` package:
+ * #### Example: Access the firebase export from the `firestore` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/firestore';
@@ -30,9 +28,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firebase.firestore().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `firestore` package:
+ * #### Example: Using the default export from the `firestore` package:
  *
  * ```js
  * import firestore from '@react-native-firebase/firestore';
@@ -40,9 +36,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  * // firestore().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -53,7 +47,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase firestore
  */
-export namespace Firestore {
+export namespace FirebaseFirestoreTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
   /**
@@ -127,7 +121,7 @@ export namespace Firestore {
      *
      * @param data An Object containing the data for the new document.
      */
-    add(data: { [key]: value }): Promise<DocumentReference>;
+    add(data: { [key: string]: value }): Promise<DocumentReference>;
 
     /**
      * Get a DocumentReference for the document within the collection at the specified path. If no
@@ -291,7 +285,11 @@ export namespace Firestore {
      *
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(observer: FirestoreObserver): Function;
+    onSnapshot(observer: {
+      complete?: () => void;
+      error?: (error: Error) => void;
+      next?: (snapshot: DocumentSnapshot) => void;
+    }): () => void;
 
     /**
      * Attaches a listener for DocumentSnapshot events with snapshot listener options.
@@ -317,7 +315,14 @@ export namespace Firestore {
      * @param options Options controlling the listen behavior.
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(options: SnapshotListenOptions, observer: FirestoreObserver): Function;
+    onSnapshot(
+      options: SnapshotListenOptions,
+      observer: {
+        complete?: () => void;
+        error?: (error: Error) => void;
+        next?: (snapshot: DocumentSnapshot) => void;
+      },
+    ): () => void;
 
     /**
      * Attaches a listener for DocumentSnapshot events.
@@ -341,7 +346,11 @@ export namespace Firestore {
      * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
      * @param onCompletion An optional function which will never be called.
      */
-    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
+    onSnapshot(
+      onNext: (snapshot: DocumentSnapshot) => void,
+      onError?: (error: Error) => void,
+      onCompletion?: () => void,
+    ): () => void;
 
     /**
      * Attaches a listener for DocumentSnapshot events with snapshot listener options.
@@ -369,10 +378,10 @@ export namespace Firestore {
      */
     onSnapshot(
       options: SnapshotListenOptions,
-      onNext: Function,
-      onError?: Function,
-      onCompletion?: Function,
-    ): Function;
+      onNext: (snapshot: DocumentSnapshot) => void,
+      onError?: (error: Error) => void,
+      onCompletion?: () => void,
+    ): () => void;
 
     /**
      * Writes to the document referred to by this DocumentReference. If the document does not yet
@@ -395,7 +404,7 @@ export namespace Firestore {
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(data: { [key]: value }, options?: SetOptions): Promise<void>;
+    set(data: { [key: string]: value }, options?: SetOptions): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this `DocumentReference`. The update will fail
@@ -414,7 +423,7 @@ export namespace Firestore {
      *
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(data: { [key]: value }): Promise<void>;
+    update(data: { [key: string]: value }): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if
@@ -475,7 +484,7 @@ export namespace Firestore {
      * console.log('User', user.data());
      * ```
      */
-    data(): { [key]: value } | undefined;
+    data(): { [key: string]: value } | undefined;
 
     /**
      * Retrieves the field specified by fieldPath. Returns undefined if the document or field doesn't exist.
@@ -529,7 +538,7 @@ export namespace Firestore {
    */
   export class FieldPath {
     /**
-     * Returns a special sentinel FieldPath to refer to the ID of a document. It can be used in queries to sort or filter by the document ID.
+     * Returns a special sentinel `FieldPath` to refer to the ID of a document. It can be used in queries to sort or filter by the document ID.
      */
     static documentId(): FieldPath;
 
@@ -677,7 +686,7 @@ export namespace Firestore {
     static serverTimestamp(): FieldValue;
 
     /**
-     * Returns true if this FieldValue is equal to the provided one.
+     * Returns true if this `FieldValue` is equal to the provided one.
      *
      * #### Example
      *
@@ -689,7 +698,7 @@ export namespace Firestore {
      * increment.isEqual(timestamp);
      * ```
      *
-     * @param other The FieldValue to compare against.
+     * @param other The `FieldValue` to compare against.
      */
     isEqual(other: FieldValue): boolean;
   }
@@ -767,12 +776,6 @@ export namespace Firestore {
     source: 'default' | 'server' | 'cache';
   }
 
-  export interface FirestoreObserver {
-    complete?: Function;
-    error?: Function;
-    next?: Function;
-  }
-
   /**
    * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
    * adding filters and ordering.
@@ -795,7 +798,7 @@ export namespace Firestore {
      *   .endAt(user);
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to end at.
      */
@@ -836,7 +839,7 @@ export namespace Firestore {
      *   .endBefore(user);
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to end before.
      */
@@ -925,7 +928,7 @@ export namespace Firestore {
     /**
      * Attaches a listener for `QuerySnapshot` events.
      *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -943,12 +946,16 @@ export namespace Firestore {
      *
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(observer: FirestoreObserver): Function;
+    onSnapshot(observer: {
+      complete?: () => void;
+      error?: (error: Error) => void;
+      next?: (snapshot: QuerySnapshot) => void;
+    }): () => void;
 
     /**
      * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
      *
-     * NOTE: Although an complete callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -969,12 +976,19 @@ export namespace Firestore {
      * @param options Options controlling the listen behavior.
      * @param observer A single object containing `next` and `error` callbacks.
      */
-    onSnapshot(options: SnapshotListenOptions, observer: FirestoreObserver): Function;
+    onSnapshot(
+      options: SnapshotListenOptions,
+      observer: {
+        complete?: () => void;
+        error?: (error: Error) => void;
+        next?: (snapshot: QuerySnapshot) => void;
+      },
+    ): () => void;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.
      *
-     * NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is never-ending.
+     * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
      *
      * Returns an unsubscribe function to stop listening to events.
      *
@@ -993,7 +1007,11 @@ export namespace Firestore {
      * @param onError A callback to be called if the listen fails or is cancelled. No further callbacks will occur.
      * @param onCompletion An optional function which will never be called.
      */
-    onSnapshot(onNext: Function, onError?: Function, onCompletion?: Function): Function;
+    onSnapshot(
+      onNext: (snapshot: QuerySnapshot) => void,
+      onError?: (error: Error) => void,
+      onCompletion?: () => void,
+    ): () => void;
 
     /**
      * Attaches a listener for `QuerySnapshot` events with snapshot listener options.
@@ -1024,7 +1042,7 @@ export namespace Firestore {
       onNext: Function,
       onError?: Function,
       onCompletion?: Function,
-    ): Function;
+    ): () => void;
 
     /**
      * Creates and returns a new Query that's additionally sorted by the specified field, optionally in descending order instead of ascending.
@@ -1064,7 +1082,7 @@ export namespace Firestore {
      *   .get();
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to start after.
      */
@@ -1107,7 +1125,7 @@ export namespace Firestore {
      *   .get();
      * ```
      *
-     * > Cursor snapshot queries have limitations. Please see [Query limitations](/) for more information.
+     * > Cursor snapshot queries have limitations. Please see [Query limitations](/query-limitations) for more information.
      *
      * @param snapshot The snapshot of the document to start at.
      */
@@ -1147,16 +1165,24 @@ export namespace Firestore {
      * ```
      *
      * @param fieldPath The path to compare.
-     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains").
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains", "array-contains-any", "in").
      * @param value The comparison value.
      */
     where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
   }
 
   /**
-   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', and 'array-contains'.
+   * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', 'array-contains', 'array-contains-any' or 'in'.
    */
-  export type WhereFilterOp = '<' | '<=' | '==' | '>' | '>=' | 'array-contains';
+  export type WhereFilterOp =
+    | '<'
+    | '<='
+    | '=='
+    | '>'
+    | '>='
+    | 'array-contains'
+    | 'array-contains-any'
+    | 'in';
 
   /**
    * A `QuerySnapshot` contains zero or more `DocumentSnapshot` objects representing the results of a query. The documents
@@ -1233,9 +1259,9 @@ export namespace Firestore {
      * ```
      *
      * @param callback A callback to be called with a `DocumentSnapshot` for each document in the snapshot.
-     * @param thisArg The this binding for the callback.
+     * @param thisArg The `this` binding for the callback.
      */
-    forEach(callback: Function, thisArg?: any): void;
+    forEach(callback: (result: DocumentSnapshot, index: number) => void, thisArg?: any): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
@@ -1269,13 +1295,13 @@ export namespace Firestore {
      * Changes the behavior of a `set()` call to only replace the values specified in its data argument.
      * Fields omitted from the `set()` call remain untouched.
      */
-    merge: boolean;
+    merge?: boolean;
 
     /**
      * Changes the behavior of `set()` calls to only replace the specified field paths.
      * Any field path that is not specified is ignored and remains untouched.
      */
-    mergeField: (string | FieldPath)[];
+    mergeFields?: (string | FieldPath)[];
   }
 
   /**
@@ -1494,7 +1520,11 @@ export namespace Firestore {
      * @param data An object of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(documentRef: DocumentReference, data: { [key]: value }, options?: SetOptions): Transaction;
+    set(
+      documentRef: DocumentReference,
+      data: { [key: string]: value },
+      options?: SetOptions,
+    ): Transaction;
 
     /**
      * Updates fields in the document referred to by the provided `DocumentReference`. The update will fail if applied
@@ -1517,7 +1547,7 @@ export namespace Firestore {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key]: value }): Transaction;
+    update(documentRef: DocumentReference, data: { [key: string]: value }): Transaction;
 
     /**
      * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to
@@ -1616,7 +1646,11 @@ export namespace Firestore {
      * @param data An object of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(documentRef: DocumentReference, data: { [key]: value }, options?: SetOptions): WriteBatch;
+    set(
+      documentRef: DocumentReference,
+      data: { [key: string]: value },
+      options?: SetOptions,
+    ): WriteBatch;
 
     /**
      * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to a document that does not exist.
@@ -1635,7 +1669,7 @@ export namespace Firestore {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key]: value }): WriteBatch;
+    update(documentRef: DocumentReference, data: { [key: string]: value }): WriteBatch;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
@@ -1720,17 +1754,13 @@ export namespace Firestore {
   /**
    * The Firebase Cloud Firestore service is available for the default app or a given app.
    *
-   * #### Example 1
-   *
-   * Get the firestore instance for the **default app**:
+   * #### Example: Get the firestore instance for the **default app**:
    *
    * ```js
    * const firestoreForDefaultApp = firebase.firestore();
    * ```
    *
-   * #### Example 2
-   *
-   * Get the firestore instance for a **secondary app**:
+   * #### Example: Get the firestore instance for a **secondary app**:
    *
    * ```js
    * const otherApp = firebase.app('otherApp');
@@ -1774,7 +1804,7 @@ export namespace Firestore {
      * #### Example
      *
      * ```js
-     * const collectionGroup = firebase.firestore().collection('orders');
+     * const collectionGroup = firebase.firestore().collectionGroup('orders');
      * ```
      *
      * @param collectionId Identifies the collections to query over. Every collection or subcollection with this ID as the last segment of its path will be included. Cannot contain a slash.
@@ -1865,14 +1895,19 @@ export namespace Firestore {
 }
 
 declare module '@react-native-firebase/firestore' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStaticsAndApp<Firestore.Module, Firestore.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseFirestoreTypes.Module,
+    FirebaseFirestoreTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -1882,10 +1917,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {
-      firestore: FirebaseModuleWithStaticsAndApp<Firestore.Module, Firestore.Statics>;
+      firestore: FirebaseModuleWithStaticsAndApp<
+        FirebaseFirestoreTypes.Module,
+        FirebaseFirestoreTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      firestore(): Firestore.Module;
+      firestore(): FirebaseFirestoreTypes.Module;
     }
   }
 }

@@ -53,7 +53,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  *
  * @firebase perf
  */
-export namespace Perf {
+export namespace FirebasePerformanceTypes {
   /**
    * Type alias describing the valid HTTP methods accepted when creating a new {@link perf.HttpMetric} instance.
    *
@@ -64,6 +64,10 @@ export namespace Perf {
    * ```
    */
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
+  /**
+   * Valid HTTP methods.
+   */
   export type HttpMethod =
     | 'GET'
     | 'HEAD'
@@ -439,14 +443,19 @@ export namespace Perf {
 }
 
 declare module '@react-native-firebase/perf' {
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
   import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
   import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
   const firebaseNamedExport: {} & ReactNativeFirebaseModule;
   export const firebase = firebaseNamedExport;
 
-  const module: FirebaseModuleWithStatics<Perf.Module, Perf.Statics>;
-  export default module;
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebasePerformanceTypes.Module,
+    FirebasePerformanceTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
@@ -456,10 +465,13 @@ declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
-      perf: FirebaseModuleWithStatics<Perf.Module, Perf.Statics>;
+      perf: FirebaseModuleWithStatics<
+        FirebasePerformanceTypes.Module,
+        FirebasePerformanceTypes.Statics
+      >;
     }
     interface FirebaseApp {
-      perf(): Perf.Module;
+      perf(): FirebasePerformanceTypes.Module;
     }
   }
 }

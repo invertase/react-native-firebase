@@ -5,21 +5,32 @@ description: Firestore initialization with iOS.
 
 # iOS Manual Linking
 
-> The following steps are only required if you are using React Native <= 0.59 or need to manually integrate the library.
+> The following steps are only required if your environment does not have access to React Native auto-linking.
 
+## CocoaPods Installation
 
-#### Add Firestore to Podfile
-**`ios/Podfile`**
+### Add the RNFBFirestore Pod
 
-```ruby
-platform :ios, '9.0'
-//...
+Add the `RNFBFirestore` Pod to your projects `/ios/Podfile`:
 
-target 'yourApp' do
-    //...
-    pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
+```ruby{3}
+target 'app' do
+  ...
+  pod 'RNFBFirestore', :path => '../node_modules/@react-native-firebase/firestore'
 end
-
 ```
 
-Run `pod install` and rebuild your iOS project.
+### Update Pods & rebuild the project
+
+You may need to update your local Pods in order for the `RNFBFirestore` Pod to be installed in your project:
+
+```bash
+$ cd /ios/
+$ pod install --repo-update
+```
+
+Once the Pods have installed locally, rebuild your iOS project:
+
+```bash
+npx react-native run-ios
+```

@@ -7,17 +7,23 @@ description: Getting started with ML Kit Natural Language APIs in React Native F
 
 ## Installation
 
+This module depends on the `@react-native-firebase/app` module. To get started and install `app`,
+visit the project's <Anchor version={false} group={false} href="/quick-start">quick start</Anchor> guide.
+
 Install this module with Yarn:
 
 ```bash
 yarn add @react-native-firebase/ml-natural-language
+
+# Using iOS
+cd ios/ && pod install
 ```
 
 > Integrating manually and not via React Native auto-linking? Check the setup instructions for <Anchor version group href="/android">Android</Anchor> & <Anchor version group href="/ios">iOS</Anchor>.
 
 ## Module usage
 
-Import the ML Kit package into your project:
+Import the ML Kit Natural Language package into your project:
 
 ```js
 import naturalLanguage from '@react-native-firebase/ml-natural-language';
