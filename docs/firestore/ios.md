@@ -1,5 +1,5 @@
 ---
-title: Firestore iOS Initialization
+title: Cloud Firestore iOS Integration
 description: Firestore initialization with iOS.
 ---
 
