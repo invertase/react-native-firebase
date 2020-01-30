@@ -116,6 +116,7 @@ Create a `Provisioning Profile Name` & click `generate`. Then `Download` & keep 
 ![Step 6](https://images.prismic.io/invertase/df020fa5-b3a1-45db-8c3c-e3e7868ba09c_Provision+Profile+-+Step+6.png?auto=compress,format)
 
 Congratulations. You have now completed configuring Apple Push Notification service with Firebase Cloud Messaging. You have setup the certificates.
+
 ---
 
 ## Next
@@ -123,7 +124,7 @@ Congratulations. You have now completed configuring Apple Push Notification serv
 <Grid>
 	<Block
 		title="Configure Xcode Project notification capabilities"
-		to="/messaging/ios-xcode-project-capabilities"
+		to="/ios-xcode-project-capabilities"
 		icon="tool"
 		color="#2196F3"
 	>
