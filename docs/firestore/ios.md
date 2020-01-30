@@ -1,12 +1,11 @@
 ---
-title: iOS Setup
+title: Cloud Firestore iOS Integration
 description: Manually integrate Cloud Firestore into your iOS application.
 ---
 
 # iOS Manual Linking
 
-> The following steps are only required if your environment does not have access to React Native
-> auto-linking.
+> The following steps are only required if your environment does not have access to React Native auto-linking (<= 0.59) or you need to manually integrate the library.
 
 ## CocoaPods Installation
 
