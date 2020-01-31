@@ -1272,7 +1272,7 @@ declare module 'react-native-firebase' {
 
       class RemoteMessage {
         collapseKey?: string;
-        data: Object;
+        data: { [key: string]: string };
         from?: string;
         messageId?: string;
         messageType: string;
@@ -1284,7 +1284,7 @@ declare module 'react-native-firebase' {
 
         setCollapseKey(collapseKey: string): RemoteMessage;
 
-        setData(data: Object): RemoteMessage;
+        setData(data: { [key: string]: string }): RemoteMessage;
 
         setMessageId(messageId: string): RemoteMessage;
 
