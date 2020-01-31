@@ -28,15 +28,7 @@ Both platforms require additional steps to complete installation:
 		color="#4CAF50"
 	>
 		Follow the Android steps to complete Crashlytics integration.
-  	</Block>
-    <Block
-		title="iOS: Additional Steps"
-        to="/ios-setup"
-        icon="phone_iphone"
-        color="#2196F3"
-    >
-        Follow the iOS steps to complete Crashlytics integration.
-    </Block>
+  </Block>
 </Grid>
 
 ## Module usage
