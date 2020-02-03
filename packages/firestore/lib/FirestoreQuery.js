@@ -98,7 +98,11 @@ export default class FirestoreQuery {
         });
       }
 
-      values.push(documentSnapshot.id);
+      if (this._modifiers.isCollectionGroupQuery()) {
+        values.push(documentSnapshot.ref.path);
+      } else {
+        values.push(documentSnapshot.id);
+      }
 
       return modifiers.setFieldsCursor(cursor, values);
     }

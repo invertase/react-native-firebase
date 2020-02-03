@@ -190,6 +190,28 @@ describe('firestore()', () => {
         ds.data().value.should.eql(2);
       });
     });
+
+    it('performs a collection group query with cursor queries', async () => {
+      const docRef = firebase.firestore().doc('v6/collectionGroupCursor');
+
+      await docRef.collection('collectionGroup').add({ value: 1 });
+      const startAt = await docRef.collection('collectionGroup').add({ value: 2 });
+      await docRef.collection('collectionGroup').add({ value: 3 });
+
+      const ds = await startAt.get();
+
+      const querySnapshot = await firebase
+        .firestore()
+        .collectionGroup('collectionGroup')
+        .orderBy('value', 'desc')
+        .startAt(ds)
+        .get();
+
+      querySnapshot.size.should.eql(2);
+      querySnapshot.forEach((d, i) => {
+        d.data().value.should.eql(i + 2);
+      });
+    });
   });
 
   describe('disableNetwork() & enableNetwork()', () => {

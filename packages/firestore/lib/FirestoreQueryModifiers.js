@@ -119,12 +119,16 @@ export default class FirestoreQueryModifiers {
   }
 
   /**
-   * Collection Group
+   * Collection Group Query
    */
 
-  asCollectionGroup() {
+  asCollectionGroupQuery() {
     this._type = 'collectionGroup';
     return this;
+  }
+
+  isCollectionGroupQuery() {
+    return this._type === 'collectionGroup';
   }
 
   /**
