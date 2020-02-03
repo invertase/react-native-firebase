@@ -203,7 +203,7 @@ describe('firestore()', () => {
       const querySnapshot = await firebase
         .firestore()
         .collectionGroup('collectionGroup')
-        .orderBy('value', 'desc')
+        .orderBy('value')
         .startAt(ds)
         .get();
 
