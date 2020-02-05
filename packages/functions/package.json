@@ -29,7 +29,7 @@
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
   },
-  "gitHead": "f61c85814013da9abdfd4abfea21c8cf11006c6a",
+  "gitHead": "558abc7e29bc5a951e0f841c04ecf6de10b5a677",
   "publishConfig": {
     "access": "public"
   }
