@@ -17,7 +17,7 @@ describe('auth() => Phone', () => {
       await Utils.sleep(50);
     }
   });
-  
+
   // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
   xdescribe('signInWithPhoneNumber', () => {
     it('signs in with a valid code', async () => {
