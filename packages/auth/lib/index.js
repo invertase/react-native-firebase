@@ -275,6 +275,13 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native.verifyPasswordResetCode(code);
   }
 
+  useUserAccessGroup(userAccessGroup) {
+    if (isAndroid) {
+      return Promise.resolve();
+    }
+    return this.native.useUserAccessGroup(userAccessGroup);
+  }
+
   getRedirectResult() {
     throw new Error(
       'firebase.auth().getRedirectResult() is unsupported by the native Firebase SDKs.',

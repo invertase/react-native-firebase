@@ -125,7 +125,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreQuery(
       this,
       this._referencePath.child(collectionId),
-      new FirestoreQueryModifiers().asCollectionGroup(),
+      new FirestoreQueryModifiers().asCollectionGroupQuery(),
     );
   }
 

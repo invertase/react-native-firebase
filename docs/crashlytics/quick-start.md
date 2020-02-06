@@ -28,15 +28,7 @@ Both platforms require additional steps to complete installation:
 		color="#4CAF50"
 	>
 		Follow the Android steps to complete Crashlytics integration.
-  	</Block>
-    <Block
-		title="iOS: Additional Steps"
-        to="/ios-setup"
-        icon="phone_iphone"
-        color="#2196F3"
-    >
-        Follow the iOS steps to complete Crashlytics integration.
-    </Block>
+  </Block>
 </Grid>
 
 ## Module usage
@@ -51,6 +43,14 @@ Once installed, import the Crashlytics package into your project:
 
 ```js
 import crashlytics from '@react-native-firebase/crashlytics';
+```
+
+You need to import the library even if you're not using any functions of the Crashlytics SDK. By doing this, you enable the listener that get the JS stacktrace into the Crash Reporting console in Firebase
+
+Consider putting this in `index.js` file.
+
+```js
+import '@react-native-firebase/crashlytics';
 ```
 
 The package also provides access to the firebase instance:
