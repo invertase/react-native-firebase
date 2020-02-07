@@ -1,6 +1,8 @@
 package io.invertase.firebase.auth;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Parcel;
 import android.util.Log;
@@ -63,6 +65,7 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
   private String mVerificationId;
   private String mLastPhoneNumber;
+  private SharedPreferences sharedPreferences;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
   private PhoneAuthCredential mCredential;
   private ReactContext mReactContext;
@@ -937,8 +940,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
         String verificationId,
         PhoneAuthProvider.ForceResendingToken forceResendingToken
       ) {
-        // TODO: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
+        // kyun: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
+        /** Save mVerificationId to local in case the activity gets restarted when going to the SMS app.
+         * So that the app doesn't crash when function _confirmVerificationCode call and can verify normal when using local verificationId
+         */
         mVerificationId = verificationId;
+        sharedPreferences = mReactContext.getSharedPreferences("RNFirebaseAuth", Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("verificationId", verificationId).commit();
         mForceResendingToken = forceResendingToken;
         WritableMap verificationMap = Arguments.createMap();
         verificationMap.putString("verificationId", verificationId);
@@ -987,7 +995,13 @@ class RNFirebaseAuth extends ReactContextBaseJavaModule {
   ) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
+    if(mVerificationId == null){
+      String verificationId = sharedPreferences.getString("verificationId","null");
+      mVerificationId = verificationId;
+      Log.d(TAG,
+              "_confirmVerificationCode: Empty verificationId , using local verificationId:" + verificationId
+      );
+    }
     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(
       mVerificationId,
       verificationCode
