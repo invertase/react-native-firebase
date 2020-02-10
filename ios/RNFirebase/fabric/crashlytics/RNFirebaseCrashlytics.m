@@ -31,6 +31,33 @@
         [CrashlyticsKit recordError:error];
     }
 
+    RCT_EXPORT_METHOD(recordCustomError:(nonnull NSString *)name reason:(NSString *)reason frameArray:(nonnull NSArray *)frameArray)
+    {
+        NSMutableArray *clsFrames = [[NSMutableArray alloc] init];
+        if(frameArray) {
+            for (NSDictionary *dict in frameArray) {
+            CLSStackFrame *frame = [CLSStackFrame stackFrame];
+            [frame setLibrary: dict[@"className"]];
+            [frame setFileName: dict[@"fileName"]];
+            [frame setLineNumber: [dict[@"lineNumber"] intValue]];
+            //[frame setOffset: [dict[@"columnNumber"] intValue]]; //Add later?
+            [frame setSymbol: dict[@"functionName"]];
+            [clsFrames addObject: frame];
+
+            if(dict[@"additional"]){
+                CLSStackFrame *f = [CLSStackFrame stackFrame];
+                [f setLibrary: @"Additional Parameters"];
+                [f setSymbol: [dict[@"additional"] stringValue]];
+                [f setFileName: dict[@"fileName"]];
+                [f setLineNumber: [dict[@"lineNumber"] intValue]];
+                [clsFrames addObject: f];
+            }
+
+            }
+            [[Crashlytics sharedInstance] recordCustomExceptionName:name reason:reason frameArray:clsFrames];
+        }
+    }
+
     RCT_EXPORT_METHOD(setBoolValue:(NSString *)key boolValue:(BOOL *)boolValue) {
         [CrashlyticsKit setBoolValue:boolValue forKey:key];
     }
@@ -49,6 +76,16 @@
 
     RCT_EXPORT_METHOD(setUserIdentifier:(NSString *)userId) {
         [CrashlyticsKit setUserIdentifier:userId];
+    }
+
+    RCT_EXPORT_METHOD(setUserName:(NSString *)userName)
+    {
+        [[Crashlytics sharedInstance] setUserName:userName];
+    }
+
+    RCT_EXPORT_METHOD(setUserEmail:(NSString *)email)
+    {
+        [[Crashlytics sharedInstance] setUserEmail:email];
     }
 
     RCT_EXPORT_METHOD(enableCrashlyticsCollection) {

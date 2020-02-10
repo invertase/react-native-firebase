@@ -7,7 +7,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'com.android.tools.build:gradle:3.4.1'
   }
 }
 
@@ -136,7 +136,6 @@ def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.
 dependencies {
   //noinspection GradleDynamicVersion
   api "com.facebook.react:react-native:+"
-  // implementation "com.google.firebase:firebase-common:16.1.0"
 
   /* ----------------------------
    *    REACT NATIVE FIREBASE
@@ -144,7 +143,7 @@ dependencies {
 
   // Required dependencies
   //noinspection GradleCompatible
-  compileOnly "com.google.firebase:firebase-core:16.0.8"
+  compileOnly "com.google.firebase:firebase-core:16.0.9"
   compileOnly "com.google.android.gms:play-services-base:16.1.0"
 
   /* -------------------------
@@ -152,47 +151,39 @@ dependencies {
    * ------------------------- */
 
   // Ads
-  compileOnly('com.google.firebase:firebase-ads:15.0.1') {
-    // exclude `customtabs` as the support lib version is out of date
-    // we manually add it as a dependency below with a custom version
-    exclude group: 'com.android.support', module: 'customtabs'
-  }
+  compileOnly "com.google.firebase:firebase-ads:17.2.1" 
   // Authentication
-  compileOnly "com.google.firebase:firebase-auth:16.2.1"
+  compileOnly "com.google.firebase:firebase-auth:17.0.0"
   // Analytics
-  compileOnly "com.google.firebase:firebase-analytics:16.4.0"
+  compileOnly "com.google.firebase:firebase-analytics:16.5.0"
   // Performance Monitoring
-  compileOnly "com.google.firebase:firebase-perf:16.2.5"
+  compileOnly "com.google.firebase:firebase-perf:17.0.2"
   // Remote Config
-  compileOnly "com.google.firebase:firebase-config:16.5.0"
+  compileOnly "com.google.firebase:firebase-config:17.0.0"
   // Cloud Storage
-  compileOnly "com.google.firebase:firebase-storage:16.1.0"
-  // Invites
-  compileOnly "com.google.firebase:firebase-invites:16.1.1"
-  // Dynamic Links
-  compileOnly "com.google.firebase:firebase-dynamic-links:16.1.8"
+  compileOnly "com.google.firebase:firebase-storage:17.0.0"
+  // Dynamic Links (with invites sub-dependency for internal API)
+  compileOnly "com.google.firebase:firebase-dynamic-links:17.0.0"
+  compileOnly "com.google.firebase:firebase-invites:17.0.0"
   // Real-time Database
-  compileOnly "com.google.firebase:firebase-database:16.1.0"
+  compileOnly "com.google.firebase:firebase-database:17.0.0"
   // Cloud Functions
-  compileOnly "com.google.firebase:firebase-functions:16.3.0"
+  compileOnly "com.google.firebase:firebase-functions:17.0.0"
   // Cloud Firestore
-  compileOnly "com.google.firebase:firebase-firestore:18.2.0"
+  compileOnly "com.google.firebase:firebase-firestore:19.0.2"
   // Cloud Messaging / FCM
-  compileOnly "com.google.firebase:firebase-messaging:17.5.0"
+  compileOnly "com.google.firebase:firebase-messaging:18.0.0"
   // Crashlytics
-  compileOnly('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
+  compileOnly('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
     transitive = true
   }
   /* --------------------------------
    *  OPTIONAL SUPPORT LIBS
    * -------------------------------- */
 
-  // For Firebase Ads
-  compileOnly "com.android.support:customtabs:$supportVersion"
-
   // For React Native Firebase Notifications
   api "com.android.support:support-v4:$supportVersion"
 
   // For React Native Firebase Notifications
-  compileOnly 'me.leolin:ShortcutBadger:1.1.21@aar'
+  compileOnly 'me.leolin:ShortcutBadger:1.1.22@aar'
 }

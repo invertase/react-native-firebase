@@ -33,7 +33,7 @@ public class ReactNativeFirebaseAppRegistrar implements ComponentRegistrar {
     return Collections.singletonList(
       LibraryVersionComponent.create(
         "react-native-firebase",
-        "5.3.0"
+        "5.5.6"
       )
     );
   }

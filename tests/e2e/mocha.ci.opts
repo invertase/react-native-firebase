@@ -1,9 +1,0 @@
---recursive
---timeout 120000
---reporter xunit
---reporter-options output=~/reports/ios-tests.xml.
---slow 1200
---bail
---exit
---require jet/platform/node
---require ./helpers
