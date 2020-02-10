@@ -55,7 +55,12 @@ RCT_EXPORT_MODULE();
 
 - (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
- restorationHandler:(void (^)(NSArray *))restorationHandler {
+restorationHandler:
+    #if defined(__IPHONE_12_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_12_0)
+        (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler {
+    #else
+        (nonnull void (^)(NSArray *_Nullable))restorationHandler {
+    #endif  // __IPHONE_12_0
     if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         return [[FIRDynamicLinks dynamicLinks]
                 handleUniversalLink:userActivity.webpageURL
@@ -197,7 +202,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 - (FIRDynamicLinkComponents *)buildDynamicLink:(NSDictionary *)linkData {
     @try {
         NSURL *link = [NSURL URLWithString:linkData[@"link"]];
-        FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link domain:linkData[@"dynamicLinkDomain"]];
+        FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link domainURIPrefix:linkData[@"domainURIPrefix"]];
         
         [self setAnalyticsParameters:linkData[@"analytics"] components:components];
         [self setAndroidParameters:linkData[@"android"] components:components];

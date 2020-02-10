@@ -3,7 +3,6 @@
 
 #if __has_include(<FirebaseAnalytics/FIRAnalytics.h>)
 #import <FirebaseAnalytics/FIRAnalytics.h>
-#import <FirebaseCore/FIRAnalyticsConfiguration.h>
 
 @implementation RNFirebaseAnalytics
 RCT_EXPORT_MODULE();
@@ -13,7 +12,7 @@ RCT_EXPORT_METHOD(logEvent:(NSString *)name props:(NSDictionary *)props) {
 }
 
 RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled:(BOOL) enabled) {
-  [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+  [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
 }
 
 RCT_EXPORT_METHOD(setCurrentScreen:(NSString *) screenName screenClass:(NSString *) screenClassOverriew) {

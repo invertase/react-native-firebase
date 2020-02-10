@@ -568,7 +568,7 @@ public class RNFirebaseStorage extends ReactContextBaseJavaModule {
           @Override
           public void onFailure(@Nonnull Exception e) {
             int errorCode = ((StorageException) e).getErrorCode();
-            if (errorCode == StorageException.ERROR_NOT_AUTHORIZED) {
+            if (errorCode == StorageException.ERROR_NOT_AUTHORIZED || errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
               WritableMap resp = getRespAsMap(taskSnapshot, null);
               listener.onSuccess(resp);
             }
