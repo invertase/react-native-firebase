@@ -23,7 +23,7 @@ cd ios/ && pod install
 
 ## Module usage
 
-Import the Performance Monitoring package into your project:
+Import the Remote Config package into your project:
 
 ```js
 import remoteConfig from '@react-native-firebase/remote-config';
