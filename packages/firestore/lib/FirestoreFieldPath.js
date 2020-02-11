@@ -54,6 +54,10 @@ export default class FirestoreFieldPath {
   _toPath() {
     return this._segments.join('.');
   }
+
+  _toArray() {
+    return this._segments;
+  }
 }
 
 export const DOCUMENT_ID = new FirestoreFieldPath('__name__');
