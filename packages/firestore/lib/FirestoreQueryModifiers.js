@@ -162,7 +162,7 @@ export default class FirestoreQueryModifiers {
 
   where(fieldPath, opStr, value) {
     const filter = {
-      fieldPath: fieldPath._toPath(),
+      fieldPath: fieldPath._toArray(),
       operator: OPERATORS[opStr],
       value: generateNativeData(value),
     };
