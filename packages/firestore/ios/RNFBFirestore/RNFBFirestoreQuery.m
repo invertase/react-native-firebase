@@ -51,8 +51,8 @@
 
 - (void)applyFilters {
   for (NSDictionary *filter in _filters) {
-    NSArray *fieldPathArray = filter[@"fieldPath"]; 
-    FIRFieldPath* fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray]; 
+    NSArray *fieldPathArray = filter[@"fieldPath"];
+    FIRFieldPath* fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
     NSString *operator = filter[@"operator"];
     id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:filter[@"value"]];
 
