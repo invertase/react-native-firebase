@@ -44,7 +44,7 @@ const PACKAGES = [
   'remote-config',
   'crashlytics',
   'ml-natural-language',
-  'ml-vision',
+  // 'ml-vision', TODO - ci is flaky like pastry
   'in-app-messaging',
   'auth',
   'database',
