@@ -68,7 +68,7 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters() {
-    return this._filters;
+    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
   }
 
   get orders() {
@@ -162,7 +162,7 @@ export default class FirestoreQueryModifiers {
 
   where(fieldPath, opStr, value) {
     const filter = {
-      fieldPath: fieldPath._toArray(),
+      fieldPath: fieldPath,
       operator: OPERATORS[opStr],
       value: generateNativeData(value),
     };
@@ -284,7 +284,7 @@ export default class FirestoreQueryModifiers {
       const filter = this._filters[i];
       // Inequality filter
       if (INEQUALITY[filter.operator]) {
-        if (filter.fieldPath !== this._orders[0].fieldPath) {
+        if (filter.fieldPath._toPath() !== this._orders[0].fieldPath) {
           throw new Error(
             `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${
               filter.fieldPath
