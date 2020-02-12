@@ -68,7 +68,7 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters() {
-    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
+    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toPath() }));
   }
 
   get orders() {
