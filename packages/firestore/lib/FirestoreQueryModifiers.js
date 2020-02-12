@@ -68,7 +68,7 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters() {
-    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toPath() }));
+    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
   }
 
   get orders() {
@@ -162,7 +162,7 @@ export default class FirestoreQueryModifiers {
 
   where(fieldPath, opStr, value) {
     const filter = {
-      fieldPath: fieldPath,
+      fieldPath,
       operator: OPERATORS[opStr],
       value: generateNativeData(value),
     };
@@ -189,11 +189,13 @@ export default class FirestoreQueryModifiers {
 
       // Check the set value is the same as the new one
       if (INEQUALITY[filter.operator] && hasInequality) {
-        if (hasInequality.fieldPath !== filter.fieldPath) {
+        if (hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
           throw new Error(
             `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${
-              hasInequality.fieldPath
-            }' and '${filter.fieldPath}'`,
+              hasInequality.fieldPath._toPath()
+            }' and '${
+              filter.fieldPath._toPath()
+            }'`,
           );
         }
       }
