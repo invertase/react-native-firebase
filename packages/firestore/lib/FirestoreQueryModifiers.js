@@ -272,22 +272,35 @@ export default class FirestoreQueryModifiers {
       }
     }
 
-    // Skip if no where filters or already validated
-    if (this._filters.length === 0 || this._orders.length > 1) {
+    // Skip if no where filters
+    if (this._filters.length === 0) {
       return;
     }
 
     // Ensure the first order field path is equal to the inequality filter field path
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
-      // Inequality filter
-      if (INEQUALITY[filter.operator]) {
-        if (filter.fieldPath._toPath() !== this._orders[0].fieldPath) {
-          throw new Error(
-            `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${filter.fieldPath._toPath()}' and so you must also use '${filter.fieldPath._toPath()}' as your first Query.orderBy(), but your first Query.orderBy() is on field '${
-              this._orders[0].fieldPath
-            }' instead`,
-          );
+      const filterFieldPath = filter.fieldPath._toPath();
+
+      for (let k = 0; k < this._orders.length; k++) {
+        const order = this._orders[k];
+        const orderFieldPath = order.fieldPath;
+        // Any where() fieldPath parameter cannot match any orderBy() parameter
+        if (filter.operator === OPERATORS['==']) {
+          if (filterFieldPath === orderFieldPath) {
+            throw new Error(
+              `Invalid query. Query.orderBy() parameter: ${orderFieldPath} cannot be the same as your Query.where() fieldPath parameter: ${filterFieldPath}`,
+            );
+          }
+        }
+
+        if (INEQUALITY[filter.operator]) {
+          // Initial orderBy() parameter has to match every where() fieldPath parameter when inequality operator is invoked
+          if (filterFieldPath !== this._orders[0].fieldPath) {
+            throw new Error(
+              `Invalid query. Initial Query.orderBy() parameter: ${orderFieldPath} has to be the same as the Query.where() fieldPath parameter(s): ${filterFieldPath} when an inequality operator is invoked `,
+            );
+          }
         }
       }
     }
