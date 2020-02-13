@@ -58,6 +58,11 @@ describe('firestore().collection().isEqual()', () => {
   });
 
   it('returns false when not equal (expensive checks)', () => {
+    //TODO - the below noted errors on firebase JS SDK, need to change to this behaviour for RNFB firestore
+    /**
+     *  .where('foo', '==', 'bar')
+        .orderBy('foo')
+     */
     const query = firebase
       .firestore()
       .collection('v6')
@@ -81,7 +86,6 @@ describe('firestore().collection().isEqual()', () => {
       .orderBy('foob')
       .limit(1)
       .endAt(2);
-
     const q3 = firebase
       .firestore()
       .collection('v6')

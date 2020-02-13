@@ -231,7 +231,7 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  sendPasswordResetEmail(email, actionCodeSettings = {}) {
+  sendPasswordResetEmail(email, actionCodeSettings = null) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
