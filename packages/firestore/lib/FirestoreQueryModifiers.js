@@ -191,11 +191,7 @@ export default class FirestoreQueryModifiers {
       if (INEQUALITY[filter.operator] && hasInequality) {
         if (hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
           throw new Error(
-            `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${
-              hasInequality.fieldPath._toPath()
-            }' and '${
-              filter.fieldPath._toPath()
-            }'`,
+            `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
           );
         }
       }
@@ -288,11 +284,7 @@ export default class FirestoreQueryModifiers {
       if (INEQUALITY[filter.operator]) {
         if (filter.fieldPath._toPath() !== this._orders[0].fieldPath) {
           throw new Error(
-            `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${
-              filter.fieldPath._toPath()
-            }' and so you must also use '${
-              filter.fieldPath._toPath()
-            }' as your first Query.orderBy(), but your first Query.orderBy() is on field '${
+            `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${filter.fieldPath._toPath()}' and so you must also use '${filter.fieldPath._toPath()}' as your first Query.orderBy(), but your first Query.orderBy() is on field '${
               this._orders[0].fieldPath
             }' instead`,
           );
