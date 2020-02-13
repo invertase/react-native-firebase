@@ -35,6 +35,7 @@ dependencies {
 ```java
 // ..
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
+import io.invertase.firebase.app.ReactNativeFirebaseFirestorePackage;
 
   // ..
   protected List<ReactPackage> getPackages() {
