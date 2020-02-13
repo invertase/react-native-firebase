@@ -289,9 +289,9 @@ export default class FirestoreQueryModifiers {
         if (filter.fieldPath._toPath() !== this._orders[0].fieldPath) {
           throw new Error(
             `Invalid query. You have a where filter with an inequality (<, <=, >, or >=) on field '${
-              filter.fieldPath
+              filter.fieldPath._toPath()
             }' and so you must also use '${
-              filter.fieldPath
+              filter.fieldPath._toPath()
             }' as your first Query.orderBy(), but your first Query.orderBy() is on field '${
               this._orders[0].fieldPath
             }' instead`,
