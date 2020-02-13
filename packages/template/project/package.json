@@ -1,6 +1,6 @@
 {
   "name": "HelloWorld",
-  "version": "6.3.2",
+  "version": "6.3.3",
   "private": true,
   "scripts": {
     "start": "react-native start",
@@ -11,7 +11,7 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/app": "6.3.2",
+    "@react-native-firebase/app": "6.3.3",
     "react": "16.9.0",
     "react-native": "0.61.5"
   },
