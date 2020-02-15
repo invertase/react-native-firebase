@@ -1288,7 +1288,7 @@ export namespace FirebaseAuthTypes {
      * #### Example
      *
      * ```js
-     * await firebase.auth().currentUser.signOut();
+     * await firebase.auth().signOut();
      * ```
      *
      */
