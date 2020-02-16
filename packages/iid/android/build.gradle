@@ -62,7 +62,13 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase_app')
+  if (findProject(':@react-native-firebase_app')) {
+    api project(':@react-native-firebase_app')
+  } else if (findProject(':react-native-firebase_app')) {
+    api project(':react-native-firebase_app')
+  } else {
+    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+  }
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-iid"
 }
