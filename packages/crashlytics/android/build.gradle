@@ -58,7 +58,13 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase_app')
+  if (findProject(':@react-native-firebase_app')) {
+    api project(':@react-native-firebase_app')
+  } else if (findProject(':react-native-firebase_app')) {
+    api project(':react-native-firebase_app')
+  } else {
+    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+  }
   // don't use firebase bom here as crashlytics-ndk is not included in the bom, trying to partially use bom here fails
   implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("firebase", "crashlytics")}"
   // ndk not in Firebase BoM
