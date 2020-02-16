@@ -31,8 +31,8 @@ project.ext {
       ],
 
       firebase: [
-        crashlytics   : "2.10.0",
-        crashlyticsNdk: "2.1.0" // not in BoM
+        crashlytics   : "2.10.1",
+        crashlyticsNdk: "2.1.1" // not in BoM
       ],
     ],
   ])
