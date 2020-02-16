@@ -440,7 +440,7 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const unsubscribe = firebase.firestore().onMessageSent((messageId) => {
+     * const unsubscribe = firebase.messaging().onMessageSent((messageId) => {
      *   console.log('Message has been sent to the FCM server', messageId);
      * });
      *
@@ -461,7 +461,7 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const unsubscribe = firebase.firestore().onSendError(({ messageId, error }) => {
+     * const unsubscribe = firebase.messaging().onSendError(({ messageId, error }) => {
      *   console.log('An error occurred when sending a message to FCM', messageId, error);
      * });
      *
@@ -508,7 +508,7 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * await firebase.firestore().sendMessage({
+     * await firebase.messaging().sendMessage({
      *   data: {
      *     loggedIn: Date.now(),
      *     uid: firebase.auth().currentUser.uid,
