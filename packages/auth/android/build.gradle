@@ -21,7 +21,7 @@ plugins {
 project.ext {
   set('react-native', [
     versions: [
-      android           : [
+      android : [
         minSdk    : 16,
         targetSdk : 28,
         compileSdk: 28,
@@ -29,7 +29,6 @@ project.ext {
         // overriding here though to match the version RN uses
         buildTools: "28.0.3"
       ],
-
       firebase          : [
         bom : "24.1.0",
       ],
@@ -57,7 +56,13 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase_app')
+  if (findProject(':@react-native-firebase_app')) {
+    api project(':@react-native-firebase_app')
+  } else if (findProject(':react-native-firebase_app')) {
+    api project(':react-native-firebase_app')
+  } else {
+    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+  }
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-auth"
 }
