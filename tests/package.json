@@ -19,7 +19,6 @@
     "@react-native-firebase/functions": "6.3.4",
     "@react-native-firebase/iid": "6.3.4",
     "@react-native-firebase/in-app-messaging": "6.3.4",
-    "@react-native-firebase/indexing": "6.3.4",
     "@react-native-firebase/messaging": "6.3.4",
     "@react-native-firebase/ml-natural-language": "6.3.4",
     "@react-native-firebase/ml-vision": "6.3.4",
