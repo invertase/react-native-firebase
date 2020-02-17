@@ -28,7 +28,6 @@ import '@react-native-firebase/firestore';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/in-app-messaging';
-import '@react-native-firebase/indexing';
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml-natural-language';
 import '@react-native-firebase/ml-vision';
