@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/ml-vision",
-  "version": "6.3.3",
+  "version": "6.3.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase ML Kit brings the power of machine learning vision to your React Native application, supporting both Android & iOS.",
   "main": "lib/index.js",
@@ -34,7 +34,7 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "gitHead": "8f886bde150930d8e418e134757819c2e53e644a",
+  "gitHead": "93c6b38f6d5e8f015aab585d7d4c18674f4a63cd",
   "publishConfig": {
     "access": "public"
   }
