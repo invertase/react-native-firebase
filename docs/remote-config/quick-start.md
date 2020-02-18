@@ -48,7 +48,7 @@ async function getValues() {
     const activated = await remoteConfig().fetchAndActivate();
 
     if (activated) {
-      const experimentalFeatureEnabled = await remoteConfig().getValue('experiment');
+      const experimentalFeatureEnabled = remoteConfig().getValue('experiment');
       console.log('Experimental source: ', experimentalFeatureEnabled.source);
       console.log('Experimental value: ', experimentalFeatureEnabled.value);
     }
