@@ -23,6 +23,7 @@ import {
   isOneOf,
   isString,
   isUndefined,
+  isArray,
 } from '@react-native-firebase/app/lib/common';
 import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 
@@ -90,12 +91,12 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     const entries = Object.entries(params);
+
     for (let i = 0; i < entries.length; i++) {
       const [key, value] = entries[i];
-      if (!isString(value) && !isNumber(value) && !isBoolean(value)) {
-        throw new Error(
-          `firebase.analytics().logEvent(_, *) 'params' value for parameter '${key}' is invalid, expected a string or number value.`,
-        );
+
+      if (isObject(value) || isArray(value)) {
+        params[key] = value.toString();
       }
     }
 
