@@ -37,6 +37,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
         .orderBy('foo')
         .limit(1)
         .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Invalid query');
     }
@@ -50,6 +51,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
         .orderBy('foo')
         .limit(1)
         .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Invalid query');
     }
@@ -65,6 +67,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
         .orderBy('foo')
         .limit(1)
         .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Invalid query');
     }
