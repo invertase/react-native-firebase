@@ -27,4 +27,49 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     queryAfter._modifiers._orders.length.should.equal(1);
     queryAfter._modifiers._filters.length.should.equal(1);
   });
+
+  it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo', '==', 'bar')
+        .orderBy('foo')
+        .limit(1)
+        .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('Invalid query');
+    }
+
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo', '==', 'bar')
+        .orderBy('bar')
+        .orderBy('foo')
+        .limit(1)
+        .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('Invalid query');
+    }
+  });
+
+  it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where('foo', '>', 'bar')
+        .orderBy('bar')
+        .orderBy('foo')
+        .limit(1)
+        .endAt(2);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('Invalid query');
+    }
+  });
 });
