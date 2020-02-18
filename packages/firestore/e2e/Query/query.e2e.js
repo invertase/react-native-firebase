@@ -28,7 +28,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     queryAfter._modifiers._filters.length.should.equal(1);
   });
 
-  it('Throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter ', async () => {
+  it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async () => {
     try {
       firebase
         .firestore()
@@ -57,7 +57,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     }
   });
 
-  it('Throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async () => {
+  it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async () => {
     try {
       firebase
         .firestore()
