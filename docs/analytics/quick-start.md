@@ -81,7 +81,7 @@ tracking drop off points during a e-commerce transaction flow. The Analytics pac
 
 ```js
 import React, { useEffect } from 'react';
-import { View } from 'react';
+import { View } from 'react-native';
 import analytics from '@react-native-firebase/analytics';
 
 function BasketScreen() {
