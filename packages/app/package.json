@@ -53,7 +53,6 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.3.4",
     "opencollective-postinstall": "^2.0.1",
     "superstruct": "^0.6.2"
   },
