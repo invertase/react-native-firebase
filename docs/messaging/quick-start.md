@@ -69,7 +69,7 @@ If permissions have already been granted, the method resolves without a dialog.
 import messaging from '@react-native-firebase/messaging';
 
 async function requestPermission() {
-  const granted = messaging().requestPermission();
+  const granted = await messaging().requestPermission();
 
   if (granted) {
     console.log('User granted messaging permissions!');
