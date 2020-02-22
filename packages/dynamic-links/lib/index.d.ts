@@ -371,28 +371,28 @@ export namespace FirebaseDynamicLinksTypes {
    *  const link = await firebase.dynamicLinks().buildShortLink({
    *    link: 'https://invertase.io',
    *    domainUriPrefix: 'https://xyz.page.link',
-   *  }, firebase.dynamicLinks.ShortLinkType.UNGUESSABLE);
+   *  }, FirebaseDynamicLinksTypes.ShortLinkType.UNGUESSABLE);
    * ```
    */
-  export interface ShortLinkType {
+  export enum ShortLinkType {
     /**
      * Shorten the path to a string that is only as long as needed to be unique, with a minimum length
      * of 4 characters. Use this if sensitive information would not be exposed if a short
      * Dynamic Link URL were guessed.
      */
-    SHORT: 'SHORT';
+    SHORT = 'SHORT',
 
     /**
      * Shorten the path to an unguessable string. Such strings are created by base62-encoding randomly
      * generated 96-bit numbers, and consist of 17 alphanumeric characters. Use unguessable strings
      * to prevent your Dynamic DynamicLinks from being crawled, which can potentially expose sensitive information.
      */
-    UNGUESSABLE: 'UNGUESSABLE';
+    UNGUESSABLE = 'UNGUESSABLE',
 
     /**
      * By default, Firebase returns a standard formatted link.
      */
-    DEFAULT: 'DEFAULT';
+    DEFAULT = 'DEFAULT',
   }
 
   /**
