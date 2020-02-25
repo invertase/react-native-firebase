@@ -419,7 +419,7 @@ No breaking changes.
 
 - The `Reference` class has undergone a rewrite. In previous versions, chaining invalid methods together on a query was possible. In version 6, the functionality now replicates the Firebase Web SDK.
   - Please thoroughly test your database queries.
-- Internal JavaScript validation has been added and will throw a JavaScript error is methods are called with incorrect parameters.
+- Internal JavaScript validation has been added and will throw a JavaScript error if methods are called with incorrect parameters.
 - All query based modifiers are now validated as per the Web SDK spec. In v5 it is possible to chain queries which are not allowed together causing native errors (e.g. `.orderByKey().orderByPriority()`, `.startAt('foo', 'bar').orderByKey()` etc). Doing so in v6 will now throw an error to keep it in-line with the Web SDK.
 - `Reference.push` now correctly mimics the Web SDK, returning a thenable reference.
 
