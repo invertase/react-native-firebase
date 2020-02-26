@@ -31,7 +31,7 @@ class FirebaseUtilsModule extends FirebaseModule {
     return this.native.isRunningInTestLab;
   }
 
-  get androidPlayServices() {
+  get playServicesAvailability() {
     if (isIOS) {
       return {
         isAvailable: true,
