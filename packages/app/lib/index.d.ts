@@ -491,7 +491,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    promptForPlayServices(): undefined;
+    promptForPlayServices(): Promise<void>;
     /**
      * Attempts to make Google Play services available on this device
      *
@@ -504,7 +504,7 @@ export namespace Utils {
      * @android Android only - iOS returns null
      */
 
-    makePlayServicesAvailable(): undefined;
+    makePlayServicesAvailable(): Promise<void>;
     /**
      * Resolves an error by starting any intents requiring user interaction.
      *
@@ -516,7 +516,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    resolutionForPlayServices(): undefined;
+    resolutionForPlayServices(): Promise<void>;
   }
 }
 
