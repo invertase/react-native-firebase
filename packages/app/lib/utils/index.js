@@ -50,21 +50,21 @@ class FirebaseUtilsModule extends FirebaseModule {
 
   promptForPlayServices() {
     if (isIOS) {
-      return false;
+      return Promise.resolve(null);
     }
     return this.native.androidPromptForPlayServices();
   }
 
   makePlayServicesAvailable() {
     if (isIOS) {
-      return false;
+      return Promise.resolve(null);
     }
     return this.native.androidMakePlayServicesAvailable();
   }
 
   resolutionForPlayServices() {
     if (isIOS) {
-      return false;
+      return Promise.resolve(null);
     }
     return this.native.androidResolutionForPlayServices();
   }
