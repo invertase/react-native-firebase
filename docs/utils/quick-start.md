@@ -56,7 +56,7 @@ const picturesDir = firebase.utils.FilePath.PICTURES_DIRECTORY;
 
 ## Check if Play Services are available on Android devices
 
-It is useful to know if the device has play services available, and what to do in response to certain use cases:
+It is useful to know if the Android device has play services available, and what to do in response to certain use cases:
 
 ```js
 import firebase from '@react-native-firebase/app';
@@ -91,7 +91,7 @@ async function checkPlayServicesExample() {
  
       default:
         // some default dialog / component?
-        // use the link below to tailor response to status to suit your use case
+        // use the link below to tailor response to status codes to suit your use case
         // https://developers.google.com/android/reference/com/google/android/gms/// common/ConnectionResult#SERVICE_VERSION_UPDATE_REQUIRED
         if (isUserResolvableError) return utils.promptForPlayServices();
         if (hasResolution) return utils.resolutionForPlayServices();
