@@ -358,6 +358,87 @@ export namespace Utils {
   export interface Statics {
     FilePath: FilePath;
   }
+  /**
+   * For further information on the status codes available & what they represent, please head over
+   * to ConnectionResult documentation:
+   * https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult
+   */
+  export enum PlayServicesAvailabilityStatusCodes {
+    API_UNAVAILABLE = 16,
+    CANCELED = 13,
+    DEVELOPER_ERROR = 10,
+    DRIVE_EXTERNAL_STORAGE_REQUIRED = 1500,
+    INTERNAL_ERROR = 8,
+    INTERRUPTED = 15,
+    INVALID_ACCOUNT = 5,
+    LICENSE_CHECK_FAILED = 11,
+    NETWORK_ERROR = 7,
+    RESOLUTION_REQUIRED = 6,
+    RESTRICTED_PROFILE = 20,
+    SERVICE_DISABLED = 3,
+    SERVICE_INVALID = 9,
+    SERVICE_MISSING = 1,
+    SERVICE_MISSING_PERMISSION = 19,
+    SERVICE_UPDATING = 18,
+    SERVICE_VERSION_UPDATE_REQUIRED = 2,
+    SIGN_IN_FAILED = 17,
+    SIGN_IN_REQUIRED = 4,
+    SUCCESS = 0,
+    TIMEOUT = 14,
+  }
+  export interface PlayServicesAvailability {
+    /**
+     * Returns a numeric status code. Please refer to Android documentation
+     * for further information:
+     * https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult
+     *
+     * ```js
+     * firebase.utils().playServicesAvailability.status;
+     * ```
+     *
+     * @android Android only - iOS returns 0
+     */
+    status: PlayServicesAvailabilityStatusCodes;
+
+    /**
+     * Returns a boolean indicating whether Play Store is available on the device
+     *
+     * ```js
+     * firebase.utils().playServicesAvailability.isAvailable;
+     * ```
+     *
+     * @android Android only - iOS returns true
+     */
+    isAvailable: boolean;
+    /**
+     * If Play Services is not available on the device, hasResolution indicates
+     * whether it is possible to do something about it (e.g. install Play Services).
+     *
+     * ```js
+     * firebase.utils().playServicesAvailability.hasResolution;
+     * ```
+     * @android Android only - iOS returns undefined
+     */
+    hasResolution: boolean | undefined;
+    /**
+     * If an error was recieved, this indicates whether the error is resolvable
+     *
+     * ```js
+     * firebase.utils().playServicesAvailability.isUserResolvableError;
+     * ```
+     * @android Android only - iOS returns undefined
+     */
+    isUserResolvableError: boolean | undefined;
+    /**
+     * A human readable error string
+     *
+     * ```js
+     * firebase.utils().playServicesAvailability.error;
+     * ```
+     * @android Android only - iOS returns undefined
+     */
+    error: string | undefined;
+  }
 
   /**
    * The React Native Firebase Utils service interface.
@@ -379,6 +460,63 @@ export namespace Utils {
      * @android
      */
     isRunningInTestLab: boolean;
+
+    /**
+     * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
+     *
+     * @android
+     */
+    playServicesAvailability: PlayServicesAvailability;
+    /**
+     * If true, allows the device to collect analytical data and send it to
+     * Firebase. Useful for GDPR.
+     *
+     * #### Example
+     *
+     * ```js
+     * const PlayServicesAvailability = await firebase.utils().getPlayServicesStatus();
+     * ```
+     *
+     * @android Android only - iOS returns null
+     */
+    getPlayServicesStatus(): Promise<PlayServicesAvailability>;
+    /**
+     * A prompt appears on the device to ask the user to update play services
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.utils().promptForPlayServices();
+     * ```
+     *
+     * @android Android only - iOS returns null
+     */
+    promptForPlayServices(): undefined;
+    /**
+     * Attempts to make Google Play services available on this device
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.utils().makePlayServicesAvailable();
+     * ```
+     *
+     * @android Android only - iOS returns null
+     */
+
+    makePlayServicesAvailable(): undefined;
+    /**
+     * Resolves an error by starting any intents requiring user interaction.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.utils().resolutionForPlayServices();
+     * ```
+     *
+     * @android Android only - iOS returns null
+     */
+    resolutionForPlayServices(): undefined;
   }
 }
 
