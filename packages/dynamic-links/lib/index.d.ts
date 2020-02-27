@@ -381,14 +381,12 @@ export namespace FirebaseDynamicLinksTypes {
      * Dynamic Link URL were guessed.
      */
     SHORT = 'SHORT',
-
     /**
      * Shorten the path to an unguessable string. Such strings are created by base62-encoding randomly
      * generated 96-bit numbers, and consist of 17 alphanumeric characters. Use unguessable strings
      * to prevent your Dynamic DynamicLinks from being crawled, which can potentially expose sensitive information.
      */
     UNGUESSABLE = 'UNGUESSABLE',
-
     /**
      * By default, Firebase returns a standard formatted link.
      */
@@ -430,9 +428,9 @@ export namespace FirebaseDynamicLinksTypes {
    */
   export interface Statics {
     /**
-     * Returns the {@link links.ShortLinkType} interface.
+     * Returns the {@link links.ShortLinkType} enum.
      */
-    ShortLinkType: ShortLinkType;
+    ShortLinkType: typeof ShortLinkType;
   }
 
   /**
