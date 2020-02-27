@@ -387,7 +387,7 @@ export namespace Utils {
     SUCCESS = 0,
     TIMEOUT = 14,
   }
- 
+
   export interface PlayServicesAvailability {
     /**
      * Returns a numeric status code. Please refer to Android documentation
@@ -460,22 +460,33 @@ export namespace Utils {
    */
   export class Module extends FirebaseModule {
     /**
-     * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
+     * Returns true if this app is running inside a Firebase Test Lab environment.
      *
-     * @android
+     * #### Example
+     *
+     * ```js
+     * const isRunningInTestLab = await firebase.utils().isRunningInTestLab;
+     * ```
+     *
+     * @android Android only - iOS returns false
      */
     isRunningInTestLab: boolean;
 
     /**
-     * Returns true if this app is running inside a Firebase Test Lab environment. Always returns false on iOS.
+     * Returns PlayServicesAvailability properties
      *
-     * @android
+     * #### Example
+     *
+     * ```js
+     * const PlayServicesAvailability = await firebase.utils().playServicesAvailability;
+     * ```
+     *
+     * @android Android only - iOS always returns { isAvailable: true, status: 0 }
      */
     playServicesAvailability: PlayServicesAvailability;
- 
+
     /**
-     * If true, allows the device to collect analytical data and send it to
-     * Firebase. Useful for GDPR.
+     * Returns PlayServicesAvailability properties
      *
      * #### Example
      *
