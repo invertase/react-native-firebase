@@ -496,7 +496,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    getPlayServicesStatus(): Promise<PlayServicesAvailability>;
+    getPlayServicesStatus(): Promise<PlayServicesAvailability | null>;
 
     /**
      * A prompt appears on the device to ask the user to update play services
@@ -509,7 +509,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    promptForPlayServices(): Promise<void>;
+    promptForPlayServices(): Promise<void | null>;
 
     /**
      * Attempts to make Google Play services available on this device
@@ -522,7 +522,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    makePlayServicesAvailable(): Promise<void>;
+    makePlayServicesAvailable(): Promise<void | null>;
 
     /**
      * Resolves an error by starting any intents requiring user interaction.
@@ -535,7 +535,7 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-    resolutionForPlayServices(): Promise<void>;
+    resolutionForPlayServices(): Promise<void | null>;
   }
 }
 
