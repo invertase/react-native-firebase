@@ -480,6 +480,7 @@ export namespace Utils {
      * @android Android only - iOS returns null
      */
     getPlayServicesStatus(): Promise<PlayServicesAvailability>;
+
     /**
      * A prompt appears on the device to ask the user to update play services
      *
