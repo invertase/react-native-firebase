@@ -492,6 +492,7 @@ export namespace Utils {
      * @android Android only - iOS returns null
      */
     promptForPlayServices(): Promise<void>;
+
     /**
      * Attempts to make Google Play services available on this device
      *
