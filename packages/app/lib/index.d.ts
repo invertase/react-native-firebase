@@ -504,7 +504,6 @@ export namespace Utils {
      *
      * @android Android only - iOS returns null
      */
-
     makePlayServicesAvailable(): Promise<void>;
     /**
      * Resolves an error by starting any intents requiring user interaction.
