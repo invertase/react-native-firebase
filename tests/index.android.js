@@ -1,2 +1,2 @@
-require('./app.playground');
+require('./app');
 //require('./app.admob');
