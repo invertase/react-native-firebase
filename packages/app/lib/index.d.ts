@@ -358,6 +358,7 @@ export namespace Utils {
   export interface Statics {
     FilePath: FilePath;
   }
+
   /**
    * For further information on the status codes available & what they represent, please head over
    * to ConnectionResult documentation:
@@ -386,6 +387,7 @@ export namespace Utils {
     SUCCESS = 0,
     TIMEOUT = 14,
   }
+ 
   export interface PlayServicesAvailability {
     /**
      * Returns a numeric status code. Please refer to Android documentation
@@ -410,6 +412,7 @@ export namespace Utils {
      * @android Android only - iOS returns true
      */
     isAvailable: boolean;
+
     /**
      * If Play Services is not available on the device, hasResolution indicates
      * whether it is possible to do something about it (e.g. install Play Services).
@@ -420,6 +423,7 @@ export namespace Utils {
      * @android Android only - iOS returns undefined
      */
     hasResolution: boolean | undefined;
+
     /**
      * If an error was recieved, this indicates whether the error is resolvable
      *
@@ -429,6 +433,7 @@ export namespace Utils {
      * @android Android only - iOS returns undefined
      */
     isUserResolvableError: boolean | undefined;
+
     /**
      * A human readable error string
      *
@@ -467,6 +472,7 @@ export namespace Utils {
      * @android
      */
     playServicesAvailability: PlayServicesAvailability;
+ 
     /**
      * If true, allows the device to collect analytical data and send it to
      * Firebase. Useful for GDPR.
