@@ -382,6 +382,13 @@ export namespace FirebaseRemoteConfigTypes {
     getValue(key: string): ConfigValue;
 
     /**
+     * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
+     * @android Android only - iOS returns Promise<null>
+     *
+     */
+    reset(): Promise<null>;
+
+    /**
      * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
      *
      * #### Example

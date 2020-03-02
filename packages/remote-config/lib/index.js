@@ -22,6 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  isIOS,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -121,6 +122,18 @@ class FirebaseConfigModule extends FirebaseModule {
 
   get minimumFetchInterval() {
     return this._minimumFetchInterval;
+  }
+  /**
+   * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
+   * @returns {Promise<null>}
+   */
+  reset() {
+    if (isIOS) {
+      console.warn('firebase.remoteConfig().reset() is not yet supported on iOS.');
+      return Promise.resolve(null);
+    }
+
+    return this._promiseWithConstants(this.native.reset());
   }
 
   setConfigSettings(settings = {}) {
