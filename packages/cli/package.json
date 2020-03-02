@@ -1,0 +1,40 @@
+{
+  "name": "@react-native-firebase/cli",
+  "version": "6.3.4",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase CLI",
+  "main": "lib/index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/cli"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "cli"
+  ],
+  "dependencies": {
+    "a2a": "^0.1.0",
+    "axios": "^0.19.2",
+    "chalk": "^3.0.0",
+    "ora": "^4.0.3",
+    "opn": "^6.0.0",
+    "boxen": "^4.2.0",
+    "portfinder": "^1.0.25",
+    "google-auth-library": "^5.10.1",
+    "configstore": "^5.0.1",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-native-firebase"
+  },
+  "gitHead": "93c6b38f6d5e8f015aab585d7d4c18674f4a63cd",
+  "publishConfig": {
+    "access": "public"
+  }
+}

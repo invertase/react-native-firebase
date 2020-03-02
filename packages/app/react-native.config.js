@@ -15,4 +15,10 @@ module.exports = {
       },
     },
   },
+  commands: [
+    {
+      name: 'firebase',
+      func: require('@react-native-firebase/cli'),
+    },
+  ],
 };
