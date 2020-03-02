@@ -494,7 +494,7 @@ export namespace Utils {
      * const PlayServicesAvailability = await firebase.utils().getPlayServicesStatus();
      * ```
      *
-     * @android Android only - iOS returns null
+     * @android Android only - iOS returns Promise<null>
      */
     getPlayServicesStatus(): Promise<PlayServicesAvailability | null>;
 
@@ -507,7 +507,7 @@ export namespace Utils {
      * await firebase.utils().promptForPlayServices();
      * ```
      *
-     * @android Android only - iOS returns null
+     * @android Android only - iOS returns Promise<null>
      */
     promptForPlayServices(): Promise<void | null>;
 
@@ -520,7 +520,7 @@ export namespace Utils {
      * await firebase.utils().makePlayServicesAvailable();
      * ```
      *
-     * @android Android only - iOS returns null
+     * @android Android only - iOS returns Promise<null>
      */
     makePlayServicesAvailable(): Promise<void | null>;
 
@@ -533,7 +533,7 @@ export namespace Utils {
      * await firebase.utils().resolutionForPlayServices();
      * ```
      *
-     * @android Android only - iOS returns null
+     * @android Android only - iOS returns Promise<null>
      */
     resolutionForPlayServices(): Promise<void | null>;
   }
