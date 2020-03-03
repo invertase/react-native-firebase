@@ -1,5 +1,4 @@
 const Chalk = require('chalk');
-const API = require('./api');
 const Store = require('../store.js');
 const Cache = require('../cache.js');
 
@@ -128,8 +127,6 @@ module.exports = {
 
     if (!Store.has('selected_account')) {
       module.exports.setDefaultAccount(account);
-    } else {
-      API.queueBackgroundPrefetch(account);
     }
 
     return `New account added [${Chalk.cyanBright(module.exports.getEmail(account.user.sub))}]`;
@@ -141,7 +138,6 @@ module.exports = {
    * @return {string}
    */
   setDefaultAccount(account) {
-    API.queueBackgroundPrefetch(account);
     Store.set('selected_account', account.user.sub);
     return `Default account set to [${Chalk.cyanBright(module.exports.getEmail())}]`;
   },

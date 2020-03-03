@@ -55,13 +55,13 @@ function handleRequestError(error, requestOptions, account) {
     error.print = () => {
       Box.warn(
         [
-          `The requested Firebase entity was not found.`,
+          'The requested Firebase entity was not found.',
           '',
           `${Chalk.white.bold('Account:')} ${Chalk.cyanBright(account.user.email)}`,
           '',
           `${Chalk.white.bold('URL:')} ${Chalk.grey(requestOptions.url)}`,
         ],
-        `Resource Not Found (404)`,
+        'Resource Not Found (404)',
       );
 
       return Promise.resolve();
@@ -72,13 +72,13 @@ function handleRequestError(error, requestOptions, account) {
     error.print = () => {
       Box.warn(
         [
-          `The account specified does not have permission to view the requested Firebase resource.`,
+          'The account specified does not have permission to view the requested Firebase resource.',
           '',
           `${Chalk.white.bold('Account:')} ${Chalk.cyanBright(account.user.email)}`,
           '',
           `${Chalk.white.bold('URL:')} ${Chalk.grey(request.url)}`,
         ],
-        `Permission Denied for Resource (403)`,
+        'Permission Denied for Resource (403)',
       );
 
       return Promise.resolve();

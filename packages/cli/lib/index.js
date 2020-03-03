@@ -1,12 +1,26 @@
 module.exports = async function firebaseCli(args, reactNativeConfig) {
-  // uncomment to sign-in
-  await require('./helpers/firebase').auth.authWithBrowser();
+  let account = require('./helpers/firebase').auth.getAccount();
+  if (!account) {
+    await require('./helpers/firebase').auth.authWithBrowser();
+    account = require('./helpers/firebase').auth.getAccount();
+  }
+  await require('./helpers/prompt').selectFirebaseAccount();
 
-  // const account = require('./helpers/firebase').auth.getAccount();
-  // const api = require('./helpers/firebase').api(account);
-
-  // const firebaseProjects = await api.management.getProjects();
+  const api = require('./helpers/firebase').api(account);
   const selectedProject = await require('./helpers/prompt').selectFirebaseProject();
+  const projectDetail = await api.management.getProject(selectedProject.projectId);
 
-  console.dir(selectedProject);
+  // console.log('\nRegistered Applications:\n');
+  // projectDetail.apps.apps
+  //   .map(app => `${app.appId} (${app.platform})`)
+  //   .forEach(app => console.log(app));
+
+  const androidProjectConfig = reactNativeConfig.platforms.android.projectConfig(
+    reactNativeConfig.root,
+  );
+
+  const iosProjectConfig = reactNativeConfig.platforms.ios.projectConfig(reactNativeConfig.root);
+
+  console.dir(androidProjectConfig);
+  console.dir(projectDetail.apps);
 };

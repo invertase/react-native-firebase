@@ -24,26 +24,52 @@ module.exports = function managementApiWithAccount(account) {
       url: `${BASE_URL}/projects/${projectId}`,
     };
 
-    const requestOptionsApps = {
-      url: `${BASE_URL}/projects/${projectId}:searchApps`,
-    };
-
     const cacheOptionsGet = {
       bypass,
       key: keyWithDomainPrefix(DOMAIN, `project:${projectId}`),
       ttl: Cache.hours(72),
     };
 
-    const cacheOptionsApps = {
-      bypass,
-      key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:apps`),
-      ttl: Cache.hours(12),
-    };
-
     const project = await request(account, requestOptionsGet, cacheOptionsGet);
 
     if (project) {
-      project.apps = await request(account, requestOptionsApps, cacheOptionsApps);
+      project.apps = {};
+      project.apps.android =
+        (await request(
+          account,
+          {
+            url: `${BASE_URL}/projects/${projectId}/androidApps`,
+          },
+          {
+            bypass,
+            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:androidApps`),
+            ttl: Cache.hours(12),
+          },
+        )).apps || [];
+      project.apps.ios =
+        (await request(
+          account,
+          {
+            url: `${BASE_URL}/projects/${projectId}/iosApps`,
+          },
+          {
+            bypass,
+            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:iosApps`),
+            ttl: Cache.hours(12),
+          },
+        )).apps || [];
+      project.apps.web =
+        (await request(
+          account,
+          {
+            url: `${BASE_URL}/projects/${projectId}/webApps`,
+          },
+          {
+            bypass,
+            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:webApps`),
+            ttl: Cache.hours(12),
+          },
+        )).apps || [];
     }
 
     return project;

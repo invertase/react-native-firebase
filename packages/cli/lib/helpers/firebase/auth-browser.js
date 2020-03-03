@@ -24,8 +24,6 @@ const DEFAULT_SCOPES = [
   'openid',
   'https://www.googleapis.com/auth/firebase',
   'https://www.googleapis.com/auth/userinfo.profile',
-  'https://www.googleapis.com/auth/firebase.readonly',
-  'https://www.googleapis.com/auth/cloud-platform',
   'https://www.googleapis.com/auth/cloudplatformprojects.readonly',
 ];
 

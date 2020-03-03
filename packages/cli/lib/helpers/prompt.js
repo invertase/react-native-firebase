@@ -111,7 +111,7 @@ module.exports = {
   async selectFirebaseAccount(allowAll = false, promptToAdd = true) {
     let accounts = Firebase.auth.getAccounts();
 
-    if (!promptToAdd) {
+    if (promptToAdd) {
       // only one account so default to that one
       if (accounts.length === 1) {
         if (
