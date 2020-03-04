@@ -227,13 +227,12 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * #### Example
    *
-   * The example below makes use of the React Native `__DEV__` global JavaScript variable which
-   * is exposed.
+   * The example below shows how to set a time limit to the length of time the request for remote config values
    *
    * ```js
-   * await firebase.remoteConfig().setConfigSettings({
-   *   isDeveloperModeEnabled: __DEV__,
-   * });
+   * firebase.remoteConfig().settings = {
+   *   fetchTimeoutMillis: 6000,
+   * };
    * ```
    */
   export interface ConfigSettings {
@@ -416,21 +415,6 @@ export namespace FirebaseRemoteConfigTypes {
      * @param key A key used to retrieve a specific value.
      */
     getValue(key: string): ConfigValue;
-
-    /**
-     * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.remoteConfig().setConfigSettings({
-     *   isDeveloperModeEnabled: __DEV__,
-     * });
-     * ```
-     *
-     * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
-     */
-    setConfigSettings(configSettings: ConfigSettings): Promise<void>;
   }
 }
 

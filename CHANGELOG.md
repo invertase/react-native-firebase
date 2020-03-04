@@ -5,6 +5,7 @@
 - removed `isDeveloperModeEnabled` from `remoteConfig().settings = { isDeveloperModeEnabled:true }` for both iOS & Android. Not in web spec.
 - removed `remoteConfig().setDefaults({})` & replaced with `remoteConfig().defaultConfig = {}` which is a web property.
 - removed `remoteConfig().setDefaultsFromResource({})`, not in the web spec.
+- removed `remoteConfig().setConfig({})` & replaced with `remoteConfig().settings = {}` which is a web property.
 
 # [6.1.0](https://github.com/invertase/react-native-firebase/compare/v6.0.4...v6.1.0) (2019-11-26)
 

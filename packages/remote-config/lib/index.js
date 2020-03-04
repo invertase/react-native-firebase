@@ -83,6 +83,7 @@ class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._defaultConfig = {};
+    this._settings = {};
     this._lastFetchStatus = null;
     this._lastFetchTime = null;
     // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
@@ -114,11 +115,44 @@ class FirebaseConfigModule extends FirebaseModule {
 
   set defaultConfig(defaults) {
     if (!isObject(defaults)) {
-      throw new Error("'firebase.remoteConfig().defaultConfig = {}'  must set an object.");
+      throw new Error('firebase.remoteConfig().defaultConfig: must set an object.');
     }
 
     this._defaultConfig = defaults;
     this._promiseWithConstants(this.native.setDefaults(defaults));
+  }
+
+  get settings() {
+    return this._settings;
+  }
+
+  set settings(settings = {}) {
+    if (!isObject(settings)) {
+      throw new Error('firebase.remoteConfig().settings: must set an object.');
+    }
+
+    if (!hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      console.warn(
+        "firebase.remoteConfig().settings: 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
+      );
+    }
+
+    if (
+      hasOwnProperty(settings, 'minimumFetchInterval') &&
+      !isNumber(settings.minimumFetchInterval)
+    ) {
+      throw new Error(
+        "firebase.remoteConfig().settings: 'settings.minimumFetchInterval' must be a number value.",
+      );
+    }
+
+    if (hasOwnProperty(settings, 'fetchTimeout') && !isNumber(settings.fetchTimeout)) {
+      throw new Error(
+        "firebase.remoteConfig().settings: 'settings.fetchTimeout' must be a number value.",
+      );
+    }
+    this._settings = settings;
+    this._promiseWithConstants(this.native.setConfigSettings(settings));
   }
 
   get lastFetchTime() {
@@ -144,33 +178,10 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._fetchTimeout;
   }
 
-  setConfigSettings(settings = {}) {
-    if (!isObject(settings)) {
-      throw new Error("firebase.remoteConfig().setConfigSettings(): 'settings' must be an object.");
-    }
-
-    if (!hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      console.warn(
-        "firebase.remoteConfig().setConfigSettings(): settings.isDeveloperModeEnabled has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
-      );
-    }
-
-    if (
-      hasOwnProperty(settings, 'minimumFetchInterval') &&
-      !isNumber(settings.minimumFetchInterval)
-    ) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' must be a number value.",
-      );
-    }
-
-    if (hasOwnProperty(settings, 'fetchTimeout') && !isNumber(settings.fetchTimeout)) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeout' must be a number value.",
-      );
-    }
-
-    return this._promiseWithConstants(this.native.setConfigSettings(settings));
+  setConfigSettings() {
+    console.warn(
+      "firebase.remoteConfig().setConfigSettings({ [key]: string}) has now been removed. Please use 'firebase.remoteConfig().settings = { ...[key]: string, }' instead'",
+    );
   }
 
   /**
