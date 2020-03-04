@@ -97,8 +97,6 @@ describe('remoteConfig()', () => {
 
   describe('config settings', () => {
     it('should be immediately available', async () => {
-      firebase.remoteConfig().isDeveloperModeEnabled.should.be.a.Boolean();
-      firebase.remoteConfig().isDeveloperModeEnabled.should.equal(false);
       firebase.remoteConfig().lastFetchStatus.should.be.a.String();
       firebase.remoteConfig().lastFetchStatus.should.equal('success');
       firebase.remoteConfig().lastFetchTime.should.be.a.Number();
@@ -106,31 +104,15 @@ describe('remoteConfig()', () => {
   });
 
   describe('setConfigSettings()', () => {
-    it('isDeveloperModeEnabled sets correctly', async () => {
-      firebase.remoteConfig().isDeveloperModeEnabled.should.equal(false);
-      firebase.remoteConfig().isDeveloperModeEnabled.should.be.a.Boolean();
-
-      await firebase.remoteConfig().setConfigSettings({ isDeveloperModeEnabled: true });
-
-      firebase.remoteConfig().isDeveloperModeEnabled.should.equal(true);
-      firebase.remoteConfig().isDeveloperModeEnabled.should.be.a.Boolean();
-
-      await firebase.remoteConfig().setConfigSettings({ isDeveloperModeEnabled: false });
-
-      firebase.remoteConfig().isDeveloperModeEnabled.should.equal(false);
-    });
-
     it('minimumFetchInterval sets correctly', async () => {
-      await firebase
-        .remoteConfig()
-        .setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 300 });
+      await firebase.remoteConfig().setConfigSettings({ minimumFetchInterval: 300 });
 
       firebase.remoteConfig().minimumFetchInterval.should.be.equal(300);
     });
 
-    it('it throws if no args', async () => {
+    it('it throws if arg is not an object', async () => {
       try {
-        await firebase.remoteConfig().setConfigSettings();
+        await firebase.remoteConfig().setConfigSettings('not an object');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql('must be an object');
@@ -138,33 +120,9 @@ describe('remoteConfig()', () => {
       }
     });
 
-    it('it throws if object does not contain isDeveloperModeEnabled key', async () => {
-      try {
-        await firebase.remoteConfig().setConfigSettings({});
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql("'isDeveloperModeEnabled' key");
-        return Promise.resolve();
-      }
-    });
-
-    it('it throws if isDeveloperModeEnabled key is not a boolean', async () => {
-      try {
-        await firebase.remoteConfig().setConfigSettings({ isDeveloperModeEnabled: 'potato' });
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql(
-          "'settings.isDeveloperModeEnabled' must be a boolean value",
-        );
-        return Promise.resolve();
-      }
-    });
-
     it('throws if minimumFetchInterval is not a number', async () => {
       try {
-        await firebase
-          .remoteConfig()
-          .setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 'potato' });
+        await firebase.remoteConfig().setConfigSettings({ minimumFetchInterval: 'potato' });
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql("'settings.minimumFetchInterval' must be a number value");

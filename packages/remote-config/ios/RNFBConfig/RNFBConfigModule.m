@@ -139,11 +139,13 @@ RCT_EXPORT_METHOD(setConfigSettings:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  FIRRemoteConfigSettings *remoteConfigSettings =
-      [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:[configSettings[@"isDeveloperModeEnabled"] boolValue]];
 
   if ([configSettings objectForKey:@"minimumFetchInterval"]) {
     remoteConfigSettings.minimumFetchInterval = [configSettings[@"minimumFetchInterval"] doubleValue];
+  }
+
+  if ([configSettings objectForKey:@"fetchTimeout"]) {
+    remoteConfigSettings.fetchTimeout = [configSettings[@"fetchTimeout"] doubleValue];
   }
 
   [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
@@ -187,7 +189,6 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
 
   NSDate *lastFetchTime = remoteConfig.lastFetchTime;
-  BOOL isDeveloperModeEnabled = [RCTConvert BOOL:@([remoteConfig configSettings].isDeveloperModeEnabled)];
   NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
   double minimumFetchInterval = [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
 
@@ -209,7 +210,6 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   return @{
       @"values": values,
       @"lastFetchStatus": lastFetchStatus,
-      @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
       @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
       @"minimumFetchInterval": @(minimumFetchInterval)
   };

@@ -17,7 +17,6 @@
 
 import {
   hasOwnProperty,
-  isBoolean,
   isNumber,
   isObject,
   isString,
@@ -116,23 +115,27 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get isDeveloperModeEnabled() {
-    return this._isDeveloperModeEnabled;
+    console.warn(
+      'firebase.remoteConfig().isDeveloperModeEnabled has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
+    );
   }
 
   get minimumFetchInterval() {
     return this._minimumFetchInterval;
   }
 
+  get fetchTimeout() {
+    return this._fetchTimeout;
+  }
+
   setConfigSettings(settings = {}) {
-    if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.",
-      );
+    if (!isObject(settings)) {
+      throw new Error("firebase.remoteConfig().setConfigSettings(): 'settings' must be an object.");
     }
 
-    if (!isBoolean(settings.isDeveloperModeEnabled)) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
+    if (!hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      console.warn(
+        "firebase.remoteConfig().setConfigSettings(): settings.isDeveloperModeEnabled has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
     }
 
@@ -142,6 +145,12 @@ class FirebaseConfigModule extends FirebaseModule {
     ) {
       throw new Error(
         "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' must be a number value.",
+      );
+    }
+
+    if (hasOwnProperty(settings, 'fetchTimeout') && !isNumber(settings.fetchTimeout)) {
+      throw new Error(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeout' must be a number value.",
       );
     }
 
@@ -209,8 +218,8 @@ class FirebaseConfigModule extends FirebaseModule {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
     this._values = convertNativeConfigValues(constants.values);
-    this._isDeveloperModeEnabled = constants.isDeveloperModeEnabled;
     this._minimumFetchInterval = constants.minimumFetchInterval;
+    this._fetchTimeout = constants.fetchTimeout;
   }
 
   _promiseWithConstants(promise) {

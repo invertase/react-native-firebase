@@ -68,10 +68,14 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
   Task<Void> setConfigSettings(Bundle configSettings) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
-      configSettingsBuilder.setDeveloperModeEnabled(configSettings.getBoolean("isDeveloperModeEnabled"));
+
       if (configSettings.containsKey("minimumFetchInterval")) {
         double fetchInterval = configSettings.getDouble("minimumFetchInterval");
-        configSettingsBuilder.setMinimumFetchIntervalInSeconds((long)fetchInterval);
+        configSettingsBuilder.setMinimumFetchIntervalInSeconds((long) fetchInterval);
+      }
+      if (configSettings.containsKey("fetchTimeout")) {
+        double fetchTimeout = configSettings.getDouble("fetchTimeout");
+        configSettingsBuilder.setFetchTimeoutInSeconds((long) fetchTimeout);
       }
       FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
       return null;
@@ -176,7 +180,6 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
 
     appConstants.put("values", getAllValuesForApp(appName));
     appConstants.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
-    appConstants.put("isDeveloperModeEnabled", remoteConfigSettings.isDeveloperModeEnabled());
     appConstants.put("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
     appConstants.put("minimumFetchInterval", remoteConfigSettings.getMinimumFetchIntervalInSeconds());
 

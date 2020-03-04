@@ -238,14 +238,19 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export interface ConfigSettings {
     /**
-     * If enabled, default behaviour such as caching is disabled for a better debugging
-     * experience.
-     */
-    isDeveloperModeEnabled: boolean;
-    /**
-     * The time that remote config should cache flags for.
+     * Indicates the default value in seconds to set for the minimum interval that needs to elapse
+     * before a fetch request can again be made to the Remote Config backend.
      */
     minimumFetchInterval?: number;
+    /**
+     * Indicates the default value in seconds to abandon a pending fetch request made to the Remote Config backend.
+     */
+    fetchTimeout: number;
+    /**
+     * Sets the connection and read timeouts for fetch requests to the Firebase Remote Config servers in seconds.
+     * A fetch call will fail if it takes longer than the specified timeout to connect to or read from the Remote Config servers.
+     */
+    fetchTimeout?: number;
   }
 
   /**
@@ -278,13 +283,18 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * Indicates the value in seconds set for the minimum interval that needs to elapse
+     * before a fetch request can again be made to the Remote Config backend.
+     */
+    minimumFetchInterval: number;
+    /**
+     * Indicates the default value in seconds to abandon a pending fetch request made to the Remote Config backend.
+     */
+    fetchTimeout: number;
+    /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
      */
     lastFetchTime: number;
-    /**
-     * Whether developer mode is enabled. This is set manually via {@link config#setConfigSettings}
-     */
-    isDeveloperModeEnabled: boolean;
     /**
      * The status of the latest Remote RemoteConfig fetch action.
      *

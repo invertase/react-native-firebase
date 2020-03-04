@@ -1,5 +1,10 @@
-# [6.1.0](https://github.com/invertase/react-native-firebase/compare/v6.0.4...v6.1.0) (2019-11-26)
+# Next
 
+## remote-config 
+ 
+- removed `isDeveloperModeEnabled` from `remoteConfig().settings = { isDeveloperModeEnabled:true }` for both iOS & Android;
+
+# [6.1.0](https://github.com/invertase/react-native-firebase/compare/v6.0.4...v6.1.0) (2019-11-26)
 
 ### Bug Fixes
 

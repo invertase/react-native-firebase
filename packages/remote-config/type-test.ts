@@ -33,7 +33,3 @@ firebase
   .fetch(123)
   .then();
 firebase.remoteConfig().getAll();
-firebase
-  .remoteConfig()
-  .setConfigSettings({ isDeveloperModeEnabled: true })
-  .then();
