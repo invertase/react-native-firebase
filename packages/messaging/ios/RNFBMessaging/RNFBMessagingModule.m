@@ -181,10 +181,6 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    return resolve(@([RCTConvert BOOL:@(YES)]));
-  }
-
   [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
   [[UIApplication sharedApplication] registerForRemoteNotifications];
 }
