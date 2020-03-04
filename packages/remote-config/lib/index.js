@@ -141,17 +141,38 @@ class FirebaseConfigModule extends FirebaseModule {
       hasOwnProperty(settings, 'minimumFetchInterval') &&
       !isNumber(settings.minimumFetchInterval)
     ) {
-      throw new Error(
-        "firebase.remoteConfig().settings: 'settings.minimumFetchInterval' must be a number value.",
+      console.warn(
+        "firebase.remoteConfig().settings: 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
     }
 
-    if (hasOwnProperty(settings, 'fetchTimeout') && !isNumber(settings.fetchTimeout)) {
-      throw new Error(
-        "firebase.remoteConfig().settings: 'settings.fetchTimeout' must be a number value.",
-      );
+    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
+      if (!isNumber(settings.minimumFetchIntervalMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().settings: 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        settings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+      }
     }
+
+    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
+      if (!isNumber(settings.fetchTimeMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().settings: 'settings.fetchTimeMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        settings.fetchTimeout = settings.fetchTimeMillis / 1000;
+      }
+    }
+
     this._settings = settings;
+
+    delete settings.minimumFetchIntervalMillis;
+    delete settings.fetchTimeMillis;
+
     this._promiseWithConstants(this.native.setConfigSettings(settings));
   }
 
@@ -171,11 +192,9 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get minimumFetchInterval() {
-    return this._minimumFetchInterval;
-  }
-
-  get fetchTimeout() {
-    return this._fetchTimeout;
+    console.warn(
+      'firebase.remoteConfig().minimumFetchInterval has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
+    );
   }
 
   setConfigSettings() {
@@ -236,8 +255,6 @@ class FirebaseConfigModule extends FirebaseModule {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
     this._values = convertNativeConfigValues(constants.values);
-    this._minimumFetchInterval = constants.minimumFetchInterval;
-    this._fetchTimeout = constants.fetchTimeout;
   }
 
   _promiseWithConstants(promise) {

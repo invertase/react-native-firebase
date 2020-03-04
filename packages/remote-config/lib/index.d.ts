@@ -237,19 +237,14 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export interface ConfigSettings {
     /**
-     * Indicates the default value in seconds to set for the minimum interval that needs to elapse
+     * Indicates the default value in milliseconds to set for the minimum interval that needs to elapse
      * before a fetch request can again be made to the Remote Config backend.
      */
-    minimumFetchInterval?: number;
+    minimumFetchIntervalMillis?: number;
     /**
-     * Indicates the default value in seconds to abandon a pending fetch request made to the Remote Config backend.
+     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config backend.
      */
-    fetchTimeout: number;
-    /**
-     * Sets the connection and read timeouts for fetch requests to the Firebase Remote Config servers in seconds.
-     * A fetch call will fail if it takes longer than the specified timeout to connect to or read from the Remote Config servers.
-     */
-    fetchTimeout?: number;
+    fetchTimeMillis?: number;
   }
 
   /**
@@ -282,14 +277,14 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Indicates the value in seconds set for the minimum interval that needs to elapse
+     * Indicates the value in milliseconds set for the minimum interval that needs to elapse
      * before a fetch request can again be made to the Remote Config backend.
      */
-    minimumFetchInterval: number;
+    minimumFetchIntervalMillis: number;
     /**
-     * Indicates the default value in seconds to abandon a pending fetch request made to the Remote Config backend.
+     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config backend.
      */
-    fetchTimeout: number;
+    fetchTimeMillis: number;
     /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
      */
