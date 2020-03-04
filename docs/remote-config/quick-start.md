@@ -62,15 +62,14 @@ async function getValues() {
 
 In some cases you may want to fetch values from the console in the background without the process visibly impacting
 your application. To prevent any race conditions where values are being requested (i.e. via `getValue`) before they
-have been fetched and activated, it is recommended you set default values using `setDefaults`:
+have been fetched and activated, it is recommended you set default values using the `defaultConfig` property:
 
 ```js
 import remoteConfig from '@react-native-firebase/remote-config';
-
 async function bootstrap() {
-  await remoteConfig().setDefaults({
-    experiment: false,
-  });
+      firebase.remoteConfig().defaultConfig = {
+        experiment_enabled: false,
+      };
 }
 ```
 

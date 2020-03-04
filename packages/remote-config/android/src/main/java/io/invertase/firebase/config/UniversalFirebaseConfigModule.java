@@ -86,26 +86,6 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
   }
 
-  Task<Void> setDefaultsFromResource(String resourceName) {
-    return Tasks.call(getExecutor(), () -> {
-      int resourceId = getXmlResourceIdByName(resourceName);
-      XmlResourceParser xmlResourceParser = null;
-
-      try {
-        xmlResourceParser = getApplicationContext().getResources().getXml(resourceId);
-      } catch (Resources.NotFoundException nfe) {
-        // do nothing
-      }
-
-      if (xmlResourceParser != null) {
-        FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
-        return null;
-      }
-
-      throw new Exception("resource_not_found");
-    });
-  }
-
   Map<String, Object> getAllValuesForApp(String appName) {
     FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName));
     Map<String, FirebaseRemoteConfigValue> configValueMapRaw = config.getAll();

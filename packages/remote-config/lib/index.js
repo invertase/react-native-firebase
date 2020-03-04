@@ -82,6 +82,9 @@ function convertNativeConfigValues(configValues) {
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
+    this._defaultConfig = {};
+    this._lastFetchStatus = null;
+    this._lastFetchTime = null;
     // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
     this._updateFromConstants(this.native.REMOTE_CONFIG_APP_CONSTANTS['[DEFAULT]']);
   }
@@ -103,6 +106,19 @@ class FirebaseConfigModule extends FirebaseModule {
 
   getAll() {
     return Object.assign({}, this._values);
+  }
+
+  get defaultConfig() {
+    return this._defaultConfig;
+  }
+
+  set defaultConfig(defaults) {
+    if (!isObject(defaults)) {
+      throw new Error("'firebase.remoteConfig().defaultConfig = {}'  must set an object.");
+    }
+
+    this._defaultConfig = defaults;
+    this._promiseWithConstants(this.native.setDefaults(defaults));
   }
 
   get lastFetchTime() {
@@ -188,30 +204,21 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   /**
-   * Sets defaults.
-   *
-   * @param {object} defaults
+   * Removed. Use defaultConfig instead to get/set default values
    */
-  setDefaults(defaults) {
-    if (!isObject(defaults)) {
-      throw new Error("firebase.remoteConfig().setDefaults(): 'defaults' must be an object.");
-    }
-
-    return this._promiseWithConstants(this.native.setDefaults(defaults));
+  setDefaults() {
+    console.warn(
+      "firebase.remoteConfig().setDefaults({ [key]: string}) has now been removed. Please use 'firebase.remoteConfig().defaultConfig = { ...[key]: string, }' instead",
+    );
   }
 
   /**
-   * Sets defaults based on resource.
-   * @param {string} resourceName
+   * Removed. Use defaultConfig instead to get/set default values
    */
-  setDefaultsFromResource(resourceName) {
-    if (!isString(resourceName)) {
-      throw new Error(
-        "firebase.remoteConfig().setDefaultsFromResource(): 'resourceName' must be a string value.",
-      );
-    }
-
-    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
+  setDefaultsFromResource() {
+    console.warn(
+      "firebase.remoteConfig().setDefaultsFromResource('resourceName') has now been removed. Please use 'firebase.remoteConfig().defaultConfig = { ...[key]: string, }' instead",
+    );
   }
 
   _updateFromConstants(constants) {

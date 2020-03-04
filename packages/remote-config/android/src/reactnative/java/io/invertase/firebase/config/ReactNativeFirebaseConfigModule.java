@@ -90,25 +90,6 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     });
   }
 
-  @ReactMethod
-  public void setDefaultsFromResource(String resourceName, Promise promise) {
-    module.setDefaultsFromResource(resourceName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        Exception exception = task.getException();
-        if (exception != null && exception.getMessage().equals("resource_not_found")) {
-          rejectPromiseWithCodeAndMessage(
-            promise,
-            "resource_not_found",
-            "The specified resource name was not found."
-          );
-        }
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
-  }
-
   private WritableMap resultWithConstants(Object result) {
     Map<String, Object> responseMap = new HashMap<>(2);
     responseMap.put("result", result);

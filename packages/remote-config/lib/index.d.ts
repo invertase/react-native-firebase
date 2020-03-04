@@ -254,14 +254,14 @@ export namespace FirebaseRemoteConfigTypes {
   }
 
   /**
-   * An Interface representing a RemoteConfig Defaults object.
+   * Set default config values by updating `defaultConfig` with an object & the properties you require as default.
    *
    * #### Example
    *
    * ```js
-   * await firebase.remoteConfig().setDefaults({
+   * firebase.remoteConfig().defaultConfig = {
    *   experiment_enabled: false,
-   * });
+   * };
    * ```
    */
   export interface ConfigDefaults {
@@ -301,6 +301,32 @@ export namespace FirebaseRemoteConfigTypes {
      * See the `LastFetchStatus` statics definition.
      */
     lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+    /**
+     * Gets the current default config.
+     *
+     * #### Example
+     *
+     * ```js
+     * const defaultConfig = firebase.remoteConfig().defaultConfig;
+     * ```
+     */
+    get defaultConfig(): ConfigDefaults;
+    /**
+     * Sets default values for the app to use.
+     * Any data values fetched from the Firebase console will override any default values.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.remoteConfig().defaultConfig = {
+     *   experiment_enabled: false,
+     * };
+     * ```
+     *
+     * @param defaults A ConfigDefaults instance used to set default values.
+     */
+
+    set defaultConfig(ConfigDefaults);
 
     /**
      * Moves fetched data to the apps active config.
@@ -405,34 +431,6 @@ export namespace FirebaseRemoteConfigTypes {
      * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
      */
     setConfigSettings(configSettings: ConfigSettings): Promise<void>;
-
-    /**
-     * Sets default values for the app to use when accessing values.
-     * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.remoteConfig().setDefaults({
-     *   experiment_enabled: false,
-     * });
-     * ```
-     *
-     * @param defaults A ConfigDefaults instance used to set default values.
-     */
-    setDefaults(defaults: ConfigDefaults): Promise<null>;
-
-    /**
-     * Sets the default values from a resource file.
-     * On iOS this is a plist file and on Android this is an XML defaultsMap file.
-     *
-     * ```js
-     *  // TODO @ehesp
-     * ```
-     *
-     * @param resourceName The plist/xml file name with no extension.
-     */
-    setDefaultsFromResource(resourceName: string): Promise<null>;
   }
 }
 
