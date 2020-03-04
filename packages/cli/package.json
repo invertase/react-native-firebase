@@ -3,8 +3,7 @@
   "version": "6.3.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase CLI",
-  "main": "lib/index.js",
-  "scripts": {},
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/cli"
@@ -17,6 +16,13 @@
     "firebase",
     "cli"
   ],
+  "scripts": {
+    "build": "tsc",
+    "build:clean": "rimraf dist",
+    "build:watch": "tsc --watch",
+    "prepare": "yarn run build",
+    "prepublishOnly": "yarn run build:clean && yarn run build"
+  },
   "dependencies": {
     "a2a": "^0.1.0",
     "axios": "^0.19.2",
@@ -29,6 +35,10 @@
     "google-auth-library": "^5.10.1",
     "configstore": "^5.0.1",
     "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "^3.8.3"
   },
   "collective": {
     "type": "opencollective",
