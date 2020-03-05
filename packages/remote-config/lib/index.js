@@ -127,20 +127,19 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   set settings(settings = {}) {
+    const nativeSettings = {};
+
     if (!isObject(settings)) {
       throw new Error('firebase.remoteConfig().settings: must set an object.');
     }
 
-    if (!hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+    if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
       console.warn(
         "firebase.remoteConfig().settings: 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
     }
 
-    if (
-      hasOwnProperty(settings, 'minimumFetchInterval') &&
-      !isNumber(settings.minimumFetchInterval)
-    ) {
+    if (hasOwnProperty(settings, 'minimumFetchInterval')) {
       console.warn(
         "firebase.remoteConfig().settings: 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
@@ -153,7 +152,7 @@ class FirebaseConfigModule extends FirebaseModule {
         );
       } else {
         //iOS & Android expect seconds
-        settings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+        nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
       }
     }
 
@@ -164,16 +163,12 @@ class FirebaseConfigModule extends FirebaseModule {
         );
       } else {
         //iOS & Android expect seconds
-        settings.fetchTimeout = settings.fetchTimeMillis / 1000;
+        nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
       }
     }
 
     this._settings = settings;
-
-    delete settings.minimumFetchIntervalMillis;
-    delete settings.fetchTimeMillis;
-
-    this._promiseWithConstants(this.native.setConfigSettings(settings));
+    this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
   }
 
   get lastFetchTime() {

@@ -104,28 +104,47 @@ describe('remoteConfig()', () => {
   });
 
   describe('setConfigSettings()', () => {
-    it('minimumFetchInterval sets correctly', async () => {
-      await firebase.remoteConfig().setConfigSettings({ minimumFetchInterval: 300 });
-
-      firebase.remoteConfig().minimumFetchInterval.should.be.equal(300);
-    });
-
     it('it throws if arg is not an object', async () => {
       try {
-        await firebase.remoteConfig().setConfigSettings('not an object');
+        firebase.remoteConfig().settings = 'not an object';
+
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql('must be an object');
+        error.message.should.containEql('must set an object');
         return Promise.resolve();
       }
     });
 
-    it('throws if minimumFetchInterval is not a number', async () => {
+    it('minimumFetchIntervalMillis sets correctly', async () => {
+      firebase.remoteConfig().settings = { minimumFetchIntervalMillis: 30000 };
+
+      firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(30000);
+    });
+
+    it('throws if minimumFetchIntervalMillis is not a number', async () => {
       try {
-        await firebase.remoteConfig().setConfigSettings({ minimumFetchInterval: 'potato' });
+        firebase.remoteConfig().settings = { minimumFetchIntervalMillis: 'potato' };
+
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql("'settings.minimumFetchInterval' must be a number value");
+        error.message.should.containEql('must be a number type in milliseconds.');
+        return Promise.resolve();
+      }
+    });
+
+    it('fetchTimeMillis sets correctly', async () => {
+      firebase.remoteConfig().settings = { fetchTimeMillis: 10000 };
+
+      firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(10000);
+    });
+
+    it('throws if fetchTimeMillis is not a number', async () => {
+      try {
+        firebase.remoteConfig().settings = { fetchTimeMillis: 'potato' };
+
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql('must be a number type in milliseconds.');
         return Promise.resolve();
       }
     });
@@ -146,6 +165,7 @@ describe('remoteConfig()', () => {
 
   describe('setDefaults()', () => {
     it('sets default values from key values object', async () => {
+      firebase.remoteConfig().defaultConfig = {};
       await firebase.remoteConfig().setDefaults({
         some_key: 'I do not exist',
         some_key_1: 1337,
