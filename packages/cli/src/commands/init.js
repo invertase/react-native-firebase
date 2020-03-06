@@ -132,33 +132,46 @@ module.exports = async function initCommand(args, reactNativeConfig) {
     await file.write(androidFirebaseConfigFilePath, androidConfigFile);
 
     console.log(androidProjectConfig);
-    const androidAppBuildGradleFilePath = join(
-      androidProjectConfig.sourceDir,
-      '..',
-      'build.gradle',
-    );
-    const androidAppBuildGradleFile = await file.exists(androidAppBuildGradleFilePath);
+    const androidBuildGradleFilePath = join(androidProjectConfig.sourceDir, '..', 'build.gradle');
+    const androidAppBuildGradleFile = await file.exists(androidBuildGradleFilePath);
 
     if (!androidAppBuildGradleFile) {
       console.log('unable to find android build gradle file', androidFirebaseConfigFilePath);
     } else {
-      const androidAppBuildGradleFileContents = await file.read(androidAppBuildGradleFilePath);
+      const androidBuildGradleFileContents = await file.read(androidBuildGradleFilePath);
 
       // https://regex101.com/r/mty6Z3/1
       const findRegex = /^[\s]*classpath[\s]+["']{1}com\.google\.gms:google-services:.+["']{1}[\s]*$/gm;
-      const match = androidAppBuildGradleFileContents.match(findRegex);
+      const match = androidBuildGradleFileContents.match(findRegex);
 
       if (match) {
         console.log('classpath  google services already set');
       } else {
         // https://regex101.com/r/jcFQuc/1
         const addRegex = /buildscript[\w\W]*dependencies[\s]*{/g;
-        const updatedGradleFile = androidAppBuildGradleFileContents.replace(addRegex, str => {
+        const updatedGradleFile = androidBuildGradleFileContents.replace(addRegex, str => {
           return str + '\n' + "    classpath 'com.google.gms:google-services:4.2.0'";
         });
-        await file.write(androidAppBuildGradleFilePath, updatedGradleFile);
+        await file.write(androidBuildGradleFilePath, updatedGradleFile);
 
         console.log('classpath  google services has been added');
+      }
+
+      const androidAppBuildGradleFileContents = await file.read(
+        androidProjectConfig.buildGradlePath,
+      );
+
+      // TODO this needs to be a regex
+      if (
+        !androidAppBuildGradleFileContents.includes(
+          "apply plugin: 'com.google.gms.google-services'",
+        )
+      ) {
+        console.log('Adding apply plugin...');
+        await file.write(
+          androidProjectConfig.buildGradlePath,
+          androidAppBuildGradleFileContents + "\napply plugin: 'com.google.gms.google-services'",
+        );
       }
 
       console.dir(androidAppBuildGradleFileContents);
