@@ -95,6 +95,10 @@ module.exports = {
       };
     });
 
+    if (!choices.length) {
+      return null;
+    }
+
     const selectedProjectId = await module.exports.selectOneFromArray(
       `Select a Firebase ${Chalk.cyanBright('[projectId]')}:`,
       choices,

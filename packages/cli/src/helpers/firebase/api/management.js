@@ -16,10 +16,11 @@ module.exports = function managementApiWithAccount(account) {
    * includes a clients summary list.
    *
    * @param projectId
+   * @param platforms
    * @param bypass
    * @returns {Promise<*>}
    */
-  async function getProject(projectId, bypass) {
+  async function getProject(projectId, apps, bypass) {
     const requestOptionsGet = {
       url: `${BASE_URL}/projects/${projectId}`,
     };
@@ -34,42 +35,51 @@ module.exports = function managementApiWithAccount(account) {
 
     if (project) {
       project.apps = {};
-      project.apps.android =
-        (await request(
-          account,
-          {
-            url: `${BASE_URL}/projects/${projectId}/androidApps`,
-          },
-          {
-            bypass,
-            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:androidApps`),
-            ttl: Cache.hours(12),
-          },
-        )).apps || [];
-      project.apps.ios =
-        (await request(
-          account,
-          {
-            url: `${BASE_URL}/projects/${projectId}/iosApps`,
-          },
-          {
-            bypass,
-            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:iosApps`),
-            ttl: Cache.hours(12),
-          },
-        )).apps || [];
-      project.apps.web =
-        (await request(
-          account,
-          {
-            url: `${BASE_URL}/projects/${projectId}/webApps`,
-          },
-          {
-            bypass,
-            key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:webApps`),
-            ttl: Cache.hours(12),
-          },
-        )).apps || [];
+
+      if (apps.android) {
+        project.apps.android =
+          (await request(
+            account,
+            {
+              url: `${BASE_URL}/projects/${projectId}/androidApps`,
+            },
+            {
+              bypass,
+              key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:androidApps`),
+              ttl: Cache.hours(12),
+            },
+          )).apps || [];
+      }
+
+      if (apps.ios) {
+        project.apps.ios =
+          (await request(
+            account,
+            {
+              url: `${BASE_URL}/projects/${projectId}/iosApps`,
+            },
+            {
+              bypass,
+              key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:iosApps`),
+              ttl: Cache.hours(12),
+            },
+          )).apps || [];
+      }
+
+      if (apps.web) {
+        project.apps.web =
+          (await request(
+            account,
+            {
+              url: `${BASE_URL}/projects/${projectId}/webApps`,
+            },
+            {
+              bypass,
+              key: keyWithDomainPrefix(DOMAIN, `project:${projectId}:webApps`),
+              ttl: Cache.hours(12),
+            },
+          )).apps || [];
+      }
     }
 
     return project;
@@ -99,8 +109,24 @@ module.exports = function managementApiWithAccount(account) {
     return request(account, requestOptions, cacheOptions);
   }
 
+  async function getAppConfig(appName) {
+    const configFile = await request(account, {
+      url: `${BASE_URL}/${appName}/config`,
+    });
+
+    return Buffer.from(configFile.configFileContents, 'base64').toString('utf-8');
+  }
+
+  async function getAndroidAppConfigShaList(appName) {
+    return request(account, {
+      url: `${BASE_URL}/${appName}/sha`,
+    });
+  }
+
   return {
     getProject,
     getProjects,
+    getAppConfig,
+    getAndroidAppConfigShaList,
   };
 };

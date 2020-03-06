@@ -34,7 +34,7 @@ const DEFAULT_SCOPES = [
  * @returns {Promise<void>}
  */
 async function getResponseHtml(name) {
-  const filePath = join(__dirname, `./login-${name}.html`);
+  const filePath = join(__dirname, `../../../templates/login-${name}.html`);
   return File.read(filePath);
 }
 
