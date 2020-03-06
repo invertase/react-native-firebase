@@ -165,14 +165,15 @@ describe('remoteConfig()', () => {
 
   describe('setDefaults()', () => {
     it('sets default values from key values object', async () => {
-      firebase.remoteConfig().defaultConfig = {};
-      await firebase.remoteConfig().setDefaults({
+      // NOTE: is this a worry? we're setting defaultConfig which makes async call
+      // to native. Then we 'fetchAndActivate'. could be a race condition
+      firebase.remoteConfig().defaultConfig = {
         some_key: 'I do not exist',
         some_key_1: 1337,
         some_key_2: true,
-      });
+      };
 
-      await firebase.remoteConfig().fetchAndActivate(0);
+      await firebase.remoteConfig().fetchAndActivate();
       const values = firebase.remoteConfig().getAll();
       values.some_key.value.should.equal('I do not exist');
       values.some_key_1.value.should.equal(1337);
@@ -185,49 +186,10 @@ describe('remoteConfig()', () => {
 
     it('it throws if defaults object not provided', () => {
       try {
-        firebase.remoteConfig().setDefaults();
+        firebase.remoteConfig().defaultConfig = 'not an object';
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql('must be an object');
-        return Promise.resolve();
-      }
-    });
-
-    it('it throws if defaults arg is not an object', () => {
-      try {
-        firebase.remoteConfig().setDefaults(1337);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an object');
-        return Promise.resolve();
-      }
-    });
-  });
-
-  describe('setDefaultsFromResource()', () => {
-    it('sets defaults from remote_config_resource_test file', async () => {
-      await firebase.remoteConfig().setDefaultsFromResource('remote_config_resource_test');
-      const config = firebase.remoteConfig().getAll();
-      config.company.source.should.equal('default');
-      config.company.value.should.equal('invertase');
-    });
-
-    it('it rejects if resource not found', async () => {
-      const [error] = await A2A(firebase.remoteConfig().setDefaultsFromResource('i_do_not_exist'));
-      if (!error) {
-        throw new Error('Did not reject');
-      }
-      // TODO dasherize error namespace
-      error.code.should.equal('remoteConfig/resource_not_found');
-      error.message.should.containEql('was not found');
-    });
-
-    it('it throws if resourceName is not a string', () => {
-      try {
-        firebase.remoteConfig().setDefaultsFromResource(1337);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a string value');
+        error.message.should.containEql('must set an object.');
         return Promise.resolve();
       }
     });
