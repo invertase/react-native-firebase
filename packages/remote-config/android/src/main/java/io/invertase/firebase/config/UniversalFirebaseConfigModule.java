@@ -33,6 +33,7 @@ import io.invertase.firebase.common.UniversalFirebaseModule;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.*;
 
@@ -84,6 +85,42 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
 
   Task<Void> setDefaults(HashMap<String, Object> defaults) {
     return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
+  }
+
+  Task<Void> ensureInitialized() {
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+    Task<FirebaseRemoteConfigInfo> ensureInitializedTask = config.ensureInitialized();
+    return ensureInitializedTask;
+    // return ensureInitializedTask.onSuccessTask(() -> {
+      
+      /**
+       * Tried to build my own FirebaseRemoteConfigInfo abstract class to return within onSuccessTask
+       */
+      // FirebaseRemoteConfigSettings.Builder configSettings = new FirebaseRemoteConfigSettings.Builder();
+      // FirebaseRemoteConfigInfo remoteConfigInfo = new FirebaseRemoteConfigInfo() {
+      //   @Override
+      //   public FirebaseRemoteConfigSettings getConfigSettings(){
+      //     return configSettings;
+      //   }
+      //   @Override
+      //   public FirebaseRemoteConfigSettings getFetchTimeMillis(){
+      //     return configSettings.getMinimumFetchIntervalInSeconds() * 1000;
+      //   }
+      //   @Override
+      //   public FirebaseRemoteConfigSettings getLastFetchStatus(){
+      //     return 
+      //   }
+      // }
+
+      /**
+       * Tried to build a config info object to return within onSuccessTask event
+       */
+      // FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName))
+      //     .getInfo();
+
+      // return remoteConfigInfo;
+
+    });
   }
 
   Map<String, Object> getAllValuesForApp(String appName) {
@@ -155,7 +192,8 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
 
   public Map<String, Object> getConstantsForApp(String appName) {
     Map<String, Object> appConstants = new HashMap<>();
-    FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName)).getInfo();
+    FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName))
+        .getInfo();
     FirebaseRemoteConfigSettings remoteConfigSettings = remoteConfigInfo.getConfigSettings();
 
     appConstants.put("values", getAllValuesForApp(appName));

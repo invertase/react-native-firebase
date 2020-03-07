@@ -90,6 +90,17 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
     });
   }
 
+  @ReactMethod
+  public FirebaseRemoteConfigInfo ensureInitialized(Promise promise) {
+    module.ensureInitialized().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(resultWithConstants(null));
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
   private WritableMap resultWithConstants(Object result) {
     Map<String, Object> responseMap = new HashMap<>(2);
     responseMap.put("result", result);

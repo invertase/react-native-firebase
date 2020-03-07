@@ -86,6 +86,20 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Config Methods
 
+RCT_EXPORT_METHOD(ensureInitialized:
+(RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject) {
+FIRRemoteConfigInitializationCompletion completionHandler = ^(NSError *__nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve([self resultWithConstants:[NSNull null]]);
+    }
+  };
+
+  [[FIRRemoteConfig remoteConfig] ensureInitializedWithCompletionHandler: completionHandler];
+}
+
 RCT_EXPORT_METHOD(fetch:
   (nonnull
     NSNumber *)expirationDuration

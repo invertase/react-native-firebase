@@ -228,6 +228,10 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._promiseWithConstants(this.native.fetchAndActivate());
   }
 
+  ensureInitialized() {
+    return this.native.ensureInitialized();
+  }
+
   /**
    * Removed. Use defaultConfig instead to get/set default values
    */

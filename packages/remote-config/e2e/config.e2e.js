@@ -150,6 +150,19 @@ describe('remoteConfig()', () => {
     });
   });
 
+  describe('ensureInitialized()', () => {
+    it.only('should ensure remote config has been initialized and values are accessible', async () => {
+      await firebase.remoteConfig().fetchAndActivate();
+
+      const ensure = await firebase.remoteConfig().ensureInitialized();
+      const number = firebase.remoteConfig().getValue('number');
+
+      should(ensure.result).equal(null);
+      number.source.should.equal('remote');
+      number.value.should.equal(1337);
+    });
+  });
+
   describe('getAll()', () => {
     it('should return an object of all available values', async () => {
       const config = firebase.remoteConfig().getAll();
