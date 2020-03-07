@@ -91,7 +91,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public FirebaseRemoteConfigInfo ensureInitialized(Promise promise) {
+  public void ensureInitialized(Promise promise) {
     module.ensureInitialized().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(null));

@@ -87,41 +87,10 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
   }
 
-  Task<Void> ensureInitialized() {
-    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+  Task<FirebaseRemoteConfigInfo> ensureInitialized() {
     Task<FirebaseRemoteConfigInfo> ensureInitializedTask = config.ensureInitialized();
 
     return ensureInitializedTask;
-    // return ensureInitializedTask.onSuccessTask(() -> {
-      
-      /**
-       * Tried to build my own FirebaseRemoteConfigInfo abstract class to return within onSuccessTask event
-       */
-      // FirebaseRemoteConfigSettings.Builder configSettings = new FirebaseRemoteConfigSettings.Builder();
-      // FirebaseRemoteConfigInfo remoteConfigInfo = new FirebaseRemoteConfigInfo() {
-      //   @Override
-      //   public FirebaseRemoteConfigSettings getConfigSettings(){
-      //     return configSettings;
-      //   }
-      //   @Override
-      //   public FirebaseRemoteConfigSettings getFetchTimeMillis(){
-      //     return configSettings.getMinimumFetchIntervalInSeconds() * 1000;
-      //   }
-      //   @Override
-      //   public FirebaseRemoteConfigSettings getLastFetchStatus(){
-      //     return 
-      //   }
-      // }
-
-      /**
-       * Tried to build a config info object to return within onSuccessTask event
-       */
-      // FirebaseRemoteConfigInfo remoteConfigInfo = FirebaseRemoteConfig.getInstance(FirebaseApp.getInstance(appName))
-      //     .getInfo();
-
-      // return remoteConfigInfo;
-
-    });
   }
 
   Map<String, Object> getAllValuesForApp(String appName) {
