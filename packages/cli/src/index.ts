@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     name: 'firebase',
     options: [
@@ -12,7 +12,7 @@ module.exports = [
   },
 ];
 
-async function firebaseCli(args, reactNativeConfig) {
+async function firebaseCli(args: string, reactNativeConfig: object) {
   const [command, ...cmdArgs] = args;
 
   switch (command) {
@@ -21,6 +21,9 @@ async function firebaseCli(args, reactNativeConfig) {
       break;
     case 'doctor':
       await require('./commands/doctor')(cmdArgs, reactNativeConfig);
+      break;
+    case 'playground':
+      await require('./commands/playground')(cmdArgs, reactNativeConfig);
       break;
     default:
       console.log('No command found - show help');

@@ -1,5 +1,5 @@
 import ConfigStore from 'configstore';
-import { name, version } from '../../package.json';
+const { name, version } = require('../../package.json');
 
 const store = new ConfigStore(`${name}-cache`);
 

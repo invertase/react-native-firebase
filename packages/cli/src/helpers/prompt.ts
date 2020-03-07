@@ -83,14 +83,14 @@ export default {
    *
    * @returns {Promise<*>}
    */
-  async selectFirebaseProject(account) {
+  async selectFirebaseProject(account: any) {
     const apiResponse = await Firebase.api(
       account || Firebase.auth.getAccount(),
     ).management.getProjects();
 
-    const projectsWithId = [];
+    const projectsWithId: any[] = [];
 
-    const choices = apiResponse.results.map((project, i) => {
+    const choices = apiResponse.results.map((project: any) => {
       const { projectId, displayName } = project;
       projectsWithId.push({ projectId, ...project });
       return {
@@ -160,7 +160,7 @@ export default {
       accounts = accounts.length ? ['all', ...accounts] : ['all'];
     }
 
-    const choices = accounts.map((account, i: number) => {
+    const choices = accounts.map((account: any, i: number) => {
       if (account === 'all') {
         return { name: account, value: i };
       }

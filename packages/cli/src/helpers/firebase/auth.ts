@@ -10,7 +10,7 @@ const authWithBrowser = (() => require('./auth-browser').bind(null, module.expor
  * @param sub
  * @returns {*}
  */
-function getAccount(sub) {
+function getAccount(sub?: any) {
   const _sub = sub || getAccountId();
   if (!_sub) {
     return undefined;
@@ -31,12 +31,12 @@ function getAccountId(): null | string {
  * @param email
  */
 function getAccountByEmail(email: string) {
-  const accounts = module.exports.getAccounts();
+  const accounts = getAccounts();
   if (!accounts.length) {
     return undefined;
   }
 
-  for (let i = 0; i < accounts.length; i++) {
+  for (let i = 0; i < accounts.length; i = i + 1) {
     const account = accounts[i];
     if (account.user.email === email) {
       return account;
@@ -49,15 +49,15 @@ function getAccountByEmail(email: string) {
 /**
  *
  */
-function getAccounts() {
+function getAccounts(): any[] {
   return Object.values(Store.get('account') || {});
 }
 
 /**
  *
  */
-function getEmails() {
-  return module.exports.getAccounts().map(a => a.user.email);
+function getEmails(): string[] {
+  return getAccounts().map(a => a.user.email);
 }
 
 /**
@@ -72,7 +72,7 @@ function hasAccountForEmail(email: string) {
  *
  * @param account
  */
-function removeAccount(account: string) {
+function removeAccount(account: any) {
   if (!account) {
     return "The account you're looking for no longer exists or none was provided.";
   }
@@ -80,7 +80,7 @@ function removeAccount(account: string) {
   const { sub, email } = account.user;
 
   // remove from disk store
-  Store.delete(`account.${sub}`, account);
+  Store.delete(`account.${sub}`);
 
   // remove all cached items for this account
   Cache.store.delete(`firebase.${sub}`);
@@ -101,9 +101,9 @@ function removeAccount(account: string) {
  *
  */
 function removeAllAccounts() {
-  const accounts = module.exports.getAccounts();
+  const accounts = getAccounts();
 
-  for (let i = 0; i < accounts.length; i++) {
+  for (let i = 0; i < accounts.length; i = i + 1) {
     removeAccount(accounts[i]);
   }
 
@@ -114,15 +114,15 @@ function removeAllAccounts() {
  *
  * @param account: { user, tokens }
  */
-function addAccount(account) {
+function addAccount(account: any) {
   Store.set(`account.${account.user.sub}`, account);
-  module.exports.clearAccountCache(account);
+  clearAccountCache(account);
 
   if (!Store.has('selected_account')) {
-    module.exports.setDefaultAccount(account);
+    setDefaultAccount(account);
   }
 
-  return `New account added [${Chalk.cyanBright(module.exports.getEmail(account.user.sub))}]`;
+  return `New account added [${Chalk.cyanBright(getEmail(account.user.sub))}]`;
 }
 
 /**
@@ -130,24 +130,24 @@ function addAccount(account) {
  * @param account
  * @return {string}
  */
-function setDefaultAccount(account) {
+function setDefaultAccount(account: any) {
   Store.set('selected_account', account.user.sub);
-  return `Default account set to [${Chalk.cyanBright(module.exports.getEmail())}]`;
+  return `Default account set to [${Chalk.cyanBright(getEmail(account.user.sub))}]`;
 }
 
 /**
  *
  * @param sub
  */
-function getEmail(sub) {
-  const account = module.exports.getAccount(sub);
+function getEmail(sub: any): string | undefined {
+  const account = getAccount(sub);
   return account ? account.user.email : undefined;
 }
 
 /**
  * Clears all cache items relating to the provided account
  */
-function clearAccountCache(account) {
+function clearAccountCache(account: any): void {
   return Cache.delete(`firebase.${account.user.sub}`);
 }
 

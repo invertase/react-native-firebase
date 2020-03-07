@@ -13,7 +13,7 @@ type Apps = { [app: string]: boolean }; // todo common type?
  * @param projectId
  * @param apps
  */
-async function getProject(account, projectId: string, apps: Apps) {
+async function getProject(account: any, projectId: string, apps: Apps) {
   const requestOptionsGet = {
     url: `${BASE_URL}/projects/${projectId}`,
   };
@@ -53,7 +53,7 @@ async function getProject(account, projectId: string, apps: Apps) {
  *
  * @returns {Promise<*>}
  */
-async function getProjects(account) {
+async function getProjects(account: any) {
   const requestOptions = {
     url: `${BASE_URL}/projects`,
     params: {
@@ -67,9 +67,10 @@ async function getProjects(account) {
 
 /**
  *
+ * @param account
  * @param appName
  */
-async function getAppConfig(account, appName: string) {
+async function getAppConfig(account: any, appName: string) {
   const configFile = await request(account, {
     url: `${BASE_URL}/${appName}/config`,
   });
@@ -79,9 +80,10 @@ async function getAppConfig(account, appName: string) {
 
 /**
  * Gets the SHA Android keys for an app
+ * @param account
  * @param appName
  */
-async function getAndroidAppConfigShaList(account, appName: string) {
+async function getAndroidAppConfigShaList(account: any, appName: string) {
   return request(account, {
     url: `${BASE_URL}/${appName}/sha`,
   });
@@ -91,7 +93,7 @@ async function getAndroidAppConfigShaList(account, appName: string) {
  *
  * @param account
  */
-export default function managementApiWithAccount(account) {
+export default function managementApiWithAccount(account: any) {
   return {
     getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
     getProjects: () => getProjects(account),

@@ -1,4 +1,3 @@
-import A2A from 'a2a';
 import Chalk from 'chalk';
 import { OAuth2Client } from 'google-auth-library';
 
@@ -6,7 +5,6 @@ import Auth from '../auth';
 
 const Box = require('../../box');
 const Store = require('../../store');
-const Cache = require('../../cache');
 
 const OAUTH_CONFIG = {
   client_id: '467090028974-obb90livofalo0lmjq3n4agk7bocrrs8.apps.googleusercontent.com',
@@ -22,7 +20,7 @@ const OAUTH_CLIENT_CACHE: { [key: string]: any } = {}; // todo any type
  * @param key
  * @returns {string}
  */
-function keyWithAccountPrefix(account, key: string) {
+function keyWithAccountPrefix(account: any, key: string) {
   return `firebase.${account.user.sub}:${key}`;
 }
 
@@ -45,7 +43,7 @@ function keyWithDomainPrefix(domain: string, key: string) {
  * @param account
  * @returns {*}
  */
-function handleRequestError(error, requestOptions, account) {
+function handleRequestError(error: any, requestOptions: any, account: any) {
   if (error.message.includes('entity was not found')) {
     error.print = () => {
       Box.warn(
@@ -71,6 +69,7 @@ function handleRequestError(error, requestOptions, account) {
           '',
           `${Chalk.white.bold('Account:')} ${Chalk.cyanBright(account.user.email)}`,
           '',
+          // @ts-ignore // TODO???
           `${Chalk.white.bold('URL:')} ${Chalk.grey(request.url)}`,
         ],
         'Permission Denied for Resource (403)',
@@ -98,7 +97,7 @@ function handleRequestError(error, requestOptions, account) {
  * @param account
  * @returns {*}
  */
-function getOAuthClient(account) {
+function getOAuthClient(account: any) {
   const _account = account || Auth.getAccount();
   const { user, tokens } = _account;
 
@@ -120,12 +119,12 @@ function getOAuthClient(account) {
  * @param requestOptions
  * @param cacheOptions
  */
-async function request(account, requestOptions) {
+async function request(account: any, requestOptions: any) {
   const _account = account || Auth.getAccount();
   const oAuth2Client = getOAuthClient(_account);
 
   try {
-    const requestResponse = await oAuth2Client.request(requestOptions).then(r => r.data);
+    const requestResponse = await oAuth2Client.request(requestOptions).then((r: any) => r.data);
 
     Store.set(`account.${_account.user.sub}.tokens`, {
       ...oAuth2Client.credentials,

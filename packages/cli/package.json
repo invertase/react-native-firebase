@@ -24,7 +24,7 @@
     "prepublishOnly": "yarn run build:clean && yarn run build"
   },
   "dependencies": {
-    "a2a": "^0.1.0",
+    "a2a": "^0.2.0",
     "axios": "^0.19.2",
     "enquirer": "^2.3.4",
     "chalk": "^3.0.0",

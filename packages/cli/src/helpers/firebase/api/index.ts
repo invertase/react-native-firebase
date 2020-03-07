@@ -6,7 +6,7 @@ const API_INSTANCE_CACHE: { [key: string]: any } = {}; // todo any type
  * @param account
  * @return {*}
  */
-function apiForAccount(account) {
+function apiForAccount(account: any) {
   if (API_INSTANCE_CACHE[account.user.sub]) {
     return API_INSTANCE_CACHE[account.user.sub];
   }
@@ -20,4 +20,4 @@ function apiForAccount(account) {
   return newInstance;
 }
 
-export default { apiForAccount };
+export default apiForAccount;
