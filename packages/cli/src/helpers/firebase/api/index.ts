@@ -1,4 +1,4 @@
-const API_INSTANCE_CACHE = {};
+const API_INSTANCE_CACHE: { [key: string]: any } = {}; // todo any type
 
 /**
  * Returns a Firebase.api instance for the specified account.
@@ -6,7 +6,7 @@ const API_INSTANCE_CACHE = {};
  * @param account
  * @return {*}
  */
-module.exports = function apiForAccount(account) {
+function apiForAccount(account) {
   if (API_INSTANCE_CACHE[account.user.sub]) {
     return API_INSTANCE_CACHE[account.user.sub];
   }
@@ -18,4 +18,6 @@ module.exports = function apiForAccount(account) {
   API_INSTANCE_CACHE[account.user.sub] = newInstance;
 
   return newInstance;
-};
+}
+
+export default { apiForAccount };

@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
-const boxen = require('boxen');
-const chalk = require('chalk');
+import boxen from 'boxen';
+import chalk from 'chalk';
 
 const EMPTY_ROW = '';
 
-module.exports = {
+export default {
   boxen,
-  errorWithStack(error, header = '') {
+  errorWithStack(error: Error, header?: string) {
     if (header) {
       console.log(EMPTY_ROW);
       console.log(`    🔴️  ${chalk.bold.underline.red(header)}`);
@@ -20,7 +20,7 @@ module.exports = {
     );
   },
 
-  warnWithStack(error, header = '') {
+  warnWithStack(error: Error, header?: string) {
     if (header) {
       console.log(EMPTY_ROW);
       console.log(`    ⚠️  ${chalk.bold.underline.yellow(header)}`);
@@ -38,7 +38,7 @@ module.exports = {
    * @param textOrArray
    * @param header
    */
-  error(textOrArray, header = '') {
+  error(textOrArray: string | string[], header?: string) {
     const text = Array.isArray(textOrArray) ? textOrArray.join('\n') : textOrArray;
 
     if (header) {
@@ -59,7 +59,7 @@ module.exports = {
    * @param textOrArray
    * @param header
    */
-  warn(textOrArray, header = '') {
+  warn(textOrArray: string | string[], header?: string) {
     const text = Array.isArray(textOrArray) ? textOrArray.join('\n') : textOrArray;
 
     if (header) {
@@ -81,7 +81,7 @@ module.exports = {
    * @param textOrArray
    * @param header
    */
-  info(textOrArray, header = '') {
+  info(textOrArray: string | string[], header?: string) {
     const text = Array.isArray(textOrArray) ? textOrArray.join('\n') : textOrArray;
 
     if (header) {

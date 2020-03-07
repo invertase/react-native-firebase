@@ -1,8 +1,8 @@
-const A2A = require('a2a');
-const Chalk = require('chalk');
-const { OAuth2Client } = require('google-auth-library');
+import A2A from 'a2a';
+import Chalk from 'chalk';
+import { OAuth2Client } from 'google-auth-library';
 
-const Auth = require('../auth');
+import Auth from '../auth';
 
 const Box = require('../../box');
 const Store = require('../../store');
@@ -13,12 +13,7 @@ const OAUTH_CONFIG = {
   client_secret: 'ktxgTUEr42PVVU4oD9Bk7ahn',
 };
 
-const OAUTH_CLIENT_CACHE = {};
-const DEFAULT_CACHE_OPTIONS = {
-  bypass: true,
-  ttl: 0,
-  key: '',
-};
+const OAUTH_CLIENT_CACHE: { [key: string]: any } = {}; // todo any type
 
 /**
  * Prefixes the cache key string with the account id, ensuring caches are account specific
@@ -27,7 +22,7 @@ const DEFAULT_CACHE_OPTIONS = {
  * @param key
  * @returns {string}
  */
-function keyWithAccountPrefix(account, key) {
+function keyWithAccountPrefix(account, key: string) {
   return `firebase.${account.user.sub}:${key}`;
 }
 
@@ -38,7 +33,7 @@ function keyWithAccountPrefix(account, key) {
  * @param key
  * @returns {string}
  */
-function keyWithDomainPrefix(domain, key) {
+function keyWithDomainPrefix(domain: string, key: string) {
   return `${domain}:${key}`;
 }
 
@@ -125,35 +120,21 @@ function getOAuthClient(account) {
  * @param requestOptions
  * @param cacheOptions
  */
-async function request(account, requestOptions, cacheOptions) {
+async function request(account, requestOptions) {
   const _account = account || Auth.getAccount();
   const oAuth2Client = getOAuthClient(_account);
-  const { key, ttl, bypass } = cacheOptions || DEFAULT_CACHE_OPTIONS;
 
-  const [requestError, requestResponse] = await A2A(
-    Cache.promise(
-      keyWithAccountPrefix(_account, key),
-      ttl,
-      () => oAuth2Client.request(requestOptions).then(r => r.data),
-      bypass,
-    ),
-  );
+  try {
+    const requestResponse = await oAuth2Client.request(requestOptions).then(r => r.data);
 
-  if (requestError) {
+    Store.set(`account.${_account.user.sub}.tokens`, {
+      ...oAuth2Client.credentials,
+    });
+
+    return Promise.resolve(requestResponse);
+  } catch (requestError) {
     return Promise.reject(handleRequestError(requestError, requestOptions, account));
   }
-
-  // update tokens
-  Store.set(`account.${_account.user.sub}.tokens`, {
-    ...oAuth2Client.credentials,
-  });
-
-  return Promise.resolve(requestResponse);
 }
 
-module.exports = {
-  request,
-  getOAuthClient,
-  keyWithAccountPrefix,
-  keyWithDomainPrefix,
-};
+export { request, getOAuthClient, keyWithAccountPrefix, keyWithDomainPrefix };

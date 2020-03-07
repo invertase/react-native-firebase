@@ -1,27 +1,28 @@
-const ora = require('ora');
+import ora from 'ora';
 
 /**
  * @link https://github.com/sindresorhus/ora
  */
-module.exports = {
+export default {
   /**
    * Create a terminal spinner with text or options.
    *
-   * @param args
    * @returns {*|Ora}
+   * @param options
    */
-  create(...args) {
-    return ora(...args);
+  create(options?: ora.Options | string): ora.Ora {
+    return ora(options);
   },
 
   /**
    * Create a spinner for a promise. The spinner is stopped with .succeed() if the promise
    * fulfills or with .fail() if it rejects. Returns the spinner instance.
    *
-   * @param args
    * @returns {*|Ora}
+   * @param action
+   * @param options
    */
-  forPromise(...args) {
-    return ora.promise(...args);
+  forPromise(action: PromiseLike<unknown>, options?: ora.Options | string): ora.Ora {
+    return ora.promise(action, options);
   },
 };

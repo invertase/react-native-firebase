@@ -1,8 +1,8 @@
-const Chalk = require('chalk');
+import Chalk from 'chalk';
 const { prompt, AutoComplete } = require('enquirer');
-const Firebase = require('./firebase');
+import Firebase from './firebase';
 
-module.exports = {
+export default {
   /* ---------------
    *     GENERIC
    * -------------- */
@@ -14,13 +14,13 @@ module.exports = {
    * @param prefix
    * @returns {Promise<ok|boolean>}
    */
-  async confirm(message, prefix = '🤔') {
+  async confirm(message: string, prefix?: string): Promise<boolean> {
     return (await prompt({
+      message,
       type: 'confirm',
-      prefix: `[${prefix}]`,
+      prefix: `[${prefix || '🤔'}]`,
       initial: true,
       name: 'confirmed',
-      message,
     })).confirmed;
   },
 
@@ -32,13 +32,17 @@ module.exports = {
    * @param prefix
    * @returns {Promise<*>}
    */
-  async selectOneFromArray(message, choices, prefix = '🔥') {
+  async selectOneFromArray(
+    message: string,
+    choices: string[],
+    prefix: string = '🔥',
+  ): Promise<string> {
     const prompt = new AutoComplete({
+      choices,
+      message,
       name: 'choice',
       limit: 6,
-      choices,
       prefix: `[${prefix}]`,
-      message,
       footer: Chalk.bgGreen(
         Chalk.grey('Start typing to filter choices, use arrow keys to navigate & ENTER to select'),
       ),
@@ -56,21 +60,21 @@ module.exports = {
    * @returns {Promise<*>}
    */
   async selectOneFromAutoComplete(
-    message,
-    source = async () => {},
+    message: string,
+    source?: (answersSoFar: string[], input: string) => Promise<unknown>, // todo proper type
     prefix = '',
-    suggestOnly = false,
+    suggestOnly?: boolean,
   ) {
     return (await prompt({
+      message,
       type: 'autocomplete',
       name: 'choice',
       pageSize: 12,
       prefix: `[${prefix}]`,
-      message,
-      source: async (answersSoFar, input) => {
-        return await source(answersSoFar, input);
+      source: async (answersSoFar: string[], input: string) => {
+        return source ? await source(answersSoFar, input) : () => {};
       },
-      suggestOnly,
+      suggestOnly: !!suggestOnly,
     })).choice;
   },
 
@@ -156,7 +160,7 @@ module.exports = {
       accounts = accounts.length ? ['all', ...accounts] : ['all'];
     }
 
-    const choices = accounts.map((account, i) => {
+    const choices = accounts.map((account, i: number) => {
       if (account === 'all') {
         return { name: account, value: i };
       }

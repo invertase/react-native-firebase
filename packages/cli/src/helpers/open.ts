@@ -6,7 +6,7 @@ const { execSync } = require('child_process');
  * @param url
  * @returns {*|void}
  */
-exports.openUrl = function openUrl(url) {
+exports.openUrl = function openUrl(url: string) {
   const encoded = encodeURI(url);
   const open = require('opn');
 

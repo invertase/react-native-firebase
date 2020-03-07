@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node"],
     "target": "esnext",
     "module": "commonjs",
     "lib": ["esnext"],
@@ -16,7 +17,8 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": false
+    "skipLibCheck": false,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules"],
   "include": ["./src"]

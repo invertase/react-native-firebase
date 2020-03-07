@@ -1,5 +1,5 @@
-const ConfigStore = require('configstore');
-const { name, version } = require('../../package.json');
+import ConfigStore from 'configstore';
+import { name, version } from '../../package.json';
 
 const store = new ConfigStore(`${name}-cache`);
 
@@ -9,8 +9,9 @@ if (store.get('version') !== version) {
   store.set('version', version);
 }
 
-module.exports = {
+export default {
   store,
+
   /**
    *
    * @param key
@@ -18,7 +19,7 @@ module.exports = {
    * @param ttl
    * @returns {*}
    */
-  set(key, ttl = 120, value) {
+  set(key: string, ttl: number = 120, value: any) {
     if (arguments.length !== 3) {
       throw new Error('Invalid Cache.set args - requires 3 args: key, ttl and value.');
     }
@@ -35,7 +36,7 @@ module.exports = {
    *
    * @param key
    */
-  delete(key) {
+  delete(key: string) {
     return store.delete(key);
   },
 
@@ -44,7 +45,7 @@ module.exports = {
    * @param key
    * @returns {*}
    */
-  get(key) {
+  get(key: string): any {
     if (!store.has(key)) return undefined;
     const { expires, value } = store.get(key);
 
@@ -71,7 +72,12 @@ module.exports = {
    * @param bypassCache
    * @returns {*}
    */
-  promise(key, ttl = 120, fnReturnsPromise, bypassCache = false) {
+  promise(
+    key: string,
+    ttl: number = 120,
+    fnReturnsPromise: () => Promise<any>,
+    bypassCache: boolean = false,
+  ): Promise<any> {
     if (arguments.length !== 4) {
       throw new Error(
         'Invalid Cache.promise args - requires 4 args: key, ttl, fnReturnsPromise and eager',
@@ -96,7 +102,7 @@ module.exports = {
    * @param number
    * @returns {number}
    */
-  minutes(number) {
+  minutes(number: number): number {
     return number * 60;
   },
 
@@ -105,7 +111,7 @@ module.exports = {
    * @param number
    * @returns {number}
    */
-  hours(number) {
+  hours(number: number): number {
     return number * 60 * 60;
   },
 
@@ -115,7 +121,7 @@ module.exports = {
    * @param number
    * @returns {number}
    */
-  days(number) {
+  days(number: number): number {
     return number * 24 * 60 * 60;
   },
 };

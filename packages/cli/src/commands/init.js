@@ -58,13 +58,13 @@ module.exports = async function initCommand(args, reactNativeConfig) {
     'google-services.json',
   );
 
-  // Check Android file exists
-  const androidFirebaseConfigFile = await file.exists(androidFirebaseConfigFilePath);
-
   const apps = {
     android: false,
     ios: true,
   };
+
+  // Check Android file exists
+  const androidFirebaseConfigFile = await file.exists(androidFirebaseConfigFilePath);
 
   // Question whether to continue for android
   if (androidFirebaseConfigFile) {
