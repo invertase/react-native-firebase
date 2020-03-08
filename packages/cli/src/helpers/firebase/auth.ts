@@ -1,6 +1,7 @@
 import Chalk from 'chalk';
 import Store from '../store';
 import Cache from '../cache';
+import { Account } from '../../types/firebase';
 
 // TODO how does this work?
 const authWithBrowser = (() => require('./auth-browser').bind(null, module.exports))();
@@ -10,7 +11,7 @@ const authWithBrowser = (() => require('./auth-browser').bind(null, module.expor
  * @param sub
  * @returns {*}
  */
-function getAccount(sub?: any) {
+function getAccount(sub?: string): Account | undefined {
   const _sub = sub || getAccountId();
   if (!_sub) {
     return undefined;
@@ -30,7 +31,7 @@ function getAccountId(): null | string {
  *
  * @param email
  */
-function getAccountByEmail(email: string) {
+function getAccountByEmail(email: string): Account | undefined {
   const accounts = getAccounts();
   if (!accounts.length) {
     return undefined;
@@ -49,7 +50,7 @@ function getAccountByEmail(email: string) {
 /**
  *
  */
-function getAccounts(): any[] {
+function getAccounts(): Account[] {
   return Object.values(Store.get('account') || {});
 }
 
@@ -64,7 +65,7 @@ function getEmails(): string[] {
  *
  * @param email
  */
-function hasAccountForEmail(email: string) {
+function hasAccountForEmail(email: string): boolean {
   return getEmails().includes(email);
 }
 
@@ -72,7 +73,7 @@ function hasAccountForEmail(email: string) {
  *
  * @param account
  */
-function removeAccount(account: any) {
+function removeAccount(account: Account): string {
   if (!account) {
     return "The account you're looking for no longer exists or none was provided.";
   }
@@ -114,7 +115,7 @@ function removeAllAccounts() {
  *
  * @param account: { user, tokens }
  */
-function addAccount(account: any) {
+function addAccount(account: any): string {
   Store.set(`account.${account.user.sub}`, account);
   clearAccountCache(account);
 
@@ -130,7 +131,7 @@ function addAccount(account: any) {
  * @param account
  * @return {string}
  */
-function setDefaultAccount(account: any) {
+function setDefaultAccount(account: Account): string {
   Store.set('selected_account', account.user.sub);
   return `Default account set to [${Chalk.cyanBright(getEmail(account.user.sub))}]`;
 }

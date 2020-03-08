@@ -1,10 +1,10 @@
 import { request, keyWithDomainPrefix } from './common';
 import Cache from '../../cache';
+import { Account } from '../../../types/firebase';
+import { Apps } from '../../../types/cli';
 
 const DOMAIN = 'firebase.googleapis.com';
 const BASE_URL = `https://${DOMAIN}/v1beta1`;
-
-type Apps = { [app: string]: boolean }; // todo common type?
 
 /**
  * Returns a project by the ID, with apps if provided
@@ -13,7 +13,7 @@ type Apps = { [app: string]: boolean }; // todo common type?
  * @param projectId
  * @param apps
  */
-async function getProject(account: any, projectId: string, apps: Apps) {
+async function getProject(account: Account, projectId: string, apps: Apps) {
   const requestOptionsGet = {
     url: `${BASE_URL}/projects/${projectId}`,
   };
@@ -53,7 +53,7 @@ async function getProject(account: any, projectId: string, apps: Apps) {
  *
  * @returns {Promise<*>}
  */
-async function getProjects(account: any) {
+async function getProjects(account: Account) {
   const requestOptions = {
     url: `${BASE_URL}/projects`,
     params: {
@@ -70,7 +70,7 @@ async function getProjects(account: any) {
  * @param account
  * @param appName
  */
-async function getAppConfig(account: any, appName: string) {
+async function getAppConfig(account: Account, appName: string) {
   const configFile = await request(account, {
     url: `${BASE_URL}/${appName}/config`,
   });
@@ -83,7 +83,7 @@ async function getAppConfig(account: any, appName: string) {
  * @param account
  * @param appName
  */
-async function getAndroidAppConfigShaList(account: any, appName: string) {
+async function getAndroidAppConfigShaList(account: Account, appName: string) {
   return request(account, {
     url: `${BASE_URL}/${appName}/sha`,
   });
@@ -93,7 +93,7 @@ async function getAndroidAppConfigShaList(account: any, appName: string) {
  *
  * @param account
  */
-export default function managementApiWithAccount(account: any) {
+export default function managementApiWithAccount(account: Account) {
   return {
     getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
     getProjects: () => getProjects(account),

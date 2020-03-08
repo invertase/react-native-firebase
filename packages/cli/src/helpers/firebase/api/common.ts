@@ -2,6 +2,7 @@ import Chalk from 'chalk';
 import { OAuth2Client } from 'google-auth-library';
 
 import Auth from '../auth';
+import { Account } from '../../../types/firebase';
 
 const Box = require('../../box');
 const Store = require('../../store');
@@ -20,7 +21,7 @@ const OAUTH_CLIENT_CACHE: { [key: string]: any } = {}; // todo any type
  * @param key
  * @returns {string}
  */
-function keyWithAccountPrefix(account: any, key: string) {
+function keyWithAccountPrefix(account: Account, key: string) {
   return `firebase.${account.user.sub}:${key}`;
 }
 
@@ -43,7 +44,7 @@ function keyWithDomainPrefix(domain: string, key: string) {
  * @param account
  * @returns {*}
  */
-function handleRequestError(error: any, requestOptions: any, account: any) {
+function handleRequestError(error: any, requestOptions: any, account: Account) {
   if (error.message.includes('entity was not found')) {
     error.print = () => {
       Box.warn(
@@ -97,7 +98,7 @@ function handleRequestError(error: any, requestOptions: any, account: any) {
  * @param account
  * @returns {*}
  */
-function getOAuthClient(account: any) {
+function getOAuthClient(account: Account) {
   const _account = account || Auth.getAccount();
   const { user, tokens } = _account;
 
@@ -117,9 +118,8 @@ function getOAuthClient(account: any) {
  *
  * @param account
  * @param requestOptions
- * @param cacheOptions
  */
-async function request(account: any, requestOptions: any) {
+async function request(account: Account, requestOptions: any) {
   const _account = account || Auth.getAccount();
   const oAuth2Client = getOAuthClient(_account);
 
@@ -130,7 +130,7 @@ async function request(account: any, requestOptions: any) {
       ...oAuth2Client.credentials,
     });
 
-    return Promise.resolve(requestResponse);
+    return requestResponse;
   } catch (requestError) {
     return Promise.reject(handleRequestError(requestError, requestOptions, account));
   }

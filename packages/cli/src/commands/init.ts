@@ -31,7 +31,7 @@
 
 // print out final steps (run-android/ios)
 
-module.exports = async function initCommand(args, reactNativeConfig) {
+export async function initCommand(args: string[], reactNativeConfig: object) {
   const { join } = require('path');
   const firebase = require('../helpers/firebase');
   const file = require('../helpers/file');
@@ -177,4 +177,4 @@ module.exports = async function initCommand(args, reactNativeConfig) {
       console.dir(androidAppBuildGradleFileContents);
     }
   }
-};
+}

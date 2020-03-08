@@ -12,7 +12,8 @@ export default [
   },
 ];
 
-async function firebaseCli(args: string, reactNativeConfig: object) {
+// todo types
+async function firebaseCli(args: string[], reactNativeConfig: object) {
   const [command, ...cmdArgs] = args;
 
   switch (command) {

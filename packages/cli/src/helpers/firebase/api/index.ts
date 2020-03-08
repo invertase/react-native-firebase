@@ -1,3 +1,5 @@
+import { Account } from '../../../types/firebase';
+
 const API_INSTANCE_CACHE: { [key: string]: any } = {}; // todo any type
 
 /**
@@ -6,7 +8,7 @@ const API_INSTANCE_CACHE: { [key: string]: any } = {}; // todo any type
  * @param account
  * @return {*}
  */
-function apiForAccount(account: any) {
+function apiForAccount(account: Account) {
   if (API_INSTANCE_CACHE[account.user.sub]) {
     return API_INSTANCE_CACHE[account.user.sub];
   }
