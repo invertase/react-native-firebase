@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 /**
  * Opens a url in the users default browser. If the user is on OSX and
@@ -6,7 +6,7 @@ const { execSync } = require('child_process');
  * @param url
  * @returns {*|void}
  */
-exports.openUrl = function openUrl(url: string) {
+function openUrl(url: string) {
   const encoded = encodeURI(url);
   const open = require('opn');
 
@@ -24,4 +24,8 @@ exports.openUrl = function openUrl(url: string) {
   } catch (err) {
     // ignore errors.
   }
+}
+
+export default {
+  openUrl,
 };

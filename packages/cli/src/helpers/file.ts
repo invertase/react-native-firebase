@@ -56,4 +56,4 @@ function write(path: string | Buffer | URL, data: any) {
   return promise;
 }
 
-export { exists, existsSync, read, write };
+export default { exists, existsSync, read, write };

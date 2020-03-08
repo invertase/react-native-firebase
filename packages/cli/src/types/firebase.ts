@@ -3,7 +3,7 @@ export interface Account {
   tokens: Tokens;
 }
 
-interface User {
+export interface User {
   iss: string;
   azp: string;
   aud: string;
@@ -21,7 +21,7 @@ interface User {
   exp: number;
 }
 
-interface Tokens {
+export interface Tokens {
   access_token: string;
   scope: string;
   token_type: string;

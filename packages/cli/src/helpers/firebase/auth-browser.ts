@@ -1,18 +1,20 @@
-const http = require('http');
-const { join } = require('path');
-const { parse: urlParse } = require('url');
-const { parse: qsParse } = require('querystring');
+import http from 'http';
+import { join } from 'path';
+import { parse as urlParse } from 'url';
+import { parse as qsParse } from 'querystring';
 
-const A2A = require('a2a');
-const Chalk = require('chalk');
-const { decode } = require('jsonwebtoken');
-const { getPortPromise } = require('portfinder');
-const { OAuth2Client } = require('google-auth-library');
+import A2A from 'a2a';
+import Chalk from 'chalk';
+import { decode } from 'jsonwebtoken';
+import { getPortPromise } from 'portfinder';
+import { OAuth2Client } from 'google-auth-library';
 
-const File = require('../file');
-const Open = require('../open');
-const Spinner = require('../spinner');
-const { promiseDefer } = require('../utils');
+import File from '../file';
+import Open from '../open';
+import Spinner from '../spinner';
+import { promiseDefer } from '../utils';
+import { TemplateTypes } from '../../types/cli';
+import { Account, Tokens, User } from '../../types/firebase';
 
 const OAUTH_CONFIG = {
   client_id: '467090028974-obb90livofalo0lmjq3n4agk7bocrrs8.apps.googleusercontent.com',
@@ -33,12 +35,17 @@ const DEFAULT_SCOPES = [
  * @param name
  * @returns {Promise<void>}
  */
-async function getResponseHtml(name) {
+async function getResponseHtml(name: TemplateTypes) {
   const filePath = join(__dirname, `../../../templates/login-${name}.html`);
   return File.read(filePath);
 }
 
-module.exports = async function authWithBrowser(auth) {
+/**
+ *
+ * @param auth
+ */
+// todo how to type this?
+async function authWithBrowser(auth: any) {
   const requestDeferred = promiseDefer();
 
   // get an available/free port on the OS
@@ -62,7 +69,7 @@ module.exports = async function authWithBrowser(auth) {
   // open an http server to accept the oauth callback
   // only requests to /oauth2callback?code=<code> are accepted
   const server = http.createServer(async (req, res) => {
-    if (req.url.indexOf('/oauth2callback') > -1) {
+    if (req && req.url && req.url.indexOf('/oauth2callback') > -1) {
       requestDeferred.resolve([req, res]);
     }
   });
@@ -113,9 +120,9 @@ module.exports = async function authWithBrowser(auth) {
   oAuth2Client.setCredentials(tokens);
 
   // TODO should probably do a test request e.g. get projects list to confirm valid access
-  const result = {
-    user: decode(tokens.id_token),
-    tokens,
+  const result: Account = {
+    user: decode(tokens.id_token) as User,
+    tokens: tokens as Tokens,
   };
 
   auth.addAccount(result);
@@ -128,4 +135,6 @@ module.exports = async function authWithBrowser(auth) {
     client: oAuth2Client,
     ...result,
   });
-};
+}
+
+export default authWithBrowser;

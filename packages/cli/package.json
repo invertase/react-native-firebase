@@ -37,6 +37,7 @@
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.3.8",
     "rimraf": "^3.0.2",
     "typescript": "^3.8.3"
   },
