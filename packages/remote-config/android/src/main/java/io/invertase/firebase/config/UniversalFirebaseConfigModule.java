@@ -88,6 +88,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
   }
 
   Task<FirebaseRemoteConfigInfo> ensureInitialized() {
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
     Task<FirebaseRemoteConfigInfo> ensureInitializedTask = config.ensureInitialized();
 
     return ensureInitializedTask;
