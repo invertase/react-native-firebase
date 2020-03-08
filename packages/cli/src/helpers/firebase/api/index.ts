@@ -14,7 +14,7 @@ function apiForAccount(account: Account) {
   }
 
   const newInstance = {
-    management: require('./management')(account),
+    management: require('./management').default(account),
   };
 
   API_INSTANCE_CACHE[account.user.sub] = newInstance;
