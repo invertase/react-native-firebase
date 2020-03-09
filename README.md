@@ -71,7 +71,7 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 | Play Services Android SDK | 11.8.0 + |     ^16.1.0      |      ^16.1.0      | ^16.1.0 (or ^17.x via [jetifier](https://github.com/mikehardy/jetifier)) | same as 5.5.x |
 | Firebase iOS SDK          | 4.7.0 +  | ^5.10.x -^5.18.x | ^5.19.x - ^5.20.x |                              ^5.19.x - ^6.x                              |     6.13+     |
 
-⚠ The Hermes VM availble with react-native 0.60.3 and higher is **not currectly supported**. Some initial testing has been done and it appears that valid code in this library does not function correctly with Hermes. Use the standard ('JSC') VM.
+⚠ The Hermes VM availble with react-native 0.60.3 and higher is **not currently supported**. Some initial testing has been done and it appears that valid code in this library does not function correctly with Hermes. Use the standard ('JSC') VM.
 ⚠ For **iOS 13** you must use Firebase iOS SDK at version `^6.5.x`. Otherwise your app may crash, for more information [take a look on this issue](https://github.com/invertase/react-native-firebase/issues/2409)
 
 ---
