@@ -1,6 +1,6 @@
 import { request, keyWithDomainPrefix } from './common';
 import Cache from '../../cache';
-import { Account } from '../../../types/firebase';
+import { Account, AndroidSha, Project, ProjectDetail } from '../../../types/firebase';
 import { Apps } from '../../../types/cli';
 
 const DOMAIN = 'firebase.googleapis.com';
@@ -13,7 +13,7 @@ const BASE_URL = `https://${DOMAIN}/v1beta1`;
  * @param projectId
  * @param apps
  */
-async function getProject(account: Account, projectId: string, apps: Apps) {
+async function getProject(account: Account, projectId: string, apps: Apps): Promise<ProjectDetail> {
   const requestOptionsGet = {
     url: `${BASE_URL}/projects/${projectId}`,
   };
@@ -53,7 +53,7 @@ async function getProject(account: Account, projectId: string, apps: Apps) {
  *
  * @returns {Promise<*>}
  */
-async function getProjects(account: Account) {
+async function getProjects(account: Account): Promise<Project[]> {
   const requestOptions = {
     url: `${BASE_URL}/projects`,
     params: {
@@ -62,7 +62,7 @@ async function getProjects(account: Account) {
     },
   };
 
-  return request(account, requestOptions);
+  return request(account, requestOptions).then(r => r.results as Project[]);
 }
 
 /**
@@ -83,10 +83,13 @@ async function getAppConfig(account: Account, appName: string) {
  * @param account
  * @param appName
  */
-async function getAndroidAppConfigShaList(account: Account, appName: string) {
+async function getAndroidAppConfigShaList(
+  account: Account,
+  appName: string,
+): Promise<AndroidSha[]> {
   return request(account, {
     url: `${BASE_URL}/${appName}/sha`,
-  });
+  }).then($ => $.certificates);
 }
 
 /**
@@ -95,8 +98,8 @@ async function getAndroidAppConfigShaList(account: Account, appName: string) {
  */
 export default function managementApiWithAccount(account: Account) {
   return {
-    getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
     getProjects: () => getProjects(account),
+    getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
     getAppConfig: (appName: string) => getAppConfig(account, appName),
     getAndroidAppConfigShaList: (appName: string) => getAndroidAppConfigShaList(account, appName),
   };

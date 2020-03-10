@@ -3,9 +3,6 @@ import Store from '../store';
 import Cache from '../cache';
 import { Account } from '../../types/firebase';
 
-// TODO how does this work?
-const authWithBrowser = (() => require('./auth-browser').bind(null, module.exports))();
-
 /**
  *
  * @param sub
@@ -89,7 +86,7 @@ function removeAccount(account: Account): string {
   if (Store.get('selected_account') === sub) {
     const accounts = module.exports.getAccounts();
     if (accounts[0]) {
-      module.exports.setDefaultAccount(accounts[0]);
+      setDefaultAccount(accounts[0]);
     } else {
       Store.delete('selected_account');
     }
@@ -152,8 +149,7 @@ function clearAccountCache(account: any): void {
   return Cache.delete(`firebase.${account.user.sub}`);
 }
 
-export default {
-  authWithBrowser,
+const authModule = {
   getAccount,
   getAccountId,
   getAccountByEmail,
@@ -166,4 +162,11 @@ export default {
   setDefaultAccount,
   getEmail,
   clearAccountCache,
+};
+
+const authWithBrowser = (() => require('./auth-browser').default.bind(null, authModule))();
+
+export default {
+  authWithBrowser,
+  ...authModule,
 };

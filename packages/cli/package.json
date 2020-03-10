@@ -24,6 +24,8 @@
     "prepublishOnly": "yarn run build:clean && yarn run build"
   },
   "dependencies": {
+    "@react-native-community/cli-types": "^4.3.0",
+    "@react-native-community/cli-tools": "^4.2.2",
     "a2a": "^0.2.0",
     "axios": "^0.19.2",
     "enquirer": "^2.3.4",

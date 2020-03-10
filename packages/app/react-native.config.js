@@ -15,5 +15,5 @@ module.exports = {
       },
     },
   },
-  commands: require('@react-native-firebase/cli').default,
+  commands: require('@react-native-firebase/cli'),
 };

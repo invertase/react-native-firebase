@@ -31,150 +31,97 @@
 
 // print out final steps (run-android/ios)
 
-export async function initCommand(args: string[], reactNativeConfig: object) {
-  const { join } = require('path');
-  const firebase = require('../helpers/firebase');
-  const file = require('../helpers/file');
-  const prompt = require('../helpers/prompt');
+import { join } from 'path';
+import Chalk from 'chalk';
+import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-community/cli-types';
+
+import firebase from '../helpers/firebase';
+import file from '../helpers/file';
+import prompt from '../helpers/prompt';
+import log from '../helpers/log';
+
+import { AppTypes } from '../types/cli';
+
+import initAndroid from './initAndroid';
+import { Account } from '../types/firebase';
+import initIos from './initIos';
+
+export default async function initCommand(args: string[], reactNativeConfig: Config) {
+  log.debug('Running "firebase init" command...');
 
   // fetch users account
   let account = await firebase.auth.getAccount();
 
   // request sign-in if account doesnt exist
   if (!account) {
-    // todo log no account exists?
+    log.info(
+      'No existing Firebase account was detected. To continue, sign-in to your Google account which owns the Firebase project you wish to setup:',
+    );
     await firebase.auth.authWithBrowser();
-    account = firebase.auth.getAccount();
+    account = firebase.auth.getAccount() as Account;
+  } else {
+    log.info(
+      `A Firebase account already exists. Continuing with user ${Chalk.cyanBright(
+        `[${account.user.email}]`,
+      )}.`,
+    );
   }
 
-  // Extract Android Project Config
   const androidProjectConfig = reactNativeConfig.platforms.android.projectConfig(
     reactNativeConfig.root,
-  );
+  ) as AndroidProjectConfig;
 
-  // Android google-services.json file path
-  const androidFirebaseConfigFilePath = join(
-    androidProjectConfig.sourceDir,
-    'google-services.json',
-  );
+  const iosProjectConfig = reactNativeConfig.platforms.ios.projectConfig(
+    reactNativeConfig.root,
+  ) as IOSProjectConfig;
 
-  const apps = {
-    android: false,
+  const apps: { [type in AppTypes]: boolean } = {
+    android: true,
     ios: true,
+    web: false, // not supported
   };
 
-  // Check Android file exists
-  const androidFirebaseConfigFile = await file.exists(androidFirebaseConfigFilePath);
-
-  // Question whether to continue for android
-  if (androidFirebaseConfigFile) {
+  const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
+  if (androidGoogleServicesFile) {
     const result = await prompt.confirm(
       'An Android "google-services.json" file already exists, do you want to replace this file?',
     );
 
-    if (result) {
-      apps.android = true;
+    if (!result) {
+      log.warn(
+        'Firebase will not be setup for Android as a "google-services.json" file already exists and you have chosen to not override it.',
+      );
+      apps.android = false;
     }
-  } else {
-    apps.android = true;
   }
 
-  // If no platforms selected, quit
+  const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
+  // todo check file exists & prompt
+
+  // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {
-    // todo log message
-    console.log('Bai');
+    log.error('Exiting init process. No apps are required to be setup.');
     process.exit();
   }
 
   // ask user to choose a project
-  const firebaseProject = await prompt.selectFirebaseProject();
+  const firebaseProject = await prompt.selectFirebaseProject(account);
 
   // if no project exists - ask them to create one
   if (!firebaseProject) {
-    console.log('no firebase projects exist! redirecting you to console...');
+    log.error(
+      `No Firebase projects exist for user ${Chalk.cyanBright(
+        `[${account.user.email}]. To continue, create a new project on the Firebase Console.`,
+      )}`,
+    );
     process.exit();
   }
 
-  // Fetch Firebase project details
+  // Fetch project detail including apps config
   const projectDetail = await firebase
     .api(account)
     .management.getProject(firebaseProject.projectId, apps);
 
-  // Only proceed with Android if they allowed it
-  if (apps.android) {
-    console.dir(projectDetail.apps.android);
-    console.dir(androidProjectConfig);
-
-    // Auto-find an app matched by the package name
-    let selectedAndroidApp = projectDetail.apps.android.find(
-      app => app.packageName === androidProjectConfig.packageName,
-    );
-
-    if (!selectedAndroidApp) {
-      console.log('todo create app via console');
-      process.exit();
-    }
-
-    const androidAppConfigShaList = await firebase
-      .api(account)
-      .management.getAndroidAppConfigShaList(selectedAndroidApp.name);
-
-    // todo prompt asking to add sha-1
-    // if they add, check it doesnt already exist
-
-    console.log('sha list', androidAppConfigShaList);
-
-    const androidConfigFile = await firebase
-      .api(account)
-      .management.getAppConfig(selectedAndroidApp.name);
-
-    console.log('writing new config file...');
-    await file.write(androidFirebaseConfigFilePath, androidConfigFile);
-
-    console.log(androidProjectConfig);
-    const androidBuildGradleFilePath = join(androidProjectConfig.sourceDir, '..', 'build.gradle');
-    const androidAppBuildGradleFile = await file.exists(androidBuildGradleFilePath);
-
-    if (!androidAppBuildGradleFile) {
-      console.log('unable to find android build gradle file', androidFirebaseConfigFilePath);
-    } else {
-      const androidBuildGradleFileContents = await file.read(androidBuildGradleFilePath);
-
-      // https://regex101.com/r/mty6Z3/1
-      const findRegex = /^[\s]*classpath[\s]+["']{1}com\.google\.gms:google-services:.+["']{1}[\s]*$/gm;
-      const match = androidBuildGradleFileContents.match(findRegex);
-
-      if (match) {
-        console.log('classpath  google services already set');
-      } else {
-        // https://regex101.com/r/jcFQuc/1
-        const addRegex = /buildscript[\w\W]*dependencies[\s]*{/g;
-        const updatedGradleFile = androidBuildGradleFileContents.replace(addRegex, str => {
-          return str + '\n' + "    classpath 'com.google.gms:google-services:4.2.0'";
-        });
-        await file.write(androidBuildGradleFilePath, updatedGradleFile);
-
-        console.log('classpath  google services has been added');
-      }
-
-      const androidAppBuildGradleFileContents = await file.read(
-        androidProjectConfig.buildGradlePath,
-      );
-
-      // TODO this needs to be a regex
-      if (
-        !androidAppBuildGradleFileContents.includes(
-          "apply plugin: 'com.google.gms.google-services'",
-        )
-      ) {
-        console.log('Adding apply plugin...');
-        await file.write(
-          androidProjectConfig.buildGradlePath,
-          androidAppBuildGradleFileContents + "\napply plugin: 'com.google.gms.google-services'",
-        );
-      }
-
-      console.dir(androidAppBuildGradleFileContents);
-    }
-  }
+  if (apps.android) await initAndroid(account, projectDetail, androidProjectConfig);
+  // if (apps.ios) await initIos(account, iosProjectConfig, reactNativeConfig);
 }

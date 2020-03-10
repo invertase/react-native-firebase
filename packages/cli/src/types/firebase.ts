@@ -29,3 +29,44 @@ export interface Tokens {
   expiry_date: number;
   scopes: string[];
 }
+
+export interface Project {
+  projectId: string;
+  projectNumber: string;
+  displayName: string;
+  name: string;
+  resources: {
+    hostingSite: string;
+    realtimeDatabaseInstance: string;
+    storageBucket: string;
+    locationId: string;
+  };
+}
+
+export interface ProjectDetail extends Project {
+  apps: {
+    android?: ProjectDetailAndroidApp[];
+    ios?: ProjectDetailIOSApp[];
+  };
+}
+
+export interface ProjectDetailAndroidApp {
+  name: string;
+  appId: string;
+  displayName: string;
+  projectId: string;
+  packageName: string;
+}
+
+export interface ProjectDetailIOSApp {
+  name: string;
+  appId: string;
+  projectId: string;
+  bundleId: string;
+}
+
+export interface AndroidSha {
+  name: string;
+  shaHash: string;
+  certType: string;
+}

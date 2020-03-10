@@ -4,8 +4,8 @@ import { OAuth2Client } from 'google-auth-library';
 import Auth from '../auth';
 import { Account } from '../../../types/firebase';
 
-const Box = require('../../box');
-const Store = require('../../store');
+import Box from '../../box';
+import Store from '../../store';
 
 const OAUTH_CONFIG = {
   client_id: '467090028974-obb90livofalo0lmjq3n4agk7bocrrs8.apps.googleusercontent.com',
@@ -21,7 +21,7 @@ const OAUTH_CLIENT_CACHE: { [key: string]: any } = {}; // todo any type
  * @param key
  * @returns {string}
  */
-function keyWithAccountPrefix(account: Account, key: string) {
+function keyWithAccountPrefix(account: Account, key: string): string {
   return `firebase.${account.user.sub}:${key}`;
 }
 
@@ -32,7 +32,7 @@ function keyWithAccountPrefix(account: Account, key: string) {
  * @param key
  * @returns {string}
  */
-function keyWithDomainPrefix(domain: string, key: string) {
+function keyWithDomainPrefix(domain: string, key: string): string {
   return `${domain}:${key}`;
 }
 
@@ -119,7 +119,7 @@ function getOAuthClient(account: Account) {
  * @param account
  * @param requestOptions
  */
-async function request(account: Account, requestOptions: any) {
+async function request(account: Account, requestOptions: object) {
   const _account = account || Auth.getAccount();
   const oAuth2Client = getOAuthClient(_account);
 
