@@ -377,7 +377,7 @@ export namespace FirebaseDatabaseTypes {
      * #### Example
      *
      * ```js
-     * const newUserRef = firebase.database().ref('users');
+     * const newUserRef = firebase.database().ref('users').push();
      * console.log('New record key:', newUserRef.key);
      * await newUserRef.set({
      *   first: 'Ada',

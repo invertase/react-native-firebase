@@ -51,26 +51,27 @@
 
 - (void)applyFilters {
   for (NSDictionary *filter in _filters) {
-    NSString *fieldPath = filter[@"fieldPath"];
+    NSArray *fieldPathArray = filter[@"fieldPath"];
+    FIRFieldPath* fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
     NSString *operator = filter[@"operator"];
     id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:filter[@"value"]];
 
     if ([operator isEqualToString:@"EQUAL"]) {
-      _query = [_query queryWhereField:fieldPath isEqualTo:value];
+      _query = [_query queryWhereFieldPath:fieldPath isEqualTo:value];
     } else if ([operator isEqualToString:@"GREATER_THAN"]) {
-      _query = [_query queryWhereField:fieldPath isGreaterThan:value];
+      _query = [_query queryWhereFieldPath:fieldPath isGreaterThan:value];
     } else if ([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
-      _query = [_query queryWhereField:fieldPath isGreaterThanOrEqualTo:value];
+      _query = [_query queryWhereFieldPath:fieldPath isGreaterThanOrEqualTo:value];
     } else if ([operator isEqualToString:@"LESS_THAN"]) {
-      _query = [_query queryWhereField:fieldPath isLessThan:value];
+      _query = [_query queryWhereFieldPath:fieldPath isLessThan:value];
     } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
-      _query = [_query queryWhereField:fieldPath isLessThanOrEqualTo:value];
+      _query = [_query queryWhereFieldPath:fieldPath isLessThanOrEqualTo:value];
     } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
-      _query = [_query queryWhereField:fieldPath arrayContains:value];
+      _query = [_query queryWhereFieldPath:fieldPath arrayContains:value];
     } else if ([operator isEqualToString:@"IN"]) {
-      _query = [_query queryWhereField:fieldPath in:value];
+      _query = [_query queryWhereFieldPath:fieldPath in:value];
     } else if ([operator isEqualToString:@"ARRAY_CONTAINS_ANY"]) {
-      _query = [_query queryWhereField:fieldPath arrayContainsAny:value];
+      _query = [_query queryWhereFieldPath:fieldPath arrayContainsAny:value];
     }
   }
 }

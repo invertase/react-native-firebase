@@ -62,7 +62,7 @@ describe('firestore().collection().isEqual()', () => {
       .firestore()
       .collection('v6')
       .where('foo', '==', 'bar')
-      .orderBy('foo')
+      .orderBy('bam')
       .limit(1)
       .endAt(2);
 
@@ -86,7 +86,7 @@ describe('firestore().collection().isEqual()', () => {
       .firestore()
       .collection('v6')
       .where('foo', '==', 'bar')
-      .orderBy('foo')
+      .orderBy('baz')
       .limit(2)
       .endAt(2);
 
@@ -94,7 +94,7 @@ describe('firestore().collection().isEqual()', () => {
       .firestore()
       .collection('v6')
       .where('foo', '==', 'bar')
-      .orderBy('foo')
+      .orderBy('baz')
       .limit(1)
       .endAt(1);
 
@@ -114,7 +114,7 @@ describe('firestore().collection().isEqual()', () => {
       .firestore()
       .collection('v6')
       .where('foo', '==', 'bar')
-      .orderBy('foo')
+      .orderBy('baz')
       .limit(1)
       .endAt(2);
 
@@ -122,7 +122,7 @@ describe('firestore().collection().isEqual()', () => {
       .firestore()
       .collection('v6')
       .where('foo', '==', 'bar')
-      .orderBy('foo')
+      .orderBy('baz')
       .limit(1)
       .endAt(2);
 

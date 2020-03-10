@@ -95,20 +95,6 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if path is not the same as an inequality query', () => {
-    try {
-      firebase
-        .firestore()
-        .collection('foo')
-        .where('foo', '>', 123)
-        .orderBy('bar');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('You have a where filter with an inequality');
-      return Promise.resolve();
-    }
-  });
-
   it('throws if duplicating the order field path', () => {
     try {
       firebase

@@ -27,7 +27,6 @@ export default class MobileAd {
     this._adUnitId = adUnitId;
     this._requestOptions = requestOptions;
 
-    this._loading = false;
     this._loaded = false;
     this._onAdEventHandler = null;
 
@@ -42,6 +41,10 @@ export default class MobileAd {
 
     if (type === AdEventType.LOADED || type === RewardedAdEventType.LOADED) {
       this._loaded = true;
+    }
+
+    if (type === AdEventType.CLOSED || type === RewardedAdEventType.CLOSED) {
+      this._loaded = false;
     }
 
     if (this._onAdEventHandler) {
