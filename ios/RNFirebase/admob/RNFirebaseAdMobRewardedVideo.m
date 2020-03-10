@@ -25,10 +25,6 @@
     [_videoAd loadRequest:[RNFirebaseAdMob buildRequest:request] withAdUnitID:_adUnitID];
 }
 
-- (void)setCustomData:(NSString *)customData {
-    _videoAd.customRewardString = customData;
-}
-
 - (void)show {
     if (_videoAd.isReady) {
         [_videoAd presentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController];

@@ -25,14 +25,9 @@ public class RNFirebaseAdMobRewardedVideo implements RewardedVideoAdListener {
     adUnit = adUnitString;
     adMob = adMobInstance;
 
-    Activity activity = adMob.getActivity();
-    // Some ads won't work without passing activity, or the app will crash
-    if (activity == null) {
-      rewardedVideo = MobileAds.getRewardedVideoAdInstance(adMob.getContext());
-    } else {
-      rewardedVideo = MobileAds.getRewardedVideoAdInstance(activity);
-    }
+    rewardedVideo = MobileAds.getRewardedVideoAdInstance(adMob.getContext());
 
+    Activity activity = adMob.getActivity();
     final RNFirebaseAdMobRewardedVideo _this = this;
 
     if (activity != null) {
@@ -74,21 +69,6 @@ public class RNFirebaseAdMobRewardedVideo implements RewardedVideoAdListener {
           if (rewardedVideo.isLoaded()) {
             rewardedVideo.show();
           }
-        }
-      });
-    }
-  }
-
-  /**
-   * Show the loaded interstitial, if it's loaded
-   */
-  void setCustomData(final String customData) {
-    Activity activity = adMob.getActivity();
-    if (activity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-           rewardedVideo.setCustomData(customData);
         }
       });
     }

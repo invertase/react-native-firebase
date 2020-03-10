@@ -60,14 +60,6 @@ RCT_EXPORT_METHOD(rewardedVideoLoadAd:
     [rewardedVideo loadAd:request];
 }
 
-RCT_EXPORT_METHOD(rewardedVideoSetCustomData:
-    (NSString *) adUnit
-            customData:
-            (NSString *) customData) {
-    RNFirebaseAdMobRewardedVideo *rewardedVideo = [self getOrCreateRewardedVideo:adUnit];
-    [rewardedVideo setCustomData:customData];
-}
-
 RCT_EXPORT_METHOD(rewardedVideoShowAd:
     (NSString *) adUnit) {
     RNFirebaseAdMobRewardedVideo *rewardedVideo = [self getOrCreateRewardedVideo:adUnit];

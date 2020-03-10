@@ -1,7 +1,6 @@
 package io.invertase.firebase.messaging;
 
 import android.content.Intent;
-import android.content.ComponentName;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -59,10 +58,10 @@ public class RNFirebaseMessagingService extends FirebaseMessagingService {
             RNFirebaseBackgroundMessagingService.class
           );
           headlessIntent.putExtra("message", message);
-          ComponentName name = this.getApplicationContext().startService(headlessIntent);
-          if (name != null) {
-            HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
-          }
+          this
+            .getApplicationContext()
+            .startService(headlessIntent);
+          HeadlessJsTaskService.acquireWakeLockNow(this.getApplicationContext());
         } catch (IllegalStateException ex) {
           Log.e(
             TAG,

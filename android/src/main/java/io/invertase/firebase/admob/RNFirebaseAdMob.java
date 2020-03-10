@@ -72,12 +72,6 @@ public class RNFirebaseAdMob extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void rewardedVideoSetCustomData(String adUnit, String customData) {
-    RNFirebaseAdMobRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
-    rewardedVideo.setCustomData(customData);
-  }
-
-  @ReactMethod
   public void rewardedVideoShowAd(String adUnit) {
     RNFirebaseAdMobRewardedVideo rewardedVideo = getOrCreateRewardedVideo(adUnit);
     rewardedVideo.show();
