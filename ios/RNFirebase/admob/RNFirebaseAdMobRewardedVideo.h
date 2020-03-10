@@ -20,7 +20,6 @@
 
 - (void)show;
 - (void)loadAd:(NSDictionary *)request;
-- (void)setCustomData:(NSString *)customData;
 - (void)sendJSEvent:(NSString *)type payload:(nullable NSDictionary *)payload;
 
 @end

@@ -49,15 +49,13 @@ RCT_EXPORT_MODULE();
 - (void)dealloc {
   DLog(@"RNFirebaseAuth:instance-destroyed");
   
-  NSArray *authStateKeys = [authStateHandlers allKeys];
-  for(NSString* key in authStateKeys) {
+  for(NSString* key in authStateHandlers) {
     FIRApp *firApp = [RNFirebaseUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
     [authStateHandlers removeObjectForKey:key];
   }
   
-  NSArray *idTokenKeys = [idTokenHandlers allKeys];
-  for(NSString* key in idTokenKeys) {
+  for(NSString* key in idTokenHandlers) {
     FIRApp *firApp = [RNFirebaseUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
     [idTokenHandlers removeObjectForKey:key];
@@ -67,15 +65,13 @@ RCT_EXPORT_MODULE();
 - (void)invalidate {
   // dealloc sometimes is not called when app is reloaded.
 
-  NSArray *authStateKeys = [authStateHandlers allKeys];
-  for(NSString* key in authStateKeys) {
+  for(NSString* key in authStateHandlers) {
       FIRApp *firApp = [RNFirebaseUtil getApp:key];
       [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
       [authStateHandlers removeObjectForKey:key];
   }
   
-  NSArray *idTokenKeys = [idTokenHandlers allKeys];
-  for(NSString* key in idTokenKeys) {
+  for(NSString* key in idTokenHandlers) {
       FIRApp *firApp = [RNFirebaseUtil getApp:key];
       [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
       [idTokenHandlers removeObjectForKey:key];
