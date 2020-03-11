@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isBoolean } from '@react-native-firebase/app/lib/common';
+import { isAndroid, isBoolean, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -215,11 +215,34 @@ class FirebaseAuthModule extends FirebaseModule {
 
   signInWithEmailAndPassword(email, password) {
     // Cases not handled in the Android SDK, causing a native error
-    if (!email) {
-      throw new Error('Error: The email address is badly formatted.');
+    // Exceptions mimicked from Web SDK
+    class FirebaseError extends Error {
+      constructor(code, message) {
+        super(message);
+        this.code = code;
+        this.message = `[${code}] ${messsage}`;
+      }
     }
-    if (!password) {
-      throw new Error('Error: The password is invalid or the user does not have a password.');
+    if (!isString(email)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'signInWithEmailAndPassword failed: First argument "email" must be a valid string.',
+      );
+    }
+    if (!isString(password)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'signInWithEmailAndPassword failed: Second argument "password" must be a valid string.',
+      );
+    }
+    if (email === '') {
+      throw new FirebaseError('auth/invalid-email', 'The email address is badly formatted.');
+    }
+    if (password === '') {
+      throw new FirebaseError(
+        'auth/invalid-password',
+        'The password is invalid or the user does not have a password.',
+      );
     }
 
     return this.native
