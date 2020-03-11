@@ -12,7 +12,7 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 
 - You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
 
-- **Once you're sure you've met the above, please follow our [Initial development environment setup](docs/INITIAL_SETUP.md) guide.**
+- **Once you're sure you've met the above, please follow our [Initial development environment setup](INITIAL_SETUP.md) guide.**
 
 # v6 example
 
