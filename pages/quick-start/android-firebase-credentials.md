@@ -50,6 +50,17 @@ Next we need to apply the plugin. Add the following line to the **very bottom** 
 apply plugin: 'com.google.gms.google-services'
 ```
 
+## Increasing Android build memory
+
+As you add more Firebase modules, there is an incredible demand placed on the Android build system, and the default memory settings will not work. To avoid OutOfMemoryErrors during Android builds, you should uncomment the alternate gradle memory setting present in `android/gradle.properties`, when done it should look like this as a starting point:
+
+```
+# Specifies the JVM arguments used for the daemon process.
+# The setting is particularly useful for tweaking memory settings.
+# Default value: -Xmx10248m -XX:MaxPermSize=256m
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+```
+
 ## Rebuilding Android
 
 Once complete, rebuild your Android project using the React Native CLI:
