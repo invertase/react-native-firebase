@@ -83,6 +83,26 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
+  Task<Void> setDefaultsFromResource(String resourceName) {
+    return Tasks.call(getExecutor(), () -> {
+      int resourceId = getXmlResourceIdByName(resourceName);
+      XmlResourceParser xmlResourceParser = null;
+
+      try {
+        xmlResourceParser = getApplicationContext().getResources().getXml(resourceId);
+      } catch (Resources.NotFoundException nfe) {
+        // do nothing
+      }
+
+      if (xmlResourceParser != null) {
+        FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
+        return null;
+      }
+
+      throw new Exception("resource_not_found");
+    });
+  }
+
   Task<Void> setDefaults(HashMap<String, Object> defaults) {
     return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
   }
@@ -90,6 +110,13 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
   Task<FirebaseRemoteConfigInfo> ensureInitialized() {
     FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
     Task<FirebaseRemoteConfigInfo> ensureInitializedTask = config.ensureInitialized();
+
+    try {
+      Tasks.await(fetchAndActivate());
+    } catch (Exception e) {
+      //do nothing
+    }
+    
 
     return ensureInitializedTask;
   }
@@ -173,18 +200,6 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     appConstants.put("minimumFetchInterval", remoteConfigSettings.getMinimumFetchIntervalInSeconds());
 
     return appConstants;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    Map<String, Object> constants = new HashMap<>();
-    Map<String, Object> constantsForApps = new HashMap<>();
-    List<FirebaseApp> firebaseApps = FirebaseApp.getApps(getApplicationContext());
-    for (FirebaseApp app : firebaseApps) {
-      constantsForApps.put(app.getName(), getConstantsForApp(app.getName()));
-    }
-    constants.put("REMOTE_CONFIG_APP_CONSTANTS", constantsForApps);
-    return constants;
   }
 
 }

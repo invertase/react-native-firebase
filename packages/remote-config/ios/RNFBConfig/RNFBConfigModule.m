@@ -177,6 +177,19 @@ RCT_EXPORT_METHOD(setDefaults:
   resolve([self resultWithConstants:[NSNull null]]);
 }
 
+RCT_EXPORT_METHOD(setDefaultsFromResource:
+  (NSString *) fileName
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject) {
+  if ([[NSBundle mainBundle] pathForResource:fileName ofType:@"plist"] != nil) {
+    [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
+    resolve([self resultWithConstants:[NSNull null]]);
+  } else {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": @"resource_not_found",
+        @"message": @"The specified resource name was not found."} mutableCopy]];
+  }
+}
+
 #pragma mark -
 #pragma mark Internal Helper Methods
 

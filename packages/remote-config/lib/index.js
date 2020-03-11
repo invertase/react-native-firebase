@@ -79,6 +79,40 @@ function convertNativeConfigValues(configValues) {
   return convertedValues;
 }
 
+const BOOLEAN_TRUTHY_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
+
+class Value {
+  constructor({ value, source }) {
+    this._value = value;
+    this._source = source;
+  }
+
+  asBoolean() {
+    if (this._source === 'static') {
+      return false;
+    }
+    return BOOLEAN_TRUTHY_VALUES.includes(this._value.toLowerCase());
+  }
+  asNumber() {
+    if (this._source === 'static') {
+      return 0;
+    }
+
+    let num = Number(this._value);
+
+    if (isNaN(num)) {
+      num = 0;
+    }
+    return num;
+  }
+  asString() {
+    return this._value;
+  }
+  getSource() {
+    return this._source;
+  }
+}
+
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
@@ -87,7 +121,6 @@ class FirebaseConfigModule extends FirebaseModule {
     this._lastFetchStatus = null;
     this._lastFetchTime = null;
     // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
-    this._updateFromConstants(this.native.REMOTE_CONFIG_APP_CONSTANTS['[DEFAULT]']);
   }
 
   getValue(key) {
@@ -96,30 +129,33 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     if (!hasOwnProperty(this._values, key)) {
-      return {
-        value: undefined,
+      return new Value({
+        value: '',
         source: 'static',
-      };
+      });
     }
 
-    return this._values[key];
+    return new Value({ value: `${this._values[key].value}`, source: this._values[key].source });
   }
 
   getAll() {
-    return Object.assign({}, this._values);
+    const values = {};
+
+    Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
+
+    return values;
   }
 
   get defaultConfig() {
-    return this._defaultConfig;
+    console.warn(
+      'firebase.remoteConfig().defaultConfig is not supported. Default values are merged with config values',
+    );
   }
 
   set defaultConfig(defaults) {
-    if (!isObject(defaults)) {
-      throw new Error('firebase.remoteConfig().defaultConfig: must set an object.');
-    }
-
-    this._defaultConfig = defaults;
-    this._promiseWithConstants(this.native.setDefaults(defaults));
+    console.warn(
+      'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
+    );
   }
 
   get settings() {
@@ -229,25 +265,37 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   ensureInitialized() {
-    return this.native.ensureInitialized();
+    return this._promiseWithConstants(this.native.ensureInitialized());
   }
 
   /**
-   * Removed. Use defaultConfig instead to get/set default values
+   * Sets defaults.
+   *
+   * @param {object} defaults
    */
-  setDefaults() {
-    console.warn(
-      "firebase.remoteConfig().setDefaults({ [key]: string}) has now been removed. Please use 'firebase.remoteConfig().defaultConfig = { ...[key]: string, }' instead",
-    );
+  setDefaults(defaults) {
+    if (!isObject(defaults)) {
+      throw new Error("firebase.remoteConfig().setDefaults(): 'defaults' must be an object.");
+    }
+
+    return this._promiseWithConstants(this.native.setDefaults(defaults));
   }
 
   /**
-   * Removed. Use defaultConfig instead to get/set default values
+   * Sets defaults based on resource.
+   * @param {string} resourceName
    */
-  setDefaultsFromResource() {
-    console.warn(
-      "firebase.remoteConfig().setDefaultsFromResource('resourceName') has now been removed. Please use 'firebase.remoteConfig().defaultConfig = { ...[key]: string, }' instead",
-    );
+  setDefaultsFromResource(resourceName) {
+    if (!isString(resourceName)) {
+      throw new Error(
+        "firebase.remoteConfig().setDefaultsFromResource(): 'resourceName' must be a string value.",
+      );
+    }
+
+    return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
+  }
+  setLogLevel() {
+    console.warn('firebase.remoteConfig().setLogLevel() is not supported natively.');
   }
 
   _updateFromConstants(constants) {
