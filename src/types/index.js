@@ -17,8 +17,6 @@ import type Functions from '../modules/functions';
 import { typeof statics as FunctionsStatics } from '../modules/functions';
 import type InstanceId from '../modules/iid';
 import { typeof statics as InstanceIdStatics } from '../modules/iid';
-import type Invites from '../modules/invites';
-import { typeof statics as InvitesStatics } from '../modules/invites';
 import type Links from '../modules/links';
 import { typeof statics as LinksStatics } from '../modules/links';
 import type Messaging from '../modules/messaging';
@@ -65,7 +63,6 @@ export type FirebaseModuleName =
   | 'RNFirebaseFirestore'
   | 'RNFirebaseFunctions'
   | 'RNFirebaseInstanceId'
-  | 'RNFirebaseInvites'
   | 'RNFirebaseLinks'
   | 'RNFirebaseMessaging'
   | 'RNFirebaseNotifications'
@@ -83,7 +80,6 @@ export type FirebaseNamespace =
   | 'firestore'
   | 'functions'
   | 'iid'
-  | 'invites'
   | 'links'
   | 'messaging'
   | 'notifications'
@@ -179,13 +175,6 @@ export type InstanceIdModule = {
   (): InstanceId,
   nativeModuleExists: boolean,
 } & InstanceIdStatics;
-
-/* Invites types */
-
-export type InvitesModule = {
-  (): Invites,
-  nativeModuleExists: boolean,
-} & InvitesStatics;
 
 /* Links types */
 

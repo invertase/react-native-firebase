@@ -39,7 +39,6 @@ declare module 'react-native-firebase' {
     RNFirebase.functions.FunctionsStatics
   >;
   type IidModule = FirebaseModuleAndStatics<RNFirebase.iid.InstanceId>;
-  // type InvitesModule = FirebaseModuleAndStatics<RNFirebase.invites.Invites>;
   type LinksModule = FirebaseModuleAndStatics<
     RNFirebase.links.Links,
     RNFirebase.links.LinksStatics
@@ -72,7 +71,6 @@ declare module 'react-native-firebase' {
     firestore: FirestoreModule;
     functions: FunctionsModule;
     iid: IidModule;
-    // invites: InvitesModule;
     links: LinksModule;
     messaging: MessagingModule;
     notifications: NotificationsModule;
@@ -109,7 +107,6 @@ declare module 'react-native-firebase' {
   export const firestore: FirestoreModule;
   export const functions: FunctionsModule;
   export const iid: IidModule;
-  // export const invites: InvitesModule;
   export const links: LinksModule;
   export const messaging: MessagingModule;
   export const notifications: NotificationsModule;
@@ -136,7 +133,6 @@ declare module 'react-native-firebase' {
 
     iid(): RNFirebase.iid.InstanceId;
 
-    // invites(): RNFirebase.invites.Invites;
     links(): RNFirebase.links.Links;
 
     messaging(): RNFirebase.messaging.Messaging;
@@ -241,7 +237,7 @@ declare module 'react-native-firebase' {
     namespace storage {
       interface StorageStatics {
         TaskState: TaskState;
-        TaskEvent: TaskState;
+        TaskEvent: TaskEvent;
         Native?: {
           MAIN_BUNDLE_PATH: string;
           CACHES_DIRECTORY_PATH: string;
@@ -1210,6 +1206,7 @@ declare module 'react-native-firebase' {
         OAuthProvider: AuthProvider;
         TwitterAuthProvider: AuthProvider;
         FacebookAuthProvider: AuthProvider;
+        AppleAuthProvider: AuthProvider;
         PhoneAuthState: {
           CODE_SENT: string;
           AUTO_VERIFY_TIMEOUT: string;
@@ -1447,7 +1444,7 @@ declare module 'react-native-firebase' {
         android: AndroidNotification;
         ios: IOSNotification;
         body: string;
-        data: any;
+        data: { [key: string]: string };
         notificationId: string;
         sound?: string;
         subtitle?: string;
@@ -2133,7 +2130,7 @@ declare module 'react-native-firebase' {
         navigation: NavigationParameters;
         social: SocialParameters;
 
-        constructor(link: string, dynamicLinkDomain: string);
+        constructor(link: string, domainURIPrefix: string);
       }
 
       interface AnalyticsParameters {
@@ -2437,7 +2434,7 @@ declare module 'react-native-firebase' {
 
       interface DocumentReference {
         readonly firestore: Firestore;
-        readonly id: string | null;
+        readonly id: string;
         readonly parent: CollectionReference;
         readonly path: string;
 
@@ -2526,7 +2523,7 @@ declare module 'react-native-firebase' {
 
       interface DocumentSnapshot {
         readonly exists: boolean;
-        readonly id: string | null;
+        readonly id: string;
         readonly metadata: Types.SnapshotMetadata;
         readonly ref: DocumentReference;
 

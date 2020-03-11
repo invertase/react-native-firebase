@@ -49,13 +49,15 @@ RCT_EXPORT_MODULE();
 - (void)dealloc {
   DLog(@"RNFirebaseAuth:instance-destroyed");
   
-  for(NSString* key in authStateHandlers) {
+  NSArray *authStateKeys = [authStateHandlers allKeys];
+  for(NSString* key in authStateKeys) {
     FIRApp *firApp = [RNFirebaseUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
     [authStateHandlers removeObjectForKey:key];
   }
   
-  for(NSString* key in idTokenHandlers) {
+  NSArray *idTokenKeys = [idTokenHandlers allKeys];
+  for(NSString* key in idTokenKeys) {
     FIRApp *firApp = [RNFirebaseUtil getApp:key];
     [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
     [idTokenHandlers removeObjectForKey:key];
@@ -65,13 +67,15 @@ RCT_EXPORT_MODULE();
 - (void)invalidate {
   // dealloc sometimes is not called when app is reloaded.
 
-  for(NSString* key in authStateHandlers) {
+  NSArray *authStateKeys = [authStateHandlers allKeys];
+  for(NSString* key in authStateKeys) {
       FIRApp *firApp = [RNFirebaseUtil getApp:key];
       [[FIRAuth authWithApp:firApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
       [authStateHandlers removeObjectForKey:key];
   }
   
-  for(NSString* key in idTokenHandlers) {
+  NSArray *idTokenKeys = [idTokenHandlers allKeys];
+  for(NSString* key in idTokenKeys) {
       FIRApp *firApp = [RNFirebaseUtil getApp:key];
       [[FIRAuth authWithApp:firApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
       [idTokenHandlers removeObjectForKey:key];
@@ -1176,6 +1180,8 @@ RCT_EXPORT_METHOD(fetchSignInMethodsForEmail:
     credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
   } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+  } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider credentialWithProviderID:@"apple.com" IDToken:authToken rawNonce:authTokenSecret];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {

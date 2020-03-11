@@ -173,7 +173,7 @@ export const isAndroid = Platform.OS === 'android';
  * @param string
  * @returns {*}
  */
-export function tryJSONParse(string: string | null): any {
+export function tryJSONParse(string?: ?string): any {
   try {
     return string && JSON.parse(string);
   } catch (jsonError) {
@@ -186,7 +186,7 @@ export function tryJSONParse(string: string | null): any {
  * @param data
  * @returns {*}
  */
-export function tryJSONStringify(data: mixed): string | null {
+export function tryJSONStringify(data: mixed): ?string | void {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {

@@ -16,7 +16,7 @@ export default class DynamicLink {
 
   _android: AndroidParameters;
 
-  _dynamicLinkDomain: string;
+  _domainURIPrefix: string;
 
   _ios: IOSParameters;
 
@@ -28,10 +28,10 @@ export default class DynamicLink {
 
   _social: SocialParameters;
 
-  constructor(link: string, dynamicLinkDomain: string) {
+  constructor(link: string, domainURIPrefix: string) {
     this._analytics = new AnalyticsParameters(this);
     this._android = new AndroidParameters(this);
-    this._dynamicLinkDomain = dynamicLinkDomain;
+    this._domainURIPrefix = domainURIPrefix;
     this._ios = new IOSParameters(this);
     this._itunes = new ITunesParameters(this);
     this._link = link;
@@ -66,16 +66,16 @@ export default class DynamicLink {
   build(): NativeDynamicLink {
     if (!this._link) {
       throw new Error('DynamicLink: Missing required `link` property');
-    } else if (!this._dynamicLinkDomain) {
+    } else if (!this._domainURIPrefix) {
       throw new Error(
-        'DynamicLink: Missing required `dynamicLinkDomain` property'
+        'DynamicLink: Missing required `domainURIPrefix` property'
       );
     }
 
     return {
       analytics: this._analytics.build(),
       android: this._android.build(),
-      dynamicLinkDomain: this._dynamicLinkDomain,
+      domainURIPrefix: this._domainURIPrefix,
       ios: this._ios.build(),
       itunes: this._itunes.build(),
       link: this._link,

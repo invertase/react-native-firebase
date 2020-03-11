@@ -158,9 +158,9 @@ export default class Query {
       }
       if (
         options.source &&
-        (options.source !== 'default' &&
-          options.source !== 'server' &&
-          options.source !== 'cache')
+        options.source !== 'default' &&
+        options.source !== 'server' &&
+        options.source !== 'cache'
       ) {
         return Promise.reject(
           new Error(

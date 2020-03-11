@@ -202,7 +202,7 @@ RCT_EXPORT_METHOD(jsInitialised:(RCTPromiseResolveBlock)resolve rejecter:(RCTPro
 - (FIRDynamicLinkComponents *)buildDynamicLink:(NSDictionary *)linkData {
     @try {
         NSURL *link = [NSURL URLWithString:linkData[@"link"]];
-        FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link domain:linkData[@"dynamicLinkDomain"]];
+        FIRDynamicLinkComponents *components = [FIRDynamicLinkComponents componentsWithLink:link domainURIPrefix:linkData[@"domainURIPrefix"]];
         
         [self setAnalyticsParameters:linkData[@"analytics"] components:components];
         [self setAndroidParameters:linkData[@"android"] components:components];

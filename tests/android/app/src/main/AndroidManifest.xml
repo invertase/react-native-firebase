@@ -20,6 +20,14 @@
     android:launchMode="singleTask"
     android:usesCleartextTraffic="true"
     android:theme="@style/AppTheme">
+
+    <!-- Add this line as part of new AdMob library process. Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+    <meta-data
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+    <uses-library android:name="org.apache.http.legacy" android:required="false"/>  <!-- Add this line to avoid crashes on Android 9 until AdMob SDK update -->
+
     <service
       android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"
       android:enabled="true"

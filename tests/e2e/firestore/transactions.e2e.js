@@ -156,8 +156,9 @@ describe('firestore()', () => {
         await firestore.runTransaction(updateFunction);
       } catch (e) {
         // TODO sdks are giving different errors - standardise?
+        // Pod v6.5 changed transaction abort to be failure from last attempt
         if (device.getPlatform() === 'ios') {
-          e.message.should.containEql('firestore/failed-precondition');
+          e.message.should.containEql('firestore/invalid-argument');
         } else {
           e.message.should.containEql('firestore/aborted');
         }

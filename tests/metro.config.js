@@ -30,6 +30,7 @@ const plugins = findPlugins(__dirname);
 const config = {
   projectRoot: __dirname,
   resolver: {
+    useWatchman: !process.env.TEAMCITY_VERSION,
     platforms: ['ios', 'android', 'native'],
     resolverMainFields: ['react-native', 'browser', 'main'],
     providesModuleNodeModules: [
