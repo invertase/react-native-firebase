@@ -214,6 +214,14 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   signInWithEmailAndPassword(email, password) {
+    // Cases not handled in the Android SDK, causing a native error
+    if (!email) {
+      throw new Error('Error: The email address is badly formatted.');
+    }
+    if (!password) {
+      throw new Error('Error: The password is invalid or the user does not have a password.');
+    }
+
     return this.native
       .signInWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
