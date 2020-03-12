@@ -894,7 +894,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         String verificationId,
         PhoneAuthProvider.ForceResendingToken forceResendingToken
       ) {
-        // kyun: This isn't being saved anywhere if the activity gets restarted when going to the SMS app
         /** 
           * Save mVerificationId to local in case the activity gets restarted when going to the SMS app.
          * So that the app doesn't crash when function _confirmVerificationCode call and can verify normal when using local verificationId
