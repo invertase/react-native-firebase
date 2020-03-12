@@ -374,4 +374,25 @@ describe('firestore().collection().where()', () => {
     const snapshot = await colRef.where('category', 'array-contains-any', expect).get();
     snapshot.size.should.eql(3); // 2nd record should only be returned once
   });
+
+  it('returns with a FieldPath', async () => {
+    const colRef = firebase.firestore().collection('v6/filter/where-fieldpath');
+    const fieldPath = new firebase.firestore.FieldPath('map', 'foo.bar@gmail.com');
+
+    await colRef.add({
+      map: {
+        'foo.bar@gmail.com': true,
+      },
+    });
+    await colRef.add({
+      map: {
+        'bar.foo@gmail.com': true,
+      },
+    });
+
+    const snapshot = await colRef.where(fieldPath, '==', true).get();
+    snapshot.size.should.eql(1); // 2nd record should only be returned once
+    const data = snapshot.docs[0].data();
+    should.equal(data.map['foo.bar@gmail.com'], true);
+  });
 });

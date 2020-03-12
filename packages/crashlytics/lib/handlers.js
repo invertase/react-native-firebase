@@ -28,17 +28,22 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   nativeObj.frames = [];
   for (let i = 0; i < stackFrames.length; i++) {
     const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
-    const subStrLen = fileName.indexOf('?') < 0 ? fileName.length : fileName.indexOf('?');
-    const fileNameParsed =
-      fileName && fileName.length ? fileName.substring(0, subStrLen) : '<unknown>';
+    let fileNameParsed = '<unknown>';
+    if (fileName) {
+      const subStrLen = fileName.indexOf('?');
+      if (subStrLen < 0) {
+        fileNameParsed = fileName;
+      } else if (subStrLen > 0) {
+        fileNameParsed = fileName.substring(0, subStrLen);
+      }
+    }
 
     nativeObj.frames.push({
       src: source,
       line: lineNumber || 0,
       col: columnNumber || 0,
       fn: functionName || '<unknown>',
-      file: `${fileNameParsed.length ? fileNameParsed : '<unknown>'}:${lineNumber ||
-        0}:${columnNumber || 0}`,
+      file: `${fileNameParsed}:${lineNumber || 0}:${columnNumber || 0}`,
     });
   }
 

@@ -72,6 +72,11 @@ export default class FirestoreQuery {
 
       for (let i = 0; i < currentOrders.length; i++) {
         const order = currentOrders[i];
+        //skip if fieldPath is '__name__'
+        if (order.fieldPath === '__name__') {
+          continue;
+        }
+
         const value = documentSnapshot.get(order.fieldPath);
 
         if (value === undefined) {
@@ -87,10 +92,14 @@ export default class FirestoreQuery {
 
       // Based on https://github.com/invertase/react-native-firebase/issues/2854#issuecomment-552986650
       if (modifiers._orders.length) {
-        modifiers._orders.push({
-          fieldPath: '__name__',
-          direction: modifiers._orders[modifiers._orders.length - 1].direction,
-        });
+        const lastOrder = modifiers._orders[modifiers._orders.length - 1];
+        //push '__name__' field only if not present already
+        if (lastOrder.fieldPath !== '__name__') {
+          modifiers._orders.push({
+            fieldPath: '__name__',
+            direction: lastOrder.direction,
+          });
+        }
       } else {
         modifiers._orders.push({
           fieldPath: '__name__',
@@ -98,7 +107,11 @@ export default class FirestoreQuery {
         });
       }
 
-      values.push(documentSnapshot.id);
+      if (this._modifiers.isCollectionGroupQuery()) {
+        values.push(documentSnapshot.ref.path);
+      } else {
+        values.push(documentSnapshot.id);
+      }
 
       return modifiers.setFieldsCursor(cursor, values);
     }

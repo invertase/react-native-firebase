@@ -19,13 +19,34 @@ package io.invertase.firebase.firestore;
 
 import android.util.Base64;
 import android.util.Log;
-import com.facebook.react.bridge.*;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.google.common.collect.Iterables;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.*;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.MetadataChanges;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SnapshotMetadata;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
-import java.util.*;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
@@ -426,7 +447,13 @@ class ReactNativeFirebaseFirestoreSerialize {
       case INT_BOOLEAN_FALSE:
         return false;
       case INT_NUMBER:
-        return typeArray.getDouble(1);
+        // https://github.com/invertase/react-native-firebase/issues/3004
+        // Number values come from JS as Strings on Android so we can check for floating points
+        String numberStringValue = Objects.requireNonNull(typeArray.getString(1));
+        if (numberStringValue.contains(".")) {
+          return Double.valueOf(numberStringValue);
+        }
+        return Long.valueOf(numberStringValue, 10);
       case INT_STRING:
         return typeArray.getString(1);
       case INT_STRING_EMPTY:

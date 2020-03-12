@@ -23,7 +23,7 @@ cd ios/ && pod install
 
 ## Module usage
 
-Import the Performance Monitoring package into your project:
+Import the Remote Config package into your project:
 
 ```js
 import remoteConfig from '@react-native-firebase/remote-config';
@@ -48,7 +48,7 @@ async function getValues() {
     const activated = await remoteConfig().fetchAndActivate();
 
     if (activated) {
-      const experimentalFeatureEnabled = await remoteConfig().getValue('experiment');
+      const experimentalFeatureEnabled = remoteConfig().getValue('experiment');
       console.log('Experimental source: ', experimentalFeatureEnabled.source);
       console.log('Experimental value: ', experimentalFeatureEnabled.value);
     }

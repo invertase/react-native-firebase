@@ -162,4 +162,25 @@ describe('firestore().collection().startAfter()', () => {
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc3');
   });
+
+  it('runs startAfter & endBefore in the same query', async () => {
+    const colRef = firebase.firestore().collection('v6/startAfter/snapshot');
+    const doc1 = colRef.doc('doc1');
+    const doc2 = colRef.doc('doc2');
+    const doc3 = colRef.doc('doc3');
+
+    await Promise.all([doc1.set({ age: 1 }), doc2.set({ age: 2 }), doc3.set({ age: 3 })]);
+
+    const first = await doc1.get();
+    const last = await doc3.get();
+
+    const inBetween = await colRef
+      .orderBy('age', 'asc')
+      .startAfter(first)
+      .endBefore(last)
+      .get();
+
+    inBetween.docs.length.should.eql(1);
+    inBetween.docs[0].id.should.eql('doc2');
+  });
 });
