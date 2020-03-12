@@ -142,8 +142,6 @@
           to: '/quick-start'
         - text: Additional Android Setup
           to: '/android-setup'
-        - text: Additional iOS Setup
-          to: '/ios-setup'
     - group: Manual Installation
       children:
         - text: Android Installation

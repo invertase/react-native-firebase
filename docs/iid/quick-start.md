@@ -32,7 +32,7 @@ import iid from '@react-native-firebase/iid';
 The package also provides access to the firebase instance:
 
 ```js
-import { firebase } from '@react-native-firebase/perf';
+import { firebase } from '@react-native-firebase/iid';
 ```
 
 ### Retrieving the instance token
@@ -43,7 +43,7 @@ To retrieve the current instance ID, call the `get` method:
 import iid from '@react-native-firebase/iid';
 
 async function getInstanceId() {
-  const id = await iid.get();
+  const id = await iid().get();
   console.log('Current Instance ID: ', id);
 }
 ```

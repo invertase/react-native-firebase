@@ -44,6 +44,7 @@
 
 // called when `registerForRemoteNotifications` completes successfully
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [FIRMessaging messaging].APNSToken = deviceToken;
   if (_registerPromiseResolver != nil) {
     _registerPromiseResolver(@([RCTConvert BOOL:@([UIApplication sharedApplication].isRegisteredForRemoteNotifications)]));
     _registerPromiseResolver = nil;

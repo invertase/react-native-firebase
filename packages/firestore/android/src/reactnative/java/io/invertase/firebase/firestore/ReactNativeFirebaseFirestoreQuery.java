@@ -22,10 +22,12 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +62,10 @@ public class ReactNativeFirebaseFirestoreQuery {
     for (int i = 0; i < filters.size(); i++) {
       ReadableMap filter = filters.getMap(i);
 
-      String fieldPath = Objects.requireNonNull(filter).getString("fieldPath");
+      ArrayList fieldPathArray = Objects.requireNonNull(filter).getArray("fieldPath").toArrayList();
+      String[] segmentArray = (String[]) fieldPathArray.toArray(new String[0]);
+
+      FieldPath fieldPath = FieldPath.of(Objects.requireNonNull(segmentArray));
       String operator = filter.getString("operator");
       ReadableArray arrayValue = filter.getArray("value");
       Object value = parseTypeMap(query.getFirestore(), Objects.requireNonNull(arrayValue));

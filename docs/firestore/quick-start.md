@@ -113,7 +113,7 @@ import firestore from '@react-native-firebase/firestore';
 
 function Users() {
   const [users, setUsers] = useState([]); // Initial empty array of users
-  const [loading, setLoading] useState(true); // Set loading to true on component mount
+  const [loading, setLoading] = useState(true); // Set loading to true on component mount
 
   // On load, fetch our users and subscribe to updates
   useEffect(() => {

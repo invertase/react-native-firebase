@@ -9,7 +9,7 @@ React Native Firebase provides native integration of Firebase Cloud Messaging (F
 cost free service, allowing for server-device and device-device communication. The React Native Firebase Messaging
 module provides a simple JavaScript API to interact with FCM.
 
-The Messaging module is only responsible for handling data-only messages. Please see [issue #2566](https://github.com/invertase/react-native-firebase/issues/2566) for more information on Notifications.
+The Messaging module is only responsible for handling remote messages. Local notifications APIs are [no longer available](https://github.com/invertase/react-native-firebase/issues/2566) in React Native Firebase v6 and above. We now offer a separate notifications package; [Notifee](https://github.com/notifee/react-native-notifee) is free to use in development, free for open source applications and free for non-profit organisations.
 
 <Youtube id="sioEY4tWmLI" />
 

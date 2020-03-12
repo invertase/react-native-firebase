@@ -152,6 +152,13 @@ export namespace FirebaseDatabaseTypes {
     child(path: string): Reference;
 
     /**
+     * The last part of the Reference's path.
+     * For example, "ada" is the key for https://<DATABASE_NAME>.firebaseio.com/users/ada.
+     * The key of a root Reference is null.
+     */
+    key: string | null;
+
+    /**
      * Writes data to this Database location.
      *
      * This will overwrite any data at this location and all child locations.
@@ -370,7 +377,7 @@ export namespace FirebaseDatabaseTypes {
      * #### Example
      *
      * ```js
-     * const newUserRef = firebase.database().ref('users');
+     * const newUserRef = firebase.database().ref('users').push();
      * console.log('New record key:', newUserRef.key);
      * await newUserRef.set({
      *   first: 'Ada',

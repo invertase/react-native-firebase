@@ -111,21 +111,6 @@ describe('analytics()', () => {
       }
     });
 
-    it('errors if params contains invalid types', () => {
-      try {
-        firebase.analytics().logEvent('invertase', {
-          foo: 'bar',
-          bar: {
-            baz: 123,
-          },
-        });
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'params' value for parameter 'bar' is invalid");
-        return Promise.resolve();
-      }
-    });
-
     it('log an event without parameters', async () => {
       await firebase.analytics().logEvent('invertase_event');
     });
