@@ -447,7 +447,7 @@ export namespace FirebaseFirestoreTypes {
 
   /**
    * A DocumentSnapshot contains data read from a document in your Firestore database. The data can be extracted with
-   * .`data()` or `.get(<field>)` to get a specific field.
+   * .`data()` or `.get(:field)` to get a specific field.
    *
    * For a DocumentSnapshot that points to a non-existing document, any data access will return 'undefined'.
    * You can use the `exists` property to explicitly verify a document's existence.
@@ -521,7 +521,7 @@ export namespace FirebaseFirestoreTypes {
 
   /**
    * A QueryDocumentSnapshot contains data read from a document in your Firestore database as part of a query.
-   * The document is guaranteed to exist and its data can be extracted with .data() or .get(<field>) to get a specific field.
+   * The document is guaranteed to exist and its data can be extracted with .data() or .get(:field) to get a specific field.
    *
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
    * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
