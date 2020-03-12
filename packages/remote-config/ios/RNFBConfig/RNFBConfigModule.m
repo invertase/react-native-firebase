@@ -87,7 +87,8 @@ RCT_EXPORT_MODULE();
 #pragma mark Firebase Config Methods
 
 RCT_EXPORT_METHOD(ensureInitialized:
-(RCTPromiseResolveBlock) resolve
+(FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject) {
 FIRRemoteConfigInitializationCompletion completionHandler = ^(NSError *__nullable error) {
     if (error) {
@@ -97,12 +98,13 @@ FIRRemoteConfigInitializationCompletion completionHandler = ^(NSError *__nullabl
     }
   };
 
-  [[FIRRemoteConfig remoteConfig] ensureInitializedWithCompletionHandler: completionHandler];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] ensureInitializedWithCompletionHandler: completionHandler];
 }
 
 RCT_EXPORT_METHOD(fetch:
-  (nonnull
-    NSNumber *)expirationDuration
+(FIRApp *) firebaseApp
+    : (nonnull
+        NSNumber *)expirationDuration
     : (RCTPromiseResolveBlock)resolve
     : (RCTPromiseRejectBlock)reject
 ) {
@@ -117,14 +119,37 @@ RCT_EXPORT_METHOD(fetch:
   };
 
   if (expirationDuration == @(-1)) {
-    [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:completionHandler];
   } else {
-    [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
   }
 }
+// TODO remeber to pass in firebaseApp
+// latest, broken fetchAndActivate
+// RCT_EXPORT_METHOD(fetchAndActivate:
+//   (RCTPromiseResolveBlock) resolve
+//     : (RCTPromiseRejectBlock)reject
+// ) {
+//   FIRRemoteConfigFetchAndActivateCompletion completionHandler = ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+//     if (error) {
+//       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+//           @"code": convertFIRRemoteConfigFetchStatusToNSString(status),
+//           @"message": convertFIRRemoteConfigFetchStatusToNSStringDescription(status)} mutableCopy]];
+//     } else {
+//       resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)])]);
+      
+//     }
+//     // return status; // todo find out what needs returning??
+//   };
 
+//   [[FIRRemoteConfig remoteConfig] fetchAndActivateWithCompletionHandler:completionHandler];
+// }
+
+
+// old fetchAndActivate
 RCT_EXPORT_METHOD(fetchAndActivate:
-  (RCTPromiseResolveBlock) resolve
+  (FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock)reject
 ) {
   FIRRemoteConfigFetchCompletion completionHandler = ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
@@ -137,19 +162,29 @@ RCT_EXPORT_METHOD(fetchAndActivate:
     }
   };
 
-  [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:completionHandler];
 }
 
+
 RCT_EXPORT_METHOD(activate:
-  (RCTPromiseResolveBlock) resolve
+(FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  BOOL status = [[FIRRemoteConfig remoteConfig] activateFetched];
-  resolve([self resultWithConstants:@(status)]);
+  FIRRemoteConfigActivateCompletion completionHandler = ^(NSError *__nullable error) {
+    if(error){
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)])]);
+    }
+  };
+  
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletionHandler:completionHandler];
 }
 
 RCT_EXPORT_METHOD(setConfigSettings:
-  (NSDictionary *) configSettings
+(FIRApp *) firebaseApp
+    : (NSDictionary *) configSettings
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
@@ -164,25 +199,27 @@ RCT_EXPORT_METHOD(setConfigSettings:
     remoteConfigSettings.fetchTimeout = [configSettings[@"fetchTimeout"] doubleValue];
   }
 
-  [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
+  [FIRRemoteConfig remoteConfigWithApp:firebaseApp].configSettings = remoteConfigSettings;
   resolve([self resultWithConstants:[NSNull null]]);
 }
 
 RCT_EXPORT_METHOD(setDefaults:
-  (NSDictionary *) defaults
+(FIRApp *) firebaseApp
+    : (NSDictionary *) defaults
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[FIRRemoteConfig remoteConfig] setDefaults:defaults];
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:defaults];
   resolve([self resultWithConstants:[NSNull null]]);
 }
 
 RCT_EXPORT_METHOD(setDefaultsFromResource:
-  (NSString *) fileName
+(FIRApp *) firebaseApp
+    : (NSString *) fileName
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject) {
   if ([[NSBundle mainBundle] pathForResource:fileName ofType:@"plist"] != nil) {
-    [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaultsFromPlistFileName:fileName];
     resolve([self resultWithConstants:[NSNull null]]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": @"resource_not_found",

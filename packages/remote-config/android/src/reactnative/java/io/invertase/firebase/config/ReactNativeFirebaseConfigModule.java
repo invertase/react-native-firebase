@@ -36,8 +36,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void activate(Promise promise) {
-    module.activate().addOnCompleteListener(task -> {
+  public void activate(String appName, Promise promise) {
+    module.activate(appName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -47,8 +47,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void fetch(double expirationDurationSeconds, Promise promise) {
-    module.fetch((long) expirationDurationSeconds).addOnCompleteListener(task -> {
+  public void fetch(String appName, double expirationDurationSeconds, Promise promise) {
+    module.fetch(appName, (long) expirationDurationSeconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -58,8 +58,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void fetchAndActivate(Promise promise) {
-    module.fetchAndActivate().addOnCompleteListener(task -> {
+  public void fetchAndActivate(String appName, Promise promise) {
+    module.fetchAndActivate(appName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -69,8 +69,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void setConfigSettings(ReadableMap configSettings, Promise promise) {
-    module.setConfigSettings(Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
+  public void setConfigSettings(String appName, ReadableMap configSettings, Promise promise) {
+    module.setConfigSettings(Arguments.toBundle(appName, configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -80,8 +80,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void setDefaults(ReadableMap defaults, Promise promise) {
-    module.setDefaults(defaults.toHashMap()).addOnCompleteListener(task -> {
+  public void setDefaults(String appName, ReadableMap defaults, Promise promise) {
+    module.setDefaults(appName, defaults.toHashMap()).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -91,8 +91,8 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void setDefaultsFromResource(String resourceName, Promise promise) {
-    module.setDefaultsFromResource(resourceName).addOnCompleteListener(task -> {
+  public void setDefaultsFromResource(String appName, String resourceName, Promise promise) {
+    module.setDefaultsFromResource(appName, resourceName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -106,7 +106,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void ensureInitialized(Promise promise) {
+  public void ensureInitialized(String appName, Promise promise) {
     module.ensureInitialized().addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(null));

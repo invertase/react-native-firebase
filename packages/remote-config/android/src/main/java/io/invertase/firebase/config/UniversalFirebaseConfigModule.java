@@ -48,25 +48,32 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-  Task<Boolean> activate() {
-    return FirebaseRemoteConfig.getInstance().activate();
+  Task<Boolean> activate(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    return FirebaseRemoteConfig.getInstance(firebaseApp).activate();
   }
 
-  Task<Void> fetch(long expirationDuration) {
+  Task<Void> fetch(String appName, long expirationDuration) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
     return Tasks.call(getExecutor(), () -> {
-      FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+      FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(firebaseApp);
       Tasks.await(expirationDuration == -1 ? config.fetch() : config.fetch(expirationDuration));
       return null;
     });
   }
 
-  Task<Boolean> fetchAndActivate() {
-    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
-    Task<Void> fetchTask = config.fetch();
-    return fetchTask.onSuccessTask(aVoid -> config.activate());
+  Task<Boolean> fetchAndActivate(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(firebaseApp);
+    return config.fetchAndActivate();
   }
 
-  Task<Void> setConfigSettings(Bundle configSettings) {
+  Task<Void> setConfigSettings(String appName, Bundle configSettings) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
     return Tasks.call(getExecutor(), () -> {
       FirebaseRemoteConfigSettings.Builder configSettingsBuilder = new FirebaseRemoteConfigSettings.Builder();
 
@@ -78,12 +85,14 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
         double fetchTimeout = configSettings.getDouble("fetchTimeout");
         configSettingsBuilder.setFetchTimeoutInSeconds((long) fetchTimeout);
       }
-      FirebaseRemoteConfig.getInstance().setConfigSettings(configSettingsBuilder.build());
+      FirebaseRemoteConfig.getInstance(firebaseApp).setConfigSettingsAsync(configSettingsBuilder.build());
       return null;
     });
   }
 
-  Task<Void> setDefaultsFromResource(String resourceName) {
+  Task<Void> setDefaultsFromResource(String appName, String resourceName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
     return Tasks.call(getExecutor(), () -> {
       int resourceId = getXmlResourceIdByName(resourceName);
       XmlResourceParser xmlResourceParser = null;
@@ -95,7 +104,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
       }
 
       if (xmlResourceParser != null) {
-        FirebaseRemoteConfig.getInstance().setDefaults(resourceId);
+        FirebaseRemoteConfig.getInstance(firebaseApp).setDefaults(resourceId);
         return null;
       }
 
@@ -103,8 +112,10 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Void> setDefaults(HashMap<String, Object> defaults) {
-    return FirebaseRemoteConfig.getInstance().setDefaultsAsync(defaults);
+  Task<Void> setDefaults(String appName, HashMap<String, Object> defaults) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    return FirebaseRemoteConfig.getInstance(firebaseApp).setDefaultsAsync(defaults);
   }
 
   Task<FirebaseRemoteConfigInfo> ensureInitialized() {

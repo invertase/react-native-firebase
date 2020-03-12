@@ -116,7 +116,6 @@ class Value {
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    this._defaultConfig = {};
     this._settings = {};
     this._lastFetchStatus = null;
     this._lastFetchTime = null;
@@ -159,52 +158,13 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get settings() {
-    return this._settings;
+    console.warn('Access to firebase.remoteConfig().settings is not supported.');
   }
 
-  set settings(settings = {}) {
-    const nativeSettings = {};
-
-    if (!isObject(settings)) {
-      throw new Error('firebase.remoteConfig().settings: must set an object.');
-    }
-
-    if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      console.warn(
-        "firebase.remoteConfig().settings: 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
-      );
-    }
-
-    if (hasOwnProperty(settings, 'minimumFetchInterval')) {
-      console.warn(
-        "firebase.remoteConfig().settings: 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
-      );
-    }
-
-    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
-      if (!isNumber(settings.minimumFetchIntervalMillis)) {
-        throw new Error(
-          "firebase.remoteConfig().settings: 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
-        );
-      } else {
-        //iOS & Android expect seconds
-        nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
-      }
-    }
-
-    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
-      if (!isNumber(settings.fetchTimeMillis)) {
-        throw new Error(
-          "firebase.remoteConfig().settings: 'settings.fetchTimeMillis' must be a number type in milliseconds.",
-        );
-      } else {
-        //iOS & Android expect seconds
-        nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
-      }
-    }
-
-    this._settings = settings;
-    this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
+  set settings(settings) {
+    console.warn(
+      "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().settings = { ...[key]: string, }' instead'",
+    );
   }
 
   get lastFetchTime() {
@@ -228,10 +188,49 @@ class FirebaseConfigModule extends FirebaseModule {
     );
   }
 
-  setConfigSettings() {
-    console.warn(
-      "firebase.remoteConfig().setConfigSettings({ [key]: string}) has now been removed. Please use 'firebase.remoteConfig().settings = { ...[key]: string, }' instead'",
-    );
+  setConfigSettings(settings = {}) {
+    const nativeSettings = {};
+
+    if (!isObject(settings)) {
+      throw new Error('firebase.remoteConfig().settings: must set an object.');
+    }
+
+    if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      console.warn(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
+      );
+    }
+
+    if (hasOwnProperty(settings, 'minimumFetchInterval')) {
+      console.warn(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
+      );
+    }
+
+    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
+      if (!isNumber(settings.minimumFetchIntervalMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+      }
+    }
+
+    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
+      if (!isNumber(settings.fetchTimeMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
+      }
+    }
+
+    this._settings = settings;
+    return this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
   }
 
   /**
@@ -323,7 +322,7 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseConfigModule,
 });
