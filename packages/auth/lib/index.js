@@ -188,6 +188,20 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   signInWithPhoneNumber(phoneNumber, forceResend) {
+    if (!isString(phoneNumber)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'signInWithPhoneNumber failed: First argument "phoneNumber" must be a valid string.',
+      );
+    }
+    if (phoneNumber === '') {
+      return Promise.reject(
+        new FirebaseError(
+          'auth/invalid-phone-number',
+          'The format of the phone number provided is incorrect. Please enter the phone number in a format that can be parsed into E.164 format. E.164 phone numbers are written in the format [+][country code][subscriber number including area code]. [ Invalid format. ]',
+        ),
+      );
+    }
     if (isAndroid) {
       return this.native
         .signInWithPhoneNumber(phoneNumber, forceResend || false)
@@ -200,6 +214,22 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   verifyPhoneNumber(phoneNumber, autoVerifyTimeoutOrForceResend, forceResend) {
+    // Cases not handled in the Android SDK, causing a native error
+    // Exceptions mimicked from Web SDK
+    if (!isString(phoneNumber)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'verifyPhoneNumber failed: First argument "phoneNumber" must be a valid string.',
+      );
+    }
+    if (phoneNumber === '') {
+      return Promise.reject(
+        new FirebaseError(
+          'auth/invalid-phone-number',
+          'The format of the phone number provided is incorrect. Please enter the phone number in a format that can be parsed into E.164 format. E.164 phone numbers are written in the format [+][country code][subscriber number including area code]. [ Invalid format. ]',
+        ),
+      );
+    }
     let _forceResend = forceResend;
     let _autoVerifyTimeout = 60;
 
@@ -213,6 +243,31 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   createUserWithEmailAndPassword(email, password) {
+    // Cases not handled in the Android SDK, causing a native error
+    // Exceptions mimicked from Web SDK
+    if (!isString(email)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'createUserWithEmailAndPassword failed: First argument "email" must be a valid string.',
+      );
+    }
+    if (!isString(password)) {
+      throw new FirebaseError(
+        'auth/argument-error',
+        'createUserWithEmailAndPassword failed: Second argument "password" must be a valid string.',
+      );
+    }
+    if (email === '') {
+      return Promise.reject(
+        new FirebaseError('auth/invalid-email', 'The email address is badly formatted.'),
+      );
+    }
+    if (password === '') {
+      return Promise.reject(
+        new FirebaseError('auth/weak-password', 'The password must be 6 characters long or more.'),
+      );
+    }
+
     return this.native
       .createUserWithEmailAndPassword(email, password)
       .then(userCredential => this._setUserCredential(userCredential));
@@ -234,12 +289,16 @@ class FirebaseAuthModule extends FirebaseModule {
       );
     }
     if (email === '') {
-      throw new FirebaseError('auth/invalid-email', 'The email address is badly formatted.');
+      return Promise.reject(
+        new FirebaseError('auth/invalid-email', 'The email address is badly formatted.'),
+      );
     }
     if (password === '') {
-      throw new FirebaseError(
-        'auth/invalid-password',
-        'The password is invalid or the user does not have a password.',
+      return Promise.reject(
+        new FirebaseError(
+          'auth/invalid-password',
+          'The password is invalid or the user does not have a password.',
+        ),
       );
     }
 
