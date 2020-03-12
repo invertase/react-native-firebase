@@ -950,12 +950,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   ) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    if(mVerificationId == null){
-      String verificationId = sharedPreferences.getString("verificationId","null");
+    if (mVerificationId == null) {
+      String verificationId = sharedPreferences.getString("verificationId", "null");
       mVerificationId = verificationId;
-      Log.d(TAG,
-              "_confirmVerificationCode: Empty verificationId , using local verificationId:" + verificationId
-      );
+```suggestion
+      Log.d(TAG, "_confirmVerificationCode: Empty verificationId, using local value: " + verificationId);
     }
     PhoneAuthCredential credential = PhoneAuthProvider.getCredential(
       mVerificationId,
