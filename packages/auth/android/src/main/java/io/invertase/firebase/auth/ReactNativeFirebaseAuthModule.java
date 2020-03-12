@@ -896,7 +896,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       ) {
         /** 
           * Save mVerificationId to local in case the activity gets restarted when going to the SMS app.
-         * So that the app doesn't crash when function _confirmVerificationCode call and can verify normal when using local verificationId
+         * So that the app doesn't crash when function _confirmVerificationCode is called and 
+         * it can verify normally by using local verificationId
          */
         mVerificationId = verificationId;
         sharedPreferences = mReactContext.getSharedPreferences("RNFirebaseAuth", Context.MODE_PRIVATE);
