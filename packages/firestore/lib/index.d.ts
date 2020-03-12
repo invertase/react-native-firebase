@@ -512,7 +512,7 @@ export namespace FirebaseFirestoreTypes {
      * ```js
      * const user = await firebase.firestore().doc('users/alovelace').get();
      *
-     * console.log('Address ZIP Code', user.get<string>('address.zip'));
+     * console.log('Address ZIP Code', user.get('address.zip'));
      * ```
      *
      * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
