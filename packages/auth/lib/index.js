@@ -15,7 +15,12 @@
  *
  */
 
-import { isAndroid, isBoolean, isString } from '@react-native-firebase/app/lib/common';
+import {
+  isAndroid,
+  isBoolean,
+  isString,
+  FirebaseError,
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -216,13 +221,6 @@ class FirebaseAuthModule extends FirebaseModule {
   signInWithEmailAndPassword(email, password) {
     // Cases not handled in the Android SDK, causing a native error
     // Exceptions mimicked from Web SDK
-    class FirebaseError extends Error {
-      constructor(code, message) {
-        super(message);
-        this.code = code;
-        this.message = `[${code}] ${messsage}`;
-      }
-    }
     if (!isString(email)) {
       throw new FirebaseError(
         'auth/argument-error',

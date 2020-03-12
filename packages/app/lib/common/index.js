@@ -100,3 +100,11 @@ export function tryJSONStringify(data) {
     return null;
   }
 }
+
+export class FirebaseError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.code = code;
+    this.message = `[${code}] ${messsage}`;
+  }
+}
