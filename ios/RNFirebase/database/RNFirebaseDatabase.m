@@ -96,11 +96,11 @@ RCT_EXPORT_METHOD(transactionStart:(NSString *)appDisplayName
                   path:(NSString *)path
                   transactionId:(nonnull NSNumber *)transactionId
                   applyLocally:(BOOL)applyLocally) {
+    FIRDatabaseReference *ref = [self getReferenceForAppPath:appDisplayName dbURL:dbURL path:path];
     dispatch_async(_transactionQueue, ^{
         NSMutableDictionary *transactionState = [NSMutableDictionary new];
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
         transactionState[@"semaphore"] = sema;
-        FIRDatabaseReference *ref = [self getReferenceForAppPath:appDisplayName dbURL:dbURL path:path];
 
         [ref runTransactionBlock:^FIRTransactionResult *_Nonnull (FIRMutableData *_Nonnull currentData) {
             dispatch_barrier_async(_transactionQueue, ^{
