@@ -1,7 +1,7 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
-firebase_sdk_version = '~> 6.13.0'
+firebase_sdk_version = '~> 6.19.0'
 using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
 if using_custom_firebase_sdk_version
   Pod::UI.puts "RNFBInAppMessaging: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m}'
   s.dependency          'React'
   s.dependency          'Firebase/Core', firebase_sdk_version
-  s.dependency          'Firebase/InAppMessagingDisplay', firebase_sdk_version
+  s.dependency          'Firebase/InAppMessaging', firebase_sdk_version
   s.dependency          'RNFBApp'
   s.static_framework    = false
 end

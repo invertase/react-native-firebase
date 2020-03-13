@@ -78,7 +78,7 @@ function convertNativeConfigValues(configValues) {
   Object.freeze(convertedValues);
   return convertedValues;
 }
-
+// as per firebase web sdk specification
 const BOOLEAN_TRUTHY_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
 
 class Value {
@@ -158,7 +158,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get settings() {
-    console.warn('Access to firebase.remoteConfig().settings is not supported.');
+    return this._settings;
   }
 
   set settings(settings) {

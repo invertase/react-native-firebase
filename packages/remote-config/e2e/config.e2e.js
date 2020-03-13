@@ -47,11 +47,11 @@ describe('remoteConfig()', () => {
 
       if (device.getPlatform() === 'android') {
         // TODO these tests fail
-      // iOS persists last fetch status so this test will fail sometimes
-        // firebase.remoteConfig().lastFetchTime.should.equal(0);
-        // firebase
-        //   .remoteConfig()
-        //   .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
+        // iOS persists last fetch status so this test will fail sometimes
+        firebase.remoteConfig().lastFetchTime.should.equal(0);
+        firebase
+          .remoteConfig()
+          .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
       }
 
       await firebase.remoteConfig().fetch(0);
@@ -86,12 +86,14 @@ describe('remoteConfig()', () => {
     it('with expiration provided', async () => {
       await firebase.remoteConfig().fetch(0);
       const activated = await firebase.remoteConfig().activate();
+
       activated.should.be.a.Boolean();
     });
 
     it('without expiration provided', async () => {
       await firebase.remoteConfig().fetch();
       const activated = await firebase.remoteConfig().activate();
+
       activated.should.be.a.Boolean();
     });
   });
@@ -107,7 +109,7 @@ describe('remoteConfig()', () => {
   describe('setConfigSettings()', () => {
     it('it throws if arg is not an object', async () => {
       try {
-        firebase.remoteConfig().settings = 'not an object';
+        firebase.remoteConfig().setConfigSettings('not an object');
 
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
@@ -117,14 +119,14 @@ describe('remoteConfig()', () => {
     });
 
     it('minimumFetchIntervalMillis sets correctly', async () => {
-      firebase.remoteConfig().settings = { minimumFetchIntervalMillis: 30000 };
+      firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 30000 });
 
       firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(30000);
     });
 
     it('throws if minimumFetchIntervalMillis is not a number', async () => {
       try {
-        firebase.remoteConfig().settings = { minimumFetchIntervalMillis: 'potato' };
+        firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
 
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
@@ -134,14 +136,14 @@ describe('remoteConfig()', () => {
     });
 
     it('fetchTimeMillis sets correctly', async () => {
-      firebase.remoteConfig().settings = { fetchTimeMillis: 10000 };
+      firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 10000 });
 
       firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(10000);
     });
 
     it('throws if fetchTimeMillis is not a number', async () => {
       try {
-        firebase.remoteConfig().settings = { fetchTimeMillis: 'potato' };
+        firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
 
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {

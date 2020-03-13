@@ -132,14 +132,14 @@ RCT_EXPORT_METHOD(fetchAndActivate:
 ) {
   FIRRemoteConfigFetchAndActivateCompletion completionHandler = ^(FIRRemoteConfigFetchAndActivateStatus status, NSError *__nullable error) {
     if (error) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": convertFIRRemoteConfigFetchStatusToNSString(status),
-          @"message": convertFIRRemoteConfigFetchStatusToNSStringDescription(status)} mutableCopy]];
+       if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
+          resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      } else {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+        }
     } else {
       resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
-      
     }
-    // return status; // todo find out what needs returning??
   };
 
   [[FIRRemoteConfig remoteConfig] fetchAndActivateWithCompletionHandler:completionHandler];
@@ -153,12 +153,17 @@ RCT_EXPORT_METHOD(activate:
 ) {
   FIRRemoteConfigActivateCompletion completionHandler = ^(NSError *__nullable error) {
     if(error){
-      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
+          resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      } else {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      }
+      
     } else {
       resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
     }
   };
-  
+    
   [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletionHandler:completionHandler];
 }
 

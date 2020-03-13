@@ -2,12 +2,18 @@
 
 ## remote-config 
  
-- removed `isDeveloperModeEnabled` from `remoteConfig().settings = { isDeveloperModeEnabled:true }` for both iOS & Android. Not in web spec.
-- removed `remoteConfig().setDefaults({})` & replaced with `remoteConfig().defaultConfig = {}` which is a web property.
-- removed `remoteConfig().setDefaultsFromResource({})`, not in the web spec.
-- removed `remoteConfig().setConfig({})` & replaced with `remoteConfig().settings = {}` which is a web property.
+- removed `isDeveloperModeEnabled` from `remoteConfig().setConfigSettings({ isDeveloperModeEnabled:true })` for both iOS & Android. Not in web spec.
 - removed `settings.minimumFetchInterval` in JS & changed it to `settings.minimumFetchIntervalMillis` as per web spec.
+- removed `remoteConfig().getValue(key).value` & `remoteConfig().getValue(key).source` has been removed. 
+- added `remoteConfig().getValue(key).asBoolean()`, `remoteConfig().getValue(key).asString()`, `remoteConfig().getValue(key).asNumber()` & `remoteConfig().getValue(key).getSource()` methods.
+- added `remoteConfig().defaultConfig = {}`, `remoteConfig().setLogLevel()` & `remoteConfig().settings = {}` console warning that we cannot use web spec implementation.
 - added `settings.fetchTimeMillis` as per web spec.
+- added `remoteConfig().ensureInitialized()` as per web spec.
+- added `setConfigSettingsAsync` API for Android.
+- added `fetchAndActivate` API for Android & iOS.
+- added `activateWithCompletionHandler` API for iOS.
+- added Multi-app support API for Android & iOS.
+
 
 # [6.1.0](https://github.com/invertase/react-native-firebase/compare/v6.0.4...v6.1.0) (2019-11-26)
 

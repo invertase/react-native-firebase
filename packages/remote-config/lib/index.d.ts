@@ -175,7 +175,7 @@ export namespace FirebaseRemoteConfigTypes {
   }
 
   /**
-   * An Interface representing a Remote RemoteConfig value.
+   * An Interface representing a RemoteConfig value.
    */
   export interface ConfigValue {
     /**
@@ -191,22 +191,43 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * const configValue = firebase.remoteConfig().getValue('beta_enabled');
-     * console.log('Value source: ', configValue.source);
+     * console.log('Value source: ', configValue.getSource());
      * ```
      */
-    source: 'remote' | 'default' | 'static';
-
+    getSource(): 'remote' | 'default' | 'static';
     /**
      * The returned value.
      *
      * #### Example
      *
      * ```js
-     * const configValue = firebase.remoteConfig().getValue('beta_enabled');
-     * console.log('Value: ', configValue.value);
+     * const configValue = firebase.remoteConfig().getValue('dev_mode');
+     * console.log('Boolean: ', configValue.asBoolean());
      * ```
      */
-    value: undefined | number | boolean | string;
+    asBoolean(): true | false;
+    /**
+     * The returned value.
+     *
+     * #### Example
+     *
+     * ```js
+     * const configValue = firebase.remoteConfig().getValue('user_count');
+     * console.log('Count: ', configValue.asNumber());
+     * ```
+     */
+    asNumber(): number;
+    /**
+     * The returned value.
+     *
+     * #### Example
+     *
+     * ```js
+     * const configValue = firebase.remoteConfig().getValue('username');
+     * console.log('Name: ', configValue.asString());
+     * ```
+     */
+    asString(): string;
   }
 
   /**
@@ -295,32 +316,57 @@ export namespace FirebaseRemoteConfigTypes {
      * See the `LastFetchStatus` statics definition.
      */
     lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+
     /**
-     * Gets the current default config.
+     * Provides an object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
+     * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }). A description of the properties
+     * can be found above
      *
-     * #### Example
-     *
-     * ```js
-     * const defaultConfig = firebase.remoteConfig().defaultConfig;
-     * ```
      */
-    get defaultConfig(): ConfigDefaults;
+    settings: { fetchTimeMillis: number; minimumFetchIntervalMillis: number };
+
     /**
-     * Sets default values for the app to use.
-     * Any data values fetched from the Firebase console will override any default values.
+     * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
      *
      * #### Example
      *
      * ```js
-     * firebase.remoteConfig().defaultConfig = {
+     * await firebase.remoteConfig().setConfigSettings({
+     *   isDeveloperModeEnabled: __DEV__,
+     * });
+     * ```
+     *
+     * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
+     */
+    setConfigSettings(configSettings: ConfigSettings): Promise<void>;
+
+    /**
+     * Sets default values for the app to use when accessing values.
+     * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().setDefaults({
      *   experiment_enabled: false,
-     * };
+     * });
      * ```
      *
      * @param defaults A ConfigDefaults instance used to set default values.
      */
+    setDefaults(defaults: ConfigDefaults): Promise<null>;
 
-    set defaultConfig(ConfigDefaults);
+    /**
+     * Sets the default values from a resource file.
+     * On iOS this is a plist file and on Android this is an XML defaultsMap file.
+     *
+     * ```js
+     *  // TODO @ehesp
+     * ```
+     *
+     * @param resourceName The plist/xml file name with no extension.
+     */
+    setDefaultsFromResource(resourceName: string): Promise<null>;
 
     /**
      * Moves fetched data to the apps active config.
