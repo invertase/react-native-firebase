@@ -250,20 +250,19 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * The example below shows how to set a time limit to the length of time the request for remote config values
    *
-   * ```js
-   * firebase.remoteConfig().settings = {
-   *   fetchTimeoutMillis: 6000,
-   * };
+   * await firebase.remoteConfig().setConfigSettings({
+   *    fetchTimeoutMillis: 6000,
+   * });
    * ```
    */
   export interface ConfigSettings {
     /**
      * Indicates the default value in milliseconds to set for the minimum interval that needs to elapse
-     * before a fetch request can again be made to the Remote Config backend.
+     * before a fetch request can again be made to the Remote Config server.
      */
     minimumFetchIntervalMillis?: number;
     /**
-     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config backend.
+     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server.
      */
     fetchTimeMillis?: number;
   }
@@ -274,9 +273,9 @@ export namespace FirebaseRemoteConfigTypes {
    * #### Example
    *
    * ```js
-   * firebase.remoteConfig().defaultConfig = {
+   * await firebase.remoteConfig().setDefaults({
    *   experiment_enabled: false,
-   * };
+   * });
    * ```
    */
   export interface ConfigDefaults {
@@ -326,13 +325,13 @@ export namespace FirebaseRemoteConfigTypes {
     settings: { fetchTimeMillis: number; minimumFetchIntervalMillis: number };
 
     /**
-     * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
+     * Set the Remote RemoteConfig settings, currently able to set `fetchTimeMillis` & `minimumFetchIntervalMillis`
      *
      * #### Example
      *
      * ```js
      * await firebase.remoteConfig().setConfigSettings({
-     *   isDeveloperModeEnabled: __DEV__,
+     *   minimumFetchIntervalMillis: 30000,
      * });
      * ```
      *

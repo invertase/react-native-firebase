@@ -118,16 +118,17 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return FirebaseRemoteConfig.getInstance(firebaseApp).setDefaultsAsync(defaults);
   }
 
-  Task<FirebaseRemoteConfigInfo> ensureInitialized() {
-    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+  Task<FirebaseRemoteConfigInfo> ensureInitialized(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(firebaseApp);
     Task<FirebaseRemoteConfigInfo> ensureInitializedTask = config.ensureInitialized();
 
     try {
-      Tasks.await(fetchAndActivate());
+      Tasks.await(fetchAndActivate(appName));
     } catch (Exception e) {
-      //do nothing
+      // do nothing
     }
-    
 
     return ensureInitializedTask;
   }
@@ -207,7 +208,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
 
     appConstants.put("values", getAllValuesForApp(appName));
     appConstants.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
-    appConstants.put("lastFetchStatus", lastFetchStatusToString(remoteConfigInfo.getLastFetchStatus()));
+    appConstants.put("lastFetchStatus", lastFetchStatusToString((remoteConfigInfo.getLastFetchStatus())));
     appConstants.put("minimumFetchInterval", remoteConfigSettings.getMinimumFetchIntervalInSeconds());
 
     return appConstants;

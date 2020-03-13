@@ -21,6 +21,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  isNull,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -168,8 +169,8 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get lastFetchTime() {
-    // android returns -1 if no fetch yet and iOS returns 0
-    return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
+    // android returns -1 (coming back as null currently) if no fetch yet and iOS returns 0
+    return this._lastFetchTime === -1 || isNull(this._lastFetchTime) ? 0 : this._lastFetchTime;
   }
 
   get lastFetchStatus() {

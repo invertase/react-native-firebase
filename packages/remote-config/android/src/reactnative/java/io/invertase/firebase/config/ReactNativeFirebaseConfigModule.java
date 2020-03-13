@@ -70,7 +70,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void setConfigSettings(String appName, ReadableMap configSettings, Promise promise) {
-    module.setConfigSettings(Arguments.toBundle(appName, configSettings)).addOnCompleteListener(task -> {
+    module.setConfigSettings(appName, Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(task.getResult()));
       } else {
@@ -107,7 +107,7 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void ensureInitialized(String appName, Promise promise) {
-    module.ensureInitialized().addOnCompleteListener(task -> {
+    module.ensureInitialized(appName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(resultWithConstants(null));
       } else {
