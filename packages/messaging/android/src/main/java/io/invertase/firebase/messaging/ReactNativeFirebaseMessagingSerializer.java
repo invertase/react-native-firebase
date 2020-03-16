@@ -25,6 +25,7 @@ class ReactNativeFirebaseMessagingSerializer {
   private static final String EVENT_MESSAGE_SENT = "messaging_message_sent";
   private static final String EVENT_MESSAGES_DELETED = "messaging_message_deleted";
   private static final String EVENT_MESSAGE_RECEIVED = "messaging_message_received";
+  private static final String EVENT_NOTIFICATION_OPENED = "messaging_notification_opened";
   private static final String EVENT_MESSAGE_SEND_ERROR = "messaging_message_send_error";
   private static final String EVENT_NEW_TOKEN = "messaging_token_refresh";
 
@@ -45,8 +46,8 @@ class ReactNativeFirebaseMessagingSerializer {
     return new ReactNativeFirebaseEvent(EVENT_MESSAGE_SEND_ERROR, eventBody);
   }
 
-  static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage) {
-    return new ReactNativeFirebaseEvent(EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
+  static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage, Boolean openEvent) {
+    return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
   }
 
   static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {

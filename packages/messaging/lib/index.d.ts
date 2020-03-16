@@ -99,6 +99,13 @@ export namespace FirebaseMessagingTypes {
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
+
+    notification?: Notification;
+  }
+
+  // TODO
+  export interface Notification {
+    foo: string;
   }
 
   /**
@@ -169,6 +176,8 @@ export namespace FirebaseMessagingTypes {
      * @param enabled A boolean value to enable or disable auto initialization.
      */
     setAutoInitEnabled(enabled: boolean): Promise<void>;
+
+    getInitialNotification(): Promise<void>; // todo
 
     /**
      * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
@@ -264,6 +273,8 @@ export namespace FirebaseMessagingTypes {
      */
     onMessage(listener: (message: RemoteMessage) => any): () => void;
 
+    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): void;
+
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
      * token expires or when the server invalidates the token.
@@ -336,8 +347,11 @@ export namespace FirebaseMessagingTypes {
      * ```
      *
      * @ios
+     * @deprecated See registerDeviceForRemoteMessages.
      */
     registerForRemoteNotifications(): Promise<void>;
+
+    registerDeviceForRemoteMessages(): Promise<void>; // todo
 
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
@@ -352,8 +366,11 @@ export namespace FirebaseMessagingTypes {
      * ```
      *
      * @ios
+     * @deprecated See isDeviceRegisteredForRemoteMessages
      */
     isRegisteredForRemoteNotifications: boolean;
+
+    isDeviceRegisteredForRemoteMessages: boolean; // todo
 
     /**
      * Unregisters the app from receiving remote notifications.
@@ -369,8 +386,11 @@ export namespace FirebaseMessagingTypes {
      * ```
      *
      * @ios
+     * @deprecated See unregisterDeviceForRemoteMessages.
      */
     unregisterForRemoteNotifications(): Promise<void>;
+
+    unregisterDeviceForRemoteMessages(): Promise<void>;
 
     /**
      * On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your
