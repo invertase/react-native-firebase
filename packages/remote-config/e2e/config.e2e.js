@@ -275,6 +275,15 @@ describe('remoteConfig()', () => {
         test1.should.equal(false);
         test2.should.equal(false);
       });
+
+      it("returns 'false' if the source is static", async () => {
+        const unknownKey = firebase
+          .remoteConfig()
+          .getValue('unknownKey')
+          .asBoolean();
+
+        unknownKey.should.equal(false);
+      });
     });
 
     describe('getValue().asString()', () => {
@@ -302,6 +311,15 @@ describe('remoteConfig()', () => {
 
         config.bool.asNumber().should.equal(0);
         config.string.asNumber().should.equal(0);
+      });
+
+      it("returns '0' if the source is static", async () => {
+        const unknownKey = firebase
+          .remoteConfig()
+          .getValue('unknownKey')
+          .asNumber();
+
+        unknownKey.should.equal(0);
       });
     });
 
@@ -364,6 +382,35 @@ describe('remoteConfig()', () => {
       boolValue.should.be.equal(true);
       stringValue.should.be.equal('invertase');
       numberValue.should.be.equal(1337);
+    });
+  });
+
+  describe('setDefaultsFromResource()', () => {
+    it('sets defaults from remote_config_resource_test file', async () => {
+      await firebase.remoteConfig().setDefaultsFromResource('remote_config_resource_test');
+      const config = firebase.remoteConfig().getAll();
+      config.company.getSource().should.equal('default');
+      config.company.asString().should.equal('invertase');
+    });
+
+    it('it rejects if resource not found', async () => {
+      const [error] = await A2A(firebase.remoteConfig().setDefaultsFromResource('i_do_not_exist'));
+      if (!error) {
+        throw new Error('Did not reject');
+      }
+      // TODO dasherize error namespace
+      error.code.should.equal('remoteConfig/resource_not_found');
+      error.message.should.containEql('was not found');
+    });
+
+    it('it throws if resourceName is not a string', () => {
+      try {
+        firebase.remoteConfig().setDefaultsFromResource(1337);
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.message.should.containEql('must be a string value');
+        return Promise.resolve();
+      }
     });
   });
 
