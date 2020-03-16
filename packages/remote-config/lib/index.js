@@ -294,6 +294,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
     return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
   }
+
   setLogLevel() {
     console.warn('firebase.remoteConfig().setLogLevel() is not supported natively.');
   }

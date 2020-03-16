@@ -298,7 +298,6 @@ describe('remoteConfig()', () => {
       });
 
       it('returns the value "0" if it cannot be evaluated as a number', async () => {
-
         const config = firebase.remoteConfig().getAll();
 
         config.bool.asNumber().should.equal(0);
@@ -365,6 +364,42 @@ describe('remoteConfig()', () => {
       boolValue.should.be.equal(true);
       stringValue.should.be.equal('invertase');
       numberValue.should.be.equal(1337);
+    });
+  });
+
+  describe('call methods, getters & setters that are deprecated, removed or not supported', () => {
+    it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
+      const config = firebase.remoteConfig();
+
+      const defaultSpy = sinon.spy(config, 'defaultConfig', ['get', 'set']);
+      const settingSpy = sinon.spy(config, 'settings', ['get', 'set']);
+      const lastFetchTimeSpy = sinon.spy(config, 'lastFetchTime', ['get']);
+      const lastFetchStatusSpy = sinon.spy(config, 'lastFetchStatus', ['get']);
+      const isDeveloperModeEnabledSpy = sinon.spy(config, 'isDeveloperModeEnabled', ['get']);
+      const minimumFetchIntervalSpy = sinon.spy(config, 'minimumFetchInterval', ['get']);
+      const setLogLevelSpy = sinon.spy(config, 'setLogLevel');
+
+      config.defaultConfig;
+      config.defaultConfig = {};
+      config.settings;
+      config.settings = {};
+      config.lastFetchTime;
+      config.lastFetchStatus;
+      config.isDeveloperModeEnabled;
+      config.minimumFetchInterval;
+      config.setLogLevel();
+
+      defaultSpy.get.should.be.calledOnce();
+      defaultSpy.set.should.be.calledOnce();
+
+      settingSpy.get.should.be.calledOnce();
+      settingSpy.set.should.be.calledOnce();
+
+      lastFetchTimeSpy.get.should.be.calledOnce();
+      lastFetchStatusSpy.get.should.be.calledOnce();
+      isDeveloperModeEnabledSpy.get.should.be.calledOnce();
+      minimumFetchIntervalSpy.get.should.be.calledOnce();
+      setLogLevelSpy.should.be.calledOnce();
     });
   });
 });
