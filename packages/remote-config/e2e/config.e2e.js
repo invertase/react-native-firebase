@@ -415,14 +415,13 @@ describe('remoteConfig()', () => {
       const config = firebase.remoteConfig();
 
       const defaultSpy = sinon.spy(config, 'defaultConfig', ['get', 'set']);
-      const settingSpy = sinon.spy(config, 'settings', ['get', 'set']);
+      const settingSpy = sinon.spy(config, 'settings', ['set']);
       const isDeveloperModeEnabledSpy = sinon.spy(config, 'isDeveloperModeEnabled', ['get']);
       const minimumFetchIntervalSpy = sinon.spy(config, 'minimumFetchInterval', ['get']);
       const setLogLevelSpy = sinon.spy(config, 'setLogLevel');
 
       config.defaultConfig;
       config.defaultConfig = {};
-      config.settings;
       config.settings = {};
       config.lastFetchTime;
       config.isDeveloperModeEnabled;
@@ -432,9 +431,7 @@ describe('remoteConfig()', () => {
       defaultSpy.get.should.be.calledOnce();
       defaultSpy.set.should.be.calledOnce();
 
-      settingSpy.get.should.be.calledOnce();
       settingSpy.set.should.be.calledOnce();
-
       isDeveloperModeEnabledSpy.get.should.be.calledOnce();
       minimumFetchIntervalSpy.get.should.be.calledOnce();
       setLogLevelSpy.should.be.calledOnce();

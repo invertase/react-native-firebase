@@ -360,7 +360,11 @@ export namespace FirebaseRemoteConfigTypes {
      * On iOS this is a plist file and on Android this is an XML defaultsMap file.
      *
      * ```js
-     *  // TODO @ehesp
+     * // put in either your iOS or Android directory without the file extension included (.plist or .xml)
+     *  await firebase.remoteConfig().setDefaultsFromResource('config_resource');
+     *
+     * // resource values will now be loaded in with your other config values
+     * const config = firebase.remoteConfig().getAll();
      * ```
      *
      * @param resourceName The plist/xml file name with no extension.
