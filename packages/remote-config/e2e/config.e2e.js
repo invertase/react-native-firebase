@@ -48,7 +48,8 @@ describe('remoteConfig()', () => {
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
         firebase.remoteConfig().lastFetchTime.should.equal(0);
-        // TODO - 'lastFetchStatus' coming back as null
+        // TODO - 'lastFetchStatus' coming back as null. should be 0 as per 
+        // https://firebase.google.com/docs/reference/android/com/google/firebase/remoteconfig/FirebaseRemoteConfig#LAST_FETCH_STATUS_NO_FETCH_YET
         // firebase
         //   .remoteConfig()
         //   .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
@@ -243,11 +244,6 @@ describe('remoteConfig()', () => {
           .getValue('test6')
           .asBoolean();
 
-        const source = firebase
-          .remoteConfig()
-          .getValue('test1')
-          .getSource();
-
         test1.should.equal(true);
         test2.should.equal(true);
         test3.should.equal(true);
@@ -420,8 +416,6 @@ describe('remoteConfig()', () => {
 
       const defaultSpy = sinon.spy(config, 'defaultConfig', ['get', 'set']);
       const settingSpy = sinon.spy(config, 'settings', ['get', 'set']);
-      const lastFetchTimeSpy = sinon.spy(config, 'lastFetchTime', ['get']);
-      const lastFetchStatusSpy = sinon.spy(config, 'lastFetchStatus', ['get']);
       const isDeveloperModeEnabledSpy = sinon.spy(config, 'isDeveloperModeEnabled', ['get']);
       const minimumFetchIntervalSpy = sinon.spy(config, 'minimumFetchInterval', ['get']);
       const setLogLevelSpy = sinon.spy(config, 'setLogLevel');
@@ -431,7 +425,6 @@ describe('remoteConfig()', () => {
       config.settings;
       config.settings = {};
       config.lastFetchTime;
-      config.lastFetchStatus;
       config.isDeveloperModeEnabled;
       config.minimumFetchInterval;
       config.setLogLevel();
@@ -442,8 +435,6 @@ describe('remoteConfig()', () => {
       settingSpy.get.should.be.calledOnce();
       settingSpy.set.should.be.calledOnce();
 
-      lastFetchTimeSpy.get.should.be.calledOnce();
-      lastFetchStatusSpy.get.should.be.calledOnce();
       isDeveloperModeEnabledSpy.get.should.be.calledOnce();
       minimumFetchIntervalSpy.get.should.be.calledOnce();
       setLogLevelSpy.should.be.calledOnce();
