@@ -48,8 +48,8 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
   if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled") == false) {
     autoInitEnabled = "false"
   }
-  defaultNotificationChannelId = rootProject.ext.firebaseJson.getStringValue("messaging_notification_channel_id", "")
-  defaultNotificationColor = rootProject.ext.firebaseJson.getStringValue("messaging_notification_color", "")
+  defaultNotificationChannelId = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_channel_id", "")
+  defaultNotificationColor = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_color", "")
 }
 
 android {

@@ -31,6 +31,6 @@
       android:value="${firebaseJsonNotificationChannelId}" />
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_color"
-      android:value="${firebaseJsonNotificationColor}" />
+      android:resource="${firebaseJsonNotificationColor}" />
   </application>
 </manifest>

@@ -784,7 +784,9 @@ declare module '@react-native-firebase/app' {
 
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
-    messaging_auto_init_enabled: boolean;
-    messaging_android_headless_task_timeout: number;
+    messaging_auto_init_enabled?: boolean;
+    messaging_android_headless_task_timeout?: number;
+    messaging_android_notification_channel_id?: string;
+    messaging_android_notification_color?: string;
   }
 }
