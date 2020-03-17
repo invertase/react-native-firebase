@@ -100,12 +100,160 @@ export namespace FirebaseMessagingTypes {
      */
     data?: { [key: string]: string };
 
+    /**
+     * Additional Notification data sent with the message
+     */
     notification?: Notification;
   }
 
-  // TODO
   export interface Notification {
-    foo: string;
+    /**
+     * The notification title.
+     */
+    title?: string;
+
+    /**
+     * The notification body content.
+     */
+    body?: string;
+
+    /**
+     * Additional Android specific properties set on the notification.
+     */
+    android?: {
+      /**
+       * The channel ID set on the notification. If not set, the notification uses the default
+       * "Miscellaneous" channel set by FCM.
+       */
+      channelId?: string;
+
+      /**
+       * Name of the click action set on the notification.
+       */
+      clickAction?: string;
+
+      /**
+       * The custom color used to tint the notification content.
+       */
+      color?: string;
+
+      /**
+       * The custom small icon used to display on the notification. If not set, uses the default
+       * application icon defined in the AndroidManifest file.
+       */
+      smallIcon?: string;
+
+      /**
+       * The custom image was provided and displayed in the notification body.
+       */
+      imageUrl?: string;
+
+      /**
+       * Deep link URL provided to the notification.
+       */
+      link?: string;
+
+      /**
+       * The current unread notification count for this application, managed by the device.
+       */
+      count?: number;
+
+      /**
+       * The notification priority.
+       *
+       * Note; on devices which have channel support (Android 8.0 (API level 26) +),
+       * this value will be ignored. Instead, the channel "importance" level is used.
+       */
+      priority?:
+        | NotificationAndroidPriority.PRIORITY_MIN
+        | NotificationAndroidPriority.PRIORITY_LOW
+        | NotificationAndroidPriority.PRIORITY_DEFAULT
+        | NotificationAndroidPriority.PRIORITY_HIGH
+        | NotificationAndroidPriority.PRIORITY_MAX;
+
+      /**
+       * The sound played when the notification was delivered on the device (channel settings permitted).
+       *
+       * Set as "default" if the default device notification sound was used.
+       */
+      sound?: string;
+
+      /**
+       * Ticker text set on the notification.
+       *
+       * Ticker text is used for devices with accessibility enabled (e.g. to read out the message).
+       */
+      ticker?: string;
+
+      /**
+       * The visibility of a notification. This value determines how the notification is shown on the users
+       * devices (e.g. on the lock-screen).
+       */
+      visibility?:
+        | NotificationAndroidVisibility.VISIBILITY_SECRET
+        | NotificationAndroidVisibility.VISIBILITY_PRIVATE
+        | NotificationAndroidVisibility.VISIBILITY_PUBLIC;
+    };
+  }
+
+  /**
+   * The enum representing a notification priority.
+   *
+   * Note; on devices which have channel support (Android 8.0 (API level 26) +),
+   * this value will be ignored. Instead, the channel "importance" level is used.
+   */
+  export enum NotificationAndroidPriority {
+    /**
+     The application small icon will not show up in the status bar, or alert the user. The notification
+     will be in a collapsed state in the notification shade and placed at the bottom of the list.
+     */
+    PRIORITY_MIN = -2,
+
+    /**
+     * The application small icon will show in the device status bar, however the notification will
+     * not alert the user (no sound or vibration). The notification will show in it's expanded state
+     * when the notification shade is pulled down.
+     */
+    PRIORITY_LOW = -1,
+
+    /**
+     * When a notification is received, the device smallIcon will appear in the notification shade.
+     * When the user pulls down the notification shade, the content of the notification will be shown
+     * in it's expanded state.
+     */
+    PRIORITY_DEFAULT = 0,
+
+    /**
+     * Notifications will appear on-top of applications, allowing direct interaction without pulling
+     * own the notification shade. This level is used for urgent notifications, such as
+     * incoming phone calls, messages etc, which require immediate attention.
+     */
+    PRIORITY_HIGH = 1,
+
+    /**
+     * The priority highest level a notification can be set at.
+     */
+    PRIORITY_MAX = 2,
+  }
+
+  /**
+   * The enum representing the visibility of a notification.
+   */
+  export enum NotificationAndroidVisibility {
+    /**
+     * Do not reveal any part of this notification on a secure lock-screen.
+     */
+    VISIBILITY_SECRET = -1,
+
+    /**
+     * Show this notification on all lock-screens, but conceal sensitive or private information on secure lock-screens.
+     */
+    VISIBILITY_PRIVATE = 0,
+
+    /**
+     * Show this notification in its entirety on all lock-screens.
+     */
+    VISIBILITY_PUBLIC = 1,
   }
 
   /**
@@ -177,7 +325,15 @@ export namespace FirebaseMessagingTypes {
      */
     setAutoInitEnabled(enabled: boolean): Promise<void>;
 
-    getInitialNotification(): Promise<void>; // todo
+    /**
+     * When a notification from FCM has triggered the application to open from a quit state,
+     * this method will return a `RemoteMessage` containing the notification data, or `null` if
+     * the app was opened via another method.
+     *
+     * See `onNotificationOpenedApp` to subscribe to when the notification is opened when the app
+     * is in a background state.
+     */
+    getInitialNotification(): Promise<RemoteMessage | null>;
 
     /**
      * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
@@ -186,14 +342,14 @@ export namespace FirebaseMessagingTypes {
      * It is recommended you call this method on app start and update your backend with the new token.
      *
      * On iOS you'll need to register for remote notifications before calling this method, you can do
-     * this by calling `registerForRemoteNotifications` or `requestPermission` as part of your app
+     * this by calling `registerDeviceForRemoteMessages` or `requestPermission` as part of your app
      * startup. If you have not registered and you call this method you will receive an 'unregistered'
      * error code.
      *
      * #### Example - Default token
      *
      * ```js
-     * await firebase.messaging().registerForRemoteNotifications();
+     * await firebase.messaging().registerDeviceForRemoteMessages();
      * const fcmToken = await firebase.messaging().getToken();
      *
      * // Update backend (e.g. Firestore) with our scoped token for the user
@@ -273,6 +429,15 @@ export namespace FirebaseMessagingTypes {
      */
     onMessage(listener: (message: RemoteMessage) => any): () => void;
 
+    /**
+     * When the user presses a notification displayed via FCM, this listener will be called if the app
+     * has opened from a background state.
+     *
+     * See `getInitialNotification` to see how to watch for when a notification opens the app from a
+     * quit state.
+     *
+     * @param listener Called with a `RemoteMessage` when a notification press opens the application.
+     */
     onNotificationOpenedApp(listener: (message: RemoteMessage) => any): void;
 
     /**
@@ -330,6 +495,14 @@ export namespace FirebaseMessagingTypes {
     requestPermission(): Promise<boolean>;
 
     /**
+     * Deprecated. See `registerDeviceForRemoteMessages` instead.
+     *
+     * @platform ios
+     * @deprecated See registerDeviceForRemoteMessages.
+     */
+    registerForRemoteNotifications(): Promise<void>;
+
+    /**
      * On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register
      * this request with APNS. For example if you want to display alerts, play sounds
      * or perform other user-facing actions (via the Notification library), you must call this method.
@@ -341,21 +514,24 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * if (!firebase.messaging().isRegisteredForRemoteNotifications) {
-     *   await firebase.messaging().registerForRemoteNotifications();
+     * if (!firebase.messaging().isDeviceRegisteredForRemoteMessages) {
+     *   await firebase.messaging().registerDeviceForRemoteMessages();
      * }
      * ```
-     *
-     * @ios
-     * @deprecated See registerDeviceForRemoteMessages.
      */
-    registerForRemoteNotifications(): Promise<void>;
+    registerDeviceForRemoteMessages(): Promise<void>;
 
-    registerDeviceForRemoteMessages(): Promise<void>; // todo
+    /**
+     * Deprecated. See `isDeviceRegisteredForRemoteMessages` instead.
+     *
+     * @platform ios
+     * @deprecated See isDeviceRegisteredForRemoteMessages
+     */
+    isRegisteredForRemoteNotifications: boolean;
 
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
-     * `registerForRemoteNotifications()`.
+     * `registerDeviceForRemoteMessages()`.
      *
      * > You can safely access this property on Android without platform checks. Android returns `true` only.
      *
@@ -365,12 +541,17 @@ export namespace FirebaseMessagingTypes {
      * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
      * ```
      *
-     * @ios
-     * @deprecated See isDeviceRegisteredForRemoteMessages
+     * @platform ios
      */
-    isRegisteredForRemoteNotifications: boolean;
+    isDeviceRegisteredForRemoteMessages: boolean;
 
-    isDeviceRegisteredForRemoteMessages: boolean; // todo
+    /**
+     * Deprecated. See `unregisterDeviceForRemoteMessages` instead.
+     *
+     * @platform ios
+     * @deprecated See unregisterDeviceForRemoteMessages.
+     */
+    unregisterForRemoteNotifications(): Promise<void>;
 
     /**
      * Unregisters the app from receiving remote notifications.
@@ -380,16 +561,13 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * if (firebase.messaging().isRegisteredForRemoteNotifications) {
-     *   await firebase.messaging().unregisterForRemoteNotifications();
+     * if (firebase.messaging().isDeviceRegisteredForRemoteMessages) {
+     *   await firebase.messaging().unregisterDeviceForRemoteMessages();
      * }
      * ```
      *
-     * @ios
-     * @deprecated See unregisterDeviceForRemoteMessages.
+     * @platform ios
      */
-    unregisterForRemoteNotifications(): Promise<void>;
-
     unregisterDeviceForRemoteMessages(): Promise<void>;
 
     /**

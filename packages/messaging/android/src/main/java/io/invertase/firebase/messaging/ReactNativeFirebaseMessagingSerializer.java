@@ -90,7 +90,72 @@ class ReactNativeFirebaseMessagingSerializer {
     messageMap.putMap(KEY_DATA, dataMap);
     messageMap.putDouble(KEY_TTL, remoteMessage.getTtl());
     messageMap.putDouble(KEY_SENT_TIME, remoteMessage.getSentTime());
+
+    if (remoteMessage.getNotification() != null) {
+      messageMap.putMap("notification", remoteMessageNotificationToWritableMap(remoteMessage.getNotification()));
+    }
+
     return messageMap;
+  }
+
+  static WritableMap remoteMessageNotificationToWritableMap(RemoteMessage.Notification notification) {
+    WritableMap notificationMap = Arguments.createMap();
+    WritableMap androidNotificationMap = Arguments.createMap();
+
+    if (notification.getTitle() != null) {
+      notificationMap.putString("title", notification.getTitle());
+    }
+
+    if (notification.getBody() != null) {
+      notificationMap.putString("body", notification.getBody());
+    }
+
+    if (notification.getChannelId() != null) {
+      androidNotificationMap.putString("channelId", notification.getChannelId());
+    }
+
+    if (notification.getClickAction() != null) {
+      androidNotificationMap.putString("clickAction", notification.getClickAction());
+    }
+
+    if (notification.getColor() != null) {
+      androidNotificationMap.putString("color", notification.getColor());
+    }
+
+    if (notification.getIcon() != null) {
+      androidNotificationMap.putString("smallIcon", notification.getIcon());
+    }
+
+    if (notification.getImageUrl() != null) {
+      androidNotificationMap.putString("imageUrl", notification.getImageUrl().toString());
+    }
+
+    if (notification.getLink() != null) {
+      androidNotificationMap.putString("link", notification.getLink().toString());
+    }
+
+    if (notification.getNotificationCount() != null) {
+      androidNotificationMap.putInt("count", notification.getNotificationCount());
+    }
+
+    if (notification.getNotificationPriority() != null) {
+      androidNotificationMap.putInt("priority", notification.getNotificationPriority());
+    }
+
+    if (notification.getSound() != null) {
+      androidNotificationMap.putString("sound", notification.getSound());
+    }
+
+    if (notification.getTicker() != null) {
+      androidNotificationMap.putString("ticker", notification.getTicker());
+    }
+
+    if (notification.getVisibility() != null) {
+      androidNotificationMap.putInt("visibility", notification.getVisibility());
+    }
+
+    notificationMap.putMap("android", androidNotificationMap);
+    return notificationMap;
   }
 
   static RemoteMessage remoteMessageFromReadableMap(ReadableMap readableMap) {
