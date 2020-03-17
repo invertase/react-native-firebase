@@ -38,18 +38,27 @@ project.ext {
 }
 
 apply from: file("./../../app/android/firebase-json.gradle")
+
 def autoInitEnabled = "true"
+def defaultNotificationChannelId = ""
+def defaultNotificationColor = ""
+
+
 if (rootProject.ext && rootProject.ext.firebaseJson) {
   if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled") == false) {
     autoInitEnabled = "false"
   }
+  defaultNotificationChannelId = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_channel_id", "")
+  defaultNotificationColor = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_color", "")
 }
 
 android {
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
-      firebaseJsonAutoInitEnabled: autoInitEnabled
+      firebaseJsonAutoInitEnabled: autoInitEnabled,
+      firebaseJsonNotificationChannelId: defaultNotificationChannelId,
+      firebaseJsonNotificationColor: defaultNotificationColor
     ]
   }
   lintOptions {

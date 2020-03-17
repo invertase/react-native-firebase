@@ -16,36 +16,54 @@
  *
  */
 
-import React, { Component } from 'react';
-import { AppRegistry, Image, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { AppRegistry, Text, Image, StyleSheet, View } from 'react-native';
 
-import '@react-native-firebase/dynamic-links';
+import messaging from '@react-native-firebase/messaging';
 
-class Root extends Component {
-  constructor(props) {
-    super(props);
-    try {
-      this.runSingleTest().catch(console.error);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+messaging().setBackgroundMessageHandler(async r => {
+  console.log('setBackgroundMessageHandler', r);
+});
 
-  async runSingleTest() {}
+function Root() {
+  const [token, setToken] = useState('');
 
-  render() {
-    return (
-      <View style={[styles.container, styles.horizontal]}>
-        <Image
-          source={{
-            uri:
-              'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
-          }}
-          style={[styles.logo]}
-        />
-      </View>
-    );
-  }
+  useEffect(() => {
+    console.warn('use effect');
+    messaging()
+      .getInitialNotification()
+      .then(n => {
+        console.warn('initial notification', n);
+      });
+
+    messaging().onNotificationOpenedApp(event => {
+      console.log('onNotificationOpenedApp', event);
+    });
+
+    messaging().onMessage(msg => {
+      console.log('onMessage', msg);
+    });
+
+    messaging()
+      .getToken()
+      .then(t => {
+        console.log(t);
+        setToken(t);
+      });
+  }, []);
+
+  return (
+    <View style={[styles.container, styles.horizontal]}>
+      <Text>{token}</Text>
+      <Image
+        source={{
+          uri:
+            'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
+        }}
+        style={[styles.logo]}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

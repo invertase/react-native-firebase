@@ -25,7 +25,9 @@ public class ReactNativeFirebaseMessagingHeadlessService extends HeadlessJsTaskS
       TASK_KEY,
       ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage),
       ReactNativeFirebaseJSON.getSharedInstance().getLongValue(TIMEOUT_JSON_KEY, TIMEOUT_DEFAULT),
-      true /* allow to run foreground */
+      // Prevents race condition where the user opens the app at the same time as a notification
+      // is delivered, causing a crash.
+      true
     );
   }
 }
