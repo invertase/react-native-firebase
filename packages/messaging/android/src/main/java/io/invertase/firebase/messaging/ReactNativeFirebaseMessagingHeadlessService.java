@@ -25,7 +25,7 @@ public class ReactNativeFirebaseMessagingHeadlessService extends HeadlessJsTaskS
       TASK_KEY,
       ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage),
       ReactNativeFirebaseJSON.getSharedInstance().getLongValue(TIMEOUT_JSON_KEY, TIMEOUT_DEFAULT),
-      false
+      true /* allow to run foreground */
     );
   }
 }
