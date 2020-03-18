@@ -17,6 +17,7 @@
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
+import { DOCUMENT_ID } from './FirestoreFieldPath';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -294,7 +295,7 @@ export default class FirestoreQueryModifiers {
           }
         }
 
-        if (filterFieldPath === '__name__' && orderFieldPath !== '__name__') {
+        if (filterFieldPath === DOCUMENT_ID._toPath() && orderFieldPath !== DOCUMENT_ID._toPath()) {
           throw new Error(
             "Invalid query. Query.where() fieldPath parameter: 'FirestoreFieldPath' cannot be used in conjunction with a different Query.orderBy() parameter",
           );
