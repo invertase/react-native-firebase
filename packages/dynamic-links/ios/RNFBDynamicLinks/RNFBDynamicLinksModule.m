@@ -99,7 +99,7 @@ RCT_EXPORT_METHOD(buildShortLink:
   } else {
     componentsOptions.pathLength = FIRShortDynamicLinkPathLengthDefault;
   }
-
+  linkComponents.options = componentsOptions;
 
   [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
