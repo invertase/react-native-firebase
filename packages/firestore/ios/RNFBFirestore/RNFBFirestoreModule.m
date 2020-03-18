@@ -103,4 +103,18 @@ RCT_EXPORT_METHOD(settings:
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(clearPersistence:
+  (FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock)reject
+) {
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] clearPersistenceWithCompletion:^(NSError *error) {
+    if (error) {
+      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+    } else {
+      resolve(nil);
+    }
+  }];
+}
+
 @end

@@ -83,4 +83,8 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
       return null;
     });
   }
+
+  Task<Void> clearPersistence(String appName){
+    return getFirestoreForApp(appName).clearPersistence();
+  }
 }
