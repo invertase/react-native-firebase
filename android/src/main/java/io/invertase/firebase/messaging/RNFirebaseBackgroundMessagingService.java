@@ -22,7 +22,7 @@ public class RNFirebaseBackgroundMessagingService extends HeadlessJsTaskService 
         "RNFirebaseBackgroundMessage",
         messageMap,
         60000,
-        false
+        true /* allows to run in foreground */
       );
     }
     return null;
