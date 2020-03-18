@@ -67,6 +67,7 @@ RCT_EXPORT_METHOD(buildLink:
         @"code": @"build-failed",
         @"message": @"Failed to build dynamic link for unknown reason",
     }];
+    return;
   }
 
   resolve(linkComponents.url.absoluteString);
