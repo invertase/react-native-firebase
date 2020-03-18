@@ -29,27 +29,36 @@ function Root() {
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    console.warn('use effect');
+    messaging()
+      .registerDeviceForRemoteMessages()
+      .then(() => {
+        console.log('Device registered');
+        return messaging().requestPermission({ provisional: false });
+      })
+      .then(perm => {
+        console.log('Permission status:', perm);
+        return messaging().getToken();
+      })
+      .then((t) => {
+        console.log(t);
+        setToken(t);
+      })
+      .catch(console.error);
+
     messaging()
       .getInitialNotification()
       .then(n => {
         console.warn('initial notification', n);
       });
 
-    messaging().onNotificationOpenedApp(event => {
-      console.log('onNotificationOpenedApp', event);
-    });
-
+    // messaging().onNotificationOpenedApp(event => {
+    //   console.log('onNotificationOpenedApp', event);
+    // });
+    //
     messaging().onMessage(msg => {
       console.log('onMessage', msg);
     });
-
-    messaging()
-      .getToken()
-      .then(t => {
-        console.log(t);
-        setToken(t);
-      });
+    //
   }, []);
 
   return (

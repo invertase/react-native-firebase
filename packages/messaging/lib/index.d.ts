@@ -257,6 +257,88 @@ export namespace FirebaseMessagingTypes {
   }
 
   /**
+   * An interface representing all the available permissions that can be requested by your app via
+   * the `requestPermission` API.
+   */
+  export interface IOSPermissions {
+    /**
+     * Request permission to display alerts.
+     *
+     * Defaults to true.
+     */
+    alert?: boolean;
+
+    /**
+     * Request permission for Siri to automatically read out notification messages over AirPods.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 13
+     */
+    announcement?: boolean;
+
+    /**
+     * Request permission to update the application badge.
+     *
+     * Defaults to true.
+     */
+    badge?: boolean;
+
+    /**
+     * Request permission to display notifications in a CarPlay environment.
+     *
+     * Defaults to true.
+     */
+    carPlay?: boolean;
+
+    /**
+     * Request permission to provisionally create non-interrupting notifications.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 12
+     */
+    provisional?: boolean;
+
+    /**
+     * Request permission to play sounds.
+     *
+     * Defaults to true.
+     */
+    sound?: boolean;
+  }
+
+  /**
+   * An enum representing the notification authorization status for this app on the device.
+   *
+   * Value is truthy if authorized, compare against an exact status (e.g. PROVISIONAL) for a more
+   * granular status.
+   */
+  export enum IOSAuthorizationStatus {
+    /**
+     * The app user has not yet chosen whether to allow the application to create notifications. Usually
+     * this status is returned prior to the first call of `requestPermission`.
+     */
+    NOT_DETERMINED = -1,
+
+    /**
+     * The app is not authorized to create notifications.
+     */
+    DENIED = 0,
+
+    /**
+     * The app is authorized to create notifications.
+     */
+    AUTHORIZED = 1,
+
+    /**
+     * The app is currently authorized to post non-interrupting user notifications
+     * @platform ios iOS >= 12
+     */
+    PROVISIONAL = 2,
+  }
+
+  /**
    * An event that is received when a message fails to send.
    *
    * ### Example
@@ -492,7 +574,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(): Promise<boolean>;
+    requestPermission(IOSPermissions): Promise<IOSAuthorizationStatus>;
 
     /**
      * Deprecated. See `registerDeviceForRemoteMessages` instead.
@@ -599,7 +681,7 @@ export namespace FirebaseMessagingTypes {
      * const hasPermission = await firebase.messaging().hasPermission();
      * ```
      */
-    hasPermission(): Promise<boolean>;
+    hasPermission(): Promise<IOSAuthorizationStatus>;
 
     /**
      * Called when the FCM server deletes pending messages. This may be due to:

@@ -16,10 +16,12 @@
  */
 
 import {
+  hasOwnProperty,
   isAndroid,
   isBoolean,
   isFunction,
   isIOS,
+  isObject,
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
@@ -192,11 +194,45 @@ class FirebaseMessagingModule extends FirebaseModule {
   /**
    * @platform ios
    */
-  requestPermission() {
+  requestPermission(permissions) {
     if (isAndroid) {
-      return Promise.resolve(true);
+      return Promise.resolve(1);
     }
-    return this.native.requestPermission();
+
+    const defaultPermissions = {
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: true,
+      provisional: false,
+      sound: true,
+    };
+
+    if (!permissions) {
+      return this.native.requestPermission(defaultPermissions);
+    }
+
+    if (!isObject(permissions)) {
+      throw new Error('firebase.messaging().requestPermission(*) expected an object value.');
+    }
+
+    Object.entries(permissions).forEach(([key, value]) => {
+      if (!hasOwnProperty(defaultPermissions, key)) {
+        throw new Error(
+          `firebase.messaging().requestPermission(*) unexpected key "${key}" provided to permissions object.`,
+        );
+      }
+
+      if (!isBoolean(value)) {
+        throw new Error(
+          `firebase.messaging().requestPermission(*) the permission "${key}" expected a boolean value.`,
+        );
+      }
+
+      defaultPermissions[key] = value;
+    });
+
+    return this.native.requestPermission(defaultPermissions);
   }
 
   registerDeviceForRemoteMessages() {

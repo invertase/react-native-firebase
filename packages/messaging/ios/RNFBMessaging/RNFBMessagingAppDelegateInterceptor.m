@@ -61,22 +61,22 @@
   }
 }
 
-// APNS - only called on iOS versions less than v10 (which isn't officially supported, added here for ease later on)
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-  // send message event for remote notifications that have also have data
-  if (userInfo[@"aps"] && ((NSDictionary *) userInfo[@"aps"]).count >= 1 && userInfo[@"aps"][@"content-available"]) {
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
-  }
-}
+// Without content-available via APNS
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+//    // Message ID available = FCM message. Could be a APN message which would be ignored.
+//    if (userInfo[@"gcm.message_id"]) {
+//      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
+//    }
+//}
 
-// APNS - only called on iOS versions greater than or equal to v10 (this one is officially supported)
+// With content-available via APNS
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  // send message event for remote notifications that have also have data
-  if (userInfo[@"aps"] && ((NSDictionary *) userInfo[@"aps"]).count >= 1 && userInfo[@"aps"][@"content-available"]) {
+  // Message ID available = FCM message. Could be a APN message which would be ignored.
+  if (userInfo[@"gcm.message_id"]) {
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
-    // complete immediately
-    completionHandler(UIBackgroundFetchResultNoData);
   }
+   
+  completionHandler(UIBackgroundFetchResultNoData);
 }
 
 @end
