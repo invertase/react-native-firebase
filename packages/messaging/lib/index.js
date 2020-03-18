@@ -38,6 +38,8 @@ const namespace = 'messaging';
 
 const nativeModuleName = 'RNFBMessagingModule';
 
+let backgroundMessageHandler;
+
 class FirebaseMessagingModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
@@ -47,6 +49,16 @@ class FirebaseMessagingModule extends FirebaseModule {
       this.native.isRegisteredForRemoteNotifications != null
         ? this.native.isRegisteredForRemoteNotifications
         : true;
+
+    AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
+      if (!backgroundMessageHandler) {
+        console.warn(
+          'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
+        );
+        return () => Promise.resolve();
+      }
+      return remoteMessage => backgroundMessageHandler(remoteMessage);
+    });
   }
 
   get isAutoInitEnabled() {
@@ -54,13 +66,26 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   /**
-   * @platform ios
+   * @ios
    */
-  get isRegisteredForRemoteNotifications() {
+  get isDeviceRegisteredForRemoteMessages() {
     if (isAndroid) {
       return true;
     }
+
     return this._isRegisteredForRemoteNotifications;
+  }
+
+  /**
+   * @platform ios
+   * @deprecated Use isDeviceRegisteredForRemoteMessages.
+   */
+  get isRegisteredForRemoteNotifications() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[deprecation] Usage of "isRegisteredForRemoteNotifications" will be deprecated in v7. Use "isDeviceRegisteredForRemoteMessages" instead.',
+    );
+    return this.isDeviceRegisteredForRemoteMessages;
   }
 
   setAutoInitEnabled(enabled) {
@@ -72,6 +97,10 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     this._isAutoInitEnabled = enabled;
     return this.native.setAutoInitEnabled(enabled);
+  }
+
+  getInitialNotification() {
+    return this.native.getInitialNotification();
   }
 
   getToken(authorizedEntity, scope) {
@@ -120,6 +149,20 @@ class FirebaseMessagingModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
+  onNotificationOpenedApp(listener) {
+    if (!isFunction(listener)) {
+      throw new Error(
+        "firebase.messaging().onNotificationOpenedApp(*) 'listener' expected a function.",
+      );
+    }
+
+    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
+    this.native;
+
+    const subscription = this.emitter.addListener('messaging_notification_opened', listener);
+    return () => subscription.remove();
+  }
+
   onTokenRefresh(listener) {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onTokenRefresh(*) 'listener' expected a function.");
@@ -156,10 +199,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.requestPermission();
   }
 
-  /**
-   * @platform ios
-   */
-  registerForRemoteNotifications() {
+  registerDeviceForRemoteMessages() {
     if (isAndroid) {
       return Promise.resolve();
     }
@@ -169,13 +209,39 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   /**
    * @platform ios
+   * @deprecated
    */
-  unregisterForRemoteNotifications() {
+  registerForRemoteNotifications() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[deprecation] Usage of "registerForRemoteNotifications" will be removed in v7. Use "registerDeviceForRemoteMessages" instead.',
+    );
+
+    return this.registerDeviceForRemoteMessages();
+  }
+
+  /**
+   * @platform ios
+   */
+  unregisterDeviceForRemoteMessages() {
     if (isAndroid) {
       return Promise.resolve();
     }
     this._isRegisteredForRemoteNotifications = false;
     return this.native.unregisterForRemoteNotifications();
+  }
+
+  /**
+   * @platform ios
+   * @deprecated
+   */
+  unregisterForRemoteNotifications() {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[deprecation] Usage of "unregisterForRemoteNotifications" will be removed in v7. Use "unregisterDeviceForRemoteMessages" instead.',
+    );
+
+    return this.unregisterDeviceForRemoteMessages();
   }
 
   /**
@@ -247,7 +313,7 @@ class FirebaseMessagingModule extends FirebaseModule {
       return;
     }
 
-    AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => handler);
+    backgroundMessageHandler = handler;
   }
 
   sendMessage(remoteMessage) {
@@ -324,6 +390,7 @@ export default createModuleNamespace({
     'messaging_message_deleted',
     'messaging_message_received',
     'messaging_message_send_error',
+    'messaging_notification_opened',
   ],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,

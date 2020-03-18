@@ -25,6 +25,7 @@ class ReactNativeFirebaseMessagingSerializer {
   private static final String EVENT_MESSAGE_SENT = "messaging_message_sent";
   private static final String EVENT_MESSAGES_DELETED = "messaging_message_deleted";
   private static final String EVENT_MESSAGE_RECEIVED = "messaging_message_received";
+  private static final String EVENT_NOTIFICATION_OPENED = "messaging_notification_opened";
   private static final String EVENT_MESSAGE_SEND_ERROR = "messaging_message_send_error";
   private static final String EVENT_NEW_TOKEN = "messaging_token_refresh";
 
@@ -45,8 +46,8 @@ class ReactNativeFirebaseMessagingSerializer {
     return new ReactNativeFirebaseEvent(EVENT_MESSAGE_SEND_ERROR, eventBody);
   }
 
-  static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage) {
-    return new ReactNativeFirebaseEvent(EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
+  static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage, Boolean openEvent) {
+    return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
   }
 
   static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {
@@ -89,7 +90,72 @@ class ReactNativeFirebaseMessagingSerializer {
     messageMap.putMap(KEY_DATA, dataMap);
     messageMap.putDouble(KEY_TTL, remoteMessage.getTtl());
     messageMap.putDouble(KEY_SENT_TIME, remoteMessage.getSentTime());
+
+    if (remoteMessage.getNotification() != null) {
+      messageMap.putMap("notification", remoteMessageNotificationToWritableMap(remoteMessage.getNotification()));
+    }
+
     return messageMap;
+  }
+
+  static WritableMap remoteMessageNotificationToWritableMap(RemoteMessage.Notification notification) {
+    WritableMap notificationMap = Arguments.createMap();
+    WritableMap androidNotificationMap = Arguments.createMap();
+
+    if (notification.getTitle() != null) {
+      notificationMap.putString("title", notification.getTitle());
+    }
+
+    if (notification.getBody() != null) {
+      notificationMap.putString("body", notification.getBody());
+    }
+
+    if (notification.getChannelId() != null) {
+      androidNotificationMap.putString("channelId", notification.getChannelId());
+    }
+
+    if (notification.getClickAction() != null) {
+      androidNotificationMap.putString("clickAction", notification.getClickAction());
+    }
+
+    if (notification.getColor() != null) {
+      androidNotificationMap.putString("color", notification.getColor());
+    }
+
+    if (notification.getIcon() != null) {
+      androidNotificationMap.putString("smallIcon", notification.getIcon());
+    }
+
+    if (notification.getImageUrl() != null) {
+      androidNotificationMap.putString("imageUrl", notification.getImageUrl().toString());
+    }
+
+    if (notification.getLink() != null) {
+      androidNotificationMap.putString("link", notification.getLink().toString());
+    }
+
+    if (notification.getNotificationCount() != null) {
+      androidNotificationMap.putInt("count", notification.getNotificationCount());
+    }
+
+    if (notification.getNotificationPriority() != null) {
+      androidNotificationMap.putInt("priority", notification.getNotificationPriority());
+    }
+
+    if (notification.getSound() != null) {
+      androidNotificationMap.putString("sound", notification.getSound());
+    }
+
+    if (notification.getTicker() != null) {
+      androidNotificationMap.putString("ticker", notification.getTicker());
+    }
+
+    if (notification.getVisibility() != null) {
+      androidNotificationMap.putInt("visibility", notification.getVisibility());
+    }
+
+    notificationMap.putMap("android", androidNotificationMap);
+    return notificationMap;
   }
 
   static RemoteMessage remoteMessageFromReadableMap(ReadableMap readableMap) {
