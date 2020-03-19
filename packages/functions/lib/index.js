@@ -59,11 +59,16 @@ class FirebaseFunctionsModule extends FirebaseModule {
     this._useFunctionsEmulatorOrigin = null;
   }
 
-  httpsCallable(name) {
+  httpsCallable(name, options = {}) {
     return data => {
-      const nativePromise = this.native.httpsCallable(this._useFunctionsEmulatorOrigin, name, {
-        data,
-      });
+      const nativePromise = this.native.httpsCallable(
+        this._useFunctionsEmulatorOrigin,
+        name,
+        {
+          data,
+        },
+        options,
+      );
       return nativePromise.catch(nativeError => {
         const { code, message, details } = nativeError.userInfo || {};
         return Promise.reject(
