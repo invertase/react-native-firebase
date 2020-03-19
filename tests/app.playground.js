@@ -30,17 +30,20 @@ function Root() {
 
   useEffect(() => {
     messaging()
-      .registerDeviceForRemoteMessages()
-      .then(() => {
-        console.log('Device registered');
-        return messaging().requestPermission({ provisional: false });
-      })
-      .then(perm => {
+      .requestPermission()
+      .then((perm) => {
         console.log('Permission status:', perm);
+        // if (perm) {
+          return messaging().registerDeviceForRemoteMessages();
+        // }
+        // return Promise.resolve();
+      })
+      .then(() => {
+        console.log('registerDeviceForRemoteMessages resolved')
         return messaging().getToken();
       })
       .then((t) => {
-        console.log(t);
+        console.log('Got token', t);
         setToken(t);
       })
       .catch(console.error);

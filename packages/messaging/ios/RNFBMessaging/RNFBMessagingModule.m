@@ -161,7 +161,7 @@ RCT_EXPORT_METHOD(requestPermission:
     return;
   }
 
-  RCTPromiseResolveBlock customResolver = ^(id result) {
+
     if (@available(iOS 10.0, *)) {
       UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
       UNAuthorizationOptions options = UNAuthorizationOptionNone;
@@ -220,29 +220,19 @@ RCT_EXPORT_METHOD(requestPermission:
           @"code": @"unsupported-platform-version",
           @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
     }
-  };
-  
-  // https://github.com/invertase/react-native-firebase/pull/3017
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    customResolver(nil);
-  } else {
-    [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:customResolver andPromiseReject:reject];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication] registerForRemoteNotifications];
-    });
-  }
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    return resolve(@([RCTConvert BOOL:@(YES)]));
-  }
-    
   if (@available(iOS 10.0, *)) {
-    [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
+      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+        resolve(@([RCTConvert BOOL:@(YES)]));
+      } else {
+        [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
+      }
+      
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication] registerForRemoteNotifications];
     });

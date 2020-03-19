@@ -60,10 +60,4 @@
   return NO;
 }
   
-- (void)application:(UIApplication *)application
-didReceiveRemoteNotification:(NSDictionary *)userInfo
-fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  NSLog(@"hello");
-}
-
 @end

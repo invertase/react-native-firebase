@@ -32,6 +32,9 @@
 
     [FIRMessaging messaging].delegate = sharedInstance;
     [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+      
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = sharedInstance;
 
     // JS -> `onSendError`
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:nil];
@@ -39,8 +42,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:nil];
     // JS -> `onDeletedMessages`
     [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:nil];
+    // JS -> app launched via notification `applicationDidLaunchWithNotification`
+    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(applicationDidLaunchWithNotification:) name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
   });
   return sharedInstance;
+}
+
++ (void)load {
+    [RNFBMessagingDelegate sharedInstance];
 }
 
 
@@ -102,5 +111,50 @@
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
 }
 
+// Called when notification is delivered but app is in the foreground
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    // todo fully parse notification
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
+        @"notification": @{
+                @"title": notification.request.content.title,
+        }
+    }];
+  completionHandler(UNNotificationPresentationOptionNone);
+}
+
+// Called when the user presses a notification and causes the app to launch
+- (void)applicationDidLaunchWithNotification:(nonnull NSNotification *)notification {
+    if (notification.userInfo[@"UIApplicationLaunchOptionsRemoteNotificationKey"]) {
+      NSDictionary *remoteNotification = notification.userInfo[@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+
+        
+        // if alert data = user pressed & it launched the app
+        // if no alert = data only when terminated
+        
+      if (remoteNotification[@"gcm.message_id"]) {
+          
+          [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
+              @"notification": @{
+                      @"title": @"fooooooooo",
+              }
+          }];
+          
+            // TODO
+          // check its an FCM message
+          // call onNotificationOpenedApp & set initialNotification
+        NSLog(@"GOOOOO");
+      }
+    }
+}
+
+// Called when notification is pressed by the user
+// - In background (notification, notification + data)
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+    // TODO
+    // check its an FCM message
+    // call onNotificationOpenedApp & set initialNotification
+    NSLog(@"didReceiveNotificationResponse called");
+    completionHandler();
+}
 
 @end
