@@ -25,26 +25,27 @@
 @implementation RNFBMessagingDelegate
 
 + (instancetype)sharedInstance {
-  static dispatch_once_t once;
   static RNFBMessagingDelegate *sharedInstance;
-  dispatch_once(&once, ^{
-    sharedInstance = [[RNFBMessagingDelegate alloc] init];
+    if (!sharedInstance) {
+        sharedInstance = [[RNFBMessagingDelegate alloc] init];
+        dispatch_async(dispatch_get_main_queue(),^{
+           [FIRMessaging messaging].delegate = sharedInstance;
+           [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+             
+           UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+           center.delegate = sharedInstance;
 
-    [FIRMessaging messaging].delegate = sharedInstance;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
-      
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    center.delegate = sharedInstance;
-
-    // JS -> `onSendError`
-    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:nil];
-    // JS -> `onMessageSent`
-    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:nil];
-    // JS -> `onDeletedMessages`
-    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:nil];
-    // JS -> app launched via notification `applicationDidLaunchWithNotification`
-    [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(applicationDidLaunchWithNotification:) name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
-  });
+           // JS -> `onSendError`
+           [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageFailure:) name:FIRMessagingSendErrorNotification object:nil];
+           // JS -> `onMessageSent`
+           [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(sendDataMessageSuccess:) name:FIRMessagingSendSuccessNotification object:nil];
+           // JS -> `onDeletedMessages`
+           [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(didDeleteMessagesOnServer) name:FIRMessagingMessagesDeletedNotification object:nil];
+           // JS -> app launched via notification `applicationDidLaunchWithNotification`
+           [[NSNotificationCenter defaultCenter] addObserver:sharedInstance selector:@selector(applicationDidLaunchWithNotification:) name:@"UIApplicationDidFinishLaunchingNotification" object:nil];
+        });
+    }
+    
   return sharedInstance;
 }
 

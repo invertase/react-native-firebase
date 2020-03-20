@@ -15,6 +15,7 @@
  *
  */
 
+#import <os/log.h>
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
@@ -103,6 +104,7 @@ RCT_EXPORT_METHOD(getToken:
           if (error) {
               [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
           } else {
+              os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", result.token);
               resolve(result.token);
           }
       }];
@@ -116,6 +118,7 @@ RCT_EXPORT_METHOD(getToken:
         if (error) {
           [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
         } else {
+          os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", identity);
           resolve(identity);
         }
       }];
@@ -143,8 +146,11 @@ RCT_EXPORT_METHOD(getAPNSToken:
 ) {
   NSData *apnsToken = [FIRMessaging messaging].APNSToken;
   if (apnsToken) {
+    NSString *apnsTokenString = [RNFBMessagingSerializer APNSTokenFromNSData:apnsToken];
+    os_log(OS_LOG_DEFAULT, "RNFB: GET APNS TOKEN: %{public}@", apnsTokenString);
     resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
+    os_log(OS_LOG_DEFAULT, "RNFB: GET APNS TOKEN FAILED - NULL");
     resolve([NSNull null]);
   }
 }

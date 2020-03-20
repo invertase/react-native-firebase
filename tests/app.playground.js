@@ -17,34 +17,46 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { AppRegistry, Text, Image, StyleSheet, View } from 'react-native';
+import { AppRegistry, Text, Image, Button, StyleSheet, View } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 
 messaging().setBackgroundMessageHandler(async r => {
   console.log('setBackgroundMessageHandler', r);
+  await messaging().getAPNSToken();
+});
+
+messaging().onMessage(async msg => {
+  console.log('onMessage', msg);
+  await messaging().getAPNSToken();
 });
 
 function Root() {
   const [token, setToken] = useState('');
+  const [apnsToken, setAPNSToken] = useState('');
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     messaging()
       .requestPermission()
-      .then((perm) => {
+      .then(perm => {
         console.log('Permission status:', perm);
         // if (perm) {
-          return messaging().registerDeviceForRemoteMessages();
+        return messaging().registerDeviceForRemoteMessages();
         // }
         // return Promise.resolve();
       })
       .then(() => {
-        console.log('registerDeviceForRemoteMessages resolved')
+        console.log('registerDeviceForRemoteMessages resolved');
         return messaging().getToken();
       })
-      .then((t) => {
+      .then(async t => {
         console.log('Got token', t);
+        const apnToken = await messaging().getAPNSToken();
+        console.log('Got apns token', apnToken);
+
         setToken(t);
+        setAPNSToken(apnToken);
       })
       .catch(console.error);
 
@@ -58,22 +70,15 @@ function Root() {
     //   console.log('onNotificationOpenedApp', event);
     // });
     //
-    messaging().onMessage(msg => {
-      console.log('onMessage', msg);
-    });
     //
-  }, []);
+  }, [counter]);
 
   return (
     <View style={[styles.container, styles.horizontal]}>
       <Text>{token}</Text>
-      <Image
-        source={{
-          uri:
-            'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
-        }}
-        style={[styles.logo]}
-      />
+      <Text>{'  APNS:  '}</Text>
+      <Text>{apnsToken}</Text>
+      <Button onPress={() => setCounter(counter + 1)} title={'Refresh'} />
     </View>
   );
 }

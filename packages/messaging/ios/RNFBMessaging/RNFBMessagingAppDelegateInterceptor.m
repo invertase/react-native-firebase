@@ -27,31 +27,30 @@
 @implementation RNFBMessagingAppDelegateInterceptor
 
 + (instancetype)sharedInstance {
-  static dispatch_once_t once;
   static RNFBMessagingAppDelegateInterceptor *sharedInstance;
-  dispatch_once(&once, ^{
+  if (!sharedInstance) {
     sharedInstance = [[RNFBMessagingAppDelegateInterceptor alloc] init];
     dispatch_async(dispatch_get_main_queue(), ^{
-      [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
-      [GULAppDelegateSwizzler proxyOriginalDelegateIncludingAPNSMethods];
-        
-      NSString *kGULDidReceiveRemoteNotificationWithCompletionSEL =
-          @"application:didReceiveRemoteNotification:fetchCompletionHandler:";
-        
-      SEL didReceiveRemoteNotificationWithCompletionSEL =
-          NSSelectorFromString(kGULDidReceiveRemoteNotificationWithCompletionSEL);
-      SEL didReceiveRemoteNotificationWithCompletionDonorSEL =
-          @selector(application:donor_didReceiveRemoteNotification:fetchCompletionHandler:);
-        
-      if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:didReceiveRemoteNotificationWithCompletionSEL]) {
-          // noop - user has own implementation & Firebase Swizzler already handles it
-      } else {
-          // Swizzle our own implementation of application:didReceiveRemoteNotification:fetchCompletionHandler:
-          Method donorMethod = class_getInstanceMethod(object_getClass(sharedInstance), didReceiveRemoteNotificationWithCompletionDonorSEL);
-          class_addMethod(object_getClass([GULAppDelegateSwizzler sharedApplication].delegate), didReceiveRemoteNotificationWithCompletionSEL, method_getImplementation(donorMethod), method_getTypeEncoding(donorMethod));
-      }
+        [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
+        [GULAppDelegateSwizzler proxyOriginalDelegateIncludingAPNSMethods];
+          
+        NSString *kGULDidReceiveRemoteNotificationWithCompletionSEL =
+            @"application:didReceiveRemoteNotification:fetchCompletionHandler:";
+          
+        SEL didReceiveRemoteNotificationWithCompletionSEL =
+            NSSelectorFromString(kGULDidReceiveRemoteNotificationWithCompletionSEL);
+        SEL didReceiveRemoteNotificationWithCompletionDonorSEL =
+            @selector(application:donor_didReceiveRemoteNotification:fetchCompletionHandler:);
+          
+        if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:didReceiveRemoteNotificationWithCompletionSEL]) {
+            // noop - user has own implementation & Firebase Swizzler already handles it
+        } else {
+            // Swizzle our own implementation of application:didReceiveRemoteNotification:fetchCompletionHandler:
+            Method donorMethod = class_getInstanceMethod(object_getClass(sharedInstance), didReceiveRemoteNotificationWithCompletionDonorSEL);
+            class_addMethod(object_getClass([GULAppDelegateSwizzler sharedApplication].delegate), didReceiveRemoteNotificationWithCompletionSEL, method_getImplementation(donorMethod), method_getTypeEncoding(donorMethod));
+        }
     });
-  });
+  }
 
   return sharedInstance;
 }
