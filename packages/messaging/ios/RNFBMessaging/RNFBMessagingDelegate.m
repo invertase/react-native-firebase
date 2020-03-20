@@ -15,6 +15,7 @@
  *
  */
 
+#import <os/log.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <UserNotifications/UserNotifications.h>
 
@@ -109,6 +110,7 @@
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
 // To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
 - (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+  os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveMessage: %{public}@", remoteMessage.messageID);
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
 }
 
@@ -133,7 +135,7 @@
         // if no alert = data only when terminated
         
       if (remoteNotification[@"gcm.message_id"]) {
-          
+          os_log(OS_LOG_DEFAULT, "RNFB: messaging:applicationDidLaunchWithNotification: %{public}@", remoteNotification[@"gcm.message_id"]);
           [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
               @"notification": @{
                       @"title": @"fooooooooo",
@@ -155,6 +157,7 @@
     // check its an FCM message
     // call onNotificationOpenedApp & set initialNotification
     NSLog(@"didReceiveNotificationResponse called");
+  os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveNotificationResponse: %{public}@", response.actionIdentifier);
     completionHandler();
 }
 

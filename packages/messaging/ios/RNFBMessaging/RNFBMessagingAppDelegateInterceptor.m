@@ -15,6 +15,7 @@
  *
  */
 
+#import <os/log.h>
 #import <objc/runtime.h>
 #import <React/RCTConvert.h>
 #import <RNFBApp/RNFBSharedUtils.h>
@@ -92,6 +93,7 @@
 
 // Forward Firebase swizzle calls onto our own internal donor method
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+    os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveRemoteNotification:");
     [self application:application donor_didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
@@ -102,6 +104,7 @@
   // Message ID available = FCM message. Could be a APN message which would be ignored.
   if (userInfo[@"gcm.message_id"]) {
     // Calls onMessage event
+    os_log(OS_LOG_DEFAULT, "RNFB: messaging:donor_didReceiveRemoteNotification:");
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
   }
 
