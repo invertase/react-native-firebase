@@ -60,6 +60,7 @@ function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
       }
 
       Object.freeze(snapshot);
+      task._snapshot = snapshot;
 
       listenerFn(snapshot);
     }
@@ -140,6 +141,7 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
+    this._snapshot = {};
   }
 
   /**
@@ -162,6 +164,10 @@ export default class StorageTask {
     return this._promise.catch.bind(this._promise);
   }
 
+  get snapshot() {
+    return this._snapshot;
+  }
+
   // // NOT on Web SDK
   // /**
   //  * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#finally
@@ -178,7 +184,7 @@ export default class StorageTask {
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
         `firebase.storage.StorageTask.on event argument must be a string with a value of '${
-          StorageStatics.TaskEvent.STATE_CHANGED
+        StorageStatics.TaskEvent.STATE_CHANGED
         }'`,
       );
     }
