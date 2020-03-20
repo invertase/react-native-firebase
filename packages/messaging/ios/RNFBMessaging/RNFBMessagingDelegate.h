@@ -22,6 +22,6 @@
 
 @interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
 
-+ (_Nonnull instancetype) sharedInstance;
++ (_Nonnull instancetype)sharedInstance;
 
 @end

@@ -27,7 +27,7 @@ messaging().setBackgroundMessageHandler(async r => {
 });
 
 messaging().onMessage(async msg => {
-  console.log('onMessage', msg);
+  console.warn('onMessage', msg);
   await messaging().getAPNSToken();
 });
 

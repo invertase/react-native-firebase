@@ -20,10 +20,8 @@
 #import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
-#import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingModule.h"
-#import "RNFBMessagingDelegate.h"
 #import "RNFBMessagingSerializer.h"
 #import "RNFBMessagingAppDelegateInterceptor.h"
 
@@ -36,12 +34,6 @@ RCT_EXPORT_MODULE();
 
 - (id)init {
   self = [super init];
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // ensure shared instances are initialized early
-    [RNFBMessagingDelegate sharedInstance];
-    [RNFBMessagingAppDelegateInterceptor sharedInstance];
-  });
   return self;
 }
 
@@ -98,30 +90,30 @@ RCT_EXPORT_METHOD(getToken:
     }];
     return;
   }
-    
-  if ([scope isEqualToString:@"FCM"] && [authorizedEntity isEqualToString:[FIRApp defaultApp].options.GCMSenderID]) {
-      [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult * _Nullable result, NSError * _Nullable error) {
-          if (error) {
-              [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-          } else {
-              os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", result.token);
-              resolve(result.token);
-          }
-      }];
-  } else {
-      NSDictionary *options = nil;
-      if ([FIRMessaging messaging].APNSToken) {
-        options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
-      }
 
-      [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-          os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", identity);
-          resolve(identity);
-        }
-      }];
+  if ([scope isEqualToString:@"FCM"] && [authorizedEntity isEqualToString:[FIRApp defaultApp].options.GCMSenderID]) {
+    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable result, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", result.token);
+        resolve(result.token);
+      }
+    }];
+  } else {
+    NSDictionary *options = nil;
+    if ([FIRMessaging messaging].APNSToken) {
+      options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
+    }
+
+    [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        os_log(OS_LOG_DEFAULT, "RNFB: GET FCM TOKEN: %{public}@", identity);
+        resolve(identity);
+      }
+    }];
   }
 }
 
@@ -157,7 +149,7 @@ RCT_EXPORT_METHOD(getAPNSToken:
 
 RCT_EXPORT_METHOD(requestPermission:
   (NSDictionary *) permissions
-                  :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
   if (RCTRunningInAppExtension()) {
@@ -168,44 +160,44 @@ RCT_EXPORT_METHOD(requestPermission:
   }
 
 
-    if (@available(iOS 10.0, *)) {
-      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-      UNAuthorizationOptions options = UNAuthorizationOptionNone;
-        
-      if ([permissions[@"alert"] isEqual:@(YES)]) {
-        options |= UNAuthorizationOptionAlert;
-      }
-        
-      if ([permissions[@"badge"] isEqual:@(YES)]) {
-        options |= UNAuthorizationOptionBadge;
-      }
-        
-      if ([permissions[@"sound"] isEqual:@(YES)]) {
-        options |= UNAuthorizationOptionSound;
-      }
-  
+  if (@available(iOS 10.0, *)) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNAuthorizationOptions options = UNAuthorizationOptionNone;
+
+    if ([permissions[@"alert"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionAlert;
+    }
+
+    if ([permissions[@"badge"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionBadge;
+    }
+
+    if ([permissions[@"sound"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionSound;
+    }
+
 //      Not supported
 //      if ([permissions[@"inAppNotificationSettings"] isEqual:@(YES)]) {
 //        if (@available(iOS 12.0, *)) {
 //          options |= UNAuthorizationOptionProvidesAppNotificationSettings;
 //        }
 //      }
-        
-      if ([permissions[@"provisional"] isEqual:@(YES)]) {
-        if (@available(iOS 12.0, *)) {
-          options |= UNAuthorizationOptionProvisional;
-        }
+
+    if ([permissions[@"provisional"] isEqual:@(YES)]) {
+      if (@available(iOS 12.0, *)) {
+        options |= UNAuthorizationOptionProvisional;
       }
-        
-      if ([permissions[@"announcement"] isEqual:@(YES)]) {
-        if (@available(iOS 13.0, *)) {
-          options |= UNAuthorizationOptionAnnouncement;
-        }
+    }
+
+    if ([permissions[@"announcement"] isEqual:@(YES)]) {
+      if (@available(iOS 13.0, *)) {
+        options |= UNAuthorizationOptionAnnouncement;
       }
-        
-      if ([permissions[@"carPlay"] isEqual:@(YES)]) {
-        options |= UNAuthorizationOptionCarPlay;
-      }
+    }
+
+    if ([permissions[@"carPlay"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionCarPlay;
+    }
 
 //      Not supported
 //      if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
@@ -213,19 +205,19 @@ RCT_EXPORT_METHOD(requestPermission:
 //          options |= UNAuthorizationOptionCriticalAlert;
 //        }
 //      }
-        
-      [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-            [self hasPermission:resolve :reject];
-        }
-      }];
-    } else {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": @"unsupported-platform-version",
-          @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
-    }
+
+    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        [self hasPermission:resolve :reject];
+      }
+    }];
+  } else {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+        @"code": @"unsupported-platform-version",
+        @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
+  }
 }
 
 RCT_EXPORT_METHOD(registerForRemoteNotifications:
@@ -233,12 +225,12 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
     : (RCTPromiseRejectBlock) reject
 ) {
   if (@available(iOS 10.0, *)) {
-      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-        resolve(@([RCTConvert BOOL:@(YES)]));
-      } else {
-        [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
-      }
-      
+    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+      resolve(@([RCTConvert BOOL:@(YES)]));
+    } else {
+      [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
+    }
+
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication] registerForRemoteNotifications];
     });
@@ -263,22 +255,22 @@ RCT_EXPORT_METHOD(hasPermission:
 ) {
   if (@available(iOS 10.0, *)) {
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-        
-        NSNumber *authorizedStatus = @-1;
-        if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
-          authorizedStatus = @-1;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-          authorizedStatus = @0;
-        } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-          authorizedStatus = @1;
+
+      NSNumber *authorizedStatus = @-1;
+      if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+        authorizedStatus = @-1;
+      } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
+        authorizedStatus = @0;
+      } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+        authorizedStatus = @1;
+      }
+
+      if (@available(iOS 12.0, *)) {
+        if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+          authorizedStatus = @2;
         }
-        
-        if (@available(iOS 12.0, *)) {
-          if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
-            authorizedStatus = @2;
-          }
-        }
-        
+      }
+
       resolve(authorizedStatus);
     }];
   } else {

@@ -36,7 +36,6 @@
   return [self remoteMessageAppDataToDict:remoteMessage.appData withMessageId:remoteMessage.messageID];
 }
 
-
 + (NSDictionary *)remoteMessageAppDataToDict:(NSDictionary *)appData withMessageId:(nullable NSString *)messageId {
   NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
   NSMutableDictionary *message = [[NSMutableDictionary alloc] init];

@@ -22,7 +22,7 @@
 
 @interface RNFBMessagingSerializer : NSObject
 
-+ (NSString *) APNSTokenFromNSData:(NSData *)tokenData;
++ (NSString *)APNSTokenFromNSData:(NSData *)tokenData;
 
 + (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage;
 
