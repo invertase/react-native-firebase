@@ -141,7 +141,15 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
-    this._snapshot = {};
+    // NOTE: need to put snapshot object immediately onto the task.snapshot
+    this._snapshot = {
+      ref: storageRef,
+      state: StorageStatics.TaskState.RUNNING,
+      metadata: null,
+      bytesTransferred: 0,
+      totalBytes: 0, // TODO to find out. Can do for blob as per web spec. but putFile requires reading file size sync or async, that is slow.
+      task: this,
+    };
   }
 
   /**
@@ -151,13 +159,26 @@ export default class StorageTask {
     if (!this._promise) {
       this._promise = this._beginTask(this);
     }
-    return this._promise.then.bind(this._promise);
+
+    return new Promise((resolve, reject) => {
+      const promise = this._promise.then.bind(this._promise);
+
+      promise()
+        .then(response => {
+          this._snapshot = { ...this._snapshot, ...response };
+          return resolve(response);
+        })
+        .catch(error => {
+          return reject(error);
+        });
+    }).then.bind(this._promise);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
    */
   get catch() {
+    // TODO need to update snapshot here if it fails
     if (!this._promise) {
       this._promise = this._beginTask(this);
     }

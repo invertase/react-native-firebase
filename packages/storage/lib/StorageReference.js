@@ -181,7 +181,7 @@ export default class StorageReference extends ReferenceBase {
     if (!isUndefined(metadata)) {
       validateMetadata(metadata);
     }
-
+    // TODO need to figure out how to handle this as putString & putFile return StorageTask, this returns a Promise contrary to our docs.
     return Base64.fromData(data).then(({ string, format }) =>
       this.putString(string, format, metadata),
     );
