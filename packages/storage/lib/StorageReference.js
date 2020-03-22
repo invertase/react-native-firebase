@@ -37,6 +37,15 @@ import StorageStatics from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
 
+export const initialSnapshot = (ref, task) => ({
+  ref,
+  task,// TODO this will be undefined for 'put' method as it won't be initialised yet
+  state: StorageStatics.TaskState.RUNNING,
+  metadata: null,
+  bytesTransferred: 0,
+  totalBytes: 0, // TODO to find out. Can do for blob as per web spec. but putFile requires reading file size sync or async, that is slow.
+});
+
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
     super(path);
@@ -181,10 +190,20 @@ export default class StorageReference extends ReferenceBase {
     if (!isUndefined(metadata)) {
       validateMetadata(metadata);
     }
-    // TODO need to figure out how to handle this as putString & putFile return StorageTask, this returns a Promise contrary to our docs.
-    return Base64.fromData(data).then(({ string, format }) =>
+    let target = Base64.fromData(data).then(({ string, format }) =>
       this.putString(string, format, metadata),
     );
+    let handler = {
+      get: (target, prop) => {
+        if (prop === 'snapshot') {
+          return initialSnapshot(this);
+        }
+        return target[prop];
+      },
+    };
+    const proxy = new Proxy(target, handler);
+    // TODO need to figure out how to handle this as putString & putFile return StorageTask, this returns a Promise contrary to our docs.
+    return proxy;
   }
 
   /**

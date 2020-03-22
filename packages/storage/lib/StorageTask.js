@@ -16,6 +16,7 @@
  */
 
 import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
+import { initialSnapshot } from "./StorageReference";
 import StorageStatics from './StorageStatics';
 
 let TASK_ID = 0;
@@ -142,14 +143,7 @@ export default class StorageTask {
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
     // NOTE: need to put snapshot object immediately onto the task.snapshot
-    this._snapshot = {
-      ref: storageRef,
-      state: StorageStatics.TaskState.RUNNING,
-      metadata: null,
-      bytesTransferred: 0,
-      totalBytes: 0, // TODO to find out. Can do for blob as per web spec. but putFile requires reading file size sync or async, that is slow.
-      task: this,
-    };
+    this._snapshot = initialSnapshot(storageRef, this);
   }
 
   /**
@@ -204,9 +198,7 @@ export default class StorageTask {
   on(event, nextOrObserver, error, complete) {
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `firebase.storage.StorageTask.on event argument must be a string with a value of '${
-        StorageStatics.TaskEvent.STATE_CHANGED
-        }'`,
+        `firebase.storage.StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent.STATE_CHANGED}'`,
       );
     }
 
