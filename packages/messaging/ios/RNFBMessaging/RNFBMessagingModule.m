@@ -16,14 +16,15 @@
  */
 
 #import <os/log.h>
+
+#import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
-#import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 
 #import "RNFBMessagingModule.h"
 #import "RNFBMessagingSerializer.h"
-#import "RNFBMessagingAppDelegateInterceptor.h"
+#import "RNFBMessaging+AppDelegate.h"
 
 
 @implementation RNFBMessagingModule
@@ -161,7 +162,6 @@ RCT_EXPORT_METHOD(requestPermission:
 
 
   if (@available(iOS 10.0, *)) {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     UNAuthorizationOptions options = UNAuthorizationOptionNone;
 
     if ([permissions[@"alert"] isEqual:@(YES)]) {
@@ -175,13 +175,6 @@ RCT_EXPORT_METHOD(requestPermission:
     if ([permissions[@"sound"] isEqual:@(YES)]) {
       options |= UNAuthorizationOptionSound;
     }
-
-//      Not supported
-//      if ([permissions[@"inAppNotificationSettings"] isEqual:@(YES)]) {
-//        if (@available(iOS 12.0, *)) {
-//          options |= UNAuthorizationOptionProvidesAppNotificationSettings;
-//        }
-//      }
 
     if ([permissions[@"provisional"] isEqual:@(YES)]) {
       if (@available(iOS 12.0, *)) {
@@ -199,14 +192,8 @@ RCT_EXPORT_METHOD(requestPermission:
       options |= UNAuthorizationOptionCarPlay;
     }
 
-//      Not supported
-//      if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
-//        if (@available(iOS 12.0, *)) {
-//          options |= UNAuthorizationOptionCriticalAlert;
-//        }
-//      }
-
-    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError *_Nullable error) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError *_Nullable error) {
       if (error) {
         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
       } else {
@@ -228,9 +215,10 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
       resolve(@([RCTConvert BOOL:@(YES)]));
     } else {
-      [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
+      [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
     }
 
+    // Apple docs recommend that registerForRemoteNotifications is always called on app start regardless of current status
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication] registerForRemoteNotifications];
     });

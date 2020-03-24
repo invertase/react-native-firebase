@@ -16,9 +16,13 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
+@interface RNFBMessagingNSNotificationCenter : NSObject
+
++ (_Nonnull instancetype)sharedInstance;
 
 @end
+
+NS_ASSUME_NONNULL_END

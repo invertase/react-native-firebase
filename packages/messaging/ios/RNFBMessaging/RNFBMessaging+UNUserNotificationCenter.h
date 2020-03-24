@@ -15,13 +15,16 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <UserNotifications/UserNotifications.h>
 
-#import <Firebase/Firebase.h>
-#import <React/RCTBridgeModule.h>
+NS_ASSUME_NONNULL_BEGIN
 
-@interface RNFBMessagingDelegate : NSObject <FIRMessagingDelegate, UNUserNotificationCenterDelegate>
+@interface RNFBMessagingUNUserNotificationCenter : NSObject <UNUserNotificationCenterDelegate>
 
 + (_Nonnull instancetype)sharedInstance;
 
+- (void)observe;
+
 @end
+
+NS_ASSUME_NONNULL_END

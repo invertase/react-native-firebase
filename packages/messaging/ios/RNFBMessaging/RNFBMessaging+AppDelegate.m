@@ -17,32 +17,32 @@
 
 #import <os/log.h>
 #import <objc/runtime.h>
+#import <Firebase/Firebase.h>
+#import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
 #import <React/RCTConvert.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
-#import "RNFBMessagingDelegate.h"
-#import "RNFBMessagingAppDelegateInterceptor.h"
 #import "RNFBMessagingSerializer.h"
+#import "RNFBMessaging+AppDelegate.h"
 
-@implementation RNFBMessagingAppDelegateInterceptor
+@implementation RNFBMessagingAppDelegate
 
 + (instancetype)sharedInstance {
   static dispatch_once_t once;
-  __strong static RNFBMessagingAppDelegateInterceptor *sharedInstance;
+  __strong static RNFBMessagingAppDelegate *sharedInstance;
   dispatch_once(&once, ^{
-    sharedInstance = [[RNFBMessagingAppDelegateInterceptor alloc] init];
+    sharedInstance = [[RNFBMessagingAppDelegate alloc] init];
   });
   return sharedInstance;
 }
 
-- (void)proxyAppDelegate {
+- (void)observe {
   static dispatch_once_t once;
-  __weak RNFBMessagingAppDelegateInterceptor *weakSelf = self;
+  __weak RNFBMessagingAppDelegate *weakSelf = self;
   dispatch_once(&once, ^{
-    RNFBMessagingAppDelegateInterceptor *strongSelf = weakSelf;
+    RNFBMessagingAppDelegate *strongSelf = weakSelf;
 
     [GULAppDelegateSwizzler registerAppDelegateInterceptor:strongSelf];
     [GULAppDelegateSwizzler proxyOriginalDelegateIncludingAPNSMethods];
@@ -51,7 +51,7 @@
         NSSelectorFromString(@"application:didReceiveRemoteNotification:fetchCompletionHandler:");
     if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:didReceiveRemoteNotificationWithCompletionSEL]) {
       // noop - user has own implementation of this method in their AppDelegate, this
-      // means the GULAppDelegateSwizzler will have already replaced it with a donor method
+      // means GULAppDelegateSwizzler will have already replaced it with a donor method
     } else {
       // add our own donor implementation of application:didReceiveRemoteNotification:fetchCompletionHandler:
       SEL didReceiveRemoteNotificationWithCompletionDonorSEL =
@@ -74,6 +74,9 @@
   _registerPromiseResolver = resolve;
   _registerPromiseRejecter = reject;
 }
+
+#pragma mark -
+#pragma mark AppDelegate Methods
 
 // called when `registerForRemoteNotifications` completes successfully
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {

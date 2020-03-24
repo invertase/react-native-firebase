@@ -15,23 +15,20 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
-#import <Firebase/Firebase.h>
+#import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-
-@interface RNFBMessagingAppDelegateInterceptor : NSObject <UIApplicationDelegate>
+@interface RNFBMessagingAppDelegate : NSObject <UIApplicationDelegate>
 
 @property _Nullable RCTPromiseRejectBlock registerPromiseRejecter;
 @property _Nullable RCTPromiseResolveBlock registerPromiseResolver;
 
-+ (instancetype)sharedInstance;
++ (_Nonnull instancetype)sharedInstance;
 
-- (void)proxyAppDelegate;
+- (void)observe;
 
 - (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject;
 
@@ -40,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
+
 
 @end
 
