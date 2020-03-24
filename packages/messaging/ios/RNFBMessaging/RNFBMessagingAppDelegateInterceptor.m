@@ -110,9 +110,8 @@
 - (void)application:(UIApplication *)application donor_didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   // Message ID available = FCM message. Could be a APN message which would be ignored.
   if (userInfo[@"gcm.message_id"]) {
-    // Calls onMessage event
     os_log(OS_LOG_DEFAULT, "RNFB: messaging:donor_didReceiveRemoteNotification:");
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageAppDataToDict:userInfo withMessageId:nil]];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (20 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
       completionHandler(UIBackgroundFetchResultNewData);
     });

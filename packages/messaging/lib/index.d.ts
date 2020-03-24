@@ -104,6 +104,33 @@ export namespace FirebaseMessagingTypes {
      * Additional Notification data sent with the message
      */
     notification?: Notification;
+
+    /**
+     * Whether the iOS APNS message was configured as a background update notification.
+     *
+     * @platform ios iOS
+     */
+    contentAvailable?: boolean;
+
+    /**
+     * Whether the iOS APNS `mutable-content` property on the message was set
+     * allowing the app to modify the notification via app extensions.
+     *
+     * @platform ios iOS
+     */
+    mutableContent?: boolean;
+
+    /**
+     * The iOS category this notification is assigned to.
+     *
+     * @platform ios iOS
+     */
+    category?: string;
+
+    /**
+     * An iOS app specific identifier used for notification grouping.
+     */
+    threadId?: string;
   }
 
   export interface Notification {
@@ -117,20 +144,41 @@ export namespace FirebaseMessagingTypes {
      */
     body?: string;
 
+    ios?: {
+      /**
+       * The notification's subtitle.
+       */
+      subtitle?: string;
+
+      /**
+       * The value of the badge on the home screen app icon.
+       * If not specified, the badge is not changed.
+       * If set to 0, the badge has been removed.
+       */
+      badge?: string;
+
+      /**
+       * The sound played when the notification was delivered on the device (if permissions permit).
+       */
+      sound?: string | NotificationIOSCriticalSound;
+    };
+
     /**
      * Additional Android specific properties set on the notification.
      */
     android?: {
       /**
+       * The sound played when the notification was delivered on the device (channel settings permitted).
+       *
+       * Set as "default" if the default device notification sound was used.
+       */
+      sound?: string;
+
+      /**
        * The channel ID set on the notification. If not set, the notification uses the default
        * "Miscellaneous" channel set by FCM.
        */
       channelId?: string;
-
-      /**
-       * Name of the click action set on the notification.
-       */
-      clickAction?: string;
 
       /**
        * The custom color used to tint the notification content.
@@ -159,6 +207,11 @@ export namespace FirebaseMessagingTypes {
       count?: number;
 
       /**
+       * Name of the click action set on the notification.
+       */
+      clickAction?: string;
+
+      /**
        * The notification priority.
        *
        * Note; on devices which have channel support (Android 8.0 (API level 26) +),
@@ -170,13 +223,6 @@ export namespace FirebaseMessagingTypes {
         | NotificationAndroidPriority.PRIORITY_DEFAULT
         | NotificationAndroidPriority.PRIORITY_HIGH
         | NotificationAndroidPriority.PRIORITY_MAX;
-
-      /**
-       * The sound played when the notification was delivered on the device (channel settings permitted).
-       *
-       * Set as "default" if the default device notification sound was used.
-       */
-      sound?: string;
 
       /**
        * Ticker text set on the notification.
@@ -194,6 +240,30 @@ export namespace FirebaseMessagingTypes {
         | NotificationAndroidVisibility.VISIBILITY_PRIVATE
         | NotificationAndroidVisibility.VISIBILITY_PUBLIC;
     };
+  }
+
+  /**
+   * Represents a critical sound configuration that can be included in the
+   * `aps` dictionary of an APNs payload.
+   */
+  export interface NotificationIOSCriticalSound {
+    /**
+     * The critical alert flag. Set to `true` to enable the critical alert.
+     */
+    critical?: boolean;
+
+    /**
+     * The name of a sound file in the app's main bundle or in the `Library/Sounds`
+     * folder of the app's container directory. Specify the string "default" to play
+     * the system sound.
+     */
+    name: string;
+
+    /**
+     * The volume for the critical alert's sound. Must be a value between 0.0
+     * (silent) and 1.0 (full volume).
+     */
+    volume?: number;
   }
 
   /**

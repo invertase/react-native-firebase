@@ -26,6 +26,8 @@
 
 + (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage;
 
-+ (NSDictionary *)remoteMessageAppDataToDict:(NSDictionary *)appData withMessageId:(nullable NSString *)messageId;
++ (NSDictionary *)notificationToDict:(UNNotification *)notification;
+
++ (NSDictionary *)remoteMessageUserInfoToDict:(NSDictionary *)userInfo;
 
 @end

@@ -56,7 +56,7 @@
   dispatch_once(&once, ^{
     RNFBMessagingDelegate *strongSelf = weakSelf;
     [FIRMessaging messaging].delegate = strongSelf;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = strongSelf;
+    [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
   });
 }
 
@@ -125,12 +125,7 @@
 
 // Called when notification is delivered but app is in the foreground
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
-  // todo fully parse notification
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
-      @"notification": @{
-          @"title": notification.request.content.title,
-      }
-  }];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer notificationToDict:notification]];
   completionHandler(UNNotificationPresentationOptionNone);
 }
 
@@ -142,23 +137,10 @@
 
   if (notification.userInfo[@"UIApplicationLaunchOptionsRemoteNotificationKey"]) {
     NSDictionary *remoteNotification = notification.userInfo[@"UIApplicationLaunchOptionsRemoteNotificationKey"];
-
-
-    // if alert data = user pressed & it launched the app
-    // if no alert = data only when terminated
-
     if (remoteNotification[@"gcm.message_id"]) {
       os_log(OS_LOG_DEFAULT, "RNFB: messaging:applicationDidLaunchWithNotification: %{public}@", remoteNotification[@"gcm.message_id"]);
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:@{
-          @"notification": @{
-              @"title": @"fooooooooo",
-          }
-      }];
-
-      // TODO
-      // check its an FCM message
-      // call onNotificationOpenedApp & set initialNotification
-      NSLog(@"GOOOOO");
+      // TODO call onNotificationOpenedApp & set initialNotification
+      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_opened_app" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification]];
     }
   }
 }
@@ -166,10 +148,13 @@
 // Called when notification is pressed by the user
 // - In background (notification, notification + data)
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-  // TODO
-  // check its an FCM message
-  // call onNotificationOpenedApp & set initialNotification
   os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveNotificationResponse: %{public}@", response.actionIdentifier);
+  NSDictionary *remoteNotification = response.notification.request.content.userInfo;
+  if (remoteNotification[@"gcm.message_id"]) {
+    // TODO call onNotificationOpenedApp & set initialNotification
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_opened_app" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification]];
+  }
+
   completionHandler();
 }
 
