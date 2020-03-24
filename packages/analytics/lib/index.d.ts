@@ -672,7 +672,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     logEvent(
       name: string,
-      params?: { [key: string]: string | number | boolean } | {},
+      params?: { [key: string]: string | number | boolean },
     ): Promise<void>;
 
     /**
