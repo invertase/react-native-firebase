@@ -222,7 +222,6 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   return responseDict;
 }
 
-// TODO only for default app, add support for multiple apps once SDK supports it
 - (NSDictionary *)getConstantsForApp:(FIRApp *) firebaseApp {
   FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfigWithApp:firebaseApp];
 

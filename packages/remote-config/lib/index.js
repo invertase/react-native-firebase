@@ -120,7 +120,6 @@ class FirebaseConfigModule extends FirebaseModule {
     this._settings = {};
     this._lastFetchStatus = null;
     this._lastFetchTime = null;
-    // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
   }
 
   getValue(key) {
