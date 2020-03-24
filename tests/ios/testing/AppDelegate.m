@@ -61,4 +61,20 @@
   return NO;
 }
 
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+  NSLog(@"TESTING1");
+  [self aTest];
+  NSLog(@"TESTING2");
+}
+
+- (void)aTest {
+  NSLog(@"TESTING3");
+}
+
+- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+  NSLog(@"TESTING1");
+  [self aTest];
+  NSLog(@"TESTING2");
+}
+
 @end

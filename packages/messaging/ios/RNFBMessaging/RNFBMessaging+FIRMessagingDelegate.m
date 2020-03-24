@@ -16,11 +16,13 @@
  */
 
 #import <os/log.h>
+#import <objc/runtime.h>
+#import <objc/message.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <GoogleUtilities/GULAppDelegateSwizzler.h>
 
 #import "RNFBMessaging+FIRMessagingDelegate.h"
 #import "RNFBMessagingSerializer.h"
-
 
 @implementation RNFBMessagingFIRMessagingDelegate
 
@@ -47,21 +49,20 @@
 #pragma mark -
 #pragma mark FIRMessagingDelegate Methods
 
-// ----------------------
-//     TOKEN Message
-// --------------------\/
-
-
 // JS -> `onTokenRefresh`
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh" body:@{
       @"token": fcmToken
   }];
-}
 
-// ----------------------
-//      DATA Message
-// --------------------\/
+  // If the users AppDelegate implements messaging:didReceiveRegistrationToken: then call it
+  SEL messaging_didReceiveRegistrationTokenSelector =
+      NSSelectorFromString(@"messaging:didReceiveRegistrationToken:");
+  if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
+    void (*usersDidReceiveRegistrationTokenIMP)(id, SEL, FIRMessaging *, NSString *) = (typeof(usersDidReceiveRegistrationTokenIMP)) &objc_msgSend;
+    usersDidReceiveRegistrationTokenIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveRegistrationTokenSelector, messaging, fcmToken);
+  }
+}
 
 // JS -> `onMessage`
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
@@ -69,6 +70,14 @@
 - (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
   os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveMessage: %{public}@", remoteMessage.messageID);
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
+
+  // If the users AppDelegate implements messaging:didReceiveMessage: then call it
+  SEL messaging_didReceiveMessageSelector =
+      NSSelectorFromString(@"messaging:didReceiveMessage:");
+  if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveMessageSelector]) {
+    void (*usersDidReceiveMessageIMP)(id, SEL, FIRMessaging *, FIRMessagingRemoteMessage *) = (typeof(usersDidReceiveMessageIMP)) &objc_msgSend;
+    usersDidReceiveMessageIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveMessageSelector, messaging, remoteMessage);
+  }
 }
 
 @end
