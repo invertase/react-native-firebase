@@ -644,7 +644,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(IOSPermissions): Promise<IOSAuthorizationStatus>;
+    requestPermission(permissions?: IOSPermissions): Promise<IOSAuthorizationStatus>;
 
     /**
      * Deprecated. See `registerDeviceForRemoteMessages` instead.
