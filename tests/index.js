@@ -15,6 +15,7 @@
  *
  */
 
-require('./app.playground');
+require('./app');
+// require('./app.playground');
 //require('./app.admob');
 // require('./app.smartreply');
