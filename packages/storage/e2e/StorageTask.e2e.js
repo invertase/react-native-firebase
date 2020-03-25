@@ -255,6 +255,30 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
+
+    it('should have access to the snapshot values outside of the Task thennable', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const bob = new jet.context.Blob([jsonDerulo], {
+        type: 'application/json',
+      });
+
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .put(bob);
+
+      await uploadTaskSnapshot;
+
+      const snapshot = uploadTaskSnapshot.snapshot;
+
+      snapshot.should.have.property('state');
+      snapshot.should.have.property('metadata');
+      snapshot.should.have.property('ref');
+      snapshot.should.have.property('task');
+      snapshot.should.have.property('totalBytes');
+      snapshot.should.have.property('bytesTransferred');
+    });
   });
 
   describe('putFile()', () => {
