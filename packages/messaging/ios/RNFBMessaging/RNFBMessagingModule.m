@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(getToken:
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
         @"code": @"unregistered",
-        @"message": @"You must be registered for remote notifications before calling get token, see messaging().registerForRemoteNotifications() or requestPermission().",
+        @"message": @"You must be registered for remote messages before calling getToken, see messaging().registerDeviceForRemoteMessages().",
     }];
     return;
   }
