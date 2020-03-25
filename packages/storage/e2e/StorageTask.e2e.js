@@ -15,6 +15,15 @@
  *
  */
 
+function snapshotProperties(snapshot) {
+  snapshot.should.have.property('state');
+  snapshot.should.have.property('metadata');
+  snapshot.should.have.property('ref');
+  snapshot.should.have.property('task');
+  snapshot.should.have.property('totalBytes');
+  snapshot.should.have.property('bytesTransferred');
+}
+
 describe('storage() -> StorageTask', () => {
   describe('writeToFile()', () => {
     it('errors if permission denied', async () => {
@@ -272,12 +281,7 @@ describe('storage() -> StorageTask', () => {
 
       const snapshot = uploadTaskSnapshot.snapshot;
 
-      snapshot.should.have.property('state');
-      snapshot.should.have.property('metadata');
-      snapshot.should.have.property('ref');
-      snapshot.should.have.property('task');
-      snapshot.should.have.property('totalBytes');
-      snapshot.should.have.property('bytesTransferred');
+      snapshotProperties(snapshot);
     });
   });
 
@@ -376,12 +380,7 @@ describe('storage() -> StorageTask', () => {
 
       const snapshot = uploadTaskSnapshot.snapshot;
 
-      snapshot.should.have.property('state');
-      snapshot.should.have.property('metadata');
-      snapshot.should.have.property('ref');
-      snapshot.should.have.property('task');
-      snapshot.should.have.property('totalBytes');
-      snapshot.should.have.property('bytesTransferred');
+      snapshotProperties(snapshot);
     });
 
     it('should have access to the snapshot values outside of the event subscriber', async () => {
@@ -395,12 +394,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.on('state_changed', {
         next: snapshot => {
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            uploadTaskSnapshot.snapshot.should.have.property('state');
-            uploadTaskSnapshot.snapshot.should.have.property('metadata');
-            uploadTaskSnapshot.snapshot.should.have.property('ref');
-            uploadTaskSnapshot.snapshot.should.have.property('task');
-            uploadTaskSnapshot.snapshot.should.have.property('totalBytes');
-            uploadTaskSnapshot.snapshot.should.have.property('bytesTransferred');
+            snapshotProperties(snapshot);
             resolve();
           }
         },
