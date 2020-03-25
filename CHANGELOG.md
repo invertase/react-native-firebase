@@ -2,6 +2,7 @@
 
 ## storage
 - added `snapshot` property to `Task` as per web spec.
+- made `StorageReference.put` return a `Task`, not a promise.
 
 
 ### Bug Fixes
