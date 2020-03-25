@@ -94,6 +94,9 @@ describe('messaging()', () => {
     it('receives messages when the app is in the foreground', async () => {
       const spy = sinon.spy();
       const unsubscribe = firebase.messaging().onMessage(spy);
+      if (device.getPlatform() === 'ios') {
+        await messaging().registerDeviceForRemoteMessages();
+      }
       const token = await firebase.messaging().getToken();
       await TestsAPI.messaging().sendToDevice(token, {
         data: {
