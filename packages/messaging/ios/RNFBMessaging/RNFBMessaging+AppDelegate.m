@@ -15,7 +15,6 @@
  *
  */
 
-#import <os/log.h>
 #import <objc/runtime.h>
 #import <Firebase/Firebase.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
@@ -54,10 +53,8 @@
       // means GULAppDelegateSwizzler will have already replaced it with a donor method
     } else {
       // add our own donor implementation of application:didReceiveRemoteNotification:fetchCompletionHandler:
-      SEL didReceiveRemoteNotificationWithCompletionDonorSEL =
-          @selector(application:donor_didReceiveRemoteNotification:fetchCompletionHandler:);
       Method donorMethod = class_getInstanceMethod(
-          object_getClass(strongSelf), didReceiveRemoteNotificationWithCompletionDonorSEL
+          object_getClass(strongSelf), didReceiveRemoteNotificationWithCompletionSEL
       );
       class_addMethod(
           object_getClass([GULAppDelegateSwizzler sharedApplication].delegate),
@@ -102,22 +99,24 @@
   }
 }
 
-// forward GULAppDelegateSwizzler method calls to our internal donor method
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveRemoteNotification:");
-  [self application:application donor_didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
-}
-
-// Called when data-only notification is received
-// - In background (only works with content-available)
-- (void)application:(UIApplication *)application donor_didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  // Message ID available = FCM message. Could be a APN message which would be ignored.
   if (userInfo[@"gcm.message_id"]) {
-    os_log(OS_LOG_DEFAULT, "RNFB: messaging:donor_didReceiveRemoteNotification:");
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (20 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      completionHandler(UIBackgroundFetchResultNewData);
-    });
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      // TODO add support in a later version for calling completion handler directly from JS when user JS code complete
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (25 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        completionHandler(UIBackgroundFetchResultNewData);
+      });
+
+      // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
+      // TODO   so we just delay sending the event for a few seconds as a workaround
+      // TODO   most likely Remote Debugging causing bridge to be invalidated
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+      });
+    } else {
+      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+      completionHandler(UIBackgroundFetchResultNoData);
+    }
   }
 }
 

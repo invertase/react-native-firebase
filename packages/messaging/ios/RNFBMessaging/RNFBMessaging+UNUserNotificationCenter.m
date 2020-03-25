@@ -15,8 +15,6 @@
  *
  */
 
-#import <os/log.h>
-
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 
 #import "RNFBMessagingSerializer.h"
@@ -29,6 +27,7 @@
   __strong static RNFBMessagingUNUserNotificationCenter *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBMessagingUNUserNotificationCenter alloc] init];
+    sharedInstance.initialNotification = nil;
   });
   return sharedInstance;
 }
@@ -43,21 +42,37 @@
   });
 }
 
+- (nullable NSDictionary *)getInitialNotification {
+  if (_initialNotification != nil) {
+    NSDictionary *initialNotificationCopy = [_initialNotification copy];
+    _initialNotification = nil;
+    return initialNotificationCopy;
+  }
+
+  return nil;
+}
+
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer notificationToDict:notification]];
+  NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
+
+  // Don't send an event if contentAvailable is true - application:didReceiveRemoteNotification will send the event
+  // for us, we don't want to duplicate them
+  if (!notificationDict[@"contentAvailable"]) {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:notificationDict];
+  }
+
+  // TODO in a later version allow customising completion options in JS code
   completionHandler(UNNotificationPresentationOptionNone);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-  os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveNotificationResponse: %{public}@", response.actionIdentifier);
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
   if (remoteNotification[@"gcm.message_id"]) {
-    // TODO call onNotificationOpenedApp & set initialNotification
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_opened_app" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification]];
+    NSDictionary *notificationDict = [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:notificationDict];
+    _initialNotification = notificationDict;
   }
-
   completionHandler();
 }
-
 
 @end

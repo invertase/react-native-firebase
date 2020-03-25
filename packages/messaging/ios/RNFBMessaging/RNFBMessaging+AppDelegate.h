@@ -38,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler;
 
-
 @end
 
 NS_ASSUME_NONNULL_END

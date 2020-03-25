@@ -15,7 +15,6 @@
  *
  */
 
-#import <os/log.h>
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
@@ -45,7 +44,6 @@
   });
 }
 
-
 #pragma mark -
 #pragma mark FIRMessagingDelegate Methods
 
@@ -68,7 +66,6 @@
 // Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
 // To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
 - (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  os_log(OS_LOG_DEFAULT, "RNFB: messaging:didReceiveMessage: %{public}@", remoteMessage.messageID);
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
 
   // If the users AppDelegate implements messaging:didReceiveMessage: then call it

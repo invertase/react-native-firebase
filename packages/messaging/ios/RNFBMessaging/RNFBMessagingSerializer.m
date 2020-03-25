@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -171,7 +170,7 @@
 
         // message.notification.ios.sound.critical Boolean
         if (apsSoundDict[@"critical"] != nil) {
-          notificationIOSSound[@"critical"] = @([RCTConvert BOOL:apsSoundDict[@"critical"]]);  ;
+          notificationIOSSound[@"critical"] = @([RCTConvert BOOL:apsSoundDict[@"critical"]]);
         }
 
         // message.notification.ios.sound.volume Number

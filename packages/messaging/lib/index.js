@@ -61,6 +61,19 @@ class FirebaseMessagingModule extends FirebaseModule {
       }
       return remoteMessage => backgroundMessageHandler(remoteMessage);
     });
+
+    if (isIOS) {
+      this.emitter.addListener('messaging_message_received_background', remoteMessage => {
+        if (!backgroundMessageHandler) {
+          console.warn(
+            'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
+          );
+          return Promise.resolve();
+        }
+
+        return backgroundMessageHandler(remoteMessage);
+      });
+    }
   }
 
   get isAutoInitEnabled() {
@@ -144,9 +157,6 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error("firebase.messaging().onMessage(*) 'listener' expected a function.");
     }
 
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
-
     const subscription = this.emitter.addListener('messaging_message_received', listener);
     return () => subscription.remove();
   }
@@ -158,9 +168,6 @@ class FirebaseMessagingModule extends FirebaseModule {
       );
     }
 
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
-
     const subscription = this.emitter.addListener('messaging_notification_opened', listener);
     return () => subscription.remove();
   }
@@ -169,9 +176,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onTokenRefresh(*) 'listener' expected a function.");
     }
-
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
 
     const subscription = this.emitter.addListener('messaging_token_refresh', event => {
       // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
@@ -300,9 +304,6 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error("firebase.messaging().onDeletedMessages(*) 'listener' expected a function.");
     }
 
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
-
     const subscription = this.emitter.addListener('messaging_message_deleted', listener);
     return () => subscription.remove();
   }
@@ -312,9 +313,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (!isFunction(listener)) {
       throw new Error("firebase.messaging().onMessageSent(*) 'listener' expected a function.");
     }
-
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
 
     const subscription = this.emitter.addListener('messaging_message_sent', listener);
     return () => {
@@ -328,9 +326,6 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error("firebase.messaging().onSendError(*) 'listener' expected a function.");
     }
 
-    // TODO(salakar) rework internals as without this native module will never be ready (therefore never subscribes)
-    this.native;
-
     const subscription = this.emitter.addListener('messaging_message_send_error', listener);
     return () => subscription.remove();
   }
@@ -343,10 +338,6 @@ class FirebaseMessagingModule extends FirebaseModule {
       throw new Error(
         "firebase.messaging().setBackgroundMessageHandler(*) 'handler' expected a function.",
       );
-    }
-
-    if (isIOS) {
-      return;
     }
 
     backgroundMessageHandler = handler;
@@ -427,6 +418,7 @@ export default createModuleNamespace({
     'messaging_message_received',
     'messaging_message_send_error',
     'messaging_notification_opened',
+    ...(isIOS ? ['messaging_message_received_background'] : []),
   ],
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,

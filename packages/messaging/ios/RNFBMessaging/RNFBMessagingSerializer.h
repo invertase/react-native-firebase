@@ -16,7 +16,6 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
 

@@ -14,11 +14,9 @@
  * limitations under the License.
  *
  */
-#import <os/log.h>
 #import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 
-#import "RNFBMessagingSerializer.h"
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
@@ -42,20 +40,20 @@
     RNFBMessagingNSNotificationCenter *strongSelf = weakSelf;
 
     // Application
-    // JS -> app launched via notification `applicationDidLaunchWithNotification`
+    // JS -> `getInitialNotification`
+    // ObjC -> Initialize other delegates & observers
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidFinishLaunchingNotification:) name:UIApplicationDidFinishLaunchingNotification object:nil];
 
-
     // Firebase Messaging
-    // JS -> `onSendError`
+    // JS -> `onSendError` events
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onSendErrorNotification:) name:FIRMessagingSendErrorNotification object:nil];
 
     // Firebase Messaging
-    // JS -> `onMessageSent`
+    // JS -> `onMessageSent` events
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onSendSuccessNotification:) name:FIRMessagingSendSuccessNotification object:nil];
 
     // Firebase Messaging
-    // JS -> `onDeletedMessages`
+    // JS -> `onDeletedMessages` events
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onDeletedMessagesNotification) name:FIRMessagingMessagesDeletedNotification object:nil];
 
   });
@@ -68,7 +66,6 @@
 
 #pragma mark -
 #pragma mark Firebase Messaging Notifications
-
 
 // Firebase Messaging
 // JS -> `onSendError`
@@ -111,12 +108,13 @@
   [[RNFBMessagingUNUserNotificationCenter sharedInstance] observe];
   [[RNFBMessagingFIRMessagingDelegate sharedInstance] observe];
 
+  // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
+  // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
+  // was called early during app initialization - we call it here in this scenario as the user can only call this via JS, at which point
+  // it'd be too late resulting in the app being terminated.
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-    NSDictionary *remoteNotification = notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotification[@"gcm.message_id"]) {
-      os_log(OS_LOG_DEFAULT, "RNFB: messaging:application_onDidFinishLaunchingNotification: %{public}@", remoteNotification[@"gcm.message_id"]);
-      // TODO call onNotificationOpenedApp & set initialNotification
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_opened_app" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification]];
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      [[UIApplication sharedApplication] registerForRemoteNotifications];
     }
   }
 }
