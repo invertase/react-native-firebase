@@ -37,19 +37,11 @@ import StorageStatics from './StorageStatics';
 import StorageUploadTask from './StorageUploadTask';
 import { validateMetadata } from './utils';
 
-export const initialSnapshot = (ref, task) => ({
-  ref,
-  task,// TODO this will be undefined for 'put' method as it won't be initialised yet
-  state: StorageStatics.TaskState.RUNNING,
-  metadata: null,
-  bytesTransferred: 0,
-  totalBytes: 0, // TODO to find out. Can do for blob as per web spec. but putFile requires reading file size sync or async, that is slow.
-});
-
 export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
     super(path);
     this._storage = storage;
+    this_task = null;
   }
 
   /**
@@ -196,13 +188,13 @@ export default class StorageReference extends ReferenceBase {
     let handler = {
       get: (target, prop) => {
         if (prop === 'snapshot') {
-          return initialSnapshot(this);
+          return this._task && this._task.snapshot;
         }
         return target[prop];
       },
     };
     const proxy = new Proxy(target, handler);
-    // TODO need to figure out how to handle this as putString & putFile return StorageTask, this returns a Promise contrary to our docs.
+
     return proxy;
   }
 
@@ -253,9 +245,11 @@ export default class StorageReference extends ReferenceBase {
       }
     }
 
-    return new StorageUploadTask(this, task =>
+    this._task = new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
     );
+
+    return this._task;
   }
 
   /**
@@ -321,9 +315,11 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    return new StorageUploadTask(this, task =>
+    this._task = new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
     );
+
+    return this._task;
   }
 }
 

@@ -16,7 +16,6 @@
  */
 
 import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
-import { initialSnapshot } from "./StorageReference";
 import StorageStatics from './StorageStatics';
 
 let TASK_ID = 0;
@@ -142,8 +141,7 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
-    // NOTE: need to put snapshot object immediately onto the task.snapshot
-    this._snapshot = initialSnapshot(storageRef, this);
+    this._snapshot = null;
   }
 
   /**
@@ -155,16 +153,14 @@ export default class StorageTask {
     }
 
     return new Promise((resolve, reject) => {
-      const promise = this._promise.then.bind(this._promise);
+      const boundPromise = this._promise.then.bind(this._promise);
 
-      promise()
-        .then(response => {
-          this._snapshot = { ...this._snapshot, ...response };
-          return resolve(response);
-        })
-        .catch(error => {
-          return reject(error);
-        });
+      boundPromise(response => {
+        this._snapshot = { ...response, ref: this._ref, task: this };
+        resolve(response);
+      }).catch(error => {
+        reject(error);
+      });
     }).then.bind(this._promise);
   }
 
@@ -172,7 +168,6 @@ export default class StorageTask {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
    */
   get catch() {
-    // TODO need to update snapshot here if it fails
     if (!this._promise) {
       this._promise = this._beginTask(this);
     }

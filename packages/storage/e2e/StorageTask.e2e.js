@@ -341,6 +341,47 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
+
+    it('should have access to the snapshot values outside of the Task thennable', async () => {
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
+
+      await uploadTaskSnapshot;
+
+      const snapshot = uploadTaskSnapshot.snapshot;
+
+      snapshot.should.have.property('state');
+      snapshot.should.have.property('metadata');
+      snapshot.should.have.property('ref');
+      snapshot.should.have.property('task');
+      snapshot.should.have.property('totalBytes');
+      snapshot.should.have.property('bytesTransferred');
+    });
+
+    it('should have access to the snapshot values outside of the event subscriber', async () => {
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
+
+      const { resolve } = Promise.defer();
+
+      uploadTaskSnapshot.on('state_changed', {
+        next: snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            uploadTaskSnapshot.snapshot.should.have.property('state');
+            uploadTaskSnapshot.snapshot.should.have.property('metadata');
+            uploadTaskSnapshot.snapshot.should.have.property('ref');
+            uploadTaskSnapshot.snapshot.should.have.property('task');
+            uploadTaskSnapshot.snapshot.should.have.property('totalBytes');
+            uploadTaskSnapshot.snapshot.should.have.property('bytesTransferred');
+            resolve();
+          }
+        },
+      });
+    });
   });
 
   describe('on()', () => {
