@@ -395,4 +395,19 @@ describe('firestore().collection().where()', () => {
     const data = snapshot.docs[0].data();
     should.equal(data.map['foo.bar@gmail.com'], true);
   });
+
+  it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where(firebase.firestore.FieldPath.documentId(), 'in', ['document-id'])
+        .orderBy('differentOrderBy', 'desc');
+
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("'FirestoreFieldPath' cannot be used in conjunction");
+      return Promise.resolve();
+    }
+  });
 });

@@ -15,7 +15,7 @@
     "generate-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -t -v -l",
     "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --platforms ios,android --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start",
-    "tests:packager:jet-reset-cache": "cd tests & cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache",
+    "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache",
     "tests:android:build": "cd tests && ./node_modules/.bin/detox build --configuration android.emu.debug",
     "tests:android:build-release": "cd tests && ./node_modules/.bin/detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug",
