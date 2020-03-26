@@ -533,64 +533,64 @@ PODS:
     - React-Core (= 0.60.5)
   - React-RCTWebSocket (0.60.5):
     - React-Core (= 0.60.5)
-  - RNFBAdMob (6.4.0-rc2):
+  - RNFBAdMob (6.4.0-rc3):
     - Firebase/AdMob (~> 6.13.0)
     - Firebase/Analytics (~> 6.13.0)
     - Firebase/Core (~> 6.13.0)
     - PersonalizedAdConsent
     - React
     - RNFBApp
-  - RNFBAnalytics (6.4.0-rc2):
+  - RNFBAnalytics (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBApp (6.4.0-rc2):
+  - RNFBApp (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - React
-  - RNFBAuth (6.4.0-rc2):
+  - RNFBAuth (6.4.0-rc3):
     - Firebase/Auth (~> 6.13.0)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBCrashlytics (6.4.0-rc2):
+  - RNFBCrashlytics (6.4.0-rc3):
     - Crashlytics (~> 3.14.0)
     - Fabric (~> 1.10.2)
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBDatabase (6.4.0-rc2):
+  - RNFBDatabase (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Database (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBDynamicLinks (6.4.0-rc2):
+  - RNFBDynamicLinks (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/DynamicLinks (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBFirestore (6.4.0-rc2):
+  - RNFBFirestore (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Firestore (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBFunctions (6.4.0-rc2):
+  - RNFBFunctions (6.4.0-rc3):
     - Firebase/Functions (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBIid (6.4.0-rc2):
+  - RNFBIid (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBInAppMessaging (6.4.0-rc2):
+  - RNFBInAppMessaging (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/InAppMessaging (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMessaging (6.4.0-rc2):
+  - RNFBMessaging (6.4.0-rc3):
     - Firebase/Messaging (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMLNaturalLanguage (6.4.0-rc2):
+  - RNFBMLNaturalLanguage (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/MLCommon (~> 6.13.0)
     - Firebase/MLNaturalLanguage (~> 6.13.0)
@@ -598,7 +598,7 @@ PODS:
     - Firebase/MLNLSmartReply (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBMLVision (6.4.0-rc2):
+  - RNFBMLVision (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/MLVision (~> 6.13.0)
     - Firebase/MLVisionBarcodeModel (~> 6.13.0)
@@ -607,17 +607,17 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBPerf (6.4.0-rc2):
+  - RNFBPerf (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Performance (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBRemoteConfig (6.4.0-rc2):
+  - RNFBRemoteConfig (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/RemoteConfig (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBStorage (6.4.0-rc2):
+  - RNFBStorage (6.4.0-rc3):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Storage (~> 6.13.0)
     - React
@@ -864,23 +864,23 @@ SPEC CHECKSUMS:
   React-RCTText: b074d89033583d4f2eb5faf7ea2db3a13c7553a2
   React-RCTVibration: 2105b2e0e2b66a6408fc69a46c8a7fb5b2fdade0
   React-RCTWebSocket: cd932a16b7214898b6b7f788c8bddb3637246ac4
-  RNFBAdMob: 1dce4abca73f79df09e87eb0280bb67028d0608f
-  RNFBAnalytics: 44895f237e2d898abb7743dab0870ea50518c423
-  RNFBApp: 317e22a2ae24ee62c7e7498cb3cfc2059585ef29
-  RNFBAuth: 7154ff2db9f2454176799a09dd0c0584f38d4034
-  RNFBCrashlytics: 36a4446bdd20f71b1d03ac89557236cf831dda95
-  RNFBDatabase: 81ba319a452d3743c9002d97ee1059cf07155ac5
-  RNFBDynamicLinks: 1d5960d5ad962ded07f46b322114f098acc8cdd6
-  RNFBFirestore: d4f9b1bfc36c0993ed0927dc3c942623a5422219
-  RNFBFunctions: ecd3815bf60ed6779d53e0dc52227499e22dd3db
-  RNFBIid: 5b9e212b073877cf873d69a866d577a45c420eeb
-  RNFBInAppMessaging: f6aa23d7b04fb444b8ab241bcdabdc41e6e166b0
-  RNFBMessaging: 964efffbf078210111b1d751a17c121d00d85881
-  RNFBMLNaturalLanguage: 6c8c6c051ff78aca47b2e5d1fe7ce7d6fa401114
-  RNFBMLVision: b0451253dc4760fd9d13448ec3efd03c718362c5
-  RNFBPerf: 2897af038a522ac91c2a1094242843be9edf8967
-  RNFBRemoteConfig: 662fca99151e5c152b7b992700ed3760cfe27f89
-  RNFBStorage: 6d60985b7833c822be83f85fcfe65c34ad66ff6b
+  RNFBAdMob: e822c684c78d32efa4d73cc535c2ee639dda0638
+  RNFBAnalytics: b58ee91262edbc54cd64c05ca3d0aa43a54fa1f2
+  RNFBApp: 7f34d96ab2ed8ed63a047aab8c680b4ac3631d3d
+  RNFBAuth: af450c77c71bbf038c99d8b09787f9c5052540bd
+  RNFBCrashlytics: f3218e5737f54c34599b901b0779b83dbd384d43
+  RNFBDatabase: ed376edc65994b8c09ef748d8ea9f321198aa3a1
+  RNFBDynamicLinks: 288d529bb3ef2fa8f32c7847bc3da360474ee263
+  RNFBFirestore: f49de443af483cd55836747d5a319c9f626c3693
+  RNFBFunctions: 8f7b20281215bfb03b91b3beb782e920147a227b
+  RNFBIid: 1b6cd43a6bd66505b38abbbaa1ec9c7e1e24eb12
+  RNFBInAppMessaging: 7001650d3ae5eb9e8046016197c11115343c62b9
+  RNFBMessaging: f4495793a9908516d105f85afe0ad69150b938ee
+  RNFBMLNaturalLanguage: 22371188c88e5824b268b107f258c9b605a64d18
+  RNFBMLVision: ffe0c48e1e7408d8f9f0b52f85f415440f459700
+  RNFBPerf: 6af811ad9f0564d9935cd3b2f9a35bfc36a75ee8
+  RNFBRemoteConfig: 4163ce815b73f7b61de429361cd64790dc9418a3
+  RNFBStorage: b16f37d9c4814c551f9b00f9ea776890d0fb5a96
   yoga: 312528f5bbbba37b4dcea5ef00e8b4033fdd9411
 
 PODFILE CHECKSUM: 4ceb34e93fa1dd96bcca7e61934b407531c8e96e
