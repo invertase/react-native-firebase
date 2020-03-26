@@ -73,8 +73,8 @@
     NSDictionary *notificationDict = [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:notificationDict];
     _initialNotification = notificationDict;
+    completionHandler();
   }
-  completionHandler();
 }
 
 @end
