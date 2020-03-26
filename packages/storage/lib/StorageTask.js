@@ -193,7 +193,9 @@ export default class StorageTask {
   on(event, nextOrObserver, error, complete) {
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `firebase.storage.StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent.STATE_CHANGED}'`,
+        `firebase.storage.StorageTask.on event argument must be a string with a value of '${
+          StorageStatics.TaskEvent.STATE_CHANGED
+        }'`,
       );
     }
 
