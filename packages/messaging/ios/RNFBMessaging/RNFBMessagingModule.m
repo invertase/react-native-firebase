@@ -81,6 +81,7 @@ RCT_EXPORT_METHOD(getToken:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
+#if !(TARGET_IPHONE_SIMULATOR)
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
         @"code": @"unregistered",
@@ -88,6 +89,7 @@ RCT_EXPORT_METHOD(getToken:
     }];
     return;
   }
+#endif
 
   if ([scope isEqualToString:@"FCM"] && [authorizedEntity isEqualToString:[FIRApp defaultApp].options.GCMSenderID]) {
     [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable result, NSError *_Nullable error) {
@@ -204,6 +206,10 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
+#if TARGET_IPHONE_SIMULATOR
+  resolve(@([RCTConvert BOOL:@(YES)]));
+  return;
+#endif
   if (@available(iOS 10.0, *)) {
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
       resolve(@([RCTConvert BOOL:@(YES)]));

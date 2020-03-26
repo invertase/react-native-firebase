@@ -114,7 +114,9 @@
   // it'd be too late resulting in the app being terminated.
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+#if !(TARGET_IPHONE_SIMULATOR)
       [[UIApplication sharedApplication] registerForRemoteNotifications];
+#endif
     }
   }
 }
