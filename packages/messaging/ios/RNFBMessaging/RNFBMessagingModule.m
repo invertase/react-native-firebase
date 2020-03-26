@@ -179,7 +179,7 @@ RCT_EXPORT_METHOD(requestPermission:
 
     if ([permissions[@"announcement"] isEqual:@(YES)]) {
       if (@available(iOS 13.0, *)) {
-        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
         options |= UNAuthorizationOptionAnnouncement;
         #endif
       }
