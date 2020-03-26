@@ -195,14 +195,22 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(hasPermission:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
         dispatch_async(dispatch_get_main_queue(), ^{
-          BOOL hasPermission = [RCTConvert BOOL:@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone)];
-          resolve(@(hasPermission));
+            BOOL hasPermission = [RCTConvert BOOL:@([RCTSharedApplication() currentUserNotificationSettings].types != UIUserNotificationTypeNone)];
+            if(hasPermission){
+                [RCTSharedApplication() registerForRemoteNotifications];
+            }
+            resolve(@(hasPermission));
         });
     } else {
         if (@available(iOS 10.0, *)) {
             [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
-              BOOL hasPermission = [RCTConvert BOOL:@(settings.alertSetting == UNNotificationSettingEnabled)];
-              resolve(@(hasPermission));
+                BOOL hasPermission = [RCTConvert BOOL:@(settings.alertSetting == UNNotificationSettingEnabled)];
+                if(hasPermission){
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [RCTSharedApplication() registerForRemoteNotifications];
+                    });
+                }
+                resolve(@(hasPermission));
             }];
         }
     }
