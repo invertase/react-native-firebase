@@ -60,6 +60,7 @@ function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
       }
 
       Object.freeze(snapshot);
+      task._snapshot = snapshot;
 
       listenerFn(snapshot);
     }
@@ -140,6 +141,7 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
+    this._snapshot = null;
   }
 
   /**
@@ -149,7 +151,17 @@ export default class StorageTask {
     if (!this._promise) {
       this._promise = this._beginTask(this);
     }
-    return this._promise.then.bind(this._promise);
+
+    return new Promise((resolve, reject) => {
+      const boundPromise = this._promise.then.bind(this._promise);
+
+      boundPromise(response => {
+        this._snapshot = { ...response, ref: this._ref, task: this };
+        resolve(response);
+      }).catch(error => {
+        reject(error);
+      });
+    }).then.bind(this._promise);
   }
 
   /**
@@ -160,6 +172,10 @@ export default class StorageTask {
       this._promise = this._beginTask(this);
     }
     return this._promise.catch.bind(this._promise);
+  }
+
+  get snapshot() {
+    return this._snapshot;
   }
 
   // // NOT on Web SDK
