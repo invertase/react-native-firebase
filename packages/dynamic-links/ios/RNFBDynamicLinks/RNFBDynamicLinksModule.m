@@ -67,6 +67,7 @@ RCT_EXPORT_METHOD(buildLink:
         @"code": @"build-failed",
         @"message": @"Failed to build dynamic link for unknown reason",
     }];
+    return;
   }
 
   resolve(linkComponents.url.absoluteString);
@@ -99,7 +100,7 @@ RCT_EXPORT_METHOD(buildShortLink:
   } else {
     componentsOptions.pathLength = FIRShortDynamicLinkPathLengthDefault;
   }
-
+  linkComponents.options = componentsOptions;
 
   [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {

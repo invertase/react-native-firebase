@@ -176,6 +176,24 @@ export namespace FirebaseFirestoreTypes {
   export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
   /**
+   * The types for a DocumentSnapshot field that are supported by Firestore.
+   */
+  export type DocumentFieldType =
+    | string
+    | number
+    | boolean
+    | { [key: string]: DocumentFieldType }
+    | DocumentFieldType[]
+    | null
+    | Timestamp
+    | GeoPoint
+    | Blob
+    | FieldPath
+    | FieldValue
+    | DocumentReference
+    | CollectionReference;
+
+  /**
    * A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
@@ -447,7 +465,7 @@ export namespace FirebaseFirestoreTypes {
 
   /**
    * A DocumentSnapshot contains data read from a document in your Firestore database. The data can be extracted with
-   * .`data()` or `.get(<field>)` to get a specific field.
+   * .`data()` or `.get(:field)` to get a specific field.
    *
    * For a DocumentSnapshot that points to a non-existing document, any data access will return 'undefined'.
    * You can use the `exists` property to explicitly verify a document's existence.
@@ -499,7 +517,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
      */
-    get(fieldPath: string | FieldPath): any;
+    get<fieldType extends DocumentFieldType>(fieldPath: string | FieldPath): fieldType;
 
     /**
      * Returns true if this `DocumentSnapshot` is equal to the provided one.
@@ -521,7 +539,7 @@ export namespace FirebaseFirestoreTypes {
 
   /**
    * A QueryDocumentSnapshot contains data read from a document in your Firestore database as part of a query.
-   * The document is guaranteed to exist and its data can be extracted with .data() or .get(<field>) to get a specific field.
+   * The document is guaranteed to exist and its data can be extracted with .data() or .get(:field) to get a specific field.
    *
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
    * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
