@@ -136,9 +136,17 @@ RCT_EXPORT_METHOD(getAPNSToken:
 ) {
   NSData *apnsToken = [FIRMessaging messaging].APNSToken;
   if (apnsToken) {
-    NSString *apnsTokenString = [RNFBMessagingSerializer APNSTokenFromNSData:apnsToken];
     resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
+    #if !(TARGET_IPHONE_SIMULATOR)
+      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"unregistered",
+          @"message": @"You must be registered for remote messages before calling getAPNSToken, see messaging().registerDeviceForRemoteMessages().",
+      }];
+      return;
+    }
+    #endif
     resolve([NSNull null]);
   }
 }
