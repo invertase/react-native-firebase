@@ -15,6 +15,8 @@
  *
  */
 #import <Firebase/Firebase.h>
+#import <React/RCTRootView.h>
+#import <React/RCTConvert.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
 
 #import "RNFBMessaging+AppDelegate.h"
@@ -44,6 +46,10 @@
     // ObjC -> Initialize other delegates & observers
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidFinishLaunchingNotification:) name:UIApplicationDidFinishLaunchingNotification object:nil];
 
+    // Application
+    // ObjC - > Mutates the root React components initialProps to toggle `isHeadless` state
+    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
     // Firebase Messaging
     // JS -> `onSendError` events
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onSendErrorNotification:) name:FIRMessagingSendErrorNotification object:nil];
@@ -108,17 +114,63 @@
   [[RNFBMessagingUNUserNotificationCenter sharedInstance] observe];
   [[RNFBMessagingFIRMessagingDelegate sharedInstance] observe];
 
-  // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
-  // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
-  // was called early during app initialization - we call it here in this scenario as the user can only call this via JS, at which point
-  // it'd be too late resulting in the app being terminated.
+  RCTRootView *rctRootView;
+  if (
+    [UIApplication sharedApplication].delegate != nil &&
+    [UIApplication sharedApplication].delegate.window != nil &&
+    [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
+    [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
+    [[UIApplication sharedApplication].delegate.window.rootViewController.view isKindOfClass:[RCTRootView class]]
+  ) {
+    rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
+  }
+
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-#if !(TARGET_IPHONE_SIMULATOR)
+      if (rctRootView != nil) {
+        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
+      #if !(TARGET_IPHONE_SIMULATOR)
+      // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
+      // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
+      // was called early during app initialization - we call it here in this scenario as the user can only call this via JS, at which point
+      // it'd be too late resulting in the app being terminated.
       [[UIApplication sharedApplication] registerForRemoteNotifications];
-#endif
+      #endif
+    } else {
+      if (rctRootView != nil) {
+        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
+    }
+  } else {
+    if (rctRootView != nil) {
+      NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
+      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+      rctRootView.appProperties = appPropertiesDict;
     }
   }
 }
+
+- (void)application_onDidEnterForeground {
+  if (
+    [UIApplication sharedApplication].delegate != nil &&
+    [UIApplication sharedApplication].delegate.window != nil &&
+    [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
+    [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
+    [[UIApplication sharedApplication].delegate.window.rootViewController.view isKindOfClass:[RCTRootView class]]
+  ) {
+    RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
+    if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
+      NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
+      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+      rctRootView.appProperties = appPropertiesDict;
+    }
+  }
+}
+
 
 @end
