@@ -58,7 +58,9 @@ export namespace FirebaseMessagingTypes {
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
   export interface Statics {
-    // firebase.messaging.* static props go here
+    AuthorizationStatus: typeof AuthorizationStatus;
+    NotificationAndroidPriority: typeof NotificationAndroidPriority;
+    NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
   }
 
   /**
@@ -271,6 +273,12 @@ export namespace FirebaseMessagingTypes {
    *
    * Note; on devices which have channel support (Android 8.0 (API level 26) +),
    * this value will be ignored. Instead, the channel "importance" level is used.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidPriority.PRIORITY_MIN;
+   * ```
    */
   export enum NotificationAndroidPriority {
     /**
@@ -308,6 +316,12 @@ export namespace FirebaseMessagingTypes {
 
   /**
    * The enum representing the visibility of a notification.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidVisibility.VISIBILITY_SECRET;
+   * ```
    */
   export enum NotificationAndroidVisibility {
     /**
@@ -381,13 +395,21 @@ export namespace FirebaseMessagingTypes {
   /**
    * An enum representing the notification authorization status for this app on the device.
    *
-   * Value is truthy if authorized, compare against an exact status (e.g. PROVISIONAL) for a more
+   * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
    * granular status.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.AuthorizationStatus.NOT_DETERMINED;
+   * ```
    */
-  export enum IOSAuthorizationStatus {
+  export enum AuthorizationStatus {
     /**
      * The app user has not yet chosen whether to allow the application to create notifications. Usually
      * this status is returned prior to the first call of `requestPermission`.
+     *
+     * @platform ios iOS
      */
     NOT_DETERMINED = -1,
 
@@ -644,7 +666,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(permissions?: IOSPermissions): Promise<IOSAuthorizationStatus>;
+    requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
 
     /**
      * Deprecated. See `registerDeviceForRemoteMessages` instead.
@@ -743,15 +765,19 @@ export namespace FirebaseMessagingTypes {
     getAPNSToken(): Promise<string | null>;
 
     /**
-     * Returns a boolean value as to whether the user has messaging permission for this app.
+     * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
      *
      * #### Example
      *
      * ```js
-     * const hasPermission = await firebase.messaging().hasPermission();
+     * const authStatus = await firebase.messaging().hasPermission();
+     * if (authStatus === firebase.messaging.AuthorizationStatus.AUTHORIZED) {
+     *   // yay
+     * }
+     *
      * ```
      */
-    hasPermission(): Promise<IOSAuthorizationStatus>;
+    hasPermission(): Promise<AuthorizationStatus>;
 
     /**
      * Called when the FCM server deletes pending messages. This may be due to:
