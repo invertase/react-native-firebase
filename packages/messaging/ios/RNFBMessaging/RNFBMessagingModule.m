@@ -15,17 +15,15 @@
  *
  */
 
+#import <Firebase/Firebase.h>
 #import <React/RCTUtils.h>
 #import <React/RCTConvert.h>
-#import <Firebase/Firebase.h>
 #import <RNFBApp/RNFBSharedUtils.h>
-#import <UserNotifications/UserNotifications.h>
 
 #import "RNFBMessagingModule.h"
-#import "RNFBMessagingDelegate.h"
 #import "RNFBMessagingSerializer.h"
-#import "RNFBMessagingAppDelegateInterceptor.h"
-
+#import "RNFBMessaging+AppDelegate.h"
+#import "RNFBMessaging+UNUserNotificationCenter.h"
 
 @implementation RNFBMessagingModule
 #pragma mark -
@@ -35,12 +33,6 @@ RCT_EXPORT_MODULE();
 
 - (id)init {
   self = [super init];
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // ensure shared instances are initialized early
-    [RNFBMessagingDelegate sharedInstance];
-    [RNFBMessagingAppDelegateInterceptor sharedInstance];
-  });
   return self;
 }
 
@@ -62,6 +54,12 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Messaging Methods
 
+RCT_EXPORT_METHOD(getInitialNotification:
+  (RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  resolve([[RNFBMessagingUNUserNotificationCenter sharedInstance] getInitialNotification]);
+}
 
 RCT_EXPORT_METHOD(setAutoInitEnabled:
   (BOOL) enabled
@@ -83,26 +81,38 @@ RCT_EXPORT_METHOD(getToken:
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
+  #if !(TARGET_IPHONE_SIMULATOR)
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
         @"code": @"unregistered",
-        @"message": @"You must be registered for remote notifications before calling get token, see messaging().registerForRemoteNotifications() or requestPermission().",
+        @"message": @"You must be registered for remote messages before calling getToken, see messaging().registerDeviceForRemoteMessages().",
     }];
     return;
   }
+  #endif
 
-  NSDictionary *options = nil;
-  if ([FIRMessaging messaging].APNSToken) {
-    options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
-  }
-
-  [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
-    if (error) {
-      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-    } else {
-      resolve(identity);
+  if ([scope isEqualToString:@"FCM"] && [authorizedEntity isEqualToString:[FIRApp defaultApp].options.GCMSenderID]) {
+    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable result, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        resolve(result.token);
+      }
+    }];
+  } else {
+    NSDictionary *options = nil;
+    if ([FIRMessaging messaging].APNSToken) {
+      options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
     }
-  }];
+
+    [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        resolve(identity);
+      }
+    }];
+  }
 }
 
 RCT_EXPORT_METHOD(deleteToken:
@@ -128,12 +138,22 @@ RCT_EXPORT_METHOD(getAPNSToken:
   if (apnsToken) {
     resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
+    #if !(TARGET_IPHONE_SIMULATOR)
+      if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"unregistered",
+          @"message": @"You must be registered for remote messages before calling getAPNSToken, see messaging().registerDeviceForRemoteMessages().",
+      }];
+      return;
+    }
+    #endif
     resolve([NSNull null]);
   }
 }
 
 RCT_EXPORT_METHOD(requestPermission:
-  (RCTPromiseResolveBlock) resolve
+  (NSDictionary *) permissions
+    :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
   if (RCTRunningInAppExtension()) {
@@ -143,60 +163,52 @@ RCT_EXPORT_METHOD(requestPermission:
     return;
   }
 
-  RCTPromiseResolveBlock customResolver = ^(id result) {
-    if (@available(iOS 10.0, *)) {
-      UNAuthorizationOptions authOptions;
-      if (@available(iOS 12.0, *)) {
-        authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      } else {
-        authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      }
 
-      [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-          resolve(@([RCTConvert BOOL:@(granted)]));
-        }
-      }];
-    } else {
-      // TODO community iOS 9 support could be added here with `registerUserNotificationSettings:settings` & `didRegisterUserNotificationSettings`
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": @"unsupported-platform-version",
-          @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
+  if (@available(iOS 10.0, *)) {
+    UNAuthorizationOptions options = UNAuthorizationOptionNone;
+
+    if ([permissions[@"alert"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionAlert;
     }
-  };
 
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    customResolver(nil);
+    if ([permissions[@"badge"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionBadge;
+    }
+
+    if ([permissions[@"sound"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionSound;
+    }
+
+    if ([permissions[@"provisional"] isEqual:@(YES)]) {
+      if (@available(iOS 12.0, *)) {
+        options |= UNAuthorizationOptionProvisional;
+      }
+    }
+
+    if ([permissions[@"announcement"] isEqual:@(YES)]) {
+      if (@available(iOS 13.0, *)) {
+        #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+        options |= UNAuthorizationOptionAnnouncement;
+        #endif
+      }
+    }
+
+    if ([permissions[@"carPlay"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionCarPlay;
+    }
+
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions:options completionHandler:^(BOOL granted, NSError *_Nullable error) {
+      if (error) {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      } else {
+        [self hasPermission:resolve :reject];
+      }
+    }];
   } else {
-
-    if (@available(iOS 10.0, *)) {
-      UNAuthorizationOptions authOptions;
-      if (@available(iOS 12.0, *)) {
-        authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      } else {
-        authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-      }
-
-      [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-          [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:customResolver andPromiseReject:reject];
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
-          });
-        }
-      }];
-
-    } else {
-      // TODO community iOS 9 support could be added here
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": @"unsupported-platform-version",
-          @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
-    }
-    
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
+        @"code": @"unsupported-platform-version",
+        @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
 }
 
@@ -204,35 +216,25 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications:
   (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
-  [[UIApplication sharedApplication] registerForRemoteNotifications];
-  
-  if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
-    return resolve(@([RCTConvert BOOL:@(YES)]));
-  }
+  #if TARGET_IPHONE_SIMULATOR
+  resolve(@([RCTConvert BOOL:@(YES)]));
+  return;
+  #endif
   if (@available(iOS 10.0, *)) {
-    UNAuthorizationOptions authOptions;
-    if (@available(iOS 12.0, *)) {
-      authOptions = UNAuthorizationOptionProvisional | UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+    if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
+      resolve(@([RCTConvert BOOL:@(YES)]));
     } else {
-      authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+      [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
     }
 
-    [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError *_Nullable error) {
-      if (error) {
-        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-      } else {
-        [[RNFBMessagingAppDelegateInterceptor sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [[UIApplication sharedApplication] registerForRemoteNotifications];
-        });
-      }
-    }];
+    // Apple docs recommend that registerForRemoteNotifications is always called on app start regardless of current status
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIApplication sharedApplication] registerForRemoteNotifications];
+    });
   } else {
-    // TODO community iOS 9 support could be added here
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unsupported-platform-version",
-        @"message": @"requestPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
+        @"message": @"registerDeviceForRemoteMessages call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
 }
 
@@ -250,11 +252,25 @@ RCT_EXPORT_METHOD(hasPermission:
 ) {
   if (@available(iOS 10.0, *)) {
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-      BOOL hasPermission = [RCTConvert BOOL:@(settings.authorizationStatus >= UNAuthorizationStatusAuthorized)];
-      resolve(@(hasPermission));
+
+      NSNumber *authorizedStatus = @-1;
+      if (settings.authorizationStatus == UNAuthorizationStatusNotDetermined) {
+        authorizedStatus = @-1;
+      } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
+        authorizedStatus = @0;
+      } else if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+        authorizedStatus = @1;
+      }
+
+      if (@available(iOS 12.0, *)) {
+        if (settings.authorizationStatus == UNAuthorizationStatusProvisional) {
+          authorizedStatus = @2;
+        }
+      }
+
+      resolve(authorizedStatus);
     }];
   } else {
-    // TODO community iOS 9 support could be added here via application `currentUserNotificationSettings`.types != UIUserNotificationTypeNone
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
         @"code": @"unsupported-platform-version",
         @"message": @"hasPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];

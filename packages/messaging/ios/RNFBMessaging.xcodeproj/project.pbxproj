@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBMessagingModule.m */; };
-		DA26951322C6AFFC00241B22 /* RNFBMessagingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */; };
+		27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F2463F242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.m */; };
+		27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24642242AA2EE0098906C /* RNFBMessaging+AppDelegate.m */; };
+		27F24646242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */; };
+		27F2464D242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F2464C242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m */; };
 		DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */; };
-		DA446E5522CA4FB30066A0A3 /* RNFBMessagingAppDelegateInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = DA446E5422CA4FB30066A0A3 /* RNFBMessagingAppDelegateInterceptor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,12 +31,16 @@
 		2744B98221F45429004F8E3F /* libRNFBMessaging.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNFBMessaging.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2744B98421F45429004F8E3F /* RNFBMessagingModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNFBMessagingModule.h; path = RNFBMessaging/RNFBMessagingModule.h; sourceTree = SOURCE_ROOT; };
 		2744B98521F45429004F8E3F /* RNFBMessagingModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBMessagingModule.m; path = RNFBMessaging/RNFBMessagingModule.m; sourceTree = SOURCE_ROOT; };
-		DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingDelegate.m; sourceTree = "<group>"; };
-		DA26951422C6B00A00241B22 /* RNFBMessagingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingDelegate.h; sourceTree = "<group>"; };
+		27F2463E242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+UNUserNotificationCenter.h"; sourceTree = "<group>"; };
+		27F2463F242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+UNUserNotificationCenter.m"; sourceTree = "<group>"; };
+		27F24641242AA2EE0098906C /* RNFBMessaging+AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+AppDelegate.h"; sourceTree = "<group>"; };
+		27F24642242AA2EE0098906C /* RNFBMessaging+AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+AppDelegate.m"; sourceTree = "<group>"; };
+		27F24644242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+FIRMessagingDelegate.h"; sourceTree = "<group>"; };
+		27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+FIRMessagingDelegate.m"; sourceTree = "<group>"; };
+		27F2464B242AA7330098906C /* RNFBMessaging+NSNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+NSNotificationCenter.h"; sourceTree = "<group>"; };
+		27F2464C242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+NSNotificationCenter.m"; sourceTree = "<group>"; };
 		DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingSerializer.h; sourceTree = "<group>"; };
 		DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingSerializer.m; sourceTree = "<group>"; };
-		DA446E5322CA4F2E0066A0A3 /* RNFBMessagingAppDelegateInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingAppDelegateInterceptor.h; sourceTree = "<group>"; };
-		DA446E5422CA4FB30066A0A3 /* RNFBMessagingAppDelegateInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingAppDelegateInterceptor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,12 +67,16 @@
 			children = (
 				2744B98421F45429004F8E3F /* RNFBMessagingModule.h */,
 				2744B98521F45429004F8E3F /* RNFBMessagingModule.m */,
-				DA26951222C6AFFC00241B22 /* RNFBMessagingDelegate.m */,
-				DA26951422C6B00A00241B22 /* RNFBMessagingDelegate.h */,
 				DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */,
 				DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */,
-				DA446E5322CA4F2E0066A0A3 /* RNFBMessagingAppDelegateInterceptor.h */,
-				DA446E5422CA4FB30066A0A3 /* RNFBMessagingAppDelegateInterceptor.m */,
+				27F2463E242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.h */,
+				27F2463F242AA29E0098906C /* RNFBMessaging+UNUserNotificationCenter.m */,
+				27F24641242AA2EE0098906C /* RNFBMessaging+AppDelegate.h */,
+				27F24642242AA2EE0098906C /* RNFBMessaging+AppDelegate.m */,
+				27F24644242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.h */,
+				27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */,
+				27F2464B242AA7330098906C /* RNFBMessaging+NSNotificationCenter.h */,
+				27F2464C242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m */,
 			);
 			path = RNFBMessaging;
 			sourceTree = "<group>";
@@ -139,9 +149,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */,
-				DA446E5522CA4FB30066A0A3 /* RNFBMessagingAppDelegateInterceptor.m in Sources */,
+				27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */,
+				27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */,
 				DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */,
-				DA26951322C6AFFC00241B22 /* RNFBMessagingDelegate.m in Sources */,
+				27F2464D242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m in Sources */,
+				27F24646242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

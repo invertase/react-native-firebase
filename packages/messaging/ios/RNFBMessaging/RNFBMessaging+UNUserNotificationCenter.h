@@ -15,10 +15,19 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import <UserNotifications/UserNotifications.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
+@interface RNFBMessagingUNUserNotificationCenter : NSObject <UNUserNotificationCenterDelegate>
 
+@property NSDictionary* initialNotification;
+
++ (_Nonnull instancetype)sharedInstance;
+
+- (void)observe;
+
+- (nullable NSDictionary *)getInitialNotification;
 @end
+
+NS_ASSUME_NONNULL_END
