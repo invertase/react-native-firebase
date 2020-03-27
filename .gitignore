@@ -550,3 +550,7 @@ GoogleService-Info.plist
 
 # generated file
 RNFBVersion.m
+
+app.playground.js
+app.admob.js
+app.smartreply.js
