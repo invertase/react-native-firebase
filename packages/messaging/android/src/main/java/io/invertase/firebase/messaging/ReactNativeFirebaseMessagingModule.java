@@ -129,7 +129,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       .call(getExecutor(), () -> NotificationManagerCompat.from(getReactApplicationContext()).areNotificationsEnabled())
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
+          promise.resolve(task.getResult() ? 1 : 0);
         } else {
           rejectPromiseWithExceptionMap(promise, task.getException());
         }
