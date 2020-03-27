@@ -16,9 +16,16 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import <Firebase/Firebase.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
+@interface RNFBMessagingFIRMessagingDelegate : NSObject <FIRMessagingDelegate>
+
++ (_Nonnull instancetype)sharedInstance;
+
+- (void)observe;
 
 @end
+
+NS_ASSUME_NONNULL_END
