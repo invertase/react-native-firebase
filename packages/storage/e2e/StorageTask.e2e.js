@@ -389,7 +389,7 @@ describe('storage() -> StorageTask', () => {
         .ref('/putStringBlob.json')
         .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
-      const { resolve } = Promise.defer();
+      const { resolve, promise } = Promise.defer();
 
       uploadTaskSnapshot.on('state_changed', {
         next: snapshot => {
@@ -399,6 +399,7 @@ describe('storage() -> StorageTask', () => {
           }
         },
       });
+      await promise;
     });
   });
 
