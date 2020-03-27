@@ -58,7 +58,9 @@ export namespace FirebaseMessagingTypes {
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
   export interface Statics {
-    // firebase.messaging.* static props go here
+    AuthorizationStatus: typeof AuthorizationStatus;
+    NotificationAndroidPriority: typeof NotificationAndroidPriority;
+    NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
   }
 
   /**
@@ -104,6 +106,33 @@ export namespace FirebaseMessagingTypes {
      * Additional Notification data sent with the message
      */
     notification?: Notification;
+
+    /**
+     * Whether the iOS APNS message was configured as a background update notification.
+     *
+     * @platform ios iOS
+     */
+    contentAvailable?: boolean;
+
+    /**
+     * Whether the iOS APNS `mutable-content` property on the message was set
+     * allowing the app to modify the notification via app extensions.
+     *
+     * @platform ios iOS
+     */
+    mutableContent?: boolean;
+
+    /**
+     * The iOS category this notification is assigned to.
+     *
+     * @platform ios iOS
+     */
+    category?: string;
+
+    /**
+     * An iOS app specific identifier used for notification grouping.
+     */
+    threadId?: string;
   }
 
   export interface Notification {
@@ -117,20 +146,41 @@ export namespace FirebaseMessagingTypes {
      */
     body?: string;
 
+    ios?: {
+      /**
+       * The notification's subtitle.
+       */
+      subtitle?: string;
+
+      /**
+       * The value of the badge on the home screen app icon.
+       * If not specified, the badge is not changed.
+       * If set to 0, the badge has been removed.
+       */
+      badge?: string;
+
+      /**
+       * The sound played when the notification was delivered on the device (if permissions permit).
+       */
+      sound?: string | NotificationIOSCriticalSound;
+    };
+
     /**
      * Additional Android specific properties set on the notification.
      */
     android?: {
       /**
+       * The sound played when the notification was delivered on the device (channel settings permitted).
+       *
+       * Set as "default" if the default device notification sound was used.
+       */
+      sound?: string;
+
+      /**
        * The channel ID set on the notification. If not set, the notification uses the default
        * "Miscellaneous" channel set by FCM.
        */
       channelId?: string;
-
-      /**
-       * Name of the click action set on the notification.
-       */
-      clickAction?: string;
 
       /**
        * The custom color used to tint the notification content.
@@ -159,6 +209,11 @@ export namespace FirebaseMessagingTypes {
       count?: number;
 
       /**
+       * Name of the click action set on the notification.
+       */
+      clickAction?: string;
+
+      /**
        * The notification priority.
        *
        * Note; on devices which have channel support (Android 8.0 (API level 26) +),
@@ -170,13 +225,6 @@ export namespace FirebaseMessagingTypes {
         | NotificationAndroidPriority.PRIORITY_DEFAULT
         | NotificationAndroidPriority.PRIORITY_HIGH
         | NotificationAndroidPriority.PRIORITY_MAX;
-
-      /**
-       * The sound played when the notification was delivered on the device (channel settings permitted).
-       *
-       * Set as "default" if the default device notification sound was used.
-       */
-      sound?: string;
 
       /**
        * Ticker text set on the notification.
@@ -197,10 +245,40 @@ export namespace FirebaseMessagingTypes {
   }
 
   /**
+   * Represents a critical sound configuration that can be included in the
+   * `aps` dictionary of an APNs payload.
+   */
+  export interface NotificationIOSCriticalSound {
+    /**
+     * The critical alert flag. Set to `true` to enable the critical alert.
+     */
+    critical?: boolean;
+
+    /**
+     * The name of a sound file in the app's main bundle or in the `Library/Sounds`
+     * folder of the app's container directory. Specify the string "default" to play
+     * the system sound.
+     */
+    name: string;
+
+    /**
+     * The volume for the critical alert's sound. Must be a value between 0.0
+     * (silent) and 1.0 (full volume).
+     */
+    volume?: number;
+  }
+
+  /**
    * The enum representing a notification priority.
    *
    * Note; on devices which have channel support (Android 8.0 (API level 26) +),
    * this value will be ignored. Instead, the channel "importance" level is used.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidPriority.PRIORITY_MIN;
+   * ```
    */
   export enum NotificationAndroidPriority {
     /**
@@ -238,6 +316,12 @@ export namespace FirebaseMessagingTypes {
 
   /**
    * The enum representing the visibility of a notification.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidVisibility.VISIBILITY_SECRET;
+   * ```
    */
   export enum NotificationAndroidVisibility {
     /**
@@ -254,6 +338,96 @@ export namespace FirebaseMessagingTypes {
      * Show this notification in its entirety on all lock-screens.
      */
     VISIBILITY_PUBLIC = 1,
+  }
+
+  /**
+   * An interface representing all the available permissions that can be requested by your app via
+   * the `requestPermission` API.
+   */
+  export interface IOSPermissions {
+    /**
+     * Request permission to display alerts.
+     *
+     * Defaults to true.
+     */
+    alert?: boolean;
+
+    /**
+     * Request permission for Siri to automatically read out notification messages over AirPods.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 13
+     */
+    announcement?: boolean;
+
+    /**
+     * Request permission to update the application badge.
+     *
+     * Defaults to true.
+     */
+    badge?: boolean;
+
+    /**
+     * Request permission to display notifications in a CarPlay environment.
+     *
+     * Defaults to true.
+     */
+    carPlay?: boolean;
+
+    /**
+     * Request permission to provisionally create non-interrupting notifications.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 12
+     */
+    provisional?: boolean;
+
+    /**
+     * Request permission to play sounds.
+     *
+     * Defaults to true.
+     */
+    sound?: boolean;
+  }
+
+  /**
+   * An enum representing the notification authorization status for this app on the device.
+   *
+   * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
+   * granular status.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.AuthorizationStatus.NOT_DETERMINED;
+   * ```
+   */
+  export enum AuthorizationStatus {
+    /**
+     * The app user has not yet chosen whether to allow the application to create notifications. Usually
+     * this status is returned prior to the first call of `requestPermission`.
+     *
+     * @platform ios iOS
+     */
+    NOT_DETERMINED = -1,
+
+    /**
+     * The app is not authorized to create notifications.
+     */
+    DENIED = 0,
+
+    /**
+     * The app is authorized to create notifications.
+     */
+    AUTHORIZED = 1,
+
+    /**
+     * The app is currently authorized to post non-interrupting user notifications
+     * @platform ios iOS >= 12
+     */
+    PROVISIONAL = 2,
   }
 
   /**
@@ -492,7 +666,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(): Promise<boolean>;
+    requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
 
     /**
      * Deprecated. See `registerDeviceForRemoteMessages` instead.
@@ -591,15 +765,19 @@ export namespace FirebaseMessagingTypes {
     getAPNSToken(): Promise<string | null>;
 
     /**
-     * Returns a boolean value as to whether the user has messaging permission for this app.
+     * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
      *
      * #### Example
      *
      * ```js
-     * const hasPermission = await firebase.messaging().hasPermission();
+     * const authStatus = await firebase.messaging().hasPermission();
+     * if (authStatus === firebase.messaging.AuthorizationStatus.AUTHORIZED) {
+     *   // yay
+     * }
+     *
      * ```
      */
-    hasPermission(): Promise<boolean>;
+    hasPermission(): Promise<AuthorizationStatus>;
 
     /**
      * Called when the FCM server deletes pending messages. This may be due to:
