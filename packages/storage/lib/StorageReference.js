@@ -41,7 +41,6 @@ export default class StorageReference extends ReferenceBase {
   constructor(storage, path) {
     super(path);
     this._storage = storage;
-    this_task = null;
   }
 
   /**
@@ -183,7 +182,7 @@ export default class StorageReference extends ReferenceBase {
       validateMetadata(metadata);
     }
 
-    this._task = new StorageUploadTask(this, task =>
+    return new StorageUploadTask(this, task =>
       Base64.fromData(data).then(({ string, format }) => {
         const { _string, _format, _metadata } = this._updateString(string, format, metadata);
         return this._storage.native.putString(
@@ -195,8 +194,6 @@ export default class StorageReference extends ReferenceBase {
         );
       }),
     );
-
-    return this._task;
   }
 
   /**
@@ -205,11 +202,9 @@ export default class StorageReference extends ReferenceBase {
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
     const { _string, _format, _metadata } = this._updateString(string, format, metadata);
 
-    this._task = new StorageUploadTask(this, task =>
+    return new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
     );
-
-    return this._task;
   }
 
   /**
@@ -275,11 +270,9 @@ export default class StorageReference extends ReferenceBase {
       );
     }
 
-    this._task = new StorageUploadTask(this, task =>
+    return new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
     );
-
-    return this._task;
   }
 
   _updateString(string, format, metadata) {
