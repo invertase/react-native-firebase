@@ -396,4 +396,20 @@ describe('auth().currentUser', () => {
       await firebase.auth().signOut();
     });
   });
+
+  describe('user.metadata', () => {
+    it("should have the properties 'lastSignInTime' & 'creationTime' which are ISO strings", async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+
+      const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
+
+      const { metadata } = user;
+
+      should(metadata.lastSignInTime).be.a.String();
+      should(metadata.creationTime).be.a.String();
+
+      await firebase.auth().currentUser.delete();
+    });
+  });
 });
