@@ -158,7 +158,23 @@ packages available for React Native which allow you to display local notificatio
 - [wix/react-native-notifications](https://github.com/wix/react-native-notifications)
     Only Android release mode:
       By default when runing from an APK the wix/react-native-notifications library is handeling all the data notifications, @react-native-firebase/messaging does not receive any data, so it can't handle anything. To avoid this behaviour you can comment or remove everything inside application tag in 'react-native-notifications' AndroidManifest:
-   <application>
+  
+  <?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wix.reactnativenotifications">
+
+    <!--
+     Permissions required for enabling FCM.
+     -->
+    <permission
+        android:name="${applicationId}.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application>
+
        <!-- &lt;!&ndash;
          A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task.
          &ndash;&gt;
@@ -176,6 +192,8 @@ packages available for React Native which allow you to display local notificatio
             android:name=".fcm.FcmInstanceIdRefreshHandlerService"
             android:exported="false" />-->
     </application>
+</manifest>
+
     
     In debug mode it works well without doing nothing.
       
