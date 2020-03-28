@@ -156,6 +156,29 @@ packages available for React Native which allow you to display local notificatio
 
 - [Notifee](https://notifee.app/) - See [integrating with FCM](https://notifee.app/react-native/docs/integrations/fcm).
 - [wix/react-native-notifications](https://github.com/wix/react-native-notifications)
+    Only Android release mode:
+      By default when runing from an APK the wix/react-native-notifications library is handeling all the data notifications, @react-native-firebase/messaging does not receive any data, so it can't handle anything. To avoid this behaviour you can comment or remove everything inside <application> tag:
+   <application>
+       <!-- &lt;!&ndash;
+         A proxy-service that gives the library an opportunity to do some work before launching/resuming the actual application task.
+         &ndash;&gt;
+        <service android:name=".core.ProxyService"/>
+
+        <service
+            android:name=".fcm.FcmInstanceIdListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".fcm.FcmInstanceIdRefreshHandlerService"
+            android:exported="false" />-->
+    </application>
+    
+    In debug mode it works well without doing nothing.
+      
 - [zo0r/react-native-push-notification](https://github.com/zo0r/react-native-push-notification)
 
 These packages allow you to programmatically display local notifications when a messaging payload has been received by using
