@@ -19,21 +19,6 @@ import { isObject, isString } from '@react-native-firebase/app/lib/common';
 
 export default class User {
   constructor(auth, user) {
-    if (user) {
-      const { metadata } = user;
-
-      if (metadata && metadata.creationTime && metadata.lastSignInTime) {
-        const update = {
-          lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
-          creationTime: new Date(metadata.creationTime).toISOString(),
-        };
-
-        user.metadata = {
-          ...metadata,
-          ...update,
-        };
-      }
-    }
     this._auth = auth;
     this._user = user;
   }
@@ -55,6 +40,20 @@ export default class User {
   }
 
   get metadata() {
+    const { metadata } = this._user;
+
+    if (metadata && metadata.creationTime && metadata.lastSignInTime) {
+      const update = {
+        lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
+        creationTime: new Date(metadata.creationTime).toISOString(),
+      };
+
+      this._user.metadata = {
+        ...metadata,
+        ...update,
+      };
+    }
+
     return this._user.metadata;
   }
 
