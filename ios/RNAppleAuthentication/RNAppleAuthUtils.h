@@ -18,6 +18,7 @@
 #ifndef RNAppleAuthUtils_h
 #define RNAppleAuthUtils_h
 
+#import <Foundation/Foundation.h>
 
 @interface RNAppleAuthUtils : NSObject
 
