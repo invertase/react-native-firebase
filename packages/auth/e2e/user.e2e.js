@@ -409,6 +409,9 @@ describe('auth().currentUser', () => {
       should(metadata.lastSignInTime).be.a.String();
       should(metadata.creationTime).be.a.String();
 
+      new Date(metadata.lastSignInTime).getFullYear().should.equal(new Date().getFullYear());
+      new Date(metadata.creationTime).getFullYear().should.equal(new Date().getFullYear());
+
       await firebase.auth().currentUser.delete();
     });
   });
