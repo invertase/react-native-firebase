@@ -545,6 +545,7 @@ typedoc.raw.json
 tests/ios/Firebase
 .tmp
 
+appPlaygrounds/
 google-services.json
 GoogleService-Info.plist
 
