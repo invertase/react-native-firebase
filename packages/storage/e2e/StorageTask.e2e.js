@@ -577,7 +577,7 @@ describe('storage() -> StorageTask', () => {
 
   describe('pause() resume()', () => {
     it('successfully pauses and resumes an upload', async function testRunner() {
-      this.timeout(25000);
+      this.timeout(50000);
 
       await firebase
         .storage()

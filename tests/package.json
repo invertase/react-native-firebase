@@ -31,7 +31,7 @@
     "@react-native-firebase/private-tests-helpers": "^0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^5.2.0",
-    "detox": "12.5.0",
+    "detox": "16.0.1",
     "jet": "^0.4.4",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
@@ -78,13 +78,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X, iOS 12.2"
+        "name": "iPhone 11 Pro Max, iOS 13.3"
       },
       "ios.ci": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
         "type": "ios.simulator",
-        "name": "iPhone X, iOS 12.2"
+        "name": "iPhone 11 Pro Max, iOS 13.3"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
