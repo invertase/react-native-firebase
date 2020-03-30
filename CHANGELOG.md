@@ -1,4 +1,9 @@
-# [6.1.0](https://github.com/invertase/react-native-firebase/compare/v6.0.4...v6.1.0) (2019-11-26)
+# Next
+
+
+## Cloud Functions
+
+- added `HttpsCallableOptions` to `firebase.functions().httpsCallable` method which allows user to set timeout on cloud function call.
 
 
 ### Bug Fixes

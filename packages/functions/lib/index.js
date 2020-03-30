@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid } from '@react-native-firebase/app/lib/common';
+import { isAndroid, isNumber } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -60,6 +60,14 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   httpsCallable(name, options = {}) {
+    if (options.timeout) {
+      if (isNumber(options.timeout)) {
+        options.timeout = options.timeout / 1000;
+      } else {
+        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+      }
+    }
+
     return data => {
       const nativePromise = this.native.httpsCallable(
         this._useFunctionsEmulatorOrigin,
