@@ -42,19 +42,10 @@ export default class User {
   get metadata() {
     const { metadata } = this._user;
 
-    if (metadata && metadata.creationTime && metadata.lastSignInTime) {
-      const update = {
-        lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
-        creationTime: new Date(metadata.creationTime).toISOString(),
-      };
-
-      this._user.metadata = {
-        ...metadata,
-        ...update,
-      };
-    }
-
-    return this._user.metadata;
+    return {
+      lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
+      creationTime: new Date(metadata.creationTime).toISOString(),
+    };
   }
 
   get phoneNumber() {
