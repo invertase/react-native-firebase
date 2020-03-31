@@ -88,6 +88,14 @@ class Value {
     this._source = source;
   }
 
+  get value() {
+    console.warn('firebase.remoteConfig().getValue().value has been removed');
+  }
+
+  get source() {
+    console.warn('firebase.remoteConfig().getValue().source has been removed');
+  }
+
   asBoolean() {
     if (this._source === 'static') {
       return false;
