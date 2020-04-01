@@ -50,7 +50,11 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseAnalyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  export interface AddToCartEventParameters {
+  export interface Item {
+    /**
+     * The item's brand.
+     */
+    item_brand: string;
     /**
      * An item ID.
      */
@@ -60,84 +64,74 @@ export namespace FirebaseAnalyticsTypes {
      */
     item_name: string;
     /**
-     * An item category.
+     * First class item category.
      */
     item_category: string;
     /**
-     * Purchase quantity.
+     * Second class item category.
      */
-    quantity: number;
+    item_category2: string;
     /**
-     * Purchase price.
+     * Third class item category.
      */
-    price?: number;
+    item_category3: string;
     /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
+     * Fourth class item category.
      */
-    value?: number;
+    item_category4: string;
     /**
-     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     * Fifth class item category.
      */
-    currency?: string;
+    item_category5: string;
     /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
+     * The ID of the list in which the item was presented to the user.
      */
-    origin?: string;
+    item_list_id: string;
+    /**
+     * The name of the list in which the item was presented to the user.
+     */
+    item_list_name: string;
     /**
      * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
      */
     item_location_id?: string;
     /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
+     * The Item variant.
      */
-    destination?: string;
+    item_variant: string;
+  }
+
+  export interface AddToCartEventParameters {
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_cart
+    currency?: string;
+    //TODO value is a double in android & double NSNumber ios
     /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+     * value of item
      */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
+    value?: number;
   }
 
   export interface AddToWishlistEventParameters {
-    /**
-     * An item ID.
-     */
-    item_id: string;
-    /**
-     * An item name.
-     */
-    item_name: string;
-    /**
-     * An item category.
-     */
-    item_category: string;
-    /**
-     * Purchase quantity.
-     */
-    quantity: number;
-    /**
-     * Purchase price.
-     */
-    price?: number;
-    /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
+    currency?: string;
+    value?: number;
+  }
+
+  export interface AddPaymentInfo {
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
+    currency?: string;
     value?: number;
     /**
-     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     * Coupon code for a purchasable item.
      */
-    currency?: string;
+    coupon?: string;
     /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
+     * The chosen method of payment
      */
-    item_location_id?: string;
+    payment_type?: string;
   }
 
   export interface BeginCheckoutEventParameters {
