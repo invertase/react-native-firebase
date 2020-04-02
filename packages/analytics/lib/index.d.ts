@@ -100,28 +100,12 @@ export namespace FirebaseAnalyticsTypes {
      */
     item_variant: string;
   }
-
-  export interface AddToCartEventParameters {
+  export interface AddPaymentInfoEventParameters {
     items?: Item[];
-    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_cart
-    currency?: string;
-    //TODO value is a double in android & double NSNumber ios
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
     /**
-     * value of item
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    value?: number;
-  }
-
-  export interface AddToWishlistEventParameters {
-    items?: Item[];
-    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
-    currency?: string;
-    value?: number;
-  }
-
-  export interface AddPaymentInfo {
-    items?: Item[];
-    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
     currency?: string;
     value?: number;
     /**
@@ -134,53 +118,61 @@ export namespace FirebaseAnalyticsTypes {
     payment_type?: string;
   }
 
-  export interface BeginCheckoutEventParameters {
-    /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
-    value?: number;
+  export interface AddShippingInfoEventParameters {
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
     currency?: string;
+    value?: number;
     /**
-     * A single ID for a ecommerce group transaction.
+     * Coupon code for a purchasable item.
      */
-    transaction_id?: string;
+    coupon?: string;
     /**
-     * Number of nights staying at hotel.
+     * The shipping tier (e.g. Ground, Air, Next-day) selected for delivery of the purchased item
      */
-    number_of_nights?: number;
+    shipping_tier?: string;
+  }
+
+  export interface AddToCartEventParameters {
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_cart
     /**
-     * Number of rooms for travel events.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    number_of_rooms?: number;
+    currency?: string;
+    //TODO value is a double in android & double NSNumber ios
     /**
-     * Number of passengers traveling.
+     * value of item
      */
-    number_of_passengers?: number;
+    value?: number;
+  }
+
+  export interface AddToWishlistEventParameters {
+    items?: Item[];
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
     /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    origin?: string;
+    currency?: string;
+    value?: number;
+  }
+
+  export interface BeginCheckoutEventParameters {
     /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    destination?: string;
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
+    currency?: string;
+    value?: number;
     /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+     * Coupon code for a purchasable item.
      */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
+    coupon?: string;
+
+    items?: Item[];
   }
 
   export interface CampaignDetailsEventParameters {
@@ -211,6 +203,15 @@ export namespace FirebaseAnalyticsTypes {
     cp1?: string;
   }
 
+  /**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-checkout_progress
+   */
+  // export interface CheckoutProgressEventParameters {
+  //   checkout_step: string;
+  //   checkout_options: string;
+  // }
+
   export interface EarnVirtualCurrencyEventParameters {
     /**
      * Name of virtual currency type. E.g. `gems`.
@@ -223,70 +224,74 @@ export namespace FirebaseAnalyticsTypes {
     value: number;
   }
 
-  export interface EcommercePurchaseEventParameters {
-    /**
-     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
-     */
-    currency?: string;
-    /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
-    value?: number;
-    /**
-     * A single ID for a ecommerce group transaction.
-     */
-    transaction_id?: string;
-    /**
-     * Tax amount.
-     */
-    tax?: number;
-    /**
-     * Shipping cost.
-     */
-    shipping?: number;
-    /**
-     * Coupon code for a purchasable item.
-     */
-    coupon?: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated event. Alternatively, you can supply your own custom Location ID.
-     */
-    location?: string;
-    /**
-     * Number of nights staying at hotel.
-     */
-    number_of_nights?: number;
-    /**
-     * Number of rooms for travel events.
-     */
-    number_of_rooms?: number;
-    /**
-     * Number of passengers traveling.
-     */
-    number_of_passengers?: number;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
-  }
+  /**
+   * Ecommerce purchase is now deprecated, use purchase instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
+   */
+  // export interface EcommercePurchaseEventParameters {
+  //   /**
+  //    * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+  //    */
+  //   currency?: string;
+  //   /**
+  //    * A context-specific numeric value which is accumulated automatically for each event type. Values
+  //    * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+  //    * parameter should also be defined.
+  //    */
+  //   value?: number;
+  //   /**
+  //    * A single ID for a ecommerce group transaction.
+  //    */
+  //   transaction_id?: string;
+  //   /**
+  //    * Tax amount.
+  //    */
+  //   tax?: number;
+  //   /**
+  //    * Shipping cost.
+  //    */
+  //   shipping?: number;
+  //   /**
+  //    * Coupon code for a purchasable item.
+  //    */
+  //   coupon?: string;
+  //   /**
+  //    * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated event. Alternatively, you can supply your own custom Location ID.
+  //    */
+  //   location?: string;
+  //   /**
+  //    * Number of nights staying at hotel.
+  //    */
+  //   number_of_nights?: number;
+  //   /**
+  //    * Number of rooms for travel events.
+  //    */
+  //   number_of_rooms?: number;
+  //   /**
+  //    * Number of passengers traveling.
+  //    */
+  //   number_of_passengers?: number;
+  //   /**
+  //    * Flight or Travel origin. E.g. `Mountain View, CA`.
+  //    */
+  //   origin?: string;
+  //   /**
+  //    * Flight or Travel destination. E.g. `Mountain View, CA`.
+  //    */
+  //   destination?: string;
+  //   /**
+  //    * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+  //    */
+  //   start_date?: string;
+  //   /**
+  //    * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+  //    */
+  //   end_date?: string;
+  //   /**
+  //    * Travel class. E.g. `business`.
+  //    */
+  //   travel_class?: string;
+  // }
 
   export interface GenerateLeadEventParameters {
     /**
@@ -358,27 +363,103 @@ export namespace FirebaseAnalyticsTypes {
      */
     character?: string;
   }
+  /**
+   * deprecated, use VIEW_PROMOTION instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
+   */
+  // export interface PresentOfferEventParameters {
+  //   /**
+  //    * Score in game.
+  //    */
+  //   score: number;
+  //   /**
+  //    * Level in game.
+  //    */
+  //   level?: number;
+  //   /**
+  //    * Character used in game.
+  //    */
+  //   character?: string;
+  // }
 
-  export interface PresentOfferEventParameters {
+  export interface PurchaseEventParameters {
     /**
-     * Score in game.
+     * A product affiliation to designate a supplying company or brick and mortar store location
      */
-    score: number;
+    affiliation: string;
     /**
-     * Level in game.
+     * Coupon code for a purchasable item.
      */
-    level?: number;
-    /**
-     * Character used in game.
-     */
-    character?: string;
-  }
-
-  export interface PurchaseRefundEventParameters {
+    coupon?: string;
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
     currency?: string;
+
+    items?: Item[];
+    /**
+     * Shipping cost.
+     */
+    shipping?: number;
+    /**
+     * Tax amount.
+     */
+    tax?: number;
+    /**
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
+     */
+    value?: number;
+    /**
+     * A single ID for a ecommerce group transaction.
+     */
+    transaction_id?: string;
+  }
+  /**
+   * deprecated, use RefundEventParameters instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
+   */
+  // export interface PurchaseRefundEventParameters {
+  //   /**
+  //    * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+  //    */
+  //   currency?: string;
+  //   /**
+  //    * A context-specific numeric value which is accumulated automatically for each event type. Values
+  //    * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+  //    * parameter should also be defined.
+  //    */
+  //   value?: number;
+  //   /**
+  //    * A single ID for a ecommerce group transaction.
+  //    */
+  //   transaction_id?: string;
+  // }
+
+  export interface RefundEventParameters {
+    /**
+     * A product affiliation to designate a supplying company or brick and mortar store location
+     */
+    affiliation: string;
+    /**
+     * Coupon code for a purchasable item.
+     */
+    coupon?: string;
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+
+    items?: Item[];
+    /**
+     * Shipping cost.
+     */
+    shipping?: number;
+    /**
+     * Tax amount.
+     */
+    tax?: number;
     /**
      * A context-specific numeric value which is accumulated automatically for each event type. Values
      * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
@@ -392,22 +473,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface RemoveFromCartEventParameters {
-    /**
-     * An item ID.
-     */
-    item_id: string;
-    /**
-     * An item name.
-     */
-    item_name: string;
-    /**
-     * An item category.
-     */
-    item_category: string;
-    /**
-     * Purchase quantity.
-     */
-    quantity?: number;
+    items?: Item[];
     /**
      * A context-specific numeric value which is accumulated automatically for each event type. Values
      * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
@@ -415,33 +481,9 @@ export namespace FirebaseAnalyticsTypes {
      */
     value?: number;
     /**
-     * Purchase price.
-     */
-    price?: number;
-    /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
-     */
+    x */
     currency?: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
-     */
-    item_location_id?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
   }
 
   export interface SearchEventParameters {
@@ -488,16 +530,56 @@ export namespace FirebaseAnalyticsTypes {
     item_id: string;
   }
 
-  export interface SetCheckoutOptionEventParameters {
+  export interface SelectItemEventParameters {
+    items: Item[];
+    content_type: string;
     /**
-     * The checkout step (1..N).
+     * The ID of the list in which the item was presented to the user
      */
-    checkout_step: number;
+    item_list_id: string;
     /**
-     * Some option on a step in an ecommerce flow.
+     * The name of the list in which the item was presented to the user
      */
-    checkout_option: string;
+    item_list_name: string;
   }
+
+  export interface SelectPromotionEventParameters {
+    /**
+     * The name of a creative used in a promotional spot
+     */
+    creative_name: string;
+    /**
+     * The name of a creative slot
+     */
+    creative_slot: string;
+    items: Item[];
+    /**
+     * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
+     */
+    location_id: string;
+    /**
+     * The ID of a product promotion
+     */
+    promotion_id: string;
+    /**
+     * The name of a product promotion
+     */
+    promotion_name: string;
+  }
+  /**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-set_checkout_option
+   */
+  // export interface SetCheckoutOptionEventParameters {
+  //   /**
+  //    * The checkout step (1..N).
+  //    */
+  //   checkout_step: number;
+  //   /**
+  //    * Some option on a step in an ecommerce flow.
+  //    */
+  //   checkout_option: string;
+  // }
 
   export interface ShareEventParameters {
     /**
@@ -508,6 +590,10 @@ export namespace FirebaseAnalyticsTypes {
      * An item ID.
      */
     item_id: string;
+    /**
+     * A particular approach used in an operation; for example, "facebook" or "email" in the context of a sign_up or login event.
+     */
+    method: string;
   }
 
   export interface SignUpEventParameters {
@@ -533,7 +619,6 @@ export namespace FirebaseAnalyticsTypes {
      */
     value: number;
   }
-
   export interface UnlockAchievementEventParameters {
     /**
      * Game achievement ID (String).
@@ -541,31 +626,8 @@ export namespace FirebaseAnalyticsTypes {
     achievement_id: string;
   }
 
-  export interface ViewItemEventParameters {
-    /**
-     * An item ID.
-     */
-    item_id: string;
-    /**
-     * An item name.
-     */
-    item_name: string;
-    /**
-     * An item category.
-     */
-    item_category: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
-     */
-    item_location_id?: string;
-    /**
-     * Purchase price.
-     */
-    price?: number;
-    /**
-     * Purchase quantity.
-     */
-    quantity?: number;
+  export interface ViewCartEventParameters {
+    items: Item[];
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
@@ -576,53 +638,56 @@ export namespace FirebaseAnalyticsTypes {
      * parameter should also be defined.
      */
     value?: number;
+  }
+
+  export interface ViewItemEventParameters {
+    items: Item[];
     /**
-     * Flight number for travel events.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    flight_number?: string;
+    currency?: string;
     /**
-     * Number of passengers traveling.
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
      */
-    number_of_passengers?: number;
-    /**
-     * Number of nights staying at hotel.
-     */
-    number_of_nights?: number;
-    /**
-     * Number of rooms for travel events.
-     */
-    number_of_rooms?: number;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * The search string/keywords used.
-     */
-    search_term?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
+    value?: number;
   }
 
   export interface ViewItemListEventParameters {
+    items: Item[];
     /**
-     * An item category.
+     * The ID of the list in which the item was presented to the user
      */
-    item_category: string;
+    item_list_id: string;
+    /**
+     * The name of the list in which the item was presented to the user
+     */
+    item_list_name: string;
+  }
+
+  export interface ViewItemPromotionEventParameters {
+    items: Item[];
+    /**
+     * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
+     */
+    location_id: string;
+    /**
+     * The name of a creative used in a promotional spot
+     */
+    creative_name: string;
+    /**
+     * The name of a creative slot
+     */
+    creative_slot: string;
+    /**
+     * The ID of a product promotion
+     */
+    promotion_id: string;
+    /**
+     * The name of a product promotion
+     */
+    promotion_name: string;
   }
 
   export interface ViewSearchResults {
