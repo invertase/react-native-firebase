@@ -424,7 +424,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logPurchase() {
+  logPurchase(object) {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logPurchaseEvent(*): The supplied arg must be an object of key/values.',
@@ -511,19 +511,19 @@ class FirebaseAnalyticsModule extends FirebaseModule {
         'firebase.analytics().logSelectContent(*): The supplied arg must be an object of key/values.',
       );
     }
+  }
 
-    logSelectItem(object) {
-      if (!isObject(object)) {
-        throw new Error(
-          'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
-        );
-      }
-
-      return this.logEvent(
-        'select_item',
-        validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectItem(*):'),
+  logSelectItem(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
       );
     }
+
+    return this.logEvent(
+      'select_item',
+      validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectItem(*):'),
+    );
   }
 
   logSetCheckoutOption(object) {
@@ -628,7 +628,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-    logViewCart(object) {
+  logViewCart(object) {
     if (!isObject(object)) {
       throw new Error(
         'firebase.analytics().logViewCart(*): The supplied arg must be an object of key/values.',
@@ -637,11 +637,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     return this.logEvent(
       'view_cart',
-      validateStruct(
-        object,
-        structs.UnlockAchievement,
-        'firebase.analytics().logViewCart(*):',
-      ),
+      validateStruct(object, structs.UnlockAchievement, 'firebase.analytics().logViewCart(*):'),
     );
   }
 
@@ -685,7 +681,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       validateStruct(object, structs.ViewPromotion, 'firebase.analytics().logViewPromotion(*):'),
     );
   }
-/**
+  /**
    * Unsupported in "Enhanced Ecommerce reports":
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
    */
