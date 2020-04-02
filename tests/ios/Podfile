@@ -1,7 +1,10 @@
 platform :ios, '9.0'
 
+# Allow using RNFirebase as static frameworks
+$RNFirebaseAsStaticFramework = true
+
 # Version override testing
-# $FirebaseSDKVersion = '6.8.1'
+# $FirebaseSDKVersion = '6.15.0'
 # $FabricSDKVersion = '1.6.0'
 # $CrashlyticsSDKVersion = '3.1.0'
 
