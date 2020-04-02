@@ -54,43 +54,43 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * The item's brand.
      */
-    item_brand: string;
+    item_brand?: string;
     /**
      * An item ID.
      */
-    item_id: string;
+    item_id?: string;
     /**
      * An item name.
      */
-    item_name: string;
+    item_name?: string;
     /**
      * First class item category.
      */
-    item_category: string;
+    item_category?: string;
     /**
      * Second class item category.
      */
-    item_category2: string;
+    item_category2?: string;
     /**
      * Third class item category.
      */
-    item_category3: string;
+    item_category3?: string;
     /**
      * Fourth class item category.
      */
-    item_category4: string;
+    item_category4?: string;
     /**
      * Fifth class item category.
      */
-    item_category5: string;
+    item_category5?: string;
     /**
      * The ID of the list in which the item was presented to the user.
      */
-    item_list_id: string;
+    item_list_id?: string;
     /**
      * The name of the list in which the item was presented to the user.
      */
-    item_list_name: string;
+    item_list_name?: string;
     /**
      * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
      */
@@ -98,7 +98,7 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * The Item variant.
      */
-    item_variant: string;
+    item_variant?: string;
   }
   export interface AddPaymentInfoEventParameters {
     items?: Item[];
@@ -225,7 +225,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   /**
-   * Ecommerce purchase is now deprecated, use purchase instead:
+   * EcommercePurchaseEventParameters purchase is now removed, use PurchaseEventParameters instead:
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
    */
   // export interface EcommercePurchaseEventParameters {
@@ -364,7 +364,7 @@ export namespace FirebaseAnalyticsTypes {
     character?: string;
   }
   /**
-   * deprecated, use VIEW_PROMOTION instead:
+   * deprecated, use ViewItemPromotionEventParameters instead:
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
    */
   // export interface PresentOfferEventParameters {
@@ -531,7 +531,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface SelectItemEventParameters {
-    items: Item[];
+    items?: Item[];
     content_type: string;
     /**
      * The ID of the list in which the item was presented to the user
@@ -552,7 +552,7 @@ export namespace FirebaseAnalyticsTypes {
      * The name of a creative slot
      */
     creative_slot: string;
-    items: Item[];
+    items?: Item[];
     /**
      * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
      */
@@ -627,7 +627,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface ViewCartEventParameters {
-    items: Item[];
+    items?: Item[];
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
@@ -641,7 +641,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface ViewItemEventParameters {
-    items: Item[];
+    items?: Item[];
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
@@ -655,7 +655,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface ViewItemListEventParameters {
-    items: Item[];
+    items?: Item[];
     /**
      * The ID of the list in which the item was presented to the user
      */
@@ -666,8 +666,8 @@ export namespace FirebaseAnalyticsTypes {
     item_list_name: string;
   }
 
-  export interface ViewItemPromotionEventParameters {
-    items: Item[];
+  export interface ViewPromotionEventParameters {
+    items?: Item[];
     /**
      * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
      */
@@ -689,13 +689,16 @@ export namespace FirebaseAnalyticsTypes {
      */
     promotion_name: string;
   }
-
-  export interface ViewSearchResults {
-    /**
-     * The search string/keywords used.
-     */
-    search_term: string;
-  }
+  /**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
+   */
+  // export interface ViewSearchResults {
+  //   /**
+  //    * The search string/keywords used.
+  //    */
+  //   search_term: string;
+  // }
 
   export interface Statics {}
 

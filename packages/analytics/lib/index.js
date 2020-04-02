@@ -206,12 +206,42 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   resetAnalyticsData() {
     return this.native.resetAnalyticsData();
   }
+  // TODO test nested items objects in structs file. not here
+  // validateItems(items) {
+  //   if(items )
+  // }
 
   /** -------------------
    *        EVENTS
    * -------------------- */
-  logAddPaymentInfo() {
-    return this.logEvent('add_payment_info');
+  logAddPaymentInfo(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logAddPaymentInfo(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'add_payment_info',
+      validateStruct(object, structs.AddPaymentInfo, 'firebase.analytics().logAddPaymentInfo(*):'),
+    );
+  }
+
+  logAddShippingInfo(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logAddShippingInfo(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'add_shipping_info',
+      validateStruct(
+        object,
+        structs.AddShippingInfo,
+        'firebase.analytics().logAddShippingInfo(*):',
+      ),
+    );
   }
 
   logAddToCart(object) {
@@ -290,19 +320,22 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       ),
     );
   }
+  /**
+   * logEcommercePurchase purchase is now removed, use logPurchase instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
+   */
+  // logEcommercePurchase(object = {}) {
+  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logEcommercePurchase(*):');
 
-  logEcommercePurchase(object = {}) {
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logEcommercePurchase(*):');
-
-    return this.logEvent(
-      'ecommerce_purchase',
-      validateStruct(
-        object,
-        structs.EcommercePurchase,
-        'firebase.analytics().logEcommercePurchase(*):',
-      ),
-    );
-  }
+  //   return this.logEvent(
+  //     'ecommerce_purchase',
+  //     validateStruct(
+  //       object,
+  //       structs.EcommercePurchase,
+  //       'firebase.analytics().logEcommercePurchase(*):',
+  //     ),
+  //   );
+  // }
 
   logGenerateLead(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logGenerateLead(*):');
@@ -391,27 +424,56 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logPresentOffer(object) {
+  logPurchase() {
     if (!isObject(object)) {
       throw new Error(
-        'firebase.analytics().logPresentOffer(*): The supplied arg must be an object of key/values.',
+        'firebase.analytics().logPurchaseEvent(*): The supplied arg must be an object of key/values.',
       );
     }
 
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
-
     return this.logEvent(
-      'present_offer',
-      validateStruct(object, structs.PresentOffer, 'firebase.analytics().logPresentOffer(*):'),
+      'purchase',
+      validateStruct(object, structs.PostScore, 'firebase.analytics().logPurchaseEvent(*):'),
     );
   }
+  /**
+   * deprecated, use logViewItemPromotionEvent instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
+   */
+  // logRefund(object) {
+  //   if (!isObject(object)) {
+  //     throw new Error(
+  //       'firebase.analytics().logRefund(*): The supplied arg must be an object of key/values.',
+  //     );
+  //   }
 
-  logPurchaseRefund(object = {}) {
-    validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
+  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
+
+  //   return this.logEvent(
+  //     'present_offer',
+  //     validateStruct(object, structs.PresentOffer, 'firebase.analytics().logPresentOffer(*):'),
+  //   );
+  // }
+
+  /**
+   * deprecated, use logRefundEvent instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
+   */
+  // logPurchaseRefund(object = {}) {
+  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logPurchaseRefund(*):');
+
+  //   return this.logEvent(
+  //     'purchase_refund',
+  //     validateStruct(object, structs.PurchaseRefund, 'firebase.analytics().logPurchaseRefund(*):'),
+  //   );
+  // }
+
+  logRefund(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logRefund(*):');
 
     return this.logEvent(
-      'purchase_refund',
-      validateStruct(object, structs.PurchaseRefund, 'firebase.analytics().logPurchaseRefund(*):'),
+      'refund',
+      validateStruct(object, structs.Refund, 'firebase.analytics().logRefund(*):'),
     );
   }
 
@@ -450,10 +512,18 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       );
     }
 
-    return this.logEvent(
-      'select_content',
-      validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectContent(*):'),
-    );
+    logSelectItem(object) {
+      if (!isObject(object)) {
+        throw new Error(
+          'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
+        );
+      }
+
+      return this.logEvent(
+        'select_item',
+        validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectItem(*):'),
+      );
+    }
   }
 
   logSetCheckoutOption(object) {
@@ -469,6 +539,23 @@ class FirebaseAnalyticsModule extends FirebaseModule {
         object,
         structs.SetCheckoutOption,
         'firebase.analytics().logSetCheckoutOption(*):',
+      ),
+    );
+  }
+
+  logSelectPromotion(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logSelectPromotion(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'select_promotion',
+      validateStruct(
+        object,
+        structs.SelectPromotion,
+        'firebase.analytics().logSelectPromotion(*):',
       ),
     );
   }
@@ -541,6 +628,23 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
+    logViewCart(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logViewCart(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'view_cart',
+      validateStruct(
+        object,
+        structs.UnlockAchievement,
+        'firebase.analytics().logViewCart(*):',
+      ),
+    );
+  }
+
   logViewItem(object) {
     if (!isObject(object)) {
       throw new Error(
@@ -569,22 +673,38 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewSearchResults(object) {
+  logViewPromotion(object) {
     if (!isObject(object)) {
       throw new Error(
-        'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
+        'firebase.analytics().logViewPromotion(*): The supplied arg must be an object of key/values.',
       );
     }
 
     return this.logEvent(
-      'view_search_results',
-      validateStruct(
-        object,
-        structs.ViewSearchResults,
-        'firebase.analytics().logViewSearchResults(*):',
-      ),
+      'view_promotion',
+      validateStruct(object, structs.ViewPromotion, 'firebase.analytics().logViewPromotion(*):'),
     );
   }
+/**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
+   */
+  // logViewSearchResults(object) {
+  //   if (!isObject(object)) {
+  //     throw new Error(
+  //       'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
+  //     );
+  //   }
+
+  //   return this.logEvent(
+  //     'view_search_results',
+  //     validateStruct(
+  //       object,
+  //       structs.ViewSearchResults,
+  //       'firebase.analytics().logViewSearchResults(*):',
+  //     ),
+  //   );
+  // }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/analytics';
