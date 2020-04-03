@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/functions",
-  "version": "6.3.4",
+  "version": "6.4.0-rc0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Cloud Functions for Firebase lets you automatically run backend code in response to events triggered by Firebase features and HTTPS requests. React Native Firebase supports integration with production and locally emulated Cloud Functions with a simple API interface.\n\n",
   "main": "lib/index.js",

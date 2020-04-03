@@ -1,23 +1,22 @@
 ---
-title: Android Setup
+title: Crashlytics - Android Setup
 description: Additional Android steps for Crashlytics integration
 ---
 
-# Android Setup
+> If you're migrating from Fabric, make sure you remove the `fabric.properties` file from your Android project. If you do not do this you will not receive crash reports on the Firebase console.
 
-> If you're migrating from Fabric ensure you remove the `fabric.properties` file from your android project - if you do not do this you will not receive crash reports on the Firebase console.
+# Adding Fabric Gradle Tools
 
-## Additional Installation Steps
+These steps are required, if you do not add these your app will most likely crash at startup with the following Error:
+ 
+"The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration.
+Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."_
 
-### Add Fabric Gradle Tools
+## 1. Add the Fabric Maven repository
 
-These steps are required, if you do not add these your app will most likely crash at startup with the following Error: _"The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration. Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."_
+Add the following line to the `android/build.gradle` file:
 
-#### Add the Fabric Maven repository
-
-**`android/build.gradle`**:
-
-```groovy{6-8}
+```groovy
 // ..
 buildscript {
   // ..
@@ -31,11 +30,11 @@ buildscript {
 }
 ```
 
-#### Add the Fabric Tools Plugin dependency
+## 2. Add the Fabric Tools Plugin dependency
 
-**`android/build.gradle`**:
+Add the following dependency to the `android/build.gradle` file:
 
-```groovy{6}
+```groovy
 // ..
 buildscript {
   // ..
@@ -47,34 +46,30 @@ buildscript {
 }
 ```
 
-#### Apply the Fabric Tools Plugin to your app
+## 3. Apply the Fabric Tools Plugin to your app
 
-**`android/app/build.gradle`**:
+Apply the `io.fabric` plugin by adding the following to the top of your `android/app/build.gradle` file:
 
-```groovy{2}
+```
 apply plugin: 'com.android.application' // apply after this line
 apply plugin: 'io.fabric'
 // ..
 ```
 
-#### Enable Crashlytics NDK reporting
+## 4. (Optional) Enable Crashlytics NDK reporting 
 
-> OPTIONAL
+Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture 
+crashes originating from the Yoga layout engine.
 
-Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture crashes originating from the Yoga layout engine.
+Add the `crashlytics` block line to the `android/app/build.gradle` file:
 
-**`android/app/build.gradle`**:
-
-```groovy{4-6}
-// ..
-apply plugin: 'io.fabric'
-// ..
+```groovy
 crashlytics {
   enableNdk true
 }
 ```
 
-#### Rebuild the project
+## 5. Rebuild the project
 
 Once the above steps have been completed, rebuild your Android project:
 

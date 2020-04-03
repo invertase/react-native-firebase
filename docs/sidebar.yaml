@@ -1,279 +1,125 @@
-- module: admob
-  groups:
-    - group: AdMob
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: European User Consent
-          to: '/european-user-consent'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: analytics
-  groups:
-    - group: Analytics
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Reserved Events
-          to: '/reserved-events'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: auth
-  groups:
-    - group: Authentication
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Firebase Authentication Kit
-          to: 'https://react-native.market/?utm_source=react-native-firebase&utm_medium=auth_sidebar&utm_campaign=documentation'
-        - text: Social Auth
-          to: '/social-auth'
-        - text: Phone Auth
-          to: '/phone-auth'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: firestore
-  groups:
-    - group: Cloud Firestore
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Query limitations
-          to: '/query-limitations'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: functions
-  groups:
-    - group: Cloud Functions
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: messaging
-  groups:
-    - group: Cloud Messaging
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: storage
-  groups:
-    - group: Cloud Storage
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: app
-  groups:
-    - group: App
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Client Initialization
-          to: '/client'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: crashlytics
-  groups:
-    - group: Crashlytics
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-        - text: Additional Android Setup
-          to: '/android-setup'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: database
-  groups:
-    - group: Realtime Database
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: dynamic-links
-  groups:
-    - group: Dynamic Links
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: in-app-messaging
-  groups:
-    - group: In-App Messaging
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: iid
-  groups:
-    - group: Instance ID
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: ml-natural-language
-  groups:
-    - group: ML Kit Natural Language
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: ml-vision
-  groups:
-    - group: ML Kit Vision
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: remote-config
-  groups:
-    - group: Remote Config
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Manual Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: perf
-  groups:
-    - group: Performance Monitoring
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
-    - group: Platform Installation
-      children:
-        - text: Android Installation
-          to: '/android'
-        - text: iOS Installation
-          to: '/ios'
-
-- module: utils
-  groups:
-    - group: Utils
-      children:
-        - text: Overview
-          to: '/'
-        - text: Quick Start
-          to: '/quick-start'
+---
+- - Getting Started
+  - '/'
+- - TypeScript
+  - '/typescript'
+- - Migrating to v6
+  - '/migrating-to-v6'
+- - Release Notes
+  - '/releases'
+- - Feature Requests
+  - 'https://invertase.canny.io/react-native-firebase'
+- - Contributing
+  - '/contributing'
+- - AdMob
+  - - - Usage
+      - '/admob/usage'
+    - - Displaying Adverts
+      - '/admob/displaying-ads'
+    - - European User Consent
+      - '/admob/european-user-consent'
+  - '//static.invertase.io/assets/firebase/google-admob.svg'
+- - Analytics
+  - - - Usage
+      - '/analytics/usage'
+    - - Screen Tracking
+      - '/analytics/screen-tracking'
+    - - Building an Analytics Funnel
+      - 'https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native'
+  - '//static.invertase.io/assets/firebase/analytics.svg'
+- - Authentication
+  - - - Usage
+      - '/auth/usage'
+    - - Social Auth
+      - '/auth/social-auth'
+    - - Phone Auth
+      - '/auth/phone-auth'
+  - '//static.invertase.io/assets/firebase/authentication.svg'
+- - Cloud Firestore
+  - - - Usage
+      - '/firestore/usage'
+    - - Usage with FlatLists
+      - '/firestore/usage-with-flatlists'
+    - - Building a "TODO" app
+      - 'https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native'
+  - '//static.invertase.io/assets/firebase/cloud-firestore.svg'
+- - Cloud Functions
+  - - - Usage
+      - '/functions/usage'
+    - - Writing & Deploying Functions
+      - '/functions/writing-deploying-functions'
+  - '//static.invertase.io/assets/firebase/cloud-functions.svg'
+- - Cloud Messaging
+  - - - Usage
+      - '/messaging/usage'
+    - - iOS Permissions
+      - '/messaging/ios-permissions'
+    - - Notifications
+      - '/messaging/notifications'
+    - - Server Integration
+      - '/messaging/server-integration'
+  - '//static.invertase.io/assets/firebase/cloud-messaging.svg'
+- - Cloud Storage
+  - - - Usage
+      - '/storage/usage'
+  - '//static.invertase.io/assets/firebase/cloud-storage.svg'
+- - Core / App
+  - - - Usage
+      - '/app/usage'
+    - - Utils
+      - '/app/utils'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
+- - Crashlytics
+  - - - Usage
+      - '/crashlytics/usage'
+    - - Viewing crash reports
+      - '/crashlytics/crash-reports'
+  - '//static.invertase.io/assets/firebase/crashlytics.svg'
+- - Realtime Database
+  - - - Usage
+      - '/database/usage'
+    - - Offline Support
+      - '/database/offline-support'
+    - - Presence Detection
+      - '/database/presence-detection'
+  - '//static.invertase.io/assets/firebase/realtime-database.svg'
+- - Dynamic Links
+  - - - Usage
+      - '/dynamic-links/usage'
+  - '//static.invertase.io/assets/firebase/dynamic-links.svg'
+- - Instance ID
+  - - - Usage
+      - '/iid/usage'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
+- - In-App Messaging
+  - - - Usage
+      - '/in-app-messaging/usage'
+  - '//static.invertase.io/assets/firebase/in-app-messaging.svg'
+- - ML Kit Natural Language
+  - - - Usage
+      - '/ml-natural-language/usage'
+  - '//static.invertase.io/assets/firebase/ml-kit.svg'
+- - ML Kit Vision
+  - - - Usage
+      - '/ml-vision/usage'
+    - - Text Recognition
+      - '/ml-vision/text-recognition'
+    - - Landmark Recognition
+      - '/ml-vision/landmark-recognition'
+    - - Barcode Scanning
+      - '/ml-vision/barcode-scanning'
+    - - Image Labelling
+      - '/ml-vision/image-labelling'
+    - - Face Detection
+      - '/ml-vision/face-detection'
+  - '//static.invertase.io/assets/firebase/ml-kit.svg'
+- - Remote Config
+  - - - Usage
+      - '/remote-config/usage'
+  - '//static.invertase.io/assets/firebase/remote-config.svg'
+- - Performance Monitoring
+  - - - Usage
+      - '/perf/usage'
+    - - Axios Integration
+      - '/perf/axios-integration'
+  - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
