@@ -65,6 +65,8 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 - [Quick Start](https://rnfirebase.io/)
 - [Reference API](https://rnfirebase.io/reference)
 
+Looking for the Version 5 documentation? [View legacy documentation](https://v5.rnfirebase.io).
+
 ## Contributing
 
 - [Overview](https://rnfirebase.io/contributing)
