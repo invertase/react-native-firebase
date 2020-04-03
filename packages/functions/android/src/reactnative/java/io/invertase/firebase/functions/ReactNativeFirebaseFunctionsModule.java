@@ -29,6 +29,8 @@ import com.google.firebase.functions.FirebaseFunctionsException;
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
+import java.io.IOException;
+
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.CODE_KEY;
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.DATA_KEY;
 import static io.invertase.firebase.functions.UniversalFirebaseFunctionsModule.DETAILS_KEY;
@@ -76,6 +78,11 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
         details = functionsException.getDetails();
         code = functionsException.getCode().name();
         message = functionsException.getMessage();
+        if (functionsException.getCause() instanceof IOException) {
+          // return UNAVAILABLE for network io errors, to match iOS
+          code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+          message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+        }
       }
       RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
       RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
