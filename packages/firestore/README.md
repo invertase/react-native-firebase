@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h2 align="center">React Native Firebase - Cloud Firestore</h2>
@@ -35,9 +35,12 @@ yarn add @react-native-firebase/firestore
 
 ## Documentation
 
-- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/firestore/quick-start)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=firestore)
-- [Reference](https://invertase.io/oss/react-native-firebase/v6/firestore/reference)
+- [Quick Start](https://rnfirebase.io/firestore/usage)
+- [Reference](https://rnfirebase.io/reference/firestore)
+
+### Additional Topics
+
+- [Usage with FlatLists](https://rnfirebase.io/firestore/usage-with-flatlists)
 
 ## License
 
@@ -46,14 +49,9 @@ yarn add @react-native-firebase/firestore
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
-  </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 
