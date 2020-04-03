@@ -17,7 +17,7 @@
 
 ## Version 6 of React Native Firebase
 
-**React Native Firebase v6 is out!** It lives under a different package namespace. Want upgrade information? Head to <https://invertase.io/oss/react-native-firebase/>
+**React Native Firebase v6 is out!** It lives under a different package namespace. Want upgrade information? Head to <https://rnfirebase.io>
 
 All the information in this README is for **Version 5** of React Native Firebase, which is on life-support only. Please consider upgrading. Thanks!
 
@@ -78,7 +78,7 @@ Using the native Firebase SDKs with **React Native Firebase** allows you to cons
 
 ## Documentation
 
-To check out our latest docs, visit [https://rnfirebase.io/docs](https://rnfirebase.io/docs)
+To check out our latest docs, visit [https://v5.rnfirebase.io/docs](https://rnfirebase.io/docs)
 
 ## Questions
 
