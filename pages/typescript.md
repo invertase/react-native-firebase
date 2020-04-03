@@ -55,14 +55,14 @@ TypeScript will no longer errors, allowing us to safely continue developing our 
 It is also possible to access the module types directly, if you need to locally reference variables within your own codebase.
 For example, we may need to store the `User` in local state. Without manually defining a type for local state, TypeScript loses the ability to type check the code. We can easily access the types manually through the module though, for example:
 
-```jsx
+```ts
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
-  const [loading, setLoading] = useState < boolean > true;
-  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {
