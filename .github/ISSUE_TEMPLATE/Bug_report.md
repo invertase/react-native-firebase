@@ -1,7 +1,6 @@
 ---
 name: ⚠️ Bug/Issue report - React Native
-about:
-  Please provide as much detail as possible to help us with a bug or issue. Issues
+about: Please provide as much detail as possible to help us with a bug or issue. Issues
   are likely to be closed and locked if they do not follow the template.
 ---
 
@@ -25,9 +24,7 @@ Please note that the issue list of this repo is exclusively for bug reports;
 <!-- Include code snippets that show your usages of the library in the context of your project. -->
 <!-- Snippets that also show how and where the library is imported in JS are useful to debug issues relating to importing or methods not found issues -->
 
-
 Describe your issue here
-
 
 ---
 
@@ -58,8 +55,8 @@ Describe your issue here
 ```json
 # N/A
 ```
-</details>
 
+</details>
 
 ### iOS
 
@@ -94,6 +91,7 @@ Describe your issue here
 #### Have you converted to AndroidX?
 
 <!--- Mark any options that apply below -->
+
 - [ ] my application is an AndroidX application?
 - [ ] I am using `android/gradle.settings` `jetifier=true` for Android compatibility?
 - [ ] I am using the NPM package `jetifier` for react-native compatibility?
@@ -131,7 +129,6 @@ Describe your issue here
 </p>
 </details>
 
-
 ---
 
 ## Environment
@@ -161,10 +158,9 @@ Describe your issue here
   - `e.g. Instance ID`
 - **Are you using `TypeScript`?**
   - `Y/N` & `VERSION`
-  
+
 </p>
 </details>
-
 
 <!-- Thanks for reading this far down ❤️  -->
 <!-- High quality, detailed issues are much easier to triage for maintainers -->
@@ -174,7 +170,4 @@ Describe your issue here
 
 ---
 
-Think `react-native-firebase` is great? Please consider supporting all of the project maintainers and contributors by donating via our [Open Collective](https://opencollective.com/react-native-firebase/donate) where all contributors can submit expenses. [[Learn More]](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
-
 - 👉 Check out [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter for updates on the library.
-
