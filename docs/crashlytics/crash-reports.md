@@ -7,8 +7,8 @@ previous: /crashlytics/usage
 
 # Overview
 
-Once you have Crashlytics up and running in your app, you can navigate to Crashlytics in your Firebase Console underneath 
-'Quality' and start reviewing the reports as they come in. If this page still tells you to setup, build or run your app 
+Once you have Crashlytics up and running in your app, you can navigate to Crashlytics in your Firebase Console underneath
+'Quality' and start reviewing the reports as they come in. If this page still tells you to setup, build or run your app
 then you have not correctly setup Crashlytics in your app (see [Usage](/crashlytics/usage)).
 
 > Keep in mind when testing out Crashlytics that Crashlytics is [disabled by default in debug mode](crashlytics/usage#crashlytics-in-debug-mode).
@@ -21,9 +21,9 @@ In this example the [Crash Attributes](crashlytics/usage#crash-attributes) examp
 
 ## Issues
 
-Under issues, Firebase has gathered all the reports from your app and organised them into separate issues, where each 
+Under issues, Firebase has gathered all the reports from your app and organised them into separate issues, where each
 issue is an unique crash or stack trace in your app. One of the issues visible in the example shown originates from `CrashTest.java`,
-which is the Android module responsible for testing Crashlytics through the `crash` method, throwing an uncaught exception 
+which is the Android module responsible for testing Crashlytics through the `crash` method, throwing an uncaught exception
 to crash the app. Using this method on the same platform will always add reports to the same issue.
 
 # Managing issues
@@ -42,7 +42,7 @@ about the associated user. Under keys you can see the custom attributes that we 
 ## Closing issues
 
 Note that in the top right there is a button that says 'Close'. After having addressed an issue you can close it, allowing
-you to filter it out in the overview by selecting 'Open' under 'Issue state', when clicking on the 'Filter issues' button. 
+you to filter it out in the overview by selecting 'Open' under 'Issue state', when clicking on the 'Filter issues' button.
 This is visible in the first example, where we're displaying only 3 relevant non-fatal events out of the 12 that occured.
 When the same issue re-occurs, it will automatically open again. By clicking the arrow next to the button we can mute the
 issue, preventing this from happening.

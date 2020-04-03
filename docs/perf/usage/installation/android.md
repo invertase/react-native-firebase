@@ -56,4 +56,3 @@ Once the above steps have been completed, rebuild your Android project:
 ```bash
 npx react-native run-android
 ```
-

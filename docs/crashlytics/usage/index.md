@@ -48,7 +48,7 @@ Use the `log` method throughout your app to accumulate extra context for possibl
 
 Crashlytics also supports sending JavaScript stack traces to the Firebase console. This can be used in any situation where an error occurs but is caught by your own code to recover gracefully. To send a stack trace, pass a JavaScript Error to the `recordError` method.
 
-> Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](#enable-debug-crash-logs) documentation. 
+> Crash reporting is disabled by default whilst developing. To enable this, view the [enable debug crash logs](#enable-debug-crash-logs) documentation.
 
 ## Crash Attributes
 
@@ -135,9 +135,7 @@ export default function App() {
   if (userCounts) {
     return (
       <View>
-        <Text>
-          There are currently {userCounts[userCounts.length - 1]} users.
-        </Text>
+        <Text>There are currently {userCounts[userCounts.length - 1]} users.</Text>
       </View>
     );
   }
@@ -161,9 +159,7 @@ import { View, Button } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 
 function App() {
-  const [enabled, setEnabled] = useState(
-    crashlytics().isCrashlyticsCollectionEnabled
-  );
+  const [enabled, setEnabled] = useState(crashlytics().isCrashlyticsCollectionEnabled);
 
   async function toggleCrashlytics() {
     await crashlytics()
@@ -185,7 +181,7 @@ function App() {
 
 ## Disable Auto Collection
 
-Additionally, you can configure whether Crashlytics sends out any reports through the `auto_collection_enabled` option in 
+Additionally, you can configure whether Crashlytics sends out any reports through the `auto_collection_enabled` option in
 your `firebase.json` config. If you want users to opt-in, it is recommended that you disable this here and enable it later
 through the method once they opt-in.
 
@@ -213,8 +209,8 @@ Because you have stack traces readily available while you're debugging your app,
 
 ## Crashlytics NDK
 
-React Native Firebase supports [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting 
-which is enabled by default. This allows Crashlytics to capture crashes originating from the Yoga layout engine used by 
+React Native Firebase supports [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting
+which is enabled by default. This allows Crashlytics to capture crashes originating from the Yoga layout engine used by
 React Native. You can disable Crashlytics NDK in your `firebase.json` config.
 
 ```json

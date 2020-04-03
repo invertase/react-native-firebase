@@ -76,9 +76,7 @@ To request consent, call the method as early as possible within your app before 
 ```js
 import { AdsConsent } from '@react-native-firebase/admob';
 
-const consentInfo = await AdsConsent.requestInfoUpdate([
-  'pub-6189033257628123',
-]);
+const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
 ```
 
 The result of the method returns an `AdsConsentInfo` interface, which provides information about the users status and location:
@@ -130,9 +128,7 @@ You must provide a privacy policy URL.
 ```js
 import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
 
-const consentInfo = await AdsConsent.requestInfoUpdate([
-  'pub-6189033257628123',
-]);
+const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
 
 if (
   consentInfo.isRequestLocationInEeaOrUnknown &&
@@ -220,10 +216,7 @@ To set a debug location, use the `setDebugGeography` method. It accepts 3 values
 For example:
 
 ```js
-import {
-  AdsConsent,
-  AdsConsentDebugGeography,
-} from '@react-native-firebase/admob';
+import { AdsConsent, AdsConsentDebugGeography } from '@react-native-firebase/admob';
 
 await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 ```

@@ -27,29 +27,29 @@ you can follow the manual installation steps for [iOS](/functions/usage/installa
 
 # What does it do
 
-Firebase Cloud Functions let you automatically run backend code in response to events triggered by Firebase features and 
-HTTPS requests. Your code is stored in Google's cloud and runs in a managed environment. There's no need to manage and 
+Firebase Cloud Functions let you automatically run backend code in response to events triggered by Firebase features and
+HTTPS requests. Your code is stored in Google's cloud and runs in a managed environment. There's no need to manage and
 scale your own servers.
 
 <Youtube id="vr0Gfvp5v1A" />
 
 After you write and deploy a function, Google's servers begin to manage the function immediately. You can fire the function
-directly with an HTTP request, via the Cloud Functions module, or in the case of background functions, Google's servers will listen for events and run 
+directly with an HTTP request, via the Cloud Functions module, or in the case of background functions, Google's servers will listen for events and run
 the function when it is triggered.
 
 For more information on use cases, view the [Firebase Cloud Functions](https://firebase.google.com/docs/functions/use-cases) documentation.
 
 # Usage
 
-The Cloud Functions module provides the functionality to directly trigger deployed HTTPs callable functions, without worrying 
-about security or implementing a HTTP request library. 
- 
+The Cloud Functions module provides the functionality to directly trigger deployed HTTPs callable functions, without worrying
+about security or implementing a HTTP request library.
+
 Functions deployed to Firebase have unique names, allowing you to easily identify which endpoint you wish to send a request to.
 To learn more about deploying Functions to Firebase, view the [Writing & Deploying Functions](/functions/writing-deploying-functions) documentation.
 
 ## Calling an endpoint
 
-Assuming we have a deployed a callable endpoint named `listProducts`, to call the endpoint the library exposes a 
+Assuming we have a deployed a callable endpoint named `listProducts`, to call the endpoint the library exposes a
 `httpsCallable` method. For example:
 
 ```js

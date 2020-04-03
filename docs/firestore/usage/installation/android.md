@@ -40,13 +40,13 @@ import io.invertase.firebase.firestore.ReactNativeFirebaseFirestorePackage;
 
 Add the package to the registry:
 
-```java
+````java
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
     new ReactNativeFirebaseFirestorePackage(),
 ```// ..
-```
+````
 
 In some scenarios, your Android build may fail with the `app:mergeDexDebug` error. This required that multidex is enabled
 for your application. To learn more, read the [Enabling Multidex](/firestore/enabling-multidex) documentation.

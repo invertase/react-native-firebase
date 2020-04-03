@@ -24,7 +24,7 @@ database()
   .then(() => console.log('Realtime Database persistence enabled'));
 
 AppRegistry.registerComponent('app', () => App);
-``` 
+```
 
 # Going offline
 
@@ -45,12 +45,12 @@ import database from '@react-native-firebase/database';
 
 function App() {
   useEffect(() => {
-    const userAgeRef = database().ref('/users/123/age')
-      
-    userAgeRef.on('value', (snapshot) => {
+    const userAgeRef = database().ref('/users/123/age');
+
+    userAgeRef.on('value', snapshot => {
       console.log('Users age: ', snapshot.val());
     });
-    
+
     database()
       .goOffline()
       .then(() => {
@@ -59,15 +59,15 @@ function App() {
       .then(() => {
         console.log('User updated whilst offline.');
       });
-  }, [])
+  }, []);
 }
 ```
 
-The above code will first execute the `on` listener with data from the remote database. 
+The above code will first execute the `on` listener with data from the remote database.
 
-Once offline, the `set` method on the reference node will `locally` be set to a new value. 
+Once offline, the `set` method on the reference node will `locally` be set to a new value.
 
-The `on` listener 
+The `on` listener
 however will now subscribe to the local database and provide the new value.
 
 This provides the ability to write code which works in both an online and offline environment without worrying about
@@ -86,10 +86,10 @@ await database().goOnline();
 
 # Local persistence size
 
-By default Firebase Database will use up to `10MB` of disk space to cache data. If the cache grows beyond this size, 
+By default Firebase Database will use up to `10MB` of disk space to cache data. If the cache grows beyond this size,
 Firebase Database will start removing data that hasn't been recently used. If you find that your application caches too
- little or too much data, call the `setPersistenceCacheSizeBytes` method to update the default cache size:
- 
+little or too much data, call the `setPersistenceCacheSizeBytes` method to update the default cache size:
+
 ```js
 import database from '@react-native-firebase/database';
 

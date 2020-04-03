@@ -5,10 +5,9 @@ next: /ml-vision/face-detection
 previous: /ml-vision/barcode-scanning
 ---
 
-Image labelling can recognize entities in an image without having to provide any additional contextual metadata, using 
+Image labelling can recognize entities in an image without having to provide any additional contextual metadata, using
 either an on-device API or a cloud-based API. It gets a list of the entities that were recognized: people, things, places,
-activities, and so on. 
- 
+activities, and so on.
 
 # Cloud Image Labelling
 
@@ -22,7 +21,7 @@ import vision from '@react-native-firebase/ml-vision';
 async function processImage(localPath) {
   const labels = await vision().cloudImageLabelerProcessImage(localPath);
 
-  labels.forEach((label) => {
+  labels.forEach(label => {
     console.log('Service labelled the image: ', label.text);
     console.log('Confidence in the label: ', label.confidence);
   });
@@ -31,17 +30,16 @@ async function processImage(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/image-document.jpg`;
 
-processImage(localFile)
-  .then(() => console.log('Finished processing file.'));
+processImage(localFile).then(() => console.log('Finished processing file.'));
 ```
 
 To learn more about the available data on a processed document, view the [`VisionImageLabel`](/reference/ml-vision/visionimagelabel)
 documentation.
 
 ## Configuration
- 
+
 By default, the service will return labels with any confidence level, which may include labels you do not care about or
-are too obvious. Set the `confidenceThreshold` key to a value between 0 & 1, where 1 represents 100% confidence. The 
+are too obvious. Set the `confidenceThreshold` key to a value between 0 & 1, where 1 represents 100% confidence. The
 cloud service will only return labels with a confidence greater than what you specified:
 
 ```js
@@ -56,7 +54,7 @@ View the [`VisionCloudImageLabelerOptions`](/reference/ml-vision/visioncloudimag
 # On-device Image Labelling
 
 Running the ML Kit service on a device requires the `ml_vision_image_label_model` and `ml_vision_label_model` to be download to the device. Although the results
-of on-device processing will be faster and more accurate, including the model in your application will increase the size 
+of on-device processing will be faster and more accurate, including the model in your application will increase the size
 of the application.
 
 ## Enable the model
@@ -95,7 +93,7 @@ import vision from '@react-native-firebase/ml-vision';
 async function processImage(localPath) {
   const labels = await vision().imageLabelerProcessImage(localPath);
 
-  labels.forEach((label) => {
+  labels.forEach(label => {
     console.log('Service labelled the image: ', label.text);
     console.log('Confidence in the label: ', label.confidence);
   });
@@ -104,6 +102,5 @@ async function processImage(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/image-document.jpg`;
 
-processImage(localFile)
-  .then(() => console.log('Finished processing file.'));
+processImage(localFile).then(() => console.log('Finished processing file.'));
 ```

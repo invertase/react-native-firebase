@@ -23,7 +23,7 @@ cd ios/ && pod install
 ```
 
 > iOS requires further configuration steps to be carried out before you can start receiving and sending
-messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messagig](/messaging/usage/ios-setup).
+> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messagig](/messaging/usage/ios-setup).
 
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
@@ -93,16 +93,16 @@ be used however you see fit within your application. Common use-cases for handli
 - Updating the application's UI.
 
 > To learn about how to send messages to devices from your own server setup, view the
-[Server Integration](/messaging/server-integration) documentation.
+> [Server Integration](/messaging/server-integration) documentation.
 
 Depending on the devices state, incoming messages are handled differently by the device and module. To understand these
 scenarios, it is first important to establish the various states a device can be in:
 
-| State          | Description                                                                                            |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Foreground** | When the application is open and in view.                                                                             |
+| State          | Description                                                                                                                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Foreground** | When the application is open and in view.                                                                                                                                                                 |
 | **Background** | When the application is open, however in the background (minimised). This typically occurs when the user has pressed the "home" button on the device or has switched to another app via the app switcher. |
-| **Quit**       | When the device is locked or application is not active or running. The user can quit an app by "swiping it away" via the app switcher UI on the device.                |
+| **Quit**       | When the device is locked or application is not active or running. The user can quit an app by "swiping it away" via the app switcher UI on the device.                                                   |
 
 The user must have opened the app before messages can be received. If the user force quits the app from the device settings, it must be re-opened again before receiving messages.
 
@@ -113,14 +113,14 @@ Depending on the contents of the message, it's important to understand both how 
 The device state and message contents determines which handler will be called:
 
 |                         | Foreground  | Background                                      | Quit                                            |
-|-------------------------|-------------|-------------------------------------------------|-------------------------------------------------|
+| ----------------------- | ----------- | ----------------------------------------------- | ----------------------------------------------- |
 | **Notification**        | `onMessage` | `setBackgroundMessageHandler`                   | `setBackgroundMessageHandler`                   |
 | **Notification + Data** | `onMessage` | `setBackgroundMessageHandler`                   | `setBackgroundMessageHandler`                   |
-| **Data**                | `onMessage` | `setBackgroundMessageHandler` (***see below***) | `setBackgroundMessageHandler` (***see below***) |
+| **Data**                | `onMessage` | `setBackgroundMessageHandler` (**_see below_**) | `setBackgroundMessageHandler` (**_see below_**) |
 
-* In cases where the message is data-only and the device is in the background or quit, both Android & iOS treat the message
-as low priority and will ignore it (i.e. no event will be sent). You can however increase the priority by setting the `priority` to `high` (Android) and
-`content-available` to `true` (iOS) properties on the payload.
+- In cases where the message is data-only and the device is in the background or quit, both Android & iOS treat the message
+  as low priority and will ignore it (i.e. no event will be sent). You can however increase the priority by setting the `priority` to `high` (Android) and
+  `content-available` to `true` (iOS) properties on the payload.
 
 To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/concept-options).
 
@@ -128,11 +128,11 @@ To learn more about how to send these options in your message payload, view the 
 
 The device state and message contents can also determine whether a [Notification](/messaging/notifications) will be displayed:
 
-|                         | Foreground                  | Background             | Quit                   |
-|-------------------------|-----------------------------|------------------------|------------------------|
-| **Notification**        | Notification: &#10060;      | Notification: &#9989;  | Notification: &#9989;  |
-| **Notification + Data** | Notification: &#10060;      | Notification: &#9989;  | Notification: &#9989;  |
-| **Data**                | Notification: &#10060;      | Notification: &#10060; | Notification: &#10060; |
+|                         | Foreground             | Background             | Quit                   |
+| ----------------------- | ---------------------- | ---------------------- | ---------------------- |
+| **Notification**        | Notification: &#10060; | Notification: &#9989;  | Notification: &#9989;  |
+| **Notification + Data** | Notification: &#10060; | Notification: &#9989;  | Notification: &#9989;  |
+| **Data**                | Notification: &#10060; | Notification: &#10060; | Notification: &#10060; |
 
 ### Foreground state messages
 
@@ -149,7 +149,7 @@ import messaging from '@react-native-firebase/messaging';
 
 function App() {
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
     });
 
@@ -213,12 +213,14 @@ admin.messaging().sendToDevice(
       user: JSON.stringify(user),
       picture: JSON.stringify(picture),
     },
-  }, {
-  // Required for background/quit data-only messages on iOS
-  contentAvailable: true,
-  // Required for background/quit data-only messages on Android
-  priority: 'high',
-});
+  },
+  {
+    // Required for background/quit data-only messages on iOS
+    contentAvailable: true,
+    // Required for background/quit data-only messages on Android
+    priority: 'high',
+  },
+);
 ```
 
 These options can be applied to all FCM messages. View the [Server Integration](/messaging/server-integration) documentation
@@ -269,12 +271,12 @@ devices subscribed to that topic will receive the message.
 Topics allow you to simplify FCM [server integration](/messaging/server-integration) as you do not need to keep a store of
 device tokens. There are however some things to keep in mind about topics:
 
-- Messages sent to topics should not contain sensitive or private information. Do not create a topic for a specific user 
-to subscribe to.
+- Messages sent to topics should not contain sensitive or private information. Do not create a topic for a specific user
+  to subscribe to.
 - Topic messaging supports unlimited subscriptions for each topic.
 - One app instance can be subscribed to no more than 2000 topics.
-- The frequency of new subscriptions is rate-limited per project. If you send too many subscription requests in a short 
-period of time, FCM servers will respond with a 429 RESOURCE_EXHAUSTED ("quota exceeded") response. Retry with exponential backoff.
+- The frequency of new subscriptions is rate-limited per project. If you send too many subscription requests in a short
+  period of time, FCM servers will respond with a 429 RESOURCE_EXHAUSTED ("quota exceeded") response. Retry with exponential backoff.
 - A server integration can send a single message to multiple topics at once. This however is limited to 5 topics.
 
 To learn more about how to send messages to devices subscribed to topics, view the [Send messages to topics](/messaging/server-integration#send-messages-to-topics)

@@ -89,7 +89,7 @@ npx react-native run-android
 ## Configure outbound requests
 
 Before requesting ads, you must tell the AdMob network what type of content you'd wish to receive based on your target
-audience. 
+audience.
 
 For example, if the application targets children then you must configure the outbound requests to only
 receive content suitable for children before loading any adverts.

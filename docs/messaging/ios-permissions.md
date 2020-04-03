@@ -53,14 +53,14 @@ await messaging().requestPermission({
 
 The full list of permission settings can be seen in the table below along with their default values:
 
-| Permission                  | Default | Description                                                                                                                                                                                             |
-| --------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `alert`                     | `true`  | Sets whether notifications can be displayed to the user on the device.                                                                                                                                  |
-| `announcement`              | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods.                                                                                                          |
-| `badge`                     | `true`  | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.                                                                                      |
-| `carPlay`                   | `true`  | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/).                                                                                   |
-| `provisional`               | `false` | Sets whether provisional permissions are granted. See [Provisional permission](#provisional-permission) for more information.                                                                           |
-| `sound`                     | `true`  | Sets whether a sound will be played when a notification is displayed on the device.                                                                                                                     |
+| Permission     | Default | Description                                                                                                                   |
+| -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `alert`        | `true`  | Sets whether notifications can be displayed to the user on the device.                                                        |
+| `announcement` | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods.                                |
+| `badge`        | `true`  | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.           |
+| `carPlay`      | `true`  | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/).         |
+| `provisional`  | `false` | Sets whether provisional permissions are granted. See [Provisional permission](#provisional-permission) for more information. |
+| `sound`        | `true`  | Sets whether a sound will be played when a notification is displayed on the device.                                           |
 
 The settings provided will be stored by the device and will be visible in the iOS Settings UI for your application.
 
@@ -115,10 +115,10 @@ async function getExistingSettings() {
 
 Devices on iOS 12+ can take advantage of provisional permissions. This type of permission system allows for notification
 permission to be instantly granted without displaying a dialog. The permission allows notifications to be displayed quietly
+
 - meaning they're only visible within the device notification center.
 
 To enable provisional notifications, pass an object to the `requestPermission` method, with the `provisional` key set to `true`:
-
 
 ```js
 await messaging().requestPermission({

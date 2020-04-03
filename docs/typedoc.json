@@ -42351,10 +42351,6 @@
 									}
 								]
 							},
-							"overwrites": {
-								"type": "reference",
-								"name": "Error.stack"
-							},
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "Error.stack"
@@ -66540,10 +66536,6 @@
 										"name": "string"
 									}
 								]
-							},
-							"overwrites": {
-								"type": "reference",
-								"name": "Error.stack"
 							},
 							"inheritedFrom": {
 								"type": "reference",

@@ -2,7 +2,7 @@
 title: TypeScript
 description: Using TypeScript with React Native Firebase
 next: /migrating-to-v6
-previous: 
+previous:
 ---
 
 The React Native Firebase project comes with support for TypeScript. The project provides
@@ -53,7 +53,7 @@ TypeScript will no longer show any errors, allowing us to safely continue develo
 
 It is also possible to access the module types directly, if you need to locally reference variables within your own codebase.
 
-For example, we may need to store the `User` in local state. Manually defining a type for local state TypeScript loses the ability to type check the code. 
+For example, we may need to store the `User` in local state. Manually defining a type for local state TypeScript loses the ability to type check the code.
 
 We can easily access the types manually through the module though, for example:
 
@@ -63,8 +63,8 @@ import { useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [loading, setLoading] = useState < boolean > true;
+  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {

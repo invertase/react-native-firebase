@@ -20,9 +20,7 @@ Google AdMob dashboard under "Ad units" should be used:
 ```js
 import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -43,15 +41,9 @@ To listen to events, such as when the advert from the network has loaded or when
 ```jsx
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native';
-import {
-  InterstitialAd,
-  AdEventType,
-  TestIds,
-} from '@react-native-firebase/admob';
+import { InterstitialAd, AdEventType, TestIds } from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -120,9 +112,7 @@ Google AdMob dashboard under "Ad units" should be used:
 ```js
 import { RewardedAd, TestIds } from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
-  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -143,15 +133,9 @@ To listen to events, such as when the advert from the network has loaded or when
 ```js
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native';
-import {
-  RewardedAd,
-  RewardedAdEventType,
-  TestIds,
-} from '@react-native-firebase/admob';
+import { RewardedAd, RewardedAdEventType, TestIds } from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__
-  ? TestIds.REWARDED
-  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.REWARDED : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -224,9 +208,7 @@ a banner:
 import React from 'react';
 import { BannerAd, BannerAdSize, TestIds } from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__
-  ? TestIds.BANNER
-  : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
 function App() {
   return (

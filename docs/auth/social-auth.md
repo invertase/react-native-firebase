@@ -5,7 +5,7 @@ next: /auth/phone-auth
 previous: /auth/usage
 ---
 
-React Native Firebase provides support for integrating with different social platforms. The authentication with these 
+React Native Firebase provides support for integrating with different social platforms. The authentication with these
 different platforms is left to the developer to implement due to the various implementations and flows possible using
 their oAuth APIs.
 
@@ -21,10 +21,10 @@ To integrate Apple Sign-In on your iOS applications, you need to install a 3rd p
 Once authentication is successful, a Firebase credential can be used to sign the user into Firebase with their Apple account.
 
 To get started, you must first install the [`react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication)
-library. There are a number of [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) to using the library, including 
+library. There are a number of [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) to using the library, including
 [setting up your Apple Developer account](https://github.com/invertase/react-native-apple-authentication/blob/master/docs/INITIAL_SETUP.md) to enable Apple Sign-In.
 
-Ensure the "Apple" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers). 
+Ensure the "Apple" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Once setup, we can trigger an initial request to allow user to sign in with their Apple account, using a pre-rendered
 button the `react-native-apple-authentication` library provides:
@@ -55,8 +55,8 @@ passing in the scope required for our application:
 import auth from '@react-native-firebase/auth';
 import appleAuth, {
   AppleAuthRequestScope,
-  AppleAuthRequestOperation
-  } from '@invertase/react-native-apple-authentication';
+  AppleAuthRequestOperation,
+} from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
   // Start the sign-in request
@@ -64,14 +64,14 @@ async function onAppleButtonPress() {
     requestedOperation: AppleAuthRequestOperation.LOGIN,
     requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   });
- 
+
   // Ensure Apple returned a user identityToken
   if (!appleAuthRequestResponse.identityToken) {
     throw 'Apple Sign-In failed - no identify token returned';
   }
 
   // Create a Firebase credential from the response
-  const { identityToken, nonce } = appleAuthRequestResponse; 
+  const { identityToken, nonce } = appleAuthRequestResponse;
   const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
 
   // Sign the user in with the credential
@@ -89,9 +89,9 @@ the native Facebook SDKs to enable Facebook sign-in.
 
 Before getting started, ensure you have installed the library, [configured your Android & iOS applications](https://developers.facebook.com/docs/android/getting-started/) and
 setup your [Facebook Developer Account](https://github.com/facebook/react-native-fbsdk#3-configure-projects)
-to enable Facebook Login. 
+to enable Facebook Login.
 
-Ensure the "Facebook" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers). 
+Ensure the "Facebook" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Once setup, we can trigger the login flow with Facebook by calling the `logInWithPermissions` method on the `LoginManager`
 class:
@@ -123,14 +123,14 @@ async function onFacebookButtonPress() {
   if (result.isCancelled) {
     throw 'User cancelled the login process';
   }
- 
+
   // Once signed in, get the users AccesToken
   const data = await AccessToken.getCurrentAccessToken();
 
   if (!data) {
     throw 'Something went wrong obtaining access token';
   }
- 
+
   // Create a Firebase credential with the AccessToken
   const facebookCredential = auth.FacebookAuthProvider.credential(data.accessToken);
 
@@ -149,17 +149,17 @@ we can sign-in the user with Twitter and generate a credential which can be used
 
 To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/GoldenOwlAsia/react-native-twitter-signin#prerequisites) list.
 
-Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers). 
+Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Before triggering a sign-in request, you must initialize the Twitter SDK using your accounts consumer key & secret:
 
 ```js
 import { NativeModules } from 'react-native';
 const { RNTwitterSignIn } = NativeModules;
- 
-RNTwitterSignIn
-  .init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET')
-  .then(() => console.log('Twitter SDK initialized'));
+
+RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() =>
+  console.log('Twitter SDK initialized'),
+);
 ```
 
 Once initalized, setup your application to trigger a sign-in request with Twitter using the `login` method.
@@ -209,7 +209,7 @@ Most configuration is already setup when using Google Sign-In with Firebase, how
 SHA1 key has been configured for use with Android. You can see view how to generate the key on the [Getting Started](/)
 documentation.
 
-Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers). 
+Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
 `webClientId`, which can be found on the Firebase Console Settings, as "Web API Key".

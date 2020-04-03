@@ -5,12 +5,12 @@ next: /ml-vision/image-labelling
 previous: /ml-vision/landmark-recognition
 ---
 
-Barcode scanning can read data encoded using most standard barcode formats. Barcode scanning happens on the device, 
+Barcode scanning can read data encoded using most standard barcode formats. Barcode scanning happens on the device,
 and doesn't require a network connection. It's a convenient way to pass information from the real world to your app.
 
 The Machine Learning service is only offered on the device, and no cloud service exists.
 
-Given an image file, the Barcode Scanning service will attempt to recognise one or more barcodes, offering information 
+Given an image file, the Barcode Scanning service will attempt to recognise one or more barcodes, offering information
 such as:
 
 - The 4-point coordinates of the barcodes on the image.
@@ -54,8 +54,8 @@ import vision, { VisionBarcodeValueType } from '@react-native-firebase/ml-vision
 
 async function processBarcodes(localPath) {
   const barcodes = await vision().barcodeDetectorProcessImage(localPath);
-  
-  barcodes.forEach((barcode) => {
+
+  barcodes.forEach(barcode => {
     if (barcode.valueType === VisionBarcodeValueType.CALENDAR_EVENT) {
       console.log('Barcode is a calendar event: ', barcode.calendarEvent);
     }
@@ -97,9 +97,8 @@ async function processBarcodes(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/barcode-document.jpg`;
 
-processBarcodes(localFile)
-  .then(() => console.log('Finished processing file.'));
+processBarcodes(localFile).then(() => console.log('Finished processing file.'));
 ```
 
-To learn about the types of information the barcode scanner can return, view the 
+To learn about the types of information the barcode scanner can return, view the
 [`VisionBarcode`](/reference/ml-vision/visionbarcode) documentation.

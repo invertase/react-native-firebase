@@ -7,8 +7,8 @@ previous: /releases
 
 Using the table below, you can find the release notes for the latest library releases.
 
-| Version |                                        |
-|---------|:--------------------------------------:|
+| Version |                                                |
+| ------- | :--------------------------------------------: |
 | v6.4.0  | [View Release Notes &raquo;](/releases/v6.4.0) |
 | v6.3.0  | [View Release Notes &raquo;](/releases/v6.3.0) |
 | v6.2.0  | [View Release Notes &raquo;](/releases/v6.2.0) |

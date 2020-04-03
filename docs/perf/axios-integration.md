@@ -71,7 +71,7 @@ axios.interceptors.response.use(
 
     // Ensure failed requests throw after interception
     return Promise.reject(error);
-  }
+  },
 );
 ```
 

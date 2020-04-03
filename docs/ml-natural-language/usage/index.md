@@ -28,16 +28,15 @@ you can follow the manual installation steps for [iOS](/ml-natural-language/usag
 # What does it do
 
 The React Native Firebase ML Natural Language module supports [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies)
-& [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages) provided by Firebase ML kit. 
+& [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages) provided by Firebase ML kit.
 At this moment, the [Translation](https://firebase.google.com/docs/ml-kit/translation) module is not supported
 
 <Youtube id="ejrn_JHksws" />
 
-
 Smart reply can automatically generate relevant replies to messages. It helps helps your users respond to messages quickly,
 and makes it easier to reply to messages on devices with limited input capabilities.
 
-Language identification can be used to determine the language of a string of text. It can be useful when working with 
+Language identification can be used to determine the language of a string of text. It can be useful when working with
 user-provided text, which often doesn't come with any language information.
 
 # Usage
@@ -47,7 +46,7 @@ for each service and usage examples of each.
 
 ## Smart Replies
 
-The [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies) service from Firebase allows you to 
+The [Smart Replies](https://firebase.google.com/docs/ml-kit/generate-smart-replies) service from Firebase allows you to
 generate suggested replies based on a list of on-going conversation data.
 
 Before using the API, the Smart Reply model must be installed on your device. To enable installation of the model, set
@@ -77,19 +76,21 @@ Once complete, the `suggestReplies` method allows you to generate potential repl
 which may generate three responses per input as example below:
 
 ```jsx
-const replies = await firebase.naturalLanguage().suggestReplies([
-  { text: 'Hey, long time no speak!', },
-  { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
-  { text: 'We should catchup some time!', },
-  { text: 'Definitely, how about we go for lunch this week?', userId: '123', isLocalUser: false },
-]);
+const replies = await firebase
+  .naturalLanguage()
+  .suggestReplies([
+    { text: 'Hey, long time no speak!' },
+    { text: 'I know right, it has been a while..', userId: '123', isLocalUser: false },
+    { text: 'We should catchup some time!' },
+    { text: 'Definitely, how about we go for lunch this week?', userId: '123', isLocalUser: false },
+  ]);
 
 replies.forEach(reply => {
   console.log(reply.text);
 });
 ```
 
-Each array item an is an instance of a [`TextMessage`](/reference/ml-natural-language/textmessage). At a minimum you 
+Each array item an is an instance of a [`TextMessage`](/reference/ml-natural-language/textmessage). At a minimum you
 must provide the a `text` property. To help the Machine Learning service identify various users in the conversation, you
 can set the `isLocalUser` flag to `false` if the message is from an external user, along with a unique ID.
 
@@ -98,7 +99,7 @@ property from the returned [`SuggestedReply`](/reference/ml-natural-language/sug
 
 ## Identify language
 
-The [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages) service from Firebase allows you to 
+The [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages) service from Firebase allows you to
 identify a language from any given string of text.
 
 Before using the API, the Language Identification model must be installed on your device. To enable installation of the model, set
@@ -138,7 +139,7 @@ Add any of the keys indicated below to your `firebase.json` file at the root of 
 true to enable them. All models and APIs are disabled (false) by default.
 
 > If you are manually linking on iOS (e.g. not using CocoaPods) then it's up to you to manage these models and dependencies
-  yourself - firebase.json support is only for Android and iOS (via Pods).
+> yourself - firebase.json support is only for Android and iOS (via Pods).
 
 ```json
 // <project-root>/firebase.json
