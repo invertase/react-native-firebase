@@ -31,7 +31,7 @@ Dynamic Links are links that work the way you want, on either iOS or Android and
 
 <Youtube id="LvY1JMcrPF8" />
 
-With Dynamic Links, your users get the best available experience for the platform they open your link on. If a user opens 
+With Dynamic Links, your users get the best available experience for the platform they open your link on. If a user opens
 a Dynamic Link on iOS or Android, they can be taken directly to the linked content in your app.
 
 # Usage
@@ -98,15 +98,14 @@ the application was opened via a link:
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 function App() {
-
   useEffect(() => {
-     dynamicLinks()
-       .getInitialLink()
-       .then((link) => {
-         if (link.url === 'https://invertase.io/offer') {
-           // ...set initial route as offers screen
-         }
-       });
+    dynamicLinks()
+      .getInitialLink()
+      .then(link => {
+        if (link.url === 'https://invertase.io/offer') {
+          // ...set initial route as offers screen
+        }
+      });
   }, []);
 
   return null;

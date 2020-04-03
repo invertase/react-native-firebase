@@ -14,7 +14,7 @@ and you wish to view which of your users are currently online.
 
 # Setup
 
-To get started, we first need a location to store our online users. 
+To get started, we first need a location to store our online users.
 
 To keep things simple we'll assume the user is authenticated (e.g. with [Firebase Authentication](/auth)) so we can use a unique user ID.
 
@@ -32,10 +32,8 @@ function App() {
 
     const reference = database().ref(`/online/${userId}`);
 
-    // Set the /users/:userId value to true 
-    reference
-      .set(true)
-      .then(() => console.log('Online presence set'));
+    // Set the /users/:userId value to true
+    reference.set(true).then(() => console.log('Online presence set'));
   }, []);
 }
 ```
@@ -53,7 +51,7 @@ Realtime Database API provides a way to execute code on the Firebase servers whe
 is lost.
 
 The `onDisconnect` method on a reference returns a new [`OnDisconnect`](/reference/database/ondisconnect) instance. The instance
-provides functionality to remove or set data whenever a client disconnects. Using the 
+provides functionality to remove or set data whenever a client disconnects. Using the
 [`remove`](/reference/database/ondisconnect#remove) method we can remove the node on the database if the client disconnects:
 
 ```jsx
@@ -68,10 +66,8 @@ function App() {
 
     const reference = database().ref(`/online/${userId}`);
 
-    // Set the /users/:userId value to true 
-    reference
-      .set(true)
-      .then(() => console.log('Online presence set'));
+    // Set the /users/:userId value to true
+    reference.set(true).then(() => console.log('Online presence set'));
 
     // Remove the node whenever the client disconnects
     reference

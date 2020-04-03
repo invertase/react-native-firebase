@@ -6,12 +6,11 @@ previous: /releases
 ---
 
 Firstly, thanks for considering contributing to React Native Firebase! It's people like you that make the open source
-community such a great community!Firstly, thanks for considering contributing to React Native Firebase! It's people 
+community such a great community! Firstly, thanks for considering contributing to React Native Firebase! It's people
 like you that make the open source community such a great community!
 
 We welcome any type of contribution, not just code. You can learn more about the various ways of contributing to this
 project by visiting any of the sections below.
-                                                    
 
 # Issues & PRs
 
@@ -35,10 +34,10 @@ Here are some example review checks that can be taken on issues;
 
 # Documentation
 
-All documentation is open sourced and we are happy to accept contributions whether they are typo fixes or new pages. 
+All documentation is open sourced and we are happy to accept contributions whether they are typo fixes or new pages.
 Content is written in Markdown, and takes advantage of [MDX](https://github.com/mdx-js/mdx) to provide powerful functionality on-top of Markdown.
 
-Our documentation reference is automatically generated from each packages TypeScript declaration. Our build process 
+Our documentation reference is automatically generated from each packages TypeScript declaration. Our build process
 automatically generates a `typedoc.json` file using Typedoc, which is then parsed into a consumable format for our documentation generator.
 
 # Community
@@ -47,6 +46,7 @@ We always love to hear about React Native Firebase being featured at community e
 or attending an event which involves the library, please let us know using the form below.
 
 We'd love to help promote the event via:
+
 - Twitter exposure on our [@rnfirebase](https://twitter.com/rnfirebase) account.
 - Members of our team attending the event in person.
 - Giving out React Native Firebase T-Shirts.

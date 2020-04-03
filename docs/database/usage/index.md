@@ -27,8 +27,8 @@ you can follow the manual installation steps for [iOS](/database/usage/installat
 
 # What does it do
 
-The Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected 
-client. React Native Firebase provides native integration with the Android & iOS Firebase SDKs, supporting both realtime 
+The Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected
+client. React Native Firebase provides native integration with the Android & iOS Firebase SDKs, supporting both realtime
 data sync and offline capabilities.
 
 <Youtube id="U5aeM5dvUpA" />
@@ -55,7 +55,7 @@ const reference = database().ref('/users/123');
 The Realtime Data provides the ability to read the value of a reference as a one-time read, or realtime changes to the node.
 When a value is read from the database, the API returns a [`DataSnapshot`](/reference/database/datasnapshot).
 
-The snapshot includes information such as whether the reference node exists, it's value or any children the node has and more. 
+The snapshot includes information such as whether the reference node exists, it's value or any children the node has and more.
 
 ### One-time read
 
@@ -67,7 +67,7 @@ import database from '@react-native-firebase/database';
 database()
   .ref('/users/123')
   .once('value')
-  .then((snapshot) => {
+  .then(snapshot => {
     console.log('User data: ', snapshot.val());
   });
 ```
@@ -81,7 +81,7 @@ import database from '@react-native-firebase/database';
 
 database()
   .ref('/users/123')
-  .on('value', (snapshot) => {
+  .on('value', snapshot => {
     console.log('User data: ', snapshot.val());
   });
 ```
@@ -98,11 +98,10 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database()
-      ref(`/users/${userId}`)
-       .on('value', (snapshot) => {
-         console.log('User data: ', snapshot.val());
-       });
+    const subscriber = database();
+    ref(`/users/${userId}`).on('value', snapshot => {
+      console.log('User data: ', snapshot.val());
+    });
 
     // Stop listening for updates when no longer required
     return () => subscriber();
@@ -116,7 +115,7 @@ The above example demonstrates how to subscribe to events whenever a value withi
 may need to only subscribe to events whenever a child node is added/changed/moved/removed. This can be achieved by passing
 a different [`EventType`](/reference/database/eventtype) to the `on` method.
 
-If you are listening to a node with many children, only listening to data you care about helps reduce network bandwidth 
+If you are listening to a node with many children, only listening to data you care about helps reduce network bandwidth
 and speeds up your application.
 
 ```jsx
@@ -125,11 +124,10 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database()
-      ref('/users')
-       .on('child_added', (snapshot) => {
-         console.log('A new node has been added', snapshot.val());
-       });
+    const subscriber = database();
+    ref('/users').on('child_added', snapshot => {
+      console.log('A new node has been added', snapshot.val());
+    });
 
     // Stop listening for updates when no longer required
     return () => subscriber();
@@ -147,7 +145,7 @@ If your application requires more advanced query capabilities, it is recommended
 #### Ordering
 
 By default, results are ordered based on the node [keys](#database-keys). If however you are using custom keys you can use
-one of the `orederByX` methods to order your data. 
+one of the `orederByX` methods to order your data.
 
 For example, if all of the nodes children are scalar values (string, numbers or booleans) you can use the `orderByValue` method,
 and Firebase will automatically order the results. The example below would return the `def` node before the `abc` node:
@@ -160,9 +158,12 @@ and Firebase will automatically order the results. The example below would retur
  *     'def': 50,
  *   }
  * }
-*/
+ */
 
-const scores = database().ref('scores').orderByValue().once('value');
+const scores = database()
+  .ref('scores')
+  .orderByValue()
+  .once('value');
 ```
 
 #### Limiting
@@ -192,11 +193,11 @@ await database()
 ## Writing data
 
 The [Firebase documentation](https://firebase.google.com/docs/database/web/structure-data) provides great examples on best
-practices on how to structure your data. We highly recommend reading the guide before building out your database. 
+practices on how to structure your data. We highly recommend reading the guide before building out your database.
 
 ### Setting data
 
-The `set` method on a [`Reference`](/reference/database/reference) overwrites all of the existing data at that reference node. 
+The `set` method on a [`Reference`](/reference/database/reference) overwrites all of the existing data at that reference node.
 The value can be anything; a string, number, object etc:
 
 ```js
@@ -238,9 +239,10 @@ sent to remote Firebase database.
 
 The `push` method will automatically generate a new key if one is not provided:
 
-
 ```js
-const newReference = database().ref('/users').push()
+const newReference = database()
+  .ref('/users')
+  .push();
 
 console.log('Auto generated key: ', newReference.key);
 
@@ -252,20 +254,24 @@ newReference
 ```
 
 The keys generated are ordered to the current time, so the list of items returned from Firebase will be chronologically
-sorted by default. 
+sorted by default.
 
 ## Removing data
 
 To remove data, you can call the `remove` method on a reference:
 
 ```js
-await database().ref('/users/123').remove();
+await database()
+  .ref('/users/123')
+  .remove();
 ```
 
 Optionally, you can also set the value of a reference node to `null` to remove it from the database:
 
 ```js
-await database().ref('/users/123').set(null);
+await database()
+  .ref('/users/123')
+  .set(null);
 ```
 
 ## Transactions
@@ -274,7 +280,7 @@ Transactions are a away to always ensure a write occurs with the latest informat
 partially apply writes & all writes execute at the end of a successful transaction.
 
 Imagine a scenario whereby an app has the ability to "Like" user posts. Whenever a user presses the "Like" button,
-the `/likes/:postId` value (number of likes) on the database increments. Without transactions, we'd first need to 
+the `/likes/:postId` value (number of likes) on the database increments. Without transactions, we'd first need to
 read the existing value and then increment that value in two separate operations.
 
 On a high traffic application, the value on the server could already have changed by the time the operation sets a new value,
@@ -290,19 +296,18 @@ import database from '@react-native-firebase/database';
 
 function onPostLike(postId) {
   const reference = database().ref(`/likes/${postId}`);
- 
+
   // Execute transaction
-  return reference.transaction((currentLikes) => {
+  return reference.transaction(currentLikes => {
     if (currentLikes === null) return 1;
     return currentLikes + 1;
   });
 }
 
 // When post "567" is liked
-onPostLike('567')
-  .then((transaction) => {
-    console.log('New post like count: ', transaction.snapshot.val());
-  });
+onPostLike('567').then(transaction => {
+  console.log('New post like count: ', transaction.snapshot.val());
+});
 ```
 
 Once the transaction is successful, a promise is resolved with a value containing whether the operation committed on the remote
@@ -310,7 +315,7 @@ database and the new [`DataSnapshot`](/reference/database/datasnapshot) containi
 
 # Securing data
 
-It is important that you understand how to write rules in your firebase console to ensure that your data is secure. 
+It is important that you understand how to write rules in your firebase console to ensure that your data is secure.
 Please follow the firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
 # firebase.json

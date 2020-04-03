@@ -10,7 +10,7 @@ with each landmark's geographic coordinates and the region of the image the land
 
 The Machine Learning service is only offered as a cloud based one, and no on-device service exists.
 
-Given an image file, the Landmark Recognition service will attempt to recognise one or more landmarks, offering information 
+Given an image file, the Landmark Recognition service will attempt to recognise one or more landmarks, offering information
 such as:
 
 - The 4-point coordinates of the landmarks on the image.
@@ -30,7 +30,7 @@ import vision from '@react-native-firebase/ml-vision';
 async function processLandmarks(localPath) {
   const landmarks = await vision().cloudLandmarkRecognizerProcessImage(localPath);
 
-  landmarks.forEach((visionLandmark) => {
+  landmarks.forEach(visionLandmark => {
     console.log('Landmark name: ', visionLandmark.landmark);
     console.log('Landmark locations: ', block.locations);
     console.log('Confidence score: ', block.confidence);
@@ -40,14 +40,13 @@ async function processLandmarks(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/image-file.jpg`;
 
-processLandmarks(localFile)
-  .then(() => console.log('Finished processing file.'));
+processLandmarks(localFile).then(() => console.log('Finished processing file.'));
 ```
 
 ## Configuration
 
 To help speed up requests and improve results, the `cloudLandmarkRecognizerProcessImage` method accepts an optional
-configuration object. 
+configuration object.
 
 ```js
 import vision, { VisionCloudLandmarkRecognizerModelType } from '@react-native-firebase/ml-vision';

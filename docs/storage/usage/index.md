@@ -37,8 +37,8 @@ global redundancy. Storage lets you securely upload these files directly from mo
 # Usage
 
 Your files are stored in a Google Cloud Storage bucket. The files in this bucket are presented in a hierarchical structure,
-just like a file system. By creating a reference to a file, your app gains access to it. These references can then be 
-used to upload or download data, get or update metadata or delete the file. A reference can either point to a specific 
+just like a file system. By creating a reference to a file, your app gains access to it. These references can then be
+used to upload or download data, get or update metadata or delete the file. A reference can either point to a specific
 file or to a higher level node in the hierarchy.
 
 The Storage module also provides support for multiple buckets.
@@ -102,7 +102,7 @@ such as the current upload progress:
 ```js
 const task = reference.putFile(pathToFile);
 
-task.on('state_changed', (taskSnapshot) => {
+task.on('state_changed', taskSnapshot => {
   console.log(`${taskSnapshot.bytesTransferred} transferred out of ${task.totalBytes}`);
 });
 
@@ -124,7 +124,7 @@ task.resume();
 
 ## Download URLs
 
-A common use-case for Cloud Storage is to use it as a global Content Delivery Network (CDN) for your images. When uploading 
+A common use-case for Cloud Storage is to use it as a global Content Delivery Network (CDN) for your images. When uploading
 files to a bucket, they are not automatically available for consumption via a HTTP URL. To generate a new Download URL, you
 need to call the `getDownloadURL` method on a reference:
 
@@ -145,32 +145,30 @@ the `list` method. The results are however paginated, and if more results are av
 import storage from '@react-native-firebase/storage';
 
 function listFilesAndDirectories(reference, pageToken) {
-  return reference.list({ pageToken })
-    .then((result) => {
-      // Loop over each item
-      result.items.forEach((ref) => {
-        console.log(ref.fullPath);
-      });
- 
-      if (result.nextPageToken) {
-        return listFilesAndDirectories(reference, result.nextPageToken);
-      }
-      
-      return Promise.resolve();
+  return reference.list({ pageToken }).then(result => {
+    // Loop over each item
+    result.items.forEach(ref => {
+      console.log(ref.fullPath);
     });
+
+    if (result.nextPageToken) {
+      return listFilesAndDirectories(reference, result.nextPageToken);
+    }
+
+    return Promise.resolve();
+  });
 }
 
 const reference = storage().ref('images');
 
-listFilesAndDirectories(reference)
-  .then(() => {
-    console.log('Finished listing');
-  });
-``` 
+listFilesAndDirectories(reference).then(() => {
+  console.log('Finished listing');
+});
+```
 
 ## Security
 
-By default your bucket will come with rules which allows only authenticated users on your project to access it. You can 
+By default your bucket will come with rules which allows only authenticated users on your project to access it. You can
 however fully customise the security rules to your own applications requirements.
 
 To learn more, view the [Storage Security](https://firebase.google.com/docs/storage/security/start) documentation
@@ -179,8 +177,8 @@ on the Firebase website.
 ## Multiple Buckets
 
 A single Firebase project can have multiple storage buckets. The module will use the default bucket if no bucket argument
-is passed to the `storage` instance. To switch buckets, provide the module with the `gs://` bucket URL found on the 
-Firebase Console, under Storage > Files. 
+is passed to the `storage` instance. To switch buckets, provide the module with the `gs://` bucket URL found on the
+Firebase Console, under Storage > Files.
 
 ```js
 import storage from '@react-native-firebase/storage';

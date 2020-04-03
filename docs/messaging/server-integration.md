@@ -57,15 +57,14 @@ function App() {
     // Get the device token
     messaging()
       .getToken()
-      .then((token) => {
+      .then(token => {
         return saveTokenToDatabase(token);
       });
 
     // Listen to whether the token changes
-    return messaging()
-      .onTokenRefresh((token) => {
-        saveTokenToDatabase(token);
-      });
+    return messaging().onTokenRefresh(token => {
+      saveTokenToDatabase(token);
+    });
   }, []);
 }
 ```
@@ -83,7 +82,7 @@ so it's important to ensure that we store all tokens in the database.
 With the tokens stored in a secure datastore, we now have the ability to send messages via FCM to those devices.
 
 > The following example uses the Node.JS `firebase-admin` package to send messages to our devices, however any SDK (listed above)
-can be used.
+> can be used.
 
 Go ahead and setup the [`firebase-tools`](https://www.npmjs.com/package/firebase-admin) library on your server environment.
 Once setup, our script needs to perform two actions:
@@ -126,12 +125,14 @@ async function onUserPictureLiked(ownerId, userId, picture) {
         user: JSON.stringify(user),
         picture: JSON.stringify(picture),
       },
-    }, {
+    },
+    {
       // Required for background/quit data-only messages on iOS
       contentAvailable: true,
       // Required for background/quit data-only messages on Android
       priority: 'high',
-    });
+    },
+  );
 }
 ```
 
@@ -168,7 +169,7 @@ or updating UI. The possibilities are endless!
 # Send messages to topics
 
 When devices [subscribe to topics](/messaging/usage#topics), you can send messages without specifying/storing any device
-tokens. 
+tokens.
 
 Using the `firebase-admin` Admin SDK as an example, we can send a message to devices subscribed to a topic:
 
@@ -183,11 +184,13 @@ const message = {
   topic: 'weather',
 };
 
-admin.messaging().send(message)
-  .then((response) => {
+admin
+  .messaging()
+  .send(message)
+  .then(response => {
     console.log('Successfully sent message:', response);
   })
-  .catch((error) => {
+  .catch(error => {
     console.log('Error sending message:', error);
   });
 ```
@@ -214,11 +217,13 @@ const message = {
   condition: "'weather' in topics && ('news' in topics || 'traffic' in topics)",
 };
 
-admin.messaging().send(message)
-  .then((response) => {
+admin
+  .messaging()
+  .send(message)
+  .then(response => {
     console.log('Successfully sent message:', response);
   })
-  .catch((error) => {
+  .catch(error => {
     console.log('Error sending message:', error);
   });
 ```

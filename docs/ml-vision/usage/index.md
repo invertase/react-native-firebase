@@ -40,16 +40,16 @@ Depending on the service, it is possible to perform Machine Learning on both the
 The table below outlines the current module support for each available service, and whether they are available on local device,
 cloud or both.
 
-| API                                                                                           | Cloud Model | On Device  |
-|-----------------------------------------------------------------------------------------------|-------------|------------|
-| [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)                    | ✅          | ✅        |
-| [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))          | ✅          |           |
-| [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                        |             | ✅        |
-| [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)                     |             | ✅        |
-| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)                       | ✅          | ✅        |
-| [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)           |             | ✅        |
-| [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)           | ❌          | ❌        |
-| [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)         | ❌          | ❌        |
+| API                                                                                   | Cloud Model | On Device |
+| ------------------------------------------------------------------------------------- | ----------- | --------- |
+| [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)            | ✅          | ✅        |
+| [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))  | ✅          |           |
+| [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                |             | ✅        |
+| [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)             |             | ✅        |
+| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)               | ✅          | ✅        |
+| [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)   |             | ✅        |
+| [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)   | ❌          | ❌        |
+| [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection) | ❌          | ❌        |
 
 # Usage
 

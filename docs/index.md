@@ -94,7 +94,7 @@ to your project.
 On the Firebase console, add a new iOS application and enter your projects details. The "iOS bundle ID" must match your
 local project bundle ID. The bundle ID can be found within the "General" tab when opening the project with XCode.
 
-Download the `GoogleService-Info.plist` file. 
+Download the `GoogleService-Info.plist` file.
 
 Using Xcode, open the projects `/ios/{projectName}.xcodeproj` file (or `/ios/{projectName}.xcworkspace` if using Pods).
 
@@ -156,7 +156,7 @@ you can follow the manual installation steps for [iOS](/install/ios) and [Androi
 
 ## Hermes Support
 
-At this time, React Native Firebase does not support the [Hermes](https://hermesengine.dev/) JavaScript engine due to 
+At this time, React Native Firebase does not support the [Hermes](https://hermesengine.dev/) JavaScript engine due to
 compatibility issues. We are actively tracking the changes to Hermes and will ensure support once both are compatible
 with each other.
 
@@ -186,15 +186,15 @@ project.ext {
         compileSdk: 28,
         buildTools: "28.0.3"
       ],
- 
+
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
         bom           : "21.1.0",
- 
+
         // Override Crashlytics SDK Version
         crashlytics   : "2.10.0",
- 
+
         // Override Crashlytics SDK Version
         crashlyticsNdk: "2.1.0"
       ],
@@ -212,10 +212,10 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 ```ruby
 # Override Firebase SDK Version
 $FirebaseSDKVersion = '6.8.1'
- 
+
 # Override Fabric SDK Version
 $FabricSDKVersion = '1.6.0'
- 
+
 # Override Crashlytics SDK Version
 $CrashlyticsSDKVersion = '3.1.0'
 ```
@@ -242,4 +242,4 @@ support, add the following global to the top of your `/ios/Podfile` file:
 
 ```ruby
 $RNFirebaseAsStaticFramework = true
-``` 
+```

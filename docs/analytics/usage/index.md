@@ -70,8 +70,8 @@ function App() {
 
 ## Pre-defined Events
 
-To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among 
-different types of apps, including retail and ecommerce, travel, and gaming apps. To learn more about these events and 
+To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among
+different types of apps, including retail and ecommerce, travel, and gaming apps. To learn more about these events and
 when to use them, browse the [Events and properties](https://support.google.com/analytics/answer/9322688?hl=en&ref_topic=9267641)
 articles in the Firebase Help Center.
 

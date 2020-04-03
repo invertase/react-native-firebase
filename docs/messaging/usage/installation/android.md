@@ -34,6 +34,7 @@ dependencies {
 Import and apply the React Native Firebase module package to your `/android/app/src/main/java/**/MainApplication.java` file:
 
 ### 3.1 Import the package
+
 Add the following underneath
 `import com.facebook.react.ReactActivity;`:
 
@@ -42,6 +43,7 @@ import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 ```
 
 ### 3.2 Add the package to the registry
+
 Add the following within the `MainActivity` class:
 
 ```java
@@ -61,4 +63,3 @@ Once the above steps have been completed, rebuild your Android project:
 ```bash
 npx react-native run-android
 ```
-

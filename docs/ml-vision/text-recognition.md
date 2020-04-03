@@ -30,8 +30,8 @@ async function processDocument(localPath) {
   const processed = await vision().cloudDocumentTextRecognizerProcessImage(localPath);
 
   console.log('Found text in document: ', processed.text);
-  
-  processed.blocks.forEach((block) => {
+
+  processed.blocks.forEach(block => {
     console.log('Found block with text: ', block.text);
     console.log('Confidence in block: ', block.confidence);
     console.log('Languages found in block: ', block.recognizedLanguages);
@@ -41,8 +41,7 @@ async function processDocument(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/text-document.jpg`;
 
-processDocument(localFile)
-  .then(() => console.log('Finished processing file.'));
+processDocument(localFile).then(() => console.log('Finished processing file.'));
 ```
 
 To learn more about the available data on a processed document, view the [`VisionDocumentText`](/reference/ml-vision/visiondocumenttext)
@@ -68,7 +67,7 @@ View the [`VisionCloudDocumentTextRecognizerOptions`](/reference/ml-vision/visio
 # On-device Text Recognition
 
 Running the ML Kit service on a device requires the `ml_vision_ocr_model` to be download to the device. Although the results
-of on-device processing will be faster and more accurate, including the model in your application will increase the size 
+of on-device processing will be faster and more accurate, including the model in your application will increase the size
 of the application.
 
 ## Enable the model
@@ -107,8 +106,8 @@ async function processDocument(localPath) {
   const processed = await vision().textRecognizerProcessImage(localPath);
 
   console.log('Found text in document: ', processed.text);
-  
-  processed.blocks.forEach((block) => {
+
+  processed.blocks.forEach(block => {
     console.log('Found block with text: ', block.text);
     console.log('Confidence in block: ', block.confidence);
     console.log('Languages found in block: ', block.recognizedLanguages);
@@ -118,6 +117,5 @@ async function processDocument(localPath) {
 // Local path to file on the device
 const localFile = `${utils.FilePath.PICTURES_DIRECTORY}/text-document.jpg`;
 
-processDocument(localFile)
-  .then(() => console.log('Finished processing file.'));
+processDocument(localFile).then(() => console.log('Finished processing file.'));
 ```

@@ -39,7 +39,7 @@ To get started, you need to define some parameters over on the [Firebase Console
 
 ![Firebase Console - Remote Config](https://images.prismic.io/invertase/87dc40bd-0da7-4d83-a87c-b12698b9818f_remote-config-console.png?auto=compress,format)
 
-Each parameter is assigned a unique "key" and values. The values can be broken down to target specific conditions (such as Android or iOS). In the above example, 
+Each parameter is assigned a unique "key" and values. The values can be broken down to target specific conditions (such as Android or iOS). In the above example,
 only Android devices would receive `enabled` for the `awesome_new_feature` parameter.
 
 ## Default values
@@ -47,10 +47,9 @@ only Android devices would receive `enabled` for the `awesome_new_feature` param
 Before fetching the parameters from Firebase, it is first important to set some default values. Default values
 help ensure that your application code runs as expected in scenarios where the device has not yet retrieved the values.
 
-
 An example of this is having no network or you have not yet fetched them within your own code.
 
-Setting default values helps to ensure that both the local device & Firebase servers are both in sync. Call the 
+Setting default values helps to ensure that both the local device & Firebase servers are both in sync. Call the
 `setDefaults` method early on in your application:
 
 ```js
@@ -83,18 +82,18 @@ remoteConfig()
     awesome_new_feature: 'disabled',
   })
   .then(() => remoteConfig().fetchAndActivate())
-  .then((activated) => {
+  .then(activated => {
     if (activated) {
-      console.log('Defaults set, fetched & activated!');    
+      console.log('Defaults set, fetched & activated!');
     } else {
-      console.log('Defaults set, however activation failed.');    
+      console.log('Defaults set, however activation failed.');
     }
   });
 ```
 
 ## Reading values
 
-With the defaults set and the remote values fetched from Firebase, we can now use the `getValue` method to get the 
+With the defaults set and the remote values fetched from Firebase, we can now use the `getValue` method to get the
 value by it's key. For example...
 
 ```js
@@ -140,7 +139,7 @@ Although Remote Config is a data-store, it is not designed for frequent reads - 
 (default is 12 hours). By design, this prevents the values being able to change frequently and potentially cause users
 confusion.
 
-You can however specify your own cache length by specifically calling the `fetch` method with the number of seconds to 
+You can however specify your own cache length by specifically calling the `fetch` method with the number of seconds to
 cache the values for:
 
 ```js

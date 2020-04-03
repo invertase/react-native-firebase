@@ -5,7 +5,7 @@ next: /crashlytics/usage
 previous: /app/usage
 ---
 
-The App module also provides access to some handy utility methods which have been exposed to aid with your 
+The App module also provides access to some handy utility methods which have been exposed to aid with your
 development.
 
 # File Paths
@@ -31,13 +31,13 @@ and screenshots—in the Firebase console.
 
 It is useful to change the apps configuration if it is being run in Test Lab, for example disabling Analytics
 data collection. Such functionality can be carried out by taking advantage of the `isRunningInTestLab`.
- 
+
 > Be aware, `isRunningInTestLab` is Android only property!
 
 ```js
 import { utils } from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
- 
+
 async function bootstrap() {
   if (utils().isRunningInTestLab) {
     await analytics().setAnalyticsCollectionEnabled(false);

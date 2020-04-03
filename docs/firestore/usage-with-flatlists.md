@@ -15,7 +15,7 @@ on our application.
 
 # Setup state
 
-First, setup a component which will display the list of data. The component will have 2 separate states; `loading` and 
+First, setup a component which will display the list of data. The component will have 2 separate states; `loading` and
 `users`:
 
 ```jsx
@@ -36,7 +36,7 @@ function Users() {
 
 # useEffect hook
 
-Next, we'll setup a hook with `useEffect`. This hook will trigger when our components mount, and we'll then subscribe to 
+Next, we'll setup a hook with `useEffect`. This hook will trigger when our components mount, and we'll then subscribe to
 the "Users" collection documents:
 
 ```jsx
@@ -49,9 +49,11 @@ function Users() {
   const [users, setUsers] = useState([]); // Initial empty array of users
 
   useEffect(() => {
-    const subscriber = firestore().collection('Users').onSnapshot(() => {
-      // see next step
-    });
+    const subscriber = firestore()
+      .collection('Users')
+      .onSnapshot(() => {
+        // see next step
+      });
 
     // Unsubscribe from events when no longer in use
     return () => subscriber();
@@ -73,19 +75,21 @@ we can use the `id` of a document:
 
 ```js
 useEffect(() => {
-  const subscriber = firestore().collection('Users').onSnapshot((querySnapshot) => {
-    const users = [];
- 
-    querySnapshot.forEach((documentSnapshot) => {
-      users.push({
-        ...documentSnapshot.data(),
-        key: documentSnapshot.id,
-      });
-    });
+  const subscriber = firestore()
+    .collection('Users')
+    .onSnapshot(querySnapshot => {
+      const users = [];
 
-    setUsers(users);
-    setLoading(false);
-  });
+      querySnapshot.forEach(documentSnapshot => {
+        users.push({
+          ...documentSnapshot.data(),
+          key: documentSnapshot.id,
+        });
+      });
+
+      setUsers(users);
+      setLoading(false);
+    });
 
   // Unsubscribe from events when no longer in use
   return () => subscriber();
@@ -93,7 +97,7 @@ useEffect(() => {
 ```
 
 Once the initial set of documents is returned, we update the `users` state with our raw object data and set the `loading`
-state to `false`. We can now 
+state to `false`. We can now
 
 # Integration
 
@@ -126,4 +130,4 @@ function Users() {
 ```
 
 With little effort, our list will automatically update in realtime whenever a document is added/removed/modified!
-This functionality can be further manipulated to respond to user filters via [Querying](/firestore/usage#querying) if required. 
+This functionality can be further manipulated to respond to user filters via [Querying](/firestore/usage#querying) if required.

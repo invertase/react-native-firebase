@@ -15,7 +15,7 @@ end-user consent prior to using the Firebase Authentication phone number sign-in
 
 > Firebase Phone Auth is not supported in all countries. Please see their [FAQs](https://firebase.google.com/support/faq/#develop) for more information.
 
-Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers). 
+Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 # Sign-in
 
@@ -62,10 +62,7 @@ function PhoneSignIn() {
   return (
     <>
       <TextInput value={code} onChangeText={text => setCode(text)} />
-      <Button
-        title="Confirm Code"
-        onPress={() => confirmCode()}
-      /> 
+      <Button title="Confirm Code" onPress={() => confirmCode()} />
     </>
   );
 }
@@ -85,5 +82,5 @@ On the [Firebase Console](https://console.firebase.google.com/project/_/authenti
 
 Enter a new phone number (e.g. `+44 7444 555666`) and a test code (e.g. `123456`).
 
-Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will 
-cause a successful sign-in. 
+Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will
+cause a successful sign-in.

@@ -8,9 +8,9 @@ description: Additional Android steps for Crashlytics integration
 # Adding Fabric Gradle Tools
 
 These steps are required, if you do not add these your app will most likely crash at startup with the following Error:
- 
+
 "The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration.
-Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."_
+Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."\_
 
 ## 1. Add the Fabric Maven repository
 
@@ -56,9 +56,9 @@ apply plugin: 'io.fabric'
 // ..
 ```
 
-## 4. (Optional) Enable Crashlytics NDK reporting 
+## 4. (Optional) Enable Crashlytics NDK reporting
 
-Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture 
+Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture
 crashes originating from the Yoga layout engine.
 
 Add the `crashlytics` block line to the `android/app/build.gradle` file:

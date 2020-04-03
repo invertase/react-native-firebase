@@ -27,8 +27,8 @@ you can follow the manual installation steps for [iOS](/iid/usage/installation/i
 
 # What does it do
 
-Instance ID provides a simple API to generate security tokens that authorize third parties to access your apps server side 
-managed resources. 
+Instance ID provides a simple API to generate security tokens that authorize third parties to access your apps server side
+managed resources.
 
 An example of this is sending messages via Firebase Cloud Messaging.
 
@@ -47,7 +47,7 @@ async function getInstanceId() {
 }
 ```
 
-## Retrieving a token 
+## Retrieving a token
 
 Returns the token that authorizes performing actions on behalf of this application instance.
 
