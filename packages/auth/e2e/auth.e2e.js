@@ -905,4 +905,110 @@ describe('auth()', () => {
       should.not.exist(resetKeychain);
     });
   });
+
+  describe('validation with signInWithEmailAndPassword', () => {
+    it('it should return an error for signing in an non string based email', () => {
+      (() => {
+        firebase.auth().signInWithEmailAndPassword(0);
+      }).should.throw(
+        '[auth/argument-error] signInWithEmailAndPassword failed: First argument "email" must be a valid string.',
+      );
+    });
+
+    it('it should return an error for signing in an non string based password', () => {
+      (() => {
+        firebase.auth().signInWithEmailAndPassword('test@test.com', 0);
+      }).should.throw(
+        '[auth/argument-error] signInWithEmailAndPassword failed: Second argument "password" must be a valid string.',
+      );
+    });
+
+    it('it should return an error for signing in an empty string based email', () => {
+      new Promise((resolve, reject) => {
+        const successCb = () => {
+          reject(new Error('Should not have successfully resolved.'));
+        };
+
+        const failureCb = error => {
+          error.code.should.equal('auth/argument-error');
+          error.message.should.containEql('The email address is badly formatted.');
+          resolve();
+        };
+
+        return firebase
+          .auth()
+          .fetchSignInMethodsForEmail('', 'test password')
+          .then(successCb)
+          .catch(failureCb);
+      });
+    });
+
+    it('it should return an error for signing in an non string based password', () => {
+      new Promise((resolve, reject) => {
+        const successCb = () => {
+          reject(new Error('Should not have successfully resolved.'));
+        };
+
+        const failureCb = error => {
+          error.code.should.equal('auth/invalid-password');
+          error.message.should.containEql(
+            'The password is invalid or the user does not have a password.',
+          );
+          resolve();
+        };
+
+        return firebase
+          .auth()
+          .fetchSignInMethodsForEmail('test@test.com', 0)
+          .then(successCb)
+          .catch(failureCb);
+      });
+    });
+
+    it('it should return an error for signing in an empty string based password', () => {
+      (() => {
+        firebase.auth().signInWithEmailAndPassword('test@tes.com', 0);
+      }).should.throw(
+        '[auth/argument-error] signInWithEmailAndPassword failed: Second argument "password" must be a valid string.',
+      );
+    });
+  });
+
+  describe('validation with createUserWithEmailAndPassword', () => {
+    it('it should return an error for signing in an non string based email', () => {
+      (() => {
+        firebase.auth().createUserWithEmailAndPassword(0);
+      }).should.throw(
+        '[auth/argument-error] createUserWithEmailAndPassword failed: First argument "email" must be a valid string.',
+      );
+    });
+
+    it('it should return an error for signing in an non string based email', () => {
+      (() => {
+        firebase.auth().createUserWithEmailAndPassword(0);
+      }).should.throw(
+        '[auth/argument-error] createUserWithEmailAndPassword failed: First argument "email" must be a valid string.',
+      );
+    });
+
+    it('it should return an error for signing in an empty string based email', () => {
+      new Promise((resolve, reject) => {
+        const successCb = () => {
+          reject(new Error('Should not have successfully resolved.'));
+        };
+
+        const failureCb = error => {
+          error.code.should.equal('auth/argument-error');
+          error.message.should.containEql('The email address is badly formatted.');
+          resolve();
+        };
+
+        return firebase
+          .auth()
+          .fetchSignInMethodsForEmail('', 'test password')
+          .then(successCb)
+          .catch(failureCb);
+      });
+    });
+  });
 });

@@ -105,6 +105,6 @@ export class FirebaseError extends Error {
   constructor(code, message) {
     super(message);
     this.code = code;
-    this.message = `[${code}] ${messsage}`;
+    this.message = `[${code}] ${message}`;
   }
 }
