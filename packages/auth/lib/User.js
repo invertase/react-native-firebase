@@ -40,7 +40,12 @@ export default class User {
   }
 
   get metadata() {
-    return this._user.metadata;
+    const { metadata } = this._user;
+
+    return {
+      lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
+      creationTime: new Date(metadata.creationTime).toISOString(),
+    };
   }
 
   get phoneNumber() {

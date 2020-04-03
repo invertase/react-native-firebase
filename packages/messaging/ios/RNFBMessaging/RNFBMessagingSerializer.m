@@ -1,4 +1,3 @@
-//
 /**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,7 @@
  *
  */
 
-
+#import <React/RCTConvert.h>
 #import "RNFBMessagingSerializer.h"
 
 @implementation RNFBMessagingSerializer
@@ -33,62 +32,161 @@
 }
 
 + (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage {
-  return [self remoteMessageAppDataToDict:remoteMessage.appData withMessageId:remoteMessage.messageID];
+  return [self remoteMessageUserInfoToDict:remoteMessage.appData];
 }
 
++ (NSDictionary *)notificationToDict:(UNNotification *)notification {
+  return [self remoteMessageUserInfoToDict:notification.request.content.userInfo];
+}
 
-+ (NSDictionary *)remoteMessageAppDataToDict:(NSDictionary *)appData withMessageId:(nullable NSString *)messageId {
-  NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
++ (NSDictionary *)remoteMessageUserInfoToDict:(NSDictionary *)userInfo {
   NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *notification = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary *notificationIOS = [[NSMutableDictionary alloc] init];
 
-  if (messageId != nil) {
-    message[@"messageId"] = messageId;
-  }
-
-  for (id key in appData) {
-    // messageId
+  // message.data
+  for (id key in userInfo) {
+    // message.messageId
     if ([key isEqualToString:@"gcm.message_id"] || [key isEqualToString:@"google.message_id"] || [key isEqualToString:@"message_id"]) {
-      message[@"messageId"] = appData[key];
+      message[@"messageId"] = userInfo[key];
       continue;
     }
 
-    // messageType
+    // message.messageType
     if ([key isEqualToString:@"message_type"]) {
-      message[@"messageType"] = appData[key];
+      message[@"messageType"] = userInfo[key];
       continue;
     }
 
-    // collapseKey
+    // message.collapseKey
     if ([key isEqualToString:@"collapse_key"]) {
-      message[@"collapseKey"] = appData[key];
+      message[@"collapseKey"] = userInfo[key];
       continue;
     }
 
-    // from
+    // message.from
     if ([key isEqualToString:@"from"]) {
-      message[@"from"] = appData[key];
+      message[@"from"] = userInfo[key];
       continue;
     }
 
-    // sentTime
+    // message.sentTime
     if ([key isEqualToString:@"google.c.a.ts"]) {
-      message[@"sentTime"] = appData[key];
-    }
-
-    // to
-    if ([key isEqualToString:@"to"] || [key isEqualToString:@"google.to"]) {
-      message[@"to"] = appData[key];
-    }
-
-    // skip keys that shouldn't be included
-    if ([key isEqualToString:@"notification"] || [key hasPrefix:@"gcm."] || [key hasPrefix:@"google."]) {
+      message[@"sentTime"] = userInfo[key];
       continue;
     }
 
-    data[key] = appData[key];
+    // message.to
+    if ([key isEqualToString:@"to"] || [key isEqualToString:@"google.to"]) {
+      message[@"to"] = userInfo[key];
+      continue;
+    }
+
+    // build data dict from remaining keys but skip keys that shouldn't be included in data
+    if (
+        [key isEqualToString:@"aps"] ||
+            [key hasPrefix:@"gcm."] ||
+            [key hasPrefix:@"google."]
+        ) {
+      continue;
+    }
+    data[key] = userInfo[key];
+  }
+  message[@"data"] = data;
+
+  if (userInfo[@"aps"] != nil) {
+    NSDictionary *apsDict = userInfo[@"aps"];
+    // message.category
+    if (apsDict[@"category"] != nil) {
+      message[@"category"] = apsDict[@"category"];
+    }
+
+    // message.threadId
+    if (apsDict[@"thread-id"] != nil) {
+      message[@"threadId"] = apsDict[@"thread-id"];
+    }
+
+    // message.contentAvailable
+    if (apsDict[@"content-available"] != nil) {
+      message[@"contentAvailable"] = @([RCTConvert BOOL:apsDict[@"content-available"]]);
+    }
+
+    // message.mutableContent
+    if (apsDict[@"mutable-content"] != nil && [apsDict[@"mutable-content"] isEqualToString:@"1"]) {
+      message[@"mutableContent"] = @([RCTConvert BOOL:apsDict[@"mutable-content"]]);
+    }
+
+    // message.notification.*
+    if (apsDict[@"alert"] != nil) {
+      // can be a string or dictionary
+      if ([apsDict[@"alert"] isKindOfClass:[NSString class]]) {
+        // message.notification.title
+        notification[@"title"] = apsDict[@"alert"];
+      } else if ([apsDict[@"alert"] isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *apsAlertDict = apsDict[@"alert"];
+
+        // message.notification.title
+        if (apsAlertDict[@"title"] != nil) {
+          notification[@"title"] = apsAlertDict[@"title"];
+        }
+
+        // message.notification.body
+        if (apsAlertDict[@"body"] != nil) {
+          notification[@"body"] = apsAlertDict[@"body"];
+        }
+
+        // iOS only
+        // message.notification.ios.subtitle
+        if (apsAlertDict[@"subtitle"] != nil) {
+          notificationIOS[@"subtitle"] = apsAlertDict[@"subtitle"];
+        }
+
+        // iOS only
+        // message.notification.ios.badge
+        if (apsAlertDict[@"badge"] != nil) {
+          notificationIOS[@"badge"] = apsAlertDict[@"badge"];
+        }
+      }
+
+
+      notification[@"ios"] = notificationIOS;
+      message[@"notification"] = notification;
+    }
+
+    // message.notification.ios.sound
+    if (apsDict[@"sound"] != nil) {
+      if ([apsDict[@"sound"] isKindOfClass:[NSString class]]) {
+        // message.notification.ios.sound
+        notification[@"sound"] = apsDict[@"sound"];
+      } else if ([apsDict[@"sound"] isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *apsSoundDict = apsDict[@"sound"];
+        NSMutableDictionary *notificationIOSSound = [[NSMutableDictionary alloc] init];
+
+        // message.notification.ios.sound.name String
+        if (apsSoundDict[@"name"] != nil) {
+          notificationIOSSound[@"name"] = apsSoundDict[@"name"];
+        }
+
+        // message.notification.ios.sound.critical Boolean
+        if (apsSoundDict[@"critical"] != nil) {
+          notificationIOSSound[@"critical"] = @([RCTConvert BOOL:apsSoundDict[@"critical"]]);
+        }
+
+        // message.notification.ios.sound.volume Number
+        if (apsSoundDict[@"volume"] != nil) {
+          notificationIOSSound[@"volume"] = apsSoundDict[@"volume"];
+        }
+
+        // message.notification.ios.sound
+        notificationIOS[@"sound"] = notificationIOSSound;
+      }
+
+      notification[@"ios"] = notificationIOS;
+      message[@"notification"] = notification;
+    }
   }
 
-  message[@"data"] = data;
   return message;
 }
 

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h2 align="center">React Native Firebase - Messaging</h2>
@@ -21,9 +21,9 @@
 
 ----
 
-React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a 
-cost free service, allowing for server-device and device-device communication. 
-The React Native Firebase Messaging module provides a simple JavaScript API to 
+React Native Firebase provides native integration of Firebase Cloud Messaging (FCM) for both Android & iOS. FCM is a
+cost free service, allowing for server-device and device-device communication.
+The React Native Firebase Messaging module provides a simple JavaScript API to
 interact with FCM.
 
 [> Learn More](https://firebase.google.com/products/cloud-messaging/)
@@ -38,9 +38,13 @@ yarn add @react-native-firebase/messaging
 
 ## Documentation
 
-- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/messaging/quick-start)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=messaging)
-- [Reference](https://invertase.io/oss/react-native-firebase/v6/messaging/reference)
+- [Quick Start](https://rnfirebase.io/messaging/usage)
+- [Reference](https://rnfirebase.io/reference/messaging)
+
+### Additional Topics
+- [iOS Permissions](https://rnfirebase.io/messaging/ios-permissions)
+- [Notifications](https://rnfirebase.io/messaging/notifications)
+- [Server Integration](https://rnfirebase.io/messaging/server-integration)
 
 ## License
 
@@ -49,14 +53,9 @@ yarn add @react-native-firebase/messaging
 ----
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
-  </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 

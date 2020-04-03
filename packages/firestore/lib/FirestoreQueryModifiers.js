@@ -17,6 +17,7 @@
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
+import { DOCUMENT_ID } from './FirestoreFieldPath';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -285,13 +286,19 @@ export default class FirestoreQueryModifiers {
       for (let k = 0; k < this._orders.length; k++) {
         const order = this._orders[k];
         const orderFieldPath = order.fieldPath;
-        // Any where() fieldPath parameter cannot match any orderBy() parameter
         if (filter.operator === OPERATORS['==']) {
+          // Any where() fieldPath parameter cannot match any orderBy() parameter when '==' operand is invoked
           if (filterFieldPath === orderFieldPath) {
             throw new Error(
               `Invalid query. Query.orderBy() parameter: ${orderFieldPath} cannot be the same as your Query.where() fieldPath parameter: ${filterFieldPath}`,
             );
           }
+        }
+
+        if (filterFieldPath === DOCUMENT_ID._toPath() && orderFieldPath !== DOCUMENT_ID._toPath()) {
+          throw new Error(
+            "Invalid query. Query.where() fieldPath parameter: 'FirestoreFieldPath' cannot be used in conjunction with a different Query.orderBy() parameter",
+          );
         }
 
         if (INEQUALITY[filter.operator]) {

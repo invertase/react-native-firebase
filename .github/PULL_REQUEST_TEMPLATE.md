@@ -1,7 +1,6 @@
 <!-- Thanks for submitting a pull request! Please provide enough information so that others can review your pull request properly. -->
 <!-- If this PR fixes an issue, type "Fixes #issueNumber" to automatically close the issue when the PR is merged. -->
 
-
 ### Summary
 
 <!-- Explain the **motivation** for making this change e.g. what existing problem does the pull request solve? -->
@@ -10,7 +9,7 @@
 
 - [ ] Supports `Android`
 - [ ] Supports `iOS`
-- [ ] `e2e` tests added or updated in packages/**/e2e
+- [ ] `e2e` tests added or updated in packages/\*\*/e2e
 - [ ] Flow types updated
 - [ ] Typescript types updated
 

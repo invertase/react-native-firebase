@@ -182,8 +182,17 @@ export default class StorageReference extends ReferenceBase {
       validateMetadata(metadata);
     }
 
-    return Base64.fromData(data).then(({ string, format }) =>
-      this.putString(string, format, metadata),
+    return new StorageUploadTask(this, task =>
+      Base64.fromData(data).then(({ string, format }) => {
+        const { _string, _format, _metadata } = this._updateString(string, format, metadata);
+        return this._storage.native.putString(
+          this.toString(),
+          _string,
+          _format,
+          _metadata,
+          task._id,
+        );
+      }),
     );
   }
 
@@ -191,48 +200,7 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
-    if (!isString(string)) {
-      throw new Error(
-        "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
-      );
-    }
-
-    if (!Object.values(StorageStatics.StringFormat).includes(format)) {
-      throw new Error(
-        `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
-          StorageStatics.StringFormat,
-        ).join(',')}.`,
-      );
-    }
-
-    if (!isUndefined(metadata)) {
-      validateMetadata(metadata);
-    }
-
-    let _string = string;
-    let _format = format;
-    let _metadata = metadata;
-
-    if (format === StorageStatics.StringFormat.RAW) {
-      _string = Base64.btoa(_string);
-      _format = StorageStatics.StringFormat.BASE64;
-    } else if (format === StorageStatics.StringFormat.DATA_URL) {
-      const { mediaType, base64String } = getDataUrlParts(_string);
-      if (isUndefined(base64String)) {
-        throw new Error(
-          'firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.',
-        );
-      }
-
-      if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
-        if (isUndefined(metadata)) {
-          _metadata = {};
-        }
-        _metadata.contentType = mediaType;
-        _string = base64String;
-        _format = StorageStatics.StringFormat.BASE64;
-      }
-    }
+    const { _string, _format, _metadata } = this._updateString(string, format, metadata);
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
@@ -305,6 +273,52 @@ export default class StorageReference extends ReferenceBase {
     return new StorageUploadTask(this, task =>
       this._storage.native.putFile(this.toString(), toFilePath(filePath), metadata, task._id),
     );
+  }
+
+  _updateString(string, format, metadata) {
+    if (!isString(string)) {
+      throw new Error(
+        "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
+      );
+    }
+
+    if (!Object.values(StorageStatics.StringFormat).includes(format)) {
+      throw new Error(
+        `firebase.storage.StorageReference.putString(_, *, _) 'format' provided is invalid, must be one of ${Object.values(
+          StorageStatics.StringFormat,
+        ).join(',')}.`,
+      );
+    }
+
+    if (!isUndefined(metadata)) {
+      validateMetadata(metadata);
+    }
+
+    let _string = string;
+    let _format = format;
+    let _metadata = metadata;
+
+    if (format === StorageStatics.StringFormat.RAW) {
+      _string = Base64.btoa(_string);
+      _format = StorageStatics.StringFormat.BASE64;
+    } else if (format === StorageStatics.StringFormat.DATA_URL) {
+      const { mediaType, base64String } = getDataUrlParts(_string);
+      if (isUndefined(base64String)) {
+        throw new Error(
+          'firebase.storage.StorageReference.putString(*, _, _) invalid data_url string provided.',
+        );
+      }
+
+      if (isUndefined(metadata) || isUndefined(metadata.contentType)) {
+        if (isUndefined(metadata)) {
+          _metadata = {};
+        }
+        _metadata.contentType = mediaType;
+        _string = base64String;
+        _format = StorageStatics.StringFormat.BASE64;
+      }
+    }
+    return { _string, _metadata, _format };
   }
 }
 

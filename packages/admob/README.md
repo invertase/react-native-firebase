@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h2 align="center">React Native Firebase - AdMob</h2>
@@ -19,7 +19,7 @@
   <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
 </p>
 
-----
+---
 
 Google AdMob is a mobile advertising platform that can help you generate revenue from your app. React Native Firebase integrates with AdMob without requiring changes to your existing AdMob configuration.
 
@@ -35,30 +35,25 @@ yarn add @react-native-firebase/admob
 
 ## Documentation
 
- - [Quick Start](https://invertase.io/oss/react-native-firebase/v6/admob/quick-start)
- - [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=admob)
- - [Reference](https://invertase.io/oss/react-native-firebase/v6/admob/reference)
+- [Quick Start](https://rnfirebase.io/admob/usage)
+- [Reference](https://rnfirebase.io/reference/admob)
 
 ### Additional Topics
 
- - [European User Consent](https://invertase.io/oss/react-native-firebase/v6/admob/european-user-consent)
+- [European User Consent](https://rnfirebase.io/admob/european-user-consent)
+- [Displaying Adverts](https://rnfirebase.io/admob/displaying-ads)
 
 ## License
 
 - See [LICENSE](/LICENSE)
 
-----
+---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
-  </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 
-----
+---
