@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-types",
-  "version": "6.4.0-rc0",
+  "version": "6.4.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "@react-native-firebase/app-types",
   "files": [
