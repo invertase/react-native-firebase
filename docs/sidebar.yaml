@@ -11,6 +11,8 @@
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
   - '/contributing'
+- - Legacy Docs (<= v5)
+  - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
 - - AdMob
   - - - Usage
       - '/admob/usage'
