@@ -66,20 +66,15 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 
 ## Documentation
 
-- [Overview](https://invertase.io/oss/react-native-firebase)
-- [Quick Start](https://invertase.io/oss/react-native-firebase/quick-start)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides)
-- [Modules](https://invertase.io/oss/react-native-firebase/v6)
+- [Quick Start](https://rnfirebase.io/)
+- [Reference API](https://rnfirebase.io/reference)
 
 ## Contributing
 
-- [Overview](https://invertase.io/oss/react-native-firebase/contributing)
-- [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs-pm)
-- [Documentation](https://invertase.io/oss/react-native-firebase/contributing/documentation)
-- [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing-review)
-- [Marketing & Content](https://invertase.io/oss/react-native-firebase/contributing/marketing-content)
-- [Community](https://invertase.io/oss/react-native-firebase/contributing/community)
-- [Donating](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
+- [Overview](https://rnfirebase.io/contributing)
+- [Issues & PRs](https://rnfirebase.io/contributing#issues--prs)
+- [Documentation](https://rnfirebase.io/contributing#documentation)
+- [Community](https://rnfirebase.io/contributing#community)
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
