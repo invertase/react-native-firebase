@@ -5,6 +5,8 @@ icon: //static.invertase.io/assets/React-Native-Firebase.svg
 next: /typescript
 ---
 
+> Looking for the legacy `<= v5` React Native Firebase docs? [They are here](https://v5.rnfirebase.io/docs/v5.x.x/getting-started).
+
 React Native Firebase is the officially recommended collection of packages that brings React Native support for all Firebase services on both Android and iOS apps.
 
 # Prerequisites
