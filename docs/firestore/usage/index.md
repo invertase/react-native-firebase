@@ -36,7 +36,6 @@ latency or Internet connectivity.
 
 <Youtube id="QcsAb2RR52c" />
 
-
 # Usage
 
 ## Collections & Documents
