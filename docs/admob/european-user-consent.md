@@ -1,20 +1,21 @@
 ---
 title: European User Consent
 description: Understand how the EU User Consent Policy can be managed within AdMob and how it affects your application.
+next: /analytics/usage
+previous: /admob/displaying-ads
 ---
 
-# European User Consent
-
 Under the Google [EU User Consent Policy](https://www.google.com/about/company/consentstaging.html), you must make
- certain disclosures to your users in the European Economic Area (EEA) and obtain their consent to use cookies or
- other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy
- reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).
+certain disclosures to your users in the European Economic Area (EEA) and obtain their consent to use cookies or
+other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy
+reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).
 
 The React Native Firebase AdMob module provides out of the box support for helping to manage your users consent
 within your application. The `AdsConsent` helper which comes with the module wraps the Google Consent SDK for both
 Android & iOS, and provides a single JavaScript interface for both platforms.
 
 The `AdsConsent` helper & AdMob module provides out of the box support for:
+
 - Requesting consent for multiple publisher IDs.
 - Showing a Google-rendered consent form, listing all providers on your enabled mediation networks.
 - Manually handling user consent if you prefer not to use the Google-rendered consent form.
@@ -47,7 +48,15 @@ Within your projects `firebase.json` file, set the `admob_delay_app_measurement_
 }
 ```
 
-Once set, rebuild your application.
+Once set, rebuild your application:
+
+```bash
+# For iOS
+npx react-native run-ios
+
+# For Android
+npx react-native run-android
+```
 
 ### Requesting consent information
 
@@ -67,7 +76,9 @@ To request consent, call the method as early as possible within your app before 
 ```js
 import { AdsConsent } from '@react-native-firebase/admob';
 
-const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
+const consentInfo = await AdsConsent.requestInfoUpdate([
+  'pub-6189033257628123',
+]);
 ```
 
 The result of the method returns an `AdsConsentInfo` interface, which provides information about the users status and location:
@@ -109,7 +120,7 @@ You can configure the form to present the user with combinations of the followin
 
 You should review the consent text carefully: what appears by default is a message that might be appropriate if you use
 Google to monetize your app; but Google cannot provide legal advice on the consent text that is appropriate for you.
-To update consent text of the Google-rendered consent form, modify the `consentform.htm`l file included in the Consent SDK as required.
+To update consent text of the Google-rendered consent form, modify the `consentform.html` file included in the Consent SDK as required.
 
 > An [example of a Google-rendered](https://developers.google.com/admob/images/android_eu_consent_form.png) consent form.
 
@@ -119,7 +130,9 @@ You must provide a privacy policy URL.
 ```js
 import { AdsConsent, AdsConsentStatus } from '@react-native-firebase/admob';
 
-const consentInfo = await AdsConsent.requestInfoUpdate(['pub-6189033257628123']);
+const consentInfo = await AdsConsent.requestInfoUpdate([
+  'pub-6189033257628123',
+]);
 
 if (
   consentInfo.isRequestLocationInEeaOrUnknown &&
@@ -199,6 +212,7 @@ call the `addTestDevice(deviceId)` method.
 > Emulators are automatically whitelisted.
 
 To set a debug location, use the `setDebugGeography` method. It accepts 3 values:
+
 - **DISABLED**: Removes any previous debug locations.
 - **EEA**: Set the test device to be within the EEA.
 - **NOT_EEA**: Set the test device to be outside of the EEA.
@@ -206,7 +220,10 @@ To set a debug location, use the `setDebugGeography` method. It accepts 3 values
 For example:
 
 ```js
-import { AdsConsent, AdsConsentDebugGeography } from '@react-native-firebase/admob';
+import {
+  AdsConsent,
+  AdsConsentDebugGeography,
+} from '@react-native-firebase/admob';
 
 await AdsConsent.setDebugGeography(AdsConsentDebugGeography.EEA);
 ```
@@ -235,8 +252,6 @@ const rewardedAd = RewardedAd.createForAdRequest('AD_UNIT_ID', {
 The requested ad URL via the SDK will send a request with an additional parameter `&npa=1`, which will return a
 non-personalized ad.
 
->  The requestNonPersonalizedAdsOnly option can be applied to every supported ad format.
-
 ### Troubleshooting
 
 #### "Could not parse Event FE preflight response."
@@ -251,4 +266,4 @@ This is a common error which occurs on both Android & iOS when making a request 
   - Your account is disabled: This can occur if Google notices you have duplicate accounts. They will email you about this, and block you from entering the dashboard.
   - You have provided invalid payment information: If your account has no payment information set up, this seems to cause this error to trigger.
 
-If you are still struggling to present the consent form, reach out to AdMob support to investigate your account status.
+If you are still struggling to present the consent form, reach out to AdMob support to investigate your account status via https://support.google.com/admob

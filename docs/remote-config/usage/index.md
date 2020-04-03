@@ -1,0 +1,173 @@
+---
+title: Remote Config
+description: Installation and getting started with Remote Config.
+icon: //static.invertase.io/assets/firebase/remote-config.svg
+next: /perf/usage
+previous: /ml-vision/face-detection
+---
+
+# Installation
+
+This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
+[Getting Started](/) documentation.
+
+```bash
+# Install & setup the app module
+yarn add @react-native-firebase/app
+
+# Install the remote-config module
+yarn add @react-native-firebase/remote-config
+
+# If you're developing your app using iOS, run this command
+cd ios/ && pod install
+```
+
+If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
+you can follow the manual installation steps for [iOS](/remote-config/usage/installation/ios) and [Android](/remote-config/usage/installation/android).
+
+# What does it do
+
+Remote Config allows you to change the appearance and/or functionality of your app without requiring an app update.
+Remote Config values are input into the Firebase console and accessible via a JavaScript API. This gives you full control
+over when and how these Remote Config values are applied and affect your application.
+
+<Youtube id="_CXXVFPO6f0" />
+
+# Usage
+
+To get started, you need to define some parameters over on the [Firebase Console](https://console.firebase.google.com/project/_/config).
+
+![Firebase Console - Remote Config](https://images.prismic.io/invertase/87dc40bd-0da7-4d83-a87c-b12698b9818f_remote-config-console.png?auto=compress,format)
+
+Each parameter is assigned a unique "key" and values. The values can be broken down to target specific conditions (such as Android or iOS). In the above example, 
+only Android devices would receive `enabled` for the `awesome_new_feature` parameter.
+
+## Default values
+
+Before fetching the parameters from Firebase, it is first important to set some default values. Default values
+help ensure that your application code runs as expected in scenarios where the device has not yet retrieved the values.
+
+
+An example of this is having no network or you have not yet fetched them within your own code.
+
+Setting default values helps to ensure that both the local device & Firebase servers are both in sync. Call the 
+`setDefaults` method early on in your application:
+
+```js
+import React, { useEffect } from 'react';
+import remoteConfig from '@react-native-firebase/remote-config';
+
+function App() {
+  useEffect(() => {
+    remoteConfig()
+      .setDefaults({
+        awesome_new_feature: 'disabled',
+      })
+      .then(() => {
+        console.log('Default values set.');
+      });
+  }, []);
+}
+```
+
+## Fetch & Activate
+
+Before reading the values from Firebase, we first need to pull them from Firebase (fetching) & then enable them on
+the device (activating). The `fetchAndActivate` API combines both tasks into a single flow:
+
+```js
+import remoteConfig from '@react-native-firebase/remote-config';
+
+remoteConfig()
+  .setDefaults({
+    awesome_new_feature: 'disabled',
+  })
+  .then(() => remoteConfig().fetchAndActivate())
+  .then((activated) => {
+    if (activated) {
+      console.log('Defaults set, fetched & activated!');    
+    } else {
+      console.log('Defaults set, however activation failed.');    
+    }
+  });
+```
+
+## Reading values
+
+With the defaults set and the remote values fetched from Firebase, we can now use the `getValue` method to get the 
+value by it's key. For example...
+
+```js
+const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
+
+if (awesomeNewFeature.value === 'enabled') {
+  enableAwesomeNewFeature();
+}
+```
+
+The API also provides a `getAll` method to read all parameters at once rather than by key:
+
+```js
+const parameters = remoteConfig().getAll();
+
+Object.entries(parameters).forEach(([key, parameter]) => {
+  console.log('Key: ', key);
+  console.log('Value: ', parameter.value);
+});
+```
+
+### Value source
+
+When a value is read, it contains source data about the parameter. As explained above, if a value is read before it has
+been fetched & activated then the value will fallback to the default value set. If you need to validate whether the value
+returned from the module was local or remote, the `source` property can be conditionally checked:
+
+```js
+const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
+
+if (awesomeNewFeature.source === 'remote') {
+  console.log('Parameter value was from the Firebase servers.');
+} else if (awesomeNewFeature.source === 'default') {
+  console.log('Parameter value was from a default value.');
+} else {
+  console.log('Parameter value was from a locally cached value.');
+}
+```
+
+## Caching
+
+Although Remote Config is a data-store, it is not designed for frequent reads - Firebase heavily caches the parameters
+(default is 12 hours). By design, this prevents the values being able to change frequently and potentially cause users
+confusion.
+
+You can however specify your own cache length by specifically calling the `fetch` method with the number of seconds to 
+cache the values for:
+
+```js
+// Fetch and cache for 5 minutes
+await remoteConfig().fetch(300);
+```
+
+To bypass caching fully, you can pass a value of `0`. Be warned Firebase may start to reject your requests
+if values are requested too frequently.
+
+You can also apply a global cache frequency by calling the `setConfigSettings` method with the `minimumFetchInterval` property:
+
+```js
+await remoteConfig().setConfigSettings({
+  minimumFetchInterval: 300,
+});
+```
+
+## Developer Mode
+
+Whilst developing your application, you may wish to frequently test how changing parameters impacts your application.
+The API provides a way to enable developer mode which bypasses caching all together.
+
+Set the `isDeveloperModeEnabled` flag to `true`:
+
+```js
+await remoteConfig().setConfigSettings({
+  isDeveloperModeEnabled: true,
+});
+```
