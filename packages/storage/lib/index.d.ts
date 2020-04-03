@@ -739,6 +739,11 @@ export namespace FirebaseStorageTypes {
    */
   export interface Task {
     /**
+     * Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
+     */
+    snapshot: null | TaskSnapshot;
+
+    /**
      * Pause the current Download or Upload task.
      *
      * #### Example
