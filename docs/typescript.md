@@ -57,14 +57,14 @@ For example, we may need to store the `User` in local state. Manually defining a
 
 We can easily access the types manually through the module though, for example:
 
-```jsx
+```ts
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
-  const [loading, setLoading] = useState < boolean > true;
-  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {
@@ -75,8 +75,6 @@ function App() {
       }
     });
   }, []);
-
-  // ...
 }
 
 export default App;
