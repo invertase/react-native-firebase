@@ -44,7 +44,7 @@ function PhoneSignIn() {
 
   async function confirmCode() {
     try {
-      await confirmation.confirm('12345');
+      await confirm.confirm(code);
     } catch (error) {
       console.log('Invalid code.');
     }
