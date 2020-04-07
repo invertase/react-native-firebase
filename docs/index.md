@@ -152,7 +152,7 @@ This module does not provide much functionality, therefore to use other Firebase
 ### Manual Linking
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/install/ios) and [Android](/install/android).
+you can follow the manual installation steps for [iOS](/install-ios) and [Android](/install-android).
 
 # Miscellaneous
 
