@@ -156,6 +156,15 @@ you can follow the manual installation steps for [iOS](/install-ios) and [Androi
 
 # Miscellaneous
 
+## Android Enabling Multidex
+
+As your application starts to grow with more native dependencies, your builds may start to fail with the common
+`Execution failed for task ':app:mergeDexDebug'` error. This error occurs when Android reaches the
+[64k methods](https://developer.android.com/studio/build/multidex) limit.
+
+One common solution is to [enable multidex](/enabling-multidex) support for Android. This is a common solution to solving
+the problem, however it is recommended you read the Android documentation to understand how it may impact your application.
+
 ## Hermes Support
 
 At this time, React Native Firebase does not support the [Hermes](https://hermesengine.dev/) JavaScript engine due to
