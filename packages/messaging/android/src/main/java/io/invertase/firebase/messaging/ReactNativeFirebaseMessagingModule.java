@@ -55,21 +55,24 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       initialNotification = null;
       return;
     } else {
-      Intent intent = getCurrentActivity().getIntent();
+      Activity activity = getCurrentActivity();
+      if (activity != null) {
+        Intent intent = activity.getIntent();
 
-      if (intent != null && intent.getExtras() != null) {
-        // messageId can be either one...
-        String messageId = intent.getExtras().getString("google.message_id");
-        if (messageId == null) messageId = intent.getExtras().getString("message_id");
+        if (intent != null && intent.getExtras() != null) {
+          // messageId can be either one...
+          String messageId = intent.getExtras().getString("google.message_id");
+          if (messageId == null) messageId = intent.getExtras().getString("message_id");
 
-        // only handle non-consumed initial notifications
-        if (messageId != null && initialNotificationMap.get(messageId) == null) {
-          RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+          // only handle non-consumed initial notifications
+          if (messageId != null && initialNotificationMap.get(messageId) == null) {
+            RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
 
-          if (remoteMessage != null) {
-            promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
-            initialNotificationMap.put(messageId, true);
-            return;
+            if (remoteMessage != null) {
+              promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
+              initialNotificationMap.put(messageId, true);
+              return;
+            }
           }
         }
       }
