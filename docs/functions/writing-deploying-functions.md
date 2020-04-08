@@ -1,6 +1,6 @@
 ---
-title: Writing & Deploying Functions
-description: Learn how to write, test & deploy to your Firebase project.
+title: Writing & Deploying Cloud Functions
+description: Learn how to write, test & deploy Cloud Functions to your Firebase project.
 next: /messaging/usage
 previous: /functions/usage
 ---
@@ -8,7 +8,7 @@ previous: /functions/usage
 Cloud Functions are a powerful asset to a developers workflow, allowing you to build complex backend tasks with
 minimal maintenance overhead. The following page outlines the steps required for writing, testing & deploying Cloud Functions to your Firebase project.
 
-# Environment Setup
+## Environment Setup
 
 Firebase provides a CLI which is required to build and deploy Cloud Functions. To install the CLI, install the firebase-tools package globally on your computer from your terminal:
 
@@ -52,7 +52,7 @@ myproject
                        # package.json) are installed
 ```
 
-# Writing a Function
+## Writing a Function
 
 The Firebase CLI has created a project structure and also installed a number of dependencies which will be used to build our Cloud Functions.
 
@@ -61,28 +61,28 @@ library to create mock data.
 
 ```bash
 cd functions/
-npm install faker --save-dev
+npm install faker
 ```
 
-Now it's time to write your first Cloud Function! Open up the generated `functions/index.js` file in your chosen editor.
+Now it's time to write our Cloud Function. Open up the generated `functions/index.js` file in your chosen editor.
 The CLI has already imported the `firebase-functions` package required to build a Cloud Function. Firebase uses
 [named exports](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export) to help identify
 functions. These exports are used to build the API endpoint name which will be accessible from our React Native application.
 
-For this tutorial, we are creating a product listing API. Go ahead and create a new HTTPS callable named function called products:
+For this tutorial, we are creating a product listing API. Go ahead and create a new HTTPS callable named function called `listProducts`:
 
 ```js
 // functions/index.js
 const functions = require('firebase-functions');
 
-exports.products = functions.https.onCall((data, context) => {
+exports.listProducts = functions.https.onCall((data, context) => {
   // ...
 });
 ```
 
-The onRequest callback returns two objects:
+The `onCall` callback returns two objects:
 
-We can now return an array of our products, generated from the `faker` library. As we are mocking a dataset, it's important
+We can now return an array of products, generated from the `faker` library. As we are mocking a dataset, it's important
 to keep consistent results for each request. The data should be generated before the request is received, rather than a
 new dataset being generated on each request:
 
@@ -110,7 +110,7 @@ exports.listProducts = functions.https.onCall((data, context) => {
 });
 ```
 
-## Testing functions
+### Testing your function
 
 Before deploying our functions project, we can run the `serve` command which builds a locally accessible instance of our
 Cloud Functions. Run the following command from within the `functions/` directory:
@@ -123,7 +123,7 @@ npm run serve
 Once booted, the CLI will be provide a local web server with the products endpoint openly available, e.g:
 
 ```
-functions: products: http://localhost:5000/rnfirebase-demo/us-central1/listProducts
+functions: listProducts: http://localhost:5000/rnfirebase-demo/us-central1/listProducts
 ```
 
 In your terminal (or browser), access the endpoint provided. Our list of generated products is ready for use.
@@ -132,11 +132,11 @@ In your terminal (or browser), access the endpoint provided. Our list of generat
 curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET  http://localhost:5000/rnfirebase-demo/us-central1/listProducts
 ```
 
-## Security
+### Security
 
-By default the endpoint will be open to the public when deployed. Firebase offers an out-of-the-box solution for handling
-authentication, which integrates with the [Authentication](/auth) module. To secure out endpoint, check whether the `auth`
-property exists on the endpoint:
+By default the endpoint will be publicly accessible when deployed. Firebase offers an out-of-the-box solution for handling
+authentication, which integrates with the [Authentication](/auth) module. To secure our endpoint for authenticated users only, check whether the `auth`
+property exists on the the function execution context:
 
 ```js
 exports.listProducts = functions.https.onCall((data, context) => {
@@ -148,24 +148,16 @@ exports.listProducts = functions.https.onCall((data, context) => {
 });
 ```
 
-When calling the function without authentication, an error will be thrown.
+When calling the function without authentication, an error response will be returned to the caller.
 
-If the user is authenticated, we can access the users data via the `context.auth` property. For example their unique ID
-will be available by accessing `context.auth.uid`.
+If the user is authenticated, we can access the users data via the `context.auth` property. For example their unique user indentifier will be available by accessing `context.auth.uid`.
 
-## Handling parameters
+### Handling function arguments
 
 A common requirement for endpoints is calling the endpoint with custom parameters. For example, rather than returning a list
-of 1000 products, we can paginate the data by passing an object to the calling method:
+of 1000 products, we can paginate the data by passing in arguments when calling our function.
 
-```js
-const { data } = await firebase.functions().httpsCallable('products')({
-  page: 1,
-  limit: 15,
-});
-```
-
-The parameters can be accessed from the `data` property when called:
+These arguments can be accessed via the `data` property when the function is executed, let's update our function code to support pagination arguments:
 
 ```js
 exports.listProducts = functions.https.onCall((data, context) => {
@@ -178,7 +170,7 @@ exports.listProducts = functions.https.onCall((data, context) => {
 });
 ```
 
-# Deploying Functions
+## Deploying Functions
 
 Once your functions are ready to be deployed, the project provides a `deploy` script which will upload all of your code
 onto the Firebase infrastructure and automatically provision production ready endpoints. Within the project, run the
@@ -193,4 +185,23 @@ Once complete, your Cloud Function will also be available from a publicly access
 
 ```
 https://us-central1-rnfirebase-demo-23aa8.cloudfunctions.net/listProducts
+```
+
+### Calling your function
+
+Once your function has been deployed you can now call it through the React Native Firebase Functions SDK in your application:
+
+
+```js
+import { firebase } from '@react-native-firebase/functions';
+
+// ...
+
+// note the name of our deployed function, 'listProducts', is referenced here:
+const { data } = await firebase.functions().httpsCallable('listProducts')({
+  page: 1,
+  limit: 15,
+});
+
+// ...
 ```

@@ -1,32 +1,34 @@
 ---
 title: iOS Permissions
-description: Request permissions from your users to allow messages to be received.
+description: Request permissions from your users to allow notifications to be displayed.
 next: /messaging/notifications
 previous: /messaging/usage
 ---
 
-# Understanding permissions
+## Understanding permissions
 
 Before diving into requesting notification permissions from your users, it is important to understand how iOS handles permissions.
 
-Notifications cannot be shown to users if the user has not granted your application permission. The overall notification permission of a single application can be either "granted" or "declined". Upon installing a new application, the default status is "declined".
+Notifications cannot be shown to users if the user has not "granted" your application permission. The overall notification permission of a single application can be either be "not determined", "granted" or "declined". Upon installing a new application, the default status is "not determined".
 
-In order to receive a "granted" status, you must request permission from your user (see below). The user can either accept or decline request to grant permissions. If granted, notifications will be delivered based on the permission settings which were requested. If the user declines the request, you cannot re-request permission. Instead they must manually enable notification permissions from the iOS Settings UI.
+In order to receive a "granted" status, you must request permission from your user (see below). The user can either accept or decline your request to grant permissions. If granted, notifications will be displayed based on the permission settings which were requested. 
 
-# Requesting permissions
+If the user declines the request, you cannot re-request permission, trying to request permission again will immediately return a "denied" status without any user interaction - instead the user must manually enable notification permissions from the iOS Settings UI.
+
+## Requesting permissions
 
 As explained in the [Usage](/messaging#ios---requesting-permissions) documentation, permission
-must be requested from your users in order to receive remote messages from FCM using the
+must be requested from your users in order to display remote notifications from FCM, via the
 `requestPermission` API:
 
 ```js
 import messaging from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const settings = await messaging().requestPermission();
+  const authorizationStatus = await messaging().requestPermission();
 
-  if (settings) {
-    console.log('Permission settings:', settings);
+  if (authorizationStatus) {
+    console.log('Permission status:', authorizationStatus);
   }
 }
 ```
@@ -36,17 +38,16 @@ Once a user has selected a permission status, iOS prevents the permission dialog
 - If the user declines permission, they must manually allow notifications via the Settings UI for your application.
 - If the user has accepted permission, notifications will be shown using the settings requested (e.g. with or without sound).
 
-## Permission settings
+### Permission settings
 
 Although overall notification permission can be granted, the permissions can be further broken down into settings.
-Settings are used by the device to control notifications, for example by alerting the user via sound. When requesting permission,
-you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
+
+Settings are used by the device to control notifications behaviour, for example alerting the user with sound. When requesting permission, you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
 
 ```js
 await messaging().requestPermission({
   sound: false,
   announcement: true,
-  inAppNotificationSettings: false,
   // ... other permission settings
 });
 ```
@@ -67,54 +68,56 @@ The settings provided will be stored by the device and will be visible in the iO
 If the permission dialog has already been presented to the user and you wish to update the existing permission settings
 (e.g. enabling sound), the setting will be silently updated and the `requestPermission` call will instantly resolve without showing a dialog.
 
-### Observing settings
+#### Reading current status
 
-In some cases, you may wish to observe what permission/settings have been granted on the device. The `requestPermission`
-API used above resolves with an object value containing the current settings. The settings contain information such as
-whether the user has specific settings enabled or disabled, and whether notification permission is enabled or disabled for the entire application.
+In some cases, you may wish to read the current permission status. The `requestPermission`
+API used above resolves an enum that returns the current status. 
 
-For example, to view whether the user has overall notification permission enabled or disabled:
+For example:
 
 ```js
 import messaging from '@react-native-firebase/messaging';
 
 async function checkApplicationPermission() {
-  const settings = await messaging.requestPermission();
+  const authorizationStatus = await messaging.requestPermission();
 
-  // settings only available on iOS
-  if (settings) {
-    console.log('User has notification permissions enabled');
+  if (authorizationStatus) {
+    console.log('User has notification permissions enabled, which may include provisional authorization.');
   } else {
     console.log('User has notification permissions disabled');
   }
 }
 ```
 
-The value of each setting returns a number value, which can be mapped to one of the following:
+The value returned is a number value, which can be mapped to one of the following values from `messaging.AuthorizationStatus`:
 
-- `-1` = `NOT_SUPPORTED`: The device either does not support the type of permission (the iOS API may be too low), or the permission has not been requested.
-- `0` = `DISABLED`: The setting has manually been disabled by the user in the iOS Settings UI.
-- `1` = `ENABLED`: The user has accept the permission & it is enabled.
+- `-1` = `messaging.AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
+- `0` = `messaging.AuthorizationStatus.DENIED`: The user has denied notification permissions.
+- `1` = `messaging.AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
+- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: Provisional authorization has been granted.
 
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
 sense during the flow of your application (e.g. starting a new chat), where the user would expect to receive such notifications.
 
-It is also possible to fetch the current permission settings without requesting permission, by calling the `hasPermission` API instead:
+It is also possible to fetch the current permission status without requesting permission, by calling the `hasPermission` API instead:
 
 ```js
-async function getExistingSettings() {
-  const settings = await messaging().hasPermission();
+import messaging from '@react-native-firebase/messaging';
 
-  if (settings) {
-    console.log('Current permission settings: ', settings);
+
+async function getExistingSettings() {
+  const authorizationStatus = await messaging().hasPermission();
+
+  if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+    console.log('Current permission status is AUTHORIZED: ', authorizationStatus);
   }
 }
 ```
 
-### Provisional permission
+### Provisional authorization
 
-Devices on iOS 12+ can take advantage of provisional permissions. This type of permission system allows for notification
-permission to be instantly granted without displaying a dialog. The permission allows notifications to be displayed quietly
+Devices on iOS 12+ can use provisional authorization. This type of permission system allows for notification
+permission to be instantly granted without displaying a dialog to your user. The permission allows notifications to be displayed quietly;
 
 - meaning they're only visible within the device notification center.
 

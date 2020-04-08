@@ -152,9 +152,18 @@ This module does not provide much functionality, therefore to use other Firebase
 ### Manual Linking
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/install/ios) and [Android](/install/android).
+you can follow the manual installation steps for [iOS](/install-ios) and [Android](/install-android).
 
 # Miscellaneous
+
+## Android Enabling Multidex
+
+As your application starts to grow with more native dependencies, your builds may start to fail with the common
+`Execution failed for task ':app:mergeDexDebug'` error. This error occurs when Android reaches the
+[64k methods](https://developer.android.com/studio/build/multidex) limit.
+
+One common solution is to [enable multidex](/enabling-multidex) support for Android. This is a common solution to solving
+the problem, however it is recommended you read the Android documentation to understand how it may impact your application.
 
 ## Hermes Support
 
