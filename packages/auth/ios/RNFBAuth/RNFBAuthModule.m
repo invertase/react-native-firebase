@@ -954,6 +954,17 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   NSString *message = [error localizedDescription];
   NSString *nativeErrorMessage = [error localizedDescription];
 
+  if(error.domain == @"FIRAuthErrorDomain"){
+      
+    message = @"DYNAMIC_LINK_NOT_ACTIVATED : FDL domain is not configured";
+    
+    return @{
+        @"code": code,
+        @"message": message,
+        @"nativeErrorMessage": nativeErrorMessage,
+    };
+  }
+
   if (code == nil)
     code = @"unknown";
 
