@@ -335,3 +335,38 @@ and caching. To disable this functionality, update the `database_persistence_ena
 ```
 
 To enable persistence, view the [Offline Support](/database/offline-support) documentation.
+
+# Change the database URL
+
+## Switch the database URL of the default app
+
+If the default installed firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL. 
+For example: 
+
+```js
+import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/database';
+
+const database = firebase.app().database('https://path-to-database.firebaseio.com');
+
+database.ref();
+```
+
+## Connect to a database of a secondary app
+
+If you want to address a database from a different firebase project, you will need to create a secondary app first
+(Read more on creating a secondary app here: https://rnfirebase.io/app/usage).
+For example:
+
+```js
+import firebase from '@react-native-firebase/app';
+import database from '@react-native-firebase/database';
+
+// create a secondary app
+const secondaryApp = await firebase.initalizeApp(credentials, config);
+
+// pass the secondary app instance to the database module
+const secondaryDatabase = database(secondaryApp);
+
+secondaryDatabase.ref();
+```
