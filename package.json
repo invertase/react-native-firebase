@@ -7,6 +7,7 @@
     "build:all:build": "lerna run build",
     "validate:all:js": "eslint . --ext .js,.jsx,.ts,.tsx",
     "validate:all:ts": "tsc --project .",
+    "validate:all:flow": "echo ''",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:link": "lerna link && lerna exec -- yarn link",
     "lerna:clean": "lerna clean",
