@@ -36,6 +36,7 @@
     "jet": "^0.6.1-0",
     "mocha": "^6.1.4",
     "nyc": "^14.1.1",
+    "react-native-port-patcher": "^1.0.4",
     "patch-package": "^6.2.2",
     "require-all": "3.0.0",
     "should": "^13.2.3",
