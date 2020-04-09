@@ -46,7 +46,7 @@
     "genversion": "^2.2.0",
     "lerna": "3.20.2",
     "rimraf": "^3.0.2",
-    "typedoc": "^0.17.4",
+    "typedoc": "^0.15.0",
     "typescript": "^3.8.3",
     "@types/react-native": "^0.62.0"
   },
