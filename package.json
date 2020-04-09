@@ -40,6 +40,7 @@
     "inquirer": "^6.2.2",
     "shelljs": "^0.8.3",
     "@react-native-community/eslint-config": "^1.0.0",
+    "react-native-port-patcher": "^1.0.4",
     "codecov": "^3.6.5",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
