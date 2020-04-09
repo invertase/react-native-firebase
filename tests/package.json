@@ -80,7 +80,7 @@
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11"
+          "type": "iPhone X"
         }
       },
       "ios.ci": {
@@ -88,7 +88,7 @@
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11"
+          "type": "iPhone X"
         }
       },
       "android.emu.debug": {
@@ -104,7 +104,7 @@
         "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11"
+          "type": "iPhone X"
         }
       },
       "android.emu.release": {
