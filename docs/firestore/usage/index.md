@@ -512,6 +512,9 @@ firestore()
 Transactions are a away to always ensure a write occurs with the latest information available on the server. Transactions
 never partially apply writes & all writes execute at the end of a successful transaction.
 
+> WARNING: due to a [known bug](https://github.com/invertase/react-native-firebase/issues/2805) in react-native-firebase v6 iOS,
+> transactions may cause data corruption. If you need transactions, consider downgrading to v5.
+
 Transactions are useful when you want to update a field's value based on its current value, or the value of some other field.
 If you simply want to write multiple documents without using the document's current state, a [batch write](#batch-write) would be more appropriate.
 
