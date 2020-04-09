@@ -100,6 +100,10 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  if ([[FIRAuth auth] canHandleNotification:userInfo]) {
+    completionHandler(UIBackgroundFetchResultNoData);
+    return;
+  }
   if (userInfo[@"gcm.message_id"]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       // TODO add support in a later version for calling completion handler directly from JS when user JS code complete
