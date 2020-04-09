@@ -58,8 +58,11 @@ for (let i = 0; i < PACKAGES.length; i++) {
 }
 
 before(async () => {
+  console.log('--->>> BEFORE DETOX INIT');
   await detox.init(config);
+  console.log('--->>> AFTER DETOX INIT');
   await jet.init();
+  console.log('--->>> AFTER JET INIT');
 });
 
 beforeEach(async function beforeEach() {

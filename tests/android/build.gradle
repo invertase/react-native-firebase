@@ -1,5 +1,6 @@
 buildscript {
   ext.kotlinVersion = '1.3.31'
+
   repositories {
     google()
     jcenter()
@@ -18,19 +19,6 @@ buildscript {
 }
 
 allprojects {
-  task downloadDependencies() {
-    description 'Download all dependencies to the Gradle cache'
-    doLast {
-      configurations.findAll().each { config ->
-        if (config.name.contains("minReactNative") && config.canBeResolved) {
-          print config.name
-          print '\n'
-          config.files
-        }
-      }
-    }
-  }
-
   println "${project.name} ${projectDir} ${rootDir}"
 
   repositories {
@@ -45,6 +33,7 @@ allprojects {
       url("$rootDir/../node_modules/jsc-android/dist")
     }
     maven {
+      // Detox
       url "$rootDir/../node_modules/detox/Detox-android"
     }
     jcenter()
