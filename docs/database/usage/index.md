@@ -324,8 +324,7 @@ If the default installed Firebase instance needs to address a different database
 For example:
 
 ```js
-import firebase from '@react-native-firebase/app';
-import '@react-native-firebase/database';
+import { firebase } from '@react-native-firebase/database';
 
 const database = firebase.app().database('https://path-to-database.firebaseio.com');
 
@@ -339,8 +338,7 @@ If you want to address a database from a different Firebase project, you will ne
 For example:
 
 ```js
-import firebase from '@react-native-firebase/app';
-import database from '@react-native-firebase/database';
+import database, { firebase } from '@react-native-firebase/database';
 
 // create a secondary app
 const secondaryApp = await firebase.initalizeApp(credentials, config);
