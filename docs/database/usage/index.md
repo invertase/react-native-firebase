@@ -334,7 +334,7 @@ database.ref();
 
 ## Connect to a database of a secondary app
 
-If you want to address a database from a different firebase project, you will need to create a secondary app first
+If you want to address a database from a different Firebase project, you will need to create a secondary app first
 (Read more on creating a secondary app here: https://rnfirebase.io/app/usage).
 For example:
 
