@@ -23,7 +23,7 @@ In the new build phase, add a new script into the text box:
 
 # 2. Rebuild the project
 
-Once the above steps have been completed, rebuild your Android project:
+Once the above steps have been completed, rebuild your iOS project:
 
 ```bash
 npx react-native run-ios
