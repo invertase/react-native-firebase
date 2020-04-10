@@ -318,6 +318,37 @@ database and the new [`DataSnapshot`](/reference/database/datasnapshot) containi
 It is important that you understand how to write rules in your firebase console to ensure that your data is secure.
 Please follow the firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
+# Using a secondary database
+
+If the default installed Firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.
+For example:
+
+```js
+import { firebase } from '@react-native-firebase/database';
+
+const database = firebase.app().database('https://path-to-database.firebaseio.com');
+
+database.ref();
+```
+
+## Connect to a database of a secondary app
+
+If you want to address a database from a different Firebase project, you will need to create a secondary app first
+(Read more on creating a secondary app here: https://rnfirebase.io/app/usage).
+For example:
+
+```js
+import database, { firebase } from '@react-native-firebase/database';
+
+// create a secondary app
+const secondaryApp = await firebase.initalizeApp(credentials, config);
+
+// pass the secondary app instance to the database module
+const secondaryDatabase = database(secondaryApp);
+
+secondaryDatabase.ref();
+```
+
 # firebase.json
 
 ## Disabling persistence
