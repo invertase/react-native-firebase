@@ -318,7 +318,7 @@ database and the new [`DataSnapshot`](/reference/database/datasnapshot) containi
 It is important that you understand how to write rules in your firebase console to ensure that your data is secure.
 Please follow the firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
-# Change the database URL
+# Using a secondary database
 
 ## Switch the database URL of the default app
 
