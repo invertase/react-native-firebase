@@ -318,30 +318,12 @@ database and the new [`DataSnapshot`](/reference/database/datasnapshot) containi
 It is important that you understand how to write rules in your firebase console to ensure that your data is secure.
 Please follow the firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
-# firebase.json
-
-## Disabling persistence
-
-By default the Realtime Database persists data on the user application, and is used by the SDKs for offline usage
-and caching. To disable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
-
-```json
-// <project-root>/firebase.json
-{
-  "react-native": {
-    "database_persistence_enabled": false
-  }
-}
-```
-
-To enable persistence, view the [Offline Support](/database/offline-support) documentation.
-
 # Change the database URL
 
 ## Switch the database URL of the default app
 
-If the default installed firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL. 
-For example: 
+If the default installed firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.
+For example:
 
 ```js
 import firebase from '@react-native-firebase/app';
@@ -370,3 +352,21 @@ const secondaryDatabase = database(secondaryApp);
 
 secondaryDatabase.ref();
 ```
+
+# firebase.json
+
+## Disabling persistence
+
+By default the Realtime Database persists data on the user application, and is used by the SDKs for offline usage
+and caching. To disable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "database_persistence_enabled": false
+  }
+}
+```
+
+To enable persistence, view the [Offline Support](/database/offline-support) documentation.
