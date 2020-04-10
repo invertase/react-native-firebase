@@ -320,9 +320,7 @@ Please follow the firebase Realtime Database documentation on [security](https:/
 
 # Using a secondary database
 
-## Switch the database URL of the default app
-
-If the default installed firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.
+If the default installed Firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.
 For example:
 
 ```js
