@@ -35,10 +35,19 @@ Import and apply the React Native Firebase module package to your `/android/app/
 
 ### 3.1 Import the package
 
+Add the following Java util packages:
+
+```java
+import java.util.List;
+import java.util.Arrays;
+```
+
 Add the following underneath
 `import com.facebook.react.ReactActivity;`:
 
 ```java
+import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.ReactPackage;
 import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 ```
 
@@ -50,7 +59,8 @@ Add the following within the `MainActivity` class:
 protected List<ReactPackage> getPackages() {
   return Arrays.asList(
     new MainReactPackage(),
-    new ReactNativeFirebaseMessagingPackage(),
+    new ReactNativeFirebaseMessagingPackage()
+  );
 }
 ```
 
