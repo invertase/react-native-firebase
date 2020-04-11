@@ -255,6 +255,9 @@ async function onGoogleButtonPress() {
   return auth().signInWithCredential(googleCredential);
 }
 ```
+For iOS, you will need to add the URL Schema. Open up ios workspace in Xcode and click on the project. Then goto to the Info tab. Here you will see URL Types at the bottom, click there and past your reversed client id, you can find this in your Google Services json. 
+
+
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
