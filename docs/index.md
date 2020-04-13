@@ -254,3 +254,7 @@ support, add the following global to the top of your `/ios/Podfile` file:
 ```ruby
 $RNFirebaseAsStaticFramework = true
 ```
+
+## Expo
+
+Expo does not support integration with native modules via it's ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow). 
