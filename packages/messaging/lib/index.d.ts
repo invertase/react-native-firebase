@@ -643,7 +643,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param listener Called with a FCM token when the token is refreshed.
      */
-    onTokenRefresh(listener: (token: string) => any): () => void;
+    onTokenRefresh(listener: (token: String & { token: string}) => any) => () => void;
 
     /**
      * On iOS, messaging permission must be requested by the current application before messages can
