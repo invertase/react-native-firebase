@@ -81,8 +81,10 @@ import messaging from '@react-native-firebase/messaging';
 async function checkApplicationPermission() {
   const authorizationStatus = await messaging.requestPermission();
 
-  if (authorizationStatus) {
-    console.log('User has notification permissions enabled, which may include provisional authorization.');
+  if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+    console.log('User has notification permissions enabled.');
+  } else if (authorizationStatus === messaging.AuthorizationStatus.PROVISIONAL) {
+    console.log('User has provisional notification permissions.');
   } else {
     console.log('User has notification permissions disabled');
   }
@@ -94,25 +96,12 @@ The value returned is a number value, which can be mapped to one of the followin
 - `-1` = `messaging.AuthorizationStatus.NOT_DETERMINED`: Permission has not yet been requested for your application.
 - `0` = `messaging.AuthorizationStatus.DENIED`: The user has denied notification permissions.
 - `1` = `messaging.AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
-- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: Provisional authorization has been granted.
+- `2` = `messaging.AuthorizationStatus.PROVISIONAL`: [Provisional authorization](#provisional-authorization) has been granted.
 
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
 sense during the flow of your application (e.g. starting a new chat), where the user would expect to receive such notifications.
 
-It is also possible to fetch the current permission status without requesting permission, by calling the `hasPermission` API instead:
-
-```js
-import messaging from '@react-native-firebase/messaging';
-
-
-async function getExistingSettings() {
-  const authorizationStatus = await messaging().hasPermission();
-
-  if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-    console.log('Current permission status is AUTHORIZED: ', authorizationStatus);
-  }
-}
-```
+It is also possible to fetch the current permission status without requesting permission, by calling the `hasPermission` API instead.
 
 ### Provisional authorization
 
