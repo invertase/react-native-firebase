@@ -9,7 +9,7 @@ jobs:
   build_android:
     name: Android App
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v1
         with:
@@ -46,7 +46,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
 
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        run: |
+          export DETOX_DISABLE_POSTINSTALL=1
+          yarn --no-audit --prefer-offline
 
       - name: Setup JDK8
         uses: actions/setup-java@v1
@@ -92,7 +94,7 @@ jobs:
   build_ios:
     name: iOS App
     runs-on: macos-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
@@ -128,6 +130,12 @@ jobs:
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+
+      - uses: actions/cache@v1
+        name: Detox Framework Cache
+        with:
+          path: ~/Library/Detox/ios
+          key: ${{ runner.os }}-detox-framework-cache-${{ env.DEVELOPER_DIR }}
 
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
