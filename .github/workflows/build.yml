@@ -3,8 +3,11 @@ name: Build
 on: [pull_request]
 
 jobs:
+  # ------------------
+  #      Android
+  # ------------------
   build_android:
-    name: Android APK
+    name: Android App
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -37,15 +40,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build debug APK
+      - name: Build Android App
         run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
-      - name: Upload APK
+      - name: Upload App
         uses: actions/upload-artifact@v1
         with:
-          name: android_apk
+          name: android_app
           path: tests/android/app/build/outputs/apk/debug/app-debug.apk
 
-
+  # ------------------
+  #        iOS
+  # ------------------
   build_ios:
     name: iOS App
     runs-on: macOS-latest
@@ -81,3 +86,15 @@ jobs:
           cd tests/ios
           pod install
         shell: bash
+      - name: Build iOS App
+        run: |
+          export SKIP_BUNDLING=1
+          export RCT_NO_LAUNCH_PACKAGER=1
+          cd tests
+          ./node_modules/.bin/detox build --configuration ios.ci
+        shell: bash
+      - name: Upload App
+        uses: actions/upload-artifact@v1
+        with:
+          name: ios_app
+          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
