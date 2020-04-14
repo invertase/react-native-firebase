@@ -61,20 +61,24 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
       #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
       - name: Select Xcode Version
         run: sudo xcode-select -s /Applications/Xcode_11.4.app
+
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
       #  -> https://github.com/actions/cache/issues/187
       - name: Clean Yarn cache directory
         run: yarn cache clean
+
       # CocoaPods cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
       - name: Clean Pods cache directory
         run: rm -rf ~/Library/Caches/CocoaPods
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -86,6 +90,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+
       - uses: actions/cache@v1
         name: Cache Pods
         with:
@@ -93,13 +98,16 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
+
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
+
       - name: Pod Install
         run: |
           cd tests/ios
           pod install
         shell: bash
+
       - name: Build iOS App
         run: |
           export SKIP_BUNDLING=1
@@ -107,6 +115,7 @@ jobs:
           cd tests
           ./node_modules/.bin/detox build --configuration ios.ci
         shell: bash
+
       - name: Upload App
         uses: actions/upload-artifact@v1
         with:
