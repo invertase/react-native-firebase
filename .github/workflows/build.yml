@@ -133,11 +133,11 @@ jobs:
       - run: brew install applesimutils
 
       - name: Detox Test
-          run: |
-            yarn run tests:packager:jet &
-            cd tests
-            ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --cleanup  --debug-synchronization 200
-          shell: bash
+        run: |
+          yarn run tests:packager:jet &
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --cleanup  --debug-synchronization 200
+        shell: bash
 
       - name: Upload App
         uses: actions/upload-artifact@v1
