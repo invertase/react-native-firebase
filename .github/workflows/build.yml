@@ -9,6 +9,7 @@ jobs:
   build_android:
     name: Android App
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v1
         with:
@@ -71,51 +72,45 @@ jobs:
   # ------------------
   build_ios:
     name: iOS App
-    runs-on: macOS-latest
+    runs-on: macos-latest
+    timeout-minutes: 25
+    env:
+      # Use the latest version of xcode for rnfirebase
+      # See link below for available versions;
+      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
+      DEVELOPER_DIR: /Applications/Xcode_11.4.app
+
     steps:
       - uses: actions/checkout@v1
         with:
           fetch-depth: 1
+
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-
-      # Use the latest version of xcode for rnfirebase
-      # See link below for available versions;
-      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
-      - name: Select Xcode Version
-        run: sudo xcode-select -s /Applications/Xcode_11.4.app
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
       #  -> https://github.com/actions/cache/issues/187
       - name: Clean Yarn cache directory
-        run: yarn cache clean
-
-      # CocoaPods cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      - name: Clean Pods cache directory
-        run: rm -rf ~/Library/Caches/CocoaPods
+        run: yarn cache
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
+
       - uses: actions/cache@v1
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
       - uses: actions/cache@v1
         name: Cache Pods
         with:
-          path: ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
 
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
@@ -133,6 +128,16 @@ jobs:
           cd tests
           ./node_modules/.bin/detox build --configuration ios.ci
         shell: bash
+
+      - run: brew tap wix/brew
+      - run: brew install applesimutils
+
+      - name: Detox Test
+          run: |
+            yarn run tests:packager:jet &
+            cd tests
+            ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --cleanup  --debug-synchronization 200
+          shell: bash
 
       - name: Upload App
         uses: actions/upload-artifact@v1
