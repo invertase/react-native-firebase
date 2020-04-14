@@ -93,7 +93,7 @@ jobs:
       #  -> https://github.com/actions/virtual-environments/issues/427
       #  -> https://github.com/actions/cache/issues/187
       - name: Clean Yarn cache directory
-        run: yarn cache
+        run: yarn cache clean
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
