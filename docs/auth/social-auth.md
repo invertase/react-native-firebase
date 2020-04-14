@@ -42,7 +42,7 @@ function AppleSignIn() {
         width: 160,
         height: 45,
       }}
-      onPress={() => onAppleButtonPress().then(() => console.log('Apple sign-in complete!')}
+      onPress={() => onAppleButtonPress().then(() => console.log('Apple sign-in complete!'))}
     />
   );
 }
@@ -104,7 +104,7 @@ function FacebookSignIn() {
   return (
     <Button
       title="Facebook Sign-In"
-      onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!')}
+      onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!'))}
     />
   );
 }
@@ -172,7 +172,7 @@ function TwitterSignIn() {
   return (
     <Button
       title="Twitter Sign-In"
-      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!')}
+      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!'))}
     />
   );
 }
@@ -232,7 +232,7 @@ function GoogleSignIn() {
   return (
     <Button
       title="Google Sign-In"
-      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!')}
+      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
     />
   );
 }
