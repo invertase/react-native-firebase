@@ -36,8 +36,8 @@ describe('database().ref().orderByValue()', () => {
       return Promise.resolve();
     }
   });
-
-  it('order by value', async () => {
+  // TODO potentially flakey on CI iOS - possible crash
+  xit('order by value', async () => {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
