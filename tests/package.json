@@ -96,7 +96,7 @@
         "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false && popd",
         "type": "android.emulator",
         "device": {
-          "avdName": "TestingAVD_29"
+          "avdName": "TestingAVD"
         }
       },
       "ios.sim.release": {
