@@ -61,6 +61,16 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
+      # Use the latest version of xcode for rnfirebase
+      # See link below for available versions;
+      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_11.4.app
+      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
+      #  -> https://github.com/actions/virtual-environments/issues/427
+      #  -> https://github.com/actions/cache/issues/187
+      - name: Clean Yarn cache directory
+        run: yarn cache clean
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -75,7 +85,7 @@ jobs:
       - uses: actions/cache@v1
         name: Cache Pods
         with:
-          path: Pods
+          path: ~/Library/Caches/CocoaPods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
