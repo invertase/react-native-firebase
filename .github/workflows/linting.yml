@@ -24,7 +24,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --no-audit --prefer-offline
+      - name: Yarn Install
+        run: yarn --no-audit --prefer-offline
       - name: Lint
         run: yarn run lint
       - name: Save Code Linting Report JSON
@@ -63,6 +64,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - run: yarn --no-audit --prefer-offline
+      - name: Yarn Install
+        run: yarn --no-audit --prefer-offline
       - name: Lint
         run: yarn run tsc:compile

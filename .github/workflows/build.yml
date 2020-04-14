@@ -31,13 +31,14 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: yarn --no-audit --prefer-offline
+      - name: Yarn Install
+        run: yarn --no-audit --prefer-offline
       - name: Setup JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
       - name: Build debug APK
-        run: yarn run tests:android:build
+        run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
