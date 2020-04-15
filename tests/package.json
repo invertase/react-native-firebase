@@ -31,43 +31,16 @@
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
-    "babel-plugin-istanbul": "^5.2.0",
+    "babel-plugin-istanbul": "^6.0.0",
     "detox": "16.2.0",
-    "jet": "^0.6.3-0",
+    "jet": "^0.6.5-0",
     "mocha": "^6.1.4",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.1",
     "react-native-port-patcher": "^1.0.4",
     "patch-package": "^6.2.2",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "^9.0.2"
-  },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 95,
-    "statements": 95,
-    "functions": 95,
-    "branches": 95,
-    "include": [
-      "packages/**"
-    ],
-    "exclude": [
-      "node_modules",
-      "**/common/lib/**",
-      "**/lib/handlers.js",
-      "**/internal/registry/**",
-      "packages/**/node_modules/**",
-      "packages/database/lib/DatabaseSyncTree.js"
-    ],
-    "cwd": "..",
-    "all": true,
-    "sourceMap": false,
-    "instrument": false,
-    "reporter": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
   },
   "detox": {
     "test-runner": "mocha",
