@@ -52,7 +52,7 @@
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone X"
+          "type": "iPhone 8"
         }
       },
       "ios.ci": {
