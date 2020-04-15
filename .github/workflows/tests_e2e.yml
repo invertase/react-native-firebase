@@ -8,7 +8,7 @@ jobs:
   # ------------------
   android:
     name: Android
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v1
@@ -61,7 +61,7 @@ jobs:
 
       - name: Download Emulator Image
         run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86"
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86" "platform-tools" "emulator"
           echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 4" -k 'system-images;android-28;google_apis;x86' -g google_apis
           $ANDROID_HOME/emulator/emulator -list-avds
 
@@ -70,7 +70,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim &
+          nohup $ANDROID_HOME/emulator/emulator-headless -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -gpu host -no-boot-anim &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
@@ -83,7 +83,7 @@ jobs:
         run: |
           nohup yarn run tests:packager:jet &
           nohup bash -c "until false; do adb shell input tap 100 800; sleep 0.1; done" &
-          nohup adb logcat --pid=$(adb shell pidof -s com.invertase.testing) '*:W' &
+          nohup bash -c "adb logcat '*:E'" &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
