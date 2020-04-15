@@ -70,10 +70,9 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -gpu swiftshader_indirect -no-snapshot -no-window -no-boot-anim &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -no-window -no-boot-anim &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
           $ANDROID_HOME/platform-tools/adb devices
-          $ANDROID_HOME/platform-tools/adb shell input keyevent 82
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
           $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
           $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
