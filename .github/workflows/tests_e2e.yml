@@ -171,7 +171,7 @@ jobs:
         run: |
           nohup yarn run tests:packager:jet &
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup  --debug-synchronization 200
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
         shell: bash
 
 #      - name: Upload App
