@@ -23,7 +23,7 @@ cd ios/ && pod install
 ```
 
 > iOS requires further configuration steps to be carried out before you can start receiving and sending
-> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messagig](/messaging/usage/ios-setup).
+> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messaging](/messaging/usage/ios-setup).
 
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
