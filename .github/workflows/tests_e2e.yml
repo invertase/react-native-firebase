@@ -61,8 +61,8 @@ jobs:
 
       - name: Download Emulator Image
         run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;google_apis;x86"
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 4" -k 'system-images;android-28;google_apis;x86' -g google_apis
           $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Start Android Emulator
@@ -70,8 +70,8 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -no-window -no-boot-anim &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -gpu swiftshader_indirect -no-boot-anim &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
           $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
@@ -83,7 +83,7 @@ jobs:
         run: |
           nohup yarn run tests:packager:jet &
           nohup bash -c "until false; do adb shell input tap 100 800; sleep 0.1; done" &
-          nohup adb logcat '*:W' &
+          nohup adb logcat --pid=$(adb shell pidof -s com.invertase.testing) '*:W' &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
