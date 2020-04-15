@@ -1,4 +1,4 @@
-name: E2E Testing
+name: Testing E2E
 
 on: [pull_request]
 
@@ -83,6 +83,12 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
+          echo "Waiting for packager to come online..."
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online!"
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
         shell: bash
@@ -170,6 +176,13 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
+          echo "Waiting for packager to come online..."
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online!"
+
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
         shell: bash
