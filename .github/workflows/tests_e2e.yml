@@ -83,7 +83,7 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
-          echo "Waiting for packager to come online..."
+          printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
             sleep 2
@@ -176,7 +176,7 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
-          echo "Waiting for packager to come online..."
+          printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
             sleep 2
