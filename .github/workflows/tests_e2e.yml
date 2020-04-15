@@ -70,7 +70,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator-headless -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -gpu host -no-boot-anim &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -gpu host -no-boot-anim &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
@@ -82,8 +82,8 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
-          nohup bash -c "until false; do adb shell input tap 100 800; sleep 0.1; done" &
-          nohup bash -c "adb logcat '*:E'" &
+          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E'" &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
