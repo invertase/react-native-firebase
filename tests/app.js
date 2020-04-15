@@ -36,7 +36,7 @@ import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React, { Component } from 'react';
-import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react-native';
+import { AppRegistry, NativeModules, StyleSheet, Text, View } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -58,13 +58,6 @@ class Root extends Component {
     if (!currentTest) {
       return (
         <View style={[styles.container, styles.horizontal]}>
-          <Image
-            source={{
-              uri:
-                'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
-            }}
-            style={[styles.logo]}
-          />
           <Text style={[styles.item, styles.module]} testID="module">
             {'No Tests Started'}
           </Text>
@@ -102,13 +95,6 @@ class Root extends Component {
 
     return (
       <View style={[styles.container, styles.horizontal]}>
-        <Image
-          source={{
-            uri:
-              'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/RNFirebase.png',
-          }}
-          style={[styles.logo]}
-        />
         <Text style={[styles.item, styles.module]} testID="module">
           {module}
         </Text>
