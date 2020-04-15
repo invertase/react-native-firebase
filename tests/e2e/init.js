@@ -22,7 +22,7 @@ const jet = require('jet/platform/node');
 
 const { detox: config } = require('../package.json');
 
-config.configurations['android.emu.debug'].device.avdName = 'TestingAVD_29' ||
+config.configurations['android.emu.debug'].device.avdName =
   process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].device.avdName;
 
 before(async () => {
