@@ -65,28 +65,33 @@ jobs:
           echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
           $ANDROID_HOME/emulator/emulator -list-avds
 
-#      - name: Start Android Emulator
-#        timeout-minutes: 10
-#        continue-on-error: true
-#        run: |
-#          echo "Starting emulator"
-#          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -no-audio -no-snapshot -no-window &
-#          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
-#          $ANDROID_HOME/platform-tools/adb devices
-#          echo "Emulator started"
-#
-#      - name: Detox Test
-#        run: |
-#          nohup yarn run tests:packager:jet &
-#          cd tests
-#          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
-#        shell: bash
-#
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: android_app
-#          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Start Android Emulator
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -no-audio -gpu swiftshader_indirect -no-snapshot -no-window -no-boot-anim &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          $ANDROID_HOME/platform-tools/adb devices
+          $ANDROID_HOME/platform-tools/adb shell input keyevent 82
+          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+
+          echo "Emulator started"
+
+      - name: Detox Test
+        run: |
+          nohup yarn run tests:packager:jet &
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+        shell: bash
+
+      - name: Upload App
+        uses: actions/upload-artifact@v1
+        with:
+          name: android_app
+          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
 
   # ------------------
   #        iOS
@@ -154,23 +159,23 @@ jobs:
           ./node_modules/.bin/detox build --configuration ios.ci
         shell: bash
 
-#      - name: Install applesimutils
-#        run: |
-#          export HOMEBREW_NO_AUTO_UPDATE=1
-#          brew tap wix/brew
-#          brew install applesimutils
-#          applesimutils --list
-#        shell: bash
-#
-#      - name: Detox Test
-#        run: |
-#          nohup yarn run tests:packager:jet &
-#          cd tests
-#          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup  --debug-synchronization 200
-#        shell: bash
-#
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: ios_app
-#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
+      - name: Install applesimutils
+        run: |
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          brew tap wix/brew
+          brew install applesimutils
+          applesimutils --list
+        shell: bash
+
+      - name: Detox Test
+        run: |
+          nohup yarn run tests:packager:jet &
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup  --debug-synchronization 200
+        shell: bash
+
+      - name: Upload App
+        uses: actions/upload-artifact@v1
+        with:
+          name: ios_app
+          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
