@@ -3,14 +3,9 @@
   package="com.invertase.testing">
 
   <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.VIBRATE" />
-  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
   <application
-    android:name="com.invertase.testing.MainApplication"
+    android:name=".MainApplication"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
@@ -21,108 +16,16 @@
     <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
     <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
     <meta-data android:name="rnfirebase_meta_testing_boolean_true" android:value="true" />
-    <!--<provider-->
-    <!--android:name="com.google.firebase.provider.FirebaseInitProvider"-->
-    <!--android:authorities="${applicationId}.firebaseinitprovider"-->
-    <!--tools:node="remove"-->
-    <!--/>-->
-
-    <!--<service-->
-    <!--android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService"-->
-    <!--android:enabled="true"-->
-    <!--android:exported="true"-->
-    <!--tools:ignore="ExportedService">-->
-    <!--<intent-filter>-->
-    <!--<action android:name="com.google.firebase.MESSAGING_EVENT" />-->
-    <!--</intent-filter>-->
-    <!--</service>-->
-
-    <!--<service-->
-    <!--android:name="io.invertase.firebase.messaging.RNFirebaseInstanceIdService"-->
-    <!--android:exported="false">-->
-    <!--<intent-filter>-->
-    <!--<action android:name="com.google.firebase.INSTANCE_ID_EVENT" />-->
-    <!--</intent-filter>-->
-    <!--</service>-->
-
-    <!--<service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />-->
-
-    <!--<receiver android:name="io.invertase.firebase.notifications.RNFirebaseNotificationReceiver" />-->
-    <!--<receiver-->
-    <!--android:name="io.invertase.firebase.notifications.RNFirebaseNotificationsRebootReceiver"-->
-    <!--android:enabled="true"-->
-    <!--android:exported="true">-->
-    <!--<intent-filter>-->
-    <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
-    <!--<action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
-    <!--<action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />-->
-
-    <!--<category android:name="android.intent.category.DEFAULT" />-->
-    <!--</intent-filter>-->
-    <!--</receiver>-->
-
 
     <activity
-      android:name="com.invertase.testing.MainActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+      android:name=".MainActivity"
       android:label="@string/app_name"
-      android:launchMode="singleTop"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:launchMode="singleTask"
       android:windowSoftInputMode="adjustResize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-      <!-- App DynamicLinks -->
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="je786.app.goo.gl"
-          android:scheme="http" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="je786.app.goo.gl"
-          android:scheme="http" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="je786.app.goo.gl"
-          android:scheme="https" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="je786.app.goo.gl"
-          android:scheme="https" />
-      </intent-filter>
-      <!-- App Indexing Test -->
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data
-          android:host="foo.bar"
-          android:scheme="invertase" />
       </intent-filter>
       <!-- Dynamic DynamicLinks Test -->
       <intent-filter>
