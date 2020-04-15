@@ -33,7 +33,7 @@
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "16.2.0",
-    "jet": "^0.6.5-0",
+    "jet": "^0.6.6-0",
     "mocha": "^6.1.4",
     "nyc": "^15.0.1",
     "react-native-port-patcher": "^1.0.4",
@@ -60,7 +60,7 @@
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 8"
+          "type": "iPhone 11"
         }
       },
       "android.emu.debug": {
