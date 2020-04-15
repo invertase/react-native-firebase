@@ -82,6 +82,8 @@ jobs:
       - name: Detox Test
         run: |
           nohup yarn run tests:packager:jet &
+          nohup bash -c "until false; do adb shell input tap 100 800; sleep 0.1; done" &
+          nohup adb logcat '*:W' &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'

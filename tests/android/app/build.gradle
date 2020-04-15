@@ -87,8 +87,6 @@ android {
     }
     debug {
       matchingFallbacks = ['debug']
-      ext.enableCrashlytics = false
-      ext.alwaysUpdateBuildId = false
     }
   }
 
