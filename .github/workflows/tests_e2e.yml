@@ -153,6 +153,7 @@ jobs:
 
       - name: Pod Install
         run: |
+          gem update cocoapods xcodeproj
           cd tests/ios
           pod install
         shell: bash
