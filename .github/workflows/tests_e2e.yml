@@ -1,4 +1,4 @@
-name: Build
+name: E2E Testing
 
 on: [pull_request]
 
@@ -6,8 +6,8 @@ jobs:
   # ------------------
   #      Android
   # ------------------
-  build_android:
-    name: Android App
+  android:
+    name: Android
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -87,17 +87,17 @@ jobs:
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
         shell: bash
 
-      - name: Upload App
-        uses: actions/upload-artifact@v1
-        with:
-          name: android_app
-          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
+#      - name: Upload App
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: android_app
+#          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
 
   # ------------------
   #        iOS
   # ------------------
-  build_ios:
-    name: iOS App
+  ios:
+    name: iOS
     runs-on: macos-latest
     timeout-minutes: 30
     env:
@@ -174,8 +174,8 @@ jobs:
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup  --debug-synchronization 200
         shell: bash
 
-      - name: Upload App
-        uses: actions/upload-artifact@v1
-        with:
-          name: ios_app
-          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
+#      - name: Upload App
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: ios_app
+#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
