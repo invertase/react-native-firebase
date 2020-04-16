@@ -12,8 +12,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */; };
 		27CE6A36224923D200222E16 /* remote_config_resource_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27CE6A35224923D200222E16 /* remote_config_resource_test.plist */; };
-		284DCD91B1011C25D9DA09A8 /* Pods_testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */; };
 		3323F06104C7189BEC46D8B5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3323FFA47718EA67C36AD776 /* Images.xcassets */; };
+		FDF372D1A7926522ECA0B7B8 /* Pods_testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C39544955B3203434EB71DAC /* Pods_testing.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,7 +45,7 @@
 		3323FFA47718EA67C36AD776 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = testing/Images.xcassets; sourceTree = "<group>"; };
 		566425D74294B2ACC4EE306F /* Pods-testing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.debug.xcconfig"; path = "Pods/Target Support Files/Pods-testing/Pods-testing.debug.xcconfig"; sourceTree = "<group>"; };
 		9C7918F28F80D1F2E4DC3B97 /* Pods-testing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.release.xcconfig"; path = "Pods/Target Support Files/Pods-testing/Pods-testing.release.xcconfig"; sourceTree = "<group>"; };
-		D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C39544955B3203434EB71DAC /* Pods_testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284DCD91B1011C25D9DA09A8 /* Pods_testing.framework in Frameworks */,
+				FDF372D1A7926522ECA0B7B8 /* Pods_testing.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +102,7 @@
 		588120300B16002F2CF411A2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */,
+				C39544955B3203434EB71DAC /* Pods_testing.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -164,7 +164,7 @@
 				C8C3C54345A6A1BEDB5A0F51 /* [CP] Copy Pods Resources */,
 				2DEDEB3AED1121B4052E9EC8 /* [CP-User] [RNFB] Core Configuration */,
 				EA9445F776F5CEB60B0182F7 /* [CP-User] [RNFB] Crashlytics Configuration */,
-				859072D199B5176B3D7ED63C /* [CP] Embed Pods Frameworks */,
+				5F00D4C16D8CD40EE587E883 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -289,21 +289,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7D57265F10EEF7CD92D7973F /* Copy Detox Framework */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Detox Framework";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "if [ -n \"$DEPLOY_DETOX_FRAMEWORK\" ]; then\nmkdir -p \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\ncp -r \"${PROJECT_DIR}\"/../node_modules/detox/Detox.framework \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nfi\n";
-		};
-		859072D199B5176B3D7ED63C /* [CP] Embed Pods Frameworks */ = {
+		5F00D4C16D8CD40EE587E883 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -319,6 +305,20 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-testing/Pods-testing-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		7D57265F10EEF7CD92D7973F /* Copy Detox Framework */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Detox Framework";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "if [ -n \"$DEPLOY_DETOX_FRAMEWORK\" ]; then\nmkdir -p \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\ncp -r \"${PROJECT_DIR}\"/../node_modules/detox/Detox.framework \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nfi\n";
 		};
 		C8C3C54345A6A1BEDB5A0F51 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
