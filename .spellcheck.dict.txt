@@ -18,6 +18,7 @@ CLI
 SDKs
 TestLab
 Gradle
+codebase
 realtime
 Realtime
 config
