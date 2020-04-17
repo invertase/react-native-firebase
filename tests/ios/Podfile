@@ -1,7 +1,7 @@
 platform :ios, '9.0'
 
 # Allow using RNFirebase as static frameworks
-$RNFirebaseAsStaticFramework = true
+$RNFirebaseAsStaticFramework = false
 
 # Version override testing
 # $FirebaseSDKVersion = '6.15.0'
@@ -11,7 +11,7 @@ $RNFirebaseAsStaticFramework = true
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'testing' do
-  use_frameworks!
+  # use_frameworks!
 
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"

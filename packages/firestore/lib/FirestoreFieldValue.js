@@ -71,9 +71,7 @@ export default class FirestoreFieldValue {
       validateArrayElements(elements);
     } catch (e) {
       throw new Error(
-        `firebase.firestore.FieldValue.arrayUnion(*) 'elements' called with invalid data. ${
-          e.message
-        }`,
+        `firebase.firestore.FieldValue.arrayUnion(*) 'elements' called with invalid data. ${e.message}`,
       );
     }
 
@@ -85,9 +83,7 @@ export default class FirestoreFieldValue {
       validateArrayElements(elements);
     } catch (e) {
       throw new Error(
-        `firebase.firestore.FieldValue.arrayRemove(*) 'elements' called with invalid data. ${
-          e.message
-        }`,
+        `firebase.firestore.FieldValue.arrayRemove(*) 'elements' called with invalid data. ${e.message}`,
       );
     }
 

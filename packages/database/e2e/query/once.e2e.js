@@ -68,7 +68,12 @@ describe('database().ref().once()', () => {
       await firebase
         .database()
         .ref()
-        .once('value', () => {}, () => {}, 'foo');
+        .once(
+          'value',
+          () => {},
+          () => {},
+          'foo',
+        );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'context' must be a context object.");
