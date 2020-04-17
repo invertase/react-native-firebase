@@ -7,13 +7,9 @@ on:
 #      - master
 #    paths:
 #      - '**/*.md'
-#      - '**/*.d.ts'
-#      - '**/*.js'
   pull_request:
     paths:
       - '**/*.md'
-      - '**/*.d.ts'
-      - '**/*.js'
 
 jobs:
   spelling:

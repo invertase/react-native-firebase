@@ -16,6 +16,8 @@ SDK
 SDKs
 TestLab
 Gradle
+realtime
+Realtime
 config
 mono-repo
 perf
