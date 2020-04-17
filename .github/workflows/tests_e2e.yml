@@ -1,0 +1,197 @@
+name: Testing E2E
+
+on: [pull_request]
+
+jobs:
+  # ------------------
+  #      Android
+  # ------------------
+  android:
+    name: Android
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v1
+
+      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
+      #  -> https://github.com/actions/virtual-environments/issues/427
+      #  -> https://github.com/actions/cache/issues/187
+      - name: Clean Yarn cache directory
+        run: yarn cache clean
+
+      # Gradle cache directory on macOS GH Action virtual environment isn't empty;
+      #  -> https://github.com/actions/virtual-environments/issues/427
+      - name: Clean Gradle cache directory
+        run: rm -rf ~/.gradle/caches
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+
+      - uses: actions/cache@v1
+        name: Gradle Cache
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
+
+      - name: Yarn Install
+        run: |
+          export DETOX_DISABLE_POSTINSTALL=1
+          yarn --no-audit --prefer-offline
+
+      - name: Setup JDK8
+        uses: actions/setup-java@v1
+        with:
+          java-version: '8'
+          architecture: 'x64'
+
+      - name: Build Android App
+        run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
+
+      - name: Download Emulator Image
+        run: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86" "platform-tools" "emulator"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 4" -k 'system-images;android-28;google_apis;x86' -g google_apis
+          $ANDROID_HOME/emulator/emulator -list-avds
+
+# # TODO broken
+#      - name: Start Android Emulator
+#        timeout-minutes: 10
+#        continue-on-error: true
+#        run: |
+#          echo "Starting emulator"
+#          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -no-window -no-boot-anim &
+#          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+#          $ANDROID_HOME/platform-tools/adb devices
+#          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+#          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+#          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+#
+#          echo "Emulator started"
+#
+#      - name: Detox Test
+#        run: |
+#          nohup yarn run tests:packager:jet &
+#          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
+#          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E'" &
+#          printf 'Waiting for packager to come online'
+#          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+#            printf '.'
+#            sleep 2
+#          done
+#          echo "Packager is online!"
+#          cd tests
+#          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+#        shell: bash
+
+#      - name: Upload App
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: android_app
+#          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
+
+  # ------------------
+  #        iOS
+  # ------------------
+  ios:
+    name: iOS
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      # Use the latest version of xcode for rnfirebase
+      # See link below for available versions;
+      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
+      DEVELOPER_DIR: /Applications/Xcode_11.4.app
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v1
+
+      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
+      #  -> https://github.com/actions/virtual-environments/issues/427
+      #  -> https://github.com/actions/cache/issues/187
+      - name: Clean Yarn cache directory
+        run: yarn cache clean
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+
+      - uses: actions/cache@v1
+        name: Cache Pods
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+
+      - uses: actions/cache@v1
+        name: Detox Framework Cache
+        with:
+          path: ~/Library/Detox/ios
+          key: ${{ runner.os }}-detox-framework-cache-${{ env.DEVELOPER_DIR }}
+
+      - name: Yarn Install
+        run: yarn --no-audit --prefer-offline
+
+      - name: Pod Install
+        run: |
+          gem update cocoapods xcodeproj
+          cd tests/ios
+          pod install
+        shell: bash
+
+      - name: Build iOS App
+        run: |
+          export SKIP_BUNDLING=1
+          export RCT_NO_LAUNCH_PACKAGER=1
+          cd tests
+          ./node_modules/.bin/detox build --configuration ios.ci
+        shell: bash
+
+      - name: Install applesimutils
+        run: |
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          brew tap wix/brew
+          brew install applesimutils
+          applesimutils --list
+        shell: bash
+
+      - name: Detox Test
+        run: |
+          nohup yarn run tests:packager:jet &
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online!"
+
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
+        shell: bash
+
+#      - name: Upload App
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: ios_app
+#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app

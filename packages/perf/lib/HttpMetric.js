@@ -98,9 +98,7 @@ export default class HttpMetric extends MetricWithAttributes {
     } else {
       // eslint-disable-next-line no-console
       console.warn(
-        `Warning: A firebase.perf.HttpMetric (${this._httpMethod}: ${
-          this._url
-        }) failed to provide a httpResponseCode; this metric will not be visible on the Firebase console.`,
+        `Warning: A firebase.perf.HttpMetric (${this._httpMethod}: ${this._url}) failed to provide a httpResponseCode; this metric will not be visible on the Firebase console.`,
       );
     }
 
