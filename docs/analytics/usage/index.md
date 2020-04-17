@@ -42,7 +42,7 @@ Analytics offers a wealth of [Predefined Events](#Predefined-Events) to track us
 
 ## Custom Events
 
-Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your firebase Analytics console.
+Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
 ```jsx
 import react, { useEffect } from 'react';
@@ -71,7 +71,7 @@ function App() {
 ## Predefined Events
 
 To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among
-different types of apps, including retail and ecommerce, travel, and gaming apps. To learn more about these events and
+different types of apps, including retail and e-commerce, travel, and gaming apps. To learn more about these events and
 when to use them, browse the [Events and properties](https://support.google.com/analytics/answer/9322688?hl=en&ref_topic=9267641)
 articles in the Firebase Help Center.
 

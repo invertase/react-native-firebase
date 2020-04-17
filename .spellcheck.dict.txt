@@ -76,7 +76,9 @@ Autolinking
 timezones
 unsubscriber
 OpenID
+APIs.
 deprecations
+Deprecations
 programmatically
 backoff
 preflight
