@@ -24,8 +24,8 @@ matrix:
       output: wordlist.dic
       encoding: utf-8
     pipeline:
-      - pyspelling.filters.javascript
-        jsdocs: true
-        js-string: true
-        line_comments: true
-        block_comments: true
+      - pyspelling.filters.javascript:
+          jsdocs: true
+          js-string: true
+          line_comments: true
+          block_comments: true
