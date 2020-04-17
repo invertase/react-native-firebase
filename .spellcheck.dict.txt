@@ -1,9 +1,11 @@
 Firebase
+Firestore
 Crashlytics
 Lerna
 js
 async
 iOS
+iOS13
 ui
 FCM
 wix
@@ -15,6 +17,7 @@ Node.js
 Invertase
 sdk
 sdks
+SDKs
 testlab
 Gradle
 config
@@ -23,6 +26,7 @@ perf
 io
 svg
 autolinking
+GDPR
 Autolinking
 Multidex
 multidex
@@ -30,6 +34,7 @@ CocoaPods
 RNFirebase
 Salakar
 AdMob
+JS
 PRs
 NPM
 SHA1
