@@ -72,6 +72,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
+        // eslint-disable-next-line no-console
         console.warn(
           'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
         );
@@ -83,6 +84,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isIOS) {
       this.emitter.addListener('messaging_message_received_background', remoteMessage => {
         if (!backgroundMessageHandler) {
+          // eslint-disable-next-line no-console
           console.warn(
             'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
           );
@@ -198,10 +200,11 @@ class FirebaseMessagingModule extends FirebaseModule {
     const subscription = this.emitter.addListener('messaging_token_refresh', event => {
       // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
       const { token } = event;
-      const tokenStringWithTokenAccessor = new String(token);
+      const tokenStringWithTokenAccessor = String(token);
       Object.defineProperty(tokenStringWithTokenAccessor, 'token', {
         enumerable: false,
         get() {
+          // eslint-disable-next-line no-console
           console.warn(
             'firebase.messaging().onTokenRefresh(event => event.token) is deprecated, use onTokenRefresh(token => token) or call getToken() instead',
           );

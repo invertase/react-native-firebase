@@ -585,7 +585,7 @@ export namespace FirebaseVisionTypes {
   /**
    * A single symbol representation.
    */
-  export interface VisionDocumentTextSymbol extends VisionDocumentTextBase {}
+  export type VisionDocumentTextSymbol = VisionDocumentTextBase;
 
   /**
    * Enum representing the detected break type.
@@ -655,7 +655,7 @@ export namespace FirebaseVisionTypes {
      *
      * A language is the BCP-47 language code, such as "en-US" or "sr-Latn".
      */
-    recognizedLanguages: String[];
+    recognizedLanguages: string[];
 
     /**
      * Returns the bounding rectangle of the detected text.
@@ -697,7 +697,7 @@ export namespace FirebaseVisionTypes {
      *
      * A language is the BCP-47 language code, such as "en-US" or "sr-Latn".
      */
-    recognizedLanguages: String[];
+    recognizedLanguages: string[];
 
     /**
      * Returns the bounding rectangle of the detected text.
@@ -735,7 +735,7 @@ export namespace FirebaseVisionTypes {
   /**
    * Roughly equivalent to a space-separated "word" in most Latin languages, or a character in others. For instance, if a word is split between two lines by a hyphen, each part is encoded as a separate Element.
    */
-  export interface VisionTextElement extends VisionTextBase {}
+  export type VisionTextElement = VisionTextBase;
 
   /**
    * Represents an image label return from `imageLabelerProcessImage()` and `cloudImageLabelerProcessImage()`.

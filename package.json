@@ -38,16 +38,21 @@
   "devDependencies": {
     "inquirer": "^7.1.0",
     "shelljs": "^0.8.3",
-    "@react-native-community/eslint-config": "^1.0.0",
     "codecov": "^3.6.5",
     "cross-env": "^7.0.2",
-    "eslint": "^6.8.0",
     "genversion": "^2.2.0",
     "lerna": "3.20.2",
     "rimraf": "^3.0.2",
     "typedoc": "^0.15.0",
     "typescript": "^3.8.3",
-    "@types/react-native": "^0.62.0"
+    "@types/react-native": "^0.62.0",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.19.0",
+    "prettier": "^1.19.1"
   },
   "workspaces": {
     "packages": [

@@ -31,13 +31,14 @@
 
 ../packages/ml-natural-language/e2e/*.e2e.js
 
-# TODO - ci is flaky like pastry
+# TODO - ci crashing ios
 # ../packages/ml-vision/e2e/*.e2e.js
 
 ../packages/in-app-messaging/e2e/*.e2e.js
 
 ../packages/database/e2e/*.e2e.js
 
+# TODO crashing - error codes are wrong
 # ../packages/storage/e2e/*.e2e.js
 
 ../packages/messaging/e2e/*.e2e.js

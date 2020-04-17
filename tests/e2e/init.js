@@ -31,12 +31,6 @@ before(async () => {
 });
 
 beforeEach(async function beforeEach() {
-  if (jet.context && jet.root && jet.root.setState) {
-    jet.root.setState({
-      currentTest: this.currentTest,
-    });
-  }
-
   const retry = this.currentTest.currentRetry();
 
   if (retry > 0) {
