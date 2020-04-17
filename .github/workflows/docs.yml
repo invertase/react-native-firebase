@@ -13,7 +13,7 @@ on:
 
 jobs:
   spelling:
-    name: Spell Check
+    name: Spelling/Grammar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -22,4 +22,4 @@ jobs:
           sudo npm install --global spellchecker-cli
       - name: Spell check
         run: |
-          spellchecker --quiet --files="**/*.md" ----ignore="CODE_OF_CONDUCT.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter
+          spellchecker --quiet --files="**/*.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter
