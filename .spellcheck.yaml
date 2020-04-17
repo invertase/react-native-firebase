@@ -1,8 +1,6 @@
 matrix:
   - name: Markdown
-    aspell:
-      mode: none
-      lang: en_US
+    spellchecker: hunspell
     dictionary:
       wordlists:
         - .spellcheck.words.txt
@@ -27,9 +25,7 @@ matrix:
     sources:
       - 'docs/**/*.md'
   - name: 'TypeScript/JS Strings & Comments'
-    aspell:
-      mode: none
-      lang: en_US
+    spellchecker: hunspell
     sources:
       - '**/*.d.ts'
       - '**/*.tsx'

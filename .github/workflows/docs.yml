@@ -29,7 +29,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools
           python -m pip install pyspelling
-          sudo apt-get install aspell aspell-en
+          sudo apt-get install hunspell hunspell-en-us
       - name: Spell check
         run: |
           python -m pyspelling --config .spellcheck.yaml
