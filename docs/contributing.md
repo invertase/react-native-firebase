@@ -38,7 +38,7 @@ All documentation is open sourced and we are happy to accept contributions wheth
 Content is written in Markdown, and takes advantage of [MDX](https://github.com/mdx-js/mdx) to provide powerful functionality on-top of Markdown.
 
 Our documentation reference is automatically generated from each packages TypeScript declaration. Our build process
-automatically generates a `typedoc.json` file using Typedoc, which is then parsed into a consumable format for our documentation generator.
+automatically generates a `typedoc.json` file using TypeDoc, which is then parsed into a consumable format for our documentation generator.
 
 # Community
 

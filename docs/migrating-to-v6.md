@@ -157,7 +157,7 @@ Authentication package:
 #### Cleaning Gradle
 
 Android caches module dependencies for quicker builds. As we've heavily modified our project dependencies it's recommended you
-clean gradle, allowing for a fresh installation. In your project, execute the following commands:
+clean Gradle, allowing for a fresh installation. In your project, execute the following commands:
 
 ```bash
 $ cd android/
@@ -328,7 +328,7 @@ app functionality is tested once migrated to version 6 is complete.
 The AdMob module has undergone a full re-write to support a new, cleaner API and regulation changes (such as GDPR).
 Please see the <Anchor href="/admob">AdMob</Anchor> documentation and update your code usage.
 
-- `RewardedVideo` has now been deprecated in favour of a new native API. Please see `RewardedAd` for more information.
+- `RewardedVideo` has now been deprecated in favor of a new native API. Please see `RewardedAd` for more information.
 
 ### Invites
 
@@ -352,7 +352,7 @@ The recommended approach for handling this deprecation is to use the Dynamic Lin
   - `setAttributes(values: { [key: string]: string }): Promise<null>` - set multiple key values to show alongside any subsequent crash reports
 - All methods except `crash`, `log` & `recordError` now return a Promise that resolve when complete.
 - `recordError` now accepts a JavaScript `Error` instead of a code and message.
-- `setUserIdentifier()` has been renamed to `setUserId()` to match analytics implementation.
+- `setUserIdentifier()` has been renamed to `setUserId()` to match the Analytics Web SDK implementation.
 - `enableCrashlyticsCollection()` has been renamed to `setCrashlyticsCollectionEnabled()`.
 
 ### Firestore
@@ -370,8 +370,8 @@ The recommended approach for handling this deprecation is to use the Dynamic Lin
 `@react-native-firebase/dynamic-links`
 
 - Module usage has been renamed from `links()` to `dynamicLinks()`.
-- The `onLink` and `getInitialLink` methods now return a `DynamicLink` object, rather than the string url.
-- The _builder_ syntax has been deprecated in favour of simple objects. See `buildLink()` documentation for an example.
+- The `onLink` and `getInitialLink` methods now return a `DynamicLink` object, rather than the string URL.
+- The _builder_ syntax has been deprecated in favor of simple objects. See `buildLink()` documentation for an example.
 - Added extra validation. Building a dynamic link with platform specific options will now error if not all required parameters are set.
 
 ### Functions
@@ -397,9 +397,9 @@ No breaking changes.
 `@react-native-firebase/messaging`
 
 - [android] The manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
-- [ios] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
-- The _builder_ syntax has been deprecated in favour of simple objects. See `newRemoteMessage()` documentation for an example.
-- [ios] The minimum supported iOS version is now 10
+- [iOS] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
+- The _builder_ syntax has been deprecated in favor of simple objects. See `newRemoteMessage()` documentation for an example.
+- [iOS] The minimum supported iOS version is now 10
 - iOS 9 or lower only accounts for 0.% of all iPhone devices.
 - To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
 - Community contributions that add iOS 9 support are welcome.
@@ -432,7 +432,7 @@ No breaking changes.
   - These replace all the original async methods: `getValue`, `getValues`, `getKeysByPrefix`.
 - `setDefaultsFromResource` now returns a Promise that resolves when completed, this will reject with code `config/resouce_not_found` if the file could not be found.
 - `setDefaultsFromResource` now expects a resource file name for Android to match iOS, formerly this required a resource id (something you would not have in RN as this was generated at build time by Android).
-  - And example for both platforms can be found in the tests. We'll writeup up a guide for this at some point to show how to use the plist/xml defaults files on each platform.
+  - An example for both platforms can be found in the tests.
 - `enableDeveloperMode` has been removed, you can now use `setConfigSettings({ isDeveloperModeEnabled: boolean })` instead.
 - `setDefaults` now returns a Promise that resolves when completed.
 

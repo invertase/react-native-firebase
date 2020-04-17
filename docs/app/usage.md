@@ -19,7 +19,7 @@ method with your project credentials. The native Android & iOS SDKs automaticall
 the credentials provided during the [Getting Started](/) installation steps. The app module does however provide support
 for manually initializing secondary Firebase app instances.
 
-Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the the following services:
+Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
 - [Authentication](/auth).
 - [Realtime Database](/database).

@@ -19,7 +19,7 @@ If you do not meet these prerequisites, follow the links below:
 
 # Installation
 
-Installing React Native Firebase requires a few steps; installing the npm module, adding the Firebase config files &
+Installing React Native Firebase requires a few steps; installing the NPM module, adding the Firebase config files &
 rebuilding your apps.
 
 ## Template (optional)
@@ -33,9 +33,9 @@ npx react-native init --template @react-native-firebase/template MyAwesomeApp
 
 You can now skip to Step 2 (Android Setup).
 
-## 1. Install via npm
+## 1. Install via NPM
 
-Install the React Native Firebase "app" module to the root of your React Native project with npm or Yarn:
+Install the React Native Firebase "app" module to the root of your React Native project with NPM or Yarn:
 
 ```bash
 # Using npm
@@ -58,7 +58,7 @@ On the Firebase console, add a new Android application and enter your projects d
 local projects package name which can be found inside of the `manifest` tag within the `/android/app/src/main/AndroidManifest.xml`
 file within your project.
 
-> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Auth.
+> The debug signing certificate is optional to use Firebase with your app, but is required for Dynamic Links, Invites and Phone Authentication.
 > To generate a certificate run `cd android && ./gradlew signingReport` and copy the SHA1 from the `debug` key. This generates two variant keys.
 > You can copy the 'SHA1' that belongs to the `debugAndroidTest` variant key option.
 
@@ -94,7 +94,7 @@ to your project.
 ### Generating iOS credentials
 
 On the Firebase console, add a new iOS application and enter your projects details. The "iOS bundle ID" must match your
-local project bundle ID. The bundle ID can be found within the "General" tab when opening the project with XCode.
+local project bundle ID. The bundle ID can be found within the "General" tab when opening the project with Xcode.
 
 Download the `GoogleService-Info.plist` file.
 
@@ -102,7 +102,7 @@ Using Xcode, open the projects `/ios/{projectName}.xcodeproj` file (or `/ios/{pr
 
 Right click on the project name and "Add files" to the project, as demonstrated below:
 
-![Add files via XCode](https://images.prismic.io/invertase/717983c0-63ca-4b6b-adc5-31318422ab47_add-files-via-xcode.png?auto=format)
+![Add files via Xcode](https://images.prismic.io/invertase/717983c0-63ca-4b6b-adc5-31318422ab47_add-files-via-xcode.png?auto=format)
 
 Select the downloaded `GoogleService-Info.plist` file from your computer, and ensure the "Copy items if needed" checkbox is enabled.
 
@@ -236,7 +236,7 @@ Once changed, reinstall your projects pods via pod install and rebuild your proj
 ## Increasing Android build memory
 
 As you add more Firebase modules, there is an incredible demand placed on the Android build system, and the default memory
-settings will not work. To avoid OutOfMemoryErrors during Android builds, you should uncomment the alternate gradle memory
+settings will not work. To avoid `OutOfMemory` errors during Android builds, you should uncomment the alternate Gradle memory
 setting present in `/android/gradle.properties`:
 
 ```
@@ -257,4 +257,4 @@ $RNFirebaseAsStaticFramework = true
 
 ## Expo
 
-Expo does not support integration with native modules via it's ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow). 
+Expo does not support integration with native modules via it's ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).

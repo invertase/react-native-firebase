@@ -71,12 +71,12 @@ The `on` listener
 however will now subscribe to the local database and provide the new value.
 
 This provides the ability to write code which works in both an online and offline environment without worrying about
-data synchronisation.
+data synchronization.
 
 # Going online
 
 The `goOnline` method re-connects the Realtime Database with the remote database. Any locally written changes performed
-whilst offline will be automatically synchronised with the remote database.
+whilst offline will be automatically synchronized with the remote database.
 
 ```js
 import database from '@react-native-firebase/database';
