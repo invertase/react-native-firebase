@@ -46,7 +46,7 @@ android {
   }
   defaultConfig {
     applicationId "com.invertase.testing"
-    minSdkVersion 18
+    minSdkVersion 21
     targetSdkVersion 28
     versionCode 1
     versionName "1.0"
@@ -58,8 +58,6 @@ android {
     testBuildType System.getProperty('testBuildType', 'debug')
     // detox
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-
-    multiDexEnabled true
   }
   splits {
     abi {

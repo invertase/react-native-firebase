@@ -11,7 +11,7 @@ Before diving into requesting notification permissions from your users, it is im
 
 Notifications cannot be shown to users if the user has not "granted" your application permission. The overall notification permission of a single application can be either be "not determined", "granted" or "declined". Upon installing a new application, the default status is "not determined".
 
-In order to receive a "granted" status, you must request permission from your user (see below). The user can either accept or decline your request to grant permissions. If granted, notifications will be displayed based on the permission settings which were requested. 
+In order to receive a "granted" status, you must request permission from your user (see below). The user can either accept or decline your request to grant permissions. If granted, notifications will be displayed based on the permission settings which were requested.
 
 If the user declines the request, you cannot re-request permission, trying to request permission again will immediately return a "denied" status without any user interaction - instead the user must manually enable notification permissions from the iOS Settings UI.
 
@@ -42,7 +42,7 @@ Once a user has selected a permission status, iOS prevents the permission dialog
 
 Although overall notification permission can be granted, the permissions can be further broken down into settings.
 
-Settings are used by the device to control notifications behaviour, for example alerting the user with sound. When requesting permission, you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
+Settings are used by the device to control notifications behavior, for example alerting the user with sound. When requesting permission, you can provide a custom object of settings if you wish to override the defaults. This is demonstrated in the following example:
 
 ```js
 await messaging().requestPermission({
@@ -71,7 +71,7 @@ If the permission dialog has already been presented to the user and you wish to 
 #### Reading current status
 
 In some cases, you may wish to read the current permission status. The `requestPermission`
-API used above resolves an enum that returns the current status. 
+API used above resolves an enum that returns the current status.
 
 For example:
 

@@ -7,7 +7,7 @@ Our tests are powered by [Jet ✈️](https://github.com/invertase/jet).
 ## Requirements
 
 - Make sure you have Xcode installed (tested with Xcode 10+).
-- Make sure you have NodeJS installed (Node 8.4.0 and up is required).
+- Make sure you have Node.js installed (version 8.4.0 and above is required).
 - Make sure you have all required dependencies installed:
 
   - [Apple Sim Utils](https://github.com/wix/AppleSimulatorUtils):
@@ -59,9 +59,9 @@ yarn tests:packager:jet
 
 ### Step 3: Build Native App
 
-As always; the first build for each platform will take a while. Subsequent builds are much much quicker ⚡️
+As always; the first build for each platform will take a while. Subsequent builds are much quicker ⚡️
 
-> ⚠️ You must rebuild native every time you make changes to native code (anything in /android /ios directories).
+> ⚠️ You must rebuild native every time you make changes to native code (anything in /android /iOS directories).
 
 #### Android
 
@@ -98,7 +98,7 @@ This action will launch a new simulator (if not already open) and run the tests 
 > 💡 iOS by default will background launch the simulator - to have
 > it launch in the foreground make sure any simulator is currently open, `Finder -> Simulator.app`.
 
-> 💡 Android by default looks for a pre-defined emulator named `TestingAVD` - make sure you have one named the same setup on Android Studio.
+> 💡 Android by default looks for a predefined emulator named `TestingAVD` - make sure you have one named the same setup on Android Studio.
 > Or you can change this name in the `package.json` of the tests project (don't commit the change though please).
 > **DO NOT** rename an existing AVD to this name - it will not work, rename does not change the file path currently so Detox will
 > fail to find the AVD in the correct directory. Create a new one with Google Play Services.
@@ -131,7 +131,7 @@ to view detailed coverage output.
 
 Mocha supports the `.only` syntax, e.g. instead of `describe(...) || it(...)` you can use `describe.only(...) || it.only(...)` to only run that specific context or test.
 
-Another way to do this is via adding a `--grep` option to e2e/mocha.opts file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
+Another way to do this is via adding a `--grep` option to `e2e/mocha.opts` file, e.g. `--grep auth` for all tests that have auth in the file path or tests descriptions.
 
 > 💡 Don't forget to remove these before committing your code and submitting a pull request
 
@@ -139,9 +139,9 @@ For more Mocha options see https://mochajs.org/#usage
 
 ---
 
-### Linting & Typechecking files
+### Linting & type checking files
 
-Runs eslint and respective type checks on project files
+Runs ESLint and respective type checks on project files
 
 ```bash
 yarn validate:all:js
@@ -152,13 +152,13 @@ yarn validate:all:flow
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
   </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
+  <p align="left">
+    <a href="https://invertase.io/hire-us">💼 Hire Us</a> |
+    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> |
     <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>

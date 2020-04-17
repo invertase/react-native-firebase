@@ -34,7 +34,7 @@ function Users() {
 }
 ```
 
-# useEffect hook
+# `useEffect` hook
 
 Next, we'll setup a hook with `useEffect`. This hook will trigger when our components mount, and we'll then subscribe to
 the "Users" collection documents:

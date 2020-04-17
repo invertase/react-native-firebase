@@ -27,22 +27,22 @@ you can follow the manual installation steps for [iOS](/analytics/usage/installa
 
 # What does it do
 
-Analytics collects usage and behaviour data for your app. Its two primary concerns are:
+Analytics collects usage and behavior data for your app. Its two primary concerns are:
 
 - **Events**: What is happening in your app, such as user actions, system events, or errors.
 - **User properties**: Attributes you define to describe segments of your user base, such as language preference or geographic location.
 
 <Youtube id="8iZpH7O6zXo" />
 
-Analytics automatically logs some [events](https://support.google.com/analytics/answer/9234069) and [user properties](https://support.google.com/analytics/answer/9268042); you don't need to add any code to enable them. However, Analytics also allows you to log [custom](#Custom-Events) or [pre-defined](#Pre-defined-Events) events within your app. How you can do this will be explained below.
+Analytics automatically logs some [events](https://support.google.com/analytics/answer/9234069) and [user properties](https://support.google.com/analytics/answer/9268042); you don't need to add any code to enable them. However, Analytics also allows you to log [custom](#Custom-Events) or [predefined](#Predefined-Events) events within your app. How you can do this will be explained below.
 
 # Usage
 
-Analytics offers a wealth of [Pre-defined Events](#Pre-defined-Events) to track user behaviour. Analytics also offers folks the ability to log [Custom Events](#Custom-Events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
+Analytics offers a wealth of [Predefined Events](#Predefined-Events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#Custom-Events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
 
 ## Custom Events
 
-Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your firebase Analytics console.
+Below is an example showing how a custom event can be logged. Please be aware that primitive data types or arrays of primitive data types are logged in your Firebase Analytics console.
 
 ```jsx
 import react, { useEffect } from 'react';
@@ -68,14 +68,14 @@ function App() {
 }
 ```
 
-## Pre-defined Events
+## Predefined Events
 
 To help you get started, Analytics provides a number of [event methods](/reference/analytics) that are common among
-different types of apps, including retail and ecommerce, travel, and gaming apps. To learn more about these events and
+different types of apps, including retail and e-commerce, travel, and gaming apps. To learn more about these events and
 when to use them, browse the [Events and properties](https://support.google.com/analytics/answer/9322688?hl=en&ref_topic=9267641)
 articles in the Firebase Help Center.
 
-Below is a sample of how to use one of the pre-defined methods the Analytics module provides for you:
+Below is a sample of how to use one of the predefined methods the Analytics module provides for you:
 
 ```jsx
 import react, { useEffect } from 'react';
@@ -101,7 +101,7 @@ function App() {
 }
 ```
 
-For a full reference to pre-defined events and expected parameters, please check out the [reference API](/reference/analytics).
+For a full reference to predefined events and expected parameters, please check out the [reference API](/reference/analytics).
 
 ## Reserved Events
 

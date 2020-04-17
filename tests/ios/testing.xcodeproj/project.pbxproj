@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,8 +12,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		271CB185206AFCD300EBADF4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 271CB184206AFCD300EBADF4 /* GoogleService-Info.plist */; };
 		27CE6A36224923D200222E16 /* remote_config_resource_test.plist in Resources */ = {isa = PBXBuildFile; fileRef = 27CE6A35224923D200222E16 /* remote_config_resource_test.plist */; };
-		284DCD91B1011C25D9DA09A8 /* Pods_testing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */; };
 		3323F06104C7189BEC46D8B5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3323FFA47718EA67C36AD776 /* Images.xcassets */; };
+		3F7DAAFAFAE497334390E087 /* libPods-testing.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84952B7CED519DB4296F49CC /* libPods-testing.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,8 +44,8 @@
 		30F8459A53F04DD0B22777D1 /* testing.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; path = testing.xcodeproj; sourceTree = "<group>"; };
 		3323FFA47718EA67C36AD776 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = testing/Images.xcassets; sourceTree = "<group>"; };
 		566425D74294B2ACC4EE306F /* Pods-testing.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.debug.xcconfig"; path = "Pods/Target Support Files/Pods-testing/Pods-testing.debug.xcconfig"; sourceTree = "<group>"; };
+		84952B7CED519DB4296F49CC /* libPods-testing.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-testing.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C7918F28F80D1F2E4DC3B97 /* Pods-testing.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testing.release.xcconfig"; path = "Pods/Target Support Files/Pods-testing/Pods-testing.release.xcconfig"; sourceTree = "<group>"; };
-		D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_testing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				284DCD91B1011C25D9DA09A8 /* Pods_testing.framework in Frameworks */,
+				3F7DAAFAFAE497334390E087 /* libPods-testing.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +102,7 @@
 		588120300B16002F2CF411A2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D15F75BA0B41F9EFCF9CBB06 /* Pods_testing.framework */,
+				84952B7CED519DB4296F49CC /* libPods-testing.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -164,7 +164,6 @@
 				C8C3C54345A6A1BEDB5A0F51 /* [CP] Copy Pods Resources */,
 				2DEDEB3AED1121B4052E9EC8 /* [CP-User] [RNFB] Core Configuration */,
 				EA9445F776F5CEB60B0182F7 /* [CP-User] [RNFB] Crashlytics Configuration */,
-				859072D199B5176B3D7ED63C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -181,6 +180,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Invertase;
 				TargetAttributes = {
@@ -302,23 +302,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "if [ -n \"$DEPLOY_DETOX_FRAMEWORK\" ]; then\nmkdir -p \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\ncp -r \"${PROJECT_DIR}\"/../node_modules/detox/Detox.framework \"${BUILT_PRODUCTS_DIR}\"/\"${FRAMEWORKS_FOLDER_PATH}\"\nfi\n";
-		};
-		859072D199B5176B3D7ED63C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-testing/Pods-testing-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-testing/Pods-testing-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-testing/Pods-testing-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		C8C3C54345A6A1BEDB5A0F51 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

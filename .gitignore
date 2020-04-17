@@ -543,6 +543,7 @@ Pods/*
 **/version.js
 typedoc.raw.json
 tests/ios/Firebase
+tests/ios/resetXcode.sh
 .tmp
 
 google-services.json
@@ -555,3 +556,4 @@ appPlaygrounds/
 app.playground.js
 app.admob.js
 app.smartreply.js
+eslint-report.json
