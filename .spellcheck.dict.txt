@@ -19,6 +19,10 @@ SDKs
 TestLab
 Gradle
 codebase
+namespace
+namespaced
+Analytics
+analytics
 realtime
 Realtime
 config
@@ -45,6 +49,7 @@ performant
 personalization
 learnt
 installable
+invertase
 Salakar
 AdMob
 JS
