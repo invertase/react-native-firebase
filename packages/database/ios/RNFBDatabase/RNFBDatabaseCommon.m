@@ -34,40 +34,40 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
 }
 
 + (dispatch_queue_t)getDispatchQueue {
-    static dispatch_once_t once;
-    __strong static dispatch_queue_t sharedInstance;
-    dispatch_once(&once, ^{
-      sharedInstance = dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
-    });
-    return sharedInstance;
+  static dispatch_once_t once;
+  __strong static dispatch_queue_t sharedInstance;
+  dispatch_once(&once, ^{
+    sharedInstance = dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+  });
+  return sharedInstance;
 }
 
 + (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL {
-    FIRDatabase *firDatabase;
+  FIRDatabase *firDatabase;
 
-    if (dbURL == nil && dbURL.length == 0) {
-      firDatabase = [FIRDatabase databaseForApp:firebaseApp];
-    } else {
-      firDatabase = [FIRDatabase databaseForApp:firebaseApp URL:dbURL];
-    }
+  if (dbURL == nil && dbURL.length == 0) {
+    firDatabase = [FIRDatabase databaseForApp:firebaseApp];
+  } else {
+    firDatabase = [FIRDatabase databaseForApp:firebaseApp URL:dbURL];
+  }
 
-    [RNFBDatabaseCommon setDatabaseConfig:firDatabase dbURL:dbURL];
+  [RNFBDatabaseCommon setDatabaseConfig:firDatabase dbURL:dbURL];
 
-    return firDatabase;
+  return firDatabase;
 }
 
 + (void)setDatabaseConfig:(FIRDatabase *)firDatabase
                     dbURL:(NSString *)dbURL {
-    NSMutableString *lockKey = [firDatabase.app.name mutableCopy];
+  NSMutableString *lockKey = [firDatabase.app.name mutableCopy];
 
-    if (dbURL != nil && dbURL.length > 0) {
-      [lockKey appendString:dbURL];
+  if (dbURL != nil && dbURL.length > 0) {
+    [lockKey appendString:dbURL];
+  }
+
+  @synchronized (configSettingsLock) {
+    if (configSettingsLock[lockKey]) {
+      return;
     }
-
-    @synchronized (configSettingsLock) {
-        if (configSettingsLock[lockKey]) {
-          return;
-        }
   }
 
   RNFBPreferences *preferences = [RNFBPreferences shared];
@@ -89,7 +89,7 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
     }
       
     @synchronized (configSettingsLock) {
-        configSettingsLock[lockKey] = @YES;
+      configSettingsLock[lockKey] = @YES;
     }
       
   } @catch (NSException *exception) {
@@ -106,28 +106,28 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
 + (FIRDatabaseReference *)getReferenceForDatabase
     :(FIRDatabase *)firebaseDatabase
                                              path:(NSString *)path {
-    @synchronized (configSettingsLock) {
-      return [firebaseDatabase referenceWithPath:path];
-    }
+  @synchronized (configSettingsLock) {
+    return [firebaseDatabase referenceWithPath:path];
+  }
 }
 
 + (FIRDatabaseReference *)getReferenceForDatabase
     :(NSString *)key
                                  firebaseDatabase:(FIRDatabase *)firebaseDatabase
                                              path:(NSString *)path {
-    @synchronized (configSettingsLock) {
-      FIRDatabaseReference *cachedReference = references[key];
+  @synchronized (configSettingsLock) {
+    FIRDatabaseReference *cachedReference = references[key];
 
-    if (cachedReference != nil) {
-      return cachedReference;
-    }
+  if (cachedReference != nil) {
+    return cachedReference;
+  }
 
-    FIRDatabaseReference *databaseReference = [firebaseDatabase referenceWithPath:path];
+  FIRDatabaseReference *databaseReference = [firebaseDatabase referenceWithPath:path];
 
-    references[key] = databaseReference;
-        
-    return databaseReference;
-    }
+  references[key] = databaseReference;
+      
+  return databaseReference;
+  }
 }
 
 + (void)removeReferenceByKey:(NSString *)key {
@@ -145,14 +145,14 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
 }
 
 + (NSArray *)getCodeAndMessage:(NSError *)error {
-    NSString *code = @"unknown";
+  NSString *code = @"unknown";
 
-    if (error == nil) {
-      return @[code, @"An unknown error has occurred."];
-    }
+  if (error == nil) {
+    return @[code, @"An unknown error has occurred."];
+  }
 
 //  NSDictionary *userInfo = [error userInfo];
-    NSString *message;
+  NSString *message;
 //  NSError *underlyingError = userInfo[NSUnderlyingErrorKey];
 //  NSString *underlyingErrorDescription = [underlyingError localizedDescription];
 
@@ -211,7 +211,7 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
       message = [error localizedDescription];
   }
 
-  return @[code, message];
+return @[code, message];
 }
 
 + (int)getEventTypeFromName
