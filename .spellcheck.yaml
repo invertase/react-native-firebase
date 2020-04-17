@@ -1,12 +1,15 @@
 matrix:
   - name: Markdown
     spellchecker: hunspell
+    hunspell:
+      d: en_US,./wordlist
     dictionary:
       wordlists:
         - .spellcheck.words.txt
       output: wordlist.dic
       encoding: utf-8
     pipeline:
+      - pyspelling.filters.url:
       - pyspelling.filters.markdown:
           markdown_extensions:
             - markdown.extensions.fenced_code
@@ -29,6 +32,8 @@ matrix:
       - 'docs/**/*.md'
   - name: 'TypeScript/JS Strings & Comments'
     spellchecker: hunspell
+    hunspell:
+      d: en_US,./wordlist
     sources:
       - '**/*.d.ts'
       - '**/*.tsx'
@@ -40,7 +45,9 @@ matrix:
       output: wordlist.dic
       encoding: utf-8
     pipeline:
+      - pyspelling.filters.url:
       - pyspelling.filters.javascript:
           jsdocs: true
+          strings: false
           line_comments: false
           block_comments: false
