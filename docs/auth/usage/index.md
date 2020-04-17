@@ -94,7 +94,7 @@ the hook is no longer in use.
 
 ## Persisting authentication state
 
-On web based applications, the Firebase Web SDK takes advantage of features such as cookies and localstorage to persist
+On web based applications, the Firebase Web SDK takes advantage of features such as cookies and local storage to persist
 the users authenticated state across sessions. The native Firebase SDKs also provide this functionality using device native SDKs,
 ensuring that a users previous authentication state between app sessions is persisted.
 
