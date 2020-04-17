@@ -1,6 +1,10 @@
 name: Code Quality Checks
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request
 
 jobs:
   linting:
