@@ -543,6 +543,7 @@ Pods/*
 **/version.js
 typedoc.raw.json
 tests/ios/Firebase
+tests/ios/resetXcode.sh
 .tmp
 
 google-services.json
