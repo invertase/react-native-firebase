@@ -855,6 +855,71 @@ describe('auth()', () => {
     });
   });
 
+  describe('signInWithPhoneNumber', () => {
+    it('sign in as expected', async () => {
+      const successCb = () => Promise.resolve();
+
+      const failureCb = () => Promise.reject();
+
+      return firebase
+        .auth()
+        .verifyPhoneNumber('+44 1234 567890', false)
+        .then(successCb)
+        .catch(failureCb);
+    });
+
+    // it.only('should return undefined with deffered promise', async () => {
+    //   const result = firebase
+    //     .auth()
+    //     .verifyPhoneNumber('+44 1234 567890', false)
+    //     .then();
+
+    //   result.should.equal('undefined');
+    // });
+
+    it('should throw an error with an invalud event', () => {
+      (() => {
+        firebase
+          .auth()
+          .verifyPhoneNumber('+44 1234 567890', false)
+          .on('test');
+      }).should.throw(
+        "firebase.auth.PhoneAuthListener.on(*, _, _, _) 'event' must equal 'state_changed'.",
+      );
+    });
+
+    it('should throw an error with a valid observer', () => {
+      (() => {
+        firebase
+          .auth()
+          .verifyPhoneNumber('+44 1234 567890', false)
+          .on('state_changed');
+      }).should.throw(
+        "firebase.auth.PhoneAuthListener.on(_, *, _, _) 'observer' must be a function.",
+      );
+    });
+  });
+
+  describe('signInWithPhoneNumber, can register on event', () => {
+    it('sign in as expected', async () => {
+      const sucessCb = () => console.log('success');
+      const failureCb = () => console.log('failre');
+      const observerCb = () => console.log('observer');
+      const auth = firebase.auth().verifyPhoneNumber('0987372634', false);
+      auth.on('state_changed', observerCb, failureCb, sucessCb);
+    });
+
+    it('emits failed event on invalid event type', () => {
+      () => {
+        const sucessCb = () => console.log('success');
+        const failureCb = () => console.log('failre');
+        const observerCb = () => console.log('observer');
+        const auth = firebase.auth().verifyPhoneNumber('0987372634', false);
+        auth.on('test', observerCb, failureCb, sucessCb);
+      };
+    });
+  });
+
   // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
   xdescribe('sendPasswordResetEmail()', () => {
     it('should not error', async () => {

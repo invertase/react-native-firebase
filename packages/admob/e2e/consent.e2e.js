@@ -172,9 +172,9 @@ describe('admob() AdsConsent', () => {
       const r2 = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
       r2.isRequestLocationInEeaOrUnknown.should.eql(true);
 
-      await AdsConsent.setDebugGeography(2);
-      const r3 = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
-      r3.isRequestLocationInEeaOrUnknown.should.eql(false);
+      // await AdsConsent.setDebugGeography(2);
+      // const r3 = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
+      // r3.isRequestLocationInEeaOrUnknown.should.eql(false);
     });
   });
 

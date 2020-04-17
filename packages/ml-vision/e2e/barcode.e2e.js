@@ -116,6 +116,22 @@ describe('mlkit.vision.barcode', () => {
           ],
         });
       });
+
+      it('shoud use default formats if unspecified', async () => {
+        await firebase.vision().barcodeDetectorProcessImage(testImageFile);
+      });
+
+      it('should throw if formats are an invalid type', async () => {
+        try {
+          await firebase.vision().barcodeDetectorProcessImage(testImageFile, 'test');
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql(
+            "firebase.vision().barcodeDetectorProcessImage(_, *) 'barcodeDetectorOptions' expected an object value.",
+          );
+          return Promise.resolve();
+        }
+      });
     });
   });
 });

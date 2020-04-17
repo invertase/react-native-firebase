@@ -156,6 +156,7 @@ export default class PhoneAuthListener {
   }
 
   _verificationCompleteHandler(credential) {
+    console.log('Emitting complete >>>>>');
     const snapshot = {
       verificationId: credential.verificationId,
       code: credential.code || null,
@@ -169,6 +170,7 @@ export default class PhoneAuthListener {
   }
 
   _verificationFailedHandler(state) {
+    console.log('Emitting failed >>>>>');
     const snapshot = {
       verificationId: state.verificationId,
       code: null,
@@ -207,6 +209,7 @@ export default class PhoneAuthListener {
     }
 
     if (isFunction(successCb)) {
+      console.log('Success >>>>', this._publicEvents.success);
       this._auth.emitter.once(this._publicEvents.success, successCb);
     }
 
