@@ -1,0 +1,31 @@
+matrix:
+  - name: Markdown
+    aspell:
+      mode: none
+    dictionary:
+      wordlists:
+        - .wordlist.txt
+      output: wordlist.dic
+      encoding: utf-8
+    pipeline:
+      - pyspelling.filters.markdown:
+      - pyspelling.filters.html:
+    sources:
+      - '**/*.md'
+  - name: TypeScript Definitions
+    sources:
+      - '**/*.d.ts'
+      - '**/*.tsx'
+      - '**/*.ts'
+      - '**/*.js'
+    dictionary:
+      wordlists:
+        - .wordlist.txt
+      output: wordlist.dic
+      encoding: utf-8
+    pipeline:
+      - pyspelling.filters.javascript
+        jsdocs: true
+        js-string: true
+        line_comments: true
+        block_comments: true
