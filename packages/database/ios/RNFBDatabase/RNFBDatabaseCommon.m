@@ -118,15 +118,15 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
   @synchronized (configSettingsLock) {
     FIRDatabaseReference *cachedReference = references[key];
 
-  if (cachedReference != nil) {
-    return cachedReference;
-  }
+    if (cachedReference != nil) {
+      return cachedReference;
+    }
 
-  FIRDatabaseReference *databaseReference = [firebaseDatabase referenceWithPath:path];
+    FIRDatabaseReference *databaseReference = [firebaseDatabase referenceWithPath:path];
 
-  references[key] = databaseReference;
-      
-  return databaseReference;
+    references[key] = databaseReference;
+        
+    return databaseReference;
   }
 }
 
