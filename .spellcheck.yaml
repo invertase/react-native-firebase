@@ -4,7 +4,7 @@ matrix:
       mode: none
     dictionary:
       wordlists:
-        - .wordlist.txt
+        - .spellcheck.words.txt
       output: wordlist.dic
       encoding: utf-8
     pipeline:
@@ -12,7 +12,7 @@ matrix:
       - pyspelling.filters.html:
     sources:
       - '**/*.md'
-  - name: TypeScript Definitions
+  - name: 'TypeScript/JS Strings & Comments'
     sources:
       - '**/*.d.ts'
       - '**/*.tsx'
@@ -20,7 +20,7 @@ matrix:
       - '**/*.js'
     dictionary:
       wordlists:
-        - .wordlist.txt
+        - .spellcheck.words.txt
       output: wordlist.dic
       encoding: utf-8
     pipeline:
