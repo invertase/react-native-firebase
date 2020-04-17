@@ -44,7 +44,7 @@ to support user interaction.
 The various Firebase Admin SDKs allow you to send messages to your users. If these messages also contain notification
 options, the React Native Firebase Cloud Messaging module will automatically display these notifications.
 
-For example, when using the [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package in a NodeJS environment
+For example, when using the [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package in a Node.js environment
 to send [messages from a server](/messaging/server-integration), a `notification` property can be added to the message payload:
 
 ```js
@@ -98,7 +98,7 @@ and select the "REST" tab under the code examples.
 
 # Handling Interaction
 
-When a user interacts with your notification by pressing on it, the default behaviour is to open the application (since
+When a user interacts with your notification by pressing on it, the default behavior is to open the application (since
 notifications via FCM only display when the application is in the background, the application will always open).
 
 In many cases, it is useful to detect whether the application was opened by pressing on a notification (so you
@@ -173,7 +173,7 @@ more advanced notifications you need to integrate with a 3rd party local notific
 
 - [Advanced channel and group management](https://notifee.app/react-native/docs/android/channels).
 - Custom appearance with [HTML text styling](https://notifee.app/react-native/docs/android/appearance#text-styling), [custom icons](https://notifee.app/react-native/docs/android/appearance#icons), [badge support](https://notifee.app/react-native/docs/android/appearance#badges), [colors](https://notifee.app/react-native/docs/android/appearance#color) and more.
-- Behaviour management such as [custom sounds](https://notifee.app/react-native/docs/android/behaviour#sound), [vibration patterns](https://notifee.app/react-native/docs/android/behaviour#vibration), device [notification light management](https://notifee.app/react-native/docs/android/behaviour#lights) and more.
+- Behavior management such as [custom sounds](https://notifee.app/react-native/docs/android/behaviour#sound), [vibration patterns](https://notifee.app/react-native/docs/android/behaviour#vibration), device [notification light management](https://notifee.app/react-native/docs/android/behaviour#lights) and more.
 - Displaying on-going [Foreground Service Notifications](https://notifee.app/react-native/docs/android/foreground-service) for dealing with long-running background tasks.
 - Advanced [interaction handling](https://notifee.app/react-native/docs/android/interaction) with action buttons, quick reply features and more.
 - Support for built in styling; [Big Picture Style](https://notifee.app/react-native/docs/android/styles#big-picture), [Big Text Style](https://notifee.app/react-native/docs/android/styles#big-text), [Inbox Style](https://notifee.app/react-native/docs/android/styles#inbox) & [Messaging Style](https://notifee.app/react-native/docs/android/styles#messaging) notifications.
@@ -182,7 +182,7 @@ more advanced notifications you need to integrate with a 3rd party local notific
 ## iOS Features
 
 - Advanced [Permission](https://notifee.app/react-native/docs/ios/permissions) management.
-- Creating [categories & action](#) buttons.
-- TODO more features.
+- Behavior management such as [custom sounds](https://notifee.app/react-native/docs/ios/behaviour#sound) and [critical notifications](https://notifee.app/react-native/docs/ios/behaviour#critical-notifications).
+- Creating [actions & categories](https://notifee.app/react-native/docs/ios/categories).
 
 To learn more about integrating FCM with Notifee, view the [integration](https://notifee.app/react-native/docs/integrations/fcm) documentation.

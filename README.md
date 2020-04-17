@@ -20,7 +20,7 @@
 
 ---
 
-**React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight javascript layer connecting you to the native Firebase SDKs for both iOS and Android.
+**React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight JavaScript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
 React Native Firebase is built with four key principals in mind;
 
@@ -32,11 +32,11 @@ React Native Firebase is built with four key principals in mind;
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🔥 **Mirrors official Firebase Web SDK**
   - functions as a drop-in replacement for the Firebase Web SDK in React Native
-  - maximises cross-platform code re-usability e.g. re-using code on web platforms
+  - maximizes cross-platform code re-usability e.g. re-using code on web platforms
 
 ## Firebase Modules
 
-This is the root of the monorepo for React Native Firebase, if you're looking for a specific package please select the package link from below.
+This is the root of the mono-repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
 
 The main package that you interface with is `App` (`@react-native-firebase/app`)
 

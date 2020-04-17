@@ -36,7 +36,7 @@ Crashlytics helps you to collect analytics and details about crashes and errors 
 
 - **Logs**: Log events in your app to be sent with the crash report for context if your app crashes.
 - **Crash reports**: Every crash is automatically turned into a crash report and sent.
-- **Stack traces**: Even when an error is caught and your app recovers, the Javascript stack trace can still be sent.
+- **Stack traces**: Even when an error is caught and your app recovers, the JavaScript stack trace can still be sent.
 
 <Youtube id="k_mdNRZzd30" />
 
@@ -52,7 +52,7 @@ Crashlytics also supports sending JavaScript stack traces to the Firebase consol
 
 ## Crash Attributes
 
-There are various methods to set attributse for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
+There are various methods to set attributes for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
 
 ```js
 import React, { useEffect } from 'react';
