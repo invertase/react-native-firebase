@@ -1,2 +1,12 @@
 firebase
 crashlytics
+lerna
+JS
+ios
+wix
+homebrew
+untap
+detox
+utils
+xcode
+nodejs

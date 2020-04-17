@@ -10,8 +10,14 @@ matrix:
     pipeline:
       - pyspelling.filters.markdown:
       - pyspelling.filters.html:
+          comments: false
+          attributes:
+            - title
+            - alt
+          ignores:
+            - :matches(code, pre)
     sources:
-      - '**/*.md'
+      - 'docs/**/*.md'
   - name: 'TypeScript/JS Strings & Comments'
     sources:
       - '**/*.d.ts'
@@ -27,5 +33,5 @@ matrix:
       - pyspelling.filters.javascript:
           jsdocs: true
           js-string: true
-          line_comments: true
-          block_comments: true
+          line_comments: false
+          block_comments: false
