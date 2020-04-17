@@ -44,6 +44,7 @@ autolinking
 Ad
 AVD
 GDPR
+NDK
 Barcode
 barcode
 Notifee
@@ -51,6 +52,7 @@ dropdown
 ESLint
 authenticator
 Axios
+scrollable
 axios
 DEVEX
 BUGFIX
@@ -64,7 +66,11 @@ Autolinking
 programmatically
 preflight
 Interstitials
+preloaded
 Multidex
+interstitials
+OAuth
+pre-rendered
 Utils
 multidex
 EEA
