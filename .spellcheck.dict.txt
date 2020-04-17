@@ -68,6 +68,7 @@ unhandled
 onwards
 plist
 enum
+scalable
 TFUA
 remarketing
 Autolinking
@@ -112,3 +113,4 @@ Hesp
 Ehesp
 Diarmid
 100k
+APNS
