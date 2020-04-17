@@ -35,4 +35,4 @@ jobs:
           sudo apt-get install aspell aspell-en
       - name: Spell check
         run: |
-          python -m pyspelling -- .spellcheck.yaml
+          python -m pyspelling --config .spellcheck.yaml
