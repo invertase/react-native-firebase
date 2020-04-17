@@ -7,7 +7,7 @@ matrix:
       output: wordlist.dic
       encoding: utf-8
     pipeline:
-      - pyspelling.parsers.markdown_parser:
+      - pyspelling.filters.markdown:
           markdown_extensions:
             - markdown.extensions.fenced_code
             - markdown.extensions.tables
