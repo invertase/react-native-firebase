@@ -20,3 +20,8 @@ sdk
 sdks
 TestLab
 gradle
+config
+perf
+io
+svg
+autolinking
