@@ -1,13 +1,11 @@
 firebase
 crashlytics
 lerna
-JS
 js
 async
 ios
-iOS
-UI
-FCM
+ui
+fcm
 wix
 homebrew
 untap
@@ -18,7 +16,7 @@ nodejs
 invertase
 sdk
 sdks
-TestLab
+testlab
 gradle
 config
 perf
