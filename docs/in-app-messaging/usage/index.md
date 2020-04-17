@@ -39,8 +39,8 @@ React Native Firebase provides support for both native Android & iOS integration
 # Usage
 
 Most of the set up occurs on [Firebase Console](https://console.firebase.google.com/u/0/project/_/inappmessaging) in the
-`In-App Messaging` tab. You can create campaigns and customise elements such as Image, Banner, Modal & Cards to appear on
-pre-defined events (e.g. purchase). This involves no code for the developer to implement. Any published campaigns from the
+`In-App Messaging` tab. You can create campaigns and customize elements such as Image, Banner, Modal & Cards to appear on
+predefined events (e.g. purchase). This involves no code for the developer to implement. Any published campaigns from the
 Firebase Console are automatically handled and displayed on your user's device.
 
 This module provides a JavaScript API to allow greater control of the displaying of these messages.

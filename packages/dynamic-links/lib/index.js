@@ -23,7 +23,13 @@ import {
 import builder from './builder';
 import version from './version';
 
-const statics = {};
+const statics = {
+  ShortLinkType: {
+    SHORT: 'SHORT',
+    UNGUESSABLE: 'UNGUESSABLE',
+    DEFAULT: 'DEFAULT',
+  },
+};
 
 const namespace = 'dynamicLinks';
 

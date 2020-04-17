@@ -1,11 +1,11 @@
 # Introduction
 
-First, thank you for considering contributing to react-native-firebase! It's people like you that make the open source community such a great community! 😊
+First, thank you for considering contributing to React Native Firebase! It's people like you that make the open source community such a great community! 😊
 
 We welcome any type of contribution, not just code. You can help with;
 
-- **QA**: file bug reports, the more details you can give the better (e.g. platform versions, screenshots sdk versions & logs)
-- **Docs**: improve reference coverage, add more examples, fix typos or anything else you can spot. At the top of every page on our docs site you can click the `Edit` pencil to go to that pages markdown file, or view the [Docs Repo](https://github.com/invertase/react-native-firebase-docs) directly
+- **QA**: file bug reports, the more details you can give the better (e.g. platform versions, screenshots SDK versions & logs)
+- **Docs**: improve reference coverage, add more examples, fix typos or anything else you can spot. At the top of every page on our docs site you can click the `Edit` pencil to go to that pages markdown file, or view the [documents](https://github.com/invertase/react-native-firebase/tree/master/docs) directly
 - **Marketing**: writing blog posts, howto's, ...
 - **Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
 - **Code**: take a look at the [open issues](issues). Even if you can't write code, commenting on them, showing that you care about a given issue matters.
@@ -41,18 +41,18 @@ This project is **not** continuously deployed, this leaves space for debate afte
 
 It is normal for a first pull request to be a potential fix for a problem but moving on from there to helping the project's direction can be difficult.
 
-We try to help contributors cross that barrier by offering good first step issues (labelled `good-first-issue`). These issues can be fixed without feeling like you are stepping on toes. Ideally, these are non-critical issues that are well defined. They will be purposely avoided by mature contributors to the project, to make space for others.
+We try to help contributors cross that barrier by offering good first step issues (labeled `good-first-issue`). These issues can be fixed without feeling like you are stepping on toes. Ideally, these are non-critical issues that are well defined. They will be purposely avoided by mature contributors to the project, to make space for others.
 
-Additionally issues labelled `needs-triage` or `help-wanted` can also be picked up, these may not necessarily require code changes but rather help with debugging and finding the cause of the issue whether it's a bug or an users incorrect setup of the library or project.
+Additionally issues labeled `needs-triage` or `help-wanted` can also be picked up, these may not necessarily require code changes but rather help with debugging and finding the cause of the issue whether it's a bug or a users incorrect setup of the library or project.
 
-We aim to keep all project discussion inside GitHub issues. This is to make sure valuable discussion is accessible via search. If you have questions about how to use the library, or how the project is running - GitHub issues are the goto tool for this project.
+We aim to keep all project discussion inside GitHub issues. This is to make sure valuable discussion is accessible via search. If you have questions about how to use the library, or how the project is running - GitHub issues are the go-to tool for this project.
 
 ### What if you only know how to develop for one platform?
 
 This is normal don't worry - not everyone can develop native code for Obj-C and Java, we understand that.
 
 Although we won't merge Pull Requests unless they support all applicable platforms, we do however recommend that you still submit a PR
-for the Platform that you do know and then label it as either `ios-help-wanted` or `android-help-wanted` (or post a comment requesting it to be labelled).
+for the Platform that you do know and then label it as either `ios-help-wanted` or `android-help-wanted` (or post a comment requesting it to be labeled).
 This will allow other contributors to help add the missing platform support by making changes to your existing PR.
 
 ### Our expectations on you as a contributor
@@ -120,7 +120,7 @@ The bigger the pull request, the longer it will take to review and merge. Try to
 
 To aid review we also ask that you fill out the PR template as much as possible.
 
-> Please include `[WIP]` at the start of your pull request title if the pull request is not yet complete.
+> Please use draft pull requests if the pull request is not yet complete.
 
 ### Code review process
 
@@ -137,7 +137,7 @@ When reviewing a Pull Request please check the following:
 - Types
   - Have flow types been added?
   - Have Typescript types been added?
-- Does the PR provide docs (e.g. links to a separate docs PR on the docs repo)
+- Does the PR provide docs
 - Have `e2e` tests been updated or new tests been added to test newly implemented or changed functionality.
 - Does the PR provide valid change log entries
 

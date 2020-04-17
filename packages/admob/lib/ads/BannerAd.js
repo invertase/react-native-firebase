@@ -57,7 +57,6 @@ function BannerAd({ unitId, size, requestOptions, ...props }) {
         throw new Error(`BannerAd: ${e.message}`);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedRequestOptions]);
 
   function onNativeEvent({ nativeEvent }) {
@@ -78,6 +77,7 @@ function BannerAd({ unitId, size, requestOptions, ...props }) {
 
   let style;
   if (size === 'FLUID') {
+    // eslint-disable-next-line react/prop-types
     style = props.style;
   } else {
     style = {

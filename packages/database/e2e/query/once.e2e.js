@@ -19,6 +19,7 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/once`;
 
+// TODO flakey on CI - improve database paths so no current test conflicts & remove sleep util usage
 describe('database().ref().once()', () => {
   before(() => seed(TEST_PATH));
   after(() => wipe(TEST_PATH));
@@ -67,7 +68,12 @@ describe('database().ref().once()', () => {
       await firebase
         .database()
         .ref()
-        .once('value', () => {}, () => {}, 'foo');
+        .once(
+          'value',
+          () => {},
+          () => {},
+          'foo',
+        );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'context' must be a context object.");
