@@ -65,7 +65,12 @@ xdescribe('database().ref().on()', () => {
       await firebase
         .database()
         .ref()
-        .on('value', () => {}, () => {}, 'foo');
+        .on(
+          'value',
+          () => {},
+          () => {},
+          'foo',
+        );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'context' must be an object.");

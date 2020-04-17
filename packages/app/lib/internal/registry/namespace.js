@@ -79,9 +79,7 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
   if (!hasMultiAppSupport && app.name !== DEFAULT_APP_NAME) {
     throw new Error(
       [
-        `You attempted to call "firebase.app('${
-          app.name
-        }').${moduleNamespace}" but; ${moduleNamespace} does not support multiple Firebase Apps.`,
+        `You attempted to call "firebase.app('${app.name}').${moduleNamespace}" but; ${moduleNamespace} does not support multiple Firebase Apps.`,
         '',
         `Ensure you access ${moduleNamespace} from the default application only.`,
       ].join('\r\n'),
@@ -153,9 +151,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
         [
           `You attempted to call "firebase.${moduleNamespace}(app)" but; ${moduleNamespace} does not support multiple Firebase Apps.`,
           '',
-          `Ensure the app provided is the default Firebase app only and not the "${
-            _app.name
-          }" app.`,
+          `Ensure the app provided is the default Firebase app only and not the "${_app.name}" app.`,
         ].join('\r\n'),
       );
     }
@@ -215,9 +211,7 @@ export function firebaseAppModuleProxy(app, moduleNamespace) {
 
   throw new Error(
     [
-      `You attempted to use "firebase.app('${
-        app.name
-      }').${moduleNamespace}" but this module could not be found.`,
+      `You attempted to use "firebase.app('${app.name}').${moduleNamespace}" but this module could not be found.`,
       '',
       `Ensure you have installed and imported the '@react-native-firebase/${moduleNamespace}' package.`,
     ].join('\r\n'),
