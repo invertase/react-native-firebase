@@ -1,17 +1,17 @@
 ---
-title: Image Labelling
-description: Get started with ML Kit Vision Image Labelling.
+title: Image Labeling
+description: Get started with ML Kit Vision Image Labeling.
 next: /ml-vision/face-detection
 previous: /ml-vision/barcode-scanning
 ---
 
-Image labelling can recognize entities in an image without having to provide any additional contextual metadata, using
+Image labeling can recognize entities in an image without having to provide any additional contextual metadata, using
 either an on-device API or a cloud-based API. It gets a list of the entities that were recognized: people, things, places,
 activities, and so on.
 
-# Cloud Image Labelling
+# Cloud Image Labeling
 
-The cloud based image labelling service uploads a given image to the Firebase services, processes the results and returns them.
+The cloud based image labeling service uploads a given image to the Firebase services, processes the results and returns them.
 To get started, call the `cloudImageLabelerProcessImage` method with a path to a local file on your device:
 
 ```js
@@ -51,7 +51,7 @@ const processed = await vision().cloudDocumentTextRecognizerProcessImage(localPa
 
 View the [`VisionCloudImageLabelerOptions`](/reference/ml-vision/visioncloudimagelabeleroptions) documentation for more information.
 
-# On-device Image Labelling
+# On-device Image Labeling
 
 Running the ML Kit service on a device requires the `ml_vision_image_label_model` and `ml_vision_label_model` to be download to the device. Although the results
 of on-device processing will be faster and more accurate, including the model in your application will increase the size

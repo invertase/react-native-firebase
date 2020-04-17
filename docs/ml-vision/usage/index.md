@@ -29,7 +29,7 @@ you can follow the manual installation steps for [iOS](installation/ios) and [An
 
 ML Kit Vision makes use of Firebase's Machine Learning Kit's [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text),
 [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces), [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes),
-[Image Labelling](https://firebase.google.com/docs/ml-kit/label-images) & [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks) features.
+[Image Labeling](https://firebase.google.com/docs/ml-kit/label-images) & [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks) features.
 
 Depending on the service, it is possible to perform Machine Learning on both the local device or cloud.
 
@@ -46,7 +46,7 @@ cloud or both.
 | [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))  | ✅          |           |
 | [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                |             | ✅        |
 | [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)             |             | ✅        |
-| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)               | ✅          | ✅        |
+| [Image Labeling](https://firebase.google.com/docs/ml-kit/label-images)               | ✅          | ✅        |
 | [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)   |             | ✅        |
 | [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)   | ❌          | ❌        |
 | [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection) | ❌          | ❌        |
@@ -58,7 +58,7 @@ To get started, you can find the documentation for the individual ML Kit Vision 
 - [Text Recognition](/ml-vision/text-recognition).
 - [Landmark Recognition](/ml-vision/landmark-recognition).
 - [Barcode Scanning](/ml-vision/barcode-scanning).
-- [Image Labelling](/ml-vision/image-labelling).
+- [Image ](/ml-vision/image-labeling).
 - [Face Detection](/ml-vision/face-detection).
 
 # firebase.json
@@ -79,7 +79,7 @@ on the `firebase.json` file at the root of your project directory.
     // on device barcode detection
     "ml_vision_barcode_model": true,
 
-    // on device image labelling
+    // on device image labeling
     "ml_vision_label_model": true,
     "ml_vision_image_label_model": true
   }

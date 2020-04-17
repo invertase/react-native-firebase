@@ -169,7 +169,7 @@ listFilesAndDirectories(reference).then(() => {
 ## Security
 
 By default your bucket will come with rules which allows only authenticated users on your project to access it. You can
-however fully customise the security rules to your own applications requirements.
+however fully customize the security rules to your own applications requirements.
 
 To learn more, view the [Storage Security](https://firebase.google.com/docs/storage/security/start) documentation
 on the Firebase website.
