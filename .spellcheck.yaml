@@ -2,6 +2,7 @@ matrix:
   - name: Markdown
     aspell:
       mode: none
+      lang: en_US
     dictionary:
       wordlists:
         - .spellcheck.words.txt
@@ -16,9 +17,19 @@ matrix:
             - alt
           ignores:
             - :matches(code, pre)
+            - pre
+            - code
+            - li
+            - h1
+            - h2
+            - h3
+            - h4
     sources:
       - 'docs/**/*.md'
   - name: 'TypeScript/JS Strings & Comments'
+    aspell:
+      mode: none
+      lang: en_US
     sources:
       - '**/*.d.ts'
       - '**/*.tsx'
@@ -32,6 +43,5 @@ matrix:
     pipeline:
       - pyspelling.filters.javascript:
           jsdocs: true
-          js-string: true
           line_comments: false
           block_comments: false

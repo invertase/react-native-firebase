@@ -2,7 +2,12 @@ firebase
 crashlytics
 lerna
 JS
+js
+async
 ios
+iOS
+UI
+FCM
 wix
 homebrew
 untap
@@ -10,3 +15,8 @@ detox
 utils
 xcode
 nodejs
+invertase
+sdk
+sdks
+TestLab
+gradle
