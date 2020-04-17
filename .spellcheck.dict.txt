@@ -12,6 +12,7 @@ Detox
 utils
 Node.js
 Invertase
+TypeDoc
 SDK
 backend
 onboarding
@@ -38,6 +39,7 @@ mono-repo
 datastore
 perf
 SVG
+SMS
 autolinking
 Ad
 AVD
@@ -45,6 +47,9 @@ GDPR
 Barcode
 barcode
 Notifee
+dropdown
+ESLint
+authenticator
 Axios
 axios
 DEVEX
@@ -56,6 +61,9 @@ enum
 TFUA
 remarketing
 Autolinking
+programmatically
+preflight
+Interstitials
 Multidex
 Utils
 multidex
@@ -77,8 +85,8 @@ PRs
 NPM
 SHA1
 APIs
-SDKs
-SDK
+SDKs.
+SDK.
 MDX
 Xcode
 v5

@@ -371,7 +371,7 @@ The recommended approach for handling this deprecation is to use the Dynamic Lin
 
 - Module usage has been renamed from `links()` to `dynamicLinks()`.
 - The `onLink` and `getInitialLink` methods now return a `DynamicLink` object, rather than the string URL.
-- The _builder_ syntax has been deprecated in favour of simple objects. See `buildLink()` documentation for an example.
+- The _builder_ syntax has been deprecated in favor of simple objects. See `buildLink()` documentation for an example.
 - Added extra validation. Building a dynamic link with platform specific options will now error if not all required parameters are set.
 
 ### Functions
@@ -398,7 +398,7 @@ No breaking changes.
 
 - [android] The manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
 - [iOS] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
-- The _builder_ syntax has been deprecated in favour of simple objects. See `newRemoteMessage()` documentation for an example.
+- The _builder_ syntax has been deprecated in favor of simple objects. See `newRemoteMessage()` documentation for an example.
 - [iOS] The minimum supported iOS version is now 10
 - iOS 9 or lower only accounts for 0.% of all iPhone devices.
 - To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
