@@ -23,3 +23,15 @@ perf
 io
 svg
 autolinking
+npm
+apis
+sdks
+sdk
+v5
+v6
+uncomment
+globals
+64k
+hesp
+diarmid
+100k
