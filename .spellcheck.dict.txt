@@ -14,9 +14,17 @@ Node.js
 Invertase
 SDK
 backend
+onboarding
 CLI
 SDKs
 TestLab
+triaging
+auth
+JSON
+Auth
+HTTPS
+HTTP
+NoSQL
 Gradle
 codebase
 namespace
