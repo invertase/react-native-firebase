@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install Dependencies
         run: |
-          npm install --global spellchecker-cli
+          sudo npm install --global spellchecker-cli
       - name: Spell check
         run: |
           spellchecker --quiet --files="**/*.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins="spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter"
