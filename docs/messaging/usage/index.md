@@ -89,7 +89,7 @@ FCM messages can be sent to devices via a number of methods (see below). A messa
 be used however you see fit within your application. Common use-cases for handling messages could be:
 
 - Displaying a notification (see [Notifications](/messaging/notifications)).
-- Syncing message data silently on the device (e.g. via AsyncStorage).
+- Syncing message data silently on the device (e.g. via `AsyncStorage`).
 - Updating the application's UI.
 
 > To learn about how to send messages to devices from your own server setup, view the
@@ -202,7 +202,7 @@ will have displayed a [notification](/messaging/notififications) to the user.
 When an incoming message is "data-only" (contains no `notification` option), both Android & iOS regard it as low priority
 and will prevent the application from waking (ignoring the message). To allow data-only messages to trigger the background
 handler, you must set the "priority" to "high" on Android, and enable the `content-available` flag on iOS. For example,
-if using the NodeJS [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
+if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
 admin.messaging().sendToDevice(
@@ -310,7 +310,7 @@ Messaging can be further configured to provide more control over how FCM is hand
 
 Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
-you do not need to change this behaviour.
+you do not need to change this behavior.
 
 If you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics:
 
@@ -329,7 +329,7 @@ To re-enable initialization (e.g. once requested permission) call the `messaging
 ## Background handler timeout (Android)
 
 On Android, a background event sent to `setBackgroundMessageHandler` has 60 seconds to resolve before it is automatically
-cancelled to free up device resources. If you wish to override this value, set the number of milliseconds in your config:
+canceled to free up device resources. If you wish to override this value, set the number of milliseconds in your config:
 
 ```json
 // <projectRoot>/firebase.json

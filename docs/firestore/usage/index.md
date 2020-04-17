@@ -25,7 +25,7 @@ cd ios/ && pod install
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/firestore/usage/installation/ios) and [Android](firestore/usage/installation/android).
 
-If you have started to receive a `app:mergeDexDebug` error after adding Cloud Firestore, please read the 
+If you have started to receive a `app:mergeDexDebug` error after adding Cloud Firestore, please read the
 [Enabling Multidex](/enabling-multidex) documentation for more information on how to resolve this error.
 
 # What does it do
@@ -143,7 +143,7 @@ collection queries) or a [`DocumentSnapshot`](/reference/firestore/documentsnaps
 provide the ability to view the data, view query metadata (such as whether the data was from local cache), whether the
 document exists or not and more.
 
-#### QuerySnapshot
+#### `QuerySnapshot`
 
 A [`QuerySnapshot`](/reference/firestore/querysnapshot) returned from a collection query allows you to inspect the collection,
 such as how many documents exist within it, access to the documents within the collection, any changes since the last query
@@ -169,7 +169,7 @@ firestore()
 Each child document of a `QuerySnapshot` is a [`QueryDocumentSnapshot`](/reference/firestore/querydocumentsnapshot), which
 allows you to access specific information about a document (see below).
 
-#### DocumentSnapshot
+#### `DocumentSnapshot`
 
 A [`DocumentSnapshot`](/reference/firestore/documentsnapshot) is returned from a query to a specific document, or as part
 of the documents returned via a [`QuerySnapshot`](/reference/firestore/querysnapshot). The snapshot provides the ability
@@ -417,7 +417,7 @@ firestore()
 Cloud Firestore supports storing and manipulating values on your database, such as [Timestamps](/reference/firestore/timestamp),
 [GeoPoints](/reference/firestore/geopoint), [Blobs](/reference/firestore/blob) and array management.
 
-To store [GeoPoint](/reference/firestore/geopoint) values, provide the latitude and longitude to a new instance of the
+To store [`GeoPoint`](/reference/firestore/geopoint) values, provide the latitude and longitude to a new instance of the
 class:
 
 ```js
@@ -428,7 +428,7 @@ firestore()
   });
 ```
 
-To store a [Blob](/reference/firestore/blob) (for example of a Base64 image string), provide the string to the static
+To store a [Blob](/reference/firestore/blob) (for example of a `Base64` image string), provide the string to the static
 `fromBase64String` method on the class:
 
 ```js
@@ -509,7 +509,7 @@ firestore()
 
 ## Transactions
 
-Transactions are a away to always ensure a write occurs with the latest information available on the server. Transactions
+Transactions are a way to always ensure a write occurs with the latest information available on the server. Transactions
 never partially apply writes & all writes execute at the end of a successful transaction.
 
 Transactions are useful when you want to update a field's value based on its current value, or the value of some other field.
@@ -519,7 +519,7 @@ When using transactions, note that:
 
 - Read operations must come before write operations.
 - A function calling a transaction (transaction function) might run more than once if a concurrent edit affects a document that the transaction reads.
-- Transaction functions should not directly modify application state (return a value from the updateFunction).
+- Transaction functions should not directly modify application state (return a value from the `updateFunction`).
 - Transactions will fail when the client is offline.
 
 Imagine a scenario whereby an app has the ability to "Like" user posts. Whenever a user presses the "Like" button,
@@ -593,13 +593,13 @@ massDeleteUsers().then(() => console.log('All users deleted in a single batch op
 
 ## Secure your data
 
-It is important that you understand how to write rules in your firebase console to ensure that your data is secure. Please
-follow the firebase Firestore documentation on [security](https://firebase.google.com/docs/firestore/security/get-started).
+It is important that you understand how to write rules in your Firebase console to ensure that your data is secure. Please
+follow the Firebase Firestore documentation on [security](https://firebase.google.com/docs/firestore/security/get-started).
 
 ## Offline Capabilities
 
 Firestore provides out of the box support for offline capabilities. When reading and writing data, Firestore uses a local
-database which synchronises automatically with the server. Firestore functionality continues when users are offline, and
+database which synchronizes automatically with the server. Firestore functionality continues when users are offline, and
 automatically handles data migration to the server when they regain connectivity.
 
 This functionality is enabled by default, however it can be disabled if you need it to be disabled (e.g. on apps containing

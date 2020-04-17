@@ -10,8 +10,8 @@ The React Native Firebase project started life in late 2016 as a personal projec
 and [Elliot Hesp](https://twitter.com/elliothesp) were working on. The project gained instant popularity, allowing React Native developers
 to hook into the native services Firebase provides.
 
-During the first few months of its development, the repository was moved into the organisation of Invertase on GitHub.
-The organisation was a collection of the personal and combined Open Source efforts Mike and Elliot had been
+During the first few months of its development, the repository was moved into the organization of Invertase on GitHub.
+The organization was a collection of the personal and combined Open Source efforts Mike and Elliot had been
 working over the past number of years. With a constant flow of feature requests, issues and contributions,
 the library rapidly grew in popularity, achieving over 100k NPM downloads in its first 12 months of development.
 
