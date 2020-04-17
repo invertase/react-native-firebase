@@ -11,8 +11,8 @@ homebrew
 untap
 detox
 utils
-nodejs
-invertase
+Node.js
+Invertase
 sdk
 sdks
 testlab
@@ -28,6 +28,7 @@ Multidex
 multidex
 CocoaPods
 RNFirebase
+Salakar
 AdMob
 PRs
 NPM
