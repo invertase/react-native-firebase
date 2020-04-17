@@ -81,9 +81,7 @@ export default class FirestoreQuery {
 
         if (value === undefined) {
           throw new Error(
-            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${
-              order.fieldPath
-            }' (used as the orderBy) does not exist.`,
+            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${order.fieldPath}' (used as the orderBy) does not exist.`,
           );
         }
 
