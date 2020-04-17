@@ -9,11 +9,24 @@ crashlytics {
 import com.android.build.OutputFile
 
 project.ext.react = [
-  entryFile: "index.js"
+    enableHermes: false,
 ]
 
 // up to mono root
 apply from: "../../node_modules/react-native/react.gradle"
+
+/**
+ * The preferred build flavor of JavaScriptCore.
+ *
+ * For example, to use the international variant, you can use:
+ * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ *
+ * The international variant includes ICU i18n library and necessary data
+ * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
+ * give correct results when using with locales other than en-US.  Note that
+ * this variant is about 6MiB larger per architecture than default.
+ */
+def jscFlavor = 'org.webkit:android-jsc:+'
 
 def enableSeparateBuildPerCPUArchitecture = false
 
@@ -41,8 +54,11 @@ android {
       abiFilters "armeabi-v7a", "x86"
     }
 
+    // detox
     testBuildType System.getProperty('testBuildType', 'debug')
+    // detox
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
     multiDexEnabled true
   }
   splits {
@@ -103,12 +119,10 @@ android {
     exclude 'META-INF/LICENSE'
     exclude 'META-INF/LICENSE.txt'
     exclude 'META-INF/NOTICE.txt'
-    pickFirst '**/armeabi-v7a/libc++_shared.so'
-    pickFirst '**/x86/libc++_shared.so'
-    pickFirst '**/arm64-v8a/libc++_shared.so'
-    pickFirst '**/x86_64/libc++_shared.so'
-    pickFirst '**/x86/libjsc.so'
-    pickFirst '**/armeabi-v7a/libjsc.so'
+    pickFirst "lib/armeabi-v7a/libc++_shared.so"
+    pickFirst "lib/arm64-v8a/libc++_shared.so"
+    pickFirst "lib/x86/libc++_shared.so"
+    pickFirst "lib/x86_64/libc++_shared.so"
   }
 }
 
@@ -116,23 +130,15 @@ dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  //noinspection GradleDynamicVersion
-  
+  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
   // JSC from node_modules
-  if (useIntlJsc) {
-    implementation 'org.webkit:android-jsc-intl:+'
-  } else {
-    implementation 'org.webkit:android-jsc:+'
-  }
+  implementation jscFlavor
 
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-  implementation(project(path: ':jet')) {
-    transitive = false
-  }
-  androidTestImplementation('com.wix:detox:+') { transitive = true }
-  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation('com.wix:detox:+')
 }
 
 // Run this once to be able to run the application with BUCK

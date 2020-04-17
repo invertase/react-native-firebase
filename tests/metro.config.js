@@ -18,8 +18,7 @@
 const { resolve, join } = require('path');
 const { readdirSync, statSync } = require('fs');
 
-const { createBlacklist } = require('metro');
-// const { mergeConfig } = require('metro-config');
+const blacklist = require('metro-config/src/defaults/blacklist');
 
 const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');
@@ -33,7 +32,7 @@ const config = {
   projectRoot: __dirname,
   resolver: {
     useWatchman: !process.env.TEAMCITY_VERSION,
-    blackListRE: createBlacklist([
+    blackListRE: blacklist([
       /.*\/__fixtures__\/.*/,
       /.*\/template\/project\/node_modules\/react-native\/.*/,
       new RegExp(`^${escape(resolve(rootDir, 'docs'))}\\/.*$`),
@@ -66,5 +65,4 @@ const config = {
   watchFolders: [resolve(__dirname, '.'), ...firebaseModules],
 };
 
-// module.exports = mergeConfig(DEFAULT, config);
 module.exports = config;
