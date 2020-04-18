@@ -9,7 +9,7 @@ previous: /database/usage
 
 The following steps are only required if you are using React Native <= 0.59 or need to manually integrate the library.
 
-## 1. Add the RNFBAnalytics Pod
+## 1. Add the `RNFBAnalytics` Pod
 
 Add the `RNFBDatabase` Pod to your projects `/ios/Podfile`:
 

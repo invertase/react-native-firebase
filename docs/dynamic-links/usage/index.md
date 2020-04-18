@@ -38,7 +38,7 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ## Create a Link
 
-You can create dynamic links via the firebase console, your app or even your custom API. Please refer to [Firebase create dynamic link documentation](https://firebase.google.com/docs/dynamic-links/create-links) for further details. Below, we will show how to build links as part of your application code:
+You can create dynamic links via the Firebase console, your app or even your custom API. Please refer to [Firebase create dynamic link documentation](https://firebase.google.com/docs/dynamic-links/create-links) for further details. Below, we will show how to build links as part of your application code:
 
 ```jsx
 import dynamicLinks from '@react-native-firebase/dynamic-links';
