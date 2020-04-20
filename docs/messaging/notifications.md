@@ -165,7 +165,7 @@ function App() {
 ```
 
 The call to `getInitialNotification` should happen within a React lifecycle method after mounting (e.g. `componentDidMount` or `useEffect`).
-If it's called too soon (e.g. within a class constructor or global scope), the notification data may be available.
+If it's called too soon (e.g. within a class constructor or global scope), the notification data may not be available.
 
 # Notifee - Advanced Notifications
 
