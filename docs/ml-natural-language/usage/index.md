@@ -65,7 +65,7 @@ Once added, rebuild your application:
 
 ```bash
 // For Android
-npx react-native run-ios
+npx react-native run-android
 
 // For iOS
 cd ios/ && pod install
@@ -118,7 +118,7 @@ Once added, rebuild your application:
 
 ```bash
 // For Android
-npx react-native run-ios
+npx react-native run-android
 
 // For iOS
 cd ios/ && pod install
