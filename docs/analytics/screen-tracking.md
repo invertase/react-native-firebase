@@ -5,7 +5,7 @@ previous: /analytics/usage
 next: /
 ---
 
-Standard React Native applications run inside a single Activity/ViewController, meaning any screen changes won't be
+Standard React Native applications run inside a single `Activity`/`ViewController`, meaning any screen changes won't be
 tracked by the native Firebase SDKs. There are a number of ways to implement navigation within React Native apps,
 therefore there is no "one fits all" solution to screen tracking.
 
@@ -36,7 +36,7 @@ documentation on the React Navigation website.
 
 # React Native Navigation
 
-The [wix/react-native-navigation](https://github.com/wix/react-native-navigation) provides 100% native platform navigation
+The [`wix/react-native-navigation`](https://github.com/wix/react-native-navigation) provides 100% native platform navigation
 for React Native apps. To manually track screens, you need to setup a command listener and manually call the
 [`setCurrentScreen`](/reference/analytics#setcurrentscreen) method the Analytics library provides:
 

@@ -110,8 +110,8 @@
       - '/ml-vision/landmark-recognition'
     - - Barcode Scanning
       - '/ml-vision/barcode-scanning'
-    - - Image Labelling
-      - '/ml-vision/image-labelling'
+    - - Image Labeling
+      - '/ml-vision/image-labeling'
     - - Face Detection
       - '/ml-vision/face-detection'
   - '//static.invertase.io/assets/firebase/ml-kit.svg'

@@ -23,7 +23,6 @@ import {
   isOneOf,
   isString,
   isUndefined,
-  isArray,
 } from '@react-native-firebase/app/lib/common';
 import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 

@@ -29,46 +29,18 @@
     "react-native": "0.62.2"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-helpers": "^0.0.13",
+    "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
-    "babel-plugin-istanbul": "^5.2.0",
+    "babel-plugin-istanbul": "^6.0.0",
     "detox": "16.2.0",
-    "jet": "^0.6.2-0",
+    "jet": "^0.6.6-0",
     "mocha": "^6.1.4",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.1",
     "react-native-port-patcher": "^1.0.4",
     "patch-package": "^6.2.2",
-    "require-all": "3.0.0",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "^9.0.2"
-  },
-  "nyc": {
-    "check-coverage": false,
-    "lines": 95,
-    "statements": 95,
-    "functions": 95,
-    "branches": 95,
-    "include": [
-      "packages/**"
-    ],
-    "exclude": [
-      "node_modules",
-      "**/common/lib/**",
-      "**/lib/handlers.js",
-      "**/internal/registry/**",
-      "packages/**/node_modules/**",
-      "packages/database/lib/DatabaseSyncTree.js"
-    ],
-    "cwd": "..",
-    "all": true,
-    "sourceMap": false,
-    "instrument": false,
-    "reporter": [
-      "lcov",
-      "html",
-      "text-summary"
-    ]
   },
   "detox": {
     "test-runner": "mocha",
@@ -80,23 +52,23 @@
         "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone X"
+          "type": "iPhone 8"
         }
       },
       "ios.ci": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES \"RCT_METRO_PORT=$RCT_METRO_PORT\" | xcpretty -k",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone X"
+          "type": "iPhone 11"
         }
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false && popd",
+        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
         "type": "android.emulator",
         "device": {
-          "avdName": "TestingAVD_29"
+          "avdName": "TestingAVD"
         }
       },
       "ios.sim.release": {
