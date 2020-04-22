@@ -1,26 +1,16 @@
 {
   "npmClient": "yarn",
-  "npmClientArgs": [
-    "--no-lockfile"
-  ],
-  "packages": [
-    "packages/*",
-    "tests"
-  ],
+  "npmClientArgs": ["--no-lockfile"],
+  "packages": ["packages/*", "tests"],
   "useWorkspaces": true,
   "command": {
     "version": {
       "conventionalCommits": true,
       "exact": true,
       "gitRemote": "origin",
-      "message": "chore(release): %s"
+      "message": "chore(release): publish [skip-ci]"
     }
   },
-  "ignoreChanges": [
-    "**/docs/**",
-    "**/.github/**",
-    "**/e2e/**",
-    "**/tests/**"
-  ],
+  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
   "version": "independent"
 }
