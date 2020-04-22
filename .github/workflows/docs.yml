@@ -1,14 +1,9 @@
 name: Documentation
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - '**/*.md'
   pull_request:
-    paths:
-      - '**/*.md'
+    branches:
+      - '**'
 
 jobs:
   spelling:
@@ -21,4 +16,4 @@ jobs:
           sudo npm install --global spellchecker-cli
       - name: Spell check
         run: |
-          spellchecker --quiet --files="**/*.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter
+          spellchecker --quiet --files="docs/**/*.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter

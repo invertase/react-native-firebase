@@ -12,7 +12,6 @@
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "gen:reference": "node scripts/generate-typedoc.js",
-    "generate-changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -t -v -l",
     "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
     "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache --no-interactive",
@@ -29,10 +28,6 @@
     "tests:ios:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "tests:ios:test-cover-reuse": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
-    "npm:version:release:patch": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version patch --no-git-tag-version --no-push --exact --force-publish=*",
-    "npm:version:release:minor": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version minor --no-git-tag-version --no-push --exact --force-publish=*",
-    "npm:version:release:major": "echo '!!🔴!! RELEASE !!🔴!!' && lerna version major --no-git-tag-version --no-push --exact --force-publish=*",
-    "npm:publish:release": "echo '!!🔴!! RELEASE !!🔴!!' && echo '!!!!! RELEASE !!!!!!' && lerna publish from-package --dist-tag latest --no-git-reset",
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
