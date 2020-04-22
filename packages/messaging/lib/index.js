@@ -264,6 +264,15 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isAndroid) {
       return Promise.resolve();
     }
+
+    const autoRegister = this.firebaseJson['messaging_ios_auto_register_for_remote_messages'];
+    if (autoRegister === undefined || autoRegister === true) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Usage of "messaging().registerDeviceForRemoteMessages()" is not required. You only need to register if auto-registration is disabled in your 'firebase.json' configuration file via the 'messaging_ios_auto_register_for_remote_messages' property.`,
+      );
+    }
+
     this._isRegisteredForRemoteNotifications = true;
     return this.native.registerForRemoteNotifications();
   }
