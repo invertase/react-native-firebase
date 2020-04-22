@@ -32,7 +32,6 @@
   "dependencies": {
     "stacktrace-js": "^2.0.0"
   },
-  "gitHead": "b5bbbef8f0e46a7b979f4e884b9e9b98aaf810f4",
   "publishConfig": {
     "access": "public"
   }
