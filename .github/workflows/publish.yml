@@ -12,9 +12,10 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           ref: 'master'
+          fetch-depth: 0
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
       - name: GIT Setup
