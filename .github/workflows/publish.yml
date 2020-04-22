@@ -20,11 +20,11 @@ jobs:
         run: yarn --no-audit --prefer-offline
       - name: GIT Setup
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name '@Salakar'
           git config --global user.email 'Salakar@users.noreply.github.com'
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
       - name: Publish Packages
         run: |
           yarn logout
@@ -36,6 +36,8 @@ jobs:
           yarn lerna publish --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Deploy Documentation
         env:
           NETLIFY_TRIGGER_URL: ${{ secrets.NETLIFY_TRIGGER_URL }}
