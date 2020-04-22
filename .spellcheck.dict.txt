@@ -123,3 +123,4 @@ v6
 VSCode
 Wix
 Xcode
+lifecycle
