@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload Logs
         uses: actions/upload-artifact@v1
-        continue-on-error: true
+        if: always()
         with:
           name: adb_logs
           path: adb-log.txt
