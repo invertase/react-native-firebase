@@ -22,6 +22,10 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
       - name: Publish Packages
         run: |
+          yarn logout
+          echo "@react-native-firebase:registry=http://registry.npmjs.org/" > ~/.npmrc
+          echo "registry=http://registry.npmjs.org/" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm whoami
           npx lerna publish --yes
         env:
