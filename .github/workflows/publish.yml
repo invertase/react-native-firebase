@@ -19,12 +19,13 @@ jobs:
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
       - name: GIT Setup
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config --global user.name '@Salakar'
           git config --global user.email 'Salakar@users.noreply.github.com'
-          git remote set-url origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          git remote set-url origin git@github.com:$GITHUB_REPOSITORY
+      - uses: webfactory/ssh-agent@v0.2.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Publish Packages
         run: |
           yarn logout
