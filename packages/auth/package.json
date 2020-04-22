@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/auth",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - The authentication module provides an easy-to-use API to integrate an authentication workflow into new and existing applications. React Native Firebase provides access to all Firebase authentication methods and identity providers.",
   "main": "lib/index.js",
@@ -24,7 +24,7 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "gitHead": "aa127b844418db58d33d00b7ba08872273e6f658",
+  "gitHead": "b5bbbef8f0e46a7b979f4e884b9e9b98aaf810f4",
   "publishConfig": {
     "access": "public"
   }

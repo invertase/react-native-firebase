@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/database",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - The Firebase Realtime Database is a cloud-hosted database. Data is stored as JSON and synchronized in realtime to every connected client. React Native Firebase provides native integration with the Android & iOS Firebase SDKs, supporting both realtime data sync and offline capabilities.",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
   "peerDependencies": {
     "@react-native-firebase/app": "*"
   },
-  "gitHead": "aa127b844418db58d33d00b7ba08872273e6f658",
+  "gitHead": "b5bbbef8f0e46a7b979f4e884b9e9b98aaf810f4",
   "publishConfig": {
     "access": "public"
   }

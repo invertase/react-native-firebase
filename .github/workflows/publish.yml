@@ -1,0 +1,33 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish_npm:
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    name: 'NPM'
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: GIT Setup
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name '@Salakar'
+          git config --global user.email 'Salakar@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+      - name: Publish Packages
+        run: |
+          npm whoami
+          npx lerna publish --yes
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Deploy Documentation
+        env:
+          NETLIFY_TRIGGER_URL: ${{ secrets.NETLIFY_TRIGGER_URL }}
+        run: |
+          curl -X POST -d {} "$NETLIFY_TRIGGER_URL"
