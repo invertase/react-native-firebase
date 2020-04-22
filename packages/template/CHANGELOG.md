@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.8.0](https://github.com/invertase/react-native-firebase/tree/master/packages/template/compare/@react-native-firebase/template@6.7.1...@react-native-firebase/template@6.8.0) (2020-04-22)
+
+
+### Features
+
+* update RFNB version ([8f007fa](https://github.com/invertase/react-native-firebase/tree/master/packages/template/commit/8f007fa97aa8025520098a234118a15293eb1c55))
+
+
+
+
+
 ## [6.7.1](https://github.com/invertase/react-native-firebase/tree/master/packages/template/compare/@react-native-firebase/template@6.7.0...@react-native-firebase/template@6.7.1) (2020-04-22)
 
 **Note:** Version bump only for package @react-native-firebase/template
