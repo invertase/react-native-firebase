@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+        with:
+          ref: 'master'
+      - name: Yarn Install
+        run: yarn --no-audit --prefer-offline
       - name: GIT Setup
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -27,7 +31,7 @@ jobs:
           echo "registry=http://registry.npmjs.org/" >> ~/.npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm whoami
-          npx lerna publish --yes
+          yarn lerna publish --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Deploy Documentation
