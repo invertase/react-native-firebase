@@ -19,6 +19,7 @@ package io.invertase.firebase.messaging;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.core.app.NotificationManagerCompat;
 
@@ -55,23 +56,29 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       initialNotification = null;
       return;
     } else {
-      Intent intent = getCurrentActivity().getIntent();
+      Activity activity = getCurrentActivity();
 
-      if (intent != null && intent.getExtras() != null) {
-        // messageId can be either one...
-        String messageId = intent.getExtras().getString("google.message_id");
-        if (messageId == null) messageId = intent.getExtras().getString("message_id");
+      if (activity != null) {
+        Intent intent = activity.getIntent();
 
-        // only handle non-consumed initial notifications
-        if (messageId != null && initialNotificationMap.get(messageId) == null) {
-          RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+        if (intent != null && intent.getExtras() != null) {
+          // messageId can be either one...
+          String messageId = intent.getExtras().getString("google.message_id");
+          if (messageId == null) messageId = intent.getExtras().getString("message_id");
 
-          if (remoteMessage != null) {
-            promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
-            initialNotificationMap.put(messageId, true);
-            return;
+          // only handle non-consumed initial notifications
+          if (messageId != null && initialNotificationMap.get(messageId) == null) {
+            RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+
+            if (remoteMessage != null) {
+              promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
+              initialNotificationMap.put(messageId, true);
+              return;
+            }
           }
         }
+      } else {
+        Log.w(TAG, "Attempt to call getInitialNotification failed. The current activity is not ready, try calling the method later in the React lifecycle.");
       }
     }
 
