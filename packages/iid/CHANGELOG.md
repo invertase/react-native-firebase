@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.7.1](https://github.com/invertase/react-native-firebase/tree/master/packages/iid/compare/@react-native-firebase/iid@6.7.0...@react-native-firebase/iid@6.7.1) (2020-04-22)
+
+**Note:** Version bump only for package @react-native-firebase/iid
+
+
+
+
+
 # 6.7.0 (2020-04-22)
 
 
