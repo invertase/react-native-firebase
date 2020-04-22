@@ -6,7 +6,7 @@ Analytics
 analytics
 APIs
 APIs.
-APNS
+APNs
 async
 auth
 Auth
