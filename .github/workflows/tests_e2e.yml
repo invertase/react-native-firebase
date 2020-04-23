@@ -64,8 +64,8 @@ jobs:
 
       - name: Download Emulator Image
         run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86"
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-28;google_apis;x86' -abi x86 -g google_apis
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-28;google_apis;x86_64' -abi x86_64 -g google_apis
           $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Start Android Emulator
