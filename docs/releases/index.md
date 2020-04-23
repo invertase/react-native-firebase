@@ -2,7 +2,7 @@
 title: Release notes
 description: View the latest release notes for React Native Firebase
 next: /contributing
-previous: /releases
+previous: /faqs-and-tips
 ---
 
 Using the table below, you can find the release notes for the latest library releases.
