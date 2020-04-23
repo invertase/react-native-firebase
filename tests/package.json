@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
-    "prepare": "patch-package"
+    "prepare": "patch-package",
+    "tests:jest": "jest",
+    "tests:jest-watch": "jest --watch",
+    "tests:jest-coverage": "jest --coverage"
   },
   "dependencies": {
     "@react-native-firebase/admob": "6.7.1",
@@ -26,7 +29,12 @@
     "@react-native-firebase/remote-config": "6.7.1",
     "@react-native-firebase/storage": "6.7.1",
     "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react-native": "0.62.2",
+    "sinon": "^9.0.2",
+    "typescript": "^3.8.3",
+    "jest": "^24.9.0",
+    "@babel/preset-env": "7.9.5",
+    "@babel/preset-flow": "7.9.0"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
