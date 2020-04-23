@@ -142,7 +142,7 @@ by default. To enable this functionality, you must set the "priority" to `high` 
 
 > If using the FCM REST API, see the [following documentation](https://firebase.google.com/docs/cloud-messaging/http-server-ref) on setting `priority` and `content-available`!
 
-The `data` property can send an object of key-value pairs totaling 4KB as string values (hence the `JSON.stringify`).
+The `data` property can send an object of key-value pairs totaling `4KB` as string values (hence the `JSON.stringify`).
 
 Back within our application, as explained in the [Usage](/messaging) documentation, our message handlers will receive a
 [`RemoteMessage`](/reference/messaging/remotemessage) payload containing the message details sent from the server:

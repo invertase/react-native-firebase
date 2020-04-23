@@ -271,7 +271,8 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (
       !isUndefined(cancelCallbackOrContext) &&
-      (!isFunction(cancelCallbackOrContext) && !isObject(cancelCallbackOrContext))
+      !isFunction(cancelCallbackOrContext) &&
+      !isObject(cancelCallbackOrContext)
     ) {
       throw new Error(
         "firebase.database().ref().on(_, _, *) 'cancelCallbackOrContext' must be a function or object.",
@@ -360,7 +361,8 @@ export default class DatabaseQuery extends ReferenceBase {
 
     if (
       !isUndefined(failureCallbackOrContext) &&
-      (!isObject(failureCallbackOrContext) && !isFunction(failureCallbackOrContext))
+      !isObject(failureCallbackOrContext) &&
+      !isFunction(failureCallbackOrContext)
     ) {
       throw new Error(
         "firebase.database().ref().once(_, _, *) 'failureCallbackOrContext' must be a function or context.",

@@ -28,7 +28,7 @@ you can follow the manual installation steps for [iOS](/perf/usage/installation/
 ## Add the Performance Monitoring Plugin
 
 On Android, you need to install the Google Performance Monitoring Plugin which enables automatic
-HTTPs network request monitoring.
+HTTPS network request monitoring.
 
 Add the plugin to your `/android/build.gradle` file as a dependency:
 
@@ -123,7 +123,7 @@ getRequest('https://api.com').then(json => {
 
 ## Disable Auto-Initialization
 
-The Performance Monitoring module will automatically start collecting data once it is installed. To disable this behaviour,
+The Performance Monitoring module will automatically start collecting data once it is installed. To disable this behavior,
 set the `perf_auto_collection_enabled` flag to `false`:
 
 ```json

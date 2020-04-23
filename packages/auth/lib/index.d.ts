@@ -298,7 +298,7 @@ export namespace FirebaseAuthTypes {
      * Returns an Object containing IDP-specific user data if the provider is one of Facebook,
      * GitHub, Google, Twitter, Microsoft, or Yahoo.
      */
-    profile?: Object;
+    profile?: Record<string, any>;
     /**
      * Returns the provider ID for specifying which provider the information in `profile` is for.
      */
@@ -312,7 +312,7 @@ export namespace FirebaseAuthTypes {
   /**
    * A structure containing a User, an AuthCredential, the operationType, and any additional user
    * information that was returned from the identity provider. operationType could be 'signIn' for
-   * a sign-in operation, 'link' for a linking operation and 'reauthenticate' for a reauthentication operation.
+   * a sign-in operation, 'link' for a linking operation and 'reauthenticate' for a re-authentication operation.
    *
    * TODO @salakar; missing credential, operationType
    */

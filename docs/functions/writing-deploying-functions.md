@@ -10,7 +10,7 @@ minimal maintenance overhead. The following page outlines the steps required for
 
 ## Environment Setup
 
-Firebase provides a CLI which is required to build and deploy Cloud Functions. To install the CLI, install the firebase-tools package globally on your computer from your terminal:
+Firebase provides a CLI which is required to build and deploy Cloud Functions. To install the CLI, install the `firebase-tools` package globally on your computer from your terminal:
 
 ```bash
 npm install -g firebase-tools
@@ -31,7 +31,7 @@ firebase init functions
 ```
 
 You will be offered two options for language support, for this tutorial select JavaScript. Allow the CLI to install
-dependencies using npm. Once complete your project structure will look like this:
+dependencies using NPM. Once complete your project structure will look like this:
 
 ```
 myproject
@@ -44,7 +44,7 @@ myproject
       |
       +- .eslintrc.json  # Optional file containing rules for JavaScript linting.
       |
-      +- package.json  # npm package file describing your Cloud Functions code
+      +- package.json  # NPM package file describing your Cloud Functions code
       |
       +- index.js      # main source file for your Cloud Functions code
       |
@@ -82,9 +82,9 @@ exports.listProducts = functions.https.onCall((data, context) => {
 
 The `onCall` callback returns two objects:
 
-We can now return an array of products, generated from the `faker` library. As we are mocking a dataset, it's important
+We can now return an array of products, generated from the `faker` library. As we are mocking a data set, it's important
 to keep consistent results for each request. The data should be generated before the request is received, rather than a
-new dataset being generated on each request:
+new data set being generated on each request:
 
 ```js
 // functions/index.js
@@ -136,7 +136,7 @@ curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET
 
 By default the endpoint will be publicly accessible when deployed. Firebase offers an out-of-the-box solution for handling
 authentication, which integrates with the [Authentication](/auth) module. To secure our endpoint for authenticated users only, check whether the `auth`
-property exists on the the function execution context:
+property exists on the function execution context:
 
 ```js
 exports.listProducts = functions.https.onCall((data, context) => {
@@ -150,7 +150,7 @@ exports.listProducts = functions.https.onCall((data, context) => {
 
 When calling the function without authentication, an error response will be returned to the caller.
 
-If the user is authenticated, we can access the users data via the `context.auth` property. For example their unique user indentifier will be available by accessing `context.auth.uid`.
+If the user is authenticated, we can access the users data via the `context.auth` property. For example their unique user identifier will be available by accessing `context.auth.uid`.
 
 ### Handling function arguments
 

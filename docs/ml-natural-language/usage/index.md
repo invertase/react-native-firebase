@@ -33,7 +33,7 @@ At this moment, the [Translation](https://firebase.google.com/docs/ml-kit/transl
 
 <Youtube id="ejrn_JHksws" />
 
-Smart reply can automatically generate relevant replies to messages. It helps helps your users respond to messages quickly,
+Smart reply can automatically generate relevant replies to messages. It helps your users respond to messages quickly,
 and makes it easier to reply to messages on devices with limited input capabilities.
 
 Language identification can be used to determine the language of a string of text. It can be useful when working with
@@ -65,7 +65,7 @@ Once added, rebuild your application:
 
 ```bash
 // For Android
-npx react-native run-ios
+npx react-native run-android
 
 // For iOS
 cd ios/ && pod install
@@ -118,7 +118,7 @@ Once added, rebuild your application:
 
 ```bash
 // For Android
-npx react-native run-ios
+npx react-native run-android
 
 // For iOS
 cd ios/ && pod install
