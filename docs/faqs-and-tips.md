@@ -18,4 +18,4 @@ Here are some commonly encountered problems:
 [TODO]
 
 # Tips
- - Advice on cleanly creating a test and production environment for your React Native Firebase App: [#3504]( https://github.com/invertase/react-native-firebase/issues/3504)
+ - Advice on supporting multiple environments (for example, dev, prod, maybe also staging, qa) for your React Native Firebase App: [#3504]( https://github.com/invertase/react-native-firebase/issues/3504)
