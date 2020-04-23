@@ -5,7 +5,7 @@ next: /releases
 previous: /migrating-to-v6
 ---
 
-Over the years, there’s been a lot of discussions on our [Github]( https://github.com/invertase/react-native-firebase) and [Discord]( https://invertase.link/discord). Many of them have been about common problems developers face when using our package, and some of them resulted in very good advice being given.
+Over the years, there’s been a lot of discussions on our [GitHub]( https://github.com/invertase/react-native-firebase) and [Discord]( https://invertase.link/discord). Many of them have been about common problems developers face when using our package, and some of them resulted in very good advice being given.
 
 In order to save others time and frustration, this page has been created to document some of these common problems and good pieces of advice.
 If you come across a discussion that results in great advice that can benefit many developers, or a discussion that resolves a problem that many developers encounter, please do add it here! Someone will definitely be grateful.
