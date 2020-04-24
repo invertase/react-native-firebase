@@ -11,6 +11,7 @@ on:
 jobs:
   jest:
     name: Jest
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
