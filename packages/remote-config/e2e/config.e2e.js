@@ -15,7 +15,7 @@
  *
  */
 
-describe('remoteConfig()', () => {
+describe.only('remoteConfig()', () => {
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -48,9 +48,9 @@ describe('remoteConfig()', () => {
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
         firebase.remoteConfig().lastFetchTime.should.equal(0);
-        firebase
-          .remoteConfig()
-          .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
+        const status = firebase.remoteConfig().lastFetchStatus;
+
+        should(status).equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
       }
 
       await firebase.remoteConfig().fetch(0);
@@ -85,13 +85,13 @@ describe('remoteConfig()', () => {
     it('with expiration provided', async () => {
       await firebase.remoteConfig().fetch(0);
       const activated = await firebase.remoteConfig().activate();
-      activated.should.be.a.Boolean();
+      should(activated).be.a.Boolean();
     });
 
     it('without expiration provided', async () => {
       await firebase.remoteConfig().fetch();
       const activated = await firebase.remoteConfig().activate();
-      activated.should.be.a.Boolean();
+      should(activated).be.a.Boolean();
     });
   });
 
