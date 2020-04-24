@@ -11,7 +11,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v1
         with:
@@ -95,6 +95,11 @@ jobs:
           nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E' > adb-log.txt" &
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+        shell: bash
+
+      - name: Submit Coverage
+        run: |
+          ./node_modules/.bin/codecov
         shell: bash
 
       - name: Upload Logs
