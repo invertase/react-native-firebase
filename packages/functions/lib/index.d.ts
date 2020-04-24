@@ -159,7 +159,7 @@ export namespace FirebaseFunctionsTypes {
    * }
    */
   export interface HttpsCallableOptions {
-    timeout?: Number;
+    timeout?: number;
   }
 
   /**
