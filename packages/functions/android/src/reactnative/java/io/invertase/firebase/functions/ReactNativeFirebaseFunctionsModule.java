@@ -52,6 +52,7 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
     String origin,
     String name,
     ReadableMap wrapper,
+    ReadableMap options,
     Promise promise
   ) {
     Task<Object> callMethodTask = module.httpsCallable(
@@ -59,7 +60,8 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
       region,
       origin,
       name,
-      wrapper.toHashMap().get(DATA_KEY)
+      wrapper.toHashMap().get(DATA_KEY), 
+      options
     );
 
     // resolve
