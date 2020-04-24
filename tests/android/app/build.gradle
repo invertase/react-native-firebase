@@ -50,9 +50,6 @@ android {
     targetSdkVersion 28
     versionCode 1
     versionName "1.0"
-    ndk {
-      abiFilters "armeabi-v7a", "x86"
-    }
 
     // detox
     testBuildType System.getProperty('testBuildType', 'debug')
@@ -64,7 +61,7 @@ android {
       reset()
       enable enableSeparateBuildPerCPUArchitecture
       universalApk false  // If true, also generate a universal APK
-      include "armeabi-v7a", "x86"
+      include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
     }
   }
 
@@ -83,10 +80,6 @@ android {
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
       proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
       signingConfig signingConfigs.release
-      matchingFallbacks = ['release']
-    }
-    debug {
-      matchingFallbacks = ['debug']
     }
   }
 
