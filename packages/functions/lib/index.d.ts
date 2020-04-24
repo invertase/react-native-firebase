@@ -336,7 +336,7 @@ export namespace FirebaseFunctionsTypes {
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
-    httpsCallable(name: string): HttpsCallable;
+    httpsCallable(name: string, options?: HttpsCallableOptions): HttpsCallable;
 
     /**
      * Changes this instance to point to a Cloud Functions emulator running
