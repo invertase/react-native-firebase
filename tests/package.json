@@ -26,9 +26,7 @@
     "@react-native-firebase/remote-config": "6.7.1",
     "@react-native-firebase/storage": "6.7.1",
     "react": "16.11.0",
-    "react-native": "0.62.2",
-    "sinon": "^9.0.2",
-    "typescript": "^3.8.3"
+    "react-native": "0.62.2"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
