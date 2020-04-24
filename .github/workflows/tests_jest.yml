@@ -4,11 +4,17 @@ on:
   pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - master
 
 jobs:
   jest:
     name: Jest
+    timeout-minutes: 5
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v1
         with:
@@ -31,3 +37,7 @@ jobs:
         run: yarn --no-audit --prefer-offline
       - name: Jest
         run: yarn run tests:jest-coverage
+      - name: Submit Coverage
+        run: |
+          ./node_modules/.bin/codecov
+        shell: bash
