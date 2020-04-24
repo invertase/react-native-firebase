@@ -30,4 +30,4 @@ jobs:
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
       - name: Jest
-        run: cd tests && yarn run tests:jest-coverage
+        run: yarn run tests:jest-coverage
