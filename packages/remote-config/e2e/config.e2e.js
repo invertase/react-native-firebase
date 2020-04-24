@@ -305,4 +305,34 @@ describe('remoteConfig()', () => {
       numberValue.should.be.equal(1337);
     });
   });
+
+  describe('reset()', () => {
+    it('should reset all default & retrieved values', async () => {
+      if (device.getPlatform() === 'android') {
+        const activated = await firebase.remoteConfig().fetchAndActivate();
+
+        await firebase.remoteConfig().setDefaults({
+          some_key: 'I do not exist',
+        });
+
+        activated.should.be.equal(true);
+
+        const config = firebase.remoteConfig().getAll();
+
+        const remoteProps = ['bool', 'string', 'number'];
+
+        config.should.have.keys(...remoteProps);
+
+        await firebase.remoteConfig().reset();
+
+        const configRetrieveAgain = firebase.remoteConfig().getAll();
+
+        should(configRetrieveAgain).not.have.properties(remoteProps);
+
+        const configRetrieve = firebase.remoteConfig().getValue('some_key').value;
+
+        should(configRetrieve).be.equal(undefined);
+      }
+    });
+  });
 });

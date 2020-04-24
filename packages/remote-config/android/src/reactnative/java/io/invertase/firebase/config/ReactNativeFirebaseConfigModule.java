@@ -69,6 +69,17 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void reset(Promise promise) {
+    module.reset().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(resultWithConstants(task.getResult()));
+      } else {
+        rejectPromiseWithConfigException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
   public void setConfigSettings(String appName, ReadableMap configSettings, Promise promise) {
     module.setConfigSettings(appName, Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {

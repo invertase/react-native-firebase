@@ -459,6 +459,13 @@ export namespace FirebaseRemoteConfigTypes {
      * @param key A key used to retrieve a specific value.
      */
     getValue(key: string): ConfigValue;
+
+    /**
+     * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
+     * @android Android only - iOS returns Promise<null> but does not reset anything
+     *
+     */
+    reset(): Promise<null>;
   }
 }
 
