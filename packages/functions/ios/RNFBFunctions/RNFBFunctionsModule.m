@@ -56,7 +56,7 @@
 
     FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
 
-    if(options[@"timeout"]){
+    if (options[@"timeout"]) {
       callable.timeoutInterval = [options[@"timeout"] doubleValue];
     }
 
