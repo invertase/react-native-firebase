@@ -11,7 +11,7 @@ whilst attempting to build your Android application:
 Execution failed for task ':app:mergeDexDebug'.
 ```
 
-To learn more about multidex, view the offical [Android documentation](https://developer.android.com/studio/build/multidex#mdex-gradle).
+To learn more about multidex, view the official [Android documentation](https://developer.android.com/studio/build/multidex#mdex-gradle).
 
 ## Enabling Multidex
 

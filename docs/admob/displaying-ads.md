@@ -11,7 +11,7 @@ The AdMob package allows you to display three types of adverts; Interstitial, Re
 
 Interstitials are full-screen ads that cover the interface of an app until closed by the user. These type of ads are
 programmatically loaded and then shown at a suitable point during your application flow (e.g. after a level on a gaming
-app has been completed, or game over). The ads can be pre-loaded in the background to ensure they're ready to go when needed.
+app has been completed, or game over). The ads can be preloaded in the background to ensure they're ready to go when needed.
 
 To create a new interstitial, call the `createForAdRequest` method from the `InterstitialAd` class. The first argument
 of the method is the "Ad Unit ID". For testing, we can use a Test ID, however for production the ID from the

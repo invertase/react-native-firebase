@@ -1,6 +1,9 @@
 name: Testing E2E
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   # ------------------
@@ -59,6 +62,7 @@ jobs:
       - name: Build Android App
         run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
 
+<<<<<<< HEAD
       - name: Download Emulator Image
         run: |
           echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86" "platform-tools" "emulator"
@@ -66,6 +70,15 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
 
 # # TODO broken
+=======
+# # TODO broken
+#      - name: Download Emulator Image
+#        run: |
+#          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86" "platform-tools" "emulator"
+#          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 4" -k 'system-images;android-28;google_apis;x86' -g google_apis
+#          $ANDROID_HOME/emulator/emulator -list-avds
+#
+>>>>>>> master
 #      - name: Start Android Emulator
 #        timeout-minutes: 10
 #        continue-on-error: true
@@ -113,7 +126,11 @@ jobs:
       # See link below for available versions;
       #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
       DEVELOPER_DIR: /Applications/Xcode_11.4.app
+<<<<<<< HEAD
 
+=======
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+>>>>>>> master
     steps:
       - uses: actions/checkout@v1
         with:
@@ -190,6 +207,13 @@ jobs:
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
         shell: bash
 
+<<<<<<< HEAD
+=======
+      - name: Submit Coverage
+        run: |
+          ./node_modules/.bin/codecov
+        shell: bash
+>>>>>>> master
 #      - name: Upload App
 #        uses: actions/upload-artifact@v1
 #        with:

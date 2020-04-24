@@ -7,7 +7,7 @@ previous: /auth/usage
 
 React Native Firebase provides support for integrating with different social platforms. The authentication with these
 different platforms is left to the developer to implement due to the various implementations and flows possible using
-their oAuth APIs.
+their OAuth APIs.
 
 # Social provides
 
@@ -162,7 +162,7 @@ RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() 
 );
 ```
 
-Once initalized, setup your application to trigger a sign-in request with Twitter using the `login` method.
+Once initialized, setup your application to trigger a sign-in request with Twitter using the `login` method.
 
 ```jsx
 import React from 'react';

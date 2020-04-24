@@ -1,6 +1,13 @@
 name: Code Quality Checks
 
+<<<<<<< HEAD
 on: [pull_request]
+=======
+on:
+  pull_request:
+    branches:
+      - '**'
+>>>>>>> master
 
 jobs:
   linting:
@@ -33,6 +40,10 @@ jobs:
         continue-on-error: true
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@1.0.4
+<<<<<<< HEAD
+=======
+        continue-on-error: true
+>>>>>>> master
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "eslint-report.json"
