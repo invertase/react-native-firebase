@@ -298,7 +298,7 @@ describe('functions()', () => {
         await functions.httpsCallable(fnName, { timeout: 1000 })({ testTimeout: 3000 });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql('DEADLINE_EXCEEDED');
+        error.message.should.containEql('UNAVAILABLE');
         return Promise.resolve();
       }
     });
