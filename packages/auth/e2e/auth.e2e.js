@@ -910,13 +910,11 @@ describe('auth()', () => {
     });
 
     it('emits failed event on invalid event type', () => {
-      () => {
-        const sucessCb = () => console.log('success');
-        const failureCb = () => console.log('failre');
-        const observerCb = () => console.log('observer');
-        const auth = firebase.auth().verifyPhoneNumber('0987372634', false);
-        auth.on('test', observerCb, failureCb, sucessCb);
-      };
+      const sucessCb = () => console.log('success');
+      const failureCb = () => console.log('failre');
+      const observerCb = () => console.log('observer');
+      const auth = firebase.auth().verifyPhoneNumber('0987372634', false);
+      auth.on('test', observerCb, failureCb, sucessCb);
     });
   });
 
