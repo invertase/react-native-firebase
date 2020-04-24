@@ -5,7 +5,7 @@ module.exports = {
   displayName: packageJson.name,
   preset: 'react-native',
   setupFiles: ['<rootDir>/__tests__/jest.setup.js'],
-  testMatch: ['**/__tests__/*.test.js'],
+  testMatch: ['**/__tests__/**/*.test.js'],
   modulePaths: ['node_modules', '../node_modules'],
   maxConcurrency: 10,
 };
