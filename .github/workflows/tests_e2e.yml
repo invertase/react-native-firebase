@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - '**'
-
 jobs:
   # ------------------
   #      Android
@@ -62,47 +61,53 @@ jobs:
       - name: Build Android App
         run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
 
-# # TODO broken
-#      - name: Download Emulator Image
-#        run: |
-#          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86" "platform-tools" "emulator"
-#          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 4" -k 'system-images;android-28;google_apis;x86' -g google_apis
-#          $ANDROID_HOME/emulator/emulator -list-avds
-#
-#      - name: Start Android Emulator
-#        timeout-minutes: 10
-#        continue-on-error: true
-#        run: |
-#          echo "Starting emulator"
-#          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -cores 2 -memory 2048 -no-audio -no-snapshot -no-window -no-boot-anim &
-#          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
-#          $ANDROID_HOME/platform-tools/adb devices
-#          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
-#          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
-#          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
-#
-#          echo "Emulator started"
-#
-#      - name: Detox Test
-#        run: |
-#          nohup yarn run tests:packager:jet &
-#          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
-#          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E'" &
-#          printf 'Waiting for packager to come online'
-#          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
-#            printf '.'
-#            sleep 2
-#          done
-#          echo "Packager is online!"
-#          cd tests
-#          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
-#        shell: bash
+      - name: Download Emulator Image
+        run: |
+          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64"
+          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-28;google_apis;x86_64' -g google_apis
+          $ANDROID_HOME/emulator/emulator -list-avds
 
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: android_app
-#          path: tests/android/app/build/outputs/apk/debug/app-debug.apk
+      - name: Start Android Emulator
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -no-audio -no-snapshot -no-window -no-boot-anim &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+          $ANDROID_HOME/platform-tools/adb devices
+          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+          echo "Emulator started"
+
+      - name: Detox Test
+        timeout-minutes: 10
+        run: |
+          nohup yarn run tests:packager:jet &
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online!"
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
+          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E' > adb-log.txt" &
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+        shell: bash
+
+      - name: Submit Coverage
+        run: |
+          ./node_modules/.bin/codecov
+        shell: bash
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: adb_logs
+          path: adb-log.txt
 
   # ------------------
   #        iOS

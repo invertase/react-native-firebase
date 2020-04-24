@@ -60,12 +60,6 @@ subprojects {
           minSdkVersion minSdk
           targetSdkVersion targetSdk
         }
-        variantFilter { variant ->
-          def names = variant.flavors*.name
-          if (names.contains("minReactNative44")) {
-            setIgnore(true)
-          }
-        }
       }
     }
   }
