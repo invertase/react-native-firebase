@@ -17,11 +17,11 @@
 
 import {
   hasOwnProperty,
-  isBoolean,
   isNumber,
   isObject,
   isString,
   isUndefined,
+  isNull,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -79,12 +79,55 @@ function convertNativeConfigValues(configValues) {
   Object.freeze(convertedValues);
   return convertedValues;
 }
+// as per firebase web sdk specification
+const BOOLEAN_TRUTHY_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
+
+class Value {
+  constructor({ value, source }) {
+    this._value = value;
+    this._source = source;
+  }
+
+  get value() {
+    console.warn('firebase.remoteConfig().getValue().value has been removed');
+  }
+
+  get source() {
+    console.warn('firebase.remoteConfig().getValue().source has been removed');
+  }
+
+  asBoolean() {
+    if (this._source === 'static') {
+      return false;
+    }
+    return BOOLEAN_TRUTHY_VALUES.includes(this._value.toLowerCase());
+  }
+  asNumber() {
+    if (this._source === 'static') {
+      return 0;
+    }
+
+    let num = Number(this._value);
+
+    if (isNaN(num)) {
+      num = 0;
+    }
+    return num;
+  }
+  asString() {
+    return this._value;
+  }
+  getSource() {
+    return this._source;
+  }
+}
 
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    // TODO(salakar) iOS does not yet support multiple apps, for now we'll use the default app always
-    this._updateFromConstants(this.native.REMOTE_CONFIG_APP_CONSTANTS['[DEFAULT]']);
+    this._settings = {};
+    this._lastFetchStatus = null;
+    this._lastFetchTime = null;
   }
 
   getValue(key) {
@@ -93,22 +136,48 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     if (!hasOwnProperty(this._values, key)) {
-      return {
-        value: undefined,
+      return new Value({
+        value: '',
         source: 'static',
-      };
+      });
     }
 
-    return this._values[key];
+    return new Value({ value: `${this._values[key].value}`, source: this._values[key].source });
   }
 
   getAll() {
-    return Object.assign({}, this._values);
+    const values = {};
+
+    Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
+
+    return values;
+  }
+
+  get defaultConfig() {
+    console.warn(
+      'firebase.remoteConfig().defaultConfig is not supported. Default values are merged with config values',
+    );
+  }
+
+  set defaultConfig(defaults) {
+    console.warn(
+      'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
+    );
+  }
+
+  get settings() {
+    return this._settings;
+  }
+
+  set settings(settings) {
+    console.warn(
+      "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().settings = { ...[key]: string, }' instead'",
+    );
   }
 
   get lastFetchTime() {
-    // android returns -1 if no fetch yet and iOS returns 0
-    return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
+    // android returns -1 (coming back as null currently) if no fetch yet and iOS returns 0
+    return this._lastFetchTime === -1 || isNull(this._lastFetchTime) ? 0 : this._lastFetchTime;
   }
 
   get lastFetchStatus() {
@@ -116,36 +185,60 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get isDeveloperModeEnabled() {
-    return this._isDeveloperModeEnabled;
+    console.warn(
+      'firebase.remoteConfig().isDeveloperModeEnabled has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
+    );
   }
 
   get minimumFetchInterval() {
-    return this._minimumFetchInterval;
+    console.warn(
+      'firebase.remoteConfig().minimumFetchInterval has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
+    );
   }
 
   setConfigSettings(settings = {}) {
-    if (!isObject(settings) || !hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings' must be an object with a 'isDeveloperModeEnabled' key.",
+    const nativeSettings = {};
+
+    if (!isObject(settings)) {
+      throw new Error('firebase.remoteConfig().settings: must set an object.');
+    }
+
+    if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      console.warn(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
     }
 
-    if (!isBoolean(settings.isDeveloperModeEnabled)) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' must be a boolean value.",
+    if (hasOwnProperty(settings, 'minimumFetchInterval')) {
+      console.warn(
+        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
     }
 
-    if (
-      hasOwnProperty(settings, 'minimumFetchInterval') &&
-      !isNumber(settings.minimumFetchInterval)
-    ) {
-      throw new Error(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' must be a number value.",
-      );
+    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
+      if (!isNumber(settings.minimumFetchIntervalMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+      }
     }
 
-    return this._promiseWithConstants(this.native.setConfigSettings(settings));
+    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
+      if (!isNumber(settings.fetchTimeMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeMillis' must be a number type in milliseconds.",
+        );
+      } else {
+        //iOS & Android expect seconds
+        nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
+      }
+    }
+
+    this._settings = settings;
+    return this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
   }
 
   /**
@@ -178,6 +271,10 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._promiseWithConstants(this.native.fetchAndActivate());
   }
 
+  ensureInitialized() {
+    return this._promiseWithConstants(this.native.ensureInitialized());
+  }
+
   /**
    * Sets defaults.
    *
@@ -205,12 +302,14 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
   }
 
+  setLogLevel() {
+    console.warn('firebase.remoteConfig().setLogLevel() is not supported natively.');
+  }
+
   _updateFromConstants(constants) {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
     this._values = convertNativeConfigValues(constants.values);
-    this._isDeveloperModeEnabled = constants.isDeveloperModeEnabled;
-    this._minimumFetchInterval = constants.minimumFetchInterval;
   }
 
   _promiseWithConstants(promise) {
@@ -232,7 +331,7 @@ export default createModuleNamespace({
   namespace,
   nativeModuleName,
   nativeEvents: false,
-  hasMultiAppSupport: false,
+  hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseConfigModule,
 });
