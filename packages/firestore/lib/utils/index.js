@@ -240,15 +240,15 @@ export function parseSnapshotArgs(args) {
  * @param converter
  */
 export function validateWithConverter(converter) {
-  if (!isUndefined(converter) || !isObject(converter)) {
+  if (isUndefined(converter) || !isObject(converter)) {
     throw new Error('expected an object value.');
   }
 
-  if (!converter.toFirestore || !isFunction(converter.toFirestore)) {
+  if (!isFunction(converter.toFirestore)) {
     throw new Error("'toFirestore' expected a function.");
   }
 
-  if (!converter.fromFirestore || !isFunction(converter.fromFirestore)) {
+  if (!isFunction(converter.fromFirestore)) {
     throw new Error("'fromFirestore' expected a function.");
   }
 }

@@ -90,7 +90,7 @@ export namespace FirebaseFirestoreTypes {
    * A `CollectionReference` object can be used for adding documents, getting document references, and querying for
    * documents (using the methods inherited from `Query`).
    */
-  export interface CollectionReference extends Query {
+  export interface CollectionReference<T> extends Query<T> {
     /**
      * The collection's identifier.
      */
@@ -121,7 +121,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An Object containing the data for the new document.
      */
-    add(data: { [key: string]: any }): Promise<DocumentReference>;
+    add(data: { [key: string]: any }): Promise<DocumentReference<T>>;
 
     /**
      * Get a DocumentReference for the document within the collection at the specified path. If no
@@ -138,7 +138,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param documentPath A slash-separated path to a document.
      */
-    doc(documentPath?: string): DocumentReference;
+    doc(documentPath?: string): DocumentReference<T>;
   }
 
   /**
@@ -198,7 +198,7 @@ export namespace FirebaseFirestoreTypes {
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
    */
-  export interface DocumentReference {
+  export interface DocumentReference<T> {
     /**
      * The Firestore instance the document is in. This is useful for performing transactions, for example.
      */
@@ -263,7 +263,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param options An object to configure the get behavior.
      */
-    get(options?: GetOptions): Promise<DocumentSnapshot>;
+    get(options?: GetOptions): Promise<DocumentSnapshot<T>>;
 
     /**
      * Returns true if this DocumentReference is equal to the provided one.
@@ -1358,7 +1358,7 @@ export namespace FirebaseFirestoreTypes {
      * Changes the behavior of `set()` calls to only replace the specified field paths.
      * Any field path that is not specified is ignored and remains untouched.
      */
-    mergeFields?: string | FieldPath[];
+    mergeFields?: string[] | FieldPath[];
   }
 
   /**
