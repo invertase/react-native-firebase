@@ -23,8 +23,8 @@ import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
 export default class FirestoreCollectionReference extends FirestoreQuery {
-  constructor(firestore, collectionPath) {
-    super(firestore, collectionPath, new FirestoreQueryModifiers());
+  constructor(firestore, collectionPath, converter) {
+    super(firestore, collectionPath, new FirestoreQueryModifiers(), converter);
   }
 
   get id() {
@@ -36,7 +36,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
     if (!parent) {
       return null;
     }
-    return new FirestoreDocumentReference(this._firestore, parent);
+    return new FirestoreDocumentReference(this._firestore, parent, this._converter);
   }
 
   get path() {
@@ -48,8 +48,21 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
       throw new Error("firebase.firestore().collection().add(*) 'data' must be an object.");
     }
 
+    let converted = data;
+    if (this._converter) {
+      try {
+        converted = this._converter.toFirestore(data);
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore().collection().add(*) "withConverter.toFirestore" threw an error: ${
+            e.message
+          }.`,
+        );
+      }
+    }
+
     const documentRef = this.doc();
-    return documentRef.set(data).then(() => Promise.resolve(documentRef));
+    return documentRef.set(converted).then(() => Promise.resolve(documentRef));
   }
 
   doc(documentPath) {
@@ -62,7 +75,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
       );
     }
 
-    return new FirestoreDocumentReference(this._firestore, path);
+    return new FirestoreDocumentReference(this._firestore, path, this._converter);
   }
 }
 

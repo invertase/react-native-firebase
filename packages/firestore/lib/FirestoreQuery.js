@@ -26,15 +26,16 @@ import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseE
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
-import { parseSnapshotArgs } from './utils';
+import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 let _id = 0;
 
 export default class FirestoreQuery {
-  constructor(firestore, collectionPath, modifiers) {
+  constructor(firestore, collectionPath, modifiers, converter) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
     this._modifiers = modifiers;
+    this._converter = converter;
   }
 
   get firestore() {
@@ -81,7 +82,9 @@ export default class FirestoreQuery {
 
         if (value === undefined) {
           throw new Error(
-            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${order.fieldPath}' (used as the orderBy) does not exist.`,
+            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${
+              order.fieldPath
+            }' (used as the orderBy) does not exist.`,
           );
         }
 
@@ -173,7 +176,7 @@ export default class FirestoreQuery {
         this._modifiers.options,
         options,
       )
-      .then(data => new FirestoreQuerySnapshot(this._firestore, this, data));
+      .then(data => new FirestoreQuerySnapshot(this._firestore, this, data, this._converter));
   }
 
   isEqual(other) {
@@ -257,6 +260,7 @@ export default class FirestoreQuery {
             this._firestore,
             this,
             event.body.snapshot,
+            this._converter,
           );
           handleSuccess(querySnapshot);
         }
@@ -407,5 +411,16 @@ export default class FirestoreQuery {
     modifiers.validateWhere();
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+  }
+
+  withConverter(converter) {
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().collection().withConverter() ${e.message}`);
+    }
+
+    // todo validate converter
+    return new FirestoreQuery(this._firestore, this._collectionPath, this._modifiers, converter);
   }
 }

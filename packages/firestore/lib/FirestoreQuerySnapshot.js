@@ -26,12 +26,14 @@ import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreSnapshotMetadata from './FirestoreSnapshotMetadata';
 
 export default class FirestoreQuerySnapshot {
-  constructor(firestore, query, nativeData) {
+  constructor(firestore, query, nativeData, converter) {
     this._query = query;
     this._source = nativeData.source;
     this._excludesMetadataChanges = nativeData.excludesMetadataChanges;
     this._changes = nativeData.changes.map($ => new FirestoreDocumentChange(firestore, $));
-    this._docs = nativeData.documents.map($ => new FirestoreDocumentSnapshot(firestore, $));
+    this._docs = nativeData.documents.map(
+      $ => new FirestoreDocumentSnapshot(firestore, $, converter),
+    );
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
   }
 

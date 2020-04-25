@@ -17,7 +17,12 @@
 
 import { isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
+import {
+  parseSetOptions,
+  parseSnapshotArgs,
+  parseUpdateArgs,
+  validateWithConverter,
+} from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
 // To avoid React Native require cycle warnings
@@ -34,9 +39,10 @@ export function provideDocumentSnapshotClass(documentSnapshot) {
 let _id = 0;
 
 export default class FirestoreDocumentReference {
-  constructor(firestore, documentPath) {
+  constructor(firestore, documentPath, converter) {
     this._firestore = firestore;
     this._documentPath = documentPath;
+    this._converter = converter;
   }
 
   get firestore() {
@@ -49,7 +55,7 @@ export default class FirestoreDocumentReference {
 
   get parent() {
     const parentPath = this._documentPath.parent();
-    return new FirestoreCollectionReference(this._firestore, parentPath);
+    return new FirestoreCollectionReference(this._firestore, parentPath, this._converter);
   }
 
   get path() {
@@ -77,7 +83,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return new FirestoreCollectionReference(this._firestore, path);
+    return new FirestoreCollectionReference(this._firestore, path, this._converter);
   }
 
   delete() {
@@ -103,7 +109,7 @@ export default class FirestoreDocumentReference {
 
     return this._firestore.native
       .documentGet(this.path, options)
-      .then(data => new FirestoreDocumentSnapshot(this._firestore, data));
+      .then(data => new FirestoreDocumentSnapshot(this._firestore, data, this._converter));
   }
 
   isEqual(other) {
@@ -157,6 +163,7 @@ export default class FirestoreDocumentReference {
           const documentSnapshot = new FirestoreDocumentSnapshot(
             this._firestore,
             event.body.snapshot,
+            this._converter,
           );
           handleSuccess(documentSnapshot);
         }
@@ -185,7 +192,20 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().set(_, *) ${e.message}.`);
     }
 
-    return this._firestore.native.documentSet(this.path, buildNativeMap(data), setOptions);
+    let converted = data;
+    if (this._converter) {
+      try {
+        converted = this._converter.toFirestore(data);
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore().doc().set(*) "withConverter.toFirestore" threw an error: ${
+            e.message
+          }.`,
+        );
+      }
+    }
+
+    return this._firestore.native.documentSet(this.path, buildNativeMap(converted), setOptions);
   }
 
   update(...args) {
@@ -203,6 +223,16 @@ export default class FirestoreDocumentReference {
     }
 
     return this._firestore.native.documentUpdate(this.path, buildNativeMap(data));
+  }
+
+  withConverter(converter) {
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().doc().withConverter() ${e.message}`);
+    }
+
+    return new FirestoreDocumentReference(this._firestore, this._documentPath, converter);
   }
 }
 

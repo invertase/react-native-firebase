@@ -121,7 +121,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An Object containing the data for the new document.
      */
-    add(data: { [key: string]: value }): Promise<DocumentReference>;
+    add(data: { [key: string]: any }): Promise<DocumentReference>;
 
     /**
      * Get a DocumentReference for the document within the collection at the specified path. If no
@@ -422,7 +422,7 @@ export namespace FirebaseFirestoreTypes {
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(data: { [key: string]: value }, options?: SetOptions): Promise<void>;
+    set(data: { [key: string]: any }, options?: SetOptions): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this `DocumentReference`. The update will fail
@@ -441,7 +441,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(data: { [key: string]: value }): Promise<void>;
+    update(data: { [key: string]: any }): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if
@@ -461,6 +461,15 @@ export namespace FirebaseFirestoreTypes {
      * @param moreFieldsAndValues Additional key value pairs.
      */
     update(field: string | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
+
+    withConverter<U>(converter: FirestoreDataConverter<U>): DocumentReference<U>;
+  }
+
+  // TODO test this
+  export interface FirestoreDataConverter<T> {
+    toFirestore: (modelObject: T) => { [key: string]: any };
+    // Handle options: https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter
+    fromFirestore: (snapshot: QueryDocumentSnapshot) => T;
   }
 
   /**
@@ -502,7 +511,7 @@ export namespace FirebaseFirestoreTypes {
      * console.log('User', user.data());
      * ```
      */
-    data(): { [key: string]: value } | undefined;
+    data(): { [key: string]: any } | undefined;
 
     /**
      * Retrieves the field specified by fieldPath. Returns undefined if the document or field doesn't exist.
@@ -563,7 +572,7 @@ export namespace FirebaseFirestoreTypes {
      * }
      * ```
      */
-    data(): { [key: string]: value };
+    data(): { [key: string]: any };
   }
 
   /**
@@ -1349,7 +1358,7 @@ export namespace FirebaseFirestoreTypes {
      * Changes the behavior of `set()` calls to only replace the specified field paths.
      * Any field path that is not specified is ignored and remains untouched.
      */
-    mergeFields?: (string | FieldPath)[];
+    mergeFields?: string | FieldPath[];
   }
 
   /**
@@ -1570,7 +1579,7 @@ export namespace FirebaseFirestoreTypes {
      */
     set(
       documentRef: DocumentReference,
-      data: { [key: string]: value },
+      data: { [key: string]: any },
       options?: SetOptions,
     ): Transaction;
 
@@ -1595,7 +1604,7 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key: string]: value }): Transaction;
+    update(documentRef: DocumentReference, data: { [key: string]: any }): Transaction;
 
     /**
      * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to
@@ -1626,6 +1635,9 @@ export namespace FirebaseFirestoreTypes {
       value: any,
       ...moreFieldsAndValues: any[]
     ): Transaction;
+
+    // TODO test passing U down? How does it effect the documents
+    withConverter<U>(converter: FirestoreDataConverter<U>): CollectionReference<U>;
   }
 
   /**
@@ -1696,7 +1708,7 @@ export namespace FirebaseFirestoreTypes {
      */
     set(
       documentRef: DocumentReference,
-      data: { [key: string]: value },
+      data: { [key: string]: any },
       options?: SetOptions,
     ): WriteBatch;
 
@@ -1717,7 +1729,7 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key: string]: value }): WriteBatch;
+    update(documentRef: DocumentReference, data: { [key: string]: any }): WriteBatch;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
