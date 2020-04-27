@@ -37,7 +37,7 @@ documentation on the React Navigation website.
 # React Native Navigation
 
 The [`wix/react-native-navigation`](https://github.com/wix/react-native-navigation) provides 100% native platform navigation
-for React Native apps. To manually track screens, you need to setup a componentDidAppear event listener and manually call the
+for React Native apps. To manually track screens, you need to setup a `componentDidAppear` event listener and manually call the
 [`setCurrentScreen`](/reference/analytics#setCurrentScreen) method the Analytics library provides:
 
 ```js
