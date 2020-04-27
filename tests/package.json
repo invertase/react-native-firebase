@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "6.7.2",
+  "version": "6.7.3",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
@@ -16,7 +16,7 @@
     "@react-native-firebase/database": "6.7.1",
     "@react-native-firebase/dynamic-links": "6.7.1",
     "@react-native-firebase/firestore": "6.7.1",
-    "@react-native-firebase/functions": "6.7.2",
+    "@react-native-firebase/functions": "6.8.0",
     "@react-native-firebase/iid": "6.7.1",
     "@react-native-firebase/in-app-messaging": "6.7.1",
     "@react-native-firebase/messaging": "6.7.1",

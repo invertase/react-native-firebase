@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.8.0](https://github.com/invertase/react-native-firebase/tree/master/packages/functions/compare/@react-native-firebase/functions@6.7.2...@react-native-firebase/functions@6.8.0) (2020-04-27)
+
+
+### Features
+
+* **functions:** support function timeout ([#3534](https://github.com/invertase/react-native-firebase/tree/master/packages/functions/issues/3534)) ([50c0f12](https://github.com/invertase/react-native-firebase/tree/master/packages/functions/commit/50c0f12ef059bad92bbb81027fded131d1dc0dad))
+
+
+
+
+
 ## [6.7.2](https://github.com/invertase/react-native-firebase/tree/master/packages/functions/compare/@react-native-firebase/functions@6.7.1...@react-native-firebase/functions@6.7.2) (2020-04-27)
 
 **Note:** Version bump only for package @react-native-firebase/functions
