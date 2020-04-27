@@ -1,5 +1,4 @@
-import perf from '../lib';
-import firebase from '../../../node_modules/@react-native-firebase/app';
+import perf, { firebase } from '../lib';
 
 describe('Performance Monitoring', () => {
   describe('namespace', () => {
