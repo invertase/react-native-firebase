@@ -13,7 +13,7 @@ therefore there is no "one fits all" solution to screen tracking.
 
 The [React Navigation](https://reactnavigation.org/) library allows for various navigation techniques such as
 Stack, Tab, Native or even custom navigation. The `NavigationController` component which the library exposes provides
-access to the current navigation state when a screen changes, allowing you to use the [`setCurrentScreen`](/reference/analytics#setcurrentscreen)
+access to the current navigation state when a screen changes, allowing you to use the [`setCurrentScreen`](/reference/analytics#setCurrentScreen)
 method the Analytics library provides:
 
 ```jsx
@@ -38,7 +38,7 @@ documentation on the React Navigation website.
 
 The [`wix/react-native-navigation`](https://github.com/wix/react-native-navigation) provides 100% native platform navigation
 for React Native apps. To manually track screens, you need to setup a componentDidAppear event listener and manually call the
-[`setCurrentScreen`](/reference/analytics#setcurrentscreen) method the Analytics library provides:
+[`setCurrentScreen`](/reference/analytics#setCurrentScreen) method the Analytics library provides:
 
 ```js
 import analytics from '@react-native-firebase/analytics';

@@ -27,6 +27,7 @@ Changelog
 CLI
 CocoaPods
 codebase
+componentDidAppear
 config
 Config
 Crashlytics
