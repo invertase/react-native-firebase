@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - '**'
+
 jobs:
   # ------------------
   #      Android
@@ -12,6 +13,8 @@ jobs:
     name: Android
     runs-on: macos-latest
     timeout-minutes: 30
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v1
         with:
