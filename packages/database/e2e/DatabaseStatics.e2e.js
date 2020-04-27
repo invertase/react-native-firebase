@@ -15,7 +15,7 @@
  *
  */
 
-const { PATH, wipe } = require('../helpers');
+const { PATH, wipe } = require('./helpers');
 
 const TEST_PATH = `${PATH}/statics`;
 
