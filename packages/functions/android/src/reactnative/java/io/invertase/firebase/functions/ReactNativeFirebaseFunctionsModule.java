@@ -60,7 +60,7 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
       region,
       origin,
       name,
-      wrapper.toHashMap().get(DATA_KEY), 
+      wrapper.toHashMap().get(DATA_KEY),
       options
     );
 
@@ -80,7 +80,10 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
         details = functionsException.getDetails();
         code = functionsException.getCode().name();
         message = functionsException.getMessage();
-        if (functionsException.getCause() instanceof IOException) {
+        String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
+        Boolean isTimeout = code.contains(timeout);
+
+        if (functionsException.getCause() instanceof IOException && !isTimeout) {
           // return UNAVAILABLE for network io errors, to match iOS
           code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
           message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
