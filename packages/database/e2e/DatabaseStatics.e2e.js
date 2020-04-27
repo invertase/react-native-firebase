@@ -33,10 +33,10 @@ describe('database.X', () => {
 
   describe('ServerValue.increment', () => {
     it('returns a valid object', () => {
-      const { TIMESTAMP } = firebase.database.ServerValue;
-      should.equal(Object.keys(TIMESTAMP).length, 1);
-      TIMESTAMP.should.have.property('.sv');
-      TIMESTAMP['.sv'].should.have.property('increment');
+      const incrementObject = firebase.database.ServerValue.increment(1);
+      should.equal(Object.keys(incrementObject).length, 1);
+      incrementObject.should.have.property('.sv');
+      incrementObject['.sv'].should.have.property('increment');
     });
 
     it('increments on the server', async () => {
