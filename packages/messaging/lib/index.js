@@ -201,7 +201,7 @@ class FirebaseMessagingModule extends FirebaseModule {
       // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
       const { token } = event;
       const tokenStringWithTokenAccessor = String(token);
-      Object.defineProperty(tokenStringWithTokenAccessor, 'token', {
+      Object.defineProperty(tokenStringWithTokenAccessor.__proto__, 'token', {
         enumerable: false,
         get() {
           // eslint-disable-next-line no-console
