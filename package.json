@@ -1,15 +1,16 @@
 {
   "name": "@invertase/react-native-apple-authentication",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A complete Apple Authentication services API for React Native iOS apps.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
+    "analyze": "npx tsc --noEmit",
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf rimraf ios/build",
     "build:docs": "typedoc --includeDeclarations --excludeExternals --out docs --plugin typedoc-plugin-markdown --hideBreadcrumbs",
-    "prepare": "yarn run build"
+    "prepare": "yarn analyze && yarn build"
   },
   "repository": {
     "type": "git",
@@ -30,15 +31,16 @@
     "apple authentication"
   ],
   "devDependencies": {
-    "@react-native-community/eslint-config": "^0.0.5",
-    "genversion": "^2.2.0",
-    "prettier": "^1.19.1",
-    "rimraf": "^3.0.0",
-    "typedoc": "^0.15.3",
-    "typedoc-plugin-markdown": "^2.2.11",
-    "typescript": "^3.7.2"
+    "@react-native-community/eslint-config": "^1.1.0",
+    "genversion": "^2.2.1",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "typedoc": "^0.17.6",
+    "typedoc-plugin-markdown": "^2.2.17",
+    "typescript": "^3.8.3"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "dependencies": {}
 }
