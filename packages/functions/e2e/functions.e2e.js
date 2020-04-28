@@ -286,5 +286,21 @@ describe('functions()', () => {
 
       return Promise.resolve();
     });
+
+    it('HttpsCallableOptions.timeout will error when timeout is exceeded', async () => {
+      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+      const region = 'europe-west2';
+
+      const functions = firebase.app().functions(region);
+      functions.useFunctionsEmulator('http://api.rnfirebase.io');
+
+      try {
+        await functions.httpsCallable(fnName, { timeout: 1000 })({ testTimeout: '3000' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+        return Promise.resolve();
+      }
+    });
   });
 });
