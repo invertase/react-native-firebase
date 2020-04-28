@@ -17,4 +17,17 @@ describe('Cloud Functions', () => {
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
   });
+
+  describe('httpcallable()', () => {
+    it('throws an error with an incorrect timeout', () => {
+      try {
+        const app = firebase.app();
+        app.functions().httpsCallable('example', { timeout: 'test' });
+        return Promise.reject(new Error('Did not throw'));
+      } catch (e) {
+        expect(e.message).toEqual('HttpsCallableOptions.timeout expected a Number in milliseconds');
+        return Promise.resolve();
+      }
+    });
+  });
 });
