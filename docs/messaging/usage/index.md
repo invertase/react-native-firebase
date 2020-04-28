@@ -177,7 +177,7 @@ any custom data via the `data` property. To learn more, view the [`RemoteMessage
 API reference.
 
 If the `RemoteMessage` payload contains a `notification` property when sent to the `setBackgroundMessageHandler` handler, the device
-will have displayed a [notification](/messaging/notififications) to the user.
+will have displayed a [notification](/messaging/notifications) to the user.
 
 #### Data-only messages
 
@@ -276,7 +276,7 @@ messaging()
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `subscribeToTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
 messaging()
