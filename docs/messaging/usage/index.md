@@ -276,7 +276,7 @@ messaging()
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `subscribeToTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
 messaging()
