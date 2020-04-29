@@ -162,7 +162,7 @@ export namespace FirebaseMessagingTypes {
     bodyLocKey?: string;
 
     /**
-     * Any arguments should be formatted into the resource specified by bodyLocKey.
+     * Any arguments that should be formatted into the resource specified by bodyLocKey.
      */
     bodyLocArgs?: string[];
 
@@ -171,6 +171,16 @@ export namespace FirebaseMessagingTypes {
        * The notification's subtitle.
        */
       subtitle?: string;
+
+      /**
+       * The native localization key for the notification's subtitle.
+       */
+      subtitleLocKey?: string;
+
+      /**
+       * Any arguments that should be formatted into the resource specified by subtitleLocKey.
+       */
+      subtitleLocArgs?: string[];
 
       /**
        * The value of the badge on the home screen app icon.
