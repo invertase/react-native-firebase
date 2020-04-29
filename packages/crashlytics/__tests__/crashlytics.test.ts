@@ -1,4 +1,4 @@
-import crashlytics, { firebase } from '../lib';
+import { firebase } from '../lib';
 
 describe('Crashlytics', () => {
   describe('namespace', () => {
