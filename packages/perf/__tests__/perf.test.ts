@@ -11,7 +11,10 @@ describe('Performance Monitoring', () => {
 
   describe('setPerformanceCollectionEnabled', () => {
     it('errors if not boolean', () => {
-      expect(() => perf().setPerformanceCollectionEnabled()).toThrow('must be a boolean');
+      expect(() => {
+        // @ts-ignore
+        perf().setPerformanceCollectionEnabled();
+      }).toThrow('must be a boolean');
     });
   });
 
@@ -19,11 +22,14 @@ describe('Performance Monitoring', () => {
     it('returns an instance of Trace', () => {
       const trace = perf().newTrace('invertase');
       expect(trace.constructor.name).toEqual('Trace');
+
+      // @ts-ignore
       expect(trace._identifier).toEqual('invertase');
     });
 
     it('errors if identifier not a string', () => {
       try {
+        // @ts-ignore
         perf().newTrace(1337);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -51,12 +57,17 @@ describe('Performance Monitoring', () => {
     it('returns an instance of HttpMetric', async () => {
       const metric = perf().newHttpMetric('https://invertase.io', 'GET');
       expect(metric.constructor.name).toEqual('HttpMetric');
+
+      // @ts-ignore
       expect(metric._url).toEqual('https://invertase.io');
+
+      // @ts-ignore
       expect(metric._httpMethod).toEqual('GET');
     });
 
     it('errors if url not a string', async () => {
       try {
+        // @ts-ignore
         perf().newHttpMetric(1337, 7331);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -67,6 +78,7 @@ describe('Performance Monitoring', () => {
 
     it('errors if httpMethod not a string', async () => {
       try {
+        // @ts-ignore
         perf().newHttpMetric('https://invertase.io', 1337);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -79,6 +91,7 @@ describe('Performance Monitoring', () => {
 
     it('errors if httpMethod not a valid type', async () => {
       try {
+        // @ts-ignore
         perf().newHttpMetric('https://invertase.io', 'FIRE');
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -93,6 +106,7 @@ describe('Performance Monitoring', () => {
   describe('setPerformanceCollectionEnabled()', () => {
     it('errors if not boolean', async () => {
       try {
+        // @ts-ignore
         firebase.perf().setPerformanceCollectionEnabled();
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
