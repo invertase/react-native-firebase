@@ -142,9 +142,29 @@ export namespace FirebaseMessagingTypes {
     title?: string;
 
     /**
+     * The native localization key for the notification title.
+     */
+    titleLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by titleLocKey.
+     */
+    titleLocArgs?: string[];
+
+    /**
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * The native localization key for the notification body content.
+     */
+    bodyLocKey?: string;
+
+    /**
+     * Any arguments should be formatted into the resource specified by bodyLocKey.
+     */
+    bodyLocArgs?: string[];
 
     ios?: {
       /**
