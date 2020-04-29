@@ -1,4 +1,4 @@
-import admob, { firebase } from '../lib';
+import { firebase } from '../lib';
 
 describe('Admob', () => {
   describe('namespace', () => {
@@ -12,6 +12,7 @@ describe('Admob', () => {
   describe('setRequestConfiguration()', () => {
     it('throws if config is not an object', () => {
       try {
+        // @ts-ignore
         firebase.admob().setRequestConfiguration('123');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
@@ -42,6 +43,7 @@ describe('Admob', () => {
       it('throws if tagForChildDirectedTreatment not a boolean', () => {
         try {
           firebase.admob().setRequestConfiguration({
+            // @ts-ignore
             tagForChildDirectedTreatment: 'true',
           });
           return Promise.reject(new Error('Did not throw Error.'));
@@ -58,6 +60,7 @@ describe('Admob', () => {
       it('throws if tagForUnderAgeOfConsent not a boolean', () => {
         try {
           firebase.admob().setRequestConfiguration({
+            // @ts-ignore
             tagForUnderAgeOfConsent: 'false',
           });
           return Promise.reject(new Error('Did not throw Error.'));

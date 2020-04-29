@@ -4,6 +4,7 @@ describe('Admob AdsConsent', () => {
   describe('requestInfoUpdate', () => {
     it('throws if publisherIds is not an array', () => {
       try {
+        // @ts-ignore
         AdsConsent.requestInfoUpdate('pub-123');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
@@ -28,6 +29,7 @@ describe('Admob AdsConsent', () => {
 
     it('throws if publisherIds contains non-string values', () => {
       try {
+        // @ts-ignore
         AdsConsent.requestInfoUpdate(['foo', 123]);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
