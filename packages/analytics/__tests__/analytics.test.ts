@@ -11,6 +11,7 @@ describe('Analytics', () => {
     it('throws if non default app arg provided to firebase.analytics(APP)', () => {
       const app = firebase.app('secondaryFromNative');
       try {
+        // @ts-ignore
         firebase.analytics(app);
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -45,6 +46,7 @@ describe('Analytics', () => {
     // TODO in app/registry/namespace.js - if (!hasCustomUrlOrRegionSupport)
     xit('throws if args provided to firebase.app().analytics(ARGS)', () => {
       try {
+        // @ts-ignore
         firebase.app().analytics('foo', 'arg2');
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {
@@ -57,6 +59,7 @@ describe('Analytics', () => {
   describe('logEvent()', () => {
     it('errors if name is not a string', () => {
       try {
+        // @ts-ignore
         firebase.analytics().logEvent(123);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
@@ -69,6 +72,7 @@ describe('Analytics', () => {
 
     it('errors if params is not an object', () => {
       try {
+        // @ts-ignore
         firebase.analytics().logEvent('invertase_event', 'foobar');
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
@@ -119,6 +123,7 @@ describe('Analytics', () => {
     describe('setAnalyticsCollectionEnabled()', () => {
       it('throws if not a boolean', () => {
         try {
+          // @ts-ignore
           firebase.analytics().setAnalyticsCollectionEnabled('foo');
           return Promise.reject(new Error('Did not throw.'));
         } catch (e) {
