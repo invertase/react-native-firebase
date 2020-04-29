@@ -192,13 +192,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "21.1.0",
-
-        // Override Crashlytics SDK Version
-        crashlytics   : "2.10.0",
-
-        // Override Crashlytics SDK Version
-        crashlyticsNdk: "2.1.0"
+        bom           : "21.1.0"
       ],
     ],
   ])
@@ -214,12 +208,6 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 ```ruby
 # Override Firebase SDK Version
 $FirebaseSDKVersion = '6.13.0'
-
-# Override Fabric SDK Version
-$FabricSDKVersion = '1.6.0'
-
-# Override Crashlytics SDK Version
-$CrashlyticsSDKVersion = '3.1.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
