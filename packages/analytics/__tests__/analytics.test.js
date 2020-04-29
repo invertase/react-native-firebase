@@ -1,4 +1,4 @@
-import analytics, { firebase } from '../lib';
+import { firebase } from '../lib';
 
 describe('Analytics', () => {
   describe('namespace', () => {
