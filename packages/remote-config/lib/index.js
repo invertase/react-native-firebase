@@ -127,8 +127,6 @@ class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._settings = {};
-    this._lastFetchStatus = null;
-    this._lastFetchTime = null;
   }
 
   getValue(key) {
@@ -210,7 +208,7 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._promiseWithConstants(this.native.reset());
   }
 
-  setConfigSettings(settings = {}) {
+  setConfigSettings(settings) {
     const nativeSettings = {};
 
     if (!isObject(settings)) {
