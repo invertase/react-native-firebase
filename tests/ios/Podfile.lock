@@ -423,24 +423,25 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.2.2)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.2.2)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.2.2)"
-  - GoogleUtilities/AppDelegateSwizzler (6.5.2):
+  - GoogleUtilities/AppDelegateSwizzler (6.6.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.5.2)
-  - GoogleUtilities/ISASwizzler (6.5.2)
-  - GoogleUtilities/Logger (6.5.2):
+  - GoogleUtilities/Environment (6.6.0):
+    - PromisesObjC (~> 1.2)
+  - GoogleUtilities/ISASwizzler (6.6.0)
+  - GoogleUtilities/Logger (6.6.0):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.5.2):
+  - GoogleUtilities/MethodSwizzler (6.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.5.2):
+  - GoogleUtilities/Network (6.6.0):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.5.2)"
-  - GoogleUtilities/Reachability (6.5.2):
+  - "GoogleUtilities/NSData+zlib (6.6.0)"
+  - GoogleUtilities/Reachability (6.6.0):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.5.2):
+  - GoogleUtilities/UserDefaults (6.6.0):
     - GoogleUtilities/Logger
   - "gRPC-C++ (0.0.9)":
     - "gRPC-C++/Implementation (= 0.0.9)"
@@ -463,7 +464,7 @@ PODS:
   - GTMSessionFetcher/Core (1.3.1)
   - GTMSessionFetcher/Full (1.3.1):
     - GTMSessionFetcher/Core (= 1.3.1)
-  - Jet (0.6.2-0):
+  - Jet (0.6.6-0):
     - React
   - leveldb-library (1.22)
   - nanopb (0.3.9011):
@@ -472,6 +473,7 @@ PODS:
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
   - PersonalizedAdConsent (1.0.5)
+  - PromisesObjC (1.2.8)
   - Protobuf (3.11.4)
   - RCTRequired (0.62.2)
   - RCTTypeSafety (0.62.2):
@@ -736,7 +738,7 @@ PODS:
     - Firebase/Firestore (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBFunctions (6.7.1):
+  - RNFBFunctions (6.8.0):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Functions (~> 6.13.0)
     - React
@@ -772,7 +774,7 @@ PODS:
     - Firebase/MLVisionTextModel (~> 6.13.0)
     - React
     - RNFBApp
-  - RNFBPerf (6.7.1):
+  - RNFBPerf (6.7.2):
     - Firebase/Core (~> 6.13.0)
     - Firebase/Performance (~> 6.13.0)
     - React
@@ -885,6 +887,7 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - PersonalizedAdConsent
+    - PromisesObjC
     - Protobuf
 
 EXTERNAL SOURCES:
@@ -1020,7 +1023,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 653963cf5be60fb59cf051e070f0836fdc305f81
   GoogleDataTransportCCTSupport: 84e4d4bbab642f2e9d83ee65d78aca2b5527d314
   GoogleToolboxForMac: 800648f8b3127618c1b59c7f97684427630c5ea3
-  GoogleUtilities: ad0f3b691c67909d03a3327cc205222ab8f42e0e
+  GoogleUtilities: 39530bc0ad980530298e9c4af8549e991fd033b1
   "gRPC-C++": 9dfe7b44821e7b3e44aacad2af29d2c21f7cde83
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   GTMSessionFetcher: cea130bbfe5a7edc8d06d3f0d17288c32ffe9925
@@ -1028,6 +1031,7 @@ SPEC CHECKSUMS:
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PersonalizedAdConsent: dbecabb3467df967c16d9cebc2ef4a8890e4bbd8
+  PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
   RCTTypeSafety: 93006131180074cffa227a1075802c89a49dd4ce
@@ -1056,13 +1060,13 @@ SPEC CHECKSUMS:
   RNFBDatabase: 2737d8e87c20246cd91e95743c514e08c791ebe1
   RNFBDynamicLinks: 9dd4895eda7b597a8dbce706cfd3f79fbfc783b2
   RNFBFirestore: 23757ad7c33d81587a5d7d7d77f3ea22a1103372
-  RNFBFunctions: 4b85785e03e9d0ef7ba039b398d8c3a79deaed33
+  RNFBFunctions: d38185ab1988518e86067a9e9d97db559cb3d078
   RNFBIid: 8f673a41f45f04273d0759c5df0aef113b580822
   RNFBInAppMessaging: 5154a6ffe88bce8464e9cc16a15c8335ed7070a9
   RNFBMessaging: c55142d3b2d34d706bf12bd5eef9ef35254c2df1
   RNFBMLNaturalLanguage: 534356c4d906d4b88430231f251d3ffd8366477c
   RNFBMLVision: a7056ed3c940eb72be6a4442c5a8a2dc013fdacb
-  RNFBPerf: 5322fbb70e8a54e0cc92fb9097bd1790c5745389
+  RNFBPerf: 5ea0bdbd7abbc801eb08d95661c0a194897e6782
   RNFBRemoteConfig: 59818c5933149b5a6b7fe5159e3d4df09199e858
   RNFBStorage: 0087dec3c49fcd4c805e9455239d684d8f61a6b0
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
