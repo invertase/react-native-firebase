@@ -23,36 +23,6 @@ describe('admob() AdsConsent', () => {
   });
 
   describe('requestInfoUpdate', () => {
-    it('throws if publisherIds is not an array', () => {
-      try {
-        AdsConsent.requestInfoUpdate('pub-123');
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'publisherIds' expected an array of string values");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if publisherIds is empty array', () => {
-      try {
-        AdsConsent.requestInfoUpdate([]);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'publisherIds' list of publisher IDs cannot be empty");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if publisherIds contains non-string values', () => {
-      try {
-        AdsConsent.requestInfoUpdate(['foo', 123]);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'publisherIds[1]' expected a string value");
-        return Promise.resolve();
-      }
-    });
-
     it('requests info update', async () => {
       const info = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
       info.status.should.Number();
