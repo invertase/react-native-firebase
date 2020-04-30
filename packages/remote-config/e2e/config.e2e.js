@@ -44,16 +44,11 @@ describe('remoteConfig()', () => {
   describe('fetch()', () => {
     it('with expiration provided', async () => {
       const date = Date.now() - 30000;
+      await firebase.remoteConfig().ensureInitialized();
 
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
-        //TODO fix this test. need to set constants
-        // firebase.remoteConfig().lastFetchTime.should.equal(0);
-        //TODO fix this test. need to set constants
-        // https://firebase.google.com/docs/reference/android/com/google/firebase/remoteconfig/FirebaseRemoteConfig#LAST_FETCH_STATUS_NO_FETCH_YET
-        // firebase
-        //   .remoteConfig()
-        //   .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET);
+        firebase.remoteConfig().lastFetchTime.should.be.a.Number();
       }
 
       await firebase.remoteConfig().fetch(0);
@@ -434,10 +429,12 @@ describe('remoteConfig()', () => {
       should(configRetrieve).be.equal(undefined);
     });
 
-    ios.it('returns a "null" value as reset() API is not supported on iOS', async () => {
-      const reset = await firebase.remoteConfig().reset();
+    it('returns a "null" value as reset() API is not supported on iOS', async () => {
+      if (device.getPlatform() === 'ios') {
+        const reset = await firebase.remoteConfig().reset();
 
-      should(reset).equal(null);
+        should(reset).equal(null);
+      }
     });
   });
 
