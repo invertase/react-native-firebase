@@ -71,8 +71,10 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     return config.fetchAndActivate();
   }
 
-  Task<Void> reset() {
-    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
+  Task<Void> reset(String appName) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+
+    FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance(firebaseApp);
     return config.reset();
   }
 

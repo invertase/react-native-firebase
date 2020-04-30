@@ -47,8 +47,9 @@ describe('remoteConfig()', () => {
 
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
+        //TODO fix this test. need to set constants
         // firebase.remoteConfig().lastFetchTime.should.equal(0);
-        // TODO - 'lastFetchStatus' coming back as null. should be 0 as per
+        //TODO fix this test. need to set constants
         // https://firebase.google.com/docs/reference/android/com/google/firebase/remoteconfig/FirebaseRemoteConfig#LAST_FETCH_STATUS_NO_FETCH_YET
         // firebase
         //   .remoteConfig()
@@ -389,7 +390,7 @@ describe('remoteConfig()', () => {
       config.company.asString().should.equal('invertase');
     });
 
-    it('it rejects if resource not found', async () => {
+    it('rejects if resource not found', async () => {
       const [error] = await A2A(firebase.remoteConfig().setDefaultsFromResource('i_do_not_exist'));
       if (!error) {
         throw new Error('Did not reject');
@@ -399,7 +400,7 @@ describe('remoteConfig()', () => {
       error.message.should.containEql('was not found');
     });
 
-    it('it throws if resourceName is not a string', () => {
+    it('throws if resourceName is not a string', () => {
       try {
         firebase.remoteConfig().setDefaultsFromResource(1337);
         return Promise.reject(new Error('Did not throw'));
@@ -410,15 +411,48 @@ describe('remoteConfig()', () => {
     });
   });
 
+  describe('reset()', () => {
+    android.it('resets all activated, fetched and default config', async () => {
+      await firebase.remoteConfig().setDefaults({
+        some_key: 'I do not exist',
+      });
+
+      const config = firebase.remoteConfig().getAll();
+
+      const remoteProps = ['bool', 'string', 'number'];
+
+      config.should.have.keys(...remoteProps);
+
+      await firebase.remoteConfig().reset();
+
+      const configRetrieveAgain = firebase.remoteConfig().getAll();
+
+      should(configRetrieveAgain).not.have.properties(remoteProps);
+
+      const configRetrieve = firebase.remoteConfig().getValue('some_key').value;
+
+      should(configRetrieve).be.equal(undefined);
+    });
+
+    ios.it('returns a "null" value as reset() API is not supported on iOS', async () => {
+      const reset = await firebase.remoteConfig().reset();
+
+      should(reset).equal(null);
+    });
+  });
+
   describe('call methods, getters & setters that are deprecated, removed or not supported', () => {
     it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
       const config = firebase.remoteConfig();
-
+      const testValue = config.getValue('testValue');
+      const testValueSpy = sinon.spy(testValue, 'value', ['get']);
+      const testSourceSpy = sinon.spy(testValue, 'source', ['get']);
       const defaultSpy = sinon.spy(config, 'defaultConfig', ['get', 'set']);
       const settingSpy = sinon.spy(config, 'settings', ['set']);
       const isDeveloperModeEnabledSpy = sinon.spy(config, 'isDeveloperModeEnabled', ['get']);
       const minimumFetchIntervalSpy = sinon.spy(config, 'minimumFetchInterval', ['get']);
       const setLogLevelSpy = sinon.spy(config, 'setLogLevel');
+      const setConfigSettingsSpy = sinon.spy(config, 'setConfigSettings');
 
       config.defaultConfig;
       config.defaultConfig = {};
@@ -427,6 +461,14 @@ describe('remoteConfig()', () => {
       config.isDeveloperModeEnabled;
       config.minimumFetchInterval;
       config.setLogLevel();
+      config.setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 300 });
+
+      testValue.value;
+      testValue.source;
+
+      setConfigSettingsSpy.should.be.calledOnce();
+      testValueSpy.get.should.be.calledOnce();
+      testSourceSpy.get.should.be.calledOnce();
 
       defaultSpy.get.should.be.calledOnce();
       defaultSpy.set.should.be.calledOnce();
