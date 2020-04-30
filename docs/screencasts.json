@@ -5,5 +5,12 @@
     "title": "Installing React Native Firebase on Android",
     "description": "Follow along setting up a new Firebase project and integrate React Native Firebase for Android.",
     "tags": ["android", "core"]
+  },
+  {
+    "slug": "ios-installation",
+    "vid": "MEb4otoZzsQ",
+    "title": "Installing React Native Firebase on iOS",
+    "description": "Follow along setting up a new Firebase project and integrate React Native Firebase for iOS.",
+    "tags": ["ios", "core"]
   }
 ]
