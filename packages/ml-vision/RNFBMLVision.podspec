@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
   s.dependency          'Firebase/MLVision', firebase_sdk_version
   if FirebaseJSON::Config.get_value_or_default('ml_vision_face_model', false)
     s.dependency          'Firebase/MLVisionFaceModel', firebase_sdk_version

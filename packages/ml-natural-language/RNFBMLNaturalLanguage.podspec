@@ -29,7 +29,6 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
   s.dependency          'Firebase/MLNaturalLanguage', firebase_sdk_version
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_language_id_model', false)
