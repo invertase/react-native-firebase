@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - master
 
 jobs:
   # ------------------
@@ -12,7 +15,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -118,7 +121,7 @@ jobs:
   ios:
     name: iOS
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;

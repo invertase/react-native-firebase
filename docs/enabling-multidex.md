@@ -16,7 +16,7 @@ To learn more about multidex, view the official [Android documentation](https://
 ## Enabling Multidex
 
 Open the `/android/app/build.gradle` file. Under `dependencies` we need to add the module, and then enable it
-within out `defaultConfig`:
+within the `defaultConfig`:
 
 ```groovy
 android {
