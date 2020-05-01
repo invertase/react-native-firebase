@@ -608,7 +608,7 @@ sensitive information). The `settings()` method must be called before any Firest
 ```js
 import firestore from '@react-native-firebase/firestore';
 
-function bootstrap() {
+async function bootstrap() {
   await firestore().settings({
     persistence: false, // disable offline persistence
   });
