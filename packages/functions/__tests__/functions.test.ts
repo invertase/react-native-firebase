@@ -12,8 +12,13 @@ describe('Cloud Functions', () => {
   describe('useFunctionsEmulator()', () => {
     it('useFunctionsEmulator -> uses 10.0.2.2', () => {
       functions().useFunctionsEmulator('http://localhost');
+
+      // @ts-ignore
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+
       functions().useFunctionsEmulator('http://127.0.0.1');
+
+      // @ts-ignore
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
   });
@@ -22,6 +27,8 @@ describe('Cloud Functions', () => {
     it('throws an error with an incorrect timeout', () => {
       try {
         const app = firebase.app();
+
+        // @ts-ignore
         app.functions().httpsCallable('example', { timeout: 'test' });
         return Promise.reject(new Error('Did not throw'));
       } catch (e) {

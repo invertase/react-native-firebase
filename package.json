@@ -34,6 +34,9 @@
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
+    "@babel/preset-env": "7.9.5",
+    "@babel/preset-flow": "7.9.0",
+    "@types/jest": "^25.2.1",
     "@types/react-native": "^0.62.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
@@ -45,15 +48,14 @@
     "eslint-plugin-react": "^7.19.0",
     "genversion": "^2.2.0",
     "inquirer": "^7.1.0",
+    "jest": "^25.5.1",
     "lerna": "3.20.2",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.3",
+    "ts-jest": "^25.4.0",
     "typedoc": "^0.15.0",
-    "typescript": "^3.8.3",
-    "jest": "^24.9.0",
-    "@babel/preset-env": "7.9.5",
-    "@babel/preset-flow": "7.9.0"
+    "typescript": "^3.8.3"
   },
   "workspaces": {
     "packages": [
