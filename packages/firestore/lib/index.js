@@ -79,6 +79,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
+  clearPersistence() {
+    return this.native.clearPersistence();
+  }
+
   collection(collectionPath) {
     if (!isString(collectionPath)) {
       throw new Error(
