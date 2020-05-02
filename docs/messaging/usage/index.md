@@ -49,13 +49,13 @@ iOS prevents messages containing notification (or 'alert') payloads from being d
 This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
-    authStatus === FirebaseMessagingTypes.AuthorizationStatus.AUTHORIZED ||
-    authStatus === FirebaseMessagingTypes.AuthorizationStatus.PROVISIONAL;
+    authStatus === AuthorizationStatus.AUTHORIZED ||
+    authStatus === AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
