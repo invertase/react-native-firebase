@@ -41,6 +41,8 @@
         (NSString *) name
         wrapper:
         (NSDictionary *) wrapper
+        options:
+        (NSDictionary *) options
         resolver:
         (RCTPromiseResolveBlock) resolve
         rejecter:
@@ -53,6 +55,10 @@
     }
 
     FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];
+
+    if (options[@"timeout"]) {
+      callable.timeoutInterval = [options[@"timeout"] doubleValue];
+    }
 
     [callable callWithObject:[wrapper valueForKey:@"data"] completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
       if (error) {

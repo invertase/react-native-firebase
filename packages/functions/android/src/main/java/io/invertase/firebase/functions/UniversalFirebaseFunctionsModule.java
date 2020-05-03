@@ -19,12 +19,16 @@ package io.invertase.firebase.functions;
 
 import android.content.Context;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableReference;
 
 import io.invertase.firebase.common.UniversalFirebaseModule;
+
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("WeakerAccess")
 public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
@@ -42,17 +46,24 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
     String region,
     String origin,
     String name,
-    Object data
+    Object data,
+    ReadableMap options
   ) {
     return Tasks.call(getExecutor(), () -> {
       FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
       FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
 
+      HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
+
+      if (options.hasKey("timeout")) {
+        httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+      }
+
       if (origin != null) {
         functionsInstance.useFunctionsEmulator(origin);
       }
 
-      return Tasks.await(functionsInstance.getHttpsCallable(name).call(data)).getData();
+      return Tasks.await(httpReference.call(data)).getData();
     });
   }
 

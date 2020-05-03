@@ -8,8 +8,8 @@ There are also a number of prerequisites which are required to be able to enable
 
 - You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
 - You must have a physical iOS device to receive messages.
-  - Firebase Cloud Messaging integrates with the [Apple Push Notification Service (APNS)](https://developer.apple.com/notifications/),
-    however APNS only works with real devices.
+  - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/),
+    however APNs only works with real devices.
 
 # Configuring your app
 
@@ -55,10 +55,10 @@ Now ensure that both the "Background fetch" and the "Remote notifications" sub-m
 
 ![Enabling the sub-modes](https://images.prismic.io/invertase/3a618574-dd9f-4478-9f39-9834d142b2e5_xcode-background-modes-check.gif?auto=compress,format)
 
-# Linking APNS with FCM
+# Linking APNs with FCM
 
-Even though FCM a has limited capability to work without linking with APNS, the below steps are strongly recommended
-to ensure the library works as expected. Without linking APNS, your device will not receive messages when in the background
+Even though FCM a has limited capability to work without linking with APNs, the below steps are strongly recommended
+to ensure the library works as expected. Without linking APNs, your device will not receive messages when in the background
 or when quit.
 
 A few steps are required:
@@ -75,11 +75,11 @@ tab on the account sidebar:
 
 ## 1. Registering a key
 
-A key can be generated which gives the FCM full access over the Apple Push Notification (APNS) service. On the "Keys" menu item,
-register a new key. The name of the key can be anything, however you must ensure the "Apple Push Notification (APNS)" service
+A key can be generated which gives the FCM full access over the Apple Push Notification service (APNs). On the "Keys" menu item,
+register a new key. The name of the key can be anything, however you must ensure the APNs service
 is enabled:
 
-![Enable "Apple Push Notification (APNS)"](https://images.prismic.io/invertase/01fefe19-132f-4b88-8c17-9dc40357e4ce_apple-key.png?auto=format)
+![Enable "Apple Push Notification (APNs)"](https://images.prismic.io/invertase/01fefe19-132f-4b88-8c17-9dc40357e4ce_apple-key.png?auto=format)
 
 Click "Continue" & then "Save". Once saved, you will be presented with a screen displaying the private "Key ID" & the ability
 to download the key. Copy the ID, and download the file to your local machine:
