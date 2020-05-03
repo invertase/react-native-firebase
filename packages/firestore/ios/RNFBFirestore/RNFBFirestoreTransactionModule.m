@@ -108,7 +108,7 @@ RCT_EXPORT_METHOD(transactionDispose:
     }
 
     dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
-    transactionState[@"abort"] = @(true);
+    transactionState[@"aborted"] = @(true);
     dispatch_semaphore_signal(semaphore);
   }
 }
@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(transactionApplyBuffer:
     :(NSArray *)commandBuffer
 ) {
   @synchronized (transactions[[transactionId stringValue]]) {
-    __block NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+    NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
     if (!transactionState) {
       DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
