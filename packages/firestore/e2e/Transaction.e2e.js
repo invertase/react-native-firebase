@@ -335,5 +335,49 @@ describe('firestore.Transaction', () => {
       const snapshot = await docRef.get();
       snapshot.data().should.eql(jet.contextify(expected));
     });
+
+    it('should roll back any updates that failed', async () => {
+      const docRef = firebase.firestore().doc('v6/transactions/transaction/rollback');
+
+      await docRef.set({
+        turn: 0,
+      });
+
+      const prop1 = 'prop1';
+      const prop2 = 'prop2';
+
+      const createTransaction = (prop, turn = 0) => {
+        return firebase.firestore().runTransaction(async transaction => {
+          const doc = await transaction.get(docRef);
+          const data = doc.data();
+
+          if (data.turn !== turn) {
+            throw new Error('turn cannot exceed 1');
+          }
+
+          if (prop1 === prop) {
+            await sleep.util(500);
+          }
+
+          const update = {
+            turn: turn + 1,
+            [prop]: 1,
+          };
+
+          transaction.update(docRef, update);
+        });
+      };
+
+      const promises = [createTransaction(prop1), createTransaction(prop2)];
+
+      try {
+        await Promise.all(promises);
+      } catch (e) {
+        // do nothing
+      }
+
+      const result = await docRef.get();
+      should(result.data()).not.have.properties([prop1]);
+    });
   });
 });
