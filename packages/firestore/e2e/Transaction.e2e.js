@@ -336,7 +336,7 @@ describe('firestore.Transaction', () => {
       snapshot.data().should.eql(jet.contextify(expected));
     });
 
-    it('should roll back any updates that failed', async () => {
+    it.only('should roll back any updates that failed', async () => {
       const docRef = firebase.firestore().doc('v6/transactions/transaction/rollback');
 
       await docRef.set({
@@ -377,7 +377,7 @@ describe('firestore.Transaction', () => {
       }
 
       const result = await docRef.get();
-      should(result.data()).not.have.properties([prop1]);
+      should(result.data()).not.have.properties([prop1, prop2]);
     });
   });
 });
