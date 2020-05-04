@@ -218,7 +218,7 @@ Before triggering a sign-in request, you must initialize the Google SDK using yo
 import { GoogleSignin } from '@react-native-community/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '', 
+  webClientId: '',
 });
 ```
 
