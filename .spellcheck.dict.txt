@@ -6,7 +6,7 @@ Analytics
 analytics
 APIs
 APIs.
-APNS
+APNs
 async
 auth
 Auth
@@ -123,3 +123,4 @@ v6
 VSCode
 Wix
 Xcode
+lifecycle

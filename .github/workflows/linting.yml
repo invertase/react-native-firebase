@@ -1,16 +1,17 @@
 name: Code Quality Checks
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - master
 
 jobs:
   linting:
     name: ESLint
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -39,6 +40,7 @@ jobs:
         continue-on-error: true
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@1.0.4
+        continue-on-error: true
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           report-json: "eslint-report.json"
@@ -52,6 +54,7 @@ jobs:
   typescript:
     name: TypeScript Build Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v1
         with:
