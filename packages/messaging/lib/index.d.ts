@@ -644,6 +644,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param listener Called with a FCM token when the token is refreshed.
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     onTokenRefresh(listener: (token: String & { token: string }) => any): () => void;
 
     /**
