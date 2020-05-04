@@ -138,7 +138,6 @@ RCT_EXPORT_METHOD(transactionBegin:
 ) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
   __block BOOL aborted = false;
-  __block BOOL completed = false;
   __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
 
   id transactionBlock = ^id(FIRTransaction *transaction, NSError **errorPointer) {
@@ -172,7 +171,7 @@ RCT_EXPORT_METHOD(transactionBegin:
 
     @synchronized (transactionState) {
       aborted = (BOOL) transactionState[@"aborted"];
-
+      
       if (transactionState[@"semaphore"] != semaphore) {
         return nil;
       }
@@ -184,10 +183,6 @@ RCT_EXPORT_METHOD(transactionBegin:
 
       if (timedOut == YES) {
         *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeDeadlineExceeded userInfo:@{}];
-        return nil;
-      }
-
-      if (completed == YES) {
         return nil;
       }
 
@@ -223,12 +218,6 @@ RCT_EXPORT_METHOD(transactionBegin:
   };
 
   id completionBlock = ^(id result, NSError *error) {
-    if (completed == YES) {
-      return;
-    }
-
-    completed = YES;
-
     @synchronized (transactionState) {
       if (aborted == NO) {
         NSMutableDictionary *eventMap = [NSMutableDictionary new];
