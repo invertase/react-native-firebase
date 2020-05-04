@@ -22,7 +22,6 @@
 #import "RCTConvert.h"
 #import "RNFBPreferences.h"
 #import <Firebase/Firebase.h>
-@import FirebaseCrashlytics;
 
 @implementation RNFBCrashlyticsModule
 #pragma mark -
