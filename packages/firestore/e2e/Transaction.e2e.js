@@ -336,7 +336,7 @@ describe('firestore.Transaction', () => {
       snapshot.data().should.eql(jet.contextify(expected));
     });
 
-    it.only('should roll back any updates that failed', async () => {
+    it('should roll back any updates that failed', async () => {
       const docRef = firebase.firestore().doc('v6/transactions/transaction/rollback');
 
       await docRef.set({
@@ -353,10 +353,6 @@ describe('firestore.Transaction', () => {
 
           if (data.turn !== turn) {
             throw new Error('turn cannot exceed 1');
-          }
-
-          if (prop1 === prop) {
-            await sleep.util(500);
           }
 
           const update = {
