@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/template",
-  "version": "6.3.4",
+  "version": "6.8.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Template",
   "scripts": {
@@ -20,6 +20,5 @@
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "c077731efbf8edf7b393e17d3e3878e9e7f621da"
+  }
 }

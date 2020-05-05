@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h2 align="center">React Native Firebase</h2>
@@ -20,11 +20,7 @@
 
 ---
 
-> Looking for the legacy version of React Native Firebase? See the [v5.x.x branch](https://github.com/invertase/react-native-firebase/tree/v5.x.x).
-
----
-
-**React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight javascript layer connecting you to the native Firebase SDKs for both iOS and Android.
+**React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight JavaScript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
 React Native Firebase is built with four key principals in mind;
 
@@ -36,11 +32,11 @@ React Native Firebase is built with four key principals in mind;
   - full reference & installation documentation alongside detailed guides and FAQs
 - 🔥 **Mirrors official Firebase Web SDK**
   - functions as a drop-in replacement for the Firebase Web SDK in React Native
-  - maximises cross-platform code re-usability e.g. re-using code on web platforms
+  - maximizes cross-platform code re-usability e.g. re-using code on web platforms
 
 ## Firebase Modules
 
-This is the root of the monorepo for React Native Firebase, if you're looking for a specific package please select the package link from below.
+This is the root of the mono-repo for React Native Firebase, if you're looking for a specific package please select the package link from below.
 
 The main package that you interface with is `App` (`@react-native-firebase/app`)
 
@@ -66,20 +62,17 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 
 ## Documentation
 
-- [Overview](https://invertase.io/oss/react-native-firebase)
-- [Quick Start](https://invertase.io/oss/react-native-firebase/quick-start)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides)
-- [Modules](https://invertase.io/oss/react-native-firebase/v6)
+- [Quick Start](https://rnfirebase.io/)
+- [Reference API](https://rnfirebase.io/reference)
+
+Looking for the Version 5 documentation? [View legacy documentation](https://v5.rnfirebase.io).
 
 ## Contributing
 
-- [Overview](https://invertase.io/oss/react-native-firebase/contributing)
-- [Issues & PRs](https://invertase.io/oss/react-native-firebase/contributing/issues-prs-pm)
-- [Documentation](https://invertase.io/oss/react-native-firebase/contributing/documentation)
-- [Code & Testing](https://invertase.io/oss/react-native-firebase/contributing/code-testing-review)
-- [Marketing & Content](https://invertase.io/oss/react-native-firebase/contributing/marketing-content)
-- [Community](https://invertase.io/oss/react-native-firebase/contributing/community)
-- [Donating](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
+- [Overview](https://rnfirebase.io/contributing)
+- [Issues & PRs](https://rnfirebase.io/contributing#issues--prs)
+- [Documentation](https://rnfirebase.io/contributing#documentation)
+- [Community](https://rnfirebase.io/contributing#community)
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 
 ## License
@@ -89,14 +82,9 @@ The main package that you interface with is `App` (`@react-native-firebase/app`)
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
-  </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 

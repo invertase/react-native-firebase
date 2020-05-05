@@ -700,6 +700,7 @@ export namespace FirebaseAnalyticsTypes {
   //   search_term: string;
   // }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
 
   /**

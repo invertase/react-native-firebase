@@ -3,11 +3,6 @@ require '../app/firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 firebase_sdk_version = '~> 6.13.0'
-using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
-if using_custom_firebase_sdk_version
-  Pod::UI.puts "RNFBMLNaturalLanguage: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
-  firebase_sdk_version = $FirebaseSDKVersion
-end
 
 Pod::Spec.new do |s|
   s.name                = "RNFBMLNaturalLanguage"
@@ -23,12 +18,21 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = "9.0"
   s.source_files        = 'ios/**/*.{h,m}'
-  s.dependency          'RNFBApp'
+
+  # React Native dependencies
   s.dependency          'React'
+  s.dependency          'RNFBApp'
+
+  if defined?($FirebaseSDKVersion)
+    Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
+    firebase_sdk_version = $FirebaseSDKVersion
+  end
+
+  # Firebase dependencies
   s.dependency          'Firebase/Core', firebase_sdk_version
+  s.dependency          'Firebase/MLNaturalLanguage', firebase_sdk_version
 
   if FirebaseJSON::Config.get_value_or_default('ml_natural_language_language_id_model', false)
-    s.dependency          'Firebase/MLNaturalLanguage', firebase_sdk_version
     s.dependency          'Firebase/MLNLLanguageID', firebase_sdk_version
   end
 
@@ -42,5 +46,10 @@ Pod::Spec.new do |s|
     s.dependency          'Firebase/MLNLSmartReply', firebase_sdk_version
   end
 
-  s.static_framework    = false
+  if defined?($RNFirebaseAsStaticFramework)
+    Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
+    s.static_framework = $RNFirebaseAsStaticFramework
+  else
+    s.static_framework = false
+  end
 end

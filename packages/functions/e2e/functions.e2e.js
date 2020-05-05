@@ -19,12 +19,6 @@ const { SAMPLE_DATA } = require('@react-native-firebase/private-tests-firebase-f
 
 describe('functions()', () => {
   describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.functions);
-      app.functions().httpsCallable.should.be.a.Function();
-    });
-
     it('accepts passing in an FirebaseApp instance as first arg', async () => {
       const appName = `functionsApp${FirebaseHelpers.id}1`;
       const platformAppConfig = FirebaseHelpers.app.config();
@@ -63,16 +57,6 @@ describe('functions()', () => {
       const response = await functionRunner();
       response.data.should.equal(region);
     });
-  });
-
-  android.it('useFunctionsEmulator -> uses 10.0.2.2', async () => {
-    const region = 'europe-west2';
-    const functions = firebase.app().functions(region);
-
-    functions.useFunctionsEmulator('http://localhost');
-    functions._useFunctionsEmulatorOrigin.should.equal('http://10.0.2.2');
-    functions.useFunctionsEmulator('http://127.0.0.1');
-    functions._useFunctionsEmulatorOrigin.should.equal('http://10.0.2.2');
   });
 
   it('useFunctionsEmulator', async () => {
@@ -285,6 +269,22 @@ describe('functions()', () => {
       }
 
       return Promise.resolve();
+    });
+
+    it('HttpsCallableOptions.timeout will error when timeout is exceeded', async () => {
+      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+      const region = 'europe-west2';
+
+      const functions = firebase.app().functions(region);
+      functions.useFunctionsEmulator('http://api.rnfirebase.io');
+
+      try {
+        await functions.httpsCallable(fnName, { timeout: 1000 })({ testTimeout: '3000' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('DEADLINE').containEql('EXCEEDED');
+        return Promise.resolve();
+      }
     });
   });
 });

@@ -23,7 +23,6 @@ import {
   isOneOf,
   isString,
   isUndefined,
-  isArray,
 } from '@react-native-firebase/app/lib/common';
 import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 
@@ -88,16 +87,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       throw new Error(
         "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
       );
-    }
-
-    const entries = Object.entries(params);
-
-    for (let i = 0; i < entries.length; i++) {
-      const [key, value] = entries[i];
-
-      if (isObject(value) || isArray(value)) {
-        params[key] = value.toString();
-      }
     }
 
     return this.native.logEvent(name, params);

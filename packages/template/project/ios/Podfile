@@ -6,6 +6,9 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 # $FabricSDKVersion = '1.6.0'
 # $CrashlyticsSDKVersion = '3.1.0'
 
+# To use RNFirebase packages as static frameworks uncomment the below line
+# $RNFirebaseAsStaticFramework = true
+
 target 'HelloWorld' do
   # Pods for HelloWorld
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
