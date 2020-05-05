@@ -10,7 +10,7 @@ else
   firebase_sdk_version = '~> 6.13.0'
 end
 if core_version_detected != core_version_required
-  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{core_version_required} but found v#{core_version_detected}, this may cause build issues."
+  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{core_version_required} but found v#{core_version_detected}, this might cause build issues or runtime crashes."
 end
 
 Pod::Spec.new do |s|
@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
 
   # React Native dependencies
   s.dependency          'React'
-  s.dependency          'RNFBApp', "~> #{core_version_required}"
+  s.dependency          'RNFBApp'
 
   # Other dependencies
   s.dependency          'PersonalizedAdConsent', '~> 1.0.4'
