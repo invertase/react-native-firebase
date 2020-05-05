@@ -38,7 +38,6 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Core', firebase_sdk_version
   s.dependency          'Firebase/Firestore', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
