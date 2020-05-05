@@ -154,7 +154,7 @@ yarn validate:all:flow
 
 ### Debugging (VsCode)
 
-Add a breakpoint in the JS file where you will need to debug. Select the debug icon.
+Add a breakpoint in the JS file where you will need to debug. Select the debug icon under 'NPM Scripts'
 
 
 
