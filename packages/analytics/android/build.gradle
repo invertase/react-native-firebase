@@ -30,12 +30,13 @@ if (findProject(':@react-native-firebase_app')) {
 }
 def packageJson = PackageJson.getForProject(project)
 def appPackageJson = PackageJson.getForProject(appProject)
-def core_version_detected = appPackageJson['version']
-def core_version_required = packageJson['peerDependencies'][appPackageJson['name']]
+def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "24.1.0"
+def coreVersionDetected = appPackageJson['version']
+def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
 // Only log after build completed so log warning appears at the end
-if (core_version_detected != core_version_required) {
+if (coreVersionDetected != coreVersionRequired) {
   gradle.buildFinished {
-    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${core_version_required} but found v${core_version_detected}, this might cause build issues or runtime crashes.")
+    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
   }
 }
 
@@ -53,7 +54,7 @@ project.ext {
       ],
 
       firebase          : [
-        bom: "24.1.0",
+        bom: firebaseBomVersion,
       ],
     ],
   ])
@@ -84,13 +85,7 @@ repositories {
 }
 
 dependencies {
-  if (findProject(':@react-native-firebase_app')) {
-    api project(':@react-native-firebase_app')
-  } else if (findProject(':react-native-firebase_app')) {
-    api project(':react-native-firebase_app')
-  } else {
-    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
-  }
+  api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-analytics"
 }
