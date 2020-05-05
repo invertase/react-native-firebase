@@ -213,7 +213,7 @@ const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyy
 function App() {
   return (
     <BannerAd
-      unitId={TestIds.BANNER}
+      unitId={adUnitId}
       size={BannerAdSize.FULL_BANNER}
       requestOptions={{
         requestNonPersonalizedAdsOnly: true,

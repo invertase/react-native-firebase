@@ -1,3 +1,5 @@
+import io.invertase.gradle.common.PackageJson
+
 buildscript {
   // The Android Gradle plugin is only required when opening the android folder stand-alone.
   // This avoids unnecessary downloads and potential conflicts when the library is included as a
@@ -18,6 +20,27 @@ plugins {
   id "io.invertase.gradle.build" version "1.4"
 }
 
+def appProject
+if (findProject(':@react-native-firebase_app')) {
+  appProject = project(':@react-native-firebase_app')
+} else if (findProject(':react-native-firebase_app')) {
+  appProject = project(':react-native-firebase_app')
+} else {
+  throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+}
+def packageJson = PackageJson.getForProject(project)
+def appPackageJson = PackageJson.getForProject(appProject)
+def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "24.1.0"
+def coreVersionDetected = appPackageJson['version']
+def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
+// Only log after build completed so log warning appears at the end
+if (coreVersionDetected != coreVersionRequired) {
+  gradle.buildFinished {
+    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
+  }
+}
+
+
 project.ext {
   set('react-native', [
     versions: [
@@ -31,7 +54,7 @@ project.ext {
       ],
 
       firebase: [
-        bom: "24.1.0",
+        bom: firebaseBomVersion,
       ],
     ],
   ])
@@ -57,13 +80,7 @@ repositories {
 }
 
 dependencies {
-  if (findProject(':@react-native-firebase_app')) {
-    api project(':@react-native-firebase_app')
-  } else if (findProject(':react-native-firebase_app')) {
-    api project(':react-native-firebase_app')
-  } else {
-    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
-  }
+  api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-storage"
 }

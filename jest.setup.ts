@@ -26,6 +26,7 @@ jest.doMock('react-native', () => {
           ],
         },
         RNFBPerfModule: {},
+        RNFBCrashlyticsModule: {},
       },
     },
     ReactNative,

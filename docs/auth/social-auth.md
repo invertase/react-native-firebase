@@ -212,13 +212,13 @@ documentation.
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
-`webClientId`, which can be found on the Firebase Console Settings, as "Web API Key".
+`webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`).
 
 ```js
 import { GoogleSignin } from '@react-native-community/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '', // From Firebase Console Settings
+  webClientId: '', 
 });
 ```
 
