@@ -151,6 +151,15 @@ yarn validate:all:flow
 
 ---
 
+
+### Debugging (VsCode)
+
+Add a breakpoint in the JS file where you will need to debug. Select the debug icon.
+
+
+
+---
+
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
   <p align="left">
