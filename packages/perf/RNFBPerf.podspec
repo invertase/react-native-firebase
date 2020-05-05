@@ -1,7 +1,17 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
-firebase_sdk_version = '~> 6.13.0'
+core_version_detected = appPackage['version']
+core_version_required = package['peerDependencies'][appPackage['name']]
+if appPackage['sdkVersions']
+  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
+else
+  firebase_sdk_version = '~> 6.13.0'
+end
+if core_version_detected != core_version_required
+  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{core_version_required} but found v#{core_version_detected}, this may cause build issues."
+end
 
 Pod::Spec.new do |s|
   s.name                = "RNFBPerf"
@@ -20,7 +30,7 @@ Pod::Spec.new do |s|
 
   # React Native dependencies
   s.dependency          'React'
-  s.dependency          'RNFBApp'
+  s.dependency          'RNFBApp', "~> #{core_version_required}"
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
