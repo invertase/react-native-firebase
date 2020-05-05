@@ -310,21 +310,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
   /**
-   * logEcommercePurchase purchase is now removed, use logPurchase instead:
+   * logEcommercePurchase purchase is now deprecated, use logPurchase instead:
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
    */
-  // logEcommercePurchase(object = {}) {
-  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logEcommercePurchase(*):');
-
-  //   return this.logEvent(
-  //     'ecommerce_purchase',
-  //     validateStruct(
-  //       object,
-  //       structs.EcommercePurchase,
-  //       'firebase.analytics().logEcommercePurchase(*):',
-  //     ),
-  //   );
-  // }
+  logEcommercePurchase() {
+    console.warn(
+      'firebase.analytics().logEcommercePurchase(), "ECOMMERCE_PURCHASE" event is now deprecated. Please use firebase.analytics().logPurchase() instead',
+    );
+  }
 
   logGenerateLead(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logGenerateLead(*):');
@@ -413,6 +406,36 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
+  /**
+   * deprecated, use logRefundEvent instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
+   */
+  logPresentOffer() {
+    console.warn(
+      'firebase.analytics().logPresentOffer(), "PRESENT_OFFER" event is now deprecated. Please use firebase.analytics().logViewPromotion() instead',
+    );
+  }
+
+  /**
+   * deprecated, use logRefundEvent instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
+   */
+  logPurchaseRefund() {
+    console.warn(
+      'firebase.analytics().logPurchaseRefund(), "PURCHASE_REFUND" event is now deprecated. Please use firebase.analytics().logRefund() instead',
+    );
+  }
+
+  /**
+   * deprecated, use logRefundEvent instead:
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-select_content
+   */
+  logSelectContent() {
+    console.warn(
+      'firebase.analytics().logSelectContent(), "SELECT_CONTENT" event is now deprecated. Please use firebase.analytics().logSelectItem() instead',
+    );
+  }
+
   logPurchase(object) {
     if (!isObject(object)) {
       throw new Error(
@@ -422,41 +445,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     return this.logEvent(
       'purchase',
-      validateStruct(object, structs.PostScore, 'firebase.analytics().logPurchaseEvent(*):'),
+      validateStruct(object, structs.Purchase, 'firebase.analytics().logPurchaseEvent(*):'),
     );
   }
-  /**
-   * deprecated, use logViewItemPromotionEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
-   */
-  // logRefund(object) {
-  //   if (!isObject(object)) {
-  //     throw new Error(
-  //       'firebase.analytics().logRefund(*): The supplied arg must be an object of key/values.',
-  //     );
-  //   }
-
-  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logPresentOffer(*):');
-
-  //   return this.logEvent(
-  //     'present_offer',
-  //     validateStruct(object, structs.PresentOffer, 'firebase.analytics().logPresentOffer(*):'),
-  //   );
-  // }
-
-  /**
-   * deprecated, use logRefundEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
-   */
-  // logPurchaseRefund(object = {}) {
-  //   validateCompound(object, 'value', 'currency', 'firebase.analytics().logPurchaseRefund(*):');
-
-  //   return this.logEvent(
-  //     'purchase_refund',
-  //     validateStruct(object, structs.PurchaseRefund, 'firebase.analytics().logPurchaseRefund(*):'),
-  //   );
-  // }
-
   logRefund(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logRefund(*):');
 
@@ -494,14 +485,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSelectContent(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSelectContent(*): The supplied arg must be an object of key/values.',
-      );
-    }
-  }
-
   logSelectItem(object) {
     if (!isObject(object)) {
       throw new Error(
@@ -511,7 +494,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
     return this.logEvent(
       'select_item',
-      validateStruct(object, structs.SelectContent, 'firebase.analytics().logSelectItem(*):'),
+      validateStruct(object, structs.SelectItem, 'firebase.analytics().logSelectItem(*):'),
     );
   }
 
@@ -674,22 +657,11 @@ class FirebaseAnalyticsModule extends FirebaseModule {
    * Unsupported in "Enhanced Ecommerce reports":
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
    */
-  // logViewSearchResults(object) {
-  //   if (!isObject(object)) {
-  //     throw new Error(
-  //       'firebase.analytics().logViewSearchResults(*): The supplied arg must be an object of key/values.',
-  //     );
-  //   }
-
-  //   return this.logEvent(
-  //     'view_search_results',
-  //     validateStruct(
-  //       object,
-  //       structs.ViewSearchResults,
-  //       'firebase.analytics().logViewSearchResults(*):',
-  //     ),
-  //   );
-  // }
+  logViewSearchResults() {
+    console.warn(
+      'firebase.analytics().logViewSearchResults(), "VIEW_SEARCH_RESULTS" event is now deprecated.',
+    );
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/analytics';

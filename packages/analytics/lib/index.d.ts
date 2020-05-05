@@ -991,27 +991,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.EarnVirtualCurrencyEventParameters}.
      */
     logEarnVirtualCurrency(params: EarnVirtualCurrencyEventParameters): Promise<void>;
-
-    /**
-     * E-Commerce Purchase event. This event signifies that an item was purchased by a user. This is
-     * different from the in-app purchase event, which is reported automatically for Google Play-based apps.
-     *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `ecommerce_purchase`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logEcommercePurchase({
-     *   coupon: 'BOGOFF',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.EcommercePurchaseEventParameters}.
-     */
-    logEcommercePurchase(params?: EcommercePurchaseEventParameters): Promise<void>;
-
     /**
      * Generate Lead event. Log this event when a lead has been generated in the app to understand
      * the efficacy of your install and re-engagement campaigns.
@@ -1121,51 +1100,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.LoginEventParameters}.
      */
     logLogin(params: LoginEventParameters): Promise<void>;
-
-    /**
-     * Present Offer event. This event signifies that the app has presented a purchase offer to a user.
-     * Add this event to a funnel with the {@link analytics#logAddToCart} and {@link analytics#logEcommercePurchase}
-     * to gauge your conversion process.
-     *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `present_offer`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logPresentOffer({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt',
-     *   item_category: 'shirts',
-     *   quantity: 1,
-     *   price: 9.99,
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.PresentOfferEventParameters}.
-     */
-    logPresentOffer(params: PresentOfferEventParameters): Promise<void>;
-
-    /**
-     * E-Commerce Purchase Refund event. This event signifies that an item purchase was refunded.
-     *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `purchase_refund`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logPurchaseRefund({
-     *  transaction_id: 'abcd',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.PurchaseRefundEventParameters}.
-     */
-    logPurchaseRefund(params?: PurchaseRefundEventParameters): Promise<void>;
-
     /**
      * Remove from cart event.
      *
@@ -1203,27 +1137,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SearchEventParameters}.
      */
     logSearch(params: SearchEventParameters): Promise<void>;
-
-    /**
-     * Select Content event. This general purpose event signifies that a user has selected some
-     * content of a certain type in an app. The content can be any object in your app. This event
-     * can help you identify popular content and categories of content in your app.
-     *
-     * Logged event name: `select_content`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logSelectContent({
-     *  content_type: 'clothing',
-     *  item_id: 'abcd',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.SelectContentEventParameters}.
-     */
-    logSelectContent(params: SelectContentEventParameters): Promise<void>;
-
     /**
      * Set checkout option event.
      *
@@ -1388,23 +1301,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.ViewItemListEventParameters}.
      */
     logViewItemList(params: ViewItemListEventParameters): Promise<void>;
-
-    /**
-     * View Search Results event. Log this event when the user has been presented with the results of a search.
-     *
-     * Logged event name: `view_search_results`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logViewSearchResults({
-     *   search_term: 'clothing',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.ViewSearchResults}.
-     */
-    logViewSearchResults(params: ViewSearchResults): Promise<void>;
   }
 }
 
