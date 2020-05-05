@@ -7,7 +7,7 @@ on:
 
 jobs:
   publish_npm:
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    if: "contains(toJSON(github.event.commits.*.message), '[publish]')"
     name: 'NPM'
     timeout-minutes: 5
     runs-on: ubuntu-latest
