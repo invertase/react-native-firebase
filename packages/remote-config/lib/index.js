@@ -47,6 +47,10 @@ const statics = {
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
+function isBooleanValue(v) {
+  return v === 'true' || v === 'false' || v === null || v === '0' || v === '1';
+}
+
 function convertNativeConfigValues(configValues) {
   const convertedValues = {};
   const entries = Object.entries(configValues);
@@ -57,10 +61,7 @@ function convertNativeConfigValues(configValues) {
     const { source, boolValue, stringValue, numberValue } = nativeValue;
     let value = stringValue;
 
-    if (
-      boolValue !== null &&
-      (stringValue === 'true' || stringValue === 'false' || stringValue === null)
-    ) {
+    if (boolValue !== null && isBooleanValue(stringValue)) {
       value = boolValue;
     } else if (
       numberValue !== null &&

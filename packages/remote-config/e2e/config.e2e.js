@@ -304,5 +304,13 @@ describe('remoteConfig()', () => {
       stringValue.should.be.equal('invertase');
       numberValue.should.be.equal(1337);
     });
+
+    it.only('can use boolean values', async () => {
+      await firebase.remoteConfig().setDefaults({ flag1: true, flag2: false });
+      const config = firebase.remoteConfig().getAll();
+
+      config.flag1.value.should.equal(true);
+      config.flag2.value.should.equal(false);
+    });
   });
 });
