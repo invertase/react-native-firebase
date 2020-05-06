@@ -345,14 +345,16 @@ describe('firestore.Transaction', () => {
 
       const prop1 = 'prop1';
       const prop2 = 'prop2';
+      const turn = 0;
+      const errorMessage = 'turn cannot exceed 1';
 
-      const createTransaction = (prop, turn = 0) => {
+      const createTransaction = prop => {
         return firebase.firestore().runTransaction(async transaction => {
           const doc = await transaction.get(docRef);
           const data = doc.data();
 
           if (data.turn !== turn) {
-            throw new Error('turn cannot exceed 1');
+            throw new Error(errorMessage);
           }
 
           const update = {
@@ -368,10 +370,10 @@ describe('firestore.Transaction', () => {
 
       try {
         await Promise.all(promises);
-      } catch (e) {
-        // do nothing
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(errorMessage);
       }
-
       const result = await docRef.get();
       should(result.data()).not.have.properties([prop1, prop2]);
     });
