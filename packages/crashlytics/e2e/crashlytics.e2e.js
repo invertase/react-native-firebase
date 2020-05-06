@@ -16,14 +16,6 @@
  */
 
 describe('crashlytics()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.crashlytics);
-      app.crashlytics().app.should.equal(app);
-    });
-  });
-
   // Run locally only - flakey on CI
   xdescribe('crash()', () => {
     it('crashes the app', async () => {
