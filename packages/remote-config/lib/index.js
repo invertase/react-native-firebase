@@ -191,7 +191,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   get minimumFetchInterval() {
     console.warn(
-      'firebase.remoteConfig().minimumFetchInterval has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
+      'firebase.remoteConfig().minimumFetchInterval has been removed. Use `firebase.remoteConfig().settings.minimumFetchIntervalMillis` instead.',
     );
   }
 
@@ -212,7 +212,7 @@ class FirebaseConfigModule extends FirebaseModule {
     const nativeSettings = {};
 
     if (!isObject(settings)) {
-      throw new Error('firebase.remoteConfig().settings: must set an object.');
+      throw new Error('firebase.remoteConfig().setConfigSettings(*): settings must set an object.');
     }
 
     if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
