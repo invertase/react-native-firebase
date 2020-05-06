@@ -203,12 +203,8 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   /** -------------------
    *        EVENTS
    * -------------------- */
-  logAddPaymentInfo(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logAddPaymentInfo(*): The supplied arg must be an object of key/values.',
-      );
-    }
+  logAddPaymentInfo(object = {}) {
+    validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddPaymentInfo(*):');
 
     return this.logEvent(
       'add_payment_info',
@@ -233,13 +229,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logAddToCart(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logAddToCart(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logAddToCart(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddToCart(*):');
 
     return this.logEvent(
@@ -248,13 +238,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logAddToWishlist(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logAddToWishlist(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logAddToWishlist(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logAddToWishlist(*):');
 
     return this.logEvent(
@@ -436,18 +420,13 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logPurchase(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logPurchaseEvent(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logPurchase(object = {}) {
     return this.logEvent(
       'purchase',
       validateStruct(object, structs.Purchase, 'firebase.analytics().logPurchaseEvent(*):'),
     );
   }
+
   logRefund(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logRefund(*):');
 
@@ -457,13 +436,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logRemoveFromCart(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logRemoveFromCart(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logRemoveFromCart(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logRemoveFromCart(*):');
 
     return this.logEvent(
@@ -485,13 +458,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logSelectItem(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logSelectItem(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logSelectItem(object = {}) {
     return this.logEvent(
       'select_item',
       validateStruct(object, structs.SelectItem, 'firebase.analytics().logSelectItem(*):'),
@@ -613,13 +580,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewItem(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewItem(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logViewItem(object = {}) {
     validateCompound(object, 'value', 'currency', 'firebase.analytics().logViewItem(*):');
 
     return this.logEvent(
@@ -628,26 +589,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     );
   }
 
-  logViewItemList(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewItemList(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logViewItemList(object = {}) {
     return this.logEvent(
       'view_item_list',
       validateStruct(object, structs.ViewItemList, 'firebase.analytics().logViewItemList(*):'),
     );
   }
 
-  logViewPromotion(object) {
-    if (!isObject(object)) {
-      throw new Error(
-        'firebase.analytics().logViewPromotion(*): The supplied arg must be an object of key/values.',
-      );
-    }
-
+  logViewPromotion(object = {}) {
     return this.logEvent(
       'view_promotion',
       validateStruct(object, structs.ViewPromotion, 'firebase.analytics().logViewPromotion(*):'),

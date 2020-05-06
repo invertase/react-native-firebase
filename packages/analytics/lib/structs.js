@@ -113,7 +113,7 @@ export const PostScore = struct({
 });
 
 export const Refund = struct({
-  affiliation: 'string',
+  affiliation: 'string?',
   coupon: 'string?',
   currency: 'string?',
   items: struct.optional([Item]),
@@ -159,9 +159,9 @@ export const SelectContent = struct({
 
 export const SelectItem = struct({
   items: struct.optional([Item]),
-  item_list_id: 'string',
-  item_list_name: 'string',
-  content_type: 'string',
+  item_list_id: 'string?',
+  item_list_name: 'string?',
+  content_type: 'string?',
 });
 
 export const SelectPromotion = struct({
@@ -212,19 +212,15 @@ export const ViewItem = struct({
 
 export const ViewItemList = struct({
   items: struct.optional([Item]),
-  item_list_id: 'string',
-  item_list_name: 'string',
+  item_list_id: 'string?',
+  item_list_name: 'string?',
 });
 
 export const ViewPromotion = struct({
   items: struct.optional([Item]),
-  location_id: 'string',
-  creative_name: 'string',
-  creative_slot: 'string',
-  promotion_id: 'string',
-  promotion_name: 'string',
+  location_id: 'string?',
+  creative_name: 'string?',
+  creative_slot: 'string?',
+  promotion_id: 'string?',
+  promotion_name: 'string?',
 });
-
-// export const ViewSearchResults = struct({
-//   search_term: 'string',
-// });
