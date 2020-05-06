@@ -8,11 +8,15 @@ export default class Value {
   }
 
   get value() {
-    console.warn('firebase.remoteConfig().getValue().value has been removed');
+    console.warn(
+      'firebase.remoteConfig().getValue(*).value has been removed. Please use one of the alternative methods such as firebase.remoteConfig().getValue(*).asString()',
+    );
   }
 
   get source() {
-    console.warn('firebase.remoteConfig().getValue().source has been removed');
+    console.warn(
+      'firebase.remoteConfig().getValue(*).source has been removed. Please use firebase.remoteConfig().getValue(*).getSource()',
+    );
   }
 
   asBoolean() {

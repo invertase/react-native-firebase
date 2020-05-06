@@ -129,7 +129,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   set settings(settings) {
     console.warn(
-      "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().settings = { ...[key]: string, }' instead'",
+      "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().setConfigSettings({ ...[key]: string, })' instead'",
     );
   }
 
@@ -160,7 +160,6 @@ class FirebaseConfigModule extends FirebaseModule {
    */
   reset() {
     if (isIOS) {
-      console.warn('firebase.remoteConfig().reset() is not yet supported on iOS.');
       return Promise.resolve(null);
     }
 

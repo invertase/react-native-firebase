@@ -126,7 +126,7 @@ describe('remoteConfig()', () => {
       }
     });
 
-    it.only('minimumFetchIntervalMillis sets correctly', async () => {
+    it('minimumFetchIntervalMillis sets correctly', async () => {
       await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
       firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(3000);
@@ -144,7 +144,7 @@ describe('remoteConfig()', () => {
     });
 
     it('fetchTimeMillis sets correctly', async () => {
-      firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
+      await firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
 
       firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(3000);
     });
@@ -173,7 +173,7 @@ describe('remoteConfig()', () => {
   });
 
   describe('getAll()', () => {
-    it('should return an object of all available values', async () => {
+    it('should return an object of all available values', () => {
       const config = firebase.remoteConfig().getAll();
       config.number.asNumber().should.equal(1337);
       config.number.getSource().should.equal('remote');
