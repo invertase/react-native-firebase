@@ -12,5 +12,12 @@
     "title": "Installing React Native Firebase on iOS",
     "description": "Follow along setting up a new Firebase project and integrate React Native Firebase for iOS.",
     "tags": ["ios", "core"]
+  },
+  {
+    "slug": "admob-usage",
+    "vid": "lwIZuV_PzqI",
+    "title": "AdMob Overview",
+    "description": "Learn how to correctly install AdMob, integrate with your Google AdMob account & display apps in your React Native app.",
+    "tags": ["admob"]
   }
 ]

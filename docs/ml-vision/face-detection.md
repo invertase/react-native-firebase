@@ -20,7 +20,7 @@ such as:
 - The probability that the face is smiling.
 - A list of face features (e.g. eyes, nose, mouth etc) and their positions on the face.
 
-# On-device Barcode Scanning
+# On-device Face Detection
 
 ## Enable the model
 
