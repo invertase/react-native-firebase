@@ -20,7 +20,7 @@ firebase
   .then();
 firebase
   .analytics()
-  .logAddToCart({ item_id: '123', item_category: '123', item_name: '123', quantity: 3 })
+  .logAddToCart({ value: 123, currency: 'USD' })
   .then();
 firebase
   .analytics()
@@ -38,7 +38,6 @@ console.log(firebase.analytics().logAppOpen);
 console.log(firebase.analytics().logBeginCheckout);
 console.log(firebase.analytics().logCampaignDetails);
 console.log(firebase.analytics().logEarnVirtualCurrency);
-console.log(firebase.analytics().logEcommercePurchase);
 console.log(firebase.analytics().logEvent);
 console.log(firebase.analytics().logGenerateLead);
 console.log(firebase.analytics().logJoinGroup);
@@ -46,11 +45,8 @@ console.log(firebase.analytics().logLevelEnd);
 console.log(firebase.analytics().logLevelStart);
 console.log(firebase.analytics().logLevelUp);
 console.log(firebase.analytics().logLogin);
-console.log(firebase.analytics().logPresentOffer);
-console.log(firebase.analytics().logPurchaseRefund);
 console.log(firebase.analytics().logRemoveFromCart);
 console.log(firebase.analytics().logSearch);
-console.log(firebase.analytics().logSelectContent);
 console.log(firebase.analytics().logSetCheckoutOption);
 console.log(firebase.analytics().logShare);
 console.log(firebase.analytics().logSignUp);
@@ -60,7 +56,6 @@ console.log(firebase.analytics().logTutorialComplete);
 console.log(firebase.analytics().logUnlockAchievement);
 console.log(firebase.analytics().logViewItem);
 console.log(firebase.analytics().logViewItemList);
-console.log(firebase.analytics().logViewSearchResults);
 console.log(firebase.analytics().resetAnalyticsData);
 console.log(firebase.analytics().setAnalyticsCollectionEnabled);
 console.log(firebase.analytics().setCurrentScreen);
@@ -77,7 +72,6 @@ console.log(analytics().logAppOpen);
 console.log(analytics().logBeginCheckout);
 console.log(analytics().logCampaignDetails);
 console.log(analytics().logEarnVirtualCurrency);
-console.log(analytics().logEcommercePurchase);
 console.log(analytics().logEvent);
 console.log(analytics().logGenerateLead);
 console.log(analytics().logJoinGroup);
@@ -85,11 +79,8 @@ console.log(analytics().logLevelEnd);
 console.log(analytics().logLevelStart);
 console.log(analytics().logLevelUp);
 console.log(analytics().logLogin);
-console.log(analytics().logPresentOffer);
-console.log(analytics().logPurchaseRefund);
 console.log(analytics().logRemoveFromCart);
 console.log(analytics().logSearch);
-console.log(analytics().logSelectContent);
 console.log(analytics().logSetCheckoutOption);
 console.log(analytics().logShare);
 console.log(analytics().logSignUp);
@@ -99,7 +90,6 @@ console.log(analytics().logTutorialComplete);
 console.log(analytics().logUnlockAchievement);
 console.log(analytics().logViewItem);
 console.log(analytics().logViewItemList);
-console.log(analytics().logViewSearchResults);
 console.log(analytics().resetAnalyticsData);
 console.log(analytics().setAnalyticsCollectionEnabled);
 console.log(analytics().setCurrentScreen);
