@@ -228,6 +228,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   NSDate *lastFetchTime = remoteConfig.lastFetchTime;
   NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
   double minimumFetchInterval = [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
+  double fetchTimeout = [RCTConvert double:@([remoteConfig configSettings].fetchTimeout)];
 
   NSMutableDictionary *values = [NSMutableDictionary new];
   NSSet *keys = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] keysWithPrefix:nil];
@@ -248,7 +249,8 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
       @"values": values,
       @"lastFetchStatus": lastFetchStatus,
       @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
-      @"minimumFetchInterval": @(minimumFetchInterval)
+      @"minimumFetchInterval": @(minimumFetchInterval),
+      @"fetchTimeout": @(fetchTimeout)
   };
 }
 

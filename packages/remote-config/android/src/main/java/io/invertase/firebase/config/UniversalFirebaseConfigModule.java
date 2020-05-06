@@ -217,6 +217,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
     appConstants.put("lastFetchTime", remoteConfigInfo.getFetchTimeMillis());
     appConstants.put("lastFetchStatus", lastFetchStatusToString((remoteConfigInfo.getLastFetchStatus())));
     appConstants.put("minimumFetchInterval", remoteConfigSettings.getMinimumFetchIntervalInSeconds());
+    appConstants.put("fetchTimeout", remoteConfigSettings.getFetchTimeoutInSeconds());
 
     return appConstants;
   }

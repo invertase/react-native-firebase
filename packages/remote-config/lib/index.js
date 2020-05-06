@@ -24,6 +24,7 @@ import {
   isIOS,
   isNull,
 } from '@react-native-firebase/app/lib/common';
+import Value from './RemoteConfigValue';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -79,48 +80,6 @@ function convertNativeConfigValues(configValues) {
 
   Object.freeze(convertedValues);
   return convertedValues;
-}
-// as per firebase web sdk specification
-const BOOLEAN_TRUTHY_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
-
-class Value {
-  constructor({ value, source }) {
-    this._value = value;
-    this._source = source;
-  }
-
-  get value() {
-    console.warn('firebase.remoteConfig().getValue().value has been removed');
-  }
-
-  get source() {
-    console.warn('firebase.remoteConfig().getValue().source has been removed');
-  }
-
-  asBoolean() {
-    if (this._source === 'static') {
-      return false;
-    }
-    return BOOLEAN_TRUTHY_VALUES.includes(this._value.toLowerCase());
-  }
-  asNumber() {
-    if (this._source === 'static') {
-      return 0;
-    }
-
-    let num = Number(this._value);
-
-    if (isNaN(num)) {
-      num = 0;
-    }
-    return num;
-  }
-  asString() {
-    return this._value;
-  }
-  getSource() {
-    return this._source;
-  }
 }
 
 class FirebaseConfigModule extends FirebaseModule {
@@ -249,7 +208,7 @@ class FirebaseConfigModule extends FirebaseModule {
       }
     }
 
-    this._settings = settings;
+    // this._settings = settings;
     return this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
   }
 
@@ -321,6 +280,12 @@ class FirebaseConfigModule extends FirebaseModule {
   _updateFromConstants(constants) {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
+    // todo what happens when no value passed to native. this will be empty or 0 or something else?
+    this._settings = {
+      fetchTimeMillis: constants.fetchTimeout * 1000,
+      minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
+    };
+
     this._values = convertNativeConfigValues(constants.values);
   }
 

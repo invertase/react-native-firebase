@@ -22,6 +22,19 @@ describe('remoteConfig()', () => {
       should.exist(app.remoteConfig);
       app.remoteConfig().app.should.equal(app);
     });
+
+    it('supports multiple apps', async () => {
+      firebase.firestore().app.name.should.equal('[DEFAULT]');
+
+      firebase
+        .firestore(firebase.app('secondaryFromNative'))
+        .app.name.should.equal('secondaryFromNative');
+
+      firebase
+        .app('secondaryFromNative')
+        .remoteConfig()
+        .app.name.should.equal('secondaryFromNative');
+    });
   });
 
   describe('statics', () => {
@@ -113,10 +126,10 @@ describe('remoteConfig()', () => {
       }
     });
 
-    it('minimumFetchIntervalMillis sets correctly', async () => {
-      firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 300 });
+    it.only('minimumFetchIntervalMillis sets correctly', async () => {
+      await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
-      firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(300);
+      firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(3000);
     });
 
     it('throws if minimumFetchIntervalMillis is not a number', async () => {
@@ -131,12 +144,12 @@ describe('remoteConfig()', () => {
     });
 
     it('fetchTimeMillis sets correctly', async () => {
-      firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 300 });
+      firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
 
-      firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(300);
+      firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(3000);
     });
 
-    it('throws if fetchTimeMillis is not a number', async () => {
+    it('throws if fetchTimeMillis is not a number', () => {
       try {
         firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
 
@@ -268,7 +281,7 @@ describe('remoteConfig()', () => {
         test2.should.equal(false);
       });
 
-      it("returns 'false' if the source is static", async () => {
+      it("returns 'false' if the source is static", () => {
         const unknownKey = firebase
           .remoteConfig()
           .getValue('unknownKey')
@@ -279,7 +292,7 @@ describe('remoteConfig()', () => {
     });
 
     describe('getValue().asString()', () => {
-      it('returns the value as a string', async () => {
+      it('returns the value as a string', () => {
         const config = firebase.remoteConfig().getAll();
 
         config.number.asString().should.equal('1337');
@@ -290,7 +303,7 @@ describe('remoteConfig()', () => {
     });
 
     describe('getValue().asNumber()', () => {
-      it('returns the value as a number if it can be evaluated as a number', async () => {
+      it('returns the value as a number if it can be evaluated as a number', () => {
         const config = firebase.remoteConfig().getAll();
 
         config.number.asNumber().should.equal(1337);
@@ -298,14 +311,14 @@ describe('remoteConfig()', () => {
         config.prefix_1.asNumber().should.equal(1);
       });
 
-      it('returns the value "0" if it cannot be evaluated as a number', async () => {
+      it('returns the value "0" if it cannot be evaluated as a number', () => {
         const config = firebase.remoteConfig().getAll();
 
         config.bool.asNumber().should.equal(0);
         config.string.asNumber().should.equal(0);
       });
 
-      it("returns '0' if the source is static", async () => {
+      it("returns '0' if the source is static", () => {
         const unknownKey = firebase
           .remoteConfig()
           .getValue('unknownKey')
@@ -315,7 +328,7 @@ describe('remoteConfig()', () => {
       });
     });
 
-    describe('getValue().getSource()', async () => {
+    describe('getValue().getSource()', () => {
       it('returns the correct source as default or remote', async () => {
         await firebase.remoteConfig().setDefaults({
           test1: '2',
@@ -333,7 +346,7 @@ describe('remoteConfig()', () => {
       });
     });
 
-    it("returns an empty string for a static value for keys that doesn't exist", async () => {
+    it("returns an empty string for a static value for keys that doesn't exist", () => {
       const configValue = firebase.remoteConfig().getValue('fourOhFour');
       configValue.getSource().should.equal('static');
       should.equal(configValue.asString(), '');
