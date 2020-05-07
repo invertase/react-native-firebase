@@ -36,6 +36,39 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 # Usage
 
+## iOS Setup
+
+To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple developer account [setup](https://developer.apple.com/programs/enroll/).
+
+1. Add an `App Store ID` & `Team ID` to your app in your Firebase console. If you do not have an `App Store ID` yet, you can put any number in here for now. Your `Team ID` can be found in your Apple developer console.
+
+![ios first step](https://images.prismic.io/invertase/30e302f6-a7bb-4e37-98fd-7115dac4c1f1_Screenshot+2020-05-07+at+09.10.02.png?auto=compress,format)
+
+2. Open the Dynamic Links tab and configure a new domain for your app. In this test example, I've created one for `https://rnfbtestapplication.page.link`. To confirm your domain has been registered with the Firebase server, you can test by
+going to the following location in your browser `[your domain]/apple-app-site-association`. The response will have a `details` array property containing an object that has the property `appID`. That will be your app's app ID (It may take some
+time for your domain to register). Please ensure it is registered before proceeding.
+
+![ios second step](https://images.prismic.io/invertase/4152f98c-b4e9-4561-a790-a0750a0392bb_Screenshot+2020-05-07+at+09.26.47.png?auto=compress,format)
+
+3. Once you're sure your domain is registered, you need to head over to your Apple developer console and create a provisioning profile for your app. Please ensure you've enabled the `Associated Domain` capability which you should check before proceeding.
+
+![ios third step](https://images.prismic.io/invertase/12d6e692-c2b1-47f5-98aa-f364c928114a_Screenshot+2020-05-07+at+10.03.45.png?auto=compress,format)
+
+4. Open your project in Xcode and open your app under the `TARGETS` header. Click the `Signing & Capabilities` tab. You will need to ensure your `Team` is registered, and your `Provisioning Profile` field is completed. Please add the domain you created in your
+Firebase console to the `Associated Domains` and prefix with `applinks:`
+
+![ios fourth step](https://images.prismic.io/invertase/d7a8696f-bef1-44a4-b048-aab7bb534f71_Screenshot+2020-05-07+at+09.55.53.png?auto=compress,format)
+
+5. Click the `Info` tab, and add a `URL Type` to your project. The `Identifier` can be called `Bundle Id` or whatever you wish. Add your bundle identifier to the `URL Schemes` property.
+
+![ios fifth step](https://images.prismic.io/invertase/cb029ba6-ad40-494e-a3f6-2aacaff494d1_Screenshot+2020-05-07+at+10.16.16.png?auto=compress,format)
+
+6. Create a dynamic link with your domain in the Firebase console. The freshly created dynamic link URL will appear in the table.
+
+![ios sixth step](https://images.prismic.io/invertase/7e5c7a61-899f-45e5-ab4e-ddf3cfee636a_Screenshot+2020-05-07+at+10.26.22.png?auto=compress,format)
+
+7. To test the dynamic link works, you will need to use a real device as it will not work on a simulator. The notes app is a good place to test your link.
+
 ## Create a Link
 
 You can create dynamic links via the Firebase console, your app or even your custom API. Please refer to [Firebase create dynamic link documentation](https://firebase.google.com/docs/dynamic-links/create-links) for further details. Below, we will show how to build links as part of your application code:
