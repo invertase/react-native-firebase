@@ -63,5 +63,13 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "sdkVersions": {
+    "ios" : {
+      "firebase": "~> 6.13.0"
+    },
+    "android": {
+      "firebase": "24.1.0"
+    }
   }
 }
