@@ -44,7 +44,7 @@ for React Native apps. To manually track screens, you need to setup a `component
 import analytics from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 
-Navigation.events().registerComponentDidAppearListener(({componentName, componentType}) => {
+Navigation.events().registerComponentDidAppearListener(({ componentName, componentType }) => {
   if (componentType === 'Component') {
     analytics().setCurrentScreen(componentName, componentName);
   }

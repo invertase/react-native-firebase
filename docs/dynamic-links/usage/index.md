@@ -46,7 +46,6 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ![firebase console dynamic link second step](https://images.prismic.io/invertase/7e5c7a61-899f-45e5-ab4e-ddf3cfee636a_Screenshot+2020-05-07+at+10.26.22.png?auto=compress,format)
 
-
 ## iOS Setup
 
 To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple developer account [setup](https://developer.apple.com/programs/enroll/).
@@ -56,14 +55,14 @@ To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple d
 ![ios dynamic link first step](https://images.prismic.io/invertase/30e302f6-a7bb-4e37-98fd-7115dac4c1f1_Screenshot+2020-05-07+at+09.10.02.png?auto=compress,format)
 
 2. Test the domain you created in your Firebase console (first step in `Firebase Setup`). Go to the following location in your browser `[your domain]/apple-app-site-association`. The response will have a `details` array property containing an object that has the property `appID`. That will be your app's app ID (It may take some
-time for your domain to register). Please ensure it is registered before proceeding.
+   time for your domain to register). Please ensure it is registered before proceeding.
 
 3. Once you're sure your domain is registered, you need to head over to your Apple developer console and create a provisioning profile for your app. Please ensure you've enabled the `Associated Domain` capability which you should check before proceeding.
 
 ![ios dynamic link third step](https://images.prismic.io/invertase/12d6e692-c2b1-47f5-98aa-f364c928114a_Screenshot+2020-05-07+at+10.03.45.png?auto=compress,format)
 
 4. Open your project in Xcode and open your app under the `TARGETS` header. Click the `Signing & Capabilities` tab. You will need to ensure your `Team` is registered, and your `Provisioning Profile` field is completed. Please add the domain you created in your
-Firebase console to the `Associated Domains` and prefix with `applinks:`
+   Firebase console to the `Associated Domains` and prefix with `applinks:`
 
 ![ios dynamic link fourth step](https://images.prismic.io/invertase/d7a8696f-bef1-44a4-b048-aab7bb534f71_Screenshot+2020-05-07+at+09.55.53.png?auto=compress,format)
 
@@ -73,7 +72,6 @@ Firebase console to the `Associated Domains` and prefix with `applinks:`
 
 6. To test the dynamic link works, you will need to use a real device as it will not work on a simulator. The notes app is a good place to paste you link and test it opens your app (ensure the app is installed on the device).
 
-
 ## Android Setup
 
 1. Create a SHA-256 fingerprint using these [instructions](https://developers.google.com/android/guides/client-auth) for your app, and add to your app in your Firebase console.
@@ -81,7 +79,7 @@ Firebase console to the `Associated Domains` and prefix with `applinks:`
 ![android dynamic link first step](https://images.prismic.io/invertase/ac7615cb-ea4f-49d8-ba2e-5d6d4d209520_Screenshot+2020-05-07+at+10.47.48.png?auto=compress,format)
 
 2. Test the domain you created in your Firebase console (first step in `Firebase Setup`). Go to the following location in your browser `[your-domain]/.well-known/assetlinks.json`. The response will have a `target` object containing a `package_name` which ought to have your app's package name. Please
-do not proceed until you see this, it may take a while to register.
+   do not proceed until you see this, it may take a while to register.
 
 3. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emualator).
 
