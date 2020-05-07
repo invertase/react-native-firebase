@@ -29,4 +29,26 @@ describe('utils()', () => {
       should.equal(firebase.utils().isRunningInTestLab, false);
     });
   });
+
+  describe('playServicesAvailability', () => {
+    it('returns isAvailable and Play Service status', async () => {
+      const playService = await firebase.utils().playServicesAvailability;
+      //iOS always returns { isAvailable: true, status: 0}
+      should(playService.isAvailable).equal(true);
+      should(playService.status).equal(0);
+    });
+  });
+
+  describe('getPlayServicesStatus', () => {
+    it('returns isAvailable and Play Service status', async () => {
+      const status = await firebase.utils().getPlayServicesStatus();
+      if (device.getPlatform() === 'android') {
+        should(status.isAvailable).equal(true);
+        should(status.status).equal(0);
+      }
+      if (device.getPlatform() === 'ios') {
+        should(status).equal(undefined);
+      }
+    });
+  });
 });
