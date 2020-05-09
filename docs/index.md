@@ -86,6 +86,14 @@ Lastly, execute the plugin by adding the following to the **very bottom** of the
 apply plugin: 'com.google.gms.google-services'
 ```
 
+### Note
+in case get Dex error like bellow add `multiDexEnabled true` in defaultConfig (app/build.gradle)
+`
+D8: Cannot fit requested classes in a single dex file (# methods: 67368 > 65536 ; # fields: 69097 > 65536)
+com.android.builder.dexing.DexArchiveMergerException: Error while merging dex archives: 
+The number of method references in a .dex file cannot exceed 64K.
+`
+
 ## 3. iOS Setup
 
 To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added
