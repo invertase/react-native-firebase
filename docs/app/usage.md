@@ -54,7 +54,7 @@ const config = {
   name: 'SECONDARY_APP',
 };
 
-await firebase.initalizeApp(credentials, config);
+await firebase.initializeApp(credentials, config);
 ```
 
 Once created, you can confirm the app instance has been created by accessing the `apps` property on the module:
@@ -81,7 +81,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 
 // create secondary app as described above
-const secondaryApp = await firebase.initalizeApp(credentials, config);
+const secondaryApp = await firebase.initializeApp(credentials, config);
 
 // Example using auth with passing the secondary app instance
 auth(secondaryApp).currentUser;
