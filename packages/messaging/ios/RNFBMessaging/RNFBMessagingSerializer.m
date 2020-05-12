@@ -171,7 +171,7 @@
         // iOS only
         // message.notification.ios.subtitleLocArgs
         if (apsAlertDict[@"subtitle-loc-args"] != nil) {
-          notification[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
+          notificationIOS[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
         }
           
         // iOS only
