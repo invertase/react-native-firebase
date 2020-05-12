@@ -165,7 +165,7 @@
         // iOS only
         // message.notification.ios.subtitleLocKey
         if (apsAlertDict[@"subtitle-loc-key"] != nil) {
-          notification[@"subtitleLocKey"] = apsAlertDict[@"subtitle-loc-key"];
+          notificationIOS[@"subtitleLocKey"] = apsAlertDict[@"subtitle-loc-key"];
         }
           
         // iOS only
