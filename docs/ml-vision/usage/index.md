@@ -90,7 +90,7 @@ The models are disabled by default to help control app size.
 
 Since only models enabled here will be compiled into the application, any changes to this file require a rebuild.
 
-```sh
+```bash
 # For Android
 npx react-native run-android
 
