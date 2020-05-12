@@ -87,3 +87,14 @@ on the `firebase.json` file at the root of your project directory.
 ```
 
 The models are disabled by default to help control app size.
+
+Since only models enabled here will be compiled into the application, any changes to this file require a rebuild.
+
+```sh
+# For Android
+npx react-native run-android
+
+# For iOS
+cd ios/ && pod install --repo-update
+npx react-native run-ios
+```
