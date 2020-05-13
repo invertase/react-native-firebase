@@ -613,7 +613,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param listener Called with a `RemoteMessage` when a notification press opens the application.
      */
-    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): void;
+    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a

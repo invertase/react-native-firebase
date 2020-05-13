@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
+  s.dependency          'Firebase/Analytics', firebase_sdk_version
   s.dependency          'Firebase/InAppMessaging', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
