@@ -46,7 +46,7 @@ cloud or both.
 | [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))  | ✅          |           |
 | [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                |             | ✅        |
 | [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)             |             | ✅        |
-| [Image Labeling](https://firebase.google.com/docs/ml-kit/label-images)               | ✅          | ✅        |
+| [Image Labeling](https://firebase.google.com/docs/ml-kit/label-images)                | ✅          | ✅        |
 | [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)   |             | ✅        |
 | [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)   | ❌          | ❌        |
 | [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection) | ❌          | ❌        |
