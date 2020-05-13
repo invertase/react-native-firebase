@@ -1,4 +1,4 @@
-# [7.0.0](https://github.com/invertase/react-native-firebase/tree/master/packages/firestore/compare/@react-native-firebase/firestore@7.0.0...@react-native-firebase/firestore@7.0.0) (2020-05-13)
+## [7.0.0](https://github.com/invertase/react-native-firebase/tree/master/packages/firestore/compare/@react-native-firebase/firestore@7.0.0...@react-native-firebase/firestore@7.0.0) (2020-05-13)
 
 
 * feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/tree/master/packages/firestore/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/tree/master/packages/firestore/issues/3613)
