@@ -113,13 +113,13 @@ To do this, open your `/ios/{projectName}/AppDelegate.m` file, and add the follo
 
 At the top of the file, import the Firebase SDK:
 
-```objc
+```
 #import <Firebase.h>
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
 
-```objc
+```
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Add me --- \/
   if ([FIRApp defaultApp] == nil) {
