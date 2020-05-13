@@ -17,18 +17,7 @@ If you do not meet these prerequisites, follow the links below:
 ## Installation
 
 Installing React Native Firebase requires a few steps; installing the NPM module, adding the Firebase config files &
-rebuilding your apps.
-
-### Template (optional)
-
-If you're starting a fresh React Native project, you can take advantage of the template for React Native
-Firebase:
-
-```bash
-npx react-native init --template @react-native-firebase/template MyAwesomeApp
-```
-
-You can now skip to Step 2 (Android Setup).
+rebuilding your application.
 
 ### 1. Install via NPM
 
