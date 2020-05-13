@@ -4,38 +4,27 @@
     "vid": "I9EKMCbbhns",
     "title": "Android Installation",
     "description": "Follow along setting up a new Firebase project and integrating React Native Firebase on Android.",
-    "tags": [
-      "android",
-      "core"
-    ]
+    "tags": ["android", "core"]
   },
   {
     "slug": "ios-installation",
     "vid": "MEb4otoZzsQ",
     "title": "iOS Installation",
     "description": "Follow along setting up a new Firebase project and integrating React Native Firebase on iOS.",
-    "tags": [
-      "ios",
-      "core"
-    ]
+    "tags": ["ios", "core"]
   },
   {
     "slug": "admob-overview",
     "vid": "lwIZuV_PzqI",
     "title": "Google AdMob Overview",
     "description": "Learn how to setup Google AdMob, integrate with your Google AdMob account and display ads in your React Native app.",
-    "tags": [
-      "admob"
-    ]
+    "tags": ["admob"]
   },
   {
     "slug": "analytics-overview",
     "vid": "gH6oKPtJYJ4",
     "title": "Firebase Analytics Overview",
     "description": "Learn how to setup Firebase Analytics for your React Native app, log custom analytics events, track screen changes in your app and integrating with React Navigation.",
-    "tags": [
-      "analytics",
-      "google-analytics"
-    ]
+    "tags": ["analytics", "google-analytics"]
   }
 ]
