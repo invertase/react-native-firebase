@@ -3,14 +3,14 @@
   - '/'
 - - TypeScript
   - '/typescript'
-- - Migrating to v6
-  - '/migrating-to-v6'
 - - Release Notes
   - '/releases'
+- - Migrating to v6
+  - '/migrating-to-v6'
 - - Feature Requests
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
-  - '/contributing'
+  - 'https://github.com/invertase/react-native-firebase/blob/master/CONTRIBUTING.md'
 - - Legacy Docs (<= v5)
   - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
 - - AdMob
