@@ -1,3 +1,16 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## [7.0.1](https://github.com/invertase/react-native-firebase/tree/master/packages/app/compare/@react-native-firebase/app@7.0.0...@react-native-firebase/app@7.0.1) (2020-05-13)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+
+
+
+
 ## [7.0.0](https://github.com/invertase/react-native-firebase/tree/master/packages/app/compare/@react-native-firebase/app@7.0.0...@react-native-firebase/app@7.0.0) (2020-05-13)
 
 
@@ -12,6 +25,3 @@
 ### BREAKING CHANGES
 
 * breaking change to mark new internal versioning requirements.
-
-
-
