@@ -31,11 +31,11 @@ This module currently supports the following Firebase ML Kit Vision APIs:
 | [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))           | ✅          |           |
 | [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                      |             | ✅        |
 | [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)                   |             | ✅        |
-| [Image Labelling](https://firebase.google.com/docs/ml-kit/label-images)                     | ✅          | ✅        |
+| [Image Labeling](https://firebase.google.com/docs/ml-kit/label-images)                     | ✅          | ✅        |
 | [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)                |             | ✅        |
 | [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)                  | ❌          | ❌        |
 | [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)           | ❌          | ❌        |
-| Image Labelling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
+| Image Labeling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
 
 [> Learn More](https://firebase.google.com/products/ml-kit/)
 
@@ -57,7 +57,7 @@ yarn add @react-native-firebase/ml-vision
 - [Text Recognition](https://rnfirebase.io/ml-vision/text-recognition)
 - [Landmark Recognition](https://rnfirebase.io/ml-vision/landmark-recognition)
 - [Barcode Scanning](https://rnfirebase.io/ml-vision/barcode-scanning)
-- [Image Labelling](https://rnfirebase.io/ml-vision/image-labelling)
+- [Image Labeling](https://rnfirebase.io/ml-vision/image-labeling)
 - [Face Detection](https://rnfirebase.io/ml-vision/face-detection)
 
 

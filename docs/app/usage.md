@@ -19,7 +19,7 @@ method with your project credentials. The native Android & iOS SDKs automaticall
 the credentials provided during the [Getting Started](/) installation steps. The app module does however provide support
 for manually initializing secondary Firebase app instances.
 
-Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the the following services:
+Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
 - [Authentication](/auth).
 - [Realtime Database](/database).
@@ -65,19 +65,27 @@ console.log(firebase.apps);
 
 ## Switching app instance
 
-You can switch app instances at any time whilst developing by calling the `app` method:
+You can switch app instances at any time whilst developing by calling the `app` method with the name of the secondary app:
 
 ```js
 import firebase from '@react-native-firebase/app';
+import '@react-native-firebase/auth';
 
 // Example using auth
 firebase.app('SECONDARY_APP').auth().currentUser;
 ```
 
-The `firebase` instance is also exported on modules for added convenience, for example:
+Or pass the secondary app instance you created above directly to the desired module, for example:
 
 ```js
-import auth, { firebase } from '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
+
+// create secondary app as described above
+const secondaryApp = await firebase.initalizeApp(credentials, config);
+
+// Example using auth with passing the secondary app instance
+auth(secondaryApp).currentUser;
 ```
 
 ## Deleting instances
