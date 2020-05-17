@@ -23,7 +23,7 @@ cd ios/ && pod install
 ```
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](installation/ios) and [Android](installation/android).
+you can follow the manual installation steps for [iOS](/ml-vision/usage/installation/ios) and [Android](/ml-vision/usage/installation/android).
 
 # What does it do
 
