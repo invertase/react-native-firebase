@@ -297,7 +297,7 @@ to manually control registration you can disable this via the `firebase.json` fi
 // <projectRoot>/firebase.json
 {
   "react-native": {
-    "messaging_ios_auto_register_for_remote_messages": false,
+    "messaging_ios_auto_register_for_remote_messages": false
   }
 }
 ```
@@ -312,7 +312,6 @@ async function registerAppWithFCM() {
   await messaging().registerDeviceForRemoteMessages();
 }
 ```
-
 
 ## Auto initialization
 
