@@ -58,7 +58,7 @@ project.ext {
       ],
     ],
   ])
-}k
+}
 
 android {
   defaultConfig {
