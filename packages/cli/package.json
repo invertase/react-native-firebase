@@ -24,22 +24,24 @@
     "prepublishOnly": "yarn run build:clean && yarn run build"
   },
   "dependencies": {
-    "@react-native-community/cli-types": "^4.3.0",
     "@react-native-community/cli-tools": "^4.2.2",
+    "@react-native-community/cli-types": "^4.3.0",
     "a2a": "^0.2.0",
     "axios": "^0.19.2",
-    "enquirer": "^2.3.4",
-    "chalk": "^3.0.0",
-    "ora": "^4.0.3",
-    "opn": "^6.0.0",
     "boxen": "^4.2.0",
-    "portfinder": "^1.0.25",
-    "google-auth-library": "^5.10.1",
+    "chalk": "^3.0.0",
     "configstore": "^5.0.1",
-    "jsonwebtoken": "^8.5.1"
+    "enquirer": "^2.3.4",
+    "google-auth-library": "^5.10.1",
+    "jsonwebtoken": "^8.5.1",
+    "opn": "^6.0.0",
+    "ora": "^4.0.3",
+    "portfinder": "^1.0.25"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.3.8",
+    "@types/lodash": "^4.14.152",
+    "@types/node-fetch": "^2.5.7",
     "rimraf": "^3.0.2",
     "typescript": "^3.8.3"
   },

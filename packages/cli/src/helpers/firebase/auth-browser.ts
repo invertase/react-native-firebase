@@ -46,7 +46,7 @@ async function getResponseHtml(name: TemplateTypes) {
  */
 // todo how to type this?
 async function authWithBrowser(auth: any) {
-  const requestDeferred = promiseDefer();
+  const requestDeferred = promiseDefer<Parameters<http.RequestListener>>();
 
   // get an available/free port on the OS
   const port = await getPortPromise();
@@ -89,52 +89,62 @@ async function authWithBrowser(auth: any) {
 
   spinner.start();
 
-  // wait for the oauth callback to be called after consent granted
-  const [req, res] = await requestDeferred.promise;
+  try {
+    // wait for the oauth callback to be called after consent granted
+    const [req, res] = await requestDeferred.promise;
 
-  // parse the request url and extract authorisation code
-  const { code } = qsParse(urlParse(req.url).query);
+    // parse the request url and extract authorisation code
+    let queryStr;
+    if (!req.url || !(queryStr = urlParse(req.url).query))
+      throw new Error('Invalid authentication response received');
 
-  // respond to the browser and close http server
-  const html = await getResponseHtml(code ? 'success' : 'failure');
-  res.writeHead(code ? 200 : 500, {
-    'Content-Type': 'text/html',
-  });
-  res.end(html);
-  req.socket.destroy();
-  server.close();
+    let { code } = qsParse(queryStr);
+    if (Array.isArray(code)) code = code[0];
 
-  if (!code) {
-    spinner.fail('Error authenticating your account, please try again later.');
+    // respond to the browser and close http server
+    const html = await getResponseHtml(code ? 'success' : 'failure');
+    res.writeHead(code ? 200 : 500, {
+      'Content-Type': 'text/html',
+    });
+    res.end(html);
+    req.socket.destroy();
+    server.close();
+
+    if (!code) throw new Error('Failed authentication response received');
+
+    // exchange access token
+    const [tokenError, response] = await A2A(oAuth2Client.getToken(code));
+    if (tokenError || !response?.tokens?.id_token) {
+      throw new Error('Invalid authentication tokens received');
+    }
+    const { tokens } = response;
+    const { id_token } = response.tokens
+
+    //tokens.scopes = DEFAULT_SCOPES;
+    oAuth2Client.setCredentials(tokens);
+
+    // TODO should probably do a test request e.g. get projects list to confirm valid access
+    const result: Account = {
+      user: decode(id_token) as User,
+      tokens: tokens as Tokens,
+    };
+
+    auth.addAccount(result);
+    spinner.succeed(`Successfully added account ${Chalk.cyanBright(`[${result.user.email}]`)}!`);
+
+    console.log('');
+
+    return Promise.resolve({
+      client: oAuth2Client,
+      ...result,
+    });
+
+  } catch (err) {
+    const error = err as Error;
+    spinner.fail(`Error authenticating your account: ${error.message}. Please try again later.`);
     return process.exit();
   }
 
-  // exchange access token
-  const [tokenError, { tokens }] = await A2A(oAuth2Client.getToken(code));
-  if (tokenError) {
-    spinner.fail('Error authenticating your account, please try again later.');
-    return process.exit();
-  }
-
-  tokens.scopes = DEFAULT_SCOPES;
-  oAuth2Client.setCredentials(tokens);
-
-  // TODO should probably do a test request e.g. get projects list to confirm valid access
-  const result: Account = {
-    user: decode(tokens.id_token) as User,
-    tokens: tokens as Tokens,
-  };
-
-  auth.addAccount(result);
-
-  spinner.succeed(`Successfully added account ${Chalk.cyanBright(`[${result.user.email}]`)}!`);
-
-  console.log('');
-
-  return Promise.resolve({
-    client: oAuth2Client,
-    ...result,
-  });
 }
 
 export default authWithBrowser;

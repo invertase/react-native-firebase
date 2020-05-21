@@ -15,7 +15,7 @@ export default async function initAndroid(
   projectDetail: ProjectDetail,
   androidReactNativeConfig: AndroidProjectConfig,
 ) {
-  if (!projectDetail.apps.android || !projectDetail.apps.android.length) {
+if(!projectDetail.apps.android?.length) {
     // TODO no apps exist...
     log.warn('No apps exist for project... ignoring android steps...');
     return;
