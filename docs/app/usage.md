@@ -60,7 +60,11 @@ await firebase.initializeApp(credentials, config);
 Once created, you can confirm the app instance has been created by accessing the `apps` property on the module:
 
 ```js
-console.log(firebase.apps);
+const apps = firebase.apps;
+
+apps.forEach(app => {
+  console.log('App name: ', app.name);
+});
 ```
 
 ## Switching app instance
