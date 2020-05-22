@@ -1,8 +1,8 @@
 ---
 title: Migrating to v6
 description: Migrate to React Native Firebase v6
-next: /releases
-previous: /typescript
+next: /admob/usage
+previous: /releases
 ---
 
 # Introduction
