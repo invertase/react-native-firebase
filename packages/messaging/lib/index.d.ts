@@ -142,15 +142,45 @@ export namespace FirebaseMessagingTypes {
     title?: string;
 
     /**
+     * The native localization key for the notification title.
+     */
+    titleLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by titleLocKey.
+     */
+    titleLocArgs?: string[];
+
+    /**
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * The native localization key for the notification body content.
+     */
+    bodyLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by bodyLocKey.
+     */
+    bodyLocArgs?: string[];
 
     ios?: {
       /**
        * The notification's subtitle.
        */
       subtitle?: string;
+
+      /**
+       * The native localization key for the notification's subtitle.
+       */
+      subtitleLocKey?: string;
+
+      /**
+       * Any arguments that should be formatted into the resource specified by subtitleLocKey.
+       */
+      subtitleLocArgs?: string[];
 
       /**
        * The value of the badge on the home screen app icon.
