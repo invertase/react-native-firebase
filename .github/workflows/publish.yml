@@ -34,7 +34,8 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm whoami
           git diff --exit-code
-          yarn lerna publish --yes
+          yarn lerna version --yes
+          yarn lerna publish from-package --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

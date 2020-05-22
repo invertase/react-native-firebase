@@ -140,7 +140,7 @@ or sign in to an existing account with `signInWithEmailAndPassword`.
 
 Ensure the "Email/Password" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-The `createUserWithEmailAndPassword` performs to operations; first creating the user if they do not already exist, and
+The `createUserWithEmailAndPassword` performs two operations; first creating the user if they do not already exist, and
 then signing them in.
 
 ```js

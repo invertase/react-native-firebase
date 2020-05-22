@@ -76,6 +76,7 @@ firebase.app('SECONDARY_APP').auth().currentUser;
 ```
 
 Or pass the secondary app instance you created above directly to the desired module, for example:
+
 ```js
 import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
