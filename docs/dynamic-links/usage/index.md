@@ -70,7 +70,41 @@ To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple d
 
 ![iOS dynamic link fifth step](https://images.prismic.io/invertase/cb029ba6-ad40-494e-a3f6-2aacaff494d1_Screenshot+2020-05-07+at+10.16.16.png?auto=compress,format)
 
-6. To test the dynamic link works, you will need to use a real device as it will not work on a simulator. The notes app is a good place to paste you link and test it opens your app (ensure the app is installed on the device).
+## iOS Testing Your Dynamic Link
+
+To test your dynamic link, you will need to use a real device as it will not work on a simulator.
+
+### Application Is Installed On Device
+
+The iOS Notes app is a good place to paste your dynamic link and test it opens your app. It should work even if it is not a published app.
+
+### Application Is Not Installed On Device
+
+1. Switch the `App Store ID` in your Firebase Console project settings to a valid App Store ID e.g. iOS Notes App Store ID.
+
+2. Generate a new dynamic link and associate with your app.
+
+3. Paste the link in iOS Notes app. When you press, it should take you to the App Store for the ID you listed in your project settings. Just by making it to the App Store is good enough to indicate your dynamic link is working.
+
+## iOS Troubleshooting
+
+1. Ensure you have the right URL in the Associated Domains in Xcode.
+
+![iOS troubleshooting first step](https://images.prismic.io/invertase/35c09a84-8a84-4a12-8352-0364a6a784bf_Screenshot+2020-05-22+at+09.28.53.png?auto=compress,format)
+
+2. Ensure you have input the correct Team ID in the Firebase console.
+
+![iOS troubleshooting second step](https://images.prismic.io/invertase/4af777b7-7a2e-48a8-a0dc-23cea50e1a4b_Screenshot+2020-05-22+at+09.40.18.png?auto=compress,format)
+
+3. Paste your link into the iOS Notes app. Long press the link which will open the menu and ensure you click "Open in [YOUR APP NAME]". Be sure *not* to press "Open in Safari" as that will disable that dynamic link domain for your device.
+
+![iOS troubleshooting third step](https://images.prismic.io/invertase/1f8b049d-e54c-4901-a369-e7f6a19a444c_FA031D26-E14F-4A92-87F2-442191455537.png?auto=compress,format)
+
+4. Ensure your dynamic link domain has an Apple app site association file for your app. Check in the browser by going to the following address: `[your domain]/apple-app-site-association`
+
+![iOS troubleshooting fourth step](https://images.prismic.io/invertase/10f825ac-6cd1-487d-9195-a1d86c7511f7_Screenshot+2020-05-22+at+10.00.57.png?auto=compress,format)
+
+5. There is a known bug that you can follow [here](http://bit.ly/2y8gey4) that stops Apple from downloading the app site association file. The work around is to uninstall your app, restart your device and reinstall your app.
 
 ## Android Setup
 
