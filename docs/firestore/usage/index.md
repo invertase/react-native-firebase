@@ -563,7 +563,7 @@ onPostLike('ABC')
 ## Batch write
 
 If you do not need to read any documents in your operation set, you can execute multiple write operations as a single batch
-hat contains any combination of `set`, `update`, or `delete` operations. A batch of writes completes atomically and can
+that contains any combination of `set`, `update`, or `delete` operations. A batch of writes completes atomically and can
 write to multiple documents.
 
 First, create a new batch instance via the `batch` method, perform operations on the batch and finally commit it once ready.
