@@ -14,7 +14,7 @@ The App module is available by default once you have installed the React Native 
 
 # Secondary Apps
 
-Unlike the Firebase Web SDK, there is no need to manually call the [`initalizeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
+Unlike the Firebase Web SDK, there is no need to manually call the [`initializeApp`](https://firebase.google.com/docs/web/setup#add-sdks-initialize)
 method with your project credentials. The native Android & iOS SDKs automatically connect to your Firebase project using
 the credentials provided during the [Getting Started](/) installation steps. The app module does however provide support
 for manually initializing secondary Firebase app instances.
@@ -33,7 +33,7 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 
 ## Initializing secondary apps
 
-The module exposes an `initalizeApp` method which accepts arguments containing the credentials and options for your secondary
+The module exposes an `initializeApp` method which accepts arguments containing the credentials and options for your secondary
 apps:
 
 ```js
@@ -54,7 +54,7 @@ const config = {
   name: 'SECONDARY_APP',
 };
 
-await firebase.initalizeApp(credentials, config);
+await firebase.initializeApp(credentials, config);
 ```
 
 Once created, you can confirm the app instance has been created by accessing the `apps` property on the module:
@@ -82,7 +82,7 @@ import firebase from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 
 // create secondary app as described above
-const secondaryApp = await firebase.initalizeApp(credentials, config);
+const secondaryApp = await firebase.initializeApp(credentials, config);
 
 // Example using auth with passing the secondary app instance
 auth(secondaryApp).currentUser;
