@@ -3,6 +3,7 @@ import initCommand from './commands/init';
 import doctorCommand from './commands/doctor';
 import playgroundCommand from './commands/playground';
 import log from './helpers/log';
+import { reportModified } from './helpers/tracker';
 
 const commands = [
   {
@@ -21,19 +22,26 @@ const commands = [
 async function firebaseCli(args: string[], reactNativeConfig: Config) {
   const [command, ...cmdArgs] = args;
 
-  switch (command) {
-    case 'init':
-      await initCommand(cmdArgs, reactNativeConfig);
-      break;
-    case 'doctor':
-      await doctorCommand(cmdArgs, reactNativeConfig);
-      break;
-    case 'playground':
-      await playgroundCommand(cmdArgs, reactNativeConfig);
-      break;
-    default:
-      log.error(`command "${command}" not found`);
+  try {
+    switch (command) {
+      case 'init':
+        await initCommand(cmdArgs, reactNativeConfig);
+        break;
+      case 'doctor':
+        await doctorCommand(cmdArgs, reactNativeConfig);
+        break;
+      case 'playground':
+        await playgroundCommand(cmdArgs, reactNativeConfig);
+        break;
+      default:
+        log.error(`command "${command}" not found`);
+    }
+  } catch (e) {
+    log.error(e.message);
+    log.error(`Error running ${command} command, process exiting.`);
   }
+
+  reportModified();
 }
 
 export default commands;

@@ -96,8 +96,7 @@ if(!projectDetail.apps.android?.length) {
   if (!androidAppBuildGradleFile) {
     log.warn(
       'Could not find an app level "build.gradle" file, unable to check whether Google Services plugin has been registered',
-    );
-  } else {
+    )  } else {
     // Check whether plugin has been registered
     // TODO should be regex to check for commented out...
     if (!androidAppBuildGradleFile.includes("apply plugin: 'com.google.gms.google-services'")) {

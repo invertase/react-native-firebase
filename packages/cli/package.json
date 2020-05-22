@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@react-native-community/cli-tools": "^4.2.2",
-    "@react-native-community/cli-types": "^4.3.0",
     "a2a": "^0.2.0",
     "axios": "^0.19.2",
     "boxen": "^4.2.0",
@@ -39,11 +38,12 @@
     "portfinder": "^1.0.25"
   },
   "devDependencies": {
+    "@react-native-community/cli-types": "^4.3.0",
     "@types/jsonwebtoken": "^8.3.8",
     "@types/lodash": "^4.14.152",
     "@types/node-fetch": "^2.5.7",
     "rimraf": "^3.0.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.3"
   },
   "collective": {
     "type": "opencollective",

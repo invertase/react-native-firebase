@@ -45,9 +45,11 @@ import { AppTypes } from '../types/cli';
 import initAndroid from './initAndroid';
 import { Account } from '../types/firebase';
 import initIos from './initIos';
+import { startTracking } from '../helpers/tracker';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
   log.debug('Running "firebase init" command...');
+  startTracking();
 
   // fetch users account
   let account = await firebase.auth.getAccount();
@@ -100,8 +102,7 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
 
   // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {
-    log.error('Exiting init process. No apps are required to be setup.');
-    process.exit();
+    throw new Error('No apps are required to be setup.');
   }
 
   // ask user to choose a project
@@ -109,12 +110,11 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
 
   // if no project exists - ask them to create one
   if (!firebaseProject) {
-    log.error(
+    throw new Error(
       `No Firebase projects exist for user ${Chalk.cyanBright(
         `[${account.user.email}]. To continue, create a new project on the Firebase Console.`,
       )}`,
     );
-    process.exit();
   }
 
   // Fetch project detail including apps config

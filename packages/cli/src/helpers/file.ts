@@ -1,8 +1,9 @@
-import { readFile, writeFile, stat, statSync } from 'fs';
+import { readFile, writeFile, stat, statSync, PathLike } from 'fs';
 import { URL } from 'url';
 import { promiseDefer } from './utils';
 import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-community/cli-types';
 import { join } from 'path';
+import { addModified } from './tracker';
 
 /**
  * Check a file exists at the specified path.
@@ -52,9 +53,10 @@ function read(path: string | Buffer | URL): Promise<string> {
  * @param path
  * @param data
  */
-function write(path: string | Buffer | URL, data: any): Promise<void> {
+function write(path: PathLike, data: any): Promise<void> {
   const { promise, resolve, reject } = promiseDefer<void>();
   writeFile(path, data, error => (error ? reject(error) : resolve()));
+  addModified(path);
   return promise;
 }
 
@@ -133,9 +135,7 @@ function writeAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig, 
   return write(androidProjectConfig.buildGradlePath, data);
 }
 
-async function readIosGoogleServices(
-  iosProjectConfig: IOSProjectConfig,
-): Promise<string | null> {
+async function readIosGoogleServices(iosProjectConfig: IOSProjectConfig): Promise<string | null> {
   return null;
 }
 
