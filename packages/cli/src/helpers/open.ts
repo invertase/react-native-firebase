@@ -8,7 +8,7 @@ import { execSync } from 'child_process';
  */
 function openUrl(url: string) {
   const encoded = encodeURI(url);
-  const open = require('opn');
+  const open = require('open');
 
   if (process.platform !== 'darwin') {
     return open(encoded);

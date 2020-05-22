@@ -34,7 +34,7 @@
     "enquirer": "^2.3.4",
     "google-auth-library": "^5.10.1",
     "jsonwebtoken": "^8.5.1",
-    "opn": "^6.0.0",
+    "open": "^7.0.4",
     "ora": "^4.0.3",
     "portfinder": "^1.0.25"
   },
