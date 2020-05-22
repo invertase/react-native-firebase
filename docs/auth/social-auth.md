@@ -9,7 +9,7 @@ React Native Firebase provides support for integrating with different social pla
 different platforms is left to the developer to implement due to the various implementations and flows possible using
 their OAuth APIs.
 
-# Social provides
+# Social providers
 
 ## Apple
 

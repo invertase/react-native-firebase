@@ -23,7 +23,7 @@ cd ios/ && pod install
 ```
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](installation/ios) and [Android](installation/android).
+you can follow the manual installation steps for [iOS](/ml-vision/usage/installation/ios) and [Android](/ml-vision/usage/installation/android).
 
 # What does it do
 
@@ -87,3 +87,14 @@ on the `firebase.json` file at the root of your project directory.
 ```
 
 The models are disabled by default to help control app size.
+
+Since only models enabled here will be compiled into the application, any changes to this file require a rebuild.
+
+```bash
+# For Android
+npx react-native run-android
+
+# For iOS
+cd ios/ && pod install --repo-update
+npx react-native run-ios
+```
