@@ -7,11 +7,10 @@ import { execSync } from 'child_process';
  * @returns {*|void}
  */
 function openUrl(url: string) {
-  const encoded = encodeURI(url);
   const open = require('open');
 
   if (process.platform !== 'darwin') {
-    return open(encoded);
+    return open(url);
   }
 
   // try reuse existing tab on OS X Google Chrome with AppleScript
