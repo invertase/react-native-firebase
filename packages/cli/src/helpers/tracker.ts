@@ -1,7 +1,8 @@
-import log from '../helpers/log';
 import { PathLike } from 'fs';
+import isGitDirty from 'is-git-dirty';
+import log from '../helpers/log';
 
-export interface cliGlobal extends NodeJS.Global {
+interface cliGlobal extends NodeJS.Global {
   filesChanged: undefined | PathLike[];
 }
 
@@ -11,6 +12,10 @@ declare const global: cliGlobal;
 export function startTracking() {
   if (global.filesChanged)
     throw new Error('startTracking() has already been called and can only be called once');
+  if (isGitDirty())
+    throw new Error(
+      'You have uncomitted files, please stash or commit your changes then try again.',
+    );
   global.filesChanged = [];
 }
 
