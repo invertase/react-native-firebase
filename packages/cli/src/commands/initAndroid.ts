@@ -6,7 +6,8 @@ import file from '../helpers/file';
 import prompt from '../helpers/prompt';
 import log from '../helpers/log';
 
-import { Account, AndroidSha, Project, ProjectDetail } from '../types/firebase';
+import { Account, AndroidSha, Project, ProjectDetail, ProjectDetailAndroidApp } from '../types/firebase';
+import createAndroidApp from '../actions/createAndroidApp';
 
 const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
 
@@ -15,27 +16,42 @@ export default async function initAndroid(
   projectDetail: ProjectDetail,
   androidReactNativeConfig: AndroidProjectConfig,
 ) {
-if(!projectDetail.apps.android?.length) {
-    // TODO no apps exist...
-    log.warn('No apps exist for project... ignoring android steps...');
-    return;
+  let selectedAndroidApp: ProjectDetailAndroidApp|undefined;
+  if (!projectDetail.apps.android?.length) {
+    log.warn(`Your project ${projectDetail.displayName} does not contain any Android apps.`);
+  } else {
+    selectedAndroidApp = projectDetail.apps.android.find(
+      app => app.packageName === androidReactNativeConfig.packageName,
+    );
+
+    if (!selectedAndroidApp) {
+      log.warn(
+        `Your project ${
+          projectDetail.displayName
+        } does not contain any Android apps that match the package name ${
+          androidReactNativeConfig.packageName
+        }.`,
+      );
+    }
   }
 
-  const selectedAndroidApp = projectDetail.apps.android.find(
-    app => app.packageName === androidReactNativeConfig.packageName,
-  );
-
   if (!selectedAndroidApp) {
-    // todo create app via console / cli
-    log.warn('No app found for package name... skipping..');
-    return;
+    const result = await prompt.confirm(
+      `Would you like to create a new Android app for your project ${projectDetail.displayName}?`,
+    );
+
+    // TODO: Add android APP from CLI
+    if (result)
+    selectedAndroidApp = await createAndroidApp(account, androidReactNativeConfig, projectDetail);
+    else throw new Error('No Android app available to setup the package with.');
   }
 
   // ask user whether they want to add a new sha-1 key
   const shaPrompt = await prompt.confirm(
-    'Would you like to add a SHA-1 key to your Android config file?',
+    'Would you like to add a SHA-1 key to your Android app?',
   );
 
+  while(true) {
   // if yes, ask them to enter the key
   if (shaPrompt) {
     const shaKey = await prompt.input('Enter your SHA-1 key:');
@@ -52,10 +68,16 @@ if(!projectDetail.apps.android?.length) {
       if (!exists) {
         // TODO add sha
       } else {
-        log.info('SHA-1 already exists for the current app, skipping');
+        log.warn('This SHA-1 already exists for the current app');
+        const shaPrompt = await prompt.confirm(
+          'Would you like to add a different SHA-1 key to your Android app?',
+        );
+        if(!shaPrompt)
+          break;
       }
     }
   }
+}
 
   // Fetch the config file for the app
   const androidConfigFile = await firebase
@@ -96,7 +118,8 @@ if(!projectDetail.apps.android?.length) {
   if (!androidAppBuildGradleFile) {
     log.warn(
       'Could not find an app level "build.gradle" file, unable to check whether Google Services plugin has been registered',
-    )  } else {
+    );
+  } else {
     // Check whether plugin has been registered
     // TODO should be regex to check for commented out...
     if (!androidAppBuildGradleFile.includes("apply plugin: 'com.google.gms.google-services'")) {

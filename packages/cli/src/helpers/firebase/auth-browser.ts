@@ -25,6 +25,7 @@ const DEFAULT_SCOPES = [
   'email',
   'openid',
   'https://www.googleapis.com/auth/firebase',
+  'https://www.googleapis.com/auth/cloud-platform',
   'https://www.googleapis.com/auth/userinfo.profile',
   'https://www.googleapis.com/auth/cloudplatformprojects.readonly',
 ];
@@ -120,7 +121,6 @@ async function authWithBrowser(auth: any) {
     const { tokens } = response;
     const { id_token } = response.tokens
 
-    //tokens.scopes = DEFAULT_SCOPES;
     oAuth2Client.setCredentials(tokens);
 
     // TODO should probably do a test request e.g. get projects list to confirm valid access

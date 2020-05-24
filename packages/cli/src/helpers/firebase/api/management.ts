@@ -95,6 +95,33 @@ async function getAndroidAppConfigShaList(
 /**
  *
  * @param account
+ * @param appName
+ */
+async function createAndroidApp(
+  account: Account,
+  projectId: string,
+  packageName: string,
+  displayName: string,
+) {
+  const androidApp = {
+    name: '',
+    appId: '',
+    displayName: displayName,
+    projectId: projectId,
+    packageName: packageName,
+  };
+  const operation = await request(account, {
+    url: `${BASE_URL}/projects/${projectId}/androidApps`,
+    method: 'post',
+    data: androidApp,
+  });
+
+  return operation;
+}
+
+/**
+ *
+ * @param account
  */
 export default function managementApiWithAccount(account: Account) {
   return {
@@ -102,5 +129,6 @@ export default function managementApiWithAccount(account: Account) {
     getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
     getAppConfig: (appName: string) => getAppConfig(account, appName),
     getAndroidAppConfigShaList: (appName: string) => getAndroidAppConfigShaList(account, appName),
+    createAndroidApp: (appName: string) => createAndroidApp(account, appName),
   };
 }

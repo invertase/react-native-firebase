@@ -43,39 +43,18 @@ import log from '../helpers/log';
 import { AppTypes } from '../types/cli';
 
 import initAndroid from './initAndroid';
-import { Account } from '../types/firebase';
 import initIos from './initIos';
 import { startTracking } from '../helpers/tracker';
+import getAccount from '../actions/getAccount';
+import getConfig from '../actions/getConfig';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
   log.debug('Running "firebase init" command...');
-  startTracking();
+  startTracking(args.includes('force'));
 
-  // fetch users account
-  let account = await firebase.auth.getAccount();
+  const account = await getAccount();
 
-  // request sign-in if account doesnt exist
-  if (!account) {
-    log.info(
-      'No existing Firebase account was detected. To continue, sign-in to your Google account which owns the Firebase project you wish to setup:',
-    );
-    await firebase.auth.authWithBrowser();
-    account = firebase.auth.getAccount() as Account;
-  } else {
-    log.info(
-      `A Firebase account already exists. Continuing with user ${Chalk.cyanBright(
-        `[${account.user.email}]`,
-      )}.`,
-    );
-  }
-
-  const androidProjectConfig = reactNativeConfig.platforms.android.projectConfig(
-    reactNativeConfig.root,
-  ) as AndroidProjectConfig;
-
-  const iosProjectConfig = reactNativeConfig.platforms.ios.projectConfig(
-    reactNativeConfig.root,
-  ) as IOSProjectConfig;
+  const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
 
   const apps: { [type in AppTypes]: boolean } = {
     android: true,
@@ -112,7 +91,9 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
   if (!firebaseProject) {
     throw new Error(
       `No Firebase projects exist for user ${Chalk.cyanBright(
-        `[${account.user.email}]. To continue, create a new project on the Firebase Console.`,
+        `[${
+          account.user.email
+        }]. To continue, create a new project on the Firebase Console at https://console.firebase.google.com/.`,
       )}`,
     );
   }

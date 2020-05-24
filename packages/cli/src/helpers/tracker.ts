@@ -9,10 +9,10 @@ interface cliGlobal extends NodeJS.Global {
 declare const global: cliGlobal;
 
 // only if we expect files to possibly be changed during this run
-export function startTracking() {
+export function startTracking(force: Boolean = false) {
   if (global.filesChanged)
     throw new Error('startTracking() has already been called and can only be called once');
-  if (isGitDirty())
+  if (!force && isGitDirty())
     throw new Error(
       'You have uncomitted files, please stash or commit your changes then try again.',
     );
