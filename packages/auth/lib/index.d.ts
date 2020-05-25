@@ -486,7 +486,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param verificationCode The code sent to the users device from Firebase.
      */
-    confirm(verificationCode: string): Promise<User | null>;
+    confirm(verificationCode: string): Promise<UserCredential | null>;
   }
 
   /**

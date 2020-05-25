@@ -25,9 +25,9 @@ describe('auth() => Phone', () => {
       confirmResult.verificationId.should.be.a.String();
       should.ok(confirmResult.verificationId.length, 'verificationId string should not be empty');
       confirmResult.confirm.should.be.a.Function();
-      const user = await confirmResult.confirm(TEST_CODE_A);
-      user.should.be.instanceOf(jet.require('packages/auth/lib/User'));
-      user.phoneNumber.should.equal(TEST_PHONE_A);
+      const userCredential = await confirmResult.confirm(TEST_CODE_A);
+      userCredential.user.should.be.instanceOf(jet.require('packages/auth/lib/User'));
+      userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
     });
 
     it('errors on invalid code', async () => {
