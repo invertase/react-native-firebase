@@ -15,4 +15,4 @@
  *
  */
 
-require('./appPlaygrounds/firestore/emulator');
+require('./app');
