@@ -49,7 +49,7 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
     FIRVision *vision = [FIRVision visionForApp:firebaseApp];
 
     FIRVisionFaceDetectorOptions *options = [[FIRVisionFaceDetectorOptions alloc] init];
-    
+
     NSInteger *classificationMode = [faceDetectorOptions[@"classificationMode"] integerValue];
     if (classificationMode == 1) {
       options.classificationMode = FIRVisionFaceDetectorClassificationModeNone;
@@ -79,8 +79,6 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
     }
       
     options.minFaceSize = [faceDetectorOptions[@"minFaceSize"] doubleValue];
-      
-      
 
     FIRVisionFaceDetector *faceDetector = [vision faceDetectorWithOptions:options];
     [faceDetector processImage:visionImage completion:^(NSArray<FIRVisionFace *> *faces, NSError *error) {
