@@ -166,6 +166,8 @@ const scores = database()
   .once('value');
 ```
 
+Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
+
 #### Limiting
 
 You can limit the number of results returned from a query by using one of the `limitToX` methods. For example, to limit to the

@@ -26,5 +26,12 @@
     "title": "Firebase Analytics Overview",
     "description": "Learn how to setup Firebase Analytics for your React Native app, log custom analytics events, track screen changes in your app and integrating with React Navigation.",
     "tags": ["analytics", "google-analytics"]
+  },
+  {
+    "slug": "authentication-overview",
+    "vid": "RrGtyfo1wr0",
+    "title": "Firebase Authentication Overview",
+    "description": "Learn how to setup Firebase Authentication for your React Native app and authenticate your users using phone, email, anonymous, Twitter, Google and other auth providers.",
+    "tags": ["authentication"]
   }
 ]
