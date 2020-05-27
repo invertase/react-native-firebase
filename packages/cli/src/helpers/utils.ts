@@ -19,4 +19,13 @@ function promiseDefer<T>(): PromiseDefer<T> {
   return deferred;
 }
 
-export { promiseDefer };
+function withParameter(fns: { [key: string]: (...args: any[]) => any }, param: any) {
+  const augmented: typeof fns = {};
+  for (let [key, fn] of Object.entries(fns)) {
+    augmented[key] = (...params: RemoveFirstFromTuple<Parameters<typeof fn>>) =>
+      fns[key](param, ...params);
+  }
+  return augmented;
+}
+
+export { promiseDefer, withParameter };

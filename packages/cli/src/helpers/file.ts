@@ -135,6 +135,11 @@ function writeAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig, 
   return write(androidProjectConfig.buildGradlePath, data);
 }
 
+/**
+ * Returns the "GoogleService-Info.plist" file for the project. Returns "null" if it doesnt exist
+ *
+ * @param iosProjectConfig
+ */
 async function readIosGoogleServices(iosProjectConfig: IOSProjectConfig): Promise<string | null> {
   return null;
 }

@@ -4,6 +4,8 @@ import doctorCommand from './commands/doctor';
 import playgroundCommand from './commands/playground';
 import log from './helpers/log';
 import { reportModified } from './helpers/tracker';
+import CliError from './helpers/error';
+import helpCommand from './commands/help';
 
 const commands = [
   {
@@ -33,12 +35,21 @@ async function firebaseCli(args: string[], reactNativeConfig: Config) {
       case 'playground':
         await playgroundCommand(cmdArgs, reactNativeConfig);
         break;
+      case '':
+      case 'help':
+        await helpCommand(cmdArgs, reactNativeConfig);
+        break;
       default:
-        log.error(`command "${command}" not found`);
+        log.error(`Unrecognized firebase comand "${command}".`);
+        log.info(
+          'Run "react-native firebase help" to see a list of all available firebase commands.',
+        );
     }
   } catch (e) {
-    log.error(e.message);
-    log.error(`Error running ${command} command, process exiting.`);
+    if (e instanceof CliError) {
+      log.error(e.message);
+      log.error(`Error running ${command} command, process exiting.`);
+    } else throw e;
   }
 
   reportModified();

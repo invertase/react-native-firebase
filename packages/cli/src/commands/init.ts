@@ -44,13 +44,14 @@ import { AppTypes } from '../types/cli';
 
 import initAndroid from './initAndroid';
 import initIos from './initIos';
-import { startTracking } from '../helpers/tracker';
+import { trackModified } from '../helpers/tracker';
 import getAccount from '../actions/getAccount';
 import getConfig from '../actions/getConfig';
+import CliError from '../helpers/error';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
   log.debug('Running "firebase init" command...');
-  startTracking(args.includes('force'));
+  trackModified(args.includes('force'));
 
   const account = await getAccount();
 
@@ -58,30 +59,40 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
 
   const apps: { [type in AppTypes]: boolean } = {
     android: true,
-    ios: true,
+    ios: false,
     web: false, // not supported
   };
 
   const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
   if (androidGoogleServicesFile) {
-    const result = await prompt.confirm(
+    apps.android = await prompt.confirm(
       'An Android "google-services.json" file already exists, do you want to replace this file?',
     );
 
-    if (!result) {
+    if (!apps.android) {
       log.warn(
         'Firebase will not be setup for Android as a "google-services.json" file already exists and you have chosen to not override it.',
       );
-      apps.android = false;
     }
   }
 
   const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
-  // todo check file exists & prompt
+  if (iosGoogleServicesFile) {
+    apps.ios = await prompt.confirm(
+      'An iOS "GoogleService-Info.plist" file already exists, do you want to replace this file?',
+    );
+
+    if (!apps.ios) {
+      log.warn(
+        'Firebase will not be setup for iOS as a "GoogleService-Info.plist" file already exists and you have chosen to not override it.',
+      );
+    }
+  }
 
   // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {
-    throw new Error('No apps are required to be setup.');
+    log.info('No apps are required to be setup, exiting...');
+    return;
   }
 
   // ask user to choose a project
@@ -89,7 +100,7 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
 
   // if no project exists - ask them to create one
   if (!firebaseProject) {
-    throw new Error(
+    throw new CliError(
       `No Firebase projects exist for user ${Chalk.cyanBright(
         `[${
           account.user.email
@@ -104,5 +115,5 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
     .management.getProject(firebaseProject.projectId, apps);
 
   if (apps.android) await initAndroid(account, projectDetail, androidProjectConfig);
-  // if (apps.ios) await initIos(account, iosProjectConfig, reactNativeConfig);
+  if (apps.ios) await initIos(account, iosProjectConfig, reactNativeConfig);
 }

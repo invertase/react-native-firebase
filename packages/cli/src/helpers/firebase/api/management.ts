@@ -2,6 +2,7 @@ import { request, keyWithDomainPrefix } from './common';
 import Cache from '../../cache';
 import { Account, AndroidSha, Project, ProjectDetail } from '../../../types/firebase';
 import { Apps } from '../../../types/cli';
+import { withParameter } from '../../utils';
 
 const DOMAIN = 'firebase.googleapis.com';
 const BASE_URL = `https://${DOMAIN}/v1beta1`;
@@ -124,11 +125,13 @@ async function createAndroidApp(
  * @param account
  */
 export default function managementApiWithAccount(account: Account) {
-  return {
-    getProjects: () => getProjects(account),
-    getProject: (projectId: string, apps: Apps) => getProject(account, projectId, apps),
-    getAppConfig: (appName: string) => getAppConfig(account, appName),
-    getAndroidAppConfigShaList: (appName: string) => getAndroidAppConfigShaList(account, appName),
-    createAndroidApp: (appName: string) => createAndroidApp(account, appName),
+  const functions = {
+    getProjects,
+    getProject,
+    getAppConfig,
+    getAndroidAppConfigShaList,
+    createAndroidApp,
   };
+
+  return withParameter(functions, account);
 }

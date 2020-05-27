@@ -1,13 +1,13 @@
-import { join } from 'path';
-import { AndroidProjectConfig, Config } from '@react-native-community/cli-types';
+import { AndroidProjectConfig } from '@react-native-community/cli-types';
 
 import firebase from '../helpers/firebase';
 import file from '../helpers/file';
 import prompt from '../helpers/prompt';
 import log from '../helpers/log';
 
-import { Account, AndroidSha, Project, ProjectDetail, ProjectDetailAndroidApp } from '../types/firebase';
-import createAndroidApp from '../actions/createAndroidApp';
+import { Account, AndroidSha, ProjectDetail, ProjectDetailAndroidApp } from '../types/firebase';
+import { createAndroidApp } from '../actions/createApp';
+import CliError from '../helpers/error';
 
 const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
 
@@ -16,7 +16,9 @@ export default async function initAndroid(
   projectDetail: ProjectDetail,
   androidReactNativeConfig: AndroidProjectConfig,
 ) {
-  let selectedAndroidApp: ProjectDetailAndroidApp|undefined;
+  log.info('Setting up Firebase for your Android app..');
+
+  let selectedAndroidApp: ProjectDetailAndroidApp | undefined;
   if (!projectDetail.apps.android?.length) {
     log.warn(`Your project ${projectDetail.displayName} does not contain any Android apps.`);
   } else {
@@ -40,44 +42,40 @@ export default async function initAndroid(
       `Would you like to create a new Android app for your project ${projectDetail.displayName}?`,
     );
 
-    // TODO: Add android APP from CLI
     if (result)
-    selectedAndroidApp = await createAndroidApp(account, androidReactNativeConfig, projectDetail);
-    else throw new Error('No Android app available to setup the package with.');
+      selectedAndroidApp = await createAndroidApp(account, androidReactNativeConfig, projectDetail);
+    else throw new CliError('No Android app available to setup the package with.');
   }
 
   // ask user whether they want to add a new sha-1 key
-  const shaPrompt = await prompt.confirm(
-    'Would you like to add a SHA-1 key to your Android app?',
-  );
+  const shaPrompt = await prompt.confirm('Would you like to add a SHA-1 key to your Android app?');
 
-  while(true) {
-  // if yes, ask them to enter the key
-  if (shaPrompt) {
-    const shaKey = await prompt.input('Enter your SHA-1 key:');
+  while (true) {
+    // if yes, ask them to enter the key
+    if (shaPrompt) {
+      const shaKey = await prompt.input('Enter your SHA-1 key:');
 
-    if (shaKey) {
-      // get existing sha keys
-      const androidAppConfigShaList = await firebase
-        .api(account)
-        .management.getAndroidAppConfigShaList(selectedAndroidApp.name);
+      if (shaKey) {
+        // get existing sha keys
+        const androidAppConfigShaList = await firebase
+          .api(account)
+          .management.getAndroidAppConfigShaList(selectedAndroidApp.name);
 
-      // check the one they entered doesnt already exist
-      const exists = androidAppConfigShaList.find((sha: AndroidSha) => sha.shaHash === shaKey);
+        // check the one they entered doesnt already exist
+        const exists = androidAppConfigShaList.find((sha: AndroidSha) => sha.shaHash === shaKey);
 
-      if (!exists) {
-        // TODO add sha
-      } else {
-        log.warn('This SHA-1 already exists for the current app');
-        const shaPrompt = await prompt.confirm(
-          'Would you like to add a different SHA-1 key to your Android app?',
-        );
-        if(!shaPrompt)
-          break;
+        if (!exists) {
+          // TODO add sha
+        } else {
+          log.warn('This SHA-1 key already exists for the current app');
+          const shaPrompt = await prompt.confirm(
+            'Would you like to add a different SHA-1 key to your Android app?',
+          );
+          if (!shaPrompt) break;
+        }
       }
     }
   }
-}
 
   // Fetch the config file for the app
   const androidConfigFile = await firebase

@@ -1,10 +1,12 @@
 import { Account } from '../types/firebase';
-import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-community/cli-types';
+import { Config, IOSProjectConfig } from '@react-native-community/cli-types';
+import log from '../helpers/log';
 
 export default async function initIos(
   account: Account,
   iosProjectConfig: IOSProjectConfig,
   reactNativeConfig: Config,
 ) {
-  console.log('todo');
+  log.info('Setting up Firebase for your Android app..');
+  log.error('Not implemented');
 }
