@@ -739,6 +739,11 @@ export namespace FirebaseStorageTypes {
    */
   export interface Task {
     /**
+     * Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
+     */
+    snapshot: null | TaskSnapshot;
+
+    /**
      * Pause the current Download or Upload task.
      *
      * #### Example
@@ -934,7 +939,7 @@ export namespace FirebaseStorageTypes {
    */
   export interface ListResult {
     /**
-     * Objects in this directory. You can call `getMetadate()` and `getDownloadUrl()` on them.
+     * Objects in this directory. You can call `getMetadata()` and `getDownloadUrl()` on them.
      */
     items: Reference[];
 

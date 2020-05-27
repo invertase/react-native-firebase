@@ -34,6 +34,86 @@ describe('messaging()', () => {
         return Promise.resolve();
       }
     });
+
+    it('sets the value', async () => {
+      should.equal(firebase.messaging().isAutoInitEnabled, true);
+      await firebase.messaging().setAutoInitEnabled(false);
+      should.equal(firebase.messaging().isAutoInitEnabled, false);
+    });
+  });
+
+  describe('isDeviceRegisteredForRemoteMessages', () => {
+    android.it('returns true on android', () => {
+      should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+      // check deprecated method also
+      should.equal(firebase.messaging().isRegisteredForRemoteNotifications, true);
+    });
+    it('defaults to false on ios before registering', () => {
+      if (device.getPlatform() === 'ios') {
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
+        // check deprecated method also
+        should.equal(firebase.messaging().isRegisteredForRemoteNotifications, false);
+      }
+    });
+  });
+
+  describe('unregisterDeviceForRemoteMessages', () => {
+    android.it('resolves on android', async () => {
+      await firebase.messaging().unregisterDeviceForRemoteMessages();
+      // check deprecated method also
+      await firebase.messaging().unregisterForRemoteNotifications();
+    });
+  });
+
+  describe('hasPermission', () => {
+    android.it('returns true android (default)', async () => {
+      should.equal(await firebase.messaging().hasPermission(), true);
+    });
+    it('returns -1 on ios (default)', async () => {
+      if (device.getPlatform() === 'ios') {
+        should.equal(await firebase.messaging().hasPermission(), -1);
+      }
+    });
+  });
+
+  describe('unregisterDeviceForRemoteMessages', () => {
+    android.it('resolves on android', async () => {
+      await firebase.messaging().unregisterDeviceForRemoteMessages();
+      // check deprecated method also
+      await firebase.messaging().unregisterForRemoteNotifications();
+    });
+  });
+
+  describe('requestPermission', () => {
+    android.it('resolves 1 on android', async () => {
+      should.equal(await firebase.messaging().requestPermission(), 1);
+    });
+  });
+
+  describe('getAPNSToken', () => {
+    android.it('resolves null on android', async () => {
+      should.equal(await firebase.messaging().getAPNSToken(), null);
+    });
+    it('resolves null on ios if using simulator', async () => {
+      if (device.getPlatform() === 'ios') {
+        should.equal(await firebase.messaging().getAPNSToken(), null);
+      }
+    });
+  });
+
+  describe('unsupported web sdk methods', () => {
+    it('useServiceWorker should not error when called', () => {
+      firebase.messaging().useServiceWorker();
+    });
+    it('usePublicVapidKey should not error when called', () => {
+      firebase.messaging().usePublicVapidKey();
+    });
+  });
+
+  describe('getInitialNotification', () => {
+    it('returns null when no initial notification', async () => {
+      should.equal(await firebase.messaging().getInitialNotification(), null);
+    });
   });
 
   describe('getToken()', () => {
@@ -91,9 +171,14 @@ describe('messaging()', () => {
       }
     });
 
-    android.it('receives messages when the app is in the foreground', async () => {
+    it('receives messages when the app is in the foreground', async () => {
       const spy = sinon.spy();
       const unsubscribe = firebase.messaging().onMessage(spy);
+      if (device.getPlatform() === 'ios') {
+        await firebase.messaging().registerDeviceForRemoteMessages();
+        // call deprecated method also
+        await firebase.messaging().registerForRemoteNotifications();
+      }
       const token = await firebase.messaging().getToken();
       await TestsAPI.messaging().sendToDevice(token, {
         data: {

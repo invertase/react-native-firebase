@@ -188,7 +188,6 @@ describe('auth().currentUser', () => {
         await firebase.auth().currentUser.sendEmailVerification(actionCodeSettings);
         await firebase.auth().currentUser.delete();
       } catch (error) {
-        console.log(error);
         // Reject
         try {
           await firebase.auth().currentUser.delete();
@@ -197,7 +196,7 @@ describe('auth().currentUser', () => {
         }
 
         return Promise.reject(
-          new Error('sendEmailVerification(actionCodeSettings) caused an error'),
+          new Error('sendEmailVerification(actionCodeSettings) caused an error' + error.message),
         );
       }
 
@@ -394,6 +393,25 @@ describe('auth().currentUser', () => {
         'firebase.auth.User.refreshToken is unsupported by the native Firebase SDKs.',
       );
       await firebase.auth().signOut();
+    });
+  });
+
+  describe('user.metadata', () => {
+    it("should have the properties 'lastSignInTime' & 'creationTime' which are ISO strings", async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+
+      const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
+
+      const { metadata } = user;
+
+      should(metadata.lastSignInTime).be.a.String();
+      should(metadata.creationTime).be.a.String();
+
+      new Date(metadata.lastSignInTime).getFullYear().should.equal(new Date().getFullYear());
+      new Date(metadata.creationTime).getFullYear().should.equal(new Date().getFullYear());
+
+      await firebase.auth().currentUser.delete();
     });
   });
 });

@@ -21,7 +21,7 @@ const baseParams = {
 };
 
 const TEST_LINK =
-  'https://reactnativefirebase.page.link/?link=https://invertase.io/oss/react-native-firebase&apn=com.invertase.testing';
+  'https://reactnativefirebase.page.link/?link=https://rnfirebase.io&apn=com.invertase.testing';
 const TEST_LINK2 =
   'https://reactnativefirebase.page.link/?link=https://invertase.io/hire-us&apn=com.invertase.testing';
 
@@ -89,7 +89,7 @@ describe('dynamicLinks()', () => {
       const dynamicLink = await firebase.dynamicLinks().getInitialLink();
 
       dynamicLink.should.be.an.Object();
-      dynamicLink.url.should.equal('https://invertase.io/oss/react-native-firebase');
+      dynamicLink.url.should.equal('https://rnfirebase.io');
     });
   });
 

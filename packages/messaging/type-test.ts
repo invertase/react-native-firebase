@@ -11,6 +11,9 @@ console.log(firebase.app().messaging().app.name);
 
 // checks statics exist
 console.log(firebase.messaging.SDK_VERSION);
+console.log(firebase.messaging.AuthorizationStatus.AUTHORIZED);
+console.log(firebase.messaging.NotificationAndroidPriority.PRIORITY_LOW);
+console.log(firebase.messaging.NotificationAndroidVisibility.VISIBILITY_PRIVATE);
 
 // checks statics exist on defaultExport
 console.log(firebase.SDK_VERSION);
