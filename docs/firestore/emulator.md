@@ -36,10 +36,6 @@ const db = firestore();
 // set the host property to connect to the emulator
 // set these before any read/write operations occur to ensure it doesn't affect your Cloud Firestore data!
 
-// for Android
-db.settings({ host: '10.0.2.2:8080' });
-
-// or for iOS
 db.settings({ host: 'localhost:8080' });
 ```
 

@@ -210,6 +210,15 @@ class FirebaseFirestoreModule extends FirebaseModule {
           "firebase.firestore().settings(*) 'settings.host' must not be an empty string.",
         );
       }
+
+      if (isAndroid) {
+        if (settings.host.startsWith('http://localhost')) {
+          settings.host = settings.host.replace('http://localhost', 'http://10.0.2.2');
+        }
+        if (settings.host.startsWith('http://127.0.0.1')) {
+          settings.host = settings.host.replace('http://127.0.0.1', 'http://10.0.2.2');
+        }
+      }
     }
 
     if (!isUndefined(settings.persistence) && !isBoolean(settings.persistence)) {
