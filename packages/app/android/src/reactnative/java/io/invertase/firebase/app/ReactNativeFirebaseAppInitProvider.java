@@ -22,7 +22,7 @@ import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
 
 public class ReactNativeFirebaseAppInitProvider extends ReactNativeFirebaseInitProvider {
   private static final String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY =
-    BuildConfig.APPLICATION_ID + ".reactnativefirebaseappinitprovider";
+    BuildConfig.LIBRARY_PACKAGE_NAME + ".reactnativefirebaseappinitprovider";
 
   @Override
   public String getEmptyProviderAuthority() {
