@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.0...@react-native-firebase/messaging@7.1.1) (2020-05-28)
+
+### Bug Fixes
+
+- **messaging,ios:** crash receiving notification with image ([#3701](https://github.com/invertase/react-native-firebase/issues/3701)) ([f889646](https://github.com/invertase/react-native-firebase/commit/f889646d2ecbede9f06fde67a63e877f14df8ced)), closes [#3447](https://github.com/invertase/react-native-firebase/issues/3447) [#3616](https://github.com/invertase/react-native-firebase/issues/3616) [#3447](https://github.com/invertase/react-native-firebase/issues/3447)
+
 # [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.0.1...@react-native-firebase/messaging@7.1.0) (2020-05-22)
 
 ### Features
