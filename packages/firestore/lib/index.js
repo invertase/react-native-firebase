@@ -22,6 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  isAndroid,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
