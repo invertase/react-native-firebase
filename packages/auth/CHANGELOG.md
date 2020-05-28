@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.1.0...@react-native-firebase/auth@8.0.0) (2020-05-28)
+
+- fix!(auth): confirm code returns User instead of UserCredential (#3684) ([71a1120](https://github.com/invertase/react-native-firebase/commit/71a1120337acd73d2483103f2acd560e8e99a335)), closes [#3684](https://github.com/invertase/react-native-firebase/issues/3684)
+
+### BREAKING CHANGES
+
+- `confirm(verificationCode)` now correctly returns an instance of `UserCredentials` instead of `User`. You can access `User` from the `.user` property on the `UserCredentials` instance.
+
 # [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.2...@react-native-firebase/auth@7.1.0) (2020-05-22)
 
 ### Features
