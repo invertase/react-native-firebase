@@ -801,7 +801,7 @@
 									"sources": [
 										{
 											"fileName": "packages/firestore/lib/index.d.ts",
-											"line": 1992,
+											"line": 1993,
 											"character": 15
 										}
 									]
@@ -1198,7 +1198,7 @@
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1991,
+									"line": 1992,
 									"character": 25
 								},
 								{
@@ -1450,7 +1450,7 @@
 									"sources": [
 										{
 											"fileName": "packages/firestore/lib/index.d.ts",
-											"line": 1986,
+											"line": 1987,
 											"character": 15
 										}
 									],
@@ -1849,7 +1849,7 @@
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1985,
+									"line": 1986,
 									"character": 20
 								},
 								{
@@ -1948,7 +1948,7 @@
 						},
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1983,
+							"line": 1984,
 							"character": 31
 						},
 						{
@@ -2129,7 +2129,7 @@
 				},
 				{
 					"fileName": "packages/firestore/lib/index.d.ts",
-					"line": 1982,
+					"line": 1983,
 					"character": 43
 				},
 				{
@@ -2646,7 +2646,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1972,
+							"line": 1973,
 							"character": 21
 						}
 					],
@@ -2680,7 +2680,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1970,
+							"line": 1971,
 							"character": 23
 						}
 					],
@@ -2701,7 +2701,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1969,
+							"line": 1970,
 							"character": 27
 						}
 					],
@@ -2734,7 +2734,7 @@
 			"sources": [
 				{
 					"fileName": "packages/firestore/lib/index.d.ts",
-					"line": 1963,
+					"line": 1964,
 					"character": 49
 				}
 			]
@@ -30473,7 +30473,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1851,
+									"line": 1852,
 									"character": 9
 								}
 							]
@@ -30523,7 +30523,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1864,
+									"line": 1865,
 									"character": 14
 								}
 							]
@@ -30573,7 +30573,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1878,
+									"line": 1879,
 									"character": 19
 								}
 							]
@@ -30612,7 +30612,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1893,
+									"line": 1894,
 									"character": 18
 								}
 							]
@@ -30662,7 +30662,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1906,
+									"line": 1907,
 									"character": 7
 								}
 							]
@@ -30701,7 +30701,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1917,
+									"line": 1918,
 									"character": 17
 								}
 							]
@@ -30770,7 +30770,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1942,
+															"line": 1943,
 															"character": 34
 														}
 													]
@@ -30793,7 +30793,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1942,
+									"line": 1943,
 									"character": 18
 								}
 							]
@@ -30849,7 +30849,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1959,
+									"line": 1960,
 									"character": 12
 								}
 							]
@@ -30881,7 +30881,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1837,
+							"line": 1838,
 							"character": 21
 						}
 					],
@@ -30967,7 +30967,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1467,
+									"line": 1468,
 									"character": 28
 								}
 							]
@@ -30986,7 +30986,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1480,
+									"line": 1481,
 									"character": 15
 								}
 							],
@@ -31009,7 +31009,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1485,
+									"line": 1486,
 									"character": 11
 								}
 							],
@@ -31062,7 +31062,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1492,
+									"line": 1493,
 									"character": 11
 								}
 							]
@@ -31095,7 +31095,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1501,
+									"line": 1502,
 									"character": 10
 								}
 							]
@@ -31128,7 +31128,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1508,
+									"line": 1509,
 									"character": 12
 								}
 							]
@@ -31178,7 +31178,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1455,
+									"line": 1456,
 									"character": 19
 								}
 							]
@@ -31228,7 +31228,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1462,
+									"line": 1463,
 									"character": 21
 								}
 							]
@@ -31262,7 +31262,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1467,
+									"line": 1468,
 									"character": 14
 								}
 							]
@@ -31300,7 +31300,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1449,
+							"line": 1450,
 							"character": 24
 						}
 					]
@@ -31974,8 +31974,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates and returns a new Query where the results are limited to the specified number of documents\nstarting from the last document and working in reverse order.",
-										"text": "#### Example\n\n```js\n// Get the last 10 users in reverse order of age\nconst querySnapshot = firebase.firestore()\n  .collection('users')\n  .orderBy('age')\n  .limitToLast(10)\n  .get();\n```\n"
+										"shortText": "Creates and returns a new Query where the results are limited to the specified number of documents\nstarting from the last document. The order is dependent on the second parameter for the `orderBy`\nmethod. If `desc` is used, the order is reversed. `orderBy` method call is required when calling `limitToLast`.",
+										"text": "#### Example\n\n```js\n// Get the last 10 users in reverse order of age\nconst querySnapshot = firebase.firestore()\n  .collection('users')\n  .orderBy('age', 'desc')\n  .limitToLast(10)\n  .get();\n```\n"
 									},
 									"parameters": [
 										{
@@ -32008,7 +32008,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 991,
+									"line": 992,
 									"character": 15
 								}
 							],
@@ -32067,7 +32067,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1015,
+																	"line": 1016,
 																	"character": 14
 																}
 															],
@@ -32115,7 +32115,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1016,
+																	"line": 1017,
 																	"character": 11
 																}
 															],
@@ -32176,7 +32176,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1017,
+																	"line": 1018,
 																	"character": 10
 																}
 															],
@@ -32242,7 +32242,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1014,
+															"line": 1015,
 															"character": 24
 														}
 													]
@@ -32274,7 +32274,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1018,
+													"line": 1019,
 													"character": 7
 												}
 											]
@@ -32341,7 +32341,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1047,
+																	"line": 1048,
 																	"character": 16
 																}
 															],
@@ -32389,7 +32389,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1048,
+																	"line": 1049,
 																	"character": 13
 																}
 															],
@@ -32450,7 +32450,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1049,
+																	"line": 1050,
 																	"character": 12
 																}
 															],
@@ -32516,7 +32516,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1046,
+															"line": 1047,
 															"character": 15
 														}
 													]
@@ -32548,7 +32548,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1051,
+													"line": 1052,
 													"character": 6
 												}
 											]
@@ -32618,7 +32618,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1076,
+															"line": 1077,
 															"character": 13
 														}
 													]
@@ -32751,7 +32751,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1079,
+													"line": 1080,
 													"character": 6
 												}
 											]
@@ -32836,7 +32836,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1107,
+															"line": 1108,
 															"character": 13
 														}
 													]
@@ -32969,7 +32969,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1110,
+													"line": 1111,
 													"character": 6
 												}
 											]
@@ -32985,22 +32985,22 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1014,
+									"line": 1015,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1044,
+									"line": 1045,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1075,
+									"line": 1076,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1105,
+									"line": 1106,
 									"character": 14
 								}
 							],
@@ -33095,7 +33095,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1130,
+									"line": 1131,
 									"character": 11
 								}
 							],
@@ -33198,12 +33198,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1154,
+									"line": 1155,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1173,
+									"line": 1174,
 									"character": 14
 								}
 							],
@@ -33306,12 +33306,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1197,
+									"line": 1198,
 									"character": 11
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1216,
+									"line": 1217,
 									"character": 11
 								}
 							],
@@ -33410,7 +33410,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1236,
+									"line": 1237,
 									"character": 9
 								}
 							],
@@ -35975,8 +35975,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "Creates and returns a new Query where the results are limited to the specified number of documents\nstarting from the last document and working in reverse order.",
-										"text": "#### Example\n\n```js\n// Get the last 10 users in reverse order of age\nconst querySnapshot = firebase.firestore()\n  .collection('users')\n  .orderBy('age')\n  .limitToLast(10)\n  .get();\n```\n"
+										"shortText": "Creates and returns a new Query where the results are limited to the specified number of documents\nstarting from the last document. The order is dependent on the second parameter for the `orderBy`\nmethod. If `desc` is used, the order is reversed. `orderBy` method call is required when calling `limitToLast`.",
+										"text": "#### Example\n\n```js\n// Get the last 10 users in reverse order of age\nconst querySnapshot = firebase.firestore()\n  .collection('users')\n  .orderBy('age', 'desc')\n  .limitToLast(10)\n  .get();\n```\n"
 									},
 									"parameters": [
 										{
@@ -36004,7 +36004,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 991,
+									"line": 992,
 									"character": 15
 								}
 							]
@@ -36058,7 +36058,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1015,
+																	"line": 1016,
 																	"character": 14
 																}
 															],
@@ -36106,7 +36106,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1016,
+																	"line": 1017,
 																	"character": 11
 																}
 															],
@@ -36167,7 +36167,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1017,
+																	"line": 1018,
 																	"character": 10
 																}
 															],
@@ -36233,7 +36233,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1014,
+															"line": 1015,
 															"character": 24
 														}
 													]
@@ -36265,7 +36265,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1018,
+													"line": 1019,
 													"character": 7
 												}
 											]
@@ -36327,7 +36327,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1047,
+																	"line": 1048,
 																	"character": 16
 																}
 															],
@@ -36375,7 +36375,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1048,
+																	"line": 1049,
 																	"character": 13
 																}
 															],
@@ -36436,7 +36436,7 @@
 															"sources": [
 																{
 																	"fileName": "packages/firestore/lib/index.d.ts",
-																	"line": 1049,
+																	"line": 1050,
 																	"character": 12
 																}
 															],
@@ -36502,7 +36502,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1046,
+															"line": 1047,
 															"character": 15
 														}
 													]
@@ -36534,7 +36534,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1051,
+													"line": 1052,
 													"character": 6
 												}
 											]
@@ -36599,7 +36599,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1076,
+															"line": 1077,
 															"character": 13
 														}
 													]
@@ -36732,7 +36732,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1079,
+													"line": 1080,
 													"character": 6
 												}
 											]
@@ -36812,7 +36812,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1107,
+															"line": 1108,
 															"character": 13
 														}
 													]
@@ -36945,7 +36945,7 @@
 											"sources": [
 												{
 													"fileName": "packages/firestore/lib/index.d.ts",
-													"line": 1110,
+													"line": 1111,
 													"character": 6
 												}
 											]
@@ -36956,22 +36956,22 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1014,
+									"line": 1015,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1044,
+									"line": 1045,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1075,
+									"line": 1076,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1105,
+									"line": 1106,
 									"character": 14
 								}
 							]
@@ -37056,7 +37056,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1130,
+									"line": 1131,
 									"character": 11
 								}
 							]
@@ -37144,12 +37144,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1154,
+									"line": 1155,
 									"character": 14
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1173,
+									"line": 1174,
 									"character": 14
 								}
 							]
@@ -37237,12 +37237,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1197,
+									"line": 1198,
 									"character": 11
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1216,
+									"line": 1217,
 									"character": 11
 								}
 							]
@@ -37331,7 +37331,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1236,
+									"line": 1237,
 									"character": 9
 								}
 							]
@@ -37792,7 +37792,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1261,
+									"line": 1262,
 									"character": 8
 								}
 							],
@@ -37819,7 +37819,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1266,
+									"line": 1267,
 									"character": 9
 								}
 							],
@@ -37842,7 +37842,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1271,
+									"line": 1272,
 									"character": 12
 								}
 							],
@@ -37866,7 +37866,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1276,
+									"line": 1277,
 									"character": 9
 								}
 							],
@@ -37890,7 +37890,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1281,
+									"line": 1282,
 									"character": 8
 								}
 							],
@@ -37950,7 +37950,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1311,
+									"line": 1312,
 									"character": 14
 								}
 							]
@@ -38033,7 +38033,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1330,
+															"line": 1331,
 															"character": 21
 														}
 													]
@@ -38066,7 +38066,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1330,
+									"line": 1331,
 									"character": 11
 								}
 							]
@@ -38116,7 +38116,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1349,
+									"line": 1350,
 									"character": 11
 								}
 							]
@@ -38147,7 +38147,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1257,
+							"line": 1258,
 							"character": 32
 						}
 					]
@@ -38180,7 +38180,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1364,
+									"line": 1365,
 									"character": 9
 								}
 							],
@@ -38217,7 +38217,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1370,
+									"line": 1371,
 									"character": 15
 								}
 							],
@@ -38253,7 +38253,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1359,
+							"line": 1360,
 							"character": 29
 						}
 					]
@@ -38286,7 +38286,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1391,
+									"line": 1392,
 									"character": 18
 								}
 							],
@@ -38309,7 +38309,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1396,
+									"line": 1397,
 									"character": 8
 								}
 							],
@@ -38332,7 +38332,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1382,
+									"line": 1383,
 									"character": 15
 								}
 							],
@@ -38355,7 +38355,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1401,
+									"line": 1402,
 									"character": 7
 								}
 							],
@@ -38380,7 +38380,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1378,
+							"line": 1379,
 							"character": 27
 						}
 					]
@@ -38411,7 +38411,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1412,
+									"line": 1413,
 									"character": 26
 								}
 							],
@@ -38433,7 +38433,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1408,
+							"line": 1409,
 							"character": 40
 						}
 					]
@@ -38464,7 +38464,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1424,
+									"line": 1425,
 									"character": 13
 								}
 							],
@@ -38487,7 +38487,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1431,
+									"line": 1432,
 									"character": 20
 								}
 							],
@@ -38540,7 +38540,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1438,
+									"line": 1439,
 									"character": 11
 								}
 							]
@@ -38566,7 +38566,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1418,
+							"line": 1419,
 							"character": 35
 						}
 					]
@@ -38597,7 +38597,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1774,
+									"line": 1775,
 									"character": 8
 								}
 							],
@@ -38621,7 +38621,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1800,
+									"line": 1801,
 									"character": 24
 								}
 							],
@@ -38644,7 +38644,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1779,
+									"line": 1780,
 									"character": 13
 								}
 							],
@@ -38668,7 +38668,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1784,
+									"line": 1785,
 									"character": 14
 								}
 							],
@@ -38692,7 +38692,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1789,
+									"line": 1790,
 									"character": 12
 								}
 							],
@@ -38716,7 +38716,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1794,
+									"line": 1795,
 									"character": 13
 								}
 							],
@@ -38783,7 +38783,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1817,
+									"line": 1818,
 									"character": 15
 								}
 							]
@@ -38813,7 +38813,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1770,
+							"line": 1771,
 							"character": 26
 						}
 					]
@@ -38877,7 +38877,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1544,
+									"line": 1545,
 									"character": 10
 								}
 							]
@@ -38934,7 +38934,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1563,
+									"line": 1564,
 									"character": 7
 								}
 							]
@@ -39021,7 +39021,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1591,
+															"line": 1592,
 															"character": 11
 														}
 													]
@@ -39056,7 +39056,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1589,
+									"line": 1590,
 									"character": 7
 								}
 							]
@@ -39143,7 +39143,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1616,
+															"line": 1617,
 															"character": 48
 														}
 													]
@@ -39251,12 +39251,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1616,
+									"line": 1617,
 									"character": 10
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1641,
+									"line": 1642,
 									"character": 10
 								}
 							]
@@ -39277,7 +39277,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1528,
+							"line": 1529,
 							"character": 30
 						}
 					]
@@ -39329,7 +39329,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1676,
+									"line": 1677,
 									"character": 10
 								}
 							]
@@ -39380,7 +39380,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1692,
+									"line": 1693,
 									"character": 10
 								}
 							]
@@ -39467,7 +39467,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1717,
+															"line": 1718,
 															"character": 11
 														}
 													]
@@ -39502,7 +39502,7 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1715,
+									"line": 1716,
 									"character": 7
 								}
 							]
@@ -39589,7 +39589,7 @@
 													"sources": [
 														{
 															"fileName": "packages/firestore/lib/index.d.ts",
-															"line": 1738,
+															"line": 1739,
 															"character": 48
 														}
 													]
@@ -39697,12 +39697,12 @@
 							"sources": [
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1738,
+									"line": 1739,
 									"character": 10
 								},
 								{
 									"fileName": "packages/firestore/lib/index.d.ts",
-									"line": 1759,
+									"line": 1760,
 									"character": 10
 								}
 							]
@@ -39723,7 +39723,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1659,
+							"line": 1660,
 							"character": 29
 						}
 					]
@@ -39905,7 +39905,7 @@
 					"sources": [
 						{
 							"fileName": "packages/firestore/lib/index.d.ts",
-							"line": 1242,
+							"line": 1243,
 							"character": 27
 						}
 					],

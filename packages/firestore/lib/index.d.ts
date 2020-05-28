@@ -973,7 +973,8 @@ export namespace FirebaseFirestoreTypes {
     limit(limit: number): Query;
     /**
      * Creates and returns a new Query where the results are limited to the specified number of documents
-     * starting from the last document and working in reverse order.
+     * starting from the last document. The order is dependent on the second parameter for the `orderBy`
+     * method. If `desc` is used, the order is reversed. `orderBy` method call is required when calling `limitToLast`.
      *
      * #### Example
      *
@@ -981,7 +982,7 @@ export namespace FirebaseFirestoreTypes {
      * // Get the last 10 users in reverse order of age
      * const querySnapshot = firebase.firestore()
      *   .collection('users')
-     *   .orderBy('age')
+     *   .orderBy('age', 'desc')
      *   .limitToLast(10)
      *   .get();
      * ```
