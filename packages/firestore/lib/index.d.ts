@@ -971,6 +971,24 @@ export namespace FirebaseFirestoreTypes {
      * @param limit The maximum number of items to return.
      */
     limit(limit: number): Query;
+    /**
+     * Creates and returns a new Query where the results are limited to the specified number of documents
+     * starting from the last document and working in reverse order.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get the last 10 users in reverse order of age
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age')
+     *   .limitToLast(10)
+     *   .get();
+     * ```
+     *
+     * @param limitToLast The maximum number of items to return.
+     */
+    limitToLast(limitToLast: number): Query;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.

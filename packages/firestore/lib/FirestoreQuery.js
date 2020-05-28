@@ -164,6 +164,8 @@ export default class FirestoreQuery {
       );
     }
 
+    this._modifiers.validatelimitToLast();
+
     return this._firestore.native
       .collectionGet(
         this._collectionPath.relativeName,
@@ -219,11 +221,25 @@ export default class FirestoreQuery {
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
   }
 
+  limitToLast(limitToLast) {
+    if (this._modifiers.isValidLimitToLast(limitToLast)) {
+      throw new Error(
+        "firebase.firestore().collection().limitToLast(*) 'limitToLast' must be a positive integer value.",
+      );
+    }
+
+    const modifiers = this._modifiers._copy().limitToLast(limitToLast);
+
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+  }
+
   onSnapshot(...args) {
     let snapshotListenOptions;
     let callback;
     let onNext;
     let onError;
+
+    this._modifiers.validatelimitToLast();
 
     try {
       const options = parseSnapshotArgs(args);
@@ -403,8 +419,6 @@ export default class FirestoreQuery {
     } catch (e) {
       throw new Error(`firebase.firestore().collection().where() ${e.message}`);
     }
-
-    modifiers.validateWhere();
 
     return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
   }
