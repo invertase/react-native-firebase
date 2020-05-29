@@ -198,20 +198,8 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     const subscription = this.emitter.addListener('messaging_token_refresh', event => {
-      // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
       const { token } = event;
-      const tokenStringWithTokenAccessor = String(token);
-      Object.defineProperty(tokenStringWithTokenAccessor, 'token', {
-        enumerable: false,
-        get() {
-          // eslint-disable-next-line no-console
-          console.warn(
-            'firebase.messaging().onTokenRefresh(event => event.token) is deprecated, use onTokenRefresh(token => token) or call getToken() instead',
-          );
-          return token;
-        },
-      });
-      listener(tokenStringWithTokenAccessor);
+      listener(token);
     });
     return () => subscription.remove();
   }

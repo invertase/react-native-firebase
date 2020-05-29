@@ -28,29 +28,10 @@ import androidx.annotation.Nullable;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
-import io.invertase.firebase.interfaces.InitProvider;
 
-public class ReactNativeFirebaseInitProvider extends ContentProvider implements InitProvider {
-  private static void checkContentProviderAuthority(
-    ProviderInfo info,
-    String emptyProviderAuthority
-  ) {
-    if (info != null) {
-      if (emptyProviderAuthority.equals(info.authority)) {
-        throw new IllegalStateException(
-          "Incorrect provider authority in manifest. This is most likely due to a missing "
-            + "applicationId variable in application's build.gradle.");
-      }
-    }
-  }
-
-  public String getEmptyProviderAuthority() {
-    throw new RuntimeException("STUB: getEmptyProviderAuthority override not implemented");
-  }
-
+public class ReactNativeFirebaseInitProvider extends ContentProvider {
   @Override
   public void attachInfo(Context context, ProviderInfo info) {
-    checkContentProviderAuthority(info, getEmptyProviderAuthority());
     super.attachInfo(context, info);
   }
 
