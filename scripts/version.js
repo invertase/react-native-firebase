@@ -9,8 +9,10 @@ const firebaseAppPackageVersion = packages.find(package => package.name == fireb
   .version;
 
 packages.forEach(package => {
-  if (package.name == firebaseAppPackageName) return;
-  const { name, version, location } = package;
+  if (package.name == firebaseAppPackageName) {
+    return;
+  }
+  const { location } = package;
 
   // ---------------------------
   //    Fix Changelog Links
@@ -34,8 +36,12 @@ packages.forEach(package => {
   // ---------------------------
   const packageJsonPath = `${location}${sep}/package.json`;
   const packageJsonContents = JSON.parse(readFileSync(packageJsonPath).toString('utf-8'));
-  if (!packageJsonContents.peerDependencies) return;
-  if (!packageJsonContents.peerDependencies[firebaseAppPackageName]) return;
+  if (!packageJsonContents.peerDependencies) {
+    return;
+  }
+  if (!packageJsonContents.peerDependencies[firebaseAppPackageName]) {
+    return;
+  }
   if (packageJsonContents.peerDependencies[firebaseAppPackageName] === firebaseAppPackageVersion) {
     return;
   }
@@ -43,6 +49,10 @@ packages.forEach(package => {
   packageJsonContents.peerDependencies[firebaseAppPackageName] = firebaseAppPackageVersion;
 
   writeFileSync(packageJsonPath, JSON.stringify(packageJsonContents, null, 2) + '\n');
+
+  execSync(`git add ${packageJsonPath}`);
+
+  execSync(`git commit -m "chore(${packageJsonContents.name.replace('@react-native-firebase/', '')}): update core peer dependency to v${firebaseAppPackageVersion} [publish]"`);
 
   console.log(
     `Updated '${firebaseAppPackageName}' peer dependency on package`,
