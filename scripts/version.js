@@ -52,7 +52,7 @@ packages.forEach(package => {
 
   execSync(`git add ${packageJsonPath}`);
 
-  execSync(`git commit -m "chore(${packageJsonContents.name.replace('@react-native-firebase/', '')}): update core peer dependency to v${firebaseAppPackageVersion} [publish]"`);
+  execSync(`git commit -m "build(${packageJsonContents.name.replace('@react-native-firebase/', '')}): update core peer dependency to v${firebaseAppPackageVersion} [publish]"`);
 
   console.log(
     `Updated '${firebaseAppPackageName}' peer dependency on package`,
