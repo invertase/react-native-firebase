@@ -24,7 +24,7 @@
     "remote-config"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "7.1.3"
+    "@react-native-firebase/app": "7.1.4"
   },
   "publishConfig": {
     "access": "public"
