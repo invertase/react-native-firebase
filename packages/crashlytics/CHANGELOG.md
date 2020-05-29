@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@7.1.0...@react-native-firebase/crashlytics@7.1.1) (2020-05-29)
+
+### Bug Fixes
+
+- **android:** remove deprecated usages of `APPLICATION_ID` ([#3711](https://github.com/invertase/react-native-firebase/issues/3711)) ([984d3fc](https://github.com/invertase/react-native-firebase/commit/984d3fc1668221c166ab459d67d1c646d73d165b))
+
 # [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@7.0.1...@react-native-firebase/crashlytics@7.1.0) (2020-05-22)
 
 ### Features
