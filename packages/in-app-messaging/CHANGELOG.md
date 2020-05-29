@@ -3,13 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [7.1.1](https://github.com/invertase/react-native-firebase/tree/master/packages/in-app-messaging/compare/@react-native-firebase/in-app-messaging@7.1.0...@react-native-firebase/in-app-messaging@7.1.1) (2020-05-29)
+## [7.1.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.1.1...@react-native-firebase/in-app-messaging@7.1.2) (2020-05-29)
 
 **Note:** Version bump only for package @react-native-firebase/in-app-messaging
 
+## [7.1.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.1.0...@react-native-firebase/in-app-messaging@7.1.1) (2020-05-29)
 
-
-
+**Note:** Version bump only for package @react-native-firebase/in-app-messaging
 
 # [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.0.1...@react-native-firebase/in-app-messaging@7.1.0) (2020-05-22)
 
