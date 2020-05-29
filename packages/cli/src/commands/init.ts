@@ -48,12 +48,13 @@ import { trackModified } from '../helpers/tracker';
 import getAccount from '../actions/getAccount';
 import getConfig from '../actions/getConfig';
 import CliError from '../helpers/error';
+import { Account } from '../types/firebase';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
   log.debug('Running "firebase init" command...');
   trackModified(args.includes('force'));
 
-  const account = await getAccount();
+  const account = (await getAccount()) as Account; // should never be undefined if optional = false
 
   const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
 
@@ -115,5 +116,5 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
     .management.getProject(firebaseProject.projectId, apps);
 
   if (apps.android) await initAndroid(account, projectDetail, androidProjectConfig);
-  if (apps.ios) await initIos(account, iosProjectConfig, reactNativeConfig);
+  if (apps.ios) await initIos(account, projectDetail, iosProjectConfig);
 }

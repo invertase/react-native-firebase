@@ -8,34 +8,18 @@ import log from '../helpers/log';
 import { Account, AndroidSha, ProjectDetail, ProjectDetailAndroidApp } from '../types/firebase';
 import { createAndroidApp } from '../actions/createApp';
 import CliError from '../helpers/error';
+import { getAndroidApp } from '../actions/getApp';
 
 const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
 
 export default async function initAndroid(
   account: Account,
   projectDetail: ProjectDetail,
-  androidReactNativeConfig: AndroidProjectConfig,
+  androidProjectConfig: AndroidProjectConfig,
 ) {
   log.info('Setting up Firebase for your Android app..');
 
-  let selectedAndroidApp: ProjectDetailAndroidApp | undefined;
-  if (!projectDetail.apps.android?.length) {
-    log.warn(`Your project ${projectDetail.displayName} does not contain any Android apps.`);
-  } else {
-    selectedAndroidApp = projectDetail.apps.android.find(
-      app => app.packageName === androidReactNativeConfig.packageName,
-    );
-
-    if (!selectedAndroidApp) {
-      log.warn(
-        `Your project ${
-          projectDetail.displayName
-        } does not contain any Android apps that match the package name ${
-          androidReactNativeConfig.packageName
-        }.`,
-      );
-    }
-  }
+  let selectedAndroidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
 
   if (!selectedAndroidApp) {
     const result = await prompt.confirm(
@@ -43,7 +27,7 @@ export default async function initAndroid(
     );
 
     if (result)
-      selectedAndroidApp = await createAndroidApp(account, androidReactNativeConfig, projectDetail);
+      selectedAndroidApp = await createAndroidApp(account, androidProjectConfig, projectDetail);
     else throw new CliError('No Android app available to setup the package with.');
   }
 
@@ -84,10 +68,10 @@ export default async function initAndroid(
 
   // Write the config file
   log.info('Writing new "google-services.json" file to "/android/app/google-services.json".');
-  await file.writeAndroidGoogleServices(androidReactNativeConfig, androidConfigFile);
+  await file.writeAndroidGoogleServices(androidProjectConfig, androidConfigFile);
 
   // Read the "/android/build.gradle" file from the users project
-  const androidBuildGradleFile = await file.readAndroidBuildGradle(androidReactNativeConfig);
+  const androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
 
   if (!androidBuildGradleFile) {
     log.warn('Could not find an Android "build.gradle" file, unable to check dependencies exist');

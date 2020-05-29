@@ -3,20 +3,26 @@ import firebase from '../helpers/firebase';
 import { Account } from '../types/firebase';
 import log from '../helpers/log';
 import prompt from '../helpers/prompt';
+import CliError from '../helpers/error';
 
-export default async function getAccount() {
+export default async function getAccount(optional = false): Promise<Account | undefined> {
   // fetch users account
   let account = firebase.auth.getAccount();
 
   if (account) {
     const cont = await prompt.confirm(
-      `A Firebase account already exists. Continue with user ${Chalk.cyanBright(
+      `You're already logged into Firebase as ${Chalk.cyanBright(
         `[${account.user.email}]`,
-      )}?`,
+      )}. Continue with this account?`,
     );
 
     if (cont) return account;
-  } else log.info('No existing Firebase account was detected.');
+  } else {
+    log.info('No existing Firebase account was detected.');
+  }
+
+  if (optional && !(await prompt.confirm('Would you like to login to a Firebase account?')))
+    return undefined;
 
   log.info(
     'To continue, sign-in to your Google account which owns the Firebase project you wish to setup:',
@@ -24,7 +30,7 @@ export default async function getAccount() {
   await firebase.auth.authWithBrowser();
 
   account = firebase.auth.getAccount();
-  if (!account) throw new Error('Something went wrong using your Firebase account');
+  if (!account) throw new CliError('Something went wrong using your Firebase account');
 
   return account;
 }

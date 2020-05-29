@@ -4,8 +4,8 @@ import log from '../helpers/log';
 
 export default async function initIos(
   account: Account,
+  projectDetail: ProjectDetail,
   iosProjectConfig: IOSProjectConfig,
-  reactNativeConfig: Config,
 ) {
   log.info('Setting up Firebase for your Android app..');
   log.error('Not implemented');

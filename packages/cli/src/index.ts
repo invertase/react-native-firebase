@@ -35,12 +35,12 @@ async function firebaseCli(args: string[], reactNativeConfig: Config) {
       case 'playground':
         await playgroundCommand(cmdArgs, reactNativeConfig);
         break;
-      case '':
+      case undefined:
       case 'help':
         await helpCommand(cmdArgs, reactNativeConfig);
         break;
       default:
-        log.error(`Unrecognized firebase comand "${command}".`);
+        log.error(`Unrecognized firebase command "${command}".`);
         log.info(
           'Run "react-native firebase help" to see a list of all available firebase commands.',
         );
