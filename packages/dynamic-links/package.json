@@ -23,7 +23,7 @@
     "dynamic link"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "7.1.2"
+    "@react-native-firebase/app": "7.1.3"
   },
   "publishConfig": {
     "access": "public"
