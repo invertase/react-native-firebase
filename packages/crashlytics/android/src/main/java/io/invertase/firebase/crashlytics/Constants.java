@@ -1,4 +1,5 @@
 package io.invertase.firebase.crashlytics;
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
 
 /*
