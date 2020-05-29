@@ -2,7 +2,8 @@
   "name": "react-native-firebase",
   "private": true,
   "scripts": {
-    "postversion": "node ./scripts/version.js",
+    "version": "node ./scripts/version.js",
+    "postversion": "node ./scripts/postversion.js",
     "prepare": "yarn run lerna:link && lerna run prepare --parallel",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
