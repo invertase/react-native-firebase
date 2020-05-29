@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.6](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.5...react-native-firebase-tests@7.1.6) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
 ## [7.1.5](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.4...react-native-firebase-tests@7.1.5) (2020-05-29)
 
 **Note:** Version bump only for package react-native-firebase-tests
