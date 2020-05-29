@@ -1,4 +1,5 @@
 package io.invertase.firebase.crashlytics;
+import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -18,7 +19,8 @@ package io.invertase.firebase.crashlytics;
  */
 
 class Constants {
-  final static String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY = BuildConfig.LIBRARY_PACKAGE_NAME + ".reactnativefirebasecrashlyticsinitprovider";
+  final static String PACKAGE_NAME = ReactNativeFirebaseApp.getApplicationContext().getPackageName();
+  final static String EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY = PACKAGE_NAME + ".reactnativefirebasecrashlyticsinitprovider";
   final static String KEY_CRASHLYTICS_NDK_ENABLED = "crashlytics_ndk_enabled";
   final static String KEY_CRASHLYTICS_DEBUG_ENABLED = "crashlytics_debug_enabled";
   final static String KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = "crashlytics_auto_collection_enabled";
