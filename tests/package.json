@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "7.1.2",
+  "version": "7.1.3",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
@@ -9,10 +9,10 @@
   "dependencies": {
     "@react-native-firebase/admob": "7.1.0",
     "@react-native-firebase/analytics": "7.1.0",
-    "@react-native-firebase/app": "7.1.0",
+    "@react-native-firebase/app": "7.1.1",
     "@react-native-firebase/app-types": "6.7.2",
     "@react-native-firebase/auth": "8.0.0",
-    "@react-native-firebase/crashlytics": "7.1.0",
+    "@react-native-firebase/crashlytics": "7.1.1",
     "@react-native-firebase/database": "7.1.0",
     "@react-native-firebase/dynamic-links": "7.1.0",
     "@react-native-firebase/firestore": "7.1.0",
