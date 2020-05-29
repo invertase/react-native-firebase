@@ -65,8 +65,10 @@ export interface ProjectDetailIOSApp {
   bundleId: string;
 }
 
+export type ShaCertificateType = 'SHA_CERTIFICATE_TYPE_UNSPECIFIED' | 'SHA_1' | 'SHA_256';
+
 export interface AndroidSha {
   name: string;
   shaHash: string;
-  certType: string;
+  certType: ShaCertificateType;
 }

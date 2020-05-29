@@ -6,7 +6,6 @@ import prompt from '../helpers/prompt';
 import log from '../helpers/log';
 
 import { Account, AndroidSha, ProjectDetail, ProjectDetailAndroidApp } from '../types/firebase';
-import { createAndroidApp } from '../actions/createApp';
 import CliError from '../helpers/error';
 import { getAndroidApp } from '../actions/getApp';
 
@@ -26,9 +25,12 @@ export default async function initAndroid(
       `Would you like to create a new Android app for your project ${projectDetail.displayName}?`,
     );
 
-    if (result)
-      selectedAndroidApp = await createAndroidApp(account, androidProjectConfig, projectDetail);
-    else throw new CliError('No Android app available to setup the package with.');
+    if (result) {
+      const displayName = await prompt.input('Enter a display name for the App:');
+      selectedAndroidApp = await firebase
+        .api(account)
+        .management.createAndroidApp(projectDetail, androidProjectConfig, displayName);
+    } else throw new CliError('No Android app available to setup the package with.');
   }
 
   // ask user whether they want to add a new sha-1 key
@@ -49,7 +51,9 @@ export default async function initAndroid(
         const exists = androidAppConfigShaList.find((sha: AndroidSha) => sha.shaHash === shaKey);
 
         if (!exists) {
-          // TODO add sha
+          const success = await firebase
+            .api(account)
+            .management.addAndroidSha(selectedAndroidApp.name, shaKey);
         } else {
           log.warn('This SHA-1 key already exists for the current app');
           const shaPrompt = await prompt.confirm(

@@ -40,6 +40,7 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
     if (androidApp) {
       log.info(`Display name: ${androidApp.displayName}`);
       log.info(`AppId: ${androidApp.appId}`);
+      log.info(`AppId: ${androidApp.name}`);
     }
   }
   const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);

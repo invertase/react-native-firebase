@@ -1,8 +1,14 @@
-import { request, keyWithDomainPrefix } from './common';
-import Cache from '../../cache';
-import { Account, AndroidSha, Project, ProjectDetail } from '../../../types/firebase';
+import { request } from './common';
+import {
+  Account,
+  AndroidSha,
+  Project,
+  ProjectDetail,
+  ProjectDetailAndroidApp,
+} from '../../../types/firebase';
 import { Apps } from '../../../types/cli';
 import { withParameter } from '../../utils';
+import CliError from '../../error';
 
 const DOMAIN = 'firebase.googleapis.com';
 const BASE_URL = `https://${DOMAIN}/v1beta1`;
@@ -96,28 +102,56 @@ async function getAndroidAppConfigShaList(
 /**
  *
  * @param account
- * @param appName
+ * @param projectDetail
+ * @param packageName
  */
 async function createAndroidApp(
   account: Account,
-  projectId: string,
+  projectDetail: ProjectDetail,
   packageName: string,
   displayName: string,
 ) {
-  const androidApp = {
-    name: '',
-    appId: '',
+  const androidApp: ProjectDetailAndroidApp = {
+    name: `${projectDetail.name}/androidApps/SomeId`,
+    appId: 'SomeId',
     displayName: displayName,
-    projectId: projectId,
+    projectId: projectDetail.projectId,
     packageName: packageName,
   };
   const operation = await request(account, {
-    url: `${BASE_URL}/projects/${projectId}/androidApps`,
+    url: `${BASE_URL}/${projectDetail.name}/androidApps`,
     method: 'post',
     data: androidApp,
   });
 
-  return operation;
+  throw new CliError('Not implemented');
+}
+
+async function createAndroidSha(
+  account: Account,
+  projectDetailAndroidApp: ProjectDetailAndroidApp,
+  hash: string,
+) {
+  hash = hash.toUpperCase();
+  if (!hash.match(/^[0-9A-F]{2}(:[0-9A-F]{2})*$/))
+    throw new CliError('Invalid SHA hash format. Bytes need to be in hex and seperated by colons.');
+  const hashParts = hash.split(':');
+  if (hashParts.length == 20) var type = 'SHA_1';
+  else if (hashParts.length == 32) var type = 'SHA_256';
+  else throw new CliError('Invalid SHA hash type. Only SHA-1 and SHA-256 are allowed.');
+
+  const shaCertificate: AndroidSha = {
+    name: `${projectDetailAndroidApp.name}/sha/SomeId`,
+    shaHash: hash,
+    certType: 'SHA_1',
+  };
+  const operation = await request(account, {
+    url: `${BASE_URL}/${projectDetailAndroidApp.name}/sha`,
+    method: 'post',
+    data: shaCertificate,
+  });
+
+  throw new CliError('Not implemented');
 }
 
 /**
@@ -131,6 +165,7 @@ export default function managementApiWithAccount(account: Account) {
     getAppConfig,
     getAndroidAppConfigShaList,
     createAndroidApp,
+    createAndroidSha,
   };
 
   return withParameter(functions, account);
