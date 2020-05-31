@@ -6,7 +6,7 @@ These fields are populated with values that the user authorized.
 
 ## What is it?
 
-The response object (`responseObject.fullname`) passed back from apple as the credential provider.
+The response object (`responseObject.fullName`) passed back from apple as the credential provider.
 
 ```js
 import appleAuth, {
@@ -17,12 +17,12 @@ import appleAuth, {
 async function onPressAppleButton() {
   /**
    * responseObject may contain the following depending on the user's input when authenticating:
-   * responseObject.fullname.familyName
-   * responseObject.fullname.givenName
-   * responseObject.fullname.middleName
-   * responseObject.fullname.namePrefix
-   * responseObject.fullname.nameSuffix
-   * responseObject.fullname.nickname
+   * responseObject.fullName.familyName
+   * responseObject.fullName.givenName
+   * responseObject.fullName.middleName
+   * responseObject.fullName.namePrefix
+   * responseObject.fullName.nameSuffix
+   * responseObject.fullName.nickname
    */
 
   const responseObject = await appleAuth.performRequest({
