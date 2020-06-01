@@ -270,7 +270,7 @@ describe('auth().currentUser', () => {
 
   // TODO: Figure how to mock phone credentials on updating a phone number
   describe('updatePhoneNumber()', () => {
-    it('should update the profile', async () => {
+    it.only('should update the profile', async () => {
       // Create with initial number
       const TEST_PHONE_A = '+447445255123';
       const TEST_CODE_A = '123456';
@@ -299,8 +299,9 @@ describe('auth().currentUser', () => {
       );
 
       //Update with number?
-      await user
-        .updatePhoneNumber(credential)
+      await firebase
+        .auth()
+        .currentUser.updatePhoneNumber(credential)
         .then($ => $)
         .catch(e => console.log('Error >>>', e));
 
