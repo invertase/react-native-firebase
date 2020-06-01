@@ -19,7 +19,7 @@ yarn add @react-native-firebase/app
 yarn add @react-native-firebase/database
 
 # If you're developing your app using iOS, run this command
-cd ios/ && pod install
+cd ios/ && pod install && cd ..
 ```
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
@@ -165,6 +165,8 @@ const scores = database()
   .orderByValue()
   .once('value');
 ```
+
+Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
 
 #### Limiting
 

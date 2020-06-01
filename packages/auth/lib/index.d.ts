@@ -486,7 +486,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param verificationCode The code sent to the users device from Firebase.
      */
-    confirm(verificationCode: string): Promise<User | null>;
+    confirm(verificationCode: string): Promise<UserCredential | null>;
   }
 
   /**
@@ -851,7 +851,7 @@ export namespace FirebaseAuthTypes {
    * ```js
    * firebase.auth().onAuthStateChanged((user) => {
    *   if (user) {
-   *     console.log('User email: ', user.email');
+   *     console.log('User email: ', user.email);
    *   }
    * });
    * ```
@@ -862,7 +862,7 @@ export namespace FirebaseAuthTypes {
    * const user = firebase.auth().currentUser;
    *
    * if (user) {
-   *  console.log('User email: ', user.email');
+   *  console.log('User email: ', user.email);
    * }
    * ```
    */
