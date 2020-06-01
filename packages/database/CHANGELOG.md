@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.1.2...@react-native-firebase/database@7.2.0) (2020-06-01)
+
+### Features
+
+- **database:** add support for ServerValue.increment ([#3561](https://github.com/invertase/react-native-firebase/issues/3561)) ([759d67e](https://github.com/invertase/react-native-firebase/commit/759d67e6fbb7e05cd2fc7d532284e91ab428ca6d))
+
 ## [7.1.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.1.1...@react-native-firebase/database@7.1.2) (2020-05-29)
 
 **Note:** Version bump only for package @react-native-firebase/database
