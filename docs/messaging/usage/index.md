@@ -49,13 +49,16 @@ iOS prevents messages containing notification (or 'alert') payloads from being d
 This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const settings = await messaging().requestPermission();
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === AuthorizationStatus.AUTHORIZED ||
+    authStatus === AuthorizationStatus.PROVISIONAL;
 
-  if (settings) {
-    console.log('Permission settings:', settings);
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
   }
 }
 ```
@@ -276,7 +279,7 @@ messaging()
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `subscribeToTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
 messaging()
@@ -297,7 +300,7 @@ to manually control registration you can disable this via the `firebase.json` fi
 // <projectRoot>/firebase.json
 {
   "react-native": {
-    "messaging_ios_auto_register_for_remote_messages": false,
+    "messaging_ios_auto_register_for_remote_messages": false
   }
 }
 ```
@@ -312,7 +315,6 @@ async function registerAppWithFCM() {
   await messaging().registerDeviceForRemoteMessages();
 }
 ```
-
 
 ## Auto initialization
 

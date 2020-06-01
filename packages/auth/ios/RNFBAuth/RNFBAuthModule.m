@@ -741,7 +741,7 @@ RCT_EXPORT_METHOD(confirmationResultConfirm:
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
+      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
     }
   }];
 }

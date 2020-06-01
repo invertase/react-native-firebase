@@ -9,7 +9,7 @@
       "conventionalCommits": true,
       "exact": true,
       "gitRemote": "origin",
-      "message": "chore(release): publish [skip-ci]"
+      "message": "chore(release): release packages"
     }
   },
   "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],

@@ -1,8 +1,18 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
 # Firebase SDK Override
-firebase_sdk_version = '~> 6.13.0'
+coreVersionDetected = appPackage['version']
+coreVersionRequired = package['peerDependencies'][appPackage['name']]
+if appPackage['sdkVersions']
+  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
+else
+  firebase_sdk_version = '~> 6.25.0'
+end
+if coreVersionDetected != coreVersionRequired
+  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
+end
 
 # Fabric SDK Override
 fabric_sdk_version = '~> 1.10.2'
@@ -46,7 +56,6 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   s.dependency          'Fabric', fabric_sdk_version
-  s.dependency          'Firebase/Core', firebase_sdk_version
   s.dependency          'Crashlytics', crashlytics_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
