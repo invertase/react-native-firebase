@@ -30,7 +30,7 @@ let testApiInstance;
 Object.defineProperty(global, 'TestAdminApi', {
   get() {
     if (testApiInstance) return testApiInstance;
-    testApiInstance = new TestingApi();
+    testApiInstance = TestingApi;
     return testApiInstance;
   },
 });

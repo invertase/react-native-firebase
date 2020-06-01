@@ -19,7 +19,7 @@ describe('auth() => Phone', () => {
   });
 
   // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
-  xdescribe('signInWithPhoneNumber', () => {
+  describe('signInWithPhoneNumber', () => {
     it('signs in with a valid code', async () => {
       const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
       confirmResult.verificationId.should.be.a.String();
@@ -37,6 +37,118 @@ describe('auth() => Phone', () => {
       confirmResult.confirm.should.be.a.Function();
       await confirmResult.confirm('666999').should.be.rejected();
       // TODO test error code and message
+    });
+  });
+
+  describe('verifyPhoneNumber', async () => {
+    it('successfully verifies', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+      await firebase.auth().verifyPhoneNumber(TEST_PHONE_A, false, false);
+    });
+
+    it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+      await firebase.auth().verifyPhoneNumber(TEST_PHONE_A, 0, false);
+    });
+
+    it('throws an error with an invalid on event', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+
+      try {
+        await firebase
+          .auth()
+          .verifyPhoneNumber(TEST_PHONE_A)
+          .on('example', phoneAuthSnapshot => {
+            console.log('Snapshot state: ' + phoneAuthSnapshot);
+          });
+
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "firebase.auth.PhoneAuthListener.on(*, _, _, _) 'event' must equal 'state_changed'.",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws an error with an invalid observer event', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+
+      try {
+        await firebase
+          .auth()
+          .verifyPhoneNumber(TEST_PHONE_A)
+          .on('state_changed', null, null, phoneAuthSnapshot => {
+            console.log('Snapshot state: ' + phoneAuthSnapshot);
+          });
+
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "firebase.auth.PhoneAuthListener.on(_, *, _, _) 'observer' must be a function.",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('successfully runs verification complete handler', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+
+      const result = await firebase
+        .auth()
+        .verifyPhoneNumber(TEST_PHONE_A)
+        .then($ => $);
+
+      return Promise.resolve();
+    });
+
+    it('succesffuly runs and adds emiters', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+
+      const obervserCb = $ => {};
+
+      const errorCb = $ => {};
+
+      const successCb = () => {};
+
+      await firebase
+        .auth()
+        .verifyPhoneNumber(TEST_PHONE_A)
+        .on('state_changed', obervserCb, errorCb, successCb, phoneAuthSnapshot => {
+          console.log('Snapshot state: ' + phoneAuthSnapshot);
+        });
+
+      return Promise.resolve();
+    });
+
+    it('catches an error and emits an error event', async () => {
+      const TEST_PHONE_A = '+447445255123';
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
+
+      await confirmResult.confirm(TEST_CODE_A);
+
+      return firebase
+        .auth()
+        .verifyPhoneNumber('test')
+        .catch(() => Promise.resolve());
     });
   });
 });
