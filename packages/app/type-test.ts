@@ -34,9 +34,3 @@ console.log(utils.FilePath.CACHES_DIRECTORY);
 
 // checks root exists
 console.log(firebase.SDK_VERSION);
-
-// checks multi-app support exists
-// console.log(firebase.utils(firebase.app()).app.name);
-
-// checks default export supports app arg
-// console.log(defaultExport(firebase.app()).app.name);
