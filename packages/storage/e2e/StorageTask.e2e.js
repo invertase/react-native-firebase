@@ -637,16 +637,16 @@ describe('storage() -> StorageTask', () => {
 
   describe('pause() resume()', () => {
     it('successfully pauses and resumes an upload', async function testRunner() {
-      this.timeout(25000);
+      // this.timeout(5000);
 
       await firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
-        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`);
 
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -764,17 +764,32 @@ describe('storage() -> StorageTask', () => {
   });
 
   describe('cancel()', () => {
+    const fileName = Math.random()
+      .toString(36)
+      .substring(7);
+
     before(async () => {
-      await firebase
-        .storage()
-        .ref('/1mbTestFile.gif')
-        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
+      const ref = firebase.storage().ref('/663-200x300.jpg');
+      const { resolve, promise } = Promise.defer();
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
+      const task = ref.writeToFile(path, err => console.log('Error >>>>', err));
+
+      task.on('state_changed', {
+        next: snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            resolve();
+          }
+        },
+      });
+
+      await task;
+      await promise;
     });
 
     it('successfully cancels an upload', () => {
-      const ref = firebase.storage().ref('/uploadCat.gif');
+      const ref = firebase.storage().ref('/663-200x300.jpg');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -817,9 +832,9 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully cancels a download', () => {
-      const ref = firebase.storage().ref('/cat.gif');
+      const ref = firebase.storage().ref('/663-200x300.jpg');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/cancelDownload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
       const downloadTask = ref.writeToFile(path);
 
       let hadRunningStatus = false;
