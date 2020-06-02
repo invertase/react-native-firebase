@@ -1,6 +1,6 @@
 ---
-title: Using The Emulator With Firestore
-description: Using the emulator to test your app locally
+title: Cloud Firestore Emulator
+description: Using the Cloud Firestore emulator to test your app locally.
 next: /firestore/usage-with-flatlists
 previous: /firestore/usage
 ---
@@ -9,7 +9,7 @@ You can test your app and its Firestore implementation with an emulator which is
 
 For example, you can connect your app to the emulator to safely read and write documents in testing.
 
-# Running the emulator
+## Running the emulator
 
 To be able to mimic the behavior of Cloud Firestore, you need to run the emulator. This is effectively a server that will receive and send requests in lieu of Cloud Firestore. This is achieved by running the following commands:
 
