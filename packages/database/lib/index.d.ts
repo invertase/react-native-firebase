@@ -73,6 +73,21 @@ export namespace FirebaseDatabaseTypes {
      * ```
      */
     TIMESTAMP: object;
+
+    /**
+     * Returns a placeholder value that can be used to atomically increment the current database value by the provided delta.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.database().ref('posts/123').update({
+     *   likes: firebase.database.ServerValue.increment(1),
+     * });
+     * ```
+     *
+     * @param delta The amount to modify the current value atomically.
+     */
+    increment(delta: number): object;
   }
 
   /**

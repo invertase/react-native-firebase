@@ -17,6 +17,13 @@ jest.doMock('react-native', () => {
               },
               options: {},
             },
+
+            {
+              appConfig: {
+                name: 'secondaryFromNative',
+              },
+              options: {},
+            },
           ],
         },
         RNFBPerfModule: {},
@@ -24,6 +31,7 @@ jest.doMock('react-native', () => {
         RNFBAdMobInterstitialModule: {},
         RNFBAdMobRewardedModule: {},
         RNFBAdsConsentModule: {},
+        RNFBCrashlyticsModule: {},
       },
     },
     ReactNative,
