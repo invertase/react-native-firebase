@@ -493,9 +493,9 @@ export namespace Utils {
      * const PlayServicesAvailability = await firebase.utils().getPlayServicesStatus();
      * ```
      *
-     * @android Android only - iOS returns undefined
+     * @android Android only - iOS always returns { isAvailable: true, status: 0 }
      */
-    getPlayServicesStatus(): Promise<PlayServicesAvailability | void>;
+    getPlayServicesStatus(): Promise<PlayServicesAvailability>;
 
     /**
      * A prompt appears on the device to ask the user to update play services

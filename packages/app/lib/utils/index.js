@@ -43,7 +43,10 @@ class FirebaseUtilsModule extends FirebaseModule {
 
   getPlayServicesStatus() {
     if (isIOS) {
-      return Promise.resolve();
+      return Promise.resolve({
+        isAvailable: true,
+        status: 0,
+      });
     }
     return this.native.androidGetPlayServicesStatus();
   }
