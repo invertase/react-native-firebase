@@ -2,6 +2,7 @@
   "name": "react-native-firebase",
   "private": true,
   "scripts": {
+    "version": "node ./scripts/version.js",
     "prepare": "yarn run lerna:link && lerna run prepare --parallel",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
@@ -41,6 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "codecov": "^3.6.5",
+    "conventional-changelog-cli": "^2.0.34",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.5.0",

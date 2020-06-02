@@ -130,18 +130,50 @@
         if (apsAlertDict[@"title"] != nil) {
           notification[@"title"] = apsAlertDict[@"title"];
         }
+          
+        // message.notification.titleLocKey
+        if (apsAlertDict[@"title-loc-key"] != nil) {
+          notification[@"titleLocKey"] = apsAlertDict[@"title-loc-key"];
+        }
+          
+        // message.notification.titleLocArgs
+        if (apsAlertDict[@"title-loc-args"] != nil) {
+          notification[@"titleLocArgs"] = apsAlertDict[@"title-loc-args"];
+        }
 
         // message.notification.body
         if (apsAlertDict[@"body"] != nil) {
           notification[@"body"] = apsAlertDict[@"body"];
         }
 
+        // message.notification.bodyLocKey
+        if (apsAlertDict[@"loc-key"] != nil) {
+          notification[@"bodyLocKey"] = apsAlertDict[@"loc-key"];
+        }
+          
+        // message.notification.bodyLocArgs
+        if (apsAlertDict[@"loc-args"] != nil) {
+          notification[@"bodyLocArgs"] = apsAlertDict[@"loc-args"];
+        }
+          
         // iOS only
         // message.notification.ios.subtitle
         if (apsAlertDict[@"subtitle"] != nil) {
           notificationIOS[@"subtitle"] = apsAlertDict[@"subtitle"];
         }
-
+          
+        // iOS only
+        // message.notification.ios.subtitleLocKey
+        if (apsAlertDict[@"subtitle-loc-key"] != nil) {
+          notificationIOS[@"subtitleLocKey"] = apsAlertDict[@"subtitle-loc-key"];
+        }
+          
+        // iOS only
+        // message.notification.ios.subtitleLocArgs
+        if (apsAlertDict[@"subtitle-loc-args"] != nil) {
+          notificationIOS[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
+        }
+          
         // iOS only
         // message.notification.ios.badge
         if (apsAlertDict[@"badge"] != nil) {
