@@ -33,5 +33,12 @@
     "title": "Firebase Authentication Overview",
     "description": "Learn how to setup Firebase Authentication for your React Native app and authenticate your users using phone, email, anonymous, Twitter, Google and other auth providers.",
     "tags": ["authentication"]
+  },
+  {
+    "slug": "cloud-firestore-overview",
+    "vid": "eET0YtDBWWg",
+    "title": "Firebase Cloud Firestore Overview",
+    "description": "Learn how to setup Firebase Cloud Firestore for your React Native app, a NoSQL real-time database for storing your application data.",
+    "tags": ["firestore"]
   }
 ]

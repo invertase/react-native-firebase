@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.1.4...@react-native-firebase/app@7.2.0) (2020-06-03)
+
+### Features
+
+- **app:** add Play Services available utilities ([#3601](https://github.com/invertase/react-native-firebase/issues/3601)) ([0b0f858](https://github.com/invertase/react-native-firebase/commit/0b0f858527b8c0757db7021533f84425f79d0ea5))
+
 ## [7.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.1.3...@react-native-firebase/app@7.1.4) (2020-05-29)
 
 **Note:** Version bump only for package @react-native-firebase/app
