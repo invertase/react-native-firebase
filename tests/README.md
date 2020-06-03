@@ -70,6 +70,7 @@ yarn tests:android:build
 ```
 
 #### iOS
+
 ```bash
 #from /test directory
 pod install --repo-update
@@ -151,14 +152,13 @@ yarn validate:all:flow
 
 ---
 
+### Debugging E2E JS Tests (VSCode)
 
-### Debugging (VsCode)
+1. Add a breakpoint in the JS file where you will need to debug.
+2. Select the debug icon under 'NPM Scripts' when selecting one of the following scripts...
 
-1. Add a breakpoint in the JS file where you will need to debug. 
-2. Select the debug icon under 'NPM Scripts', choosing one of the following...
-
-  - tests:ios:test:debug (IOS)
-  - tests:android:test:debug (Android)
+- tests:ios:test:debug (iOS)
+- tests:android:test:debug (Android)
 
 ---
 
