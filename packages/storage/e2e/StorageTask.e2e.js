@@ -24,7 +24,7 @@ function snapshotProperties(snapshot) {
   snapshot.should.have.property('bytesTransferred');
 }
 
-describe('storage() -> StorageTask', () => {
+describe.only('storage() -> StorageTask', () => {
   describe('writeToFile()', () => {
     it('errors if permission denied', async () => {
       try {
@@ -588,8 +588,8 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    it('listens to download state', function testRunner() {
-      this.timeout(25000);
+    it('listens to download state', async () => {
+      // this.timeout(25000);
 
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
@@ -608,11 +608,11 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
 
-    it('listens to upload state', function testRunner() {
-      this.timeout(25000);
+    it('listens to upload state', async () => {
+      // this.timeout(25000);
 
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`;
@@ -631,12 +631,12 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
   });
 
   describe('pause() resume()', () => {
-    it('successfully pauses and resumes an upload', async function testRunner() {
+    it('successfully pauses and resumes an upload', async () => {
       // this.timeout(5000);
 
       await firebase
@@ -701,8 +701,8 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    it('successfully pauses and resumes a download', function testRunner() {
-      this.timeout(25000);
+    it('successfully pauses and resumes a download', async () => {
+      // this.timeout(25000);
 
       const ref = firebase
         .storage()
@@ -726,6 +726,7 @@ describe('storage() -> StorageTask', () => {
           // TODO(salakar) validate snapshot props
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+            // console.warn('PAUSE');
             hadRunningStatus = true;
             downloadTask.pause();
           }
@@ -733,6 +734,7 @@ describe('storage() -> StorageTask', () => {
           // 2) resume when we receive first paused event
           if (snapshot.state === firebase.storage.TaskState.PAUSED) {
             hadPausedStatus = true;
+            // console.warn('RESUME');
             downloadTask.resume();
           }
 
@@ -743,11 +745,13 @@ describe('storage() -> StorageTask', () => {
             hadPausedStatus &&
             !hadResumedStatus
           ) {
+            // console.warn('RESUME 2ND RUNNING');
             hadResumedStatus = true;
           }
 
           // 4) finally confirm we received all statuses
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            // console.warn('SUCCESS?????');
             should.equal(hadRunningStatus, true);
             should.equal(hadPausedStatus, true);
             should.equal(hadResumedStatus, true);
@@ -755,41 +759,31 @@ describe('storage() -> StorageTask', () => {
           }
         },
         error => {
+          // console.warn('ERROR????');
+
           reject(error);
         },
       );
 
-      return promise;
+      await promise;
     });
   });
 
   describe('cancel()', () => {
-    const fileName = Math.random()
-      .toString(36)
-      .substring(7);
+    it('successfully cancels an upload', async () => {
+      // Download and write to disk
+      await Utils.sleep(10000);
+      const refDownload = firebase.storage().ref('/663-200x300.jpg');
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/testUploadFile.jpg`;
 
-    before(async () => {
-      const ref = firebase.storage().ref('/663-200x300.jpg');
-      const { resolve, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
-      const task = ref.writeToFile(path, err => console.log('Error >>>>', err));
+      console.warn('Start');
+      await refDownload.writeToFile(path);
+      console.warn('Finish');
 
-      task.on('state_changed', {
-        next: snapshot => {
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            resolve();
-          }
-        },
-      });
+      const ref = firebase.storage().ref('/successful-cancel.jpg');
 
-      await task;
-      await promise;
-    });
-
-    it('successfully cancels an upload', () => {
-      const ref = firebase.storage().ref('/663-200x300.jpg');
+      //Upload and cancel
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -828,13 +822,14 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
 
-    it('successfully cancels a download', () => {
-      const ref = firebase.storage().ref('/663-200x300.jpg');
+    it('successfully cancels a download', async () => {
+      await Utils.sleep(10000);
+      const ref = firebase.storage().ref('/1mbTestFile.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/${fileName}.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/testUploadFile.jpg`;
       const downloadTask = ref.writeToFile(path);
 
       let hadRunningStatus = false;
@@ -873,7 +868,7 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
   });
 });
