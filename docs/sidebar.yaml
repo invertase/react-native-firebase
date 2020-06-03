@@ -40,6 +40,8 @@
 - - Cloud Firestore
   - - - Usage
       - '/firestore/usage'
+    - - Usage with Emulator
+      - '/firestore/emulator'  
     - - Usage with FlatLists
       - '/firestore/usage-with-flatlists'
     - - Building a "TODO" app
