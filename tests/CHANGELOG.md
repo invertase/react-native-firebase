@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.13](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.12...react-native-firebase-tests@7.1.13) (2020-06-03)
+
+
+### Bug Fixes
+
+* **firestore:**  update isEqual API to check collection path equality ([#3738](https://github.com/invertase/react-native-firebase/issues/3738)) ([405e040](https://github.com/invertase/react-native-firebase/commit/405e04009c1550dc6897b207ae3a63ad274c6de5))
+
+
+
+
+
 ## [7.1.12](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.11...react-native-firebase-tests@7.1.12) (2020-06-03)
 
 **Note:** Version bump only for package react-native-firebase-tests
