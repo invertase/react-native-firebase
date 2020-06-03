@@ -22,6 +22,7 @@ import {
   isObject,
   isString,
   isUndefined,
+  isAndroid,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -209,6 +210,15 @@ class FirebaseFirestoreModule extends FirebaseModule {
         throw new Error(
           "firebase.firestore().settings(*) 'settings.host' must not be an empty string.",
         );
+      }
+
+      if (isAndroid) {
+        if (settings.host.startsWith('localhost')) {
+          settings.host = settings.host.replace('localhost', '10.0.2.2');
+        }
+        if (settings.host.startsWith('127.0.0.1')) {
+          settings.host = settings.host.replace('127.0.0.1', '10.0.2.2');
+        }
       }
     }
 
