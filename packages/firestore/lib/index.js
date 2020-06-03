@@ -80,8 +80,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
-  clearPersistence() {
-    return this.native.clearPersistence();
+  async clearPersistence() {
+    await this.native.clearPersistence();
   }
 
   collection(collectionPath) {
@@ -134,8 +134,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
     );
   }
 
-  disableNetwork() {
-    return this.native.disableNetwork();
+  async disableNetwork() {
+    await this.native.disableNetwork();
   }
 
   doc(documentPath) {
@@ -156,8 +156,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreDocumentReference(this, path);
   }
 
-  enableNetwork() {
-    return this.native.enableNetwork();
+  async enableNetwork() {
+    await this.native.enableNetwork();
   }
 
   runTransaction(updateFunction) {

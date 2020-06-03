@@ -1949,7 +1949,7 @@ export namespace FirebaseFirestoreTypes {
      * await firebase.firestore().clearPersistence();
      * ```
      */
-    clearPersistence(): Promise<null>;
+    clearPersistence(): Promise<void>;
   }
 }
 
