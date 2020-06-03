@@ -181,7 +181,7 @@ describe('remoteConfig()', () => {
       // firebase console stores as a string
       config.float.value.should.equal(123.456);
       config.float.source.should.equal('remote');
-      config.prefix_1.value.should.equal(1);
+      config.prefix_1.value.should.equal(true);
       config.prefix_1.source.should.equal('remote');
     });
   });
@@ -305,7 +305,7 @@ describe('remoteConfig()', () => {
       numberValue.should.be.equal(1337);
     });
 
-    it.only('can use boolean values', async () => {
+    it('can use boolean values', async () => {
       await firebase.remoteConfig().setDefaults({ flag1: true, flag2: false });
       const config = firebase.remoteConfig().getAll();
 

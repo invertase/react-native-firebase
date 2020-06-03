@@ -48,7 +48,7 @@ const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
 function isBooleanValue(v) {
-  return v === 'true' || v === 'false' || v === null || v === '0' || v === '1';
+  return v === 'true' || v === 'false' || v === '0' || v === '1';
 }
 
 function convertNativeConfigValues(configValues) {
