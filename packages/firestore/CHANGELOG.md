@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.1.4...@react-native-firebase/firestore@7.1.5) (2020-06-03)
+
+### Bug Fixes
+
+- **firestore:** update isEqual API to check collection path equality ([#3738](https://github.com/invertase/react-native-firebase/issues/3738)) ([405e040](https://github.com/invertase/react-native-firebase/commit/405e04009c1550dc6897b207ae3a63ad274c6de5))
+
 ## [7.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.1.3...@react-native-firebase/firestore@7.1.4) (2020-06-03)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
