@@ -726,7 +726,6 @@ describe.only('storage() -> StorageTask', () => {
           // TODO(salakar) validate snapshot props
           // 1) pause when we receive first running event
           if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-            // console.warn('PAUSE');
             hadRunningStatus = true;
             downloadTask.pause();
           }
@@ -734,7 +733,6 @@ describe.only('storage() -> StorageTask', () => {
           // 2) resume when we receive first paused event
           if (snapshot.state === firebase.storage.TaskState.PAUSED) {
             hadPausedStatus = true;
-            // console.warn('RESUME');
             downloadTask.resume();
           }
 
@@ -745,13 +743,11 @@ describe.only('storage() -> StorageTask', () => {
             hadPausedStatus &&
             !hadResumedStatus
           ) {
-            // console.warn('RESUME 2ND RUNNING');
             hadResumedStatus = true;
           }
 
           // 4) finally confirm we received all statuses
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            // console.warn('SUCCESS?????');
             should.equal(hadRunningStatus, true);
             should.equal(hadPausedStatus, true);
             should.equal(hadResumedStatus, true);
@@ -759,8 +755,6 @@ describe.only('storage() -> StorageTask', () => {
           }
         },
         error => {
-          // console.warn('ERROR????');
-
           reject(error);
         },
       );
@@ -776,9 +770,7 @@ describe.only('storage() -> StorageTask', () => {
       const refDownload = firebase.storage().ref('/663-200x300.jpg');
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/testUploadFile.jpg`;
 
-      console.warn('Start');
       await refDownload.writeToFile(path);
-      console.warn('Finish');
 
       const ref = firebase.storage().ref('/successful-cancel.jpg');
 
