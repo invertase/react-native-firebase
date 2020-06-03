@@ -66,9 +66,7 @@ describe('auth() => Phone', () => {
         await firebase
           .auth()
           .verifyPhoneNumber(TEST_PHONE_A)
-          .on('example', phoneAuthSnapshot => {
-            console.log('Snapshot state: ' + phoneAuthSnapshot);
-          });
+          .on('example', () => {});
 
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
@@ -89,9 +87,7 @@ describe('auth() => Phone', () => {
         await firebase
           .auth()
           .verifyPhoneNumber(TEST_PHONE_A)
-          .on('state_changed', null, null, phoneAuthSnapshot => {
-            console.log('Snapshot state: ' + phoneAuthSnapshot);
-          });
+          .on('state_changed', null, null, () => {});
 
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
@@ -108,7 +104,7 @@ describe('auth() => Phone', () => {
 
       await confirmResult.confirm(TEST_CODE_A);
 
-      const result = await firebase
+      await firebase
         .auth()
         .verifyPhoneNumber(TEST_PHONE_A)
         .then($ => $);
@@ -122,18 +118,16 @@ describe('auth() => Phone', () => {
 
       await confirmResult.confirm(TEST_CODE_A);
 
-      const obervserCb = $ => {};
+      const obervserCb = () => {};
 
-      const errorCb = $ => {};
+      const errorCb = () => {};
 
       const successCb = () => {};
 
       await firebase
         .auth()
         .verifyPhoneNumber(TEST_PHONE_A)
-        .on('state_changed', obervserCb, errorCb, successCb, phoneAuthSnapshot => {
-          console.log('Snapshot state: ' + phoneAuthSnapshot);
-        });
+        .on('state_changed', obervserCb, errorCb, successCb, () => {});
 
       return Promise.resolve();
     });

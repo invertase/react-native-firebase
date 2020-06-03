@@ -291,7 +291,7 @@ describe('auth().currentUser', () => {
       //Sign in number
       const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
 
-      const user = await confirmResult.confirm(TEST_CODE_A);
+      await confirmResult.confirm(TEST_CODE_A);
 
       const credential = await firebase.auth.PhoneAuthProvider.credential(
         confirmResult.verificationId,
@@ -302,8 +302,7 @@ describe('auth().currentUser', () => {
       await firebase
         .auth()
         .currentUser.updatePhoneNumber(credential)
-        .then($ => $)
-        .catch(e => console.log('Error >>>', e));
+        .then($ => $);
 
       // TODO Add assertions, what exactly does this update. No phone number included to update?
     });
