@@ -270,7 +270,7 @@ describe('auth().currentUser', () => {
 
   // TODO: Figure how to mock phone credentials on updating a phone number
   describe('updatePhoneNumber()', () => {
-    it.only('should update the profile', async () => {
+    it('should update the profile', async () => {
       // Create with initial number
       const TEST_PHONE_A = '+447445255123';
       const TEST_CODE_A = '123456';
