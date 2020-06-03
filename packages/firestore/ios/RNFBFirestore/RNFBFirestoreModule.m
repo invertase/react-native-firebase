@@ -112,7 +112,7 @@ RCT_EXPORT_METHOD(clearPersistence:
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      resolve(nil);
+      resolve([NSNull null]);
     }
   }];
 }
