@@ -54,8 +54,7 @@ import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
-    authStatus === AuthorizationStatus.AUTHORIZED ||
-    authStatus === AuthorizationStatus.PROVISIONAL;
+    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
