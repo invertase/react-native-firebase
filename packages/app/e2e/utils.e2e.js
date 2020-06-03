@@ -42,13 +42,9 @@ describe('utils()', () => {
   describe('getPlayServicesStatus', () => {
     it('returns isAvailable and Play Service status', async () => {
       const status = await firebase.utils().getPlayServicesStatus();
-      if (device.getPlatform() === 'android') {
-        should(status.isAvailable).equal(true);
-        should(status.status).equal(0);
-      }
-      if (device.getPlatform() === 'ios') {
-        should(status).equal(undefined);
-      }
+      //iOS always returns { isAvailable: true, status: 0}
+      should(status.isAvailable).equal(true);
+      should(status.status).equal(0);
     });
   });
 });
