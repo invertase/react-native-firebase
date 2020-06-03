@@ -213,11 +213,11 @@ class FirebaseFirestoreModule extends FirebaseModule {
       }
 
       if (isAndroid) {
-        if (settings.host.startsWith('http://localhost')) {
-          settings.host = settings.host.replace('http://localhost', '10.0.2.2');
+        if (settings.host.startsWith('localhost')) {
+          settings.host = settings.host.replace('localhost', '10.0.2.2');
         }
-        if (settings.host.startsWith('http://127.0.0.1')) {
-          settings.host = settings.host.replace('http://127.0.0.1', '10.0.2.2');
+        if (settings.host.startsWith('127.0.0.1')) {
+          settings.host = settings.host.replace('127.0.0.1', '10.0.2.2');
         }
       }
     }
