@@ -189,6 +189,7 @@ export default class FirestoreQuery {
       this._modifiers.type !== other._modifiers.type ||
       this._modifiers.filters.length !== other._modifiers.filters.length ||
       this._modifiers.orders.length !== other._modifiers.orders.length ||
+      this._collectionPath.relativeName !== other._collectionPath.relativeName ||
       Object.keys(this._modifiers.options).length !== Object.keys(other._modifiers.options).length
     ) {
       return false;

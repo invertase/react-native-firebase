@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.3...@react-native-firebase/auth@8.0.4) (2020-06-03)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.2...@react-native-firebase/auth@8.0.3) (2020-06-01)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.1...@react-native-firebase/auth@8.0.2) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.0...@react-native-firebase/auth@8.0.1) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.1.0...@react-native-firebase/auth@8.0.0) (2020-05-28)
+
+- fix!(auth): confirm code returns User instead of UserCredential (#3684) ([71a1120](https://github.com/invertase/react-native-firebase/commit/71a1120337acd73d2483103f2acd560e8e99a335)), closes [#3684](https://github.com/invertase/react-native-firebase/issues/3684)
+
+### BREAKING CHANGES
+
+- `confirm(verificationCode)` now correctly returns an instance of `UserCredentials` instead of `User`. You can access `User` from the `.user` property on the `UserCredentials` instance.
+
+# [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.2...@react-native-firebase/auth@7.1.0) (2020-05-22)
+
+### Features
+
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+
+## [7.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.1...@react-native-firebase/auth@7.0.2) (2020-05-15)
+
+### Bug Fixes
+
+- **auth:** use correct code on network exception ([#3655](https://github.com/invertase/react-native-firebase/issues/3655)) ([8bcf5c9](https://github.com/invertase/react-native-firebase/commit/8bcf5c945db5614835630b6d0cf4951c4a5b2a2d)), closes [#3654](https://github.com/invertase/react-native-firebase/issues/3654)
+
 ## [7.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.0...@react-native-firebase/auth@7.0.1) (2020-05-13)
 
 **Note:** Version bump only for package @react-native-firebase/auth
