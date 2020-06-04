@@ -80,7 +80,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private String mVerificationId;
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
-  private PhoneAuthCredential mCredential;
+  private HashMap<String, PhoneAuthCredential> mPhoneAutoVerifyCredentials = new HashMap<>();
+
 
 
   ReactNativeFirebaseAuthModule(ReactApplicationContext reactContext) {
@@ -995,14 +996,15 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
 
     // Reset the credential
-    mCredential = null;
+    String newCode = URLEncoder.encode(phoneNumber);
+    String  key = "RNFATOKEN" + newCode;
+    mPhoneAutoVerifyCredentials.remove(phoneNumber);
+
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
       @Override
       public void onVerificationCompleted(final PhoneAuthCredential phoneAuthCredential) {
-        // Cache the credential to protect against null verificationId
-        mCredential = phoneAuthCredential;
 
         Log.d(TAG, "verifyPhoneNumber:verification:onVerificationCompleted");
         WritableMap state = Arguments.createMap();
@@ -1018,8 +1020,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         parcel.setDataPosition(parcel.dataPosition() + 8);
         String code = parcel.readString();
 
-        state.putString("code", code);
-        state.putString("verificationId", verificationId);
+
+        // handle null verificationId cases such as in auto verification
+        if(code == null && verificationId == null) {
+          mPhoneAutoVerifyCredentials.put(key, phoneAuthCredential);
+          state.putString("verificationId", key);
+          state.putString("code", newCode);
+        } else {
+          state.putString("verificationId", verificationId);
+          state.putString("code", code);
+        }
+
         parcel.recycle();
         sendPhoneStateEvent(appName, requestKey, "onVerificationComplete", state);
       }
@@ -1373,14 +1384,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     String authToken,
     String authSecret
   ) {
-    // If the phone number is auto-verified quickly, then the verificationId can be null
+
+    // If the phone number is auto-verified quickly, then we hijack the verificationId
     // We cached the credential as part of the verifyPhoneNumber request to be re-used here
-    // if possible
-    if (authToken == null && mCredential != null) {
-      PhoneAuthCredential credential = mCredential;
-      // Reset the cached credential
-      mCredential = null;
-      return credential;
+    // if possible. Phone credentials can be reused.
+    if (authToken != null && authToken.startsWith("RNFATOKEN")) {
+      if (mPhoneAutoVerifyCredentials.containsKey((authToken))) {
+        PhoneAuthCredential credential = mPhoneAutoVerifyCredentials.get(authToken);
+        return credential;
+      }
+      return null;
     }
 
     if (authToken != null) {
