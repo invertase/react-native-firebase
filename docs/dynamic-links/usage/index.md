@@ -96,7 +96,7 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 ![iOS troubleshooting second step](https://images.prismic.io/invertase/4af777b7-7a2e-48a8-a0dc-23cea50e1a4b_Screenshot+2020-05-22+at+09.40.18.png?auto=compress,format)
 
-3. Paste your link into the iOS Notes app. Long press the link which will open the menu and ensure you click "Open in [YOUR APP NAME]". Be sure *not* to press "Open in Safari" as that will disable that dynamic link domain for your device.
+3. Paste your link into the iOS Notes app. Long press the link which will open the menu and ensure you click "Open in [YOUR APP NAME]". Be sure _not_ to press "Open in Safari" as that will disable that dynamic link domain for your device.
 
 ![iOS troubleshooting third step](https://images.prismic.io/invertase/1f8b049d-e54c-4901-a369-e7f6a19a444c_FA031D26-E14F-4A92-87F2-442191455537.png?auto=compress,format)
 
