@@ -59,7 +59,10 @@ export default class NativeFirebaseError extends Error {
       value: userInfo.nativeErrorMessage || null,
     });
 
-    this.stack = NativeFirebaseError.getStackWithMessage(`NativeFirebaseError: ${this.message}`, this.jsStack);
+    this.stack = NativeFirebaseError.getStackWithMessage(
+      `NativeFirebaseError: ${this.message}`,
+      this.jsStack,
+    );
 
     // Unused
     // this.nativeStackIOS = nativeError.nativeStackIOS;

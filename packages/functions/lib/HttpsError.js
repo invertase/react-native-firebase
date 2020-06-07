@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeFirebaseError } from "@react-native-firebase/app/lib/internal";
+import { NativeFirebaseError } from '@react-native-firebase/app/lib/internal';
 
 export default class HttpsError extends Error {
   constructor(code, message, details, nativeErrorInstance) {
@@ -36,6 +36,9 @@ export default class HttpsError extends Error {
       value: message,
     });
 
-    this.stack = NativeFirebaseError.getStackWithMessage(`Error: ${this.message}`, nativeErrorInstance.jsStack);
+    this.stack = NativeFirebaseError.getStackWithMessage(
+      `Error: ${this.message}`,
+      nativeErrorInstance.jsStack,
+    );
   }
 }
