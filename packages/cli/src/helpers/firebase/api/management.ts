@@ -1,11 +1,5 @@
 import { request } from './common';
-import {
-  Account,
-  AndroidSha,
-  Project,
-  ProjectDetail,
-  ProjectDetailAndroidApp,
-} from '../../../types/firebase';
+import { Account, AndroidSha, Project, ProjectDetail, AndroidApp } from '../../../types/firebase';
 import { Apps } from '../../../types/cli';
 import { withParameter } from '../../utils';
 import CliError from '../../error';
@@ -32,23 +26,29 @@ async function getProject(account: Account, projectId: string, apps: Apps): Prom
 
     if (apps.android) {
       project.apps.android =
-        (await request(account, {
-          url: `${BASE_URL}/projects/${projectId}/androidApps`,
-        })).apps || [];
+        (
+          await request(account, {
+            url: `${BASE_URL}/projects/${projectId}/androidApps`,
+          })
+        ).apps || [];
     }
 
     if (apps.ios) {
       project.apps.ios =
-        (await request(account, {
-          url: `${BASE_URL}/projects/${projectId}/iosApps`,
-        })).apps || [];
+        (
+          await request(account, {
+            url: `${BASE_URL}/projects/${projectId}/iosApps`,
+          })
+        ).apps || [];
     }
 
     if (apps.web) {
       project.apps.web =
-        (await request(account, {
-          url: `${BASE_URL}/projects/${projectId}/webApps`,
-        })).apps || [];
+        (
+          await request(account, {
+            url: `${BASE_URL}/projects/${projectId}/webApps`,
+          })
+        ).apps || [];
     }
   }
 
@@ -92,11 +92,11 @@ async function getAppConfig(account: Account, appName: string) {
  */
 async function getAndroidAppConfigShaList(
   account: Account,
-  appName: string,
+  projectDetailAndroidApp: AndroidApp,
 ): Promise<AndroidSha[]> {
   return request(account, {
-    url: `${BASE_URL}/${appName}/sha`,
-  }).then($ => $.certificates);
+    url: `${BASE_URL}/${projectDetailAndroidApp.name}/sha`,
+  }).then($ => $.certificates || []);
 }
 
 /**
@@ -111,7 +111,8 @@ async function createAndroidApp(
   packageName: string,
   displayName: string,
 ) {
-  const androidApp: ProjectDetailAndroidApp = {
+  // TODO: use an actual ID
+  const androidApp: AndroidApp = {
     name: `${projectDetail.name}/androidApps/SomeId`,
     appId: 'SomeId',
     displayName: displayName,
@@ -124,22 +125,23 @@ async function createAndroidApp(
     data: androidApp,
   });
 
-  throw new CliError('Not implemented');
+  return operation.response;
 }
 
 async function createAndroidSha(
   account: Account,
-  projectDetailAndroidApp: ProjectDetailAndroidApp,
+  projectDetailAndroidApp: AndroidApp,
   hash: string,
 ) {
   hash = hash.toUpperCase();
-  if (!hash.match(/^[0-9A-F]{2}(:[0-9A-F]{2})*$/))
+  if (!hash.match(/^[0-9a-f]{2}(:[0-9a-f]{2})*$/))
     throw new CliError('Invalid SHA hash format. Bytes need to be in hex and seperated by colons.');
   const hashParts = hash.split(':');
   if (hashParts.length == 20) var type = 'SHA_1';
   else if (hashParts.length == 32) var type = 'SHA_256';
   else throw new CliError('Invalid SHA hash type. Only SHA-1 and SHA-256 are allowed.');
 
+  // TODO: use an actual ID
   const shaCertificate: AndroidSha = {
     name: `${projectDetailAndroidApp.name}/sha/SomeId`,
     shaHash: hash,
@@ -151,7 +153,7 @@ async function createAndroidSha(
     data: shaCertificate,
   });
 
-  throw new CliError('Not implemented');
+  return operation.response;
 }
 
 /**

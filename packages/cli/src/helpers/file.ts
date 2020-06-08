@@ -73,7 +73,7 @@ async function readAndroidGoogleServices(
     'google-services.json',
   );
 
-  const fileExists = exists(androidFirebaseConfigFilePath);
+  const fileExists = await exists(androidFirebaseConfigFilePath);
   if (!fileExists) return null;
   return read(androidFirebaseConfigFilePath);
 }
@@ -97,12 +97,10 @@ function writeAndroidGoogleServices(androidProjectConfig: AndroidProjectConfig, 
  *
  * @param androidProjectConfig
  */
-function readAndroidBuildGradle(androidProjectConfig: AndroidProjectConfig) {
-  const androidBuildGradleFilePath = join(androidProjectConfig.sourceDir, '..', 'build.gradle');
-  console.log(androidBuildGradleFilePath);
-  const fileExists = exists(androidBuildGradleFilePath);
+async function readAndroidBuildGradle(androidProjectConfig: AndroidProjectConfig) {
+  const fileExists = await exists(androidProjectConfig.buildGradlePath);
   if (!fileExists) return null;
-  return read(androidBuildGradleFilePath);
+  return read(androidProjectConfig.buildGradlePath);
 }
 
 /**
@@ -111,8 +109,7 @@ function readAndroidBuildGradle(androidProjectConfig: AndroidProjectConfig) {
  * @param data
  */
 function writeAndroidBuildGradle(androidProjectConfig: AndroidProjectConfig, data: string) {
-  const androidBuildGradleFilePath = join(androidProjectConfig.sourceDir, '..', 'build.gradle');
-  return write(androidBuildGradleFilePath, data);
+  return write(androidProjectConfig.buildGradlePath, data);
 }
 
 /**
@@ -120,10 +117,11 @@ function writeAndroidBuildGradle(androidProjectConfig: AndroidProjectConfig, dat
  *
  * @param androidProjectConfig
  */
-function readAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig) {
-  const fileExists = exists(androidProjectConfig.buildGradlePath);
+async function readAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig) {
+  const androidAppBuildGradlePath = join(androidProjectConfig.sourceDir, 'app', 'build.gradle');
+  const fileExists = await exists(androidAppBuildGradlePath);
   if (!fileExists) return null;
-  return read(androidProjectConfig.buildGradlePath);
+  return read(androidAppBuildGradlePath);
 }
 
 /**
@@ -132,7 +130,8 @@ function readAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig) {
  * @param data
  */
 function writeAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig, data: string) {
-  return write(androidProjectConfig.buildGradlePath, data);
+  const androidAppBuildGradlePath = join(androidProjectConfig.sourceDir, 'app', 'build.gradle');
+  return write(androidAppBuildGradlePath, data);
 }
 
 /**

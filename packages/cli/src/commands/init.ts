@@ -54,7 +54,7 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
   log.debug('Running "firebase init" command...');
   trackModified(args.includes('force'));
 
-  const account = (await getAccount()) as Account; // should never be undefined if optional = false
+  const account = await getAccount();
 
   const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
 
@@ -103,9 +103,7 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
   if (!firebaseProject) {
     throw new CliError(
       `No Firebase projects exist for user ${Chalk.cyanBright(
-        `[${
-          account.user.email
-        }]. To continue, create a new project on the Firebase Console at https://console.firebase.google.com/.`,
+        `[${account.user.email}]. To continue, create a new project on the Firebase Console at https://console.firebase.google.com/.`,
       )}`,
     );
   }

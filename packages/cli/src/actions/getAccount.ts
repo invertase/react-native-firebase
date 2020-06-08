@@ -5,7 +5,7 @@ import log from '../helpers/log';
 import prompt from '../helpers/prompt';
 import CliError from '../helpers/error';
 
-export default async function getAccount(optional = false): Promise<Account | undefined> {
+export default async function getAccount(): Promise<Account> {
   // fetch users account
   let account = firebase.auth.getAccount();
 
@@ -20,9 +20,6 @@ export default async function getAccount(optional = false): Promise<Account | un
   } else {
     log.info('No existing Firebase account was detected.');
   }
-
-  if (optional && !(await prompt.confirm('Would you like to login to a Firebase account?')))
-    return undefined;
 
   log.info(
     'To continue, sign-in to your Google account which owns the Firebase project you wish to setup:',

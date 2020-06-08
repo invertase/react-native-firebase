@@ -45,12 +45,12 @@ export interface Project {
 
 export interface ProjectDetail extends Project {
   apps: {
-    android?: ProjectDetailAndroidApp[];
-    ios?: ProjectDetailIOSApp[];
+    android?: AndroidApp[];
+    ios?: IOSApp[];
   };
 }
 
-export interface ProjectDetailAndroidApp {
+export interface AndroidApp {
   name: string;
   appId: string;
   displayName: string;
@@ -58,7 +58,7 @@ export interface ProjectDetailAndroidApp {
   packageName: string;
 }
 
-export interface ProjectDetailIOSApp {
+export interface IOSApp {
   name: string;
   appId: string;
   projectId: string;

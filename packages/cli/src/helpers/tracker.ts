@@ -29,8 +29,12 @@ export function addModified(file: PathLike) {
 export function reportModified() {
   if (global.filesModified) {
     if (global.filesModified.length) {
-      log.info(`The following ${global.filesModified.length} files have been modified:`);
-      global.filesModified.forEach(file => log.info(file.toString()));
+      log.info(
+        `The following ${
+          global.filesModified.length
+        } file(s) have been modified:\n${global.filesModified.join('\n')}`,
+      );
+      global.filesModified.map(file => file.toString());
     } else log.info('No files have been modified.');
   }
   // no output if files weren't expected to change during run

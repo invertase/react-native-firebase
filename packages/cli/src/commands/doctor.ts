@@ -1,64 +1,107 @@
 import Chalk from 'chalk';
 import { Config } from '@react-native-community/cli-types';
 import getAccount from '../actions/getAccount';
-import log from '../helpers/log';
 import file from '../helpers/file';
 import getConfig from '../actions/getConfig';
 import prompt from '../helpers/prompt';
 import firebase from '../helpers/firebase';
 import { getAndroidApp } from '../actions/getApp';
+import CliError from '../helpers/error';
+import { getGoogleServicesDependency, getGoogleServicesPlugin } from '../helpers/gradle';
+
+const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
+
+function validateStyle(val: string, success: boolean): string {
+  if (success) return Chalk.green(val);
+  return Chalk.red(val);
+}
+
+function validateSymbol(success: boolean): string {
+  if (success) return Chalk.green('✓');
+  return Chalk.red('✖');
+}
+
+function foundResult(success: any): string {
+  return success ? 'found' : 'not found';
+}
 
 export default async function doctorCommand(args: string[], reactNativeConfig: Config) {
   const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
 
-  const account = await getAccount(true);
-  if (account) {
-    var firebaseProject = await prompt.selectFirebaseProject(account);
-    if (!firebaseProject)
-      log.warn(
-        `No Firebase projects exist for user ${Chalk.cyanBright(
-          `[${account.user.email}], Firebase information will not be available.`,
-        )}`,
-      );
-    else {
-      var projectDetail = await firebase
-        .api(account)
-        .management.getProject(firebaseProject.projectId, { android: true, ios: true, web: false });
-      log.info('# Firebase project information');
-      log.info(`Display name: ${projectDetail.displayName}`);
-      log.info(`Project ID: ${projectDetail.projectId}`);
-      log.info(`Project number: ${projectDetail.projectNumber}`);
-    }
-  } else {
-    log.warn('Not logged into Firebase, Firebase information will not be available.');
-  }
+  const account = await getAccount();
+  var firebaseProject = await prompt.selectFirebaseProject(account);
+  if (!firebaseProject)
+    throw new CliError(
+      `No Firebase projects exist for user ${Chalk.cyanBright(`[${account.user.email}].`)}`,
+    );
 
-  log.info('# Firebase Android information');
-  log.info(`Package name: ${androidProjectConfig.packageName}`);
-  if (projectDetail) {
-    var androidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
-    if (androidApp) {
-      log.info(`Display name: ${androidApp.displayName}`);
-      log.info(`AppId: ${androidApp.appId}`);
-      log.info(`AppId: ${androidApp.name}`);
-    }
-  }
+  const projectDetail = await firebase
+    .api(account)
+    .management.getProject(firebaseProject.projectId, { android: true, ios: true, web: false });
+
+  var androidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
+
+  const checks: { [key: string]: [string, string, boolean][] } = {
+    Android: [],
+    iOS: [],
+  };
+
+  checks['Android'].push([
+    `Package '${androidProjectConfig.packageName}'`,
+    foundResult(androidApp),
+    !!androidApp,
+  ]);
+
   const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
-  if (androidGoogleServicesFile) {
-    log.success('A "google-services.json" has been found.');
-  } else {
-    log.warn(
-      'No "google-services.json" file has been found, Firebase for Android has not been setup.',
-    );
+
+  checks['Android'].push([
+    `google-services.json`,
+    foundResult(androidGoogleServicesFile),
+    !!androidGoogleServicesFile,
+  ]);
+
+  const androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
+  checks['Android'].push([
+    `build.gradle`,
+    foundResult(androidGoogleServicesFile),
+    !!androidBuildGradleFile,
+  ]);
+  if (androidBuildGradleFile) {
+    const dependency = await getGoogleServicesDependency(androidBuildGradleFile);
+    checks['Android'].push([
+      `Google Services Dependency`,
+      dependency ? dependency.version : 'not configured',
+      !!dependency && dependency.version == GOOGLE_SERVICES_PLUGIN_VERSION,
+    ]);
   }
 
-  log.info('# iOS');
+  const androidAppBuildGradleFile = await file.readAndroidAppBuildGradle(androidProjectConfig);
+  checks['Android'].push([
+    `App build.gradle`,
+    foundResult(androidBuildGradleFile),
+    !!androidAppBuildGradleFile,
+  ]);
+  if (androidAppBuildGradleFile) {
+    const googleServicePlugin = getGoogleServicesPlugin(androidAppBuildGradleFile);
+    checks['Android'].push([
+      `Google Services Plugin`,
+      googleServicePlugin ? 'configured' : 'not configured',
+      !!androidBuildGradleFile,
+    ]);
+  }
+
   const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
-  if (iosGoogleServicesFile) {
-    log.success('A "GoogleService-Info.plist" has been found.');
-  } else {
-    log.warn(
-      'No "GoogleService-Info.plist" file has been found, Firebase for iOS has not been setup.',
-    );
+  checks['iOS'].push([
+    `GoogleService-Info.plist`,
+    foundResult(iosGoogleServicesFile),
+    !!iosGoogleServicesFile,
+  ]);
+
+  for (let [category, items] of Object.entries(checks)) {
+    const pass = items.every(item => item[2]);
+    console.log(`\n${validateSymbol(pass)} ${category}`);
+    for (let item of items) {
+      console.log(` - ${item[0]}: ${validateStyle(item[1], item[2])}`);
+    }
   }
 }

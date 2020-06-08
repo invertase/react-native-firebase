@@ -1,4 +1,4 @@
-import { Account } from '../types/firebase';
+import { Account, ProjectDetail } from '../types/firebase';
 import { Config, IOSProjectConfig } from '@react-native-community/cli-types';
 import log from '../helpers/log';
 

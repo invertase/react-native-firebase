@@ -1,11 +1,11 @@
 import Chalk from 'chalk';
-import { ProjectDetailAndroidApp, ProjectDetail } from '../types/firebase';
+import { AndroidApp, ProjectDetail } from '../types/firebase';
 import log from '../helpers/log';
 
 export function getAndroidApp(
   projectDetail: ProjectDetail,
   packageName: string,
-): ProjectDetailAndroidApp | undefined {
+): AndroidApp | undefined {
   if (!projectDetail.apps.android?.length) {
     log.warn(`Your project ${projectDetail.displayName} does not contain any Android apps.`);
     return;

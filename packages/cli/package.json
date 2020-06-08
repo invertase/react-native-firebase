@@ -32,6 +32,7 @@
     "configstore": "^5.0.1",
     "enquirer": "^2.3.4",
     "google-auth-library": "^5.10.1",
+    "gradle-to-js": "^2.0.0",
     "is-git-dirty": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "open": "^7.0.4",
