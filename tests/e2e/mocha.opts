@@ -43,4 +43,4 @@
 
 ../packages/messaging/e2e/*.e2e.js
 
-../packages/firestore/e2e/*.e2e.js
+../packages/firestore/e2e/**/*.e2e.js
