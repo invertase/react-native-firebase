@@ -32,7 +32,7 @@
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
-    "detox": "16.2.1",
+    "detox": "16.7.2",
     "jet": "^0.6.6-0",
     "mocha": "^6.1.4",
     "nyc": "^15.0.1",
