@@ -52,27 +52,27 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
         Double cacheSizeBytesDouble = (Double) settings.get("cacheSizeBytes");
 
         UniversalFirebasePreferences.getSharedInstance().setIntValue(
-            UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
-            Objects.requireNonNull(cacheSizeBytesDouble).intValue());
+          UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+          Objects.requireNonNull(cacheSizeBytesDouble).intValue());
       }
 
       // settings.host
       if (settings.containsKey("host")) {
         UniversalFirebasePreferences.getSharedInstance().setStringValue(
-            UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName, (String) settings.get("host"));
+          UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName, (String) settings.get("host"));
       }
 
       // settings.persistence
       if (settings.containsKey("persistence")) {
         UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
-            UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
-            (boolean) settings.get("persistence"));
+          UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+          (boolean) settings.get("persistence"));
       }
 
       // settings.ssl
       if (settings.containsKey("ssl")) {
         UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
-            UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName, (boolean) settings.get("ssl"));
+          UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName, (boolean) settings.get("ssl"));
       }
 
       return null;

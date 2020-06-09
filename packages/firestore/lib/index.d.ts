@@ -1957,7 +1957,7 @@ export namespace FirebaseFirestoreTypes {
      * #### Example
      *
      *```js
-     * await firebase.firestore().clearPersistence();
+     * await firebase.firestore().terminate();
      * ```
      */
     terminate(): Promise<void>;
