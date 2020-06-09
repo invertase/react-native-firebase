@@ -84,6 +84,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.clearPersistence();
   }
 
+  async terminate() {
+    await this.native.terminate();
+  }
+
   collection(collectionPath) {
     if (!isString(collectionPath)) {
       throw new Error(

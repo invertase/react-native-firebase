@@ -20,7 +20,6 @@ package io.invertase.firebase.firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
@@ -29,20 +28,27 @@ import java.util.HashMap;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class UniversalFirebaseFirestoreCommon {
-  private static HashMap<String, Boolean> settingsLock = new HashMap<>();
+  static HashMap<String, FirebaseFirestore> instanceCache = new HashMap<>();
 
   static FirebaseFirestore getFirestoreForApp(String appName) {
+    FirebaseFirestore cachedInstance = instanceCache.get(appName);
+
+    if(cachedInstance != null){
+      return cachedInstance;
+    }
+
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
     FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp);
+
     setFirestoreSettings(instance, appName);
+
+    instanceCache.put(appName, instance);
 
     return instance;
   }
 
   private static void setFirestoreSettings(FirebaseFirestore firebaseFirestore, String appName) {
-    // Ensure not already been set
-    if (settingsLock.containsKey(appName)) return;
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
@@ -78,8 +84,6 @@ public class UniversalFirebaseFirestoreCommon {
     firestoreSettings.setSslEnabled(ssl);
 
     firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
-
-    settingsLock.put(appName, true);
   }
 
   static Query getQueryForFirestore(

@@ -88,4 +88,15 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
       }
     });
   }
+
+  @ReactMethod
+  public void terminate(String appName, Promise promise) {
+    module.terminate(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        rejectPromiseFirestoreException(promise, task.getException());
+      }
+    });
+  }
 }

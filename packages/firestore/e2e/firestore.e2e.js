@@ -318,4 +318,24 @@ describe('firestore()', () => {
       }
     });
   });
+
+  describe('Clear cached data persistence', () => {
+    it('should clear any cached data', async () => {
+      const db = firebase.firestore();
+      const ref = db.doc('v6/foobar');
+
+      await ref.set({ foo: 'bar' });
+
+      await db.terminate();
+      await db.clearPersistence();
+
+      try {
+        await ref.get({ source: 'cache' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.code.should.equal('firestore/unavailable');
+        return Promise.resolve();
+      }
+    });
+  });
 });

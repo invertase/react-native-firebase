@@ -24,6 +24,7 @@
 #pragma mark -
 #pragma mark Module Setup
 
+extern NSMutableDictionary * instanceCache;
 
 RCT_EXPORT_MODULE();
 
@@ -115,6 +116,23 @@ RCT_EXPORT_METHOD(clearPersistence:
       resolve(nil);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(terminate:
+  (FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock)reject
+) {
+    FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+    [instanceCache removeObjectForKey: [firebaseApp name]];
+    
+    [instance terminateWithCompletion:^(NSError *error) {
+      if (error) {
+        [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+      } else {
+        resolve(nil);
+      }
+    }];
 }
 
 

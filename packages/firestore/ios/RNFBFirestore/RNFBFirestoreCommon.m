@@ -26,12 +26,27 @@ NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
 
 __strong NSMutableDictionary *settingsLock;
 
-@implementation RNFBFirestoreCommon
+NSMutableDictionary * instanceCache;
 
+@implementation RNFBFirestoreCommon
 + (FIRFirestore *)getFirestoreForApp:(FIRApp *)app {
-  FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
-  [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
-  return instance;
+    if(instanceCache == nil){
+        instanceCache = [[NSMutableDictionary alloc] init];
+    }
+    
+    FIRFirestore * cachedInstance = instanceCache[[app name]];
+    
+    if(cachedInstance){
+      return cachedInstance;
+    }
+
+    FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
+  
+    [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
+    
+    instanceCache[[app name]] = instance;
+    
+    return instance;
 }
 
 + (dispatch_queue_t)getFirestoreQueue {
