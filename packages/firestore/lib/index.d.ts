@@ -1950,6 +1950,17 @@ export namespace FirebaseFirestoreTypes {
      * ```
      */
     clearPersistence(): Promise<void>;
+    /**
+     * Typically called to ensure a new Firestore instance is initialized before calling
+     * `firebase.firestore().clearPersistence()`.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().clearPersistence();
+     * ```
+     */
+    terminate(): Promise<void>;
   }
 }
 
