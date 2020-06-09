@@ -23,24 +23,24 @@ packages/dynamic-links/e2e/*.e2e.js
 
 packages/iid/e2e/*.e2e.js
 
-# ../packages/perf/e2e/*.e2e.js
+../packages/perf/e2e/*.e2e.js
 
-# ../packages/functions/e2e/*.e2e.js
+../packages/functions/e2e/*.e2e.js
 
-# ../packages/remote-config/e2e/*.e2e.js
+../packages/remote-config/e2e/*.e2e.js
 
-# ../packages/ml-natural-language/e2e/*.e2e.js
+../packages/ml-natural-language/e2e/*.e2e.js
 
 # TODO - ci crashing ios
-# ../packages/ml-vision/e2e/*.e2e.js
+../packages/ml-vision/e2e/*.e2e.js
 
-# ../packages/in-app-messaging/e2e/*.e2e.js
+../packages/in-app-messaging/e2e/*.e2e.js
 
-# ../packages/database/e2e/*.e2e.js
+../packages/database/e2e/*.e2e.js
 
 # TODO crashing - error codes are wrong
-# ../packages/storage/e2e/*.e2e.js
+../packages/storage/e2e/*.e2e.js
 
-# ../packages/messaging/e2e/*.e2e.js
+../packages/messaging/e2e/*.e2e.js
 
-# ../packages/firestore/e2e/**/*.e2e.js
+../packages/firestore/e2e/**/*.e2e.js
