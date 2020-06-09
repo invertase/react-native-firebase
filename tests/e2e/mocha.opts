@@ -8,7 +8,7 @@
 --require node_modules/jet/platform/node
 
 
-../../packages/app/e2e/*.e2e.js
+../packages/app/e2e/*.e2e.js
 
 ../packages/analytics/e2e/*.e2e.js
 
