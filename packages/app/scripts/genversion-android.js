@@ -7,7 +7,7 @@ const outputPath = path.resolve(
   '..',
   'android',
   'src/reactnative/java/io/invertase/firebase/app',
-  'ReactNativeFirebaseAppRegistrar.java',
+  'ReactNativeFirebaseVersion.java',
 );
 const template = `
 package io.invertase.firebase.app;
