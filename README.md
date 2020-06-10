@@ -143,38 +143,9 @@ function App() {
 
 #### 4. Implement the logout process
 
-```js
-// App.js
+There is an operation `AppleAuthRequestOperation.LOGOUT`, however it does not work as expected and is not even being used by Apple in their example code. See [this issue for more information](https://github.com/invertase/react-native-apple-authentication/issues/10#issuecomment-611532131)
 
-import { View, Button } from 'react-native';
-import appleAuth, {
-  AppleAuthRequestOperation,
-  AppleAuthCredentialState,
-} from '@invertase/react-native-apple-authentication';
-
-async function onLogout() {
-  // performs logout request
-  const appleAuthRequestResponse = await appleAuth.performRequest({
-    requestedOperation: AppleAuthRequestOperation.LOGOUT,
-  });
-
-  // get current authentication state for user
-  const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
-
-  // use credentialState response to ensure the user credential's have been revoked
-  if (credentialState === AppleAuthCredentialState.REVOKED) {
-    // user is unauthenticated
-  }
-}
-
-function App() {
-  return (
-    <View>
-      <Button onPress={() => onLogout()}>log out</Button>
-    </View>
-  );
-}
-```
+So it is recommended when logging out to just clear all data you have from a user, collected during `AppleAuthRequestOperation.LOGIN`.
 
 ## Serverside verification
 
