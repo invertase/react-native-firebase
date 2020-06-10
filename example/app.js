@@ -99,23 +99,18 @@ async function onAppleButtonPress(updateCredentialStateForUser) {
 }
 
 function RootComponent() {
-  if (!appleAuth.isSupported) {
-    return (
-      <View style={[styles.container, styles.horizontal]}>
-        <Text>Apple Authentication is not supported on this device.</Text>
-      </View>
-    );
-  }
-
   const [credentialStateForUser, updateCredentialStateForUser] = useState(-1);
   useEffect(() => {
+    if (!appleAuth.isSupported) return
+
     fetchAndUpdateCredentialState(updateCredentialStateForUser).catch(error =>
       updateCredentialStateForUser(`Error: ${error.code}`),
     );
-    return () => {};
   }, []);
 
   useEffect(() => {
+    if (!appleAuth.isSupported) return
+
     return appleAuth.onCredentialRevoked(async () => {
       console.warn('Credential Revoked');
       fetchAndUpdateCredentialState(updateCredentialStateForUser).catch(error =>
@@ -123,7 +118,15 @@ function RootComponent() {
       );
     });
   }, []);
-
+  
+  if (!appleAuth.isSupported) {
+    return (
+      <View style={[styles.container, styles.horizontal]}>
+        <Text>Apple Authentication is not supported on this device.</Text>
+      </View>
+    );
+  }
+  
   return (
     <View style={[styles.container, styles.horizontal]}>
       <Text style={styles.header}>Credential State</Text>
