@@ -15,7 +15,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -87,7 +87,7 @@ jobs:
           echo "Emulator started"
 
       - name: Detox Test
-        timeout-minutes: 10
+        timeout-minutes: 30
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
