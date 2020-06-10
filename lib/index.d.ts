@@ -230,6 +230,15 @@ export interface AppleAuthRequestOptions {
   nonce?: string;
 
   /**
+   * Disable automatic nonce behaviour by setting this to false.
+   *
+   * Useful for authentication providers that don't yet support nonces.
+   *
+   * Defaults to true.
+   */
+  nonceEnabled?: boolean;
+
+  /**
    * State to be passed to the identity provider.
    *
    * This value will be returned as a part of successful AppleAuthRequestResponse response.
