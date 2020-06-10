@@ -1,5 +1,5 @@
 {
-  "include": ["lib/*.d.ts", "type-test.ts"],
+  "include": ["lib/*.d.ts", "type-test.tsx"],
   "compilerOptions": {
     "noEmit": true,
     "target": "es5",
@@ -8,16 +8,17 @@
     "importHelpers": true,
     "jsx": "react",
     "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": ["es2015", "es2016", "esnext", "dom"]
+    "lib": ["es2015", "es2016", "esnext"]
   },
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
