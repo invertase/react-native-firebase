@@ -6,7 +6,7 @@ Analytics
 analytics
 APIs
 APIs.
-APNS
+APNs
 async
 auth
 Auth
@@ -104,6 +104,7 @@ SDK.
 SDKs
 SDKs.
 SHA1
+SHA-256
 SMS
 SVG
 TestLab
@@ -123,3 +124,5 @@ v6
 VSCode
 Wix
 Xcode
+Xcode.
+lifecycle

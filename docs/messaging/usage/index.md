@@ -22,8 +22,8 @@ yarn add @react-native-firebase/messaging
 cd ios/ && pod install
 ```
 
-> iOS requires further configuration steps to be carried out before you can start receiving and sending
-> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messaging](/messaging/usage/ios-setup).
+> iOS requires further configuration before you can start receiving and sending
+> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Cloud Messaging](/messaging/usage/ios-setup).
 
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
@@ -40,40 +40,24 @@ The module also provides basic support for displaying local notifications, to le
 
 # Usage
 
-Before receiving messages from the FCM service, you must first register your device and to use the service on iOS, you need to request the explicit users
-permission to accept incoming messages.
-
-## Registering devices with FCM
-
-Before devices can receive and send messages via FCM, they must be registered. The library exposes a `registerDeviceForRemoteMessages`
-method which should be called early on in your apps life-cycle. It is recommended that this method is called on every app
-boot:
-
-```js
-import messaging from '@react-native-firebase/messaging';
-
-async function registerAppWithFCM() {
-  await messaging().registerDeviceForRemoteMessages();
-}
-```
-
 ## iOS - Requesting permissions
 
-iOS prevents messages from being delivered to devices unless you have received explicit permission from the user. This includes
-messages which include data payloads and/or notification payloads.
+iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user.
 
 > To learn more about local notifications, view the [Notifications](/messaging/notifications) documentation.
 
-The module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
+This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging from '@react-native-firebase/messaging';
+import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const settings = await messaging().requestPermission();
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
 
-  if (settings) {
-    console.log('Permission settings:', settings);
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
   }
 }
 ```
@@ -195,7 +179,7 @@ any custom data via the `data` property. To learn more, view the [`RemoteMessage
 API reference.
 
 If the `RemoteMessage` payload contains a `notification` property when sent to the `setBackgroundMessageHandler` handler, the device
-will have displayed a [notification](/messaging/notififications) to the user.
+will have displayed a [notification](/messaging/notifications) to the user.
 
 #### Data-only messages
 
@@ -294,7 +278,7 @@ messaging()
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `subscribeToTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
 messaging()
@@ -305,6 +289,31 @@ messaging()
 # firebase.json
 
 Messaging can be further configured to provide more control over how FCM is handled internally within your application.
+
+## Auto Registration (iOS)
+
+React Native Firebase Messaging automatically registers the device with APNs to receive remote messages. If you need
+to manually control registration you can disable this via the `firebase.json` file:
+
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_ios_auto_register_for_remote_messages": false
+  }
+}
+```
+
+Once auto-registration is disabled you must manually call `registerDeviceForRemoteMessages` in your JavaScript code as
+early as possible in your application startup;
+
+```js
+import messaging from '@react-native-firebase/messaging';
+
+async function registerAppWithFCM() {
+  await messaging().registerDeviceForRemoteMessages();
+}
+```
 
 ## Auto initialization
 

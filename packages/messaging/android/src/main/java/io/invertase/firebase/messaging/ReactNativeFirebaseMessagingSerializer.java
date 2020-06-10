@@ -106,8 +106,24 @@ class ReactNativeFirebaseMessagingSerializer {
       notificationMap.putString("title", notification.getTitle());
     }
 
+    if (notification.getTitleLocalizationKey() != null) {
+      notificationMap.putString("titleLocKey", notification.getTitleLocalizationKey());
+    }
+
+    if (notification.getTitleLocalizationArgs() != null) {
+      notificationMap.putArray("titleLocArgs", Arguments.fromJavaArgs(notification.getTitleLocalizationArgs()));
+    }
+
     if (notification.getBody() != null) {
       notificationMap.putString("body", notification.getBody());
+    }
+
+    if (notification.getBodyLocalizationKey() != null) {
+      notificationMap.putString("bodyLocKey", notification.getBodyLocalizationKey());
+    }
+
+    if (notification.getBodyLocalizationArgs() != null) {
+      notificationMap.putArray("bodyLocArgs", Arguments.fromJavaArgs(notification.getBodyLocalizationArgs()));
     }
 
     if (notification.getChannelId() != null) {
