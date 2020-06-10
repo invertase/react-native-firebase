@@ -59,8 +59,16 @@ describe('mlkit.vision.barcode', () => {
       }
     });
 
-    xit('should return a valid response', async () => {
+    it('should return a valid response', async () => {
+      console.warn('Here 1 >>>>>');
+
       const res = await firebase.vision().barcodeDetectorProcessImage(testImageFile);
+
+      console.warn('Here 2 >>>>>');
+
+      Utils.sleep(5000);
+
+      console.warn('Here 3 >>>>>');
 
       res.should.be.Array();
       res.length.should.be.greaterThan(0);
