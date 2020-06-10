@@ -93,7 +93,7 @@
   }
 
   return @{
-      @"nonce": _nonce,
+      @"nonce": _nonce ? _nonce : (id) [NSNull null],
       @"user": appleIdCredential.user,
       @"fullName": fullName ? fullName : (id) [NSNull null],
       @"realUserStatus": @(appleIdCredential.realUserStatus),

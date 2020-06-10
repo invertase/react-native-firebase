@@ -23,7 +23,7 @@
 
 @interface RNAppleAuthASAuthorizationDelegates : NSObject <ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding>
 
-@property(nonatomic, strong, nonnull) NSString *nonce;
+@property(nonatomic, strong, nullable) NSString *nonce;
 @property(nonatomic, strong, nullable) void (^completion)(NSError *, NSDictionary *);
 
 - (instancetype)initWithCompletion:(void (^)(NSError *error, NSDictionary *authorizationCredential))completion andNonce:(NSString *)nonce;

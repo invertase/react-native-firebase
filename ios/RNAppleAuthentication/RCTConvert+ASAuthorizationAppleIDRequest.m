@@ -41,10 +41,12 @@
     appleIdRequest.user = [requestOptions valueForKey:@"user"];
   }
 
-  if ([requestOptions valueForKey:@"nonce"] != nil) {
-    appleIdRequest.nonce = [requestOptions valueForKey:@"nonce"];
-  } else {
-    appleIdRequest.nonce = [RNAppleAuthUtils randomNonce:32];
+  if (![[requestOptions valueForKey:@"nonceEnabled"] isEqual:@(NO)]) {
+    if ([requestOptions valueForKey:@"nonce"] != nil) {
+      appleIdRequest.nonce = [requestOptions valueForKey:@"nonce"];
+    } else {
+      appleIdRequest.nonce = [RNAppleAuthUtils randomNonce:32];
+    }
   }
 
   return appleIdRequest;
