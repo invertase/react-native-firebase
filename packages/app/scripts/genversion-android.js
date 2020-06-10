@@ -1,3 +1,15 @@
+const fs = require('fs');
+const path = require('path');
+
+const version = require('../lib/version');
+const outputPath = path.resolve(
+  __dirname,
+  '..',
+  'android',
+  'src/reactnative/java/io/invertase/firebase/app',
+  'ReactNativeFirebaseAppRegistrar.java',
+);
+const template = `
 package io.invertase.firebase.app;
 
 /*
@@ -40,3 +52,7 @@ public class ReactNativeFirebaseAppRegistrar implements ComponentRegistrar {
     );
   }
 }
+
+`;
+
+fs.writeFileSync(outputPath, template.replace('BuildConfig.VERSION_NAME', `"${version}"`), 'utf8');
