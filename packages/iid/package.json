@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/iid",
-  "version": "7.1.3",
+  "version": "7.1.4",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Firebase Instance ID provides a unique identifier for each instance of your app and a mechanism to authenticate and authorize actions for it (for example: sending FCM messages).",
   "main": "lib/index.js",
