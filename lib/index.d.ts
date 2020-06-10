@@ -371,7 +371,7 @@ export namespace RNAppleAuth {
      * Perform a request to Apple Authentication services with the provided request options.
      * @param options AppleAuthRequestOptions
      */
-    performRequest(options: AppleAuthRequestOptions): Promise<AppleAuthRequestResponse>;
+    performRequest(options?: AppleAuthRequestOptions): Promise<AppleAuthRequestResponse>;
 
     /**
      * Get the current @{RNAppleAuth.AppleAuthCredentialState} for the provided user identifier.
