@@ -59,7 +59,7 @@ describe('mlkit.vision.barcode', () => {
       }
     });
 
-    it('should return a valid response', async () => {
+    xit('should return a valid response', async () => {
       const testImageFileValidResponse = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/barcode1.png`;
       await firebase
         .storage()
