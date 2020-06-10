@@ -176,6 +176,26 @@ function App() {
 }
 ```
 
+## Serverside verification
+
+#### Nonce
+
+- Based on the [Firebase implementation guidelines](https://firebase.google.com/docs/auth/ios/apple#sign_in_with_apple_and_authenticate_with_firebase) the nonce provided to `appleAuth.performRequest` is automatically SHA256-hashed.
+- To verify the nonce serverside you first need to hash the nonce value, ie:
+  ```js
+  crypto.createHash('sha256').update(nonce).digest('hex');
+  ```
+- The nonce can then be easily compared serverside for extra security verification, ie:
+  ```js
+  import crypto from 'crypto';
+  import appleSigninAuth from 'apple-signin-auth';
+  
+  appleIdTokenClaims = await appleSigninAuth.verifyIdToken(id_token, {
+    /** sha256 hex hash of raw nonce */
+    nonce: nonce ? crypto.createHash('sha256').update(nonce).digest('hex') : undefined,
+  });
+  ```
+
 ## API Reference Documentation
 
 ### Interfaces
