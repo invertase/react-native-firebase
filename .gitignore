@@ -551,7 +551,7 @@ GoogleService-Info.plist
 
 # generated files
 RNFBVersion.m
-ReactNativeFirebaseAppRegistrar.java
+ReactNativeFirebaseVersion.java
 
 appPlaygrounds/
 app.playground.js
