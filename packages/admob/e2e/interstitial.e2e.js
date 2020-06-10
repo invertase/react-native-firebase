@@ -51,7 +51,7 @@ describe('admob() InterstitialAd', () => {
       i.loaded.should.eql(false);
     });
 
-    it('loads with requestOptions', async () => {
+    xit('loads with requestOptions', async () => {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL, {
