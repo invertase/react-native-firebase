@@ -60,13 +60,13 @@ describe('mlkit.vision.barcode', () => {
     });
 
     it('should return a valid response', async () => {
-      const testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/barcode1.png`;
+      const testImageFileValidResponse = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/barcode1.png`;
       await firebase
         .storage()
         .ref('vision/barcode.png')
-        .writeToFile(testImageFile);
+        .writeToFile(testImageFileValidResponse);
 
-      const res = await firebase.vision().barcodeDetectorProcessImage(testImageFile);
+      const res = await firebase.vision().barcodeDetectorProcessImage(testImageFileValidResponse);
 
       console.warn('Here 2 >>>>>');
 
