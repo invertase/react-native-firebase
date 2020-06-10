@@ -30,6 +30,11 @@ import java.util.List;
 public class ReactNativeFirebaseAppRegistrar implements ComponentRegistrar {
   @Override
   public List<Component<?>> getComponents() {
-    return Collections.singletonList(LibraryVersionComponent.create("react-native-firebase", ReactNativeFirebaseVersion.VERSION));
+    return Collections
+        .singletonList(
+            LibraryVersionComponent.create(
+                "react-native-firebase", 
+                ReactNativeFirebaseVersion.VERSION
+        ));
   }
 }
