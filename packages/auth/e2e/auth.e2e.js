@@ -39,13 +39,12 @@ describe('auth()', () => {
   });
 
   describe('applyActionCode()', () => {
-    //TODO: Figure out how to create a valid test code
-    // it('works as expected', async () => {
-    //   await firebase
-    //     .auth()
-    //     .applyActionCode('fooby shooby dooby')
-    //     .then($ => $);
-    // });
+    xit('works as expected', async () => {
+      await firebase
+        .auth()
+        .applyActionCode('fooby shooby dooby')
+        .then($ => $);
+    });
     it('errors on invalid code', async () => {
       try {
         await firebase
