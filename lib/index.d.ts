@@ -15,7 +15,10 @@
  *
  */
 
-export namespace RNAppleAuth {
+import React from 'react';
+import { GestureResponderEvent, StyleProp, ViewStyle } from 'react-native';
+
+declare module '@invertase/react-native-apple-authentication' {
   /**
    * The Button style (mainly color) to render.
    */
@@ -170,12 +173,12 @@ export namespace RNAppleAuth {
    */
   export interface AppleButtonProps {
     /**
-     * See @{RNAppleAuth.AppleButtonStyle}
+     * See @{AppleButtonStyle}
      */
     buttonStyle?: AppleButtonStyle;
 
     /**
-     * See @{RNAppleAuth.AppleButtonType}
+     * See @{AppleButtonType}
      */
     buttonType?: AppleButtonType;
 
@@ -183,6 +186,10 @@ export namespace RNAppleAuth {
      * Corner radius of the button.
      */
     cornerRadius?: number;
+
+    onPress?: (event: GestureResponderEvent) => void;
+
+    style?: StyleProp<ViewStyle>;
   }
 
   /**
@@ -213,7 +220,7 @@ export namespace RNAppleAuth {
 
     /**
      * Nonce to be passed to the identity provider. If value not provided, one will automatically
-     * be created for you and available as part of @{RNAppleAuth.AppleAuthRequestResponse}.
+     * be created for you and available as part of @{AppleAuthRequestResponse}.
      *
      * This value can be verified with the identity token provided as a part of successful
      * ASAuthorization response.
@@ -281,7 +288,7 @@ export namespace RNAppleAuth {
     /**
      * An opaque user ID associated with the AppleID used for the sign in. This identifier will be
      * stable across the 'developer team', it can later be used as an input to
-     * @{RNAppleAuth.AppleAuthRequest} to request user contact information.
+     * @{AppleAuthRequest} to request user contact information.
      *
      * The identifier will remain stable as long as the user is connected with the requesting client.
      * The value may change upon user disconnecting from the identity provider.
@@ -293,14 +300,14 @@ export namespace RNAppleAuth {
      *
      * This field is populated with a value that the user authorized.
      *
-     * See @{RNAppleAuth.AppleAuthRequestResponseFullName}
+     * See @{AppleAuthRequestResponseFullName}
      */
     fullName: null | AppleAuthRequestResponseFullName;
 
     /**
      * Check this property for a hint as to whether the current user is a "real user".
      *
-     * See @{RNAppleAuth.AppleAuthRealUserStatus}
+     * See @{AppleAuthRealUserStatus}
      */
     realUserStatus: AppleAuthRealUserStatus;
 
@@ -309,7 +316,7 @@ export namespace RNAppleAuth {
      * Note that these may contain a subset of the requested scopes. You should query this value to
      * identify which scopes were returned as it may be different from ones you requested.
      *
-     * See @{RNAppleAuth.AppleAuthRealUserStatus}
+     * See @{AppleAuthRealUserStatus}
      */
     authorizedScopes: AppleAuthRequestScope[];
 
@@ -349,46 +356,6 @@ export namespace RNAppleAuth {
     authorizationCode: string | null;
   }
 
-  export interface Module {
-    /**
-     * A boolean value of whether Apple Authentication is supported on this device & platform version.
-     *
-     * This will always return false for Android, and false for iOS devices running iOS
-     * versions less than 13.
-     */
-    isSupported: boolean;
-
-    /**
-     * A boolean value of whether the 'SignUp' Type variant of the Apple Authentication Button is
-     * supported.
-     *
-     * This will always return false for Android, and false for iOS devices running iOS
-     * versions less than 13.2
-     */
-    isSignUpButtonSupported: boolean;
-
-    /**
-     * Perform a request to Apple Authentication services with the provided request options.
-     * @param options AppleAuthRequestOptions
-     */
-    performRequest(options?: AppleAuthRequestOptions): Promise<AppleAuthRequestResponse>;
-
-    /**
-     * Get the current @{RNAppleAuth.AppleAuthCredentialState} for the provided user identifier.
-     *
-     * @param user An opaque user ID associated with the AppleID used for the sign in.
-     */
-    getCredentialStateForUser(user: string): Promise<AppleAuthCredentialState>;
-
-    /**
-     * Subscribe to credential revoked events. Call `getCredentialStateForUser` on event received
-     * to confirm the current credential state for your user identifier.
-     *
-     * @param listener Returns a function that when called will unsubscribe from future events.
-     */
-    onCredentialRevoked(listener: Function): Function;
-  }
-
   /**
    * Errors that can occur during authorization.
    *
@@ -420,23 +387,52 @@ export namespace RNAppleAuth {
      */
     FAILED = '1004',
   }
+
+  const AppleButton: {
+    Type: typeof AppleButtonType;
+    Style: typeof AppleButtonStyle;
+  } & React.FC<AppleButtonProps>;
 }
 
-declare module '@invertase/react-native-apple-authentication' {
-  import React from 'react';
+declare type AppleAuth = {
+  /**
+   * A boolean value of whether Apple Authentication is supported on this device & platform version.
+   *
+   * This will always return false for Android, and false for iOS devices running iOS
+   * versions less than 13.
+   */
+  isSupported: boolean;
 
-  export const AppleButton: {
-    Type: typeof RNAppleAuth.AppleButtonType;
-    Style: typeof RNAppleAuth.AppleButtonStyle;
-  } & React.FC<RNAppleAuth.AppleButtonProps>;
+  /**
+   * A boolean value of whether the 'SignUp' Type variant of the Apple Authentication Button is
+   * supported.
+   *
+   * This will always return false for Android, and false for iOS devices running iOS
+   * versions less than 13.2
+   */
+  isSignUpButtonSupported: boolean;
 
-  export const AppleAuthError: typeof RNAppleAuth.AppleAuthError;
-  export const AppleAuthRequestScope: typeof RNAppleAuth.AppleAuthRequestScope;
-  export const AppleAuthRealUserStatus: typeof RNAppleAuth.AppleAuthRealUserStatus;
-  export const AppleAuthCredentialState: typeof RNAppleAuth.AppleAuthCredentialState;
-  export const AppleAuthRequestOperation: typeof RNAppleAuth.AppleAuthRequestOperation;
-  export const AppleAuthRequestResponse: typeof RNAppleAuth.AppleAuthRequestResponse;
+  /**
+   * Perform a request to Apple Authentication services with the provided request options.
+   * @param options AppleAuthRequestOptions
+   */
+  performRequest(options?: AppleAuthRequestOptions): Promise<AppleAuthRequestResponse>;
 
-  const defaultExport: {} & RNAppleAuth.Module;
-  export default defaultExport;
-}
+  /**
+   * Get the current @{AppleAuthCredentialState} for the provided user identifier.
+   *
+   * @param user An opaque user ID associated with the AppleID used for the sign in.
+   */
+  getCredentialStateForUser(user: string): Promise<AppleAuthCredentialState>;
+
+  /**
+   * Subscribe to credential revoked events. Call `getCredentialStateForUser` on event received
+   * to confirm the current credential state for your user identifier.
+   *
+   * @param listener Returns a function that when called will unsubscribe from future events.
+   */
+  onCredentialRevoked(listener: Function): () => void | undefined;
+};
+
+declare const appleAuth: AppleAuth;
+export default appleAuth;
