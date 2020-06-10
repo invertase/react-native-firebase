@@ -59,7 +59,7 @@ describe('mlkit.vision.barcode', () => {
       }
     });
 
-    it('should return a valid response', async () => {
+    xit('should return a valid response', async () => {
       const res = await firebase.vision().barcodeDetectorProcessImage(testImageFile);
 
       res.should.be.Array();
