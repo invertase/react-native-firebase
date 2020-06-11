@@ -954,7 +954,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           TAG,
           "confirmationResultConfirm:signInWithCredential:onComplete:success"
         );
-        promiseWithUser(Objects.requireNonNull(task.getResult()).getUser(), promise);
+        promiseWithAuthResult(Objects.requireNonNull(task.getResult()), promise);
       } else {
         Exception exception = task.getException();
         Log.e(
