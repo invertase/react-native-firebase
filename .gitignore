@@ -540,7 +540,7 @@ Pods/*
 .idea/**/*
 **/Pods/**
 **/dist/
-**/version.js
+packages/**/version.js
 typedoc.raw.json
 tests/ios/Firebase
 tests/ios/resetXcode.sh
@@ -549,8 +549,9 @@ tests/ios/resetXcode.sh
 google-services.json
 GoogleService-Info.plist
 
-# generated file
+# generated files
 RNFBVersion.m
+ReactNativeFirebaseVersion.java
 
 appPlaygrounds/
 app.playground.js
