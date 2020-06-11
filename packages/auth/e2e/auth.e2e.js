@@ -920,9 +920,6 @@ describe('auth()', () => {
 
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, pass);
 
-      console.log('created user');
-      console.log(user);
-
       try {
         await user.sendEmailVerification(actionCodeSettings);
       } catch (e) {
