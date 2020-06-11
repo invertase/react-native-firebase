@@ -26,15 +26,12 @@ describe('auth() -> emailLink Provider', () => {
       await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
     });
 
-    // TODO: send method times out when default action code settings are used
+    xit('should send email with defaults', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
 
-    // it('should send email with defaults', async () => {
-    //   const random = Utils.randString(12, '#aA');
-    //   const email = `${random}@${random}.com`;
-    //   // const email = 'MANUAL TEST EMAIL HERE';
-    //   console.log('Testing >>>>');
-    //   await firebase.auth().sendSignInLinkToEmail(email);
-    // });
+      await firebase.auth().sendSignInLinkToEmail(email);
+    });
   });
 
   describe('isSignInWithEmailLink', () => {

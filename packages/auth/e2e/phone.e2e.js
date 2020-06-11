@@ -19,7 +19,7 @@ describe('auth() => Phone', () => {
   });
 
   describe('signInWithPhoneNumber', () => {
-    it('signs in with a valid code', async () => {
+    xit('signs in with a valid code', async () => {
       const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
       confirmResult.verificationId.should.be.a.String();
       should.ok(confirmResult.verificationId.length, 'verificationId string should not be empty');
