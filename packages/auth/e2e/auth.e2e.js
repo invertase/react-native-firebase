@@ -58,6 +58,24 @@ describe('auth()', () => {
     });
   });
 
+  describe('reload()', () => {
+    it.only('Meta data returns as expected', async () => {
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+  });
+
   describe('verifyPasswordResetCode()', () => {
     it('errors on invalid code', async () => {
       try {
@@ -345,7 +363,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await Utils.sleep(50);
+      await Utils.sleep(500);
 
       // Assertions
 
