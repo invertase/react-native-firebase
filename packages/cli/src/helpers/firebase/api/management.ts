@@ -112,12 +112,13 @@ async function createAndroidApp(
   displayName: string,
 ) {
   // TODO: use an actual ID
+  const appId = 'SomeId';
   const androidApp: AndroidApp = {
-    name: `${projectDetail.name}/androidApps/SomeId`,
-    appId: 'SomeId',
-    displayName: displayName,
+    name: `${projectDetail.name}/androidApps/${appId}`,
+    appId,
+    displayName,
     projectId: projectDetail.projectId,
-    packageName: packageName,
+    packageName,
   };
   const operation = await request(account, {
     url: `${BASE_URL}/${projectDetail.name}/androidApps`,
@@ -142,8 +143,9 @@ async function createAndroidSha(
   else throw new CliError('Invalid SHA hash type. Only SHA-1 and SHA-256 are allowed.');
 
   // TODO: use an actual ID
+  const shaId = 'SomeId';
   const shaCertificate: AndroidSha = {
-    name: `${projectDetailAndroidApp.name}/sha/SomeId`,
+    name: `${projectDetailAndroidApp.name}/sha/${shaId}`,
     shaHash: hash,
     certType: 'SHA_1',
   };
