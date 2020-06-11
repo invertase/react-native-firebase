@@ -39,7 +39,8 @@
 ../packages/database/e2e/*.e2e.js
 
 # TODO crashing - error codes are wrong
-# ../packages/storage/e2e/*.e2e.js
+
+../packages/storage/e2e/*.e2e.js
 
 ../packages/messaging/e2e/*.e2e.js
 
