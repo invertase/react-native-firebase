@@ -153,6 +153,12 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
       - uses: actions/cache@v1
+        name: Cache Pods
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+
+      - uses: actions/cache@v1
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
