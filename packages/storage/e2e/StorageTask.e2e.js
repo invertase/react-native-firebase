@@ -24,7 +24,7 @@ function snapshotProperties(snapshot) {
   snapshot.should.have.property('bytesTransferred');
 }
 
-describe.only('storage() -> StorageTask', () => {
+describe('storage() -> StorageTask', () => {
   describe('writeToFile()', () => {
     it('errors if permission denied', async () => {
       try {
