@@ -159,7 +159,7 @@ describe('messaging()', () => {
       }
     });
 
-    xit.only('generate a new token after deleting', async () => {
+    xit('generate a new token after deleting', async () => {
       const token1 = await firebase.messaging().getToken();
       console.log(token1);
 
