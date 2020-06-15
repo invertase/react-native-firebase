@@ -4,7 +4,7 @@ platform :ios, '9.0'
 $RNFirebaseAsStaticFramework = false
 
 # Version override testing
-# $FirebaseSDKVersion = '6.15.0'
+$FirebaseSDKVersion = '6.26.0'
 # $FabricSDKVersion = '1.6.0'
 # $CrashlyticsSDKVersion = '3.1.0'
 
@@ -45,6 +45,7 @@ target 'testing' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_native_modules!
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :branch => 'master'
 end
 
 post_install do |installer|
