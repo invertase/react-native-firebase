@@ -1,6 +1,7 @@
 describe('auth() => Settings', () => {
-  it('returns app verification disabled for testing', async () => {
+  xit('returns app verification disabled for testing', async () => {
     firebase.auth().settings.appVerificationDisabledForTesting = true;
+    await Utils.sleep(500);
     const settings = await firebase.auth().settings.appVerificationDisabledForTesting;
     settings.should.equal(true);
   });
