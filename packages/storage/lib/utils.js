@@ -32,7 +32,6 @@ export async function handleStorageEvent(storageInstance, event) {
   const body = event.body || {};
 
   if (body.error) {
-    console.log('Handling storage error >>>>', body.error);
     body.error = await NativeFirebaseError.fromEvent(body.error, storageInstance._config.namespace);
   }
 

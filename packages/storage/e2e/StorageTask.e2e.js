@@ -589,8 +589,6 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('listens to download state', async () => {
-      // this.timeout(25000);
-
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -612,8 +610,6 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('listens to upload state', async () => {
-      // this.timeout(25000);
-
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
@@ -702,8 +698,6 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully pauses and resumes a download', async () => {
-      // this.timeout(25000);
-
       const ref = firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
