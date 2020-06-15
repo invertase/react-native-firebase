@@ -598,7 +598,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
-  - "FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, branch `@salakar/dev`)"
+  - FirebaseFirestore (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, branch `master`)
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - Jet (from `../node_modules/jet/ios`)
@@ -698,7 +698,7 @@ EXTERNAL SOURCES:
   FBReactNativeSpec:
     :path: "../node_modules/react-native/Libraries/FBReactNativeSpec"
   FirebaseFirestore:
-    :branch: "@salakar/dev"
+    :branch: master
     :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
   Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
@@ -783,7 +783,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   FirebaseFirestore:
-    :commit: cf9a5a3d67811d230af512ce20f51a9d8b653c61
+    :commit: af590d4cf806e41e73d78595c55d75e4961d1da0
     :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
 
 SPEC CHECKSUMS:
@@ -876,6 +876,6 @@ SPEC CHECKSUMS:
   RNFBStorage: b0ccef917b83e187fb7727a8f10935440e965462
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
 
-PODFILE CHECKSUM: c15598d1b9a96e5e47a508da5eddb0bed44608b8
+PODFILE CHECKSUM: f990a6c586bfe695cc7ed846d274c34e22e775ac
 
 COCOAPODS: 1.9.1
