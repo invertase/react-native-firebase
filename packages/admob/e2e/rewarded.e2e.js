@@ -121,7 +121,7 @@ describe('admob() RewardedAd', () => {
       spy.callCount.should.be.eql(0);
     });
 
-    it('loads with a valid ad unit id', async () => {
+    xit('loads with a valid ad unit id', async () => {
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED);
