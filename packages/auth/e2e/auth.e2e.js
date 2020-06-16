@@ -885,7 +885,6 @@ describe('auth()', () => {
     });
   });
 
-  // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
   describe('sendPasswordResetEmail()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
