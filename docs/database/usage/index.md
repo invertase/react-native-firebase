@@ -98,10 +98,10 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database();
-    ref(`/users/${userId}`).on('value', snapshot => {
-      console.log('User data: ', snapshot.val());
-    });
+    const subscriber = database()
+      .ref(`/users/${userId}`).on('value', snapshot => {
+        console.log('User data: ', snapshot.val());
+      });
 
     // Stop listening for updates when no longer required
     return () => subscriber();
@@ -124,10 +124,10 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database();
-    ref('/users').on('child_added', snapshot => {
-      console.log('A new node has been added', snapshot.val());
-    });
+    const subscriber = database()
+      .ref('/users').on('child_added', snapshot => {
+        console.log('A new node has been added', snapshot.val());
+      });
 
     // Stop listening for updates when no longer required
     return () => subscriber();

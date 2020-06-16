@@ -56,7 +56,7 @@ describe('inAppMessaging()', () => {
     });
   });
 
-  describe('setMessagesDisplaySuppressed()', () => {
+  xdescribe('setMessagesDisplaySuppressed()', () => {
     it('false', async () => {
       should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
       await firebase.inAppMessaging().setMessagesDisplaySuppressed(false);
