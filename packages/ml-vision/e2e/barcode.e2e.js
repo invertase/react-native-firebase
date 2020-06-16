@@ -108,7 +108,7 @@ describe('mlkit.vision.barcode', () => {
         }
       });
 
-      it('sets formats', async () => {
+      xit('sets formats', async () => {
         await firebase.vision().barcodeDetectorProcessImage(testImageFile, {
           barcodeFormats: [
             firebase.vision.VisionBarcodeFormat.AZTEC,
