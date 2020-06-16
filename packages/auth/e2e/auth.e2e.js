@@ -337,7 +337,6 @@ describe('auth()', () => {
       await Utils.sleep(50);
     });
 
-    //TODO Readd this
     it('listens to a null user when auth result is not defined', async () => {
       let unsubscribe;
 
