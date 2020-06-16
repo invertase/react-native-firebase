@@ -114,7 +114,7 @@ describe('auth() => Phone', () => {
       return Promise.resolve();
     });
 
-    it('successfully runs and adds emiters', async () => {
+    it.only('successfully runs and adds emiters', async () => {
       const TEST_PHONE_A = '+447445255123';
       const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
 
@@ -124,14 +124,14 @@ describe('auth() => Phone', () => {
 
       const errorCb = () => {};
 
-      const successCb = () => {};
+      const successCb = () => {
+        return Promise.resolve();
+      };
 
       await firebase
         .auth()
         .verifyPhoneNumber(TEST_PHONE_A)
         .on('state_changed', obervserCb, errorCb, successCb, () => {});
-
-      return Promise.resolve();
     });
 
     it('catches an error and emits an error event', async () => {
