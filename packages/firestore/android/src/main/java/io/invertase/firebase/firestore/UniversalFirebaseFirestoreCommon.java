@@ -53,23 +53,29 @@ public class UniversalFirebaseFirestoreCommon {
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
 
+    String cacheSizeKey = UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName;
+    String hostKey = UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName;
+    String persistenceKey = UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName;
+    String sslKey = UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName;
+
+
     int cacheSizeBytes = preferences.getIntValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+      cacheSizeKey,
       (int) firebaseFirestore.getFirestoreSettings().getCacheSizeBytes()
     );
 
     String host = preferences.getStringValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
+      hostKey,
       firebaseFirestore.getFirestoreSettings().getHost()
     );
 
     boolean persistence = preferences.getBooleanValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+      persistenceKey,
       firebaseFirestore.getFirestoreSettings().isPersistenceEnabled()
     );
 
     boolean ssl = preferences.getBooleanValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
+      sslKey,
       firebaseFirestore.getFirestoreSettings().isSslEnabled()
     );
 
@@ -85,7 +91,8 @@ public class UniversalFirebaseFirestoreCommon {
 
     firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
 
-    preferences.clearAll();
+
+    preferences.remove(cacheSizeKey).remove(hostKey).remove(persistenceKey).remove(sslKey);
   }
 
   static Query getQueryForFirestore(
