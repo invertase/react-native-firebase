@@ -284,7 +284,8 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it.only('should throw too many requests when limit has been reached', async () => {
+    xit('should throw too many requests when limit has been reached', async () => {
+      await Utils.sleep(10000);
       try {
         // Setup for creating new accounts
         const random = Utils.randString(12, '#aA');
@@ -293,35 +294,18 @@ describe('auth().currentUser', () => {
 
         const promises = [];
 
-        // Create 11 new accounts (limit is to delete a maximum of 10 accounts a second)
-        [...Array(16).keys()].map($ =>
+        // Create 10 accounts to force the error
+        [...Array(10).keys()].map($ =>
           promises.push(
             new Promise(r => r(firebase.auth().createUserWithEmailAndPassword(email + $, pass))),
           ),
         );
 
-        const accounts = await Promise.all(promises);
-        const users = accounts.map($ => $.user);
-
-        const deletions = [];
-
-        users.map($ =>
-          deletions.push(
-            new Promise(r => {
-              console.warn('Deleting >>>', $.email, Date.now());
-              return r($.delete());
-            }),
-          ),
-        );
-
-        await Promise.all(deletions);
+        await Promise.all(promises);
 
         return Promise.reject('Should have rejected');
       } catch (ex) {
         ex.code.should.equal('auth/too-many-requests');
-
-        // Cooldown for rate limiter is one minute for delections
-        await Utils.sleep(60000);
         return Promise.resolve();
       }
     });
