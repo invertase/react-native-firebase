@@ -24,8 +24,6 @@ NSString *const FIRESTORE_HOST = @"firebase_firestore_host";
 NSString *const FIRESTORE_PERSISTENCE = @"firebase_firestore_persistence";
 NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
 
-__strong NSMutableDictionary *settingsLock;
-
 NSMutableDictionary * instanceCache;
 
 @implementation RNFBFirestoreCommon
@@ -59,16 +57,6 @@ NSMutableDictionary * instanceCache;
 }
 
 + (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName {
-  @synchronized(settingsLock) {
-    if (settingsLock == nil) {
-      settingsLock = [[NSMutableDictionary alloc] init];
-    }
-
-    // Prevent setting if already set
-    if (settingsLock[appName]) {
-      return;
-    }
-
     FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
     RNFBPreferences *preferences = [RNFBPreferences shared];
 
@@ -94,9 +82,9 @@ NSMutableDictionary * instanceCache;
     NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
     firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
 
-    settingsLock[appName] = @(YES);
     firestore.settings = firestoreSettings;
-  }
+
+    [preferences clearAll];
 }
 
 + (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path; {

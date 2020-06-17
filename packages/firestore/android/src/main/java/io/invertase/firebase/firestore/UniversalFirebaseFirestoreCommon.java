@@ -84,6 +84,8 @@ public class UniversalFirebaseFirestoreCommon {
     firestoreSettings.setSslEnabled(ssl);
 
     firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
+
+    preferences.clearAll();
   }
 
   static Query getQueryForFirestore(
