@@ -46,15 +46,26 @@ describe('firestore().collection().isEqual()', () => {
       .collection('v6')
       .limit(3);
 
+    const ref1 = firebase
+      .firestore()
+      .collection('foo')
+      .where('bar', '==', true);
+    const ref2 = firebase
+      .firestore()
+      .collection('baz')
+      .where('bar', '==', true);
+
     const eql1 = query.isEqual(q1);
     const eql2 = query.isEqual(q2);
     const eql3 = query.isEqual(q3);
     const eql4 = query.isEqual(q4);
+    const eql5 = ref1.isEqual(ref2);
 
     eql1.should.be.False();
     eql2.should.be.False();
     eql3.should.be.False();
     eql4.should.be.False();
+    eql5.should.be.False();
   });
 
   it('returns false when not equal (expensive checks)', () => {

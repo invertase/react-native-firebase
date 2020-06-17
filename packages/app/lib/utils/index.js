@@ -31,6 +31,47 @@ class FirebaseUtilsModule extends FirebaseModule {
     return this.native.isRunningInTestLab;
   }
 
+  get playServicesAvailability() {
+    if (isIOS) {
+      return {
+        isAvailable: true,
+        status: 0,
+      };
+    }
+    return this.native.androidPlayServices;
+  }
+
+  getPlayServicesStatus() {
+    if (isIOS) {
+      return Promise.resolve({
+        isAvailable: true,
+        status: 0,
+      });
+    }
+    return this.native.androidGetPlayServicesStatus();
+  }
+
+  promptForPlayServices() {
+    if (isIOS) {
+      return Promise.resolve();
+    }
+    return this.native.androidPromptForPlayServices();
+  }
+
+  makePlayServicesAvailable() {
+    if (isIOS) {
+      return Promise.resolve();
+    }
+    return this.native.androidMakePlayServicesAvailable();
+  }
+
+  resolutionForPlayServices() {
+    if (isIOS) {
+      return Promise.resolve();
+    }
+    return this.native.androidGetPlayServicesStatus();
+  }
+
   logInfo(...args) {
     return logger.logInfo(...args);
   }
