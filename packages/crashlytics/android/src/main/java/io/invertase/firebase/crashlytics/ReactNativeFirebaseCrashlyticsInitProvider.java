@@ -50,11 +50,6 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
   }
 
   @Override
-  public String getEmptyProviderAuthority() {
-    return EMPTY_APPLICATION_ID_PROVIDER_AUTHORITY;
-  }
-
-  @Override
   public boolean onCreate() {
     super.onCreate();
 
