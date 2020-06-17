@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.2.0...@react-native-firebase/app@7.2.1) (2020-06-10)
+
+### Bug Fixes
+
+- **android:** generate version for ReactNativeFirebaseAppRegistrar.java ([#3766](https://github.com/invertase/react-native-firebase/issues/3766)) ([1324985](https://github.com/invertase/react-native-firebase/commit/13249857c7303d44b9a2ca92d2604a27e949bad9))
+
 # [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.1.4...@react-native-firebase/app@7.2.0) (2020-06-03)
 
 ### Features
