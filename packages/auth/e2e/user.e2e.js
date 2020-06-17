@@ -283,6 +283,48 @@ describe('auth().currentUser', () => {
       // Clean up
       await firebase.auth().currentUser.delete();
     });
+
+    it.only('should throw too many requests when limit has been reached', async () => {
+      try {
+        // Setup for creating new accounts
+        const random = Utils.randString(12, '#aA');
+        const email = `${random}@${random}.com`;
+        const pass = random;
+
+        const promises = [];
+
+        // Create 11 new accounts (limit is to delete a maximum of 10 accounts a second)
+        [...Array(16).keys()].map($ =>
+          promises.push(
+            new Promise(r => r(firebase.auth().createUserWithEmailAndPassword(email + $, pass))),
+          ),
+        );
+
+        const accounts = await Promise.all(promises);
+        const users = accounts.map($ => $.user);
+
+        const deletions = [];
+
+        users.map($ =>
+          deletions.push(
+            new Promise(r => {
+              console.warn('Deleting >>>', $.email, Date.now());
+              return r($.delete());
+            }),
+          ),
+        );
+
+        await Promise.all(deletions);
+
+        return Promise.reject('Should have rejected');
+      } catch (ex) {
+        ex.code.should.equal('auth/too-many-requests');
+
+        // Cooldown for rate limiter is one minute for delections
+        await Utils.sleep(60000);
+        return Promise.resolve();
+      }
+    });
   });
 
   describe('updateProfile()', () => {
