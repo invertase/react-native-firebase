@@ -84,7 +84,10 @@ NSMutableDictionary * instanceCache;
 
     firestore.settings = firestoreSettings;
 
-    [preferences clearAll];
+    [preferences remove:cacheKey];
+    [preferences remove:hostKey];
+    [preferences remove:persistenceKey];
+    [preferences remove:sslKey];
 }
 
 + (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path; {

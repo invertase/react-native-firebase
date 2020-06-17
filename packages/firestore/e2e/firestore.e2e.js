@@ -319,7 +319,7 @@ describe('firestore()', () => {
     });
   });
 
-  describe.only('Clear cached data persistence', () => {
+  describe('Clear cached data persistence', () => {
     it('should clear any cached data', async () => {
       const db = firebase.firestore();
       const id = 'foobar';
