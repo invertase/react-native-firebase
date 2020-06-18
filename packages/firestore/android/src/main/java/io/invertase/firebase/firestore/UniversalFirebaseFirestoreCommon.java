@@ -92,7 +92,7 @@ public class UniversalFirebaseFirestoreCommon {
     firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
 
 
-    preferences.remove(cacheSizeKey).remove(hostKey).remove(persistenceKey).remove(sslKey);
+    preferences.remove(cacheSizeKey).remove(hostKey).remove(persistenceKey).remove(sslKey).apply();
   }
 
   static Query getQueryForFirestore(
