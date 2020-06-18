@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.4...@react-native-firebase/admob@7.2.0) (2020-06-18)
+
+### Features
+
+- **android:** don't call ad of AdmobBanner multiple times ([#3488](https://github.com/invertase/react-native-firebase/issues/3488)) ([8c8d448](https://github.com/invertase/react-native-firebase/commit/8c8d448a3e9d4c96fd015d74e859081218af67c8))
+
 ## [7.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.3...@react-native-firebase/admob@7.1.4) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/admob
