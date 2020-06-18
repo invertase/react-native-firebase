@@ -1781,9 +1781,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         message = invalidEmail;
       } else if (exception instanceof FirebaseNetworkException) {
         code = "NETWORK_REQUEST_FAILED";
-      }
-      else if (exception instanceof FirebaseTooManyRequestsException) {
-        code = "too-many-requests";
+      } else if (exception instanceof FirebaseTooManyRequestsException) {
+        code = "TOO_MANY_REQUESTS";
         message = message;
       }
     }
