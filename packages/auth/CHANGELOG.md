@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.5...@react-native-firebase/auth@8.0.6) (2020-06-18)
+
+### Bug Fixes
+
+- **auth,android:** too-many-requests code now correctly returned ([#3795](https://github.com/invertase/react-native-firebase/issues/3795)) ([c799472](https://github.com/invertase/react-native-firebase/commit/c7994720b14114ac70540744794d8b645e2209e0))
+
 ## [8.0.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.4...@react-native-firebase/auth@8.0.5) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/auth
