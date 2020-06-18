@@ -1,13 +1,13 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "7.1.16",
+  "version": "7.1.17",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/admob": "7.1.4",
+    "@react-native-firebase/admob": "7.2.0",
     "@react-native-firebase/analytics": "7.1.4",
     "@react-native-firebase/app": "7.2.1",
     "@react-native-firebase/app-types": "6.7.2",
@@ -19,7 +19,7 @@
     "@react-native-firebase/functions": "7.1.4",
     "@react-native-firebase/iid": "7.1.4",
     "@react-native-firebase/in-app-messaging": "7.1.4",
-    "@react-native-firebase/messaging": "7.1.5",
+    "@react-native-firebase/messaging": "7.1.6",
     "@react-native-firebase/ml-natural-language": "7.1.4",
     "@react-native-firebase/ml-vision": "7.1.4",
     "@react-native-firebase/perf": "7.1.4",
