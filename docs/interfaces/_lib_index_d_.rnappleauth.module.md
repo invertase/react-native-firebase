@@ -21,7 +21,8 @@ async function onAppleButtonPress() {
     requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
   });
 
-  //authorization state request
+  // authorization state request
+  // /!\ This method must be tested on a real device. On the iOS simulator it always throws an error.
   const credentialState = await appleAuth.getCredentialStateForUser(responseObject.user);
 
   if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
@@ -100,6 +101,8 @@ versions less than 13.
 _Defined in [lib/index.d.ts:381](https://github.com/invertase/react-native-apple-authentication/blob/2b75721d/lib/index.d.ts#L381)_
 
 Get the current @{RNAppleAuth.AppleAuthCredentialState} for the provided user identifier.
+
+**NOTE:** This method must be tested on a real device. On the iOS simulator it always throws an error.
 
 **Parameters:**
 
