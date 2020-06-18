@@ -105,6 +105,7 @@ async function onAppleButtonPress() {
   });
 
   // get current authentication state for user
+  // /!\ This method must be tested on a real device. On the iOS simulator it always throws an error.
   const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
 
   // use credentialState response to ensure the user is authenticated
@@ -204,6 +205,15 @@ So it is recommended when logging out to just clear all data you have from a use
     <key>CFBundleAllowMixedLocalizations</key>
     <string>true</string>
     ```
+
+## Troubleshouting
+
+```
+The operation couldn’t be completed. (com.apple.AuthenticationServices.AuthorizationError error 1000.)
+```
+
+In the case you are using the function `getCredentialStateForUser` on a simulator, this error will always be fired. You should test your code on a real device.
+
 
 ## License
 
