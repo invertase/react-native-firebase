@@ -284,6 +284,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
+    // Can only be run/reproduced locally with Firebase Auth rate limits lowered on the Firebase console.
     xit('should throw too many requests when limit has been reached', async () => {
       await Utils.sleep(10000);
       try {
