@@ -64,5 +64,12 @@ describe('utils()', () => {
       firebase.utils.Native.TEMP_DIRECTORY_PATH.should.be.a.String();
       firebase.utils.Native.LIBRARY_DIRECTORY_PATH.should.be.a.String();
     });
+
+    it('displays the correct file path for deprecated file paths', () => {
+      const deprecatedFilePath = firebase.utils.FilePath.DOCUMENT_DIRECTORY_PATH;
+      const newFilePath = firebase.utils.Native.DOCUMENT_DIRECTORY_PATH;
+
+      deprecatedFilePath.should.equal(newFilePath);
+    });
   });
 });
