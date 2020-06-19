@@ -23,12 +23,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class UniversalFirebaseFirestoreCommon {
-  static HashMap<String, FirebaseFirestore> instanceCache = new HashMap<>();
+  static WeakHashMap<String, FirebaseFirestore> instanceCache = new WeakHashMap<>();
 
   static FirebaseFirestore getFirestoreForApp(String appName) {
     FirebaseFirestore cachedInstance = instanceCache.get(appName);
