@@ -10,7 +10,8 @@
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf rimraf ios/build",
     "build:docs": "typedoc --includeDeclarations --excludeExternals --out docs --plugin typedoc-plugin-markdown --hideBreadcrumbs",
-    "prepare": "yarn analyze && yarn build"
+    "prepare": "yarn analyze && yarn build",
+    "shipit": "yarn np"
   },
   "repository": {
     "type": "git",
@@ -44,5 +45,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {}
+  "dependencies": {
+    "np": "^6.2.4"
+  }
 }
