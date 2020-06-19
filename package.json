@@ -31,15 +31,15 @@
     "apple authentication"
   ],
   "devDependencies": {
-    "@react-native-community/eslint-config": "^1.1.0",
-    "@types/react": "16.9.36",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@types/react": "16.9.38",
     "@types/react-native": "0.62.13",
     "genversion": "^2.2.1",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
-    "typedoc": "^0.17.6",
-    "typedoc-plugin-markdown": "^2.2.17",
-    "typescript": "^3.8.3"
+    "typedoc": "^0.17.7",
+    "typedoc-plugin-markdown": "^2.3.1",
+    "typescript": "^3.9.5"
   },
   "publishConfig": {
     "access": "public"
