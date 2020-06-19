@@ -2,6 +2,13 @@
 
 # Release Notes
 
+## 1.1.1
+
+- fix(types): performRequest can accept state parameter (#94, thanks @skantus!)
+- docs: warn getCredentialStateForUser is real device only (#97, thanks @magrinj!)
+- chore: npm ignore, formatting, changelog (thanks @salakar!)
+- release: add "shipit" run script to automate release (thanks @mikehardy!)
+
 ## 1.1.0
 
 - feat: added validation to performRequest options (#59)
