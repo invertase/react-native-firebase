@@ -29,7 +29,7 @@ NSMutableDictionary * instanceCache;
 @implementation RNFBFirestoreCommon
 + (FIRFirestore *)getFirestoreForApp:(FIRApp *)app {
     if(instanceCache == nil){
-        instanceCache = [[NSMutableDictionary alloc] init];
+      instanceCache = [[NSMutableDictionary alloc] init];
     }
     
     FIRFirestore * cachedInstance = instanceCache[[app name]];
