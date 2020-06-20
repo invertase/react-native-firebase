@@ -144,6 +144,34 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       });
   }
 
+  @ReactMethod
+  public void resolveLink(String link, Promise promise) {
+    try {
+      FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(Uri.parse(link))
+        .addOnCompleteListener(task -> {
+          if (task.isSuccessful()) {
+            PendingDynamicLinkData linkData = task.getResult();
+            // Careful: link == null if link invalid, isSuccessful is only false on processing error
+            if (linkData != null && linkData.getLink() != null && linkData.getLink().toString() != null) {
+              String linkUrl = linkData.getLink().toString();
+              // I can't believe they made this an int when versionCode is moving to long, but okay
+              int linkMinimumVersion = linkData.getMinimumAppVersion();
+              promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion));
+            } else {
+              rejectPromiseWithCodeAndMessage(promise, "resolve-link-not-found", "Dynamic link not found");
+            }
+          } else {
+            rejectPromiseWithCodeAndMessage(promise, "resolve-link-error", task.getException().getMessage());
+          }
+        });
+    }
+    catch (Exception e) {
+      // This would be very unexpected, but crashing is even less expected
+      rejectPromiseWithCodeAndMessage(promise, "resolve-link-error", "Unknown resolve failure");
+    }
+  }
+
   private WritableMap dynamicLinkToWritableMap(String url, int minVersion) {
     WritableMap writableMap = Arguments.createMap();
 
