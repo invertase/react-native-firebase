@@ -339,7 +339,8 @@ export default class DatabaseQuery extends ReferenceBase {
     // every registration unique per .on() call
     listeners += 1;
 
-    return callback;
+    // return unsubscription function
+    return () => this.off(eventType, callback, context);
   }
 
   /**
