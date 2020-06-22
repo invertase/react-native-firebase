@@ -85,6 +85,7 @@ class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._settings = {};
+    this._lastFetchTime = 0;
   }
 
   getValue(key) {
@@ -117,7 +118,7 @@ class FirebaseConfigModule extends FirebaseModule {
     );
   }
 
-  set defaultConfig(defaults) {
+  set defaultConfig() {
     // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
@@ -136,7 +137,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get lastFetchTime() {
-    // android returns -1 if no fetch yet and iOS returns 0	    // android returns -1 (coming back as null currently) if no fetch yet and iOS returns 0
+    // android returns -1 if no fetch yet and iOS returns 0
     return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
   }
 
@@ -285,7 +286,7 @@ class FirebaseConfigModule extends FirebaseModule {
   _updateFromConstants(constants) {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
-    // todo what happens when no value passed to native. this will be empty or 0 or something else?
+    
     this._settings = {
       fetchTimeMillis: constants.fetchTimeout * 1000,
       minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
