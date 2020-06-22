@@ -211,7 +211,7 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
       message = [error localizedDescription];
   }
 
-return @[code, message];
+  return @[code, message];
 }
 
 + (int)getEventTypeFromName
