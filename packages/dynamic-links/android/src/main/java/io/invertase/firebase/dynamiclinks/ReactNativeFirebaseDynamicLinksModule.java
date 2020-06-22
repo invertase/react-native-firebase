@@ -152,7 +152,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
         .addOnCompleteListener(task -> {
           if (task.isSuccessful()) {
             PendingDynamicLinkData linkData = task.getResult();
-            // Careful: link == null if link invalid, isSuccessful is only false on processing error
+            // Note: link == null if link invalid, isSuccessful is only false on processing error
             if (linkData != null && linkData.getLink() != null && linkData.getLink().toString() != null) {
               String linkUrl = linkData.getLink().toString();
               int linkMinimumVersion = linkData.getMinimumAppVersion();
