@@ -1958,6 +1958,28 @@ export namespace FirebaseFirestoreTypes {
      * @param settings A `Settings` object.
      */
     settings(settings: Settings): Promise<void>;
+    /**
+     * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+     * are made.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().clearPersistence();
+     * ```
+     */
+    clearPersistence(): Promise<void>;
+    /**
+     * Typically called to ensure a new Firestore instance is initialized before calling
+     * `firebase.firestore().clearPersistence()`.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().terminate();
+     * ```
+     */
+    terminate(): Promise<void>;
   }
 }
 

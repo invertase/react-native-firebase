@@ -20,50 +20,63 @@ package io.invertase.firebase.firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
 
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class UniversalFirebaseFirestoreCommon {
-  private static HashMap<String, Boolean> settingsLock = new HashMap<>();
+  static WeakHashMap<String, WeakReference<FirebaseFirestore>> instanceCache = new WeakHashMap<>();
 
   static FirebaseFirestore getFirestoreForApp(String appName) {
+    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(appName);
+
+    if(cachedInstance != null){
+      return cachedInstance.get();
+    }
+
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
     FirebaseFirestore instance = FirebaseFirestore.getInstance(firebaseApp);
+
     setFirestoreSettings(instance, appName);
+
+    instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
 
     return instance;
   }
 
   private static void setFirestoreSettings(FirebaseFirestore firebaseFirestore, String appName) {
-    // Ensure not already been set
-    if (settingsLock.containsKey(appName)) return;
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
     FirebaseFirestoreSettings.Builder firestoreSettings = new FirebaseFirestoreSettings.Builder();
 
+    String cacheSizeKey = UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName;
+    String hostKey = UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName;
+    String persistenceKey = UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName;
+    String sslKey = UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName;
+
+
     int cacheSizeBytes = preferences.getIntValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
+      cacheSizeKey,
       (int) firebaseFirestore.getFirestoreSettings().getCacheSizeBytes()
     );
 
     String host = preferences.getStringValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
+      hostKey,
       firebaseFirestore.getFirestoreSettings().getHost()
     );
 
     boolean persistence = preferences.getBooleanValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
+      persistenceKey,
       firebaseFirestore.getFirestoreSettings().isPersistenceEnabled()
     );
 
     boolean ssl = preferences.getBooleanValue(
-      UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
+      sslKey,
       firebaseFirestore.getFirestoreSettings().isSslEnabled()
     );
 
@@ -79,7 +92,8 @@ public class UniversalFirebaseFirestoreCommon {
 
     firebaseFirestore.setFirestoreSettings(firestoreSettings.build());
 
-    settingsLock.put(appName, true);
+
+    preferences.remove(cacheSizeKey).remove(hostKey).remove(persistenceKey).remove(sslKey).apply();
   }
 
   static Query getQueryForFirestore(
