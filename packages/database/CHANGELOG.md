@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.2...@react-native-firebase/database@7.2.3) (2020-06-22)
+
+### Bug Fixes
+
+- **ios:** potential race condition fix ([#3484](https://github.com/invertase/react-native-firebase/issues/3484)) ([ca34cef](https://github.com/invertase/react-native-firebase/commit/ca34cef160cd0e632bec6d60e10b45c8efd568c8))
+
 ## [7.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.1...@react-native-firebase/database@7.2.2) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/database
