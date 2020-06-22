@@ -1,5 +1,16 @@
-package io.invertase.firebase.interfaces;
+const fs = require('fs');
+const path = require('path');
 
+const version = require('../lib/version');
+const outputPath = path.resolve(
+  __dirname,
+  '..',
+  'android',
+  'src/reactnative/java/io/invertase/firebase/app',
+  'ReactNativeFirebaseVersion.java',
+);
+const template = `
+package io.invertase.firebase.app;
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +27,10 @@ package io.invertase.firebase.interfaces;
  * limitations under the License.
  *
  */
-
-public interface InitProvider {
-  String getEmptyProviderAuthority();
+// generated file - do not modify or commit
+public class ReactNativeFirebaseVersion {
+  public static String VERSION = "version_number";
 }
+`;
+
+fs.writeFileSync(outputPath, template.replace('version_number', `${version}`), 'utf8');

@@ -8,12 +8,14 @@ export default class Value {
   }
 
   get value() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().getValue(*).value has been removed. Please use one of the alternative methods such as firebase.remoteConfig().getValue(*).asString()',
     );
   }
 
   get source() {
+	// eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().getValue(*).source has been removed. Please use firebase.remoteConfig().getValue(*).getSource()',
     );
@@ -25,6 +27,7 @@ export default class Value {
     }
     return BOOLEAN_TRUTHY_VALUES.includes(this._value.toLowerCase());
   }
+
   asNumber() {
     if (this._source === 'static') {
       return 0;
@@ -37,9 +40,11 @@ export default class Value {
     }
     return num;
   }
+
   asString() {
     return this._value;
   }
+
   getSource() {
     return this._source;
   }

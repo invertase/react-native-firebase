@@ -197,7 +197,6 @@ RCT_EXPORT_METHOD(setDefaults:
   [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:defaults];
   resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
-// done
 RCT_EXPORT_METHOD(setDefaultsFromResource:
 (FIRApp *) firebaseApp
     : (NSString *) fileName
@@ -205,7 +204,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
     : (RCTPromiseRejectBlock) reject) {
   if ([[NSBundle mainBundle] pathForResource:fileName ofType:@"plist"] != nil) {
     [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaultsFromPlistFileName:fileName];
-    resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp ]);
+    resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": @"resource_not_found",
         @"message": @"The specified resource name was not found."} mutableCopy]];
@@ -218,7 +217,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
 - (NSDictionary *)resultWithConstants:(id) result firebaseApp:(FIRApp *) firebaseApp {
   NSMutableDictionary *responseDict = [NSMutableDictionary new];
   responseDict[@"result"] = result;
-  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp ];
+  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
   return responseDict;
 }
 
