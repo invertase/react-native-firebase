@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.4...@react-native-firebase/admob@7.2.0) (2020-06-18)
+
+### Features
+
+- **android:** don't call ad of AdmobBanner multiple times ([#3488](https://github.com/invertase/react-native-firebase/issues/3488)) ([8c8d448](https://github.com/invertase/react-native-firebase/commit/8c8d448a3e9d4c96fd015d74e859081218af67c8))
+
+## [7.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.3...@react-native-firebase/admob@7.1.4) (2020-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/admob
+
+## [7.1.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.2...@react-native-firebase/admob@7.1.3) (2020-06-03)
+
+**Note:** Version bump only for package @react-native-firebase/admob
+
+## [7.1.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.1...@react-native-firebase/admob@7.1.2) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/admob
+
+## [7.1.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.1.0...@react-native-firebase/admob@7.1.1) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/admob
+
+# [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.0.1...@react-native-firebase/admob@7.1.0) (2020-05-22)
+
+### Features
+
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+
 ## [7.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.0.0...@react-native-firebase/admob@7.0.1) (2020-05-13)
 
 **Note:** Version bump only for package @react-native-firebase/admob

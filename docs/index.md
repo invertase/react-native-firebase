@@ -213,7 +213,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '6.8.1'
+$FirebaseSDKVersion = '6.13.0'
 
 # Override Fabric SDK Version
 $FabricSDKVersion = '1.6.0'

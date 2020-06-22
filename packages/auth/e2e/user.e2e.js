@@ -283,6 +283,33 @@ describe('auth().currentUser', () => {
       // Clean up
       await firebase.auth().currentUser.delete();
     });
+
+    // Can only be run/reproduced locally with Firebase Auth rate limits lowered on the Firebase console.
+    xit('should throw too many requests when limit has been reached', async () => {
+      await Utils.sleep(10000);
+      try {
+        // Setup for creating new accounts
+        const random = Utils.randString(12, '#aA');
+        const email = `${random}@${random}.com`;
+        const pass = random;
+
+        const promises = [];
+
+        // Create 10 accounts to force the error
+        [...Array(10).keys()].map($ =>
+          promises.push(
+            new Promise(r => r(firebase.auth().createUserWithEmailAndPassword(email + $, pass))),
+          ),
+        );
+
+        await Promise.all(promises);
+
+        return Promise.reject('Should have rejected');
+      } catch (ex) {
+        ex.code.should.equal('auth/too-many-requests');
+        return Promise.resolve();
+      }
+    });
   });
 
   describe('updateProfile()', () => {
