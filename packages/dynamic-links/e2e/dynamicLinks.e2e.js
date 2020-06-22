@@ -121,7 +121,7 @@ describe('dynamicLinks()', () => {
         await firebase.dynamicLinks().resolveLink(baseParams.domainUriPrefix + '/not-a-valid-link');
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
-        e.code.should.containEql('resolve-link-not-found');
+        e.code.should.containEql('not-found');
         e.message.should.containEql('Dynamic link not found');
         return Promise.resolve();
       }
