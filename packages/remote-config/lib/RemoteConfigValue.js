@@ -1,5 +1,5 @@
 // as per firebase web sdk specification
-const BOOLEAN_TRUTHY_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
+const ConfigValue = ['1', 'true', 't', 'yes', 'y', 'on'];
 
 export default class Value {
   constructor({ value, source }) {
@@ -15,7 +15,7 @@ export default class Value {
   }
 
   get source() {
-	// eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().getValue(*).source has been removed. Please use firebase.remoteConfig().getValue(*).getSource()',
     );
@@ -25,7 +25,7 @@ export default class Value {
     if (this._source === 'static') {
       return false;
     }
-    return BOOLEAN_TRUTHY_VALUES.includes(this._value.toLowerCase());
+    return ConfigValue.includes(this._value.toLowerCase());
   }
 
   asNumber() {
