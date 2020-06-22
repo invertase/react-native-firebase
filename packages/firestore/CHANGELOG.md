@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.1.7...@react-native-firebase/firestore@7.2.0) (2020-06-22)
+
+### Bug Fixes
+
+- **android:** fixed IllegalMonitorStateException crashed issue ([#3800](https://github.com/invertase/react-native-firebase/issues/3800)) ([76f6cf9](https://github.com/invertase/react-native-firebase/commit/76f6cf9770df049c2ae38a0b0f894b606f2de4df))
+
+### Features
+
+- **firestore:** support clearPersistence() & terminate() APIs ([#3591](https://github.com/invertase/react-native-firebase/issues/3591)) ([57ff900](https://github.com/invertase/react-native-firebase/commit/57ff9003b664b94aa6b5b1997138bdb2220dba65))
+- **firestore:** support limitToLast query filter ([#3702](https://github.com/invertase/react-native-firebase/issues/3702)) ([dc7f921](https://github.com/invertase/react-native-firebase/commit/dc7f9213c0c1196d1d5de4e1fb92f9d791280313))
+
 ## [7.1.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.1.6...@react-native-firebase/firestore@7.1.7) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.19](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.18...react-native-firebase-tests@7.1.19) (2020-06-22)
+
+
+### Bug Fixes
+
+* **ml-vision:** convert options to correct type ([#3694](https://github.com/invertase/react-native-firebase/issues/3694)) ([b462be5](https://github.com/invertase/react-native-firebase/commit/b462be542a41a4e37a201146642f1b9fd4c6a74f))
+
+
+
+
+
 ## [7.1.18](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.17...react-native-firebase-tests@7.1.18) (2020-06-19)
 
 **Note:** Version bump only for package react-native-firebase-tests

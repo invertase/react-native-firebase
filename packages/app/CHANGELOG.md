@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.2.1...@react-native-firebase/app@7.3.0) (2020-06-22)
+
+### Features
+
+- **firestore:** support clearPersistence() & terminate() APIs ([#3591](https://github.com/invertase/react-native-firebase/issues/3591)) ([57ff900](https://github.com/invertase/react-native-firebase/commit/57ff9003b664b94aa6b5b1997138bdb2220dba65))
+
 ## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.2.0...@react-native-firebase/app@7.2.1) (2020-06-10)
 
 ### Bug Fixes
