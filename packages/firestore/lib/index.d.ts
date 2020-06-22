@@ -276,7 +276,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * // false
      * alovelace.isEqual(dsmith);
-     * ``
+     * ```
      *
      * @param other The `DocumentReference` to compare against.
      */
@@ -417,7 +417,7 @@ export namespace FirebaseFirestoreTypes {
      *   age: 30,
      *   city: 'LON',
      * });
-     * ``
+     * ```
      *
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.

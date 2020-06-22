@@ -3,6 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.18](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.17...react-native-firebase-tests@7.1.18) (2020-06-19)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.17](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.16...react-native-firebase-tests@7.1.17) (2020-06-18)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.16](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.15...react-native-firebase-tests@7.1.16) (2020-06-18)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.15](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.14...react-native-firebase-tests@7.1.15) (2020-06-10)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.14](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.13...react-native-firebase-tests@7.1.14) (2020-06-10)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.13](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.12...react-native-firebase-tests@7.1.13) (2020-06-03)
+
+
+### Bug Fixes
+
+* **firestore:**  update isEqual API to check collection path equality ([#3738](https://github.com/invertase/react-native-firebase/issues/3738)) ([405e040](https://github.com/invertase/react-native-firebase/commit/405e04009c1550dc6897b207ae3a63ad274c6de5))
+
+
+
+
+
+## [7.1.12](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.11...react-native-firebase-tests@7.1.12) (2020-06-03)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.11](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.10...react-native-firebase-tests@7.1.11) (2020-06-03)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.10](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.9...react-native-firebase-tests@7.1.10) (2020-06-03)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.9](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.8...react-native-firebase-tests@7.1.9) (2020-06-01)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.8](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.7...react-native-firebase-tests@7.1.8) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.7](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.6...react-native-firebase-tests@7.1.7) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.6](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.5...react-native-firebase-tests@7.1.6) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.5](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.4...react-native-firebase-tests@7.1.5) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [7.1.4](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.3...react-native-firebase-tests@7.1.4) (2020-05-29)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
 ## [7.1.3](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@7.1.2...react-native-firebase-tests@7.1.3) (2020-05-29)
 
 **Note:** Version bump only for package react-native-firebase-tests
