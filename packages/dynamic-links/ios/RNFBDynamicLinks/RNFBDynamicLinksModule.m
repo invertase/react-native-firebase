@@ -182,6 +182,34 @@ RCT_EXPORT_METHOD(getInitialLink:
   }
 }
 
+RCT_EXPORT_METHOD(resolveLink:
+  (NSString *) link
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject)
+{
+  id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+    if (!error && dynamicLink && dynamicLink.url) {
+        resolve(@{
+            @"url": dynamicLink.url.absoluteString,
+            @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+        });
+    } else if (!error) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"not-found",
+          @"message": @"Dynamic link not found"
+      }];
+    } else {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"resolve-link-error",
+          @"message":[error localizedDescription]
+      }];
+    }
+};
+
+  NSURL *linkURL = [NSURL URLWithString:link];
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
+}
+
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {
   NSURL *link = [NSURL URLWithString:dynamicLinkDict[@"link"]];
   FIRDynamicLinkComponents *linkComponents = [FIRDynamicLinkComponents componentsWithLink:link domainURIPrefix:dynamicLinkDict[@"domainUriPrefix"]];
