@@ -86,7 +86,10 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
   Task<Void> terminate(String appName) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
 
-    instanceCache.remove(appName);
+    if (instanceCache.get(appName) != null) {
+      instanceCache.get(appName).clear();
+      instanceCache.remove(appName);
+    }
 
     return firebaseFirestore.terminate();
   }

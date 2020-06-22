@@ -24,17 +24,18 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
 import java.util.WeakHashMap;
+import java.lang.ref.WeakReference;
 
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 public class UniversalFirebaseFirestoreCommon {
-  static WeakHashMap<String, FirebaseFirestore> instanceCache = new WeakHashMap<>();
+  static WeakHashMap<String, WeakReference<FirebaseFirestore>> instanceCache = new WeakHashMap<>();
 
   static FirebaseFirestore getFirestoreForApp(String appName) {
-    FirebaseFirestore cachedInstance = instanceCache.get(appName);
+    WeakReference<FirebaseFirestore> cachedInstance = instanceCache.get(appName);
 
     if(cachedInstance != null){
-      return cachedInstance;
+      return cachedInstance.get();
     }
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -43,7 +44,7 @@ public class UniversalFirebaseFirestoreCommon {
 
     setFirestoreSettings(instance, appName);
 
-    instanceCache.put(appName, instance);
+    instanceCache.put(appName, new WeakReference<FirebaseFirestore>(instance));
 
     return instance;
   }
