@@ -158,7 +158,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
               int linkMinimumVersion = linkData.getMinimumAppVersion();
               promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion));
             } else {
-              rejectPromiseWithCodeAndMessage(promise, "resolve-link-not-found", "Dynamic link not found");
+              rejectPromiseWithCodeAndMessage(promise, "not-found", "Dynamic link not found");
             }
           } else {
             rejectPromiseWithCodeAndMessage(promise, "resolve-link-error", task.getException().getMessage());
