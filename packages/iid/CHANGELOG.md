@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/iid@7.1.4...@react-native-firebase/iid@7.1.5) (2020-06-19)
+
+### Bug Fixes
+
+- **iid:** RNFBid requires dep on instanceID ([#3804](https://github.com/invertase/react-native-firebase/issues/3804)) ([31cd364](https://github.com/invertase/react-native-firebase/commit/31cd36493e268a631fd8519a0fea3bb2979092d4))
+
 ## [7.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/iid@7.1.3...@react-native-firebase/iid@7.1.4) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/iid
