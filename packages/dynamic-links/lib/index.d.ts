@@ -577,7 +577,7 @@ export namespace FirebaseDynamicLinksTypes {
      * ```
      *
      * Can throw error with message 'Invalid link parameter' if link parameter is null
-     * Can throw error with code 'resolve-link-not-found' if the link does not resolve
+     * Can throw error with code 'not-found' if the link does not resolve
      * Can throw error with code 'resolve-link-error' if there is a processing error
 
      * @returns the resolved Dynamic Link
