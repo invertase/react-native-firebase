@@ -195,7 +195,7 @@ RCT_EXPORT_METHOD(resolveLink:
         });
     } else if (!error) {
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": @"resolve-link-not-found",
+          @"code": @"not-found",
           @"message": @"Dynamic link not found"
       }];
     } else {
