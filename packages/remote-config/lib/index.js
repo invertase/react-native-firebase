@@ -186,6 +186,7 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     if (hasOwnProperty(settings, 'minimumFetchInterval')) {
+      // eslint-disable-next-line no-console
       console.warn(
         "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
