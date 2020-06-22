@@ -155,7 +155,6 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
             // Careful: link == null if link invalid, isSuccessful is only false on processing error
             if (linkData != null && linkData.getLink() != null && linkData.getLink().toString() != null) {
               String linkUrl = linkData.getLink().toString();
-              // I can't believe they made this an int when versionCode is moving to long, but okay
               int linkMinimumVersion = linkData.getMinimumAppVersion();
               promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion));
             } else {
