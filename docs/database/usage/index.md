@@ -89,8 +89,9 @@ database()
 The event handler will be called straight away with the snapshot data, and further called when any changes to the node
 occur.
 
-The event handler also returns a function, allowing you to unsubscribe from events. This can be used within any `useEffect`
-hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
+You can unsubscribe from events by calling the `off` method. To unsubscribe from specific events, call the `off` method
+with the function that the event handler returned. This can be used within any `useEffect` hooks to automatically unsubscribe
+when the hook needs to unsubscribe itself:
 
 ```jsx
 import React, { useEffect } from 'react';
@@ -98,13 +99,14 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database()
+    const onValueChange = database()
       .ref(`/users/${userId}`).on('value', snapshot => {
         console.log('User data: ', snapshot.val());
       });
 
     // Stop listening for updates when no longer required
-    return () => subscriber();
+    return () => database()
+      .ref(`/users/${userId}`).off('value', onValueChange);
   }, [userId]);
 }
 ```
@@ -124,13 +126,14 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database()
+    const onChildAdd = database()
       .ref('/users').on('child_added', snapshot => {
         console.log('A new node has been added', snapshot.val());
       });
 
     // Stop listening for updates when no longer required
-    return () => subscriber();
+    return () => database()
+      .ref('/users').off('child_added', onChildAdd);
   }, [userId]);
 }
 ```

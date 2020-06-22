@@ -103,7 +103,7 @@ such as the current upload progress:
 const task = reference.putFile(pathToFile);
 
 task.on('state_changed', taskSnapshot => {
-  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${task.totalBytes}`);
+  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
 });
 
 task.then(() => {

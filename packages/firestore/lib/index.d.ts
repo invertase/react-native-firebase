@@ -981,6 +981,26 @@ export namespace FirebaseFirestoreTypes {
     limit(limit: number): Query<T>;
 
     /**
+     * Creates and returns a new Query where the results are limited to the specified number of documents
+     * starting from the last document. The order is dependent on the second parameter for the `orderBy`
+     * method. If `desc` is used, the order is reversed. `orderBy` method call is required when calling `limitToLast`.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get the last 10 users in reverse order of age
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age', 'desc')
+     *   .limitToLast(10)
+     *   .get();
+     * ```
+     *
+     * @param limitToLast The maximum number of items to return.
+     */
+    limitToLast(limitToLast: number): Query<T>;
+
+    /**
      * Attaches a listener for `QuerySnapshot` events.
      *
      * > Although an `onCompletion` callback can be provided, it will never be called because the snapshot stream is never-ending.
@@ -1958,6 +1978,28 @@ export namespace FirebaseFirestoreTypes {
      * @param settings A `Settings` object.
      */
     settings(settings: Settings): Promise<void>;
+    /**
+     * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+     * are made.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().clearPersistence();
+     * ```
+     */
+    clearPersistence(): Promise<void>;
+    /**
+     * Typically called to ensure a new Firestore instance is initialized before calling
+     * `firebase.firestore().clearPersistence()`.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().terminate();
+     * ```
+     */
+    terminate(): Promise<void>;
   }
 }
 
