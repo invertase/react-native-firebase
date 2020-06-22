@@ -22,7 +22,6 @@ import {
   isString,
   isUndefined,
   isIOS,
-  isNull,
 } from '@react-native-firebase/app/lib/common';
 import Value from './RemoteConfigValue';
 import {
@@ -112,12 +111,14 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get defaultConfig() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().defaultConfig is not supported. Default values are merged with config values',
     );
   }
 
   set defaultConfig(defaults) {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
     );
@@ -128,6 +129,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   set settings(settings) {
+    // eslint-disable-next-line no-console
     console.warn(
       "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().setConfigSettings({ ...[key]: string, })' instead'",
     );
@@ -143,12 +145,14 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   get isDeveloperModeEnabled() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().isDeveloperModeEnabled has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
     );
   }
 
   get minimumFetchInterval() {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().minimumFetchInterval has been removed. Use `firebase.remoteConfig().settings.minimumFetchIntervalMillis` instead.',
     );
@@ -174,6 +178,7 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
+      // eslint-disable-next-line no-console
       console.warn(
         "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
       );
@@ -273,6 +278,7 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   setLogLevel() {
+    // eslint-disable-next-line no-console
     console.warn('firebase.remoteConfig().setLogLevel() is not supported natively.');
   }
 
