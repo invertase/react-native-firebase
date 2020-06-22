@@ -80,6 +80,76 @@ describe('dynamicLinks()', () => {
     });
   });
 
+  describe('resolveLink()', () => {
+    it('resolves a long link', async () => {
+      const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);
+      link.should.be.an.Object();
+      link.url.should.equal('https://invertase.io/hire-us');
+      should.equal(link.minimumAppVersion, null);
+    });
+
+    it('resolves a short link', async () => {
+      const shortLink = await firebase.dynamicLinks().buildShortLink(
+        {
+          ...baseParams,
+          ios: {
+            bundleId: 'io.invertase.testing',
+            minimumVersion: '123',
+          },
+          android: {
+            packageName: 'com.invertase.testing',
+            minimumVersion: '123',
+          },
+        },
+        firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
+      );
+      shortLink.should.be.String();
+      // Unguessable links are 17 characters by definitions, add the slash: 18 chars
+      shortLink.length.should.be.eql(baseParams.domainUriPrefix.length + 18);
+
+      const link = await firebase.dynamicLinks().resolveLink(shortLink);
+      link.should.be.an.Object();
+      link.url.should.equal(baseParams.link);
+      // TODO: harmonize the API so that minimumAppVersion is either a number or a string
+      // it would be a breaking change in the API though
+      // On Android it's a number and iOS a String, so parseInt is used to have a single test
+      parseInt(link.minimumAppVersion, 10).should.equal(123);
+    });
+
+    it('throws on links that do not exist', async () => {
+      try {
+        await firebase.dynamicLinks().resolveLink(baseParams.domainUriPrefix + '/not-a-valid-link');
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.code.should.containEql('not-found');
+        e.message.should.containEql('Dynamic link not found');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws on invalid links', async () => {
+      try {
+        await firebase.dynamicLinks().resolveLink(null);
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql('Invalid link parameter');
+        return Promise.resolve();
+      }
+    });
+
+    // // The API is documented as being capable of suffering a processing failure, and we
+    // // handle it, but I don't know how to trigger it to validate
+    // it('throws on link processing error', async () => {
+    //   try {
+    //     await firebase.dynamicLinks().resolveLink(SOME UNKNOWN INPUT TO CAUSE PROCESSING ERROR);
+    //     return Promise.reject(new Error('Did not throw Error.'));
+    //   } catch (e) {
+    //     e.code.should.containEql('resolve-link-error');
+    //     return Promise.resolve();
+    //   }
+    // });
+  });
+
   ios.describe('getInitialLink()', () => {
     it('should return the dynamic link instance that launched the app', async () => {
       await device.openURL({
