@@ -90,7 +90,7 @@ export namespace FirebaseFirestoreTypes {
    * A `DocumentData` object represents the data in a document.
    */
   export interface DocumentData {
-      [key: string]: DocumentFieldType
+      [key: string]: DocumentFieldType;
   }
 
   /**
@@ -551,7 +551,8 @@ export namespace FirebaseFirestoreTypes {
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
    * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
    */
-  export interface QueryDocumentSnapshot<T extends DocumentData = DocumentData> extends DocumentSnapshot<T> {
+  export interface QueryDocumentSnapshot<T extends DocumentData = DocumentData>
+    extends DocumentSnapshot<T> {
     /**
      * A QueryDocumentSnapshot is always guaranteed to exist.
      */
@@ -1316,7 +1317,10 @@ export namespace FirebaseFirestoreTypes {
      * @param thisArg The `this` binding for the callback.
      */
 
-    forEach(callback: (result: QueryDocumentSnapshot<T>, index: number) => void, thisArg?: any): void;
+    forEach(
+      callback: (result: QueryDocumentSnapshot<T>, index: number) => void,
+      thisArg?: any
+    ): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
@@ -1602,7 +1606,10 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update<T extends DocumentData = DocumentData>(documentRef: DocumentReference<T>, data: Partial<T>): Transaction;
+    update<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>, 
+      data: Partial<T>
+    ): Transaction;
 
     /**
      * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to
@@ -1724,7 +1731,10 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update<T extends DocumentData = DocumentData>(documentRef: DocumentReference<T>, data: T): WriteBatch;
+    update<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+      data: T
+      ): WriteBatch;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
@@ -1850,7 +1860,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param collectionPath A slash-separated path to a collection.
      */
-    collection<T extends DocumentData = DocumentData>(collectionPath: string): CollectionReference<T>;
+    collection<T extends DocumentData = DocumentData>(
+      collectionPath: string
+      ): CollectionReference<T>;
 
     /**
      * Creates and returns a new Query that includes all documents in the database that are contained
