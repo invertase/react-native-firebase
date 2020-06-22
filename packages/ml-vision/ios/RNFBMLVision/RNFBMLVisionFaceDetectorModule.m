@@ -50,35 +50,35 @@ RCT_EXPORT_METHOD(faceDetectorProcessImage:
 
     FIRVisionFaceDetectorOptions *options = [[FIRVisionFaceDetectorOptions alloc] init];
 
-    NSInteger *classificationMode = [faceDetectorOptions[@"classificationMode"] pointerValue];
-    if (classificationMode == (NSInteger *) 1) {
+    NSInteger *classificationMode = [faceDetectorOptions[@"classificationMode"] integerValue];
+    if (classificationMode == 1) {
       options.classificationMode = FIRVisionFaceDetectorClassificationModeNone;
-    } else if (classificationMode == (NSInteger *) 2) {
+    } else if (classificationMode == 2) {
       options.classificationMode = FIRVisionFaceDetectorClassificationModeAll;
     }
 
-    NSInteger *contourMode = [faceDetectorOptions[@"contourMode"] pointerValue];
-    if (contourMode == (NSInteger *) 1) {
+    NSInteger *contourMode = [faceDetectorOptions[@"contourMode"] integerValue];
+    if (contourMode == 1) {
       options.contourMode = FIRVisionFaceDetectorContourModeNone;
-    } else if (contourMode == (NSInteger *) 2) {
+    } else if (contourMode == 2) {
       options.contourMode = FIRVisionFaceDetectorContourModeAll;
     }
 
-    NSInteger *landmarkMode = [faceDetectorOptions[@"landmarkMode"] pointerValue];
-    if (landmarkMode == (NSInteger *) 1) {
+    NSInteger *landmarkMode = [faceDetectorOptions[@"landmarkMode"] integerValue];
+    if (landmarkMode == 1) {
       options.landmarkMode = FIRVisionFaceDetectorLandmarkModeNone;
-    } else if (landmarkMode == (NSInteger *) 2) {
+    } else if (landmarkMode == 2) {
       options.landmarkMode = FIRVisionFaceDetectorLandmarkModeAll;
     }
 
-    NSInteger *performanceMode = [faceDetectorOptions[@"performanceMode"] pointerValue];
-    if (performanceMode == (NSInteger *) 1) {
+    NSInteger *performanceMode = [faceDetectorOptions[@"performanceMode"] integerValue];
+    if (performanceMode == 1) {
       options.performanceMode = FIRVisionFaceDetectorPerformanceModeFast;
-    } else if (performanceMode == (NSInteger *) 2) {
+    } else if (performanceMode == 2) {
       options.performanceMode = FIRVisionFaceDetectorPerformanceModeAccurate;
     }
-
-    options.minFaceSize = (CGFloat) [faceDetectorOptions[@"minFaceSize"] doubleValue];
+      
+    options.minFaceSize = [faceDetectorOptions[@"minFaceSize"] doubleValue];
 
     FIRVisionFaceDetector *faceDetector = [vision faceDetectorWithOptions:options];
     [faceDetector processImage:visionImage completion:^(NSArray<FIRVisionFace *> *faces, NSError *error) {
