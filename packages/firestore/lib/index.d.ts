@@ -90,7 +90,7 @@ export namespace FirebaseFirestoreTypes {
    * A `DocumentData` object represents the data in a document.
    */
   export interface DocumentData {
-      [key: string]: DocumentFieldType;
+    [key: string]: DocumentFieldType;
   }
 
   /**
@@ -1339,7 +1339,7 @@ export namespace FirebaseFirestoreTypes {
 
     forEach(
       callback: (result: QueryDocumentSnapshot<T>, index: number) => void,
-      thisArg?: any
+      thisArg?: any,
     ): void;
 
     /**
@@ -1573,7 +1573,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param documentRef A reference to the document to be read.
      */
-    get<T extends DocumentData = DocumentData>(documentRef: DocumentReference<T>): Promise<DocumentSnapshot<T>>;
+    get<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+    ): Promise<DocumentSnapshot<T>>;
 
     /**
      * Writes to the document referred to by the provided `DocumentReference`. If the document does not exist yet,
@@ -1627,8 +1629,8 @@ export namespace FirebaseFirestoreTypes {
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
     update<T extends DocumentData = DocumentData>(
-      documentRef: DocumentReference<T>, 
-      data: Partial<T>
+      documentRef: DocumentReference<T>,
+      data: Partial<T>,
     ): Transaction;
 
     /**
@@ -1753,8 +1755,8 @@ export namespace FirebaseFirestoreTypes {
      */
     update<T extends DocumentData = DocumentData>(
       documentRef: DocumentReference<T>,
-      data: T
-      ): WriteBatch;
+      data: T,
+    ): WriteBatch;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
@@ -1881,8 +1883,8 @@ export namespace FirebaseFirestoreTypes {
      * @param collectionPath A slash-separated path to a collection.
      */
     collection<T extends DocumentData = DocumentData>(
-      collectionPath: string
-      ): CollectionReference<T>;
+      collectionPath: string,
+    ): CollectionReference<T>;
 
     /**
      * Creates and returns a new Query that includes all documents in the database that are contained
