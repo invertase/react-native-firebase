@@ -118,7 +118,7 @@ class FirebaseConfigModule extends FirebaseModule {
     );
   }
 
-  set defaultConfig() {
+  set defaultConfig(defaults) {
     // eslint-disable-next-line no-console
     console.warn(
       'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
@@ -287,7 +287,7 @@ class FirebaseConfigModule extends FirebaseModule {
   _updateFromConstants(constants) {
     this._lastFetchTime = constants.lastFetchTime;
     this._lastFetchStatus = constants.lastFetchStatus;
-    
+
     this._settings = {
       fetchTimeMillis: constants.fetchTimeout * 1000,
       minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,

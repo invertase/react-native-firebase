@@ -24,6 +24,16 @@ console.log(config.firebase.SDK_VERSION);
 console.log(firebase.remoteConfig().lastFetchStatus);
 console.log(firebase.remoteConfig().lastFetchTime);
 
+
+const value = firebase.remoteConfig().getValue('example');
+
+// checks methods exist on RemoteConfigValue
+console.log(value.asBoolean());
+console.log(value.asNumber());
+console.log(value.asString());
+console.log(value.getSource());
+
+
 firebase
   .remoteConfig()
   .fetch()
@@ -33,3 +43,9 @@ firebase
   .fetch(123)
   .then();
 firebase.remoteConfig().getAll();
+firebase.remoteConfig().reset().then;
+firebase.remoteConfig().activate().then;
+firebase.remoteConfig().fetchAndActivate().then;
+firebase.remoteConfig().setConfigSettings({}).then;
+firebase.remoteConfig().ensureInitialized().then;
+firebase.remoteConfig().setDefaults({}).then;

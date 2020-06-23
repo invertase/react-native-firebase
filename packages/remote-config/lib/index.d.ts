@@ -390,6 +390,16 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      */
     activate(): Promise<boolean>;
+    /**
+     * Ensures the last activated config are available to the getters.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().ensureInitialized();
+     * ```
+     */
+    ensureInitialized(): Promise<null>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
