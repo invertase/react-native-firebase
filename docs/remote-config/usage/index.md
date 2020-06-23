@@ -94,7 +94,7 @@ remoteConfig()
 ## Reading values
 
 With the defaults set and the remote values fetched from Firebase, we can now use the `getValue` method to get the
-value and use a number of methods to retrieve the value (same API as Firebase web SDK)
+value and use a number of methods to retrieve the value (same API as Firebase Remote Config web SDK)
 
 ```js
 const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
@@ -104,12 +104,13 @@ if (awesomeNewFeature.asString() === 'enabled') {
   enableAwesomeNewFeature();
 }
 // resolves value to number
-// if it is not a number or source is static, the value will be 0
+// if it is not a number or source is 'static', the value will be 0
 if (awesomeNewFeature.asNumber() === 5) {
   enableAwesomeNewFeature();
 }
 // resolves value to boolean
 // if value is any of the following: '1', 'true', 't', 'yes', 'y', 'on', it will resolve to true
+// if source is 'static', value will be false
 if (awesomeNewFeature.asNumber() === true) {
   enableAwesomeNewFeature();
 }
