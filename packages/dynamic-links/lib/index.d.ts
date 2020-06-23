@@ -403,9 +403,14 @@ export namespace FirebaseDynamicLinksTypes {
     url: string;
 
     /**
-     * The minimum app version requested to process the dynamic link.
+     * The minimum app version (not system version) requested to process the dynamic link.
+     * This is retrieved from the imv= parameter of the Dynamic Link URL.
      *
-     * Returns `null` if not specified.
+     * If the app version of the opening app is less than the value of this property,
+     * then the app is expected to open AppStore to allow user to download most recent version.
+     * App can notify or ask the user before opening AppStore.
+     *
+     * Returns `null` if not specified
      *
      * #### Android
      *
@@ -413,8 +418,7 @@ export namespace FirebaseDynamicLinksTypes {
      *
      * #### iOS
      *
-     * On iOS this returns a string value representing the minimum app version (not the iOS system version). If the app version of the opening app is less than the value of this property, then the app is expected to open AppStore to allow user to download most recent version. App can notify or ask the user before opening AppStore.
-     *
+     * On iOS this returns a string value representing the minimum app version (not the iOS system version).
      */
     minimumAppVersion: number | string | null;
   }
@@ -558,6 +562,28 @@ export namespace FirebaseDynamicLinksTypes {
      * @param listener The listener callback, called with Dynamic Link instances.
      */
     onLink(listener: Function<DynamicLink>): Function;
+
+    /**
+     * Resolve a given dynamic link (short or long) directly.
+     *
+     * This mimics the result of external link resolution, app open, and the DynamicLink you
+     * would get from {@link dynamic-links#getInitialLink}
+     *
+     * #### Example
+     *
+     * ```js
+     * const link = await firebase.dynamicLinks().resolveLink('https://reactnativefirebase.page.link/76adfasdf');
+     * console.log('Received link with URL: ' + link.url);
+     * ```
+     *
+     * Can throw error with message 'Invalid link parameter' if link parameter is null
+     * Can throw error with code 'not-found' if the link does not resolve
+     * Can throw error with code 'resolve-link-error' if there is a processing error
+
+     * @returns the resolved Dynamic Link
+     * @param link The Dynamic Link URL to resolve, either short or long
+     */
+    resolveLink(link: string): Promise<DynamicLink>;
   }
 }
 
