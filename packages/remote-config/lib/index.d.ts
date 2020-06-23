@@ -397,6 +397,7 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * await firebase.remoteConfig().ensureInitialized();
+     * // get remote config values
      * ```
      */
     ensureInitialized(): Promise<null>;
