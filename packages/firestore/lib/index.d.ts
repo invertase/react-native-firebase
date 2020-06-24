@@ -1755,7 +1755,7 @@ export namespace FirebaseFirestoreTypes {
      */
     update<T extends DocumentData = DocumentData>(
       documentRef: DocumentReference<T>,
-      data: Partial<{ [K in keyof T]: T[K] | FieldValue}>,
+      data: Partial<{ [K in keyof T]: T[K] | FieldValue }>,
     ): WriteBatch;
 
     /**
