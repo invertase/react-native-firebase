@@ -448,7 +448,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(data: Partial<T>): Promise<void>;
+    update(data: Partial<{ [K in keyof T]: T[K] | FieldValue }>): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if
@@ -1630,7 +1630,7 @@ export namespace FirebaseFirestoreTypes {
      */
     update<T extends DocumentData = DocumentData>(
       documentRef: DocumentReference<T>,
-      data: Partial<T>,
+      data: Partial<{ [K in keyof T]: T[K] | FieldValue }>,
     ): Transaction;
 
     /**
@@ -1755,7 +1755,7 @@ export namespace FirebaseFirestoreTypes {
      */
     update<T extends DocumentData = DocumentData>(
       documentRef: DocumentReference<T>,
-      data: T,
+      data: Partial<{ [K in keyof T]: T[K] | FieldValue}>,
     ): WriteBatch;
 
     /**
@@ -1780,7 +1780,7 @@ export namespace FirebaseFirestoreTypes {
     update<T extends DocumentData = DocumentData, K extends keyof T = string>(
       documentRef: DocumentReference<T>,
       field: K | FieldPath,
-      value: T[K],
+      value: T[K] | FieldValue,
       ...moreFieldAndValues: any[]
     ): WriteBatch;
   }
