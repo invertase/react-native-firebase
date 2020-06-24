@@ -118,6 +118,11 @@ public class ReactNativeFirebaseFirestoreQuery {
       query = query.limit(limit);
     }
 
+    if (options.hasKey("limitToLast")) {
+      int limitToLast = options.getInt("limitToLast");
+      query = query.limitToLast(limitToLast);
+    }
+
     if (options.hasKey("startAt")) {
       List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("startAt"));
       query = query.startAt(Objects.requireNonNull(fieldList.toArray()));

@@ -32,6 +32,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
@@ -953,7 +955,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           TAG,
           "confirmationResultConfirm:signInWithCredential:onComplete:success"
         );
-        promiseWithUser(Objects.requireNonNull(task.getResult()).getUser(), promise);
+        promiseWithAuthResult(Objects.requireNonNull(task.getResult()), promise);
       } else {
         Exception exception = task.getException();
         Log.e(
@@ -1773,9 +1775,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       }
     }
 
-    if (code.equals("UNKNOWN") && exception instanceof FirebaseAuthInvalidCredentialsException) {
-      code = "INVALID_EMAIL";
-      message = invalidEmail;
+    if (code.equals("UNKNOWN")) {
+      if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+        code = "INVALID_EMAIL";
+        message = invalidEmail;
+      } else if (exception instanceof FirebaseNetworkException) {
+        code = "NETWORK_REQUEST_FAILED";
+      } else if (exception instanceof FirebaseTooManyRequestsException) {
+        code = "TOO_MANY_REQUESTS";
+        message = message;
+      }
     }
 
     code = code
@@ -1910,7 +1919,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
-    
+
     // Required
     String url = actionCodeSettings.getString("url");
     builder = builder.setUrl(Objects.requireNonNull(url));

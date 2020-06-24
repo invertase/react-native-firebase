@@ -3,263 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [6.7.1](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/compare/@react-native-firebase/auth@6.7.0...@react-native-firebase/auth@6.7.1) (2020-04-22)
+## [8.0.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.6...@react-native-firebase/auth@8.0.7) (2020-06-22)
 
 **Note:** Version bump only for package @react-native-firebase/auth
 
-
-
-
-
-# 6.7.0 (2020-04-22)
-
+## [8.0.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.5...@react-native-firebase/auth@8.0.6) (2020-06-18)
 
 ### Bug Fixes
 
-* **android,build:** conditionally check `app` dependency, fixes… ([#3215](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3215)) ([b4eaa39](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/b4eaa39ea8022535696d28e6eacb5c3e3ce9578f))
-* **android,build:** use correct plugin & BoM versions ([fb763eb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/fb763ebde216d8c789b08bd0d77c078089776627))
-* **auth:** user.metadata uses ISO strings ([#3360](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3360)) ([8adef65](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/8adef653faa008e0146374f99f5ba1af902749bf))
+- **auth,android:** too-many-requests code now correctly returned ([#3795](https://github.com/invertase/react-native-firebase/issues/3795)) ([c799472](https://github.com/invertase/react-native-firebase/commit/c7994720b14114ac70540744794d8b645e2209e0))
 
+## [8.0.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.4...@react-native-firebase/auth@8.0.5) (2020-06-10)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.3...@react-native-firebase/auth@8.0.4) (2020-06-03)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.2...@react-native-firebase/auth@8.0.3) (2020-06-01)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.1...@react-native-firebase/auth@8.0.2) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.0...@react-native-firebase/auth@8.0.1) (2020-05-29)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.1.0...@react-native-firebase/auth@8.0.0) (2020-05-28)
+
+- fix!(auth): confirm code returns User instead of UserCredential (#3684) ([71a1120](https://github.com/invertase/react-native-firebase/commit/71a1120337acd73d2483103f2acd560e8e99a335)), closes [#3684](https://github.com/invertase/react-native-firebase/issues/3684)
+
+### BREAKING CHANGES
+
+- `confirm(verificationCode)` now correctly returns an instance of `UserCredentials` instead of `User`. You can access `User` from the `.user` property on the `UserCredentials` instance.
+
+# [7.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.2...@react-native-firebase/auth@7.1.0) (2020-05-22)
 
 ### Features
 
-* independently version packages ([#3513](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
-* **ios:** allow static_framework usage via Podfile global ([#3388](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3388)) ([530f8bb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/530f8bbb51f89f106854dbf1df5ec80211e2cf8b)), closes [#3253](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3253)
-* **messaging:** ios & android messaging updates & fixes ([#3339](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3339)) ([d66a611](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/d66a6118f82005087f53b86571990fc071402153))
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
 
-
-
-# 6.3.0 (2020-02-04)
-
+## [7.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.1...@react-native-firebase/auth@7.0.2) (2020-05-15)
 
 ### Bug Fixes
 
-* **auth:** add missing default actionCodeSettings ([239b35b](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/239b35b362289629fa4c46aa792f9b4200545d24))
-* **auth,ios:** remove unnecessary string cast ([#3091](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3091)) ([c5043d1](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/c5043d1fcffa0902f4521125e3fb5ac2178fe264))
-* **types:** remove types in ConfirmationResult.js ([#3153](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3153)) ([2cd513a](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/2cd513aee3fd6adbe18c7d1a26d1e72ab7eb4f2b))
+- **auth:** use correct code on network exception ([#3655](https://github.com/invertase/react-native-firebase/issues/3655)) ([8bcf5c9](https://github.com/invertase/react-native-firebase/commit/8bcf5c945db5614835630b6d0cf4951c4a5b2a2d)), closes [#3654](https://github.com/invertase/react-native-firebase/issues/3654)
 
+## [7.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.0...@react-native-firebase/auth@7.0.1) (2020-05-13)
 
+**Note:** Version bump only for package @react-native-firebase/auth
 
-# 6.2.0 (2019-12-08)
+## [7.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@7.0.0...@react-native-firebase/auth@7.0.0) (2020-05-13)
 
+- feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/issues/3613)
 
 ### Features
 
-* **auth:** add initial support for Apple auth provider ([#2979](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2979)) ([3e20af0](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/3e20af06db6a8061deb79831fa915b6fc293fd27))
+- **ios:** podspecs now utilize CoreOnly instead of Core ([#3575](https://github.com/invertase/react-native-firebase/issues/3575)) ([35285f1](https://github.com/invertase/react-native-firebase/commit/35285f1655b16d05e6630fc556f95cccfb707ee4))
 
+### BREAKING CHANGES
 
-
-# 6.1.0 (2019-11-26)
-
-
-### Bug Fixes
-
-* **auth:** collection was mutated while being enumerated. ([#2900](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2900)) ([5471187](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/5471187b30527cd1157bde209886664e52413a7c))
-* **auth:** trigger initial listener asynchronously ([#2897](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2897)) ([227ab63](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/227ab631a6163a950af675da690b1467f7616d6c))
-
-
-### Features
-
-* **firestore:** array-contains, array-contains-any & in filters ([#2868](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2868)) ([42e034c](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/42e034c4807da54441d2baeab9f57bbf1a137a4a))
-* **ios:** upgrade Firebase iOS SDK version to 6.13.0 ([547d0a2](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/547d0a2d74a68808b29063f9b3aa3e1ac38551fc))
-
-
-
-## 6.0.4 (2019-11-17)
-
-
-### Bug Fixes
-
-* **auth:** Fix exception in PhoneAuthListener ([#2828](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2828)) ([0843cbd](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/0843cbdf3a4548c78a93bed115a1b3b0666436d1)), closes [#2639](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2639)
-
-
-
-## 6.0.3 (2019-10-25)
-
-
-
-## 6.0.2 (2019-10-18)
-
-
-### Bug Fixes
-
-* **auth:** Fix iOS event subscriptions not correctly removing on reload ([49c0050](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/49c0050383aa0c54a2329104e2ad85a5e41a4a95))
-
-
-
-## 6.0.1 (2019-10-07)
-
-
-
-# 0.1.0 (2019-07-30)
-
-
-
-
-
-# 6.6.0 (2020-04-22)
-
-
-### Bug Fixes
-
-* **android,build:** conditionally check `app` dependency, fixes… ([#3215](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3215)) ([b4eaa39](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/b4eaa39ea8022535696d28e6eacb5c3e3ce9578f))
-* **android,build:** use correct plugin & BoM versions ([fb763eb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/fb763ebde216d8c789b08bd0d77c078089776627))
-* **auth:** user.metadata uses ISO strings ([#3360](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3360)) ([8adef65](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/8adef653faa008e0146374f99f5ba1af902749bf))
-
-
-### Features
-
-* independently version packages ([#3513](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
-* **ios:** allow static_framework usage via Podfile global ([#3388](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3388)) ([530f8bb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/530f8bbb51f89f106854dbf1df5ec80211e2cf8b)), closes [#3253](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3253)
-* **messaging:** ios & android messaging updates & fixes ([#3339](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3339)) ([d66a611](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/d66a6118f82005087f53b86571990fc071402153))
-
-
-
-# 6.3.0 (2020-02-04)
-
-
-### Bug Fixes
-
-* **auth:** add missing default actionCodeSettings ([239b35b](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/239b35b362289629fa4c46aa792f9b4200545d24))
-* **auth,ios:** remove unnecessary string cast ([#3091](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3091)) ([c5043d1](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/c5043d1fcffa0902f4521125e3fb5ac2178fe264))
-* **types:** remove types in ConfirmationResult.js ([#3153](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3153)) ([2cd513a](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/2cd513aee3fd6adbe18c7d1a26d1e72ab7eb4f2b))
-
-
-
-# 6.2.0 (2019-12-08)
-
-
-### Features
-
-* **auth:** add initial support for Apple auth provider ([#2979](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2979)) ([3e20af0](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/3e20af06db6a8061deb79831fa915b6fc293fd27))
-
-
-
-# 6.1.0 (2019-11-26)
-
-
-### Bug Fixes
-
-* **auth:** collection was mutated while being enumerated. ([#2900](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2900)) ([5471187](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/5471187b30527cd1157bde209886664e52413a7c))
-* **auth:** trigger initial listener asynchronously ([#2897](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2897)) ([227ab63](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/227ab631a6163a950af675da690b1467f7616d6c))
-
-
-### Features
-
-* **firestore:** array-contains, array-contains-any & in filters ([#2868](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2868)) ([42e034c](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/42e034c4807da54441d2baeab9f57bbf1a137a4a))
-* **ios:** upgrade Firebase iOS SDK version to 6.13.0 ([547d0a2](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/547d0a2d74a68808b29063f9b3aa3e1ac38551fc))
-
-
-
-## 6.0.4 (2019-11-17)
-
-
-### Bug Fixes
-
-* **auth:** Fix exception in PhoneAuthListener ([#2828](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2828)) ([0843cbd](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/0843cbdf3a4548c78a93bed115a1b3b0666436d1)), closes [#2639](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2639)
-
-
-
-## 6.0.3 (2019-10-25)
-
-
-
-## 6.0.2 (2019-10-18)
-
-
-### Bug Fixes
-
-* **auth:** Fix iOS event subscriptions not correctly removing on reload ([49c0050](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/49c0050383aa0c54a2329104e2ad85a5e41a4a95))
-
-
-
-## 6.0.1 (2019-10-07)
-
-
-
-# 0.1.0 (2019-07-30)
-
-
-
-
-
-# 6.5.0 (2020-04-22)
-
-
-### Bug Fixes
-
-* **android,build:** conditionally check `app` dependency, fixes… ([#3215](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3215)) ([b4eaa39](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/b4eaa39ea8022535696d28e6eacb5c3e3ce9578f))
-* **android,build:** use correct plugin & BoM versions ([fb763eb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/fb763ebde216d8c789b08bd0d77c078089776627))
-* **auth:** user.metadata uses ISO strings ([#3360](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3360)) ([8adef65](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/8adef653faa008e0146374f99f5ba1af902749bf))
-
-
-### Features
-
-* **ios:** allow static_framework usage via Podfile global ([#3388](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3388)) ([530f8bb](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/530f8bbb51f89f106854dbf1df5ec80211e2cf8b)), closes [#3253](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3253)
-* **messaging:** ios & android messaging updates & fixes ([#3339](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3339)) ([d66a611](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/d66a6118f82005087f53b86571990fc071402153))
-
-
-
-# 6.3.0 (2020-02-04)
-
-
-### Bug Fixes
-
-* **auth:** add missing default actionCodeSettings ([239b35b](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/239b35b362289629fa4c46aa792f9b4200545d24))
-* **auth,ios:** remove unnecessary string cast ([#3091](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3091)) ([c5043d1](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/c5043d1fcffa0902f4521125e3fb5ac2178fe264))
-* **types:** remove types in ConfirmationResult.js ([#3153](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/3153)) ([2cd513a](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/2cd513aee3fd6adbe18c7d1a26d1e72ab7eb4f2b))
-
-
-
-# 6.2.0 (2019-12-08)
-
-
-### Features
-
-* **auth:** add initial support for Apple auth provider ([#2979](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2979)) ([3e20af0](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/3e20af06db6a8061deb79831fa915b6fc293fd27))
-
-
-
-# 6.1.0 (2019-11-26)
-
-
-### Bug Fixes
-
-* **auth:** collection was mutated while being enumerated. ([#2900](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2900)) ([5471187](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/5471187b30527cd1157bde209886664e52413a7c))
-* **auth:** trigger initial listener asynchronously ([#2897](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2897)) ([227ab63](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/227ab631a6163a950af675da690b1467f7616d6c))
-
-
-### Features
-
-* **firestore:** array-contains, array-contains-any & in filters ([#2868](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2868)) ([42e034c](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/42e034c4807da54441d2baeab9f57bbf1a137a4a))
-* **ios:** upgrade Firebase iOS SDK version to 6.13.0 ([547d0a2](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/547d0a2d74a68808b29063f9b3aa3e1ac38551fc))
-
-
-
-## 6.0.4 (2019-11-17)
-
-
-### Bug Fixes
-
-* **auth:** Fix exception in PhoneAuthListener ([#2828](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2828)) ([0843cbd](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/0843cbdf3a4548c78a93bed115a1b3b0666436d1)), closes [#2639](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/issues/2639)
-
-
-
-## 6.0.3 (2019-10-25)
-
-
-
-## 6.0.2 (2019-10-18)
-
-
-### Bug Fixes
-
-* **auth:** Fix iOS event subscriptions not correctly removing on reload ([49c0050](https://github.com/invertase/react-native-firebase/tree/master/packages/auth/commit/49c0050383aa0c54a2329104e2ad85a5e41a4a95))
-
-
-
-## 6.0.1 (2019-10-07)
-
-
-
-# 0.1.0 (2019-07-30)
+- breaking change to mark new internal versioning requirements.
