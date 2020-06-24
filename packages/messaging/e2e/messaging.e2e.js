@@ -319,4 +319,47 @@ describe('messaging()', () => {
       }
     });
   });
+
+  describe('sendMessage()', () => {
+    it.only('successfully sends a message', async () => {
+      try {
+        await Utils.sleep(10000);
+
+        if (device.getPlatform() === 'ios') {
+          await firebase.messaging().registerDeviceForRemoteMessages();
+          // call deprecated method also
+          await firebase.messaging().registerForRemoteNotifications();
+        }
+
+        await firebase.messaging().sendMessage({
+          // data: {
+          to: '11111111111111@fcm.googleapis.com',
+          messageId: 'test1',
+          messageType: 'test2',
+          notification: {
+            title: 'Foo',
+            body: 'Bar',
+          },
+          // },
+        });
+
+        // const token = await firebase.messaging().getToken();
+        // await TestsAPI.messaging().sendToDevice(token, {
+        //   data: {
+        //     to: '11111111111111@fcm.googleapis.com',
+        //     messageId: 'test1',
+        //     messageType: 'test2',
+        //     notification: {
+        //       title: 'Foo',
+        //       body: 'Bar',
+        //     },
+        //   },
+        // });
+        return Promise.reject('Should have thrown error');
+      } catch (ex) {
+        console.warn(ex.message);
+        return Promise.resolve();
+      }
+    });
+  });
 });
