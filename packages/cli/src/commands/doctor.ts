@@ -9,9 +9,10 @@ import prompt from '../helpers/prompt';
 import firebase from '../helpers/firebase';
 import { getAndroidApp } from '../actions/getApp';
 import CliError from '../helpers/error';
-import { getGoogleServicesDependency, getGoogleServicesPlugin } from '../helpers/gradle';
-
-const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
+import { ProjectDetail } from '../types/firebase';
+import { compilePluginList } from '../actions/handleGradle';
+import { getDependency } from '../helpers/gradle';
+import * as gradle from '../helpers/gradle';
 
 const display = console.log; // eslint-disable-line no-console
 
@@ -21,6 +22,11 @@ enum Status {
   Success,
   Warning,
   Error,
+}
+
+type CheckItem = [string | null, Status];
+interface CheckGroup {
+  [key: string]: CheckGroup | CheckItem;
 }
 
 function boolStatus(status: any, error: Status = Status.Error): Status {
@@ -57,6 +63,19 @@ function foundResult(condition: any): string {
   return condition ? condition.toString() : 'Not found';
 }
 
+// returns true if version a > b
+function compareVersion(a: string, b: string) {
+  const va = a.split('.').map(i => +i),
+    vb = b.split('.').map(i => +i);
+  for (let i = 0; ; i++) {
+    if (i == va.length) return false;
+    if (i == vb.length) return true;
+
+    if (va[i] > vb[i]) return true;
+    if (va[i] < vb[i]) return false;
+  }
+}
+
 export default async function doctorCommand(args: string[], reactNativeConfig: Config) {
   const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
 
@@ -67,19 +86,20 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
       `No Firebase projects exist for user ${Chalk.cyanBright(`[${account.user.email}].`)}`,
     );
 
-  const projectDetail = await firebase
+  const projectDetail = await (firebase
     .api(account)
-    .management.getProject(firebaseProject.projectId, { android: true, ios: true, web: false });
+    .management.getProject(firebaseProject.projectId, {
+      android: true,
+      ios: true,
+      web: false,
+    }) as Promise<ProjectDetail>);
 
   const Loader = getLoader();
   const loader = new Loader();
 
   loader.start('Running diagnostics...');
 
-  type CheckItem = [string | null, Status];
-  interface CheckGroup {
-    [key: string]: CheckGroup | CheckItem;
-  }
+  const plugins = compilePluginList();
 
   const checks: CheckGroup = {};
 
@@ -132,13 +152,15 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
   ];
 
   if (androidBuildGradleFile) {
-    const dependency = await getGoogleServicesDependency(androidBuildGradleFile);
-    checks['Android'][`build.gradle`][`Google Services Dependency`] = [
-      dependency ? dependency.version : 'Not configured',
-      dependency
-        ? boolStatus(dependency.version == GOOGLE_SERVICES_PLUGIN_VERSION, Status.Warning)
-        : Status.Error,
-    ];
+    for (const plugin of plugins) {
+      const version = gradle.pluginVersions[plugin[0]][plugin[1]];
+      const dependency = await getDependency(plugin[0], plugin[1], androidBuildGradleFile);
+      const outdated = dependency && compareVersion(dependency.version, version);
+      checks['Android'][`build.gradle`][`${plugin[1]} dependency`] = [
+        dependency ? `${dependency.version} >= ${version}` : 'Not configured',
+        dependency ? boolStatus(outdated, Status.Warning) : Status.Error,
+      ];
+    }
   }
 
   const androidAppBuildGradleFile = await file.readAndroidAppBuildGradle(androidProjectConfig);
@@ -150,11 +172,13 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
     boolStatus(androidAppBuildGradleFile),
   ];
   if (androidAppBuildGradleFile) {
-    const googleServicePlugin = getGoogleServicesPlugin(androidAppBuildGradleFile);
-    checks['Android'][`App build.gradle`][`Google Services Plugin`] = [
-      googleServicePlugin ? 'configured' : 'Not configured',
-      boolStatus(androidBuildGradleFile),
-    ];
+    for (const plugin of plugins) {
+      const pluginRegistered = gradle.getPlugin(plugin[0], plugin[1], androidAppBuildGradleFile);
+      checks['Android'][`App build.gradle`][`${plugin[1]} plugin`] = [
+        pluginRegistered ? 'Registered' : 'Not registered',
+        boolStatus(pluginRegistered),
+      ];
+    }
   }
 
   checks['iOS'] = {};

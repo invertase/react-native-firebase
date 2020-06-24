@@ -8,10 +8,11 @@ import log from '../helpers/log';
 import { Account, AndroidSha, ProjectDetail } from '../types/firebase';
 import CliError from '../helpers/error';
 import { getAndroidApp } from '../actions/getApp';
-import { GradleDependency } from '../types/cli';
-import { getGoogleServicesPlugin, getGoogleServicesDependency } from '../helpers/gradle';
-
-const GOOGLE_SERVICES_PLUGIN_VERSION = '4.2.0';
+import {
+  handleGradleDependency,
+  handleGradlePlugin,
+  compilePluginList,
+} from '../actions/handleGradle';
 
 export default async function initAndroid(
   account: Account,
@@ -19,6 +20,8 @@ export default async function initAndroid(
   androidProjectConfig: AndroidProjectConfig,
 ) {
   log.info('Setting up Firebase for your Android app..');
+
+  const plugins = compilePluginList();
 
   let selectedAndroidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
 
@@ -46,36 +49,18 @@ export default async function initAndroid(
   await file.writeAndroidGoogleServices(androidProjectConfig, androidConfigFile);
 
   // Read the "/android/build.gradle" file from the users project
-  const androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
+  let androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
 
   if (!androidBuildGradleFile) {
-    log.warn('Could not find an Android "build.gradle" file, unable to check dependencies exist');
+    log.warn('Could not find an Android "build.gradle" file, unable to check for dependencies');
   } else {
-    const dependency = await getGoogleServicesDependency(androidBuildGradleFile);
-
-    if (dependency) {
-      if (dependency.version == GOOGLE_SERVICES_PLUGIN_VERSION)
-        log.success('Google Services dependency already set.');
-      else {
-        const updatedGradleFile = androidBuildGradleFile.replace(
-          `'com.google.gms:google-services:${dependency.version}'`,
-          `'com.google.gms:google-services:${GOOGLE_SERVICES_PLUGIN_VERSION}'`,
-        );
-        log.info(
-          `Google Services plugin version ${dependency.version} found instead of ${GOOGLE_SERVICES_PLUGIN_VERSION}, updating "/android/build.gradle"...`,
-        );
-        await file.writeAndroidBuildGradle(androidProjectConfig, updatedGradleFile);
-      }
-    } else {
-      // Update the file with the added dependency
-      log.info('Google Services not found, updating "/android/build.gradle"...');
-      const addDependencyRegex = /buildscript[\w\W]*dependencies[\s]*{/g;
-      const updatedGradleFile = androidBuildGradleFile.replace(addDependencyRegex, str => {
-        return `${str}
-    classpath 'com.google.gms:google-services:${GOOGLE_SERVICES_PLUGIN_VERSION}'`;
-      });
-      await file.writeAndroidBuildGradle(androidProjectConfig, updatedGradleFile);
-    }
+    for (const plugin of plugins)
+      androidBuildGradleFile = await handleGradleDependency(
+        plugin[0],
+        plugin[1],
+        androidBuildGradleFile,
+      );
+    await file.writeAndroidBuildGradle(androidProjectConfig, androidBuildGradleFile);
   }
 
   // Read the "/android/app/build.gradle" file
@@ -83,23 +68,17 @@ export default async function initAndroid(
 
   if (!androidAppBuildGradleFile) {
     log.warn(
-      'Could not find an app level "build.gradle" file, unable to check whether Google Services plugin has been registered',
+      'Could not find an app level "build.gradle" file, unable to check for registered plugins',
     );
   } else {
-    const googleServicePlugin = getGoogleServicesPlugin(androidAppBuildGradleFile);
-    // Check whether plugin has been registered
-    if (!googleServicePlugin) {
-      log.info(
-        'Google Services plugin has not been registered, updating "/android/app/build.gradle"',
+    for (const plugin of plugins)
+      androidBuildGradleFile = await handleGradlePlugin(
+        plugin[0],
+        plugin[1],
+        plugin[2],
+        androidAppBuildGradleFile,
       );
-      await file.writeAndroidAppBuildGradle(
-        androidProjectConfig,
-        `${androidAppBuildGradleFile}
-apply plugin: 'com.google.gms.google-services'`,
-      );
-    } else {
-      log.success('Google Services plugin already registered.');
-    }
+    await file.writeAndroidAppBuildGradle(androidProjectConfig, androidAppBuildGradleFile);
   }
 
   // ask user whether they want to add a new sha-1 key

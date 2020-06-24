@@ -21,7 +21,8 @@
     "build:clean": "rimraf dist",
     "build:watch": "tsc --watch",
     "prepare": "yarn run build",
-    "prepublishOnly": "yarn run build:clean && yarn run build"
+    "prepublishOnly": "yarn run build:clean && yarn run build",
+    "update-plugin-versions": "node scripts/update-plugin-versions"
   },
   "dependencies": {
     "@react-native-community/cli": "^4.10.0",
