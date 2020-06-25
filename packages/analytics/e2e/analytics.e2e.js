@@ -94,7 +94,7 @@ describe('analytics()', () => {
     it('accepts string values', async () => {
       await firebase.analytics().setUserId('rn-firebase');
     });
-    
+  });
 
   describe('setUserProperty()', () => {
     it('allows a null values to be set', async () => {
@@ -279,7 +279,7 @@ describe('analytics()', () => {
     });
   });
 
-    describe('logSearch()', () => {
+  describe('logSearch()', () => {
     it('calls logSearch', async () => {
       await firebase.analytics().logSearch({
         search_term: 'foo',
