@@ -16,7 +16,7 @@ console.log(firebase.SDK_VERSION);
 
 firebase
   .analytics()
-  .logAddPaymentInfo()
+  .logAddPaymentInfo({ value: 123, currency: 'USD' })
   .then();
 firebase
   .analytics()
@@ -33,6 +33,7 @@ firebase
 
 console.log(firebase.analytics().logAddPaymentInfo);
 console.log(firebase.analytics().logAddToCart);
+console.log(firebase.analytics().logAddShippingInfo);
 console.log(firebase.analytics().logAddToWishlist);
 console.log(firebase.analytics().logAppOpen);
 console.log(firebase.analytics().logBeginCheckout);
@@ -45,6 +46,7 @@ console.log(firebase.analytics().logLevelEnd);
 console.log(firebase.analytics().logLevelStart);
 console.log(firebase.analytics().logLevelUp);
 console.log(firebase.analytics().logLogin);
+console.log(firebase.analytics().logPostScore);
 console.log(firebase.analytics().logRemoveFromCart);
 console.log(firebase.analytics().logSearch);
 console.log(firebase.analytics().logSetCheckoutOption);
@@ -67,6 +69,7 @@ console.log(firebase.analytics().setUserProperty);
 
 console.log(analytics().logAddPaymentInfo);
 console.log(analytics().logAddToCart);
+console.log(analytics().logAddShippingInfo);
 console.log(analytics().logAddToWishlist);
 console.log(analytics().logAppOpen);
 console.log(analytics().logBeginCheckout);
@@ -79,6 +82,7 @@ console.log(analytics().logLevelEnd);
 console.log(analytics().logLevelStart);
 console.log(analytics().logLevelUp);
 console.log(analytics().logLogin);
+console.log(analytics().logPostScore);
 console.log(analytics().logRemoveFromCart);
 console.log(analytics().logSearch);
 console.log(analytics().logSetCheckoutOption);

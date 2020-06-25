@@ -232,15 +232,6 @@ describe('analytics()', () => {
   });
 
   describe('logAddPaymentInfo()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logAddPaymentInfo({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
     it('calls logAddPaymentInfo', async () => {
       await firebase.analytics().logAddPaymentInfo({
         value: 123,
@@ -251,16 +242,6 @@ describe('analytics()', () => {
   });
 
   describe('logAddToCart()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logAddToCart({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
-
     it('calls logAddToCart', async () => {
       await firebase.analytics().logAddToCart({
         value: 123,
@@ -269,17 +250,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logAddToWishlist()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logAddToWishlist({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
+  describe('logAddShippingInfo()', () => {
+    it('calls logAddShippingInfo', async () => {
+      await firebase.analytics().logAddShippingInfo({
+        value: 123,
+        currency: 'GBP',
+      });
     });
+  });
 
+  describe('logAddToWishlist()', () => {
     it('calls logAddToWishlist', async () => {
       await firebase.analytics().logAddToWishlist({
         items: [
@@ -306,27 +286,9 @@ describe('analytics()', () => {
     it('calls logBeginCheckout', async () => {
       await firebase.analytics().logBeginCheckout();
     });
-
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logBeginCheckout({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
   });
 
   describe('logCampaignDetails()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logCampaignDetails();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logCampaignDetails', async () => {
       await firebase.analytics().logCampaignDetails({
         source: 'foo',
@@ -337,14 +299,6 @@ describe('analytics()', () => {
   });
 
   describe('logEarnVirtualCurrency()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logEarnVirtualCurrency();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logEarnVirtualCurrency', async () => {
       await firebase.analytics().logEarnVirtualCurrency({
         virtual_currency_name: 'foo',
@@ -383,16 +337,6 @@ describe('analytics()', () => {
   });
 
   describe('logGenerateLead()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logGenerateLead({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
-
     it('calls logGenerateLead', async () => {
       await firebase.analytics().logGenerateLead({
         currency: 'USD',
@@ -402,13 +346,6 @@ describe('analytics()', () => {
   });
 
   describe('logJoinGroup()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logJoinGroup();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
 
     it('calls logJoinGroup', async () => {
       await firebase.analytics().logJoinGroup({
@@ -418,14 +355,6 @@ describe('analytics()', () => {
   });
 
   describe('logLevelEnd()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logLevelEnd();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logLevelEnd', async () => {
       await firebase.analytics().logLevelEnd({
         level: 123,
@@ -435,14 +364,6 @@ describe('analytics()', () => {
   });
 
   describe('logLevelStart()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logLevelStart();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logLevelEnd', async () => {
       await firebase.analytics().logLevelStart({
         level: 123,
@@ -451,14 +372,6 @@ describe('analytics()', () => {
   });
 
   describe('logLevelUp()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logLevelUp();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logLevelUp', async () => {
       await firebase.analytics().logLevelUp({
         level: 123,
@@ -468,14 +381,6 @@ describe('analytics()', () => {
   });
 
   describe('logLogin()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logLogin();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logLogin', async () => {
       await firebase.analytics().logLogin({
         method: 'facebook.com',
@@ -484,14 +389,6 @@ describe('analytics()', () => {
   });
 
   describe('logPostScore()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logPostScore();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logPostScore', async () => {
       await firebase.analytics().logPostScore({
         score: 123,

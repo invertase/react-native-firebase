@@ -81,13 +81,181 @@ describe('Analytics', () => {
       );
     });
 
-    describe('setAnalyticsCollectionEnabled()', () => {
-      it('throws if not a boolean', () => {
-        // @ts-ignore
-        expect(() => firebase.analytics().setAnalyticsCollectionEnabled('foo')).toThrowError(
-          "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
+    describe('logAddPaymentInfo()', () => {
+      it('errors if param is not an object', async () => {
+        // @ts-ignore test
+        expect(() => firebase.analytics().logAddPaymentInfo(123)).toThrowError(
+          'firebase.analytics().logAddPaymentInfo(*):',
         );
       });
+      it('errors when compound values are not set', async () => {
+        expect(() =>
+          firebase.analytics().logAddPaymentInfo({
+            value: 123,
+          }),
+        ).toThrowError('firebase.analytics().logAddPaymentInfo(*):');
+      });
+    });
+  });
+
+  describe('logAddToCart()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logAddToCart(123)).toThrowError(
+        'firebase.analytics().logAddToCart(*):',
+      );
+    });
+    it('errors when compound values are not set', async () => {
+      expect(() =>
+        firebase.analytics().logAddToCart({
+          value: 123,
+        }),
+      ).toThrowError('firebase.analytics().logAddToCart(*):');
+    });
+  });
+
+  describe('logAddShippingInfo()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logAddShippingInfo(123)).toThrowError(
+        'firebase.analytics().logAddShippingInfo(*):',
+      );
+    });
+    it('errors when compound values are not set', async () => {
+      expect(() =>
+        firebase.analytics().logAddShippingInfo({
+          value: 123,
+        }),
+      ).toThrowError('firebase.analytics().logAddShippingInfo(*):');
+    });
+  });
+
+  describe('logAddToWishlist()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logAddToWishlist(123)).toThrowError(
+        'firebase.analytics().logAddToWishlist(*):',
+      );
+    });
+    it('errors when compound values are not set', async () => {
+      expect(() =>
+        firebase.analytics().logAddToWishlist({
+          value: 123,
+        }),
+      ).toThrowError('firebase.analytics().logAddToWishlist(*):');
+    });
+  });
+
+  describe('logBeginCheckout()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logBeginCheckout(123)).toThrowError(
+        'firebase.analytics().logBeginCheckout(*):',
+      );
+    });
+    it('errors when compound values are not set', async () => {
+      expect(() =>
+        firebase.analytics().logBeginCheckout({
+          value: 123,
+        }),
+      ).toThrowError('firebase.analytics().logBeginCheckout(*):');
+    });
+  });
+
+  describe('logGenerateLead()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logGenerateLead(123)).toThrowError(
+        'firebase.analytics().logGenerateLead(*):',
+      );
+    });
+    it('errors when compound values are not set', async () => {
+      expect(() =>
+        firebase.analytics().logGenerateLead({
+          value: 123,
+        }),
+      ).toThrowError('firebase.analytics().logGenerateLead(*):');
+    });
+  });
+
+  describe('logCampaignDetails()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logCampaignDetails(123)).toThrowError(
+        'firebase.analytics().logCampaignDetails(*):',
+      );
+    });
+  });
+
+  describe('logEarnVirtualCurrency()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logEarnVirtualCurrency(123)).toThrowError(
+        'firebase.analytics().logEarnVirtualCurrency(*):',
+      );
+    });
+  });
+
+  describe('logJoinGroup()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logJoinGroup(123)).toThrowError(
+        'firebase.analytics().logJoinGroup(*):',
+      );
+    });
+  });
+
+  describe('logLevelEnd()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logLevelEnd(123)).toThrowError(
+        'firebase.analytics().logLevelEnd(*):',
+      );
+    });
+  });
+
+  describe('logLevelStart()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logLevelStart(123)).toThrowError(
+        'firebase.analytics().logLevelStart(*):',
+      );
+    });
+  });
+
+  describe('logLevelUp()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logLevelUp(123)).toThrowError(
+        'firebase.analytics().logLevelUp(*):',
+      );
+    });
+  });
+
+  describe('logLogin()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logLogin(123)).toThrowError(
+        'firebase.analytics().logLogin(*):',
+      );
+    });
+  });
+
+  describe('logPostScore()', () => {
+    it('errors if param is not an object', async () => {
+      // @ts-ignore test
+      expect(() => firebase.analytics().logPostScore(123)).toThrowError(
+        'firebase.analytics().logPostScore(*):',
+      );
+    });
+  });
+
+  describe('setAnalyticsCollectionEnabled()', () => {
+    it('throws if not a boolean', () => {
+      // @ts-ignore
+      expect(() => firebase.analytics().setAnalyticsCollectionEnabled('foo')).toThrowError(
+        "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",
+      );
     });
   });
 });

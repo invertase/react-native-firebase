@@ -562,6 +562,28 @@ export namespace FirebaseAnalyticsTypes {
      */
     promotion_name?: string;
   }
+
+  export interface AddShippingInfoParameters {
+    items?: Item[];
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+    /**
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
+     */
+    value?: number;
+    /**
+     * Coupon code for a purchasable item.
+     */
+    coupon?: string;
+    /**
+     * The shipping tier (e.g. Ground, Air, Next-day) selected for delivery of the purchased item
+     */
+    shipping_tier?: string;
+  }
   /**
    * Unsupported in "Enhanced Ecommerce reports":
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
@@ -734,6 +756,8 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
      * Logged event name: `add_payment_info`
      *
      * #### Example
@@ -742,13 +766,12 @@ export namespace FirebaseAnalyticsTypes {
      * await firebase.analytics().logAddPaymentInfo();
      * ```
      */
-    logAddPaymentInfo(): Promise<void>;
+    logAddPaymentInfo(params: AddPaymentInfoEventParameters): Promise<void>;
 
     /**
-     * E-Commerce Add To Cart event. This event signifies that an item was added to a cart for purchase.
-     * Add this event to a funnel with {@link analytics#logEcommercePurchase} to gauge the effectiveness of your checkout process.
+     * E-Commerce Add To Cart event.
      *
-     * If you supply the VALUE parameter, you must also supply the CURRENCY parameter so that revenue metrics can be computed accurately.
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
      * Logged event name: `add_to_cart`
      *
@@ -778,17 +801,30 @@ export namespace FirebaseAnalyticsTypes {
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logAddToWishlist({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt 1',
-     *   item_category: 'shirts',
-     *   quantity: 2,
-     * });
+     * await firebase.analytics().logAddToWishlist();
      * ```
      *
      * @param params See {@link analytics.AddToWishlistEventParameters}.
      */
     logAddToWishlist(params: AddToWishlistEventParameters): Promise<void>;
+
+    /**
+     * E-Commerce Add Shipping Info event. This event signifies that a user has submitted their shipping information.
+     * Use this event to identify popular gift items in your app.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `add_shipping_info`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logAddShippingInfo();
+     * ```
+     *
+     * @param params See {@link analytics.AddShippingInfoParameters}.
+     */
+    logAddShippingInfo(params: AddShippingInfoParameters): Promise<void>;
 
     /**
      * App Open event. By logging this event when an App is moved to the foreground, developers can
@@ -808,8 +844,7 @@ export namespace FirebaseAnalyticsTypes {
 
     /**
      * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of
-     * checking out. Add this event to a funnel with your {@link analytics#logEcommercePurchase} event to gauge the
-     * effectiveness of your checkout process.
+     * checking out.
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
@@ -973,6 +1008,25 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.LoginEventParameters}.
      */
     logLogin(params: LoginEventParameters): Promise<void>;
+
+    /**
+     * Post Score event. Log this event when the user posts a score in your gaming app. This event can
+     * help you understand how users are actually performing in your game and it can help you correlate
+     * high scores with certain audiences or behaviors.
+     *
+     * Logged event name: `post_score`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logPostScore({
+     *   method: 'facebook.com',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.PostScoreEventParameters}.
+     */
+    logPostScore(params: PostScoreEventParameters): Promise<void>;
     /**
      * Remove from cart event.
      *

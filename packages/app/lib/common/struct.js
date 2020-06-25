@@ -41,7 +41,10 @@ export const validateStruct = (value = {}, struct, prefix = '') => {
 };
 
 export const validateCompound = (source = {}, a, b, prefix = '') => {
-  if (isUndefined(source[a]) && !isUndefined(source[b])) {
+  if (
+    (isUndefined(source[a]) && !isUndefined(source[b])) ||
+    (!isUndefined(source[a]) && isUndefined(source[b]))
+  ) {
     throw new Error(
       `${prefix} if you supply the '${a}' parameter, you must also supply the '${b}' parameter.`,
     );
