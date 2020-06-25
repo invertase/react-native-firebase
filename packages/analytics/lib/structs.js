@@ -224,3 +224,7 @@ export const ViewPromotion = struct({
   promotion_id: 'string?',
   promotion_name: 'string?',
 });
+
+export const ViewSearchResults = struct({
+  search_term: 'string',
+});

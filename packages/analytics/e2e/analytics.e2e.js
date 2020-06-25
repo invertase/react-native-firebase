@@ -64,47 +64,11 @@ describe('analytics()', () => {
     it('screenName with screenClassOverride', async () => {
       await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
     });
-
-    it('errors if screenName not a string', async () => {
-      try {
-        await firebase.analytics().setCurrentScreen(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'screenName' expected a string value");
-      }
-    });
-
-    it('errors if screenClassOverride not a string', async () => {
-      try {
-        await firebase.analytics().setCurrentScreen('invertase screen', 666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'screenClassOverride' expected a string value");
-      }
-    });
   });
 
   describe('setMinimumSessionDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setMinimumSessionDuration();
-    });
-
-    it('errors if milliseconds not a number', async () => {
-      try {
-        await firebase.analytics().setMinimumSessionDuration('123');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'milliseconds' expected a number value");
-      }
-    });
-
-    it('errors if milliseconds is less than 0', async () => {
-      try {
-        await firebase.analytics().setMinimumSessionDuration(-100);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'milliseconds' expected a positive number value");
-      }
     });
 
     it('custom duration', async () => {
@@ -115,24 +79,6 @@ describe('analytics()', () => {
   describe('setSessionTimeoutDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setSessionTimeoutDuration();
-    });
-
-    it('errors if milliseconds not a number', async () => {
-      try {
-        await firebase.analytics().setSessionTimeoutDuration('123');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'milliseconds' expected a number value");
-      }
-    });
-
-    it('errors if milliseconds is less than 0', async () => {
-      try {
-        await firebase.analytics().setSessionTimeoutDuration(-100);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'milliseconds' expected a positive number value");
-      }
     });
 
     it('custom duration', async () => {
@@ -148,16 +94,7 @@ describe('analytics()', () => {
     it('accepts string values', async () => {
       await firebase.analytics().setUserId('rn-firebase');
     });
-
-    it('throws if none string none null values', async () => {
-      try {
-        await firebase.analytics().setUserId(123);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'id' expected a string value");
-      }
-    });
-  });
+    
 
   describe('setUserProperty()', () => {
     it('allows a null values to be set', async () => {
@@ -167,61 +104,9 @@ describe('analytics()', () => {
     it('accepts string values', async () => {
       await firebase.analytics().setUserProperty('invertase2', 'rn-firebase');
     });
-
-    it('throws if name is not a string', async () => {
-      try {
-        await firebase.analytics().setUserProperty(1337, 'invertase');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'name' expected a string value");
-      }
-    });
-
-    it('throws if value is invalid', async () => {
-      try {
-        await firebase.analytics().setUserProperty('invertase3', 33.3333);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'value' expected a string value");
-      }
-    });
   });
 
   describe('setUserProperties()', () => {
-    it('throws if properties is not an object', async () => {
-      try {
-        await firebase.analytics().setUserProperties(1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'properties' expected an object of key/value pairs");
-      }
-    });
-
-    it('throws if property value is invalid', async () => {
-      try {
-        await firebase.analytics().setUserProperties({
-          test: '123',
-          foo: {
-            bar: 'baz',
-          },
-        });
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql("'properties' value for parameter 'foo' is invalid");
-      }
-    });
-
-    it('throws if value is a number', async () => {
-      try {
-        await firebase.analytics().setUserProperties({ invertase1: 123 });
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'properties' value for parameter 'invertase1' is invalid, expected a string.",
-        );
-      }
-    });
-
     it('allows null values to be set', async () => {
       await firebase.analytics().setUserProperties({ invertase2: null });
     });
@@ -308,16 +193,6 @@ describe('analytics()', () => {
   });
 
   describe('logPurchase()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logPurchase({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
-
     it('calls logPurchase', async () => {
       await firebase.analytics().logPurchase({
         currency: 'USD',
@@ -346,7 +221,6 @@ describe('analytics()', () => {
   });
 
   describe('logJoinGroup()', () => {
-
     it('calls logJoinGroup', async () => {
       await firebase.analytics().logJoinGroup({
         group_id: '123',
@@ -397,16 +271,6 @@ describe('analytics()', () => {
   });
 
   describe('logRemoveFromCart()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logRemoveFromCart({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
-
     it('calls logRemoveFromCart', async () => {
       await firebase.analytics().logRemoveFromCart({
         value: 123,
@@ -415,15 +279,7 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSearch()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logSearch();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
+    describe('logSearch()', () => {
     it('calls logSearch', async () => {
       await firebase.analytics().logSearch({
         search_term: 'foo',
@@ -432,14 +288,6 @@ describe('analytics()', () => {
   });
 
   describe('logSetCheckoutOption()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logSetCheckoutOption();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logSelectContent', async () => {
       await firebase.analytics().logSetCheckoutOption({
         checkout_step: 123,
@@ -459,14 +307,6 @@ describe('analytics()', () => {
   });
 
   describe('logShare()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logShare();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logShare', async () => {
       await firebase.analytics().logShare({
         content_type: 'foo',
@@ -477,14 +317,6 @@ describe('analytics()', () => {
   });
 
   describe('logSignUp()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logSignUp();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logSignUp', async () => {
       await firebase.analytics().logSignUp({
         method: 'facebook.com',
@@ -493,14 +325,6 @@ describe('analytics()', () => {
   });
 
   describe('logSpendVirtualCurrency()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logSpendVirtualCurrency();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logSpendVirtualCurrency', async () => {
       await firebase.analytics().logSpendVirtualCurrency({
         item_name: 'foo',
@@ -523,14 +347,6 @@ describe('analytics()', () => {
   });
 
   describe('logUnlockAchievement()', () => {
-    it('errors when no parameters are set', async () => {
-      try {
-        await firebase.analytics().logUnlockAchievement();
-      } catch (e) {
-        e.message.should.containEql('The supplied arg must be an object of key/values');
-      }
-    });
-
     it('calls logUnlockAchievement', async () => {
       await firebase.analytics().logUnlockAchievement({
         achievement_id: 'foo',
@@ -538,17 +354,13 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logViewItem()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logViewItem({
-          currency: 'GBP',
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
+  describe('logViewCart()', () => {
+    it('calls logViewCart', async () => {
+      await firebase.analytics().logViewCart();
     });
+  });
 
+  describe('logViewItem()', () => {
     it('calls logViewItem', async () => {
       await firebase.analytics().logViewItem({
         items: [
@@ -574,16 +386,7 @@ describe('analytics()', () => {
   });
 
   describe('logRefund()', () => {
-    it('errors when compound values are not set', async () => {
-      try {
-        await firebase.analytics().logAddPaymentInfo({
-          value: 123,
-        });
-      } catch (e) {
-        e.message.should.containEql('parameter, you must also supply the');
-      }
-    });
-    it('calls logViewSearchResults', async () => {
+    it('calls logRefund', async () => {
       await firebase.analytics().logRefund({
         affiliation: 'affiliation',
         coupon: 'coupon',
@@ -591,26 +394,32 @@ describe('analytics()', () => {
     });
   });
 
-  describe('call methods, getters & setters that are deprecated, removed or not supported', () => {
-    it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
-      const analytics = firebase.analytics();
-      const logEcommercePurchaseSpy = sinon.spy(analytics, 'logEcommercePurchase');
-      const logPresentOfferSpy = sinon.spy(analytics, 'logPresentOffer');
-      const logPurchaseRefundSpy = sinon.spy(analytics, 'logPurchaseRefund');
-      const logSelectContentSpy = sinon.spy(analytics, 'logSelectContent');
-      const logViewSearchResultsSpy = sinon.spy(analytics, 'logViewSearchResults');
+  describe('logSelectContent()', () => {
+    it('calls logSelectContent', async () => {
+      await firebase.analytics().logSelectContent({
+        content_type: 'clothing',
+        item_id: 'abcd',
+      });
+    });
+  });
 
-      analytics.logEcommercePurchase();
-      analytics.logPresentOffer();
-      analytics.logPurchaseRefund();
-      analytics.logSelectContent();
-      analytics.logViewSearchResults();
+  describe('logSelectPromotion()', () => {
+    it('calls logSelectPromotion', async () => {
+      await firebase.analytics().logSelectPromotion({
+        creative_name: 'string',
+        creative_slot: 'string',
+        location_id: 'string',
+        promotion_id: 'string',
+        promotion_name: 'string',
+      });
+    });
+  });
 
-      logEcommercePurchaseSpy.should.be.calledOnce();
-      logPresentOfferSpy.should.be.calledOnce();
-      logPurchaseRefundSpy.should.be.calledOnce();
-      logSelectContentSpy.should.be.calledOnce();
-      logViewSearchResultsSpy.should.be.calledOnce();
+  describe('logViewSearchResults()', () => {
+    it('calls logViewSearchResults', async () => {
+      await firebase.analytics().logViewSearchResults({
+        search_term: 'promotion',
+      });
     });
   });
 });

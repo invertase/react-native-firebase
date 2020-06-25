@@ -527,6 +527,13 @@ export namespace FirebaseAnalyticsTypes {
     value?: number;
   }
 
+  export interface ViewSearchResultsParameters {
+    /**
+     * The search string/keywords used.
+     */
+    search_term: string;
+  }
+
   export interface ViewItemListEventParameters {
     items?: Item[];
     /**
@@ -752,7 +759,30 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     resetAnalyticsData(): Promise<void>;
-
+    /**
+     * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
+     * automatically for Google Play-based apps.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `purchase`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logPurchase({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     */
+    logPurchase(params: PurchaseEventParameters): Promise<void>;
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
@@ -763,7 +793,16 @@ export namespace FirebaseAnalyticsTypes {
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logAddPaymentInfo();
+     * await firebase.analytics().logAddPaymentInfo({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
      * ```
      */
     logAddPaymentInfo(params: AddPaymentInfoEventParameters): Promise<void>;
@@ -779,10 +818,14 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logAddToCart({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt 1',
-     *   item_category: 'shirts',
-     *   quantity: 2,
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
@@ -801,7 +844,16 @@ export namespace FirebaseAnalyticsTypes {
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logAddToWishlist();
+     * await firebase.analytics().logAddToWishlist({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
      * ```
      *
      * @param params See {@link analytics.AddToWishlistEventParameters}.
@@ -819,7 +871,16 @@ export namespace FirebaseAnalyticsTypes {
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logAddShippingInfo();
+     * await firebase.analytics().logAddShippingInfo({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
      * ```
      *
      * @param params See {@link analytics.AddShippingInfoParameters}.
@@ -854,7 +915,14 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logBeginCheckout({
-     *  travel_class: 'business',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
@@ -880,6 +948,26 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.CampaignDetailsEventParameters}.
      */
     logCampaignDetails(params: CampaignDetailsEventParameters): Promise<void>;
+    /**
+     * View Promotion event. This event signifies that a promotion was shown to a user.
+     *
+     * Logged event name: `view_promotion`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logViewPromotion({
+     *   creative_name: 'the promotion',
+     *   creative_slot: 'evening',
+     *   location_id: 'london',
+     *   promotion_id: '230593',
+     *   promotion_name: 'london evening event',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.ViewPromotionEventParameters}.
+     */
+    logViewPromotion(params: ViewPromotionEventParameters): Promise<void>;
 
     /**
      * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with
@@ -1020,7 +1108,9 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logPostScore({
-     *   method: 'facebook.com',
+     *   score: 567334,
+     *   level: 3,
+     *   character: 'Pete',
      * });
      * ```
      *
@@ -1036,15 +1126,43 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logRemoveFromCart({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt',
-     *   item_category: 'shirts',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
      * @param params See {@link analytics.RemoveFromCartEventParameters}.
      */
     logRemoveFromCart(params: RemoveFromCartEventParameters): Promise<void>;
+    /**
+     * E-Commerce Refund event. This event signifies that a refund was issued.
+     *
+     * Logged event name: `remove_from_cart`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logRefund({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.RefundEventParameters}.
+     */
+    logRefund(params: RefundEventParameters): Promise<void>;
 
     /**
      * Search event. Apps that support search features can use this event to contextualize search
@@ -1064,6 +1182,45 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SearchEventParameters}.
      */
     logSearch(params: SearchEventParameters): Promise<void>;
+    /**
+     * Select Content event. This general purpose event signifies that a user has selected some
+     * content of a certain type in an app. The content can be any object in your app. This event
+     * can help you identify popular content and categories of content in your app.
+     *
+     * Logged event name: `select_content`
+     *ana
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logSelectContent({
+     *  content_type: 'clothing',
+     *  item_id: 'abcd',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.SelectContentEventParameters}.
+     */
+    logSelectContent(params: SelectContentEventParameters): Promise<void>;
+    /**
+     * Select Content event. This general purpose event signifies that a user has selected some
+     * content of a certain type in an app. The content can be any object in your app. This event
+     * can help you identify popular content and categories of content in your app.
+     *
+     * Logged event name: `select_content`
+     *ana
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logSelectItem({
+     *  item_list_id: '54690834',
+     *  item_list_name: 'purple baseball cap',
+     *  content_type: 'cap',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.SelectItemEventParameters}.
+     */
+    logSelectItem(params: SelectItemEventParameters): Promise<void>;
     /**
      * Set checkout option event.
      *
@@ -1171,6 +1328,27 @@ export namespace FirebaseAnalyticsTypes {
     logTutorialComplete(): Promise<void>;
 
     /**
+     * Select promotion event. This event signifies that a user has selected a promotion offer. Use the
+     * appropriate parameters to contextualize the event, such as the item(s) for which the promotion applies.
+     *
+     * Logged event name: `select_promotion`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logSelectPromotion({
+     *   creative_name: 'the promotion',
+     *   creative_slot: 'evening',
+     *   location_id: 'london',
+     *   promotion_id: '230593',
+     *   promotion_name: 'london evening event',
+     * });
+     * ```
+     * @param params See {@link analytics.SelectPromotionEventParameters}.
+     */
+    logSelectPromotion(params: SelectPromotionEventParameters): Promise<void>;
+
+    /**
      * Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.
      * Since achievements generally represent the breadth of a gaming experience, this event can help
      * you understand how many users are experiencing all that your game has to offer.
@@ -1202,15 +1380,45 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logViewItem({
-     *  item_id: 'abcd',
-     *  item_name: 't-shirt',
-     *  item_category: 'shirts',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
      * @param params See {@link analytics.ViewItemEventParameters}.
      */
     logViewItem(params: ViewItemEventParameters): Promise<void>;
+    /**
+     * E-commerce View Cart event. This event signifies that a user has viewed their cart. Use this to analyze your purchase funnel.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `view_cart`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logViewCart({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.ViewCartEventParameters}.
+     */
+    logViewCart(params: ViewCartEventParameters): Promise<void>;
 
     /**
      * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
@@ -1221,13 +1429,29 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logViewItemList({
-     *   item_category: 't-shirts',
+     *   item_list_name: 't-shirts',
      * });
      * ```
      *
      * @param params See {@link analytics.ViewItemListEventParameters}.
      */
     logViewItemList(params: ViewItemListEventParameters): Promise<void>;
+    /**
+     * View Search Results event. Log this event when the user has been presented with the results of a search.
+     *
+     * Logged event name: `view_search_results`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logViewSearchResults({
+     *   search_term: 'clothing',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.ViewSearchResultsParameters}.
+     */
+    logViewSearchResults(params: ViewSearchResultsParameters): Promise<void>;
   }
 }
 
