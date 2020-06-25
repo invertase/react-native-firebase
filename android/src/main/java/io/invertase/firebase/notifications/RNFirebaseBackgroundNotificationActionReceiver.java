@@ -28,6 +28,11 @@ public class RNFirebaseBackgroundNotificationActionReceiver extends BroadcastRec
     notificationOpenMap.putMap("notification", notificationMap);
 
     Bundle extrasBundle = extras.getBundle("results");
+
+    if (extrasBundle == null) {
+      extrasBundle = RemoteInput.getResultsFromIntent(intent);
+    }
+
     if (extrasBundle != null) {
       WritableMap results = Arguments.makeNativeMap(extrasBundle);
       notificationOpenMap.putMap("results", results);
