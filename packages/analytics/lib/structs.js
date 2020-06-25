@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 import struct from '@react-native-firebase/app/lib/common/struct';
+
 const Item = struct({
   item_brand: 'string?',
   item_id: 'string?',

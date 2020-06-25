@@ -420,7 +420,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   /**
-   * deprecated, use logRefundEvent instead:
+   * Deprecated, use logRefundEvent instead:
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
    */
   logPresentOffer() {
@@ -431,7 +431,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   /**
-   * deprecated, use logRefundEvent instead:
+   * Deprecated, use logRefundEvent instead:
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
    */
   logPurchaseRefund() {
