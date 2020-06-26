@@ -600,7 +600,7 @@ export namespace FirebaseDatabaseTypes {
     off(
       eventType?: EventType,
       callback?: (a: DataSnapshot, b?: string | null) => any,
-      context?: Record<string, any>
+      context?: Record<string, any>,
     ): void;
 
     /**
