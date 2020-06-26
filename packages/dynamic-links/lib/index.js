@@ -99,6 +99,13 @@ class FirebaseLinksModule extends FirebaseModule {
       subscription.remove();
     };
   }
+
+  resolveLink(link) {
+    if (!link) {
+      throw new Error('firebase.dynamicLinks().resolve(*) Invalid link parameter');
+    }
+    return this.native.resolveLink(link);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/dynamic-links';
