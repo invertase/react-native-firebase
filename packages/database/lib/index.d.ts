@@ -600,7 +600,7 @@ export namespace FirebaseDatabaseTypes {
     off(
       eventType?: EventType,
       callback?: (a: DataSnapshot, b?: string | null) => any,
-      context?: Object | null,
+      context?: Record<string, any>
     ): void;
 
     /**
@@ -722,7 +722,7 @@ export namespace FirebaseDatabaseTypes {
     on(
       eventType?: EventType,
       callback?: (a: DataSnapshot, b?: string | null) => any,
-      cancelCallbackOrContext?: ((a: Error) => any) | Object | null,
+      cancelCallbackOrContext?: ((a: Error) => any) | Record<string, any> | null,
       context?: Record<string, any> | null,
     ): (a: admin.database.DataSnapshot | null, b?: string) => any;
 
@@ -760,8 +760,8 @@ export namespace FirebaseDatabaseTypes {
     once(
       eventType: EventType,
       successCallback?: (a: DataSnapshot, b?: string | null) => any,
-      failureCallbackOrContext?: ((a: Error) => void) | Object | null,
-      context?: Object | null,
+      failureCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
+      context?: Record<string, any> | null,
     ): Promise<DataSnapshot>;
 
     /**
