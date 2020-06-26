@@ -30,7 +30,7 @@
     "vision"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "7.3.0"
+    "@react-native-firebase/app": "7.3.1"
   },
   "publishConfig": {
     "access": "public"
