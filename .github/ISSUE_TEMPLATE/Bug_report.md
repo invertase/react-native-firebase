@@ -1,7 +1,7 @@
 ---
 name: ⚠️ Bug/Issue report - React Native
 about: Please provide as much detail as possible to help us with a bug or issue. Issues
-  are likely to be closed and locked if they do not follow the template.
+  are likely to be closed and locked if they do not follow the template. Also note that v5 of react-native-firebase has been deprecated, so issues or bugs related to that version are unlikely to get attention.
 ---
 
 <!---
