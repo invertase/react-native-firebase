@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.7...@react-native-firebase/auth@8.0.8) (2020-06-26)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
 ## [8.0.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.6...@react-native-firebase/auth@8.0.7) (2020-06-22)
 
 **Note:** Version bump only for package @react-native-firebase/auth
