@@ -4,6 +4,7 @@ import { promiseDefer } from './utils';
 import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-community/cli-types';
 import { join } from 'path';
 import { addModified } from './tracker';
+import { FirebaseConfig } from '../types/cli';
 
 /**
  * Check a file exists at the specified path.
@@ -143,6 +144,28 @@ async function readIosGoogleServices(iosProjectConfig: IOSProjectConfig): Promis
   return null;
 }
 
+/**
+ * Returns "firebase.json" file. Returns null if it doesnt exist
+ *
+ * @param androidProjectConfig
+ */
+async function readFirebaseConfig(reactNativeConfig: Config) {
+  const firebaseConfigPath = join(reactNativeConfig.root, 'firebase.json');
+  const fileExists = await exists(firebaseConfigPath);
+  if (!fileExists) return null;
+  return JSON.parse(await read(firebaseConfigPath));
+}
+
+/**
+ * Writes a new "firebase.json" file to the project
+ * @param androidProjectConfig
+ * @param data
+ */
+function writeFirebaseConfig(reactNativeConfig: Config, data: FirebaseConfig) {
+  const androidAppBuildGradlePath = join(reactNativeConfig.root, 'app', 'build.gradle');
+  return write(androidAppBuildGradlePath, JSON.stringify(data, null, 2));
+}
+
 export default {
   exists,
   existsSync,
@@ -155,4 +178,6 @@ export default {
   readAndroidAppBuildGradle,
   writeAndroidAppBuildGradle,
   readIosGoogleServices,
+  readFirebaseConfig,
+  writeFirebaseConfig,
 };

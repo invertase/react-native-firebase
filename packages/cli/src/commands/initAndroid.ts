@@ -1,4 +1,4 @@
-import { AndroidProjectConfig } from '@react-native-community/cli-types';
+import { AndroidProjectConfig, Config } from '@react-native-community/cli-types';
 
 import firebase from '../helpers/firebase';
 import file from '../helpers/file';
@@ -8,20 +8,18 @@ import log from '../helpers/log';
 import { Account, AndroidSha, ProjectDetail } from '../types/firebase';
 import CliError from '../helpers/error';
 import { getAndroidApp } from '../actions/getApp';
-import {
-  handleGradleDependency,
-  handleGradlePlugin,
-  compilePluginList,
-} from '../actions/handleGradle';
+import { handleGradleDependency, handleGradlePlugin, getPluginList } from '../actions/handleGradle';
+import { getAndroidConfig } from '../actions/getConfig';
 
 export default async function initAndroid(
   account: Account,
   projectDetail: ProjectDetail,
-  androidProjectConfig: AndroidProjectConfig,
+  reactNativeConfig: Config,
 ) {
   log.info('Setting up Firebase for your Android app..');
 
-  const plugins = compilePluginList();
+  const androidProjectConfig = getAndroidConfig(reactNativeConfig);
+  const plugins = getPluginList(reactNativeConfig);
 
   let selectedAndroidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
 
@@ -44,9 +42,18 @@ export default async function initAndroid(
     .api(account)
     .management.getAppConfig(selectedAndroidApp.name);
 
-  // Write the config file
-  log.info('Writing new "google-services.json" file to "/android/app/google-services.json".');
-  await file.writeAndroidGoogleServices(androidProjectConfig, androidConfigFile);
+  const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
+  if (androidGoogleServicesFile) {
+    const result = await prompt.confirm(
+      'An Android "google-services.json" file already exists, do you want to replace this file?',
+    );
+
+    if (result) {
+      // Write the config file
+      log.info('Writing new "google-services.json" file to "/android/app/google-services.json".');
+      await file.writeAndroidGoogleServices(androidProjectConfig, androidConfigFile);
+    }
+  }
 
   // Read the "/android/build.gradle" file from the users project
   let androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
@@ -60,6 +67,7 @@ export default async function initAndroid(
         plugin[1],
         androidBuildGradleFile,
       );
+    log.info('Writing new "build.gradle" file to "/android/build.gradle".');
     await file.writeAndroidBuildGradle(androidProjectConfig, androidBuildGradleFile);
   }
 
@@ -78,6 +86,7 @@ export default async function initAndroid(
         plugin[2],
         androidAppBuildGradleFile,
       );
+    log.info('Writing new "build.gradle" file to "/android/app/build.gradle".');
     await file.writeAndroidAppBuildGradle(androidProjectConfig, androidAppBuildGradleFile);
   }
 

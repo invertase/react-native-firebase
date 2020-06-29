@@ -4,13 +4,13 @@ import { getLoader } from '@react-native-community/cli/build/tools/loader';
 import { join } from 'path';
 import getAccount from '../actions/getAccount';
 import file from '../helpers/file';
-import getConfig from '../actions/getConfig';
+import { getAndroidConfig, getIosConfig } from '../actions/getConfig';
 import prompt from '../helpers/prompt';
 import firebase from '../helpers/firebase';
 import { getAndroidApp } from '../actions/getApp';
 import CliError from '../helpers/error';
 import { ProjectDetail } from '../types/firebase';
-import { compilePluginList } from '../actions/handleGradle';
+import { getPluginList } from '../actions/handleGradle';
 import { getDependency } from '../helpers/gradle';
 import * as gradle from '../helpers/gradle';
 
@@ -77,7 +77,8 @@ function compareVersion(a: string, b: string) {
 }
 
 export default async function doctorCommand(args: string[], reactNativeConfig: Config) {
-  const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
+  const androidProjectConfig = getAndroidConfig(reactNativeConfig);
+  const iosProjectConfig = getIosConfig(reactNativeConfig);
 
   const account = await getAccount();
   const firebaseProject = await prompt.selectFirebaseProject(account);
@@ -99,7 +100,7 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
 
   loader.start('Running diagnostics...');
 
-  const plugins = compilePluginList();
+  const plugins = getPluginList(reactNativeConfig);
 
   const checks: CheckGroup = {};
 

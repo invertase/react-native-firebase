@@ -1,14 +1,13 @@
-import { join } from 'path';
+import { Config } from '@react-native-community/cli-types';
 import * as gradle from '../helpers/gradle';
 import log from '../helpers/log';
 
-export function compilePluginList() {
+export function getPluginList(reactNativeConfig: Config) {
   // Compile list of plugins to handle
-  const packageInfo = require(join(process.cwd(), 'package.json'));
   const plugins: [string, string, 'start' | 'end'][] = [
     ['com.google.gms', 'google-services', 'end'],
   ];
-  if (packageInfo.dependencies['@react-native-firebase/perf'])
+  if (reactNativeConfig.dependencies['@react-native-firebase/perf'])
     plugins.push(['com.google.firebase', 'perf-plugin', 'start']);
   return plugins;
 }

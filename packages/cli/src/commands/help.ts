@@ -7,7 +7,7 @@ Options:
   force                           Bypasses safety checks
 
 Commands:
-  init [force]                    Setup Firebase for your app
+  init [force]                    (WIP) Setup Firebase for your app
   doctor                          Display diagnostic information for your app
   help                            Show this overview
 `);

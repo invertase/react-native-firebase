@@ -49,46 +49,29 @@ import getAccount from '../actions/getAccount';
 import getConfig from '../actions/getConfig';
 import CliError from '../helpers/error';
 import { Account } from '../types/firebase';
+import handleFirebaseConfig from '../actions/handleFirebase';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
   log.debug('Running "firebase init" command...');
+  if (
+    !(await prompt.confirm(
+      'This command is a work in progress, are you sure you want to continue?',
+    ))
+  )
+    return;
+
   trackModified(args.includes('force'));
 
   const account = await getAccount();
 
-  const [androidProjectConfig, iosProjectConfig] = getConfig(reactNativeConfig);
-
   const apps: { [type in AppTypes]: boolean } = {
-    android: true,
+    android: false,
     ios: false,
     web: false, // not supported
   };
 
-  const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
-  if (androidGoogleServicesFile) {
-    apps.android = await prompt.confirm(
-      'An Android "google-services.json" file already exists, do you want to replace this file?',
-    );
-
-    if (!apps.android) {
-      log.warn(
-        'Firebase will not be setup for Android as a "google-services.json" file already exists and you have chosen to not override it.',
-      );
-    }
-  }
-
-  const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
-  if (iosGoogleServicesFile) {
-    apps.ios = await prompt.confirm(
-      'An iOS "GoogleService-Info.plist" file already exists, do you want to replace this file?',
-    );
-
-    if (!apps.ios) {
-      log.warn(
-        'Firebase will not be setup for iOS as a "GoogleService-Info.plist" file already exists and you have chosen to not override it.',
-      );
-    }
-  }
+  apps.android = await prompt.confirm('Do you want to setup Android for your app?');
+  apps.ios = await prompt.confirm('Do you want to setup iOS for your app?');
 
   // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {
@@ -113,6 +96,8 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
     .api(account)
     .management.getProject(firebaseProject.projectId, apps);
 
-  if (apps.android) await initAndroid(account, projectDetail, androidProjectConfig);
-  if (apps.ios) await initIos(account, projectDetail, iosProjectConfig);
+  await handleFirebaseConfig(reactNativeConfig);
+
+  if (apps.android) await initAndroid(account, projectDetail, reactNativeConfig);
+  if (apps.ios) await initIos(account, projectDetail, reactNativeConfig);
 }
