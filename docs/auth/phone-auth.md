@@ -1,6 +1,6 @@
 ---
 title: Phone Authentication
-description: Sign-in with users with their phone number.
+description: Sign-in users with their phone number.
 next: /firestore/usage
 previous: /auth/social-auth
 ---

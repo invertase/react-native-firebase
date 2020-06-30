@@ -103,7 +103,7 @@ such as the current upload progress:
 const task = reference.putFile(pathToFile);
 
 task.on('state_changed', taskSnapshot => {
-  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${task.totalBytes}`);
+  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
 });
 
 task.then(() => {
@@ -131,7 +131,9 @@ need to call the `getDownloadURL` method on a reference:
 ```js
 import storage from '@react-native-firebase/storage';
 
-const url = await storage().ref('images/profile-1.png').getDownloadURL();
+const url = await storage()
+  .ref('images/profile-1.png')
+  .getDownloadURL();
 ```
 
 > Images uploaded manually via the Firebase Console automatically generate a download URL.

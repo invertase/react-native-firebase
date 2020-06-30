@@ -2,6 +2,8 @@
   "name": "react-native-firebase",
   "private": true,
   "scripts": {
+    "version": "node ./scripts/version.js",
+    "postversion": "node ./scripts/postversion.js",
     "prepare": "yarn run lerna:link && lerna run prepare --parallel",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
@@ -30,14 +32,18 @@
     "tests:ios:test-reuse": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "tests:ios:test-cover-reuse": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
+    "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
+    "@babel/preset-env": "7.9.5",
+    "@babel/preset-flow": "7.9.0",
+    "@types/jest": "^25.2.1",
     "@types/react-native": "^0.62.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "codecov": "^3.6.5",
+    "conventional-changelog-cli": "^2.0.34",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.5.0",
@@ -45,15 +51,14 @@
     "eslint-plugin-react": "^7.19.0",
     "genversion": "^2.2.0",
     "inquirer": "^7.1.0",
+    "jest": "^25.5.1",
     "lerna": "3.20.2",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.3",
+    "ts-jest": "^25.4.0",
     "typedoc": "^0.15.0",
-    "typescript": "^3.8.3",
-    "jest": "^24.9.0",
-    "@babel/preset-env": "7.9.5",
-    "@babel/preset-flow": "7.9.0"
+    "typescript": "^3.8.3"
   },
   "workspaces": {
     "packages": [

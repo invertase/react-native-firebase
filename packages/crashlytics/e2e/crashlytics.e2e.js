@@ -16,14 +16,6 @@
  */
 
 describe('crashlytics()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.crashlytics);
-      app.crashlytics().app.should.equal(app);
-    });
-  });
-
   // Run locally only - flakey on CI
   xdescribe('crash()', () => {
     it('crashes the app', async () => {
@@ -56,36 +48,6 @@ describe('crashlytics()', () => {
     it('rejects none string values', async () => {
       try {
         await firebase.crashlytics().setUserId(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-  });
-
-  describe('setUserName()', () => {
-    it('accepts string values', async () => {
-      await firebase.crashlytics().setUserName('invertase');
-    });
-
-    it('rejects none string values', async () => {
-      try {
-        await firebase.crashlytics().setUserName(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-  });
-
-  describe('setUserEmail()', () => {
-    it('accepts string values', async () => {
-      await firebase.crashlytics().setUserEmail('oss@invertase.io');
-    });
-
-    it('rejects none string values', async () => {
-      try {
-        await firebase.crashlytics().setUserEmail(666.1337);
         return Promise.reject(new Error('Did not throw.'));
       } catch (e) {
         e.message.should.containEql('must be a string');

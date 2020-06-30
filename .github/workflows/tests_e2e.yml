@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - '**'
+  push:
+    branches:
+      - master
 
 jobs:
   # ------------------
@@ -12,7 +15,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -71,11 +74,11 @@ jobs:
           $ANDROID_HOME/emulator/emulator -list-avds
 
       - name: Start Android Emulator
-        timeout-minutes: 10
+        timeout-minutes: 15
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -no-audio -no-snapshot -no-window -no-boot-anim &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
           $ANDROID_HOME/platform-tools/adb devices
           $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
@@ -84,7 +87,7 @@ jobs:
           echo "Emulator started"
 
       - name: Detox Test
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -118,7 +121,7 @@ jobs:
   ios:
     name: iOS
     runs-on: macos-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
@@ -188,6 +191,7 @@ jobs:
         shell: bash
 
       - name: Detox Test
+        timeout-minutes: 20
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'

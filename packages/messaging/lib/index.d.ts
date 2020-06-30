@@ -142,15 +142,45 @@ export namespace FirebaseMessagingTypes {
     title?: string;
 
     /**
+     * The native localization key for the notification title.
+     */
+    titleLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by titleLocKey.
+     */
+    titleLocArgs?: string[];
+
+    /**
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * The native localization key for the notification body content.
+     */
+    bodyLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by bodyLocKey.
+     */
+    bodyLocArgs?: string[];
 
     ios?: {
       /**
        * The notification's subtitle.
        */
       subtitle?: string;
+
+      /**
+       * The native localization key for the notification's subtitle.
+       */
+      subtitleLocKey?: string;
+
+      /**
+       * Any arguments that should be formatted into the resource specified by subtitleLocKey.
+       */
+      subtitleLocArgs?: string[];
 
       /**
        * The value of the badge on the home screen app icon.
@@ -368,6 +398,13 @@ export namespace FirebaseMessagingTypes {
      * Defaults to true.
      */
     badge?: boolean;
+
+    /**
+     * Request permission for critical alerts.
+     *
+     * Defaults to false.
+     */
+    criticalAlert?: boolean;
 
     /**
      * Request permission to display notifications in a CarPlay environment.
@@ -613,7 +650,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param listener Called with a `RemoteMessage` when a notification press opens the application.
      */
-    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): void;
+    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a

@@ -31,7 +31,7 @@
 
 ../packages/ml-natural-language/e2e/*.e2e.js
 
-# TODO - ci crashing ios
+# TODO - ci crashing Android
 # ../packages/ml-vision/e2e/*.e2e.js
 
 ../packages/in-app-messaging/e2e/*.e2e.js
@@ -43,4 +43,4 @@
 
 ../packages/messaging/e2e/*.e2e.js
 
-../packages/firestore/e2e/*.e2e.js
+../packages/firestore/e2e/**/*.e2e.js

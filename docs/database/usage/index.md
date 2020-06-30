@@ -19,7 +19,7 @@ yarn add @react-native-firebase/app
 yarn add @react-native-firebase/database
 
 # If you're developing your app using iOS, run this command
-cd ios/ && pod install
+cd ios/ && pod install && cd ..
 ```
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
@@ -89,8 +89,9 @@ database()
 The event handler will be called straight away with the snapshot data, and further called when any changes to the node
 occur.
 
-The event handler also returns a function, allowing you to unsubscribe from events. This can be used within any `useEffect`
-hooks to automatically unsubscribe when the hook needs to unsubscribe itself:
+You can unsubscribe from events by calling the `off` method. To unsubscribe from specific events, call the `off` method
+with the function that the event handler returned. This can be used within any `useEffect` hooks to automatically unsubscribe
+when the hook needs to unsubscribe itself:
 
 ```jsx
 import React, { useEffect } from 'react';
@@ -98,13 +99,17 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database();
-    ref(`/users/${userId}`).on('value', snapshot => {
-      console.log('User data: ', snapshot.val());
-    });
+    const onValueChange = database()
+      .ref(`/users/${userId}`)
+      .on('value', snapshot => {
+        console.log('User data: ', snapshot.val());
+      });
 
     // Stop listening for updates when no longer required
-    return () => subscriber();
+    return () =>
+      database()
+        .ref(`/users/${userId}`)
+        .off('value', onValueChange);
   }, [userId]);
 }
 ```
@@ -124,13 +129,17 @@ import database from '@react-native-firebase/database';
 
 function User({ userId }) {
   useEffect(() => {
-    const subscriber = database();
-    ref('/users').on('child_added', snapshot => {
-      console.log('A new node has been added', snapshot.val());
-    });
+    const onChildAdd = database()
+      .ref('/users')
+      .on('child_added', snapshot => {
+        console.log('A new node has been added', snapshot.val());
+      });
 
     // Stop listening for updates when no longer required
-    return () => subscriber();
+    return () =>
+      database()
+        .ref('/users')
+        .off('child_added', onChildAdd);
   }, [userId]);
 }
 ```
@@ -165,6 +174,8 @@ const scores = database()
   .orderByValue()
   .once('value');
 ```
+
+Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
 
 #### Limiting
 
