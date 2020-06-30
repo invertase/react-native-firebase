@@ -133,6 +133,7 @@ npx react-native run-android
 # iOS apps
 cd ios/
 pod install --repo-update
+cd ..
 npx react-native run-ios
 ```
 
