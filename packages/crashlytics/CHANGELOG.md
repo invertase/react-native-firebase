@@ -15,10 +15,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - This is a breaking change to remove the use of the Fabric SDKs.
 
-Co-authored-by: David Buchan-Swanson <david.buchanswanson@gmail.com>
-Co-authored-by: Mike Diarmid <mike.diarmid@gmail.com>
-[publish]
-
 ## [7.1.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@7.1.6...@react-native-firebase/crashlytics@7.1.7) (2020-06-26)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
