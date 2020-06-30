@@ -1,9 +1,6 @@
 PODS:
   - boost-for-react-native (1.63.0)
-  - Crashlytics (3.14.0):
-    - Fabric (~> 1.10.2)
   - DoubleConversion (1.1.6)
-  - Fabric (1.10.2)
   - FBLazyVector (0.62.2)
   - FBReactNativeSpec (0.62.2):
     - Folly (= 2018.10.22.00)
@@ -25,6 +22,9 @@ PODS:
     - FirebaseAnalytics (= 6.6.1)
   - Firebase/CoreOnly (6.27.0):
     - FirebaseCore (= 6.8.0)
+  - Firebase/Crashlytics (6.27.0):
+    - Firebase/CoreOnly
+    - FirebaseCrashlytics (~> 4.2.0)
   - Firebase/Database (6.27.0):
     - Firebase/CoreOnly
     - FirebaseDatabase (~> 6.3.0)
@@ -105,6 +105,13 @@ PODS:
     - GoogleUtilities/Environment (~> 6.5)
     - GoogleUtilities/Logger (~> 6.5)
     - nanopb (~> 1.30905.0)
+  - FirebaseCrashlytics (4.2.0):
+    - FirebaseCore (~> 6.8)
+    - FirebaseInstallations (~> 1.1)
+    - GoogleDataTransport (~> 6.1)
+    - GoogleDataTransportCCTSupport (~> 3.1)
+    - nanopb (~> 1.30905.0)
+    - PromisesObjC (~> 1.2)
   - FirebaseDatabase (6.3.0):
     - FirebaseCore (~> 6.8)
     - leveldb-library (~> 1.22)
@@ -213,9 +220,9 @@ PODS:
   - glog (0.3.5)
   - Google-Mobile-Ads-SDK (7.61.0):
     - GoogleAppMeasurement (~> 6.0)
-  - GoogleAPIClientForREST/Core (1.4.1):
+  - GoogleAPIClientForREST/Core (1.4.2):
     - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAPIClientForREST/Vision (1.4.1):
+  - GoogleAPIClientForREST/Vision (1.4.2):
     - GoogleAPIClientForREST/Core
     - GTMSessionFetcher (>= 1.1.7)
   - GoogleAppMeasurement (6.6.1):
@@ -498,67 +505,67 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
-  - RNFBAdMob (7.2.0):
+  - RNFBAdMob (7.2.2):
     - Firebase/AdMob (= 6.27.0)
     - PersonalizedAdConsent (~> 1.0.4)
     - React
     - RNFBApp
-  - RNFBAnalytics (7.1.4):
+  - RNFBAnalytics (7.1.6):
     - Firebase/Analytics (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBApp (7.2.1):
+  - RNFBApp (7.3.1):
     - Firebase/CoreOnly (= 6.27.0)
     - React
-  - RNFBAuth (8.0.6):
+  - RNFBAuth (8.0.8):
     - Firebase/Auth (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBCrashlytics (7.1.5):
-    - Crashlytics (~> 3.14.0)
-    - Fabric (~> 1.10.2)
+  - RNFBCrashlytics (7.1.7):
+    - Firebase/Core (= 6.27.0)
+    - Firebase/Crashlytics (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBDatabase (7.2.2):
+  - RNFBDatabase (7.2.5):
     - Firebase/Database (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBDynamicLinks (7.1.4):
+  - RNFBDynamicLinks (7.2.1):
     - Firebase/Analytics (= 6.27.0)
     - Firebase/DynamicLinks (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBFirestore (7.1.7):
+  - RNFBFirestore (7.2.2):
     - Firebase/Firestore (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBFunctions (7.1.4):
+  - RNFBFunctions (7.1.6):
     - Firebase/Functions (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBIid (7.1.5):
+  - RNFBIid (7.1.7):
     - Firebase/CoreOnly (= 6.27.0)
     - FirebaseInstanceID
     - React
     - RNFBApp
-  - RNFBInAppMessaging (7.1.4):
+  - RNFBInAppMessaging (7.1.6):
     - Firebase/Analytics (= 6.27.0)
     - Firebase/InAppMessaging (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBMessaging (7.1.6):
+  - RNFBMessaging (7.1.8):
     - Firebase/Analytics (= 6.27.0)
     - Firebase/Messaging (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBMLNaturalLanguage (7.1.4):
+  - RNFBMLNaturalLanguage (7.1.6):
     - Firebase/MLCommon (= 6.27.0)
     - Firebase/MLNaturalLanguage (= 6.27.0)
     - Firebase/MLNLLanguageID (= 6.27.0)
     - Firebase/MLNLSmartReply (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBMLVision (7.1.4):
+  - RNFBMLVision (7.1.7):
     - Firebase/MLVision (= 6.27.0)
     - Firebase/MLVisionBarcodeModel (= 6.27.0)
     - Firebase/MLVisionFaceModel (= 6.27.0)
@@ -566,16 +573,16 @@ PODS:
     - Firebase/MLVisionTextModel (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBPerf (7.1.4):
+  - RNFBPerf (7.1.6):
     - Firebase/Performance (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBRemoteConfig (7.1.4):
+  - RNFBRemoteConfig (7.1.6):
     - Firebase/Analytics (= 6.27.0)
     - Firebase/RemoteConfig (= 6.27.0)
     - React
     - RNFBApp
-  - RNFBStorage (7.1.4):
+  - RNFBStorage (7.1.6):
     - Firebase/Storage (= 6.27.0)
     - React
     - RNFBApp
@@ -633,14 +640,13 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - boost-for-react-native
-    - Crashlytics
-    - Fabric
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
+    - FirebaseCrashlytics
     - FirebaseDatabase
     - FirebaseDynamicLinks
     - FirebaseFunctions
@@ -772,9 +778,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  Crashlytics: 540b7e5f5da5a042647227a5e3ac51d85eed06df
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  Fabric: 706c8b8098fff96c33c0db69cbf81f9c551d0d74
   FBLazyVector: 4aab18c93cd9546e4bfed752b4084585eca8b245
   FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
   Firebase: fc4cbf6f1592636431821ef9a3c557e4dfd9f268
@@ -783,6 +787,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: b85c064e0ac60f82486728d50a4803f235687302
   FirebaseCore: feda061cb1ee6d8ad4824f4a4a8ffbcfe284f595
   FirebaseCoreDiagnostics: 4505e4d4009b1d93f605088ee7d7764d5f0d1c84
+  FirebaseCrashlytics: 7d0fa02ea8842cc4b2ab07b0735edafde1ad77d6
   FirebaseDatabase: 3d02ffa794ec174853c086cf87cf2dc79bd6da49
   FirebaseDynamicLinks: 50cff91aff05347770be750dde61d3311ff7ffc8
   FirebaseFirestore: 654df6218d2ab6d748926bea16d9fee8f116eddd
@@ -806,7 +811,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   Google-Mobile-Ads-SDK: 4c3b24b04293b4bb370b2cb392cdd3ee97c87752
-  GoogleAPIClientForREST: e50dc3267b3131ee3a25e707c10204f6bec15ae9
+  GoogleAPIClientForREST: 9f49df9fac7867b459187e687fed3066b2be049a
   GoogleAppMeasurement: 2fd5c5a56c069db635c8e7b92d4809a9591d0a69
   GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
   GoogleDataTransportCCTSupport: 489c1265d2c85b68187a83a911913d190012158d
@@ -838,25 +843,25 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  RNFBAdMob: 00cf52cd768017c0fde99a34d90f2e1428b6cb1d
-  RNFBAnalytics: 96e79f9cd45fe362c06784d1facfbdb6f39bf258
-  RNFBApp: 101cfd8809436e6e0cf3edd0bdcf753983269de1
-  RNFBAuth: 559fe3bbd9a87c68412fdbee863ea785003480be
-  RNFBCrashlytics: ce4deb00692924b6c796e438a3c573baf07ed5c8
-  RNFBDatabase: 63bb65d7326cd988069080eda35170b5b9deab8f
-  RNFBDynamicLinks: f133d6ac42db9a85d2b408093dabe0258c70146f
-  RNFBFirestore: be13988a8d5a6d04501c88040716cc220b4d6101
-  RNFBFunctions: cb24c91d35e2dcfe25a79ec581f48aef843f0990
-  RNFBIid: d0edec8b1944c3e1701b1de9c5c10864e76b72ca
-  RNFBInAppMessaging: 0d7ab07fc69b28f913f23347a9bc8b76ec321ed4
-  RNFBMessaging: 677fa21a462cf19cdd067b6eb2b6a24db6db2096
-  RNFBMLNaturalLanguage: 3b886d483a7c62180a2e221b45fc5d2bca211658
-  RNFBMLVision: 8a7777d8c12911469e4cce4331f1b89c92d1a381
-  RNFBPerf: f9ade59625fcbfa2d7fde719861b18260741fa3c
-  RNFBRemoteConfig: 31dd85444f7dd8ec98328b3207f0ec0845a4c1d7
-  RNFBStorage: 9aa7e533c475dca7f7fc39a8ea8d00422cfd7c6f
+  RNFBAdMob: d3b6995d9702e71d37faf7d4cdb5feb96a929da2
+  RNFBAnalytics: b86ef349d45139c17b1816111c718f6c297bb858
+  RNFBApp: 09f59710d4670eb40274ada7ed83201e768f1c13
+  RNFBAuth: 5fd739d7b8d19289970caf462c10cebd85f2b4f9
+  RNFBCrashlytics: df08da95dc42ba4dbb65893854567f09fa2bcc73
+  RNFBDatabase: 8c224caa8fa815997df18ec00474d178be187e02
+  RNFBDynamicLinks: 8c667021b47e2436223872d805c5d658223f42a2
+  RNFBFirestore: 36549dd426ab175ee4611d125434f6b8b76341a2
+  RNFBFunctions: 83f1e88d17cd83b38d9731be7c3a12d4cceadfb9
+  RNFBIid: 97255cb4278256a0119776c1926dbb958b046c18
+  RNFBInAppMessaging: 5737a93cd3df33229aa00981fe3f7fcba21c9872
+  RNFBMessaging: 2929b7242fe325d76e78285fa32928ba619f0601
+  RNFBMLNaturalLanguage: 195af1896ef2e78052a4713fde56397bb3f4d31a
+  RNFBMLVision: 98e4dd64ca3942cc55d947037212631d020d5458
+  RNFBPerf: df3f02b19d54f3bbd7a49af23145cf32fa6717a0
+  RNFBRemoteConfig: 8976404c7dc69ec2e9f5c8ebd78f2a80d11181ab
+  RNFBStorage: 0668e2093a1775d78dcea4881207b247e0175896
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
 
 PODFILE CHECKSUM: 1cbd09c80745bbdb0e6f1ac8f0240d2c4fc031dd
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.9.1
