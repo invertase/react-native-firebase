@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@7.1.7...@react-native-firebase/crashlytics@8.0.0) (2020-06-30)
+
+- feat(crashlytics)!: upgrade to new Firebase Crashlytics SDK (#3580) ([cad58e1](https://github.com/invertase/react-native-firebase/commit/cad58e178b43dea461e17fa4a0a3fecd507ba68a)), closes [#3580](https://github.com/invertase/react-native-firebase/issues/3580)
+
+### BREAKING CHANGES
+
+- This is a breaking change to remove the use of the Fabric SDKs.
+
+Co-authored-by: David Buchan-Swanson <david.buchanswanson@gmail.com>
+Co-authored-by: Mike Diarmid <mike.diarmid@gmail.com>
+[publish]
+
 ## [7.1.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@7.1.6...@react-native-firebase/crashlytics@7.1.7) (2020-06-26)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics

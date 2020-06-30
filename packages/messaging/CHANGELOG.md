@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.8...@react-native-firebase/messaging@7.2.0) (2020-06-30)
+
+### Features
+
+- support critical alert permissions ([#3852](https://github.com/invertase/react-native-firebase/issues/3852)) ([c8f7c31](https://github.com/invertase/react-native-firebase/commit/c8f7c3180250dd491ef57ddc0b66f7e491319c35))
+
 ## [7.1.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.7...@react-native-firebase/messaging@7.1.8) (2020-06-26)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
