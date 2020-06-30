@@ -332,7 +332,7 @@ RCT_EXPORT_METHOD(sendEmailVerification:
 RCT_EXPORT_METHOD(verifyBeforeUpdateEmail:
   (FIRApp *) firebaseApp
     :(NSString *) email
-    :(FIRActionCodeSettings *) actionCodeSettings
+    :(NSDictionary *) actionCodeSettings
     :(RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {

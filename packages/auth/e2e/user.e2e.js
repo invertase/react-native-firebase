@@ -204,6 +204,29 @@ describe('auth().currentUser', () => {
     });
   });
 
+  describe.only('verifyBeforeUpdateEmail()', () => {
+    it('should not error', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      try {
+        await firebase.auth().createUserWithEmailAndPassword(email, random);
+        await firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail);
+        // TODO is there a way to test? Need to hit the link sent to the email for email to change
+        // const currentEmail = firebase.auth().currentUser.email;
+        // should(currentEmail).equal(updateEmail);
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should work with actionCodeSettings', async () => {
+      //TODO test with actionCodeSettings as well
+    });
+  });
+
   describe('unlink()', () => {
     it('should unlink the email address', async () => {
       const random = Utils.randString(12, '#aA');

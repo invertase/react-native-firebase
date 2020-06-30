@@ -1037,6 +1037,30 @@ export namespace FirebaseAuthTypes {
      * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
      */
     sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void>;
+    /**
+     * Sends a link to the user's email address, when clicked, the user's Authentication email address will be updated to whatever
+     * was passed as the first argument.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().currentUser.verifyBeforeUpdateEmail(
+     * 'foo@emailaddress.com',
+     * {
+     *   handleCodeInApp: true,
+     * });
+     * ```
+     *
+     * > This will Promise reject if the user is anonymous.
+     *
+     * @error auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed.
+     * @error auth/missing-continue-uri A continue URL must be provided in the request.
+     * @error auth/missing-ios-bundle-id An iOS bundle ID must be provided if an App Store ID is provided.
+     * @error auth/invalid-continue-uri The continue URL provided in the request is invalid.
+     * @error auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console.
+     * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
+     */
+    verifyBeforeUpdateEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 
     /**
      * Returns a JSON-serializable representation of this object.
