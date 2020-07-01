@@ -90,6 +90,7 @@ preloaded
 programmatically
 PRs
 PubSub
+react-native-firebase
 realtime
 Realtime
 remarketing
