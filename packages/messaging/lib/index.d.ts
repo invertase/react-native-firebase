@@ -400,6 +400,13 @@ export namespace FirebaseMessagingTypes {
     badge?: boolean;
 
     /**
+     * Request permission for critical alerts.
+     *
+     * Defaults to false.
+     */
+    criticalAlert?: boolean;
+
+    /**
      * Request permission to display notifications in a CarPlay environment.
      *
      * Defaults to true.
