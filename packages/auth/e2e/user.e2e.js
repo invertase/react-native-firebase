@@ -154,6 +154,160 @@ describe('auth().currentUser', () => {
   });
 
   describe('sendEmailVerification()', () => {
+    it('should error if actionCodeSettings.url is not present', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({});
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.url is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({ url: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase
+          .auth()
+          .currentUser.sendEmailVerification({ url: 'string', dynamicLinkDomain: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if handleCodeInApp is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({ url: 'string', handleCodeInApp: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.handleCodeInApp' expected a boolean value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.iOS is not an object', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({ url: 'string', iOS: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.iOS' expected an object value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.iOS.bundleId is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase
+          .auth()
+          .currentUser.sendEmailVerification({ url: 'string', iOS: { bundleId: 123 } });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.iOS.bundleId' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android is not an object', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({ url: 'string', android: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.android' expected an object value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.packageName is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase
+          .auth()
+          .currentUser.sendEmailVerification({ url: 'string', android: { packageName: 123 } });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.packageName' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.installApp is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({
+          url: 'string',
+          android: { packageName: 'packageName', installApp: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.installApp' expected a boolean value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.minimumVersion is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.sendEmailVerification({
+          url: 'string',
+          android: { packageName: 'packageName', minimumVersion: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.minimumVersion' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -165,7 +319,7 @@ describe('auth().currentUser', () => {
       } catch (error) {
         // Reject
         try {
-          await firebase.auth().currentUser.delete();
+          // await firebase.auth().currentUser.delete();
         } catch (_) {
           /* do nothing */
         }
@@ -204,7 +358,202 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe.only('verifyBeforeUpdateEmail()', () => {
+  describe('verifyBeforeUpdateEmail()', () => {
+    it('should error if actionCodeSettings.url is not present', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {});
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.url is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, { url: 123 });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.url' expected a string value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          dynamicLinkDomain: 123,
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if handleCodeInApp is not a boolean', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          handleCodeInApp: 123,
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.handleCodeInApp' expected a boolean value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.iOS is not an object', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          iOS: 123,
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.iOS' expected an object value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.iOS.bundleId is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          iOS: { bundleId: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.iOS.bundleId' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android is not an object', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          android: 123,
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql("'actionCodeSettings.android' expected an object value.");
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.packageName is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          android: { packageName: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.packageName' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.installApp is not a boolean', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          android: { packageName: 'string', installApp: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.installApp' expected a boolean value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should error if actionCodeSettings.android.minimumVersion is not a string', async () => {
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      try {
+        firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, {
+          url: 'string',
+          android: { packageName: 'string', minimumVersion: 123 },
+        });
+        return Promise.reject(new Error('it did not error'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'actionCodeSettings.android.minimumVersion' expected a string value.",
+        );
+        await firebase.auth().currentUser.delete();
+      }
+    });
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');

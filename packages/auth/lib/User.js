@@ -113,7 +113,7 @@ export default class User {
         !isString(actionCodeSettings.dynamicLinkDomain)
       ) {
         throw new Error(
-          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.dynamicLinkDomain' expected an string value.",
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
         );
       }
 
@@ -122,7 +122,7 @@ export default class User {
         !isBoolean(actionCodeSettings.handleCodeInApp)
       ) {
         throw new Error(
-          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.handleCodeInApp' expected an boolean value.",
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
       }
 
@@ -223,7 +223,7 @@ export default class User {
         !isString(actionCodeSettings.dynamicLinkDomain)
       ) {
         throw new Error(
-          "firebase.auth.User.verifyBeforeUpdateEmail(*) 'actionCodeSettings.dynamicLinkDomain' expected an string value.",
+          "firebase.auth.User.verifyBeforeUpdateEmail(*) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
         );
       }
 
@@ -232,7 +232,7 @@ export default class User {
         !isBoolean(actionCodeSettings.handleCodeInApp)
       ) {
         throw new Error(
-          "firebase.auth.User.verifyBeforeUpdateEmail(*) 'actionCodeSettings.handleCodeInApp' expected an boolean value.",
+          "firebase.auth.User.verifyBeforeUpdateEmail(*) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
         );
       }
 
