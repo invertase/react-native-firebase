@@ -54,8 +54,7 @@ project.ext {
       ],
 
       firebase: [
-        crashlytics   : "2.10.1",
-        crashlyticsNdk: "2.1.1" // not in BoM
+        bom: "25.3.0",
       ],
     ],
   ])
@@ -82,10 +81,9 @@ repositories {
 
 dependencies {
   api appProject
-  // don't use firebase bom here as crashlytics-ndk is not included in the bom, trying to partially use bom here fails
-  implementation "com.crashlytics.sdk.android:crashlytics:${ReactNative.ext.getVersion("firebase", "crashlytics")}"
-  // ndk not in Firebase BoM
-  implementation "com.crashlytics.sdk.android:crashlytics-ndk:${ReactNative.ext.getVersion("firebase", "crashlyticsNdk")}"
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-crashlytics"
+  implementation "com.google.firebase:firebase-crashlytics-ndk"
 }
 
 ReactNative.shared.applyPackageVersion()

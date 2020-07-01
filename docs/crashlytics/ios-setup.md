@@ -16,7 +16,7 @@ add a 'New Run Script Phase':
 In the new build phase, add a new script into the text box:
 
 ```
-"${PODS_ROOT}/Fabric/run"
+"${PODS_ROOT}/FirebaseCrashlytics/run"
 ```
 
 ![Script](https://prismic-io.s3.amazonaws.com/invertase%2Ff06cf5b3-884e-4cbc-8c3d-81072a254f1d_new+project+%281%29.png)
