@@ -45,6 +45,7 @@ const DIRECTIONS = {
 export default class FirestoreQueryModifiers {
   constructor() {
     this._limit = undefined;
+    this._limitToLast = undefined;
     this._filters = [];
     this._orders = [];
     this._type = 'collection';
@@ -58,6 +59,7 @@ export default class FirestoreQueryModifiers {
   _copy() {
     const newInstance = new FirestoreQueryModifiers();
     newInstance._limit = this._limit;
+    newInstance._limitToLast = this._limitToLast;
     newInstance._filters = [...this._filters];
     newInstance._orders = [...this._orders];
     newInstance._type = this._type;
@@ -82,6 +84,11 @@ export default class FirestoreQueryModifiers {
     if (this._limit) {
       options.limit = this._limit;
     }
+
+    if (this._limitToLast) {
+      options.limitToLast = this._limitToLast;
+    }
+
     if (this._startAt) {
       options.startAt = this._startAt;
     }
@@ -141,7 +148,32 @@ export default class FirestoreQueryModifiers {
   }
 
   limit(limit) {
+    this._limitToLast = undefined;
     this._limit = limit;
+    return this;
+  }
+
+  /**
+   * limitToLast
+   */
+
+  isValidLimitToLast(limit) {
+    return !isNumber(limit) || Math.floor(limit) !== limit || limit <= 0;
+  }
+
+  validatelimitToLast() {
+    if (this._limitToLast) {
+      if (!this._orders.length) {
+        throw new Error(
+          'firebase.firestore().collection().limitToLast() queries require specifying at least one firebase.firestore().collection().orderBy() clause',
+        );
+      }
+    }
+  }
+
+  limitToLast(limitToLast) {
+    this._limit = undefined;
+    this._limitToLast = limitToLast;
     return this;
   }
 

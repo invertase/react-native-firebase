@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.2.0...@react-native-firebase/messaging@7.2.1) (2020-06-30)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.8...@react-native-firebase/messaging@7.2.0) (2020-06-30)
+
+### Features
+
+- support critical alert permissions ([#3852](https://github.com/invertase/react-native-firebase/issues/3852)) ([c8f7c31](https://github.com/invertase/react-native-firebase/commit/c8f7c3180250dd491ef57ddc0b66f7e491319c35))
+
+## [7.1.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.7...@react-native-firebase/messaging@7.1.8) (2020-06-26)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.1.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.6...@react-native-firebase/messaging@7.1.7) (2020-06-22)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.1.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.5...@react-native-firebase/messaging@7.1.6) (2020-06-18)
+
+### Bug Fixes
+
+- **ios:** handle nil messaging token ([#3790](https://github.com/invertase/react-native-firebase/issues/3790)) ([b2ffe11](https://github.com/invertase/react-native-firebase/commit/b2ffe115874c422414d58038d5d01e1b411c5a6c))
+
 ## [7.1.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.1.4...@react-native-firebase/messaging@7.1.5) (2020-06-10)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
