@@ -30,7 +30,7 @@ public class UniversalFirebaseFirestoreException extends Exception {
   UniversalFirebaseFirestoreException(FirebaseFirestoreException nativeException, Throwable cause) {
     super(nativeException != null ? nativeException.getMessage() : "", cause);
 
-    String code = "unknown";
+    String code = null;
     String message = "An unknown error occurred";
 
     if (cause != null && cause.getMessage() != null && cause.getMessage().contains(":")) {

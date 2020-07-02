@@ -98,36 +98,6 @@ export interface Module extends ReactNativeFirebaseModule {
   setUserId(userId: string): Promise<null>;
 
   /**
-   * Optionally specify a user name which will be visible in the Firebase Crashlytics console.
-   *
-   * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
-   *
-   * #### Example
-   *
-   * ```js
-   * await firebase.crashlytics().setUserName('Alias');
-   * ```
-   *
-   * @param userName A string representing an end-user's name or app username
-   */
-  setUserName(userName: string): Promise<null>;
-
-  /**
-   * Optionally specify a user email which will be visible in the Firebase Crashlytics console.
-   *
-   * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
-   *
-   * #### Example
-   *
-   * ```js
-   * firebase.crashlytics().setUserEmail('user@gmail.com');
-   * ```
-   *
-   * @param userEmail A users email address.
-   */
-  setUserEmail(userEmail: string): Promise<null>;
-
-  /**
    * Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.
    *
    * #### Example

@@ -33,6 +33,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
@@ -1780,6 +1781,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         message = invalidEmail;
       } else if (exception instanceof FirebaseNetworkException) {
         code = "NETWORK_REQUEST_FAILED";
+      } else if (exception instanceof FirebaseTooManyRequestsException) {
+        code = "TOO_MANY_REQUESTS";
+        message = message;
       }
     }
 

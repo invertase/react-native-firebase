@@ -132,7 +132,7 @@ class ReactNativeFirebaseFirestoreTransactionHandler {
    */
 
   private void safeUnlock() {
-    if (lock.isLocked()) {
+    if (lock.isHeldByCurrentThread()) {
       lock.unlock();
     }
   }
