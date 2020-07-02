@@ -114,7 +114,7 @@ describe('firestore.WriteBatch.commit()', () => {
     await Promise.all([lRef.delete(), nycRef.delete(), sfRef.delete()]);
   });
 
-  it('should set/mergeFields & commit', async () => {
+  xit('should set/mergeFields & commit', async () => {
     const lRef = firebase.firestore().doc('v6/LON');
     const nycRef = firebase.firestore().doc('v6/NYC');
     const sfRef = firebase.firestore().doc('v6/SF');
