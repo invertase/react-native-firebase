@@ -81,7 +81,6 @@ describe('auth()', () => {
       const pass = random;
 
       await firebase.auth().createUserWithEmailAndPassword(email1, pass);
-      await Utils.sleep(100);
       const firstUser = firebase.auth().currentUser;
       await firstUser.reload();
 
@@ -91,7 +90,6 @@ describe('auth()', () => {
       const email2 = `${anotherRandom}@${anotherRandom}.com`;
 
       await firebase.auth().createUserWithEmailAndPassword(email2, pass);
-      await Utils.sleep(100);
       const secondUser = firebase.auth().currentUser;
       await secondUser.reload();
 
