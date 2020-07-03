@@ -15,10 +15,6 @@ The following describes how to set up a server to handle messages, including...
 - A custom XMPP server with XCS for receiving messages.
 - Firebase admin for sending messages.
 
-Your architecture would look similar to
-
-<img width="160px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQbtMUufbKexT-bPChzNVLtuF1QTnddMqJCTw&usqp=CAU">
-
 So what are we going to do?
 
 1. Send a message from a client device.
@@ -26,7 +22,7 @@ So what are we going to do?
 3. Push the message to Firebase using firebase-admin
 4. Receive the message and ackowledge on other connected devices.
 
-## Why can't I send an receive messages?
+## Why can't I send an send and receive messages?
 
 A common instance involves an implementation similar to the following.
 
