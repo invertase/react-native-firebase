@@ -76,6 +76,10 @@ public class UniversalFirebasePreferences {
     getPreferences().edit().clear().apply();
   }
 
+  public SharedPreferences.Editor remove(String key){
+    return getPreferences().edit().remove(key);
+  }
+
   private SharedPreferences getPreferences() {
     if (preferences == null) {
       preferences = ReactNativeFirebaseApp
