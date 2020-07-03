@@ -1,6 +1,6 @@
 ---
 title: Messaging with XMPP
-description: To send and receive messages with FCM requires additional steps to ensure listeners are correctly working. The following explains how send and receive messages between FCM and client devices.
+description: To send and receive messages directly from devices with FCM requires you to create and deploy an XMPP server.
 ---
 
 ## Introduction
@@ -54,7 +54,7 @@ Permissions are limited on the client meaning an additional solution is required
 
 This is where a custom server based on Node XCS
 
-Below is an example of how to configure a custom server using `node-xcs`.
+Below is an example of how to configure a custom XMPP server using `node-xcs`.
 
 ```js
 const Sender = require('node-xcs').Sender;
