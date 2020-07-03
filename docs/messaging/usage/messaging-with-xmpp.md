@@ -1,14 +1,14 @@
 ---
 title: Messaging with XMPP
-description: To send and recieve messages with FCM requires additional steps to ensure listeners are correctly working.
+description: To send and receive messages with FCM requires additional steps to ensure listeners are correctly working.
 ---
 
 This page demonstrates how to send and receive messages through a custom server. This will have to be deployed separately.
 
 - Please note: A common issue found when using Firestore Messaging is that
-- messages can only be received unless sent through an XMP enabled server.
+- messages can only be received unless sent through an `XMPP` enabled server.
 
-To give an example in your app, using `messaging.sendMessage()` will result in your FCM message been acknowledged by the server, however none of the client listeners will not be able to recieve the message.
+To give an example in your app, using `messaging.sendMessage()` will result in your FCM message been acknowledged by the server, however none of the client listeners will not be able to receive the message.
 
 Below is an example of how to configure a custom server using `node-xcs`.
 
