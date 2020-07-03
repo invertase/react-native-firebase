@@ -41,3 +41,4 @@ extern NSString *const FIRESTORE_CACHE_SIZE;
 extern NSString *const FIRESTORE_HOST;
 extern NSString *const FIRESTORE_PERSISTENCE;
 extern NSString *const FIRESTORE_SSL;
+extern NSMutableDictionary * instanceCache;

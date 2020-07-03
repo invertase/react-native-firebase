@@ -33,5 +33,5 @@ console.log(firebase.crashlytics().isCrashlyticsCollectionEnabled);
 console.log(firebase.crashlytics().log('foo'));
 firebase
   .crashlytics()
-  .setUserEmail('foo')
+  .setUserId('id')
   .then();

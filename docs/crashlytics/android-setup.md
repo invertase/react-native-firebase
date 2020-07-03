@@ -12,9 +12,9 @@ These steps are required, if you do not add these your app will most likely cras
 "The Crashlytics build ID is missing. This occurs when Crashlytics tooling is absent from your app's build configuration.
 Please review Crashlytics onboarding instructions and ensure you have a valid Crashlytics account."\_
 
-## 1. Add the Fabric Maven repository
+## 1. Add the Google repository (if it's not there already)
 
-Add the following line to the `android/build.gradle` file:
+Add the following line to the `android/build.gradle` file :
 
 ```groovy
 // ..
@@ -22,15 +22,13 @@ buildscript {
   // ..
   repositories {
     // ..
-    maven {
-      url 'https://maven.fabric.io/public'
-    }
+    google()
   }
   // ..
 }
 ```
 
-## 2. Add the Fabric Tools Plugin dependency
+## 2. Add the Firebase Crashlytics Plugin dependency
 
 Add the following dependency to the `android/build.gradle` file:
 
@@ -40,19 +38,20 @@ buildscript {
   // ..
   dependencies {
     // ..
-    classpath 'io.fabric.tools:gradle:1.28.1'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.0.0'
   }
   // ..
 }
 ```
 
-## 3. Apply the Fabric Tools Plugin to your app
+## 3. Apply the Firebase Crashlytics Plugin to your app
 
-Apply the `io.fabric` plugin by adding the following to the top of your `android/app/build.gradle` file:
+Apply the `com.google.firebase.crashlytics` plugin by adding the following to the top of your `android/app/build.gradle` file:
 
 ```
-apply plugin: 'com.android.application' // apply after this line
-apply plugin: 'io.fabric'
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services' // apply after this line
+apply plugin: 'com.google.firebase.crashlytics'
 // ..
 ```
 
@@ -61,11 +60,24 @@ apply plugin: 'io.fabric'
 Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture
 crashes originating from the Yoga layout engine.
 
-Add the `crashlytics` block line to the `android/app/build.gradle` file:
+Add the `firebaseCrashlytics` block line to the `android/app/build.gradle` file:
 
 ```groovy
-crashlytics {
-  enableNdk true
+android {
+    // ...
+
+    buildTypes {
+        release {
+            /* Add the firebaseCrashlytics extension (by default,
+            * it's disabled to improve build speeds) and set
+            * nativeSymbolUploadEnabled to true. */
+
+            firebaseCrashlytics {
+                nativeSymbolUploadEnabled true
+            }
+            // ...
+        }
+    }
 }
 ```
 

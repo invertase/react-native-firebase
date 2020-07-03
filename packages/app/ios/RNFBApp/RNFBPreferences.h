@@ -37,6 +37,8 @@
 
 - (void)clearAll;
 
+- (void)remove:(NSString *)key;
+
 + (RNFBPreferences *)shared;
 
 @end
