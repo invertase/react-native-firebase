@@ -563,16 +563,27 @@ describe('auth().currentUser', () => {
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, random);
         await firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail);
-        // TODO is there a way to test? Need to hit the link sent to the email for email to change
-        // const currentEmail = firebase.auth().currentUser.email;
-        // should(currentEmail).equal(updateEmail);
+      } catch (_) {
+        return Promise.reject("'verifyBeforeUpdateEmail()' did not work");
       } finally {
         await firebase.auth().currentUser.delete();
       }
     });
 
     it('should work with actionCodeSettings', async () => {
-      //TODO test with actionCodeSettings as well
+      const random = Utils.randString(12, '#aA');
+      const random2 = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const updateEmail = `${random2}@${random2}.com`;
+      const actionCodeSettings = { url: 'https://invertase.io' };
+      try {
+        await firebase.auth().createUserWithEmailAndPassword(email, random);
+        await firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail, actionCodeSettings);
+      } catch (_) {
+        return Promise.reject("'verifyBeforeUpdateEmail()' with 'actionCodeSettings' did not work");
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
     });
   });
 
