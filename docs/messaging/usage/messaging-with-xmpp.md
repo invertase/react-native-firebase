@@ -1,14 +1,62 @@
 ---
 title: Messaging with XMPP
-description: To send and receive messages with FCM requires additional steps to ensure listeners are correctly working.
+description: To send and receive messages with FCM requires additional steps to ensure listeners are correctly working. The following explains how send and receive messages between FCM and client devices.
 ---
 
-This page demonstrates how to send and receive messages through a custom server. This will have to be deployed separately.
+## Introduction
 
-- Please note: A common issue found when using Firestore Messaging is that
-- messages can only be received unless sent through an `XMPP` enabled server.
+This is a reference for using the Firebase Messaging service. Although methods are provided for sending and receiving message, additional configuration is needed to ensure a working solution.
 
-To give an example in your app, using `messaging.sendMessage()` will result in your FCM message been acknowledged by the server, however none of the client listeners will not be able to receive the message.
+> A custom solution is needed to exchange messages between devices (including the message sender device)
+> please ensure a solution from this article has been configured to successfully send and receive messages from a device.
+
+The following describes how to set up a server to handle messages, including...
+
+- A custom XMPP server with XCS for receiving messages.
+- Firebase admin for sending messages.
+
+Your architecture would look similar to
+
+<img width="160px" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQbtMUufbKexT-bPChzNVLtuF1QTnddMqJCTw&usqp=CAU">
+
+So what are we going to do?
+
+1. Send a message from a client device.
+2. Intercept using a custom XMPP server.
+3. Push the message to Firebase using firebase-admin
+4. Receive the message and ackowledge on other connected devices.
+
+## Why can't I send an receive messages?
+
+A common instance involves an implementation similar to the following.
+
+```js
+firebase.messaging().onMessage(message => {
+  console.log('Received a message');
+});
+
+firebase.messaging().onMessageSent(message => {
+  console.log('Sent a message');
+});
+
+firebase.messaging().onSendError(message => {
+  console.log('Received an Error');
+});
+
+firebase.messaging().sendMessage({
+  data: {
+    foo: 'bar',
+  },
+});
+```
+
+Although correct, none of the listeners will acknowledge a `message` or `error`.
+
+Permissions are limited on the client meaning an additional solution is required to communicate between `FCM` and any connected devices.
+
+## How do I receive messages?
+
+This is where a custom server based on Node XCS
 
 Below is an example of how to configure a custom server using `node-xcs`.
 
@@ -43,7 +91,9 @@ async function app() {
 app();
 ```
 
-Using the events above you can then send messages, this will trigger the listeners on the devices.
+## How do I send messages?
+
+An ability to post to firebase with the correct permissions, for this we can use `Firebase-admin`.
 
 ```js
 const admin = require('firebase-admin');
@@ -63,5 +113,3 @@ const serviceAccount = require('./service-account.json');
   });
 })();
 ```
-
-Our recommendation would be to deploy a cloud function that could host your implementation.
