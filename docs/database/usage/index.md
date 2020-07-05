@@ -154,7 +154,7 @@ If your application requires more advanced query capabilities, it is recommended
 #### Ordering
 
 By default, results are ordered based on the node [keys](#database-keys). If however you are using custom keys you can use
-one of the `orederByX` methods to order your data.
+one of the `orderByX` methods to order your data.
 
 For example, if all of the nodes children are scalar values (string, number or boolean) you can use the `orderByValue` method,
 and Firebase will automatically order the results. The example below would return the `def` node before the `abc` node:
