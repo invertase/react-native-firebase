@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.2.1...@react-native-firebase/messaging@7.3.0) (2020-07-05)
+
+### Features
+
+- **messaging:** Call original delegate when intercepting notification response on iOS ([b17df84](https://github.com/invertase/react-native-firebase/commit/b17df846d291cd6f507680f6415e78392c32b0b0))
+
 ## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.2.0...@react-native-firebase/messaging@7.2.1) (2020-06-30)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
