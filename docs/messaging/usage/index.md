@@ -224,7 +224,7 @@ admin.messaging().send({
       headers: {
         'apns-push-type': 'background',
         'apns-priority': '5',
-        'apns-topic': //app bundle identifier
+        'apns-topic': '' // your app bundle identifier
       }
     },
     //must include token, topic, or condition
