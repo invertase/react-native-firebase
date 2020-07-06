@@ -98,6 +98,11 @@ export namespace FirebaseMessagingTypes {
     ttl?: number;
 
     /**
+     * The time the message was sent, in milliseconds since the start of unix epoch
+     */
+    sentTime?: number;
+
+    /**
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
