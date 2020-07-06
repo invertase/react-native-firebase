@@ -2,6 +2,10 @@
 
 # Release Notes
 
+## 1.1.2
+
+- fix(dependencies): move 'np' to devDependencies (thanks @mikehardy and @hsource!)
+
 ## 1.1.1
 
 - fix(types): performRequest can accept state parameter (#94, thanks @skantus!)
