@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.4...@react-native-firebase/firestore@7.3.0) (2020-07-06)
+
+### Features
+
+- **firestore, android:** allow FirestoreSerializer native use ([#3888](https://github.com/invertase/react-native-firebase/issues/3888)) ([68daf94](https://github.com/invertase/react-native-firebase/commit/68daf945c4dacca954eb8592b94b992ca82d0ffb))
+
 ## [7.2.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.3...@react-native-firebase/firestore@7.2.4) (2020-07-05)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
