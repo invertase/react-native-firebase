@@ -18,10 +18,7 @@ package io.invertase.firebase.crashlytics;
  */
 
 import android.util.Log;
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.crashlytics.android.ndk.CrashlyticsNdk;
-import io.fabric.sdk.android.Fabric;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import io.invertase.firebase.common.ReactNativeFirebaseInitProvider;
 import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
@@ -53,35 +50,12 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
   public boolean onCreate() {
     super.onCreate();
 
-    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled() && getContext() != null) {
-      ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
-      boolean useNdk = json.getBooleanValue(KEY_CRASHLYTICS_NDK_ENABLED, true);
-      boolean debug = json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false);
-
-      try {
-        Fabric.Builder builder = new Fabric.Builder(getContext());
-
-        Crashlytics crashlyticsCore = new Crashlytics.Builder()
-          .core(new CrashlyticsCore.Builder().disabled(!debug && BuildConfig.DEBUG).build())
-          .build();
-
-        if (useNdk) {
-          builder.kits(crashlyticsCore, new CrashlyticsNdk());
-        } else {
-          builder.kits(crashlyticsCore);
-        }
-
-        builder.debuggable(debug);
-
-        Fabric.with(builder.build());
-
-        Log.i(TAG, "initialization successful");
-      } catch (IllegalStateException exception) {
-        Log.e(TAG, "initialization failed", exception);
-        return false;
-      }
-    } else {
-      Log.i(TAG, "auto collection disabled, skipping initialization");
+    try {
+      FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled());
+      Log.i(TAG, "initialization successful");
+    } catch (Exception exception) {
+      Log.e(TAG, "initialization failed", exception);
+      return false;
     }
 
     return true;

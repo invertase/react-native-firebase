@@ -98,6 +98,11 @@ export namespace FirebaseMessagingTypes {
     ttl?: number;
 
     /**
+     * The time the message was sent, in milliseconds since the start of unix epoch
+     */
+    sentTime?: number;
+
+    /**
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
@@ -398,6 +403,13 @@ export namespace FirebaseMessagingTypes {
      * Defaults to true.
      */
     badge?: boolean;
+
+    /**
+     * Request permission for critical alerts.
+     *
+     * Defaults to false.
+     */
+    criticalAlert?: boolean;
 
     /**
      * Request permission to display notifications in a CarPlay environment.

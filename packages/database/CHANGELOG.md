@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.2.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.6...@react-native-firebase/database@7.2.7) (2020-07-05)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [7.2.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.5...@react-native-firebase/database@7.2.6) (2020-06-30)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [7.2.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.4...@react-native-firebase/database@7.2.5) (2020-06-26)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
 ## [7.2.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.2.3...@react-native-firebase/database@7.2.4) (2020-06-22)
 
 **Note:** Version bump only for package @react-native-firebase/database
