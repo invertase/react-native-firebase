@@ -15,7 +15,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -121,7 +121,7 @@ jobs:
   ios:
     name: iOS
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
@@ -191,7 +191,7 @@ jobs:
         shell: bash
 
       - name: Detox Test
-        timeout-minutes: 20
+        timeout-minutes: 40
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
