@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.0.3...@react-native-firebase/crashlytics@8.1.0) (2020-07-07)
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+
 ## [8.0.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.0.2...@react-native-firebase/crashlytics@8.0.3) (2020-07-05)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
