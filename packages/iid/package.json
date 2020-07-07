@@ -24,7 +24,7 @@
     "iid"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.0.1"
+    "@react-native-firebase/app": "8.1.0"
   },
   "publishConfig": {
     "access": "public"
