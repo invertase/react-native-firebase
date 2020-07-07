@@ -184,8 +184,7 @@ Firebase Console, under Storage > Files.
 
 ```js
 
-import firebase from '@react-native-firebase/app';
-import storage from '@react-native-firebase/storage';
+import storage, { firebase } from '@react-native-firebase/storage';
 
 const defaultStorageBucket = storage();
 const secondaryStorageBucket = firebase.app().storage('gs://my-secondary-bucket.appspot.com');
