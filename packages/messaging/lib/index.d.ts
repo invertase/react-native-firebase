@@ -892,14 +892,13 @@ export namespace FirebaseMessagingTypes {
     onSendError(listener: (evt: SendErrorEvent) => any): () => void;
 
     /**
-     * On Android, set a message handler function which is called when the app is in the background
-     * or terminated. A headless task is created, allowing you to access the React Native environment
+     * Set a message handler function which is called when the app is in the background
+     * or terminated. In Android, a headless task is created, allowing you to access the React Native environment
      * to perform tasks such as updating local storage, or sending a network request.
      *
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
      *
-     * > You can safely call this method on iOS without platform checks. It's a no-op on iOS.
      *
      * #### Example
      *
@@ -913,7 +912,6 @@ export namespace FirebaseMessagingTypes {
      * });
      * ```
      *
-     * @android
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
