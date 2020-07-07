@@ -24,7 +24,7 @@
     "functions"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.0.1"
+    "@react-native-firebase/app": "8.1.0"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-firebase-functions": "^0.0.1"
