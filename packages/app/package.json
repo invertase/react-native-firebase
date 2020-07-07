@@ -67,10 +67,10 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "~> 6.25.0"
+      "firebase": "~> 6.27.0"
     },
     "android": {
-      "firebase": "25.3.1"
+      "firebase": "25.5.0"
     }
   }
 }
