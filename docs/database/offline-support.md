@@ -11,7 +11,7 @@ and automatically managed by the Firebase SDKs.
 # Enabling Persistence
 
 Persistence is automatically disabled by default when using Realtime Database, however it
-[can be changed to be enabled by default in the firebase.json](/database/usage#disabling-persistence). You can also enable persistence programmatically, by calling the `setPersistenceEnabled`
+[can be changed to be enabled by default in the firebase.json](/database/usage#enabling-persistence). You can also enable persistence programmatically, by calling the `setPersistenceEnabled`
 as early on in your application code as possible:
 
 ```js
