@@ -41,6 +41,7 @@ EEA
 Ehesp
 enum
 ESLint
+Fastlane
 FCM
 Firebase
 Firestore
