@@ -362,18 +362,18 @@ secondaryDatabase.ref();
 
 # firebase.json
 
-## Disabling persistence
+## Enabling persistence
 
-By default the Realtime Database persists data on the user application, and is used by the SDKs for offline usage
-and caching. To disable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
+The Realtime Database can be set to persist data on the user application to be used by the SDKs for offline usage
+and caching. To enable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
 
 ```json
 // <project-root>/firebase.json
 {
   "react-native": {
-    "database_persistence_enabled": false
+    "database_persistence_enabled": true
   }
 }
 ```
 
-To enable persistence, view the [Offline Support](/database/offline-support) documentation.
+For more on persistence, view the [Offline Support](/database/offline-support) documentation.
