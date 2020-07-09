@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.2.1...@react-native-firebase/analytics@7.3.0) (2020-07-09)
+
+### Features
+
+- **analytics:** add & deprecate pre-defined analytics events ([#3385](https://github.com/invertase/react-native-firebase/issues/3385)) ([6c53f47](https://github.com/invertase/react-native-firebase/commit/6c53f479d9d86f686d52f258ed51b5dc6a8ef25a))
+
 ## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.2.0...@react-native-firebase/analytics@7.2.1) (2020-07-07)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
