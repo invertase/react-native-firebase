@@ -1,6 +1,6 @@
 {
 	"id": 0,
-	"name": "@react-native-firebase/app - v8.0.1",
+	"name": "@react-native-firebase/app - v8.2.0",
 	"kind": 0,
 	"flags": {},
 	"children": [
@@ -937,7 +937,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 1000,
+											"line": 998,
 											"character": 15
 										}
 									]
@@ -999,14 +999,14 @@
 									]
 								},
 								{
-									"id": 2659,
+									"id": 2674,
 									"name": "remoteConfig",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2660,
+											"id": 2675,
 											"name": "remoteConfig",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -1014,7 +1014,7 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 2628
+												"id": 2634
 											}
 										}
 									],
@@ -1027,21 +1027,21 @@
 									]
 								},
 								{
-									"id": 2842,
+									"id": 2857,
 									"name": "storage",
 									"kind": 2048,
 									"kindString": "Method",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2843,
+											"id": 2858,
 											"name": "storage",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2844,
+													"id": 2859,
 													"name": "bucket",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -1066,7 +1066,7 @@
 											"type": {
 												"type": "reference",
 												"name": "Module",
-												"id": 2817
+												"id": 2832
 											}
 										}
 									],
@@ -1153,8 +1153,8 @@
 										2104,
 										2143,
 										2600,
-										2659,
-										2842,
+										2674,
+										2857,
 										124,
 										2506
 									]
@@ -1218,7 +1218,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 999,
+									"line": 997,
 									"character": 25
 								},
 								{
@@ -1574,7 +1574,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 993,
+											"line": 991,
 											"character": 15
 										}
 									],
@@ -1659,7 +1659,7 @@
 									}
 								},
 								{
-									"id": 2658,
+									"id": 2673,
 									"name": "remoteConfig",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1679,7 +1679,7 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 2628
+												"id": 2634
 											},
 											{
 												"type": "reference",
@@ -1690,7 +1690,7 @@
 									}
 								},
 								{
-									"id": 2841,
+									"id": 2856,
 									"name": "storage",
 									"kind": 1024,
 									"kindString": "Property",
@@ -1710,12 +1710,12 @@
 											{
 												"type": "reference",
 												"name": "Module",
-												"id": 2817
+												"id": 2832
 											},
 											{
 												"type": "reference",
 												"name": "Statics",
-												"id": 2675
+												"id": 2690
 											}
 										]
 									}
@@ -1804,8 +1804,8 @@
 										2103,
 										2142,
 										2599,
-										2658,
-										2841,
+										2673,
+										2856,
 										122,
 										2505
 									]
@@ -1869,7 +1869,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 992,
+									"line": 990,
 									"character": 20
 								},
 								{
@@ -1968,7 +1968,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 990,
+							"line": 988,
 							"character": 31
 						},
 						{
@@ -2149,7 +2149,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 989,
+					"line": 987,
 					"character": 43
 				},
 				{
@@ -3094,7 +3094,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 979,
+							"line": 977,
 							"character": 21
 						}
 					],
@@ -3128,7 +3128,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 977,
+							"line": 975,
 							"character": 23
 						}
 					],
@@ -3149,7 +3149,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 976,
+							"line": 974,
 							"character": 27
 						}
 					],
@@ -3182,7 +3182,7 @@
 			"sources": [
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 970,
+					"line": 968,
 					"character": 49
 				}
 			]
@@ -3998,14 +3998,14 @@
 			]
 		},
 		{
-			"id": 2654,
+			"id": 2669,
 			"name": "\"@react-native-firebase/remote-config\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 2657,
+					"id": 2672,
 					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4028,7 +4028,7 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 2628
+								"id": 2634
 							},
 							{
 								"type": "reference",
@@ -4039,7 +4039,7 @@
 					}
 				},
 				{
-					"id": 2656,
+					"id": 2671,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4061,7 +4061,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 2655,
+					"id": 2670,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4095,9 +4095,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						2657,
-						2656,
-						2655
+						2672,
+						2671,
+						2670
 					]
 				}
 			],
@@ -4110,14 +4110,14 @@
 			]
 		},
 		{
-			"id": 2837,
+			"id": 2852,
 			"name": "\"@react-native-firebase/storage\"",
 			"kind": 2,
 			"kindString": "Module",
 			"flags": {},
 			"children": [
 				{
-					"id": 2840,
+					"id": 2855,
 					"name": "defaultExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4140,18 +4140,18 @@
 							{
 								"type": "reference",
 								"name": "Module",
-								"id": 2817
+								"id": 2832
 							},
 							{
 								"type": "reference",
 								"name": "Statics",
-								"id": 2675
+								"id": 2690
 							}
 						]
 					}
 				},
 				{
-					"id": 2839,
+					"id": 2854,
 					"name": "firebase",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4173,7 +4173,7 @@
 					"defaultValue": " firebaseNamedExport"
 				},
 				{
-					"id": 2838,
+					"id": 2853,
 					"name": "firebaseNamedExport",
 					"kind": 32,
 					"kindString": "Variable",
@@ -4207,9 +4207,9 @@
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						2840,
-						2839,
-						2838
+						2855,
+						2854,
+						2853
 					]
 				}
 			],
@@ -44645,7 +44645,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 939,
+									"line": 937,
 									"character": 15
 								}
 							]
@@ -44721,14 +44721,8 @@
 									"kindString": "Call signature",
 									"flags": {},
 									"comment": {
-										"shortText": "On Android, set a message handler function which is called when the app is in the background\nor terminated. A headless task is created, allowing you to access the React Native environment\nto perform tasks such as updating local storage, or sending a network request.",
-										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n> You can safely call this method on iOS without platform checks. It's a no-op on iOS.\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.getItem('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.setItem('messages', JSON.stringify(messageArray));\n});\n```\n",
-										"tags": [
-											{
-												"tag": "android",
-												"text": "\n"
-											}
-										]
+										"shortText": "Set a message handler function which is called when the app is in the background\nor terminated. In Android, a headless task is created, allowing you to access the React Native environment\nto perform tasks such as updating local storage, or sending a network request.",
+										"text": "This method must be called **outside** of your application lifecycle, e.g. alongside your\n`AppRegistry.registerComponent()` method call at the the entry point of your application code.\n\n\n#### Example\n\n```js\nfirebase.messaging().setBackgroundMessageHandler(async (remoteMessage) => {\n   // Update a users messages list using AsyncStorage\n   const currentMessages = await AsyncStorage.getItem('messages');\n   const messageArray = JSON.parse(currentMessages);\n   messageArray.push(remoteMessage.data);\n   await AsyncStorage.setItem('messages', JSON.stringify(messageArray));\n});\n```\n\n"
 									},
 									"parameters": [
 										{
@@ -44781,7 +44775,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 918,
+															"line": 916,
 															"character": 40
 														}
 													]
@@ -44798,7 +44792,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 918,
+									"line": 916,
 									"character": 31
 								}
 							]
@@ -44853,7 +44847,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 953,
+									"line": 951,
 									"character": 20
 								}
 							]
@@ -45001,7 +44995,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 966,
+									"line": 964,
 									"character": 24
 								}
 							]
@@ -48664,7 +48658,7 @@
 			},
 			"children": [
 				{
-					"id": 2628,
+					"id": 2634,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -48677,7 +48671,7 @@
 					},
 					"children": [
 						{
-							"id": 2653,
+							"id": 2668,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48705,8 +48699,8 @@
 							}
 						},
 						{
-							"id": 2630,
-							"name": "isDeveloperModeEnabled",
+							"id": 2636,
+							"name": "fetchTimeMillis",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -48728,7 +48722,7 @@
 							}
 						},
 						{
-							"id": 2631,
+							"id": 2638,
 							"name": "lastFetchStatus",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48769,7 +48763,7 @@
 							}
 						},
 						{
-							"id": 2629,
+							"id": 2637,
 							"name": "lastFetchTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -48792,7 +48786,114 @@
 							}
 						},
 						{
-							"id": 2632,
+							"id": 2635,
+							"name": "minimumFetchIntervalMillis",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Indicates the value in milliseconds set for the minimum interval that needs to elapse\nbefore a fetch request can again be made to the Remote Config backend."
+							},
+							"sources": [
+								{
+									"fileName": "packages/remote-config/lib/index.d.ts",
+									"line": 303,
+									"character": 30
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "number"
+							}
+						},
+						{
+							"id": 2639,
+							"name": "settings",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Provides an object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set\nusing setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }). A description of the properties\ncan be found above"
+							},
+							"sources": [
+								{
+									"fileName": "packages/remote-config/lib/index.d.ts",
+									"line": 325,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 2640,
+									"name": "__type",
+									"kind": 65536,
+									"kindString": "Type literal",
+									"flags": {},
+									"children": [
+										{
+											"id": 2641,
+											"name": "fetchTimeMillis",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "packages/remote-config/lib/index.d.ts",
+													"line": 325,
+													"character": 31
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "number"
+											}
+										},
+										{
+											"id": 2642,
+											"name": "minimumFetchIntervalMillis",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "packages/remote-config/lib/index.d.ts",
+													"line": 325,
+													"character": 67
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "number"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Variables",
+											"kind": 32,
+											"children": [
+												2641,
+												2642
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "packages/remote-config/lib/index.d.ts",
+											"line": 325,
+											"character": 13
+										}
+									]
+								}
+							}
+						},
+						{
+							"id": 2652,
 							"name": "activate",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48801,7 +48902,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2633,
+									"id": 2653,
 									"name": "activate",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48831,7 +48932,46 @@
 							]
 						},
 						{
-							"id": 2634,
+							"id": 2654,
+							"name": "ensureInitialized",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 2655,
+									"name": "ensureInitialized",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Ensures the last activated config are available to the getters.",
+										"text": "#### Example\n\n```js\nawait firebase.remoteConfig().ensureInitialized();\n// get remote config values\n```\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "null"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/remote-config/lib/index.d.ts",
+									"line": 403,
+									"character": 21
+								}
+							]
+						},
+						{
+							"id": 2656,
 							"name": "fetch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48840,7 +48980,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2635,
+									"id": 2657,
 									"name": "fetch",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48851,7 +48991,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2636,
+											"id": 2658,
 											"name": "expirationDurationSeconds",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -48897,7 +49037,7 @@
 							]
 						},
 						{
-							"id": 2637,
+							"id": 2659,
 							"name": "fetchAndActivate",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48906,7 +49046,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2638,
+									"id": 2660,
 									"name": "fetchAndActivate",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48936,7 +49076,7 @@
 							]
 						},
 						{
-							"id": 2639,
+							"id": 2661,
 							"name": "getAll",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48945,7 +49085,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2640,
+									"id": 2662,
 									"name": "getAll",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48957,7 +49097,7 @@
 									"type": {
 										"type": "reference",
 										"name": "ConfigValues",
-										"id": 2619
+										"id": 2625
 									}
 								}
 							],
@@ -48970,7 +49110,7 @@
 							]
 						},
 						{
-							"id": 2641,
+							"id": 2663,
 							"name": "getValue",
 							"kind": 2048,
 							"kindString": "Method",
@@ -48979,7 +49119,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2642,
+									"id": 2664,
 									"name": "getValue",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -48990,7 +49130,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2643,
+											"id": 2665,
 											"name": "key",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49020,7 +49160,51 @@
 							]
 						},
 						{
-							"id": 2644,
+							"id": 2666,
+							"name": "reset",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 2667,
+									"name": "reset",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.",
+										"tags": [
+											{
+												"tag": "android",
+												"text": "Android only - iOS returns Promise<null> but does not reset anything\n\n#### Example\n\n```js\nawait firebase.remoteConfig().reset();\n// get remote config values\n```\n\n"
+											}
+										]
+									},
+									"type": {
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "null"
+											}
+										]
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/remote-config/lib/index.d.ts",
+									"line": 486,
+									"character": 9
+								}
+							]
+						},
+						{
+							"id": 2643,
 							"name": "setConfigSettings",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49029,7 +49213,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2645,
+									"id": 2644,
 									"name": "setConfigSettings",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49040,7 +49224,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2646,
+											"id": 2645,
 											"name": "configSettings",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49051,7 +49235,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ConfigSettings",
-												"id": 2622
+												"id": 2628
 											}
 										}
 									],
@@ -49076,7 +49260,7 @@
 							]
 						},
 						{
-							"id": 2647,
+							"id": 2646,
 							"name": "setDefaults",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49085,7 +49269,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2648,
+									"id": 2647,
 									"name": "setDefaults",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49096,7 +49280,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2649,
+											"id": 2648,
 											"name": "defaults",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49107,7 +49291,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ConfigDefaults",
-												"id": 2625
+												"id": 2631
 											}
 										}
 									],
@@ -49132,7 +49316,7 @@
 							]
 						},
 						{
-							"id": 2650,
+							"id": 2649,
 							"name": "setDefaultsFromResource",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49141,7 +49325,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2651,
+									"id": 2650,
 									"name": "setDefaultsFromResource",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49152,7 +49336,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2652,
+											"id": 2651,
 											"name": "resourceName",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -49192,24 +49376,28 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2653,
-								2630,
-								2631,
-								2629
+								2668,
+								2636,
+								2638,
+								2637,
+								2635,
+								2639
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2632,
-								2634,
-								2637,
-								2639,
-								2641,
-								2644,
-								2647,
-								2650
+								2652,
+								2654,
+								2656,
+								2659,
+								2661,
+								2663,
+								2666,
+								2643,
+								2646,
+								2649
 							]
 						}
 					],
@@ -49229,7 +49417,7 @@
 					]
 				},
 				{
-					"id": 2625,
+					"id": 2631,
 					"name": "ConfigDefaults",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49242,7 +49430,7 @@
 					},
 					"indexSignature": [
 						{
-							"id": 2626,
+							"id": 2632,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
@@ -49253,7 +49441,7 @@
 							},
 							"parameters": [
 								{
-									"id": 2627,
+									"id": 2633,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -49292,7 +49480,7 @@
 					]
 				},
 				{
-					"id": 2622,
+					"id": 2628,
 					"name": "ConfigSettings",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49305,8 +49493,8 @@
 					},
 					"children": [
 						{
-							"id": 2623,
-							"name": "isDeveloperModeEnabled",
+							"id": 2630,
+							"name": "fetchTimeMillis",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -49338,8 +49526,8 @@
 							}
 						},
 						{
-							"id": 2624,
-							"name": "minimumFetchInterval",
+							"id": 2629,
+							"name": "minimumFetchIntervalMillis",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -49376,8 +49564,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2623,
-								2624
+								2630,
+								2629
 							]
 						}
 					],
@@ -49402,16 +49590,16 @@
 					},
 					"children": [
 						{
-							"id": 2617,
-							"name": "source",
-							"kind": 1024,
-							"kindString": "Property",
+							"id": 2619,
+							"name": "asBoolean",
+							"kind": 2048,
+							"kindString": "Method",
 							"flags": {
 								"isExported": true
 							},
 							"signatures": [
 								{
-									"id": 2606,
+									"id": 2620,
 									"name": "asBoolean",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49444,16 +49632,16 @@
 							]
 						},
 						{
-							"id": 2618,
-							"name": "value",
-							"kind": 1024,
-							"kindString": "Property",
+							"id": 2621,
+							"name": "asNumber",
+							"kind": 2048,
+							"kindString": "Method",
 							"flags": {
 								"isExported": true
 							},
 							"signatures": [
 								{
-									"id": 2608,
+									"id": 2622,
 									"name": "asNumber",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49477,7 +49665,7 @@
 							]
 						},
 						{
-							"id": 2609,
+							"id": 2623,
 							"name": "asString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49486,7 +49674,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2610,
+									"id": 2624,
 									"name": "asString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49510,7 +49698,7 @@
 							]
 						},
 						{
-							"id": 2603,
+							"id": 2617,
 							"name": "getSource",
 							"kind": 2048,
 							"kindString": "Method",
@@ -49519,7 +49707,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2604,
+									"id": 2618,
 									"name": "getSource",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -49561,8 +49749,10 @@
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2617,
-								2618
+								2619,
+								2621,
+								2623,
+								2617
 							]
 						}
 					],
@@ -49575,7 +49765,7 @@
 					]
 				},
 				{
-					"id": 2619,
+					"id": 2625,
 					"name": "ConfigValues",
 					"kind": 256,
 					"kindString": "Interface",
@@ -49588,7 +49778,7 @@
 					},
 					"indexSignature": [
 						{
-							"id": 2620,
+							"id": 2626,
 							"name": "__index",
 							"kind": 8192,
 							"kindString": "Index signature",
@@ -49599,7 +49789,7 @@
 							},
 							"parameters": [
 								{
-									"id": 2621,
+									"id": 2627,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -49948,17 +50138,17 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						2628
+						2634
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2625,
-						2622,
+						2631,
+						2628,
 						2616,
-						2619,
+						2625,
 						2604,
 						2613,
 						2609
@@ -49974,7 +50164,7 @@
 			]
 		},
 		{
-			"id": 2661,
+			"id": 2676,
 			"name": "FirebaseStorageTypes",
 			"kind": 2,
 			"kindString": "Module",
@@ -49993,7 +50183,7 @@
 			},
 			"children": [
 				{
-					"id": 2817,
+					"id": 2832,
 					"name": "Module",
 					"kind": 128,
 					"kindString": "Class",
@@ -50006,7 +50196,7 @@
 					},
 					"children": [
 						{
-							"id": 2836,
+							"id": 2851,
 							"name": "app",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50034,7 +50224,7 @@
 							}
 						},
 						{
-							"id": 2822,
+							"id": 2837,
 							"name": "maxDownloadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50058,7 +50248,7 @@
 							}
 						},
 						{
-							"id": 2826,
+							"id": 2841,
 							"name": "maxOperationRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50082,7 +50272,7 @@
 							}
 						},
 						{
-							"id": 2818,
+							"id": 2833,
 							"name": "maxUploadRetryTime",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50106,7 +50296,7 @@
 							}
 						},
 						{
-							"id": 2830,
+							"id": 2845,
 							"name": "ref",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50115,7 +50305,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2831,
+									"id": 2846,
 									"name": "ref",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50126,7 +50316,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2832,
+											"id": 2847,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50154,7 +50344,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2708
+										"id": 2723
 									}
 								}
 							],
@@ -50167,7 +50357,7 @@
 							]
 						},
 						{
-							"id": 2833,
+							"id": 2848,
 							"name": "refFromURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50176,7 +50366,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2834,
+									"id": 2849,
 									"name": "refFromURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50187,7 +50377,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2835,
+											"id": 2850,
 											"name": "url",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50204,7 +50394,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2708
+										"id": 2723
 									}
 								}
 							],
@@ -50217,7 +50407,7 @@
 							]
 						},
 						{
-							"id": 2823,
+							"id": 2838,
 							"name": "setMaxDownloadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50226,7 +50416,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2824,
+									"id": 2839,
 									"name": "setMaxDownloadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50237,7 +50427,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2825,
+											"id": 2840,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50272,7 +50462,7 @@
 							]
 						},
 						{
-							"id": 2827,
+							"id": 2842,
 							"name": "setMaxOperationRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50281,7 +50471,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2828,
+									"id": 2843,
 									"name": "setMaxOperationRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50292,7 +50482,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2829,
+											"id": 2844,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50327,7 +50517,7 @@
 							]
 						},
 						{
-							"id": 2819,
+							"id": 2834,
 							"name": "setMaxUploadRetryTime",
 							"kind": 2048,
 							"kindString": "Method",
@@ -50336,7 +50526,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2820,
+									"id": 2835,
 									"name": "setMaxUploadRetryTime",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -50347,7 +50537,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2821,
+											"id": 2836,
 											"name": "time",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -50387,21 +50577,21 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2836,
-								2822,
-								2826,
-								2818
+								2851,
+								2837,
+								2841,
+								2833
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2830,
-								2833,
-								2823,
-								2827,
-								2819
+								2845,
+								2848,
+								2838,
+								2842,
+								2834
 							]
 						}
 					],
@@ -50421,7 +50611,7 @@
 					]
 				},
 				{
-					"id": 2689,
+					"id": 2704,
 					"name": "FullMetadata",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50433,7 +50623,7 @@
 					},
 					"children": [
 						{
-							"id": 2691,
+							"id": 2706,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50457,7 +50647,7 @@
 							}
 						},
 						{
-							"id": 2699,
+							"id": 2714,
 							"name": "cacheControl",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50492,11 +50682,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.cacheControl",
-								"id": 2680
+								"id": 2695
 							}
 						},
 						{
-							"id": 2700,
+							"id": 2715,
 							"name": "contentDisposition",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50531,11 +50721,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentDisposition",
-								"id": 2681
+								"id": 2696
 							}
 						},
 						{
-							"id": 2701,
+							"id": 2716,
 							"name": "contentEncoding",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50570,11 +50760,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentEncoding",
-								"id": 2682
+								"id": 2697
 							}
 						},
 						{
-							"id": 2702,
+							"id": 2717,
 							"name": "contentLanguage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50609,11 +50799,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentLanguage",
-								"id": 2683
+								"id": 2698
 							}
 						},
 						{
-							"id": 2703,
+							"id": 2718,
 							"name": "contentType",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50648,11 +50838,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.contentType",
-								"id": 2684
+								"id": 2699
 							}
 						},
 						{
-							"id": 2704,
+							"id": 2719,
 							"name": "customMetadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50677,21 +50867,21 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 2705,
+											"id": 2720,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 2706,
+													"id": 2721,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 2707,
+															"id": 2722,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -50726,11 +50916,11 @@
 							"inheritedFrom": {
 								"type": "reference",
 								"name": "SettableMetadata.customMetadata",
-								"id": 2685
+								"id": 2700
 							}
 						},
 						{
-							"id": 2692,
+							"id": 2707,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50754,7 +50944,7 @@
 							}
 						},
 						{
-							"id": 2693,
+							"id": 2708,
 							"name": "generation",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50778,7 +50968,7 @@
 							}
 						},
 						{
-							"id": 2690,
+							"id": 2705,
 							"name": "md5Hash",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50810,7 +51000,7 @@
 							}
 						},
 						{
-							"id": 2694,
+							"id": 2709,
 							"name": "metageneration",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50834,7 +51024,7 @@
 							}
 						},
 						{
-							"id": 2695,
+							"id": 2710,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50858,7 +51048,7 @@
 							}
 						},
 						{
-							"id": 2696,
+							"id": 2711,
 							"name": "size",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50881,7 +51071,7 @@
 							}
 						},
 						{
-							"id": 2697,
+							"id": 2712,
 							"name": "timeCreated",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50905,7 +51095,7 @@
 							}
 						},
 						{
-							"id": 2698,
+							"id": 2713,
 							"name": "updated",
 							"kind": 1024,
 							"kindString": "Property",
@@ -50934,21 +51124,21 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2691,
-								2699,
-								2700,
-								2701,
-								2702,
-								2703,
-								2704,
-								2692,
-								2693,
-								2690,
-								2694,
-								2695,
-								2696,
-								2697,
-								2698
+								2706,
+								2714,
+								2715,
+								2716,
+								2717,
+								2718,
+								2719,
+								2707,
+								2708,
+								2705,
+								2709,
+								2710,
+								2711,
+								2712,
+								2713
 							]
 						}
 					],
@@ -50963,12 +51153,12 @@
 						{
 							"type": "reference",
 							"name": "SettableMetadata",
-							"id": 2679
+							"id": 2694
 						}
 					]
 				},
 				{
-					"id": 2810,
+					"id": 2825,
 					"name": "ListOptions",
 					"kind": 256,
 					"kindString": "Interface",
@@ -50980,7 +51170,7 @@
 					},
 					"children": [
 						{
-							"id": 2811,
+							"id": 2826,
 							"name": "maxResults",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51013,7 +51203,7 @@
 							}
 						},
 						{
-							"id": 2812,
+							"id": 2827,
 							"name": "pageToken",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51051,8 +51241,8 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2811,
-								2812
+								2826,
+								2827
 							]
 						}
 					],
@@ -51065,7 +51255,7 @@
 					]
 				},
 				{
-					"id": 2813,
+					"id": 2828,
 					"name": "ListResult",
 					"kind": 256,
 					"kindString": "Interface",
@@ -51077,7 +51267,7 @@
 					},
 					"children": [
 						{
-							"id": 2814,
+							"id": 2829,
 							"name": "items",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51099,12 +51289,12 @@
 								"elementType": {
 									"type": "reference",
 									"name": "Reference",
-									"id": 2708
+									"id": 2723
 								}
 							}
 						},
 						{
-							"id": 2815,
+							"id": 2830,
 							"name": "nextPageToken",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51136,7 +51326,7 @@
 							}
 						},
 						{
-							"id": 2816,
+							"id": 2831,
 							"name": "prefixes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51159,7 +51349,7 @@
 								"elementType": {
 									"type": "reference",
 									"name": "Reference",
-									"id": 2708
+									"id": 2723
 								}
 							}
 						}
@@ -51169,9 +51359,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2814,
-								2815,
-								2816
+								2829,
+								2830,
+								2831
 							]
 						}
 					],
@@ -51184,7 +51374,7 @@
 					]
 				},
 				{
-					"id": 2708,
+					"id": 2723,
 					"name": "Reference",
 					"kind": 256,
 					"kindString": "Interface",
@@ -51197,7 +51387,7 @@
 					},
 					"children": [
 						{
-							"id": 2709,
+							"id": 2724,
 							"name": "bucket",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51220,7 +51410,7 @@
 							}
 						},
 						{
-							"id": 2711,
+							"id": 2726,
 							"name": "fullPath",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51243,7 +51433,7 @@
 							}
 						},
 						{
-							"id": 2712,
+							"id": 2727,
 							"name": "name",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51266,7 +51456,7 @@
 							}
 						},
 						{
-							"id": 2710,
+							"id": 2725,
 							"name": "parent",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51289,7 +51479,7 @@
 									{
 										"type": "reference",
 										"name": "Reference",
-										"id": 2708
+										"id": 2723
 									},
 									{
 										"type": "intrinsic",
@@ -51299,7 +51489,7 @@
 							}
 						},
 						{
-							"id": 2713,
+							"id": 2728,
 							"name": "root",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51319,11 +51509,11 @@
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 2708
+								"id": 2723
 							}
 						},
 						{
-							"id": 2714,
+							"id": 2729,
 							"name": "storage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -51343,11 +51533,11 @@
 							"type": {
 								"type": "reference",
 								"name": "Module",
-								"id": 2817
+								"id": 2832
 							}
 						},
 						{
-							"id": 2717,
+							"id": 2732,
 							"name": "child",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51356,7 +51546,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2718,
+									"id": 2733,
 									"name": "child",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51367,7 +51557,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2719,
+											"id": 2734,
 											"name": "path",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51384,7 +51574,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Reference",
-										"id": 2708
+										"id": 2723
 									}
 								}
 							],
@@ -51397,7 +51587,7 @@
 							]
 						},
 						{
-							"id": 2720,
+							"id": 2735,
 							"name": "delete",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51406,7 +51596,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2721,
+									"id": 2736,
 									"name": "delete",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51436,7 +51626,7 @@
 							]
 						},
 						{
-							"id": 2722,
+							"id": 2737,
 							"name": "getDownloadURL",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51445,7 +51635,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2723,
+									"id": 2738,
 									"name": "getDownloadURL",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51475,7 +51665,7 @@
 							]
 						},
 						{
-							"id": 2724,
+							"id": 2739,
 							"name": "getMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51484,7 +51674,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2725,
+									"id": 2740,
 									"name": "getMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51500,7 +51690,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 2689
+												"id": 2704
 											}
 										]
 									}
@@ -51515,7 +51705,7 @@
 							]
 						},
 						{
-							"id": 2726,
+							"id": 2741,
 							"name": "list",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51524,7 +51714,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2727,
+									"id": 2742,
 									"name": "list",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51535,7 +51725,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2728,
+											"id": 2743,
 											"name": "options",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51548,7 +51738,7 @@
 											"type": {
 												"type": "reference",
 												"name": "ListOptions",
-												"id": 2810
+												"id": 2825
 											}
 										}
 									],
@@ -51559,7 +51749,7 @@
 											{
 												"type": "reference",
 												"name": "ListResult",
-												"id": 2813
+												"id": 2828
 											}
 										]
 									}
@@ -51574,7 +51764,7 @@
 							]
 						},
 						{
-							"id": 2729,
+							"id": 2744,
 							"name": "listAll",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51583,7 +51773,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2730,
+									"id": 2745,
 									"name": "listAll",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51599,7 +51789,7 @@
 											{
 												"type": "reference",
 												"name": "ListResult",
-												"id": 2813
+												"id": 2828
 											}
 										]
 									}
@@ -51614,7 +51804,7 @@
 							]
 						},
 						{
-							"id": 2738,
+							"id": 2753,
 							"name": "put",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51623,7 +51813,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2739,
+									"id": 2754,
 									"name": "put",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51634,7 +51824,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2740,
+											"id": 2755,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51661,7 +51851,7 @@
 											}
 										},
 										{
-											"id": 2741,
+											"id": 2756,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51674,14 +51864,14 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2679
+												"id": 2694
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2762
+										"id": 2777
 									}
 								}
 							],
@@ -51694,7 +51884,7 @@
 							]
 						},
 						{
-							"id": 2731,
+							"id": 2746,
 							"name": "putFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51703,7 +51893,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2732,
+									"id": 2747,
 									"name": "putFile",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51714,7 +51904,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2733,
+											"id": 2748,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51728,7 +51918,7 @@
 											}
 										},
 										{
-											"id": 2734,
+											"id": 2749,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51741,14 +51931,14 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2679
+												"id": 2694
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2762
+										"id": 2777
 									}
 								}
 							],
@@ -51761,7 +51951,7 @@
 							]
 						},
 						{
-							"id": 2742,
+							"id": 2757,
 							"name": "putString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51770,7 +51960,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2743,
+									"id": 2758,
 									"name": "putString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51781,7 +51971,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2744,
+											"id": 2759,
 											"name": "data",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51795,7 +51985,7 @@
 											}
 										},
 										{
-											"id": 2745,
+											"id": 2760,
 											"name": "format",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51828,7 +52018,7 @@
 											}
 										},
 										{
-											"id": 2746,
+											"id": 2761,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51841,14 +52031,14 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2679
+												"id": 2694
 											}
 										}
 									],
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2762
+										"id": 2777
 									}
 								}
 							],
@@ -51861,7 +52051,7 @@
 							]
 						},
 						{
-							"id": 2715,
+							"id": 2730,
 							"name": "toString",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51870,7 +52060,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2716,
+									"id": 2731,
 									"name": "toString",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51894,7 +52084,7 @@
 							]
 						},
 						{
-							"id": 2747,
+							"id": 2762,
 							"name": "updateMetadata",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51903,7 +52093,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2748,
+									"id": 2763,
 									"name": "updateMetadata",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51914,7 +52104,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2749,
+											"id": 2764,
 											"name": "metadata",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51925,7 +52115,7 @@
 											"type": {
 												"type": "reference",
 												"name": "SettableMetadata",
-												"id": 2679
+												"id": 2694
 											}
 										}
 									],
@@ -51936,7 +52126,7 @@
 											{
 												"type": "reference",
 												"name": "FullMetadata",
-												"id": 2689
+												"id": 2704
 											}
 										]
 									}
@@ -51951,7 +52141,7 @@
 							]
 						},
 						{
-							"id": 2735,
+							"id": 2750,
 							"name": "writeToFile",
 							"kind": 2048,
 							"kindString": "Method",
@@ -51960,7 +52150,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2736,
+									"id": 2751,
 									"name": "writeToFile",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -51971,7 +52161,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2737,
+											"id": 2752,
 											"name": "localFilePath",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -51988,7 +52178,7 @@
 									"type": {
 										"type": "reference",
 										"name": "Task",
-										"id": 2762
+										"id": 2777
 									}
 								}
 							],
@@ -52006,30 +52196,30 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2709,
-								2711,
-								2712,
-								2710,
-								2713,
-								2714
+								2724,
+								2726,
+								2727,
+								2725,
+								2728,
+								2729
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2717,
-								2720,
-								2722,
-								2724,
-								2726,
-								2729,
-								2738,
-								2731,
-								2742,
-								2715,
-								2747,
-								2735
+								2732,
+								2735,
+								2737,
+								2739,
+								2741,
+								2744,
+								2753,
+								2746,
+								2757,
+								2730,
+								2762,
+								2750
 							]
 						}
 					],
@@ -52042,7 +52232,7 @@
 					]
 				},
 				{
-					"id": 2679,
+					"id": 2694,
 					"name": "SettableMetadata",
 					"kind": 256,
 					"kindString": "Interface",
@@ -52055,7 +52245,7 @@
 					},
 					"children": [
 						{
-							"id": 2680,
+							"id": 2695,
 							"name": "cacheControl",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52089,7 +52279,7 @@
 							}
 						},
 						{
-							"id": 2681,
+							"id": 2696,
 							"name": "contentDisposition",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52123,7 +52313,7 @@
 							}
 						},
 						{
-							"id": 2682,
+							"id": 2697,
 							"name": "contentEncoding",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52157,7 +52347,7 @@
 							}
 						},
 						{
-							"id": 2683,
+							"id": 2698,
 							"name": "contentLanguage",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52191,7 +52381,7 @@
 							}
 						},
 						{
-							"id": 2684,
+							"id": 2699,
 							"name": "contentType",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52225,7 +52415,7 @@
 							}
 						},
 						{
-							"id": 2685,
+							"id": 2700,
 							"name": "customMetadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52250,21 +52440,21 @@
 									{
 										"type": "reflection",
 										"declaration": {
-											"id": 2686,
+											"id": 2701,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"indexSignature": [
 												{
-													"id": 2687,
+													"id": 2702,
 													"name": "__index",
 													"kind": 8192,
 													"kindString": "Index signature",
 													"flags": {},
 													"parameters": [
 														{
-															"id": 2688,
+															"id": 2703,
 															"name": "key",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -52303,12 +52493,12 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2680,
-								2681,
-								2682,
-								2683,
-								2684,
-								2685
+								2695,
+								2696,
+								2697,
+								2698,
+								2699,
+								2700
 							]
 						}
 					],
@@ -52323,12 +52513,12 @@
 						{
 							"type": "reference",
 							"name": "FullMetadata",
-							"id": 2689
+							"id": 2704
 						}
 					]
 				},
 				{
-					"id": 2675,
+					"id": 2690,
 					"name": "Statics",
 					"kind": 256,
 					"kindString": "Interface",
@@ -52341,7 +52531,7 @@
 					},
 					"children": [
 						{
-							"id": 2676,
+							"id": 2691,
 							"name": "StringFormat",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52362,11 +52552,11 @@
 							"type": {
 								"type": "reference",
 								"name": "StringFormat",
-								"id": 2662
+								"id": 2677
 							}
 						},
 						{
-							"id": 2678,
+							"id": 2693,
 							"name": "TaskEvent",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52387,11 +52577,11 @@
 							"type": {
 								"type": "reference",
 								"name": "TaskEvent",
-								"id": 2667
+								"id": 2682
 							}
 						},
 						{
-							"id": 2677,
+							"id": 2692,
 							"name": "TaskState",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52412,7 +52602,7 @@
 							"type": {
 								"type": "reference",
 								"name": "TaskState",
-								"id": 2669
+								"id": 2684
 							}
 						}
 					],
@@ -52421,9 +52611,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2676,
-								2678,
-								2677
+								2691,
+								2693,
+								2692
 							]
 						}
 					],
@@ -52436,7 +52626,7 @@
 					]
 				},
 				{
-					"id": 2662,
+					"id": 2677,
 					"name": "StringFormat",
 					"kind": 256,
 					"kindString": "Interface",
@@ -52449,7 +52639,7 @@
 					},
 					"children": [
 						{
-							"id": 2664,
+							"id": 2679,
 							"name": "BASE64",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52473,7 +52663,7 @@
 							}
 						},
 						{
-							"id": 2665,
+							"id": 2680,
 							"name": "BASE64URL",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52497,7 +52687,7 @@
 							}
 						},
 						{
-							"id": 2666,
+							"id": 2681,
 							"name": "DATA_URL",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52521,7 +52711,7 @@
 							}
 						},
 						{
-							"id": 2663,
+							"id": 2678,
 							"name": "RAW",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52550,10 +52740,10 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2664,
-								2665,
-								2666,
-								2663
+								2679,
+								2680,
+								2681,
+								2678
 							]
 						}
 					],
@@ -52566,7 +52756,7 @@
 					]
 				},
 				{
-					"id": 2762,
+					"id": 2777,
 					"name": "Task",
 					"kind": 256,
 					"kindString": "Interface",
@@ -52579,7 +52769,7 @@
 					},
 					"children": [
 						{
-							"id": 2763,
+							"id": 2778,
 							"name": "snapshot",
 							"kind": 1024,
 							"kindString": "Property",
@@ -52606,13 +52796,13 @@
 									{
 										"type": "reference",
 										"name": "TaskSnapshot",
-										"id": 2802
+										"id": 2817
 									}
 								]
 							}
 						},
 						{
-							"id": 2768,
+							"id": 2783,
 							"name": "cancel",
 							"kind": 2048,
 							"kindString": "Method",
@@ -52621,7 +52811,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2769,
+									"id": 2784,
 									"name": "cancel",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -52651,7 +52841,7 @@
 							]
 						},
 						{
-							"id": 2796,
+							"id": 2811,
 							"name": "catch",
 							"kind": 2048,
 							"kindString": "Method",
@@ -52660,14 +52850,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2797,
+									"id": 2812,
 									"name": "catch",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2798,
+											"id": 2813,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -52675,21 +52865,21 @@
 											"type": {
 												"type": "reflection",
 												"declaration": {
-													"id": 2799,
+													"id": 2814,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
 													"flags": {},
 													"signatures": [
 														{
-															"id": 2800,
+															"id": 2815,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
 															"flags": {},
 															"parameters": [
 																{
-																	"id": 2801,
+																	"id": 2816,
 																	"name": "a",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -52739,7 +52929,7 @@
 							]
 						},
 						{
-							"id": 2770,
+							"id": 2785,
 							"name": "on",
 							"kind": 2048,
 							"kindString": "Method",
@@ -52748,7 +52938,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2771,
+									"id": 2786,
 									"name": "on",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -52759,7 +52949,7 @@
 									},
 									"parameters": [
 										{
-											"id": 2772,
+											"id": 2787,
 											"name": "event",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -52773,7 +52963,7 @@
 											}
 										},
 										{
-											"id": 2773,
+											"id": 2788,
 											"name": "nextOrObserver",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -52789,7 +52979,7 @@
 													{
 														"type": "reference",
 														"name": "TaskSnapshotObserver",
-														"id": 2750
+														"id": 2765
 													},
 													{
 														"type": "intrinsic",
@@ -52798,21 +52988,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2774,
+															"id": 2789,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2775,
+																	"id": 2790,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2776,
+																			"id": 2791,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -52820,7 +53010,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2802
+																				"id": 2817
 																			}
 																		}
 																	],
@@ -52843,7 +53033,7 @@
 											}
 										},
 										{
-											"id": 2777,
+											"id": 2792,
 											"name": "error",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -52859,21 +53049,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2778,
+															"id": 2793,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2779,
+																	"id": 2794,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2780,
+																			"id": 2795,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -52908,7 +53098,7 @@
 											}
 										},
 										{
-											"id": 2781,
+											"id": 2796,
 											"name": "complete",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -52924,14 +53114,14 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2782,
+															"id": 2797,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2783,
+																	"id": 2798,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
@@ -52962,14 +53152,14 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 2784,
+											"id": 2799,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
 											"flags": {},
 											"signatures": [
 												{
-													"id": 2785,
+													"id": 2800,
 													"name": "__call",
 													"kind": 4096,
 													"kindString": "Call signature",
@@ -53000,7 +53190,7 @@
 							]
 						},
 						{
-							"id": 2764,
+							"id": 2779,
 							"name": "pause",
 							"kind": 2048,
 							"kindString": "Method",
@@ -53009,7 +53199,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2765,
+									"id": 2780,
 									"name": "pause",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -53039,7 +53229,7 @@
 							]
 						},
 						{
-							"id": 2766,
+							"id": 2781,
 							"name": "resume",
 							"kind": 2048,
 							"kindString": "Method",
@@ -53048,7 +53238,7 @@
 							},
 							"signatures": [
 								{
-									"id": 2767,
+									"id": 2782,
 									"name": "resume",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -53078,7 +53268,7 @@
 							]
 						},
 						{
-							"id": 2786,
+							"id": 2801,
 							"name": "then",
 							"kind": 2048,
 							"kindString": "Method",
@@ -53087,14 +53277,14 @@
 							},
 							"signatures": [
 								{
-									"id": 2787,
+									"id": 2802,
 									"name": "then",
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
 									"parameters": [
 										{
-											"id": 2788,
+											"id": 2803,
 											"name": "onFulfilled",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -53107,21 +53297,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2789,
+															"id": 2804,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2790,
+																	"id": 2805,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2791,
+																			"id": 2806,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -53129,7 +53319,7 @@
 																			"type": {
 																				"type": "reference",
 																				"name": "TaskSnapshot",
-																				"id": 2802
+																				"id": 2817
 																			}
 																		}
 																	],
@@ -53156,7 +53346,7 @@
 											}
 										},
 										{
-											"id": 2792,
+											"id": 2807,
 											"name": "onRejected",
 											"kind": 32768,
 											"kindString": "Parameter",
@@ -53169,21 +53359,21 @@
 													{
 														"type": "reflection",
 														"declaration": {
-															"id": 2793,
+															"id": 2808,
 															"name": "__type",
 															"kind": 65536,
 															"kindString": "Type literal",
 															"flags": {},
 															"signatures": [
 																{
-																	"id": 2794,
+																	"id": 2809,
 																	"name": "__call",
 																	"kind": 4096,
 																	"kindString": "Call signature",
 																	"flags": {},
 																	"parameters": [
 																		{
-																			"id": 2795,
+																			"id": 2810,
 																			"name": "a",
 																			"kind": 32768,
 																			"kindString": "Parameter",
@@ -53244,19 +53434,19 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2763
+								2778
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								2768,
-								2796,
-								2770,
-								2764,
-								2766,
-								2786
+								2783,
+								2811,
+								2785,
+								2779,
+								2781,
+								2801
 							]
 						}
 					],
@@ -53269,7 +53459,7 @@
 					]
 				},
 				{
-					"id": 2667,
+					"id": 2682,
 					"name": "TaskEvent",
 					"kind": 256,
 					"kindString": "Interface",
@@ -53282,7 +53472,7 @@
 					},
 					"children": [
 						{
-							"id": 2668,
+							"id": 2683,
 							"name": "STATE_CHANGED",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53311,7 +53501,7 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2668
+								2683
 							]
 						}
 					],
@@ -53324,7 +53514,7 @@
 					]
 				},
 				{
-					"id": 2802,
+					"id": 2817,
 					"name": "TaskSnapshot",
 					"kind": 256,
 					"kindString": "Interface",
@@ -53337,7 +53527,7 @@
 					},
 					"children": [
 						{
-							"id": 2803,
+							"id": 2818,
 							"name": "bytesTransferred",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53360,7 +53550,7 @@
 							}
 						},
 						{
-							"id": 2809,
+							"id": 2824,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53385,7 +53575,7 @@
 							}
 						},
 						{
-							"id": 2804,
+							"id": 2819,
 							"name": "metadata",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53405,11 +53595,11 @@
 							"type": {
 								"type": "reference",
 								"name": "FullMetadata",
-								"id": 2689
+								"id": 2704
 							}
 						},
 						{
-							"id": 2805,
+							"id": 2820,
 							"name": "ref",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53429,11 +53619,11 @@
 							"type": {
 								"type": "reference",
 								"name": "Reference",
-								"id": 2708
+								"id": 2723
 							}
 						},
 						{
-							"id": 2806,
+							"id": 2821,
 							"name": "state",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53477,7 +53667,7 @@
 							}
 						},
 						{
-							"id": 2807,
+							"id": 2822,
 							"name": "task",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53497,11 +53687,11 @@
 							"type": {
 								"type": "reference",
 								"name": "Task",
-								"id": 2762
+								"id": 2777
 							}
 						},
 						{
-							"id": 2808,
+							"id": 2823,
 							"name": "totalBytes",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53529,13 +53719,13 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2803,
-								2809,
-								2804,
-								2805,
-								2806,
-								2807,
-								2808
+								2818,
+								2824,
+								2819,
+								2820,
+								2821,
+								2822,
+								2823
 							]
 						}
 					],
@@ -53548,7 +53738,7 @@
 					]
 				},
 				{
-					"id": 2750,
+					"id": 2765,
 					"name": "TaskSnapshotObserver",
 					"kind": 256,
 					"kindString": "Interface",
@@ -53561,7 +53751,7 @@
 					},
 					"children": [
 						{
-							"id": 2759,
+							"id": 2774,
 							"name": "complete",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53581,14 +53771,14 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2760,
+									"id": 2775,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2761,
+											"id": 2776,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -53610,7 +53800,7 @@
 							}
 						},
 						{
-							"id": 2755,
+							"id": 2770,
 							"name": "error",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53630,7 +53820,7 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2756,
+									"id": 2771,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
@@ -53640,7 +53830,7 @@
 									},
 									"signatures": [
 										{
-											"id": 2757,
+											"id": 2772,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
@@ -53650,7 +53840,7 @@
 											},
 											"parameters": [
 												{
-													"id": 2758,
+													"id": 2773,
 													"name": "error",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -53679,7 +53869,7 @@
 							}
 						},
 						{
-							"id": 2751,
+							"id": 2766,
 							"name": "next",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53706,21 +53896,21 @@
 							"type": {
 								"type": "reflection",
 								"declaration": {
-									"id": 2752,
+									"id": 2767,
 									"name": "__type",
 									"kind": 65536,
 									"kindString": "Type literal",
 									"flags": {},
 									"signatures": [
 										{
-											"id": 2753,
+											"id": 2768,
 											"name": "__call",
 											"kind": 4096,
 											"kindString": "Call signature",
 											"flags": {},
 											"parameters": [
 												{
-													"id": 2754,
+													"id": 2769,
 													"name": "taskSnapshot",
 													"kind": 32768,
 													"kindString": "Parameter",
@@ -53728,7 +53918,7 @@
 													"type": {
 														"type": "reference",
 														"name": "TaskSnapshot",
-														"id": 2802
+														"id": 2817
 													}
 												}
 											],
@@ -53754,9 +53944,9 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2759,
-								2755,
-								2751
+								2774,
+								2770,
+								2766
 							]
 						}
 					],
@@ -53769,7 +53959,7 @@
 					]
 				},
 				{
-					"id": 2669,
+					"id": 2684,
 					"name": "TaskState",
 					"kind": 256,
 					"kindString": "Interface",
@@ -53782,7 +53972,7 @@
 					},
 					"children": [
 						{
-							"id": 2670,
+							"id": 2685,
 							"name": "CANCELLED",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53805,7 +53995,7 @@
 							}
 						},
 						{
-							"id": 2671,
+							"id": 2686,
 							"name": "ERROR",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53828,7 +54018,7 @@
 							}
 						},
 						{
-							"id": 2672,
+							"id": 2687,
 							"name": "PAUSED",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53851,7 +54041,7 @@
 							}
 						},
 						{
-							"id": 2673,
+							"id": 2688,
 							"name": "RUNNING",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53874,7 +54064,7 @@
 							}
 						},
 						{
-							"id": 2674,
+							"id": 2689,
 							"name": "SUCCESS",
 							"kind": 1024,
 							"kindString": "Property",
@@ -53902,11 +54092,11 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								2670,
-								2671,
-								2672,
-								2673,
-								2674
+								2685,
+								2686,
+								2687,
+								2688,
+								2689
 							]
 						}
 					],
@@ -53924,25 +54114,25 @@
 					"title": "Classes",
 					"kind": 128,
 					"children": [
-						2817
+						2832
 					]
 				},
 				{
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2689,
-						2810,
-						2813,
-						2708,
-						2679,
-						2675,
-						2662,
-						2762,
-						2667,
-						2802,
-						2750,
-						2669
+						2704,
+						2825,
+						2828,
+						2723,
+						2694,
+						2690,
+						2677,
+						2777,
+						2682,
+						2817,
+						2765,
+						2684
 					]
 				}
 			],
@@ -63415,12 +63605,12 @@
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 2628
+							"id": 2634
 						},
 						{
 							"type": "reference",
 							"name": "Module",
-							"id": 2817
+							"id": 2832
 						}
 					]
 				},
@@ -64290,7 +64480,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1008,
+									"line": 1006,
 									"character": 43
 								}
 							],
@@ -64320,7 +64510,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1009,
+									"line": 1007,
 									"character": 45
 								}
 							],
@@ -64350,7 +64540,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1010,
+									"line": 1008,
 									"character": 40
 								}
 							],
@@ -64380,7 +64570,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1007,
+									"line": 1005,
 									"character": 31
 								}
 							],
@@ -64418,7 +64608,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1019,
+									"line": 1017,
 									"character": 51
 								}
 							],
@@ -64674,7 +64864,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 1006,
+							"line": 1004,
 							"character": 30
 						},
 						{
@@ -65502,7 +65692,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 1005,
+					"line": 1003,
 					"character": 29
 				},
 				{
@@ -66841,7 +67031,7 @@
 			]
 		},
 		{
-			"id": 2845,
+			"id": 2860,
 			"name": "interstitial",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66863,7 +67053,7 @@
 			"defaultValue": " admob.InterstitialAd.createForAdRequest('foo', {\n  keywords: ['test'],\n})"
 		},
 		{
-			"id": 2850,
+			"id": 2865,
 			"name": "metric",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66885,7 +67075,7 @@
 			"defaultValue": " firebase.perf().newHttpMetric('foo', 'GET')"
 		},
 		{
-			"id": 2848,
+			"id": 2863,
 			"name": "r",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66907,7 +67097,7 @@
 			"defaultValue": " firebase.database().ref('foo')"
 		},
 		{
-			"id": 2851,
+			"id": 2867,
 			"name": "ref",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66924,12 +67114,12 @@
 			"type": {
 				"type": "reference",
 				"name": "Reference",
-				"id": 2708
+				"id": 2723
 			},
 			"defaultValue": " firebase.storage().ref('foo')"
 		},
 		{
-			"id": 2846,
+			"id": 2861,
 			"name": "rewardedAd",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66951,7 +67141,7 @@
 			"defaultValue": " admob.RewardedAd.createForAdRequest('foo', {\n  keywords: ['test'],\n})"
 		},
 		{
-			"id": 2852,
+			"id": 2868,
 			"name": "task",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66968,12 +67158,12 @@
 			"type": {
 				"type": "reference",
 				"name": "Task",
-				"id": 2762
+				"id": 2777
 			},
 			"defaultValue": " firebase\n  .storage()\n  .ref('foo')\n  .putString('foo')"
 		},
 		{
-			"id": 2849,
+			"id": 2864,
 			"name": "trace",
 			"kind": 32,
 			"kindString": "Variable",
@@ -66995,7 +67185,7 @@
 			"defaultValue": " firebase.perf().newTrace('foo')"
 		},
 		{
-			"id": 2847,
+			"id": 2862,
 			"name": "u",
 			"kind": 32,
 			"kindString": "Variable",
@@ -67026,7 +67216,7 @@
 			"defaultValue": " firebase.auth().currentUser"
 		},
 		{
-			"id": 2852,
+			"id": 2866,
 			"name": "value",
 			"kind": 32,
 			"kindString": "Variable",
@@ -67043,7 +67233,7 @@
 			"type": {
 				"type": "reference",
 				"name": "ConfigValue",
-				"id": 2602
+				"id": 2616
 			},
 			"defaultValue": " firebase.remoteConfig().getValue('example')"
 		}
@@ -67068,8 +67258,8 @@
 				2138,
 				2486,
 				2595,
-				2654,
-				2837,
+				2669,
+				2852,
 				126,
 				312,
 				612,
@@ -67084,7 +67274,7 @@
 				1926,
 				2513,
 				2603,
-				2661,
+				2676,
 				2273,
 				2147,
 				1,
@@ -67095,14 +67285,15 @@
 			"title": "Variables",
 			"kind": 32,
 			"children": [
-				2845,
-				2850,
-				2848,
-				2851,
-				2846,
-				2852,
-				2849,
-				2847
+				2860,
+				2865,
+				2863,
+				2867,
+				2861,
+				2868,
+				2864,
+				2862,
+				2866
 			]
 		}
 	]
