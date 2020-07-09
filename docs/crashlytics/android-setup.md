@@ -5,7 +5,7 @@ description: Additional Android steps for Crashlytics integration
 
 > If you're migrating from Fabric, make sure you remove the `fabric.properties` file from your Android project. If you do not do this you will not receive crash reports on the Firebase console.
 
-# Adding Fabric Gradle Tools
+# Adding Firebase Crashlytics Gradle Tools
 
 These steps are required, if you do not add these your app will most likely crash at startup with the following Error:
 

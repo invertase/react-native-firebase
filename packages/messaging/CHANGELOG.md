@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.1...@react-native-firebase/messaging@7.4.2) (2020-07-09)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.0...@react-native-firebase/messaging@7.4.1) (2020-07-07)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.4.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.3.2...@react-native-firebase/messaging@7.4.0) (2020-07-07)
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+
+## [7.3.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.3.1...@react-native-firebase/messaging@7.3.2) (2020-07-06)
+
+### Bug Fixes
+
+- **types:** add sentTime to FirebaseMessagingTypes.RemoteMessage ([#3885](https://github.com/invertase/react-native-firebase/issues/3885)) ([0b87a15](https://github.com/invertase/react-native-firebase/commit/0b87a15de04bbde065a4fd76ce8ab7a5c04f5b13))
+
+## [7.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.3.0...@react-native-firebase/messaging@7.3.1) (2020-07-05)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.2.1...@react-native-firebase/messaging@7.3.0) (2020-07-05)
+
+### Features
+
+- **messaging:** Call original delegate when intercepting notification response on iOS ([b17df84](https://github.com/invertase/react-native-firebase/commit/b17df846d291cd6f507680f6415e78392c32b0b0))
+
 ## [7.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.2.0...@react-native-firebase/messaging@7.2.1) (2020-06-30)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

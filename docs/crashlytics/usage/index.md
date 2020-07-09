@@ -22,10 +22,9 @@ yarn add @react-native-firebase/crashlytics
 cd ios/ && pod install
 ```
 
-Once installed, you must complete the following additional setup steps for both Android & iOS:
+Once installed, you must complete the following additional setup steps for Android:
 
 - [Android Additional Setup](/crashlytics/android-setup).
-- [iOS Additional Setup](/crashlytics/ios-setup).
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
