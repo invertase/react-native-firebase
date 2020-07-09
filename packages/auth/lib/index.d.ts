@@ -1191,6 +1191,27 @@ export namespace FirebaseAuthTypes {
     set languageCode(code: string);
 
     /**
+     * Gets the current language code.
+     *
+     * #### Example
+     *
+     * ```js
+     * const language = firebase.auth().languageCode;
+     * ```
+     * Sets the language code.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Set language to French
+     * firebase.auth().languageCode = 'fr';
+     * ```
+     *
+     * @param code An ISO language code.
+     *
+     */
+    languageCode: string;
+    /**
      * Returns the current `AuthSettings`.
      */
     settings: AuthSettings;
