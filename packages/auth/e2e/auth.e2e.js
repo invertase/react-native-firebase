@@ -821,6 +821,23 @@ describe('auth()', () => {
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
+
+      if (Platform.ios) {
+        await firebase.auth().setLanguageCode(null);
+        if (firebase.auth().languageCode !== null) {
+          throw new Error("expected 'languageCode' to be a string or null value");
+        }
+      }
+
+      if (Platform.android) {
+        try {
+          await firebase.auth().setLanguageCode(null);
+          return Promise.reject('It did not error');
+        } catch (e) {
+          e.message.should.containEql("expected 'languageCode' to be a string");
+        }
+      }
+
       await firebase.auth().setLanguageCode('en');
     });
   });

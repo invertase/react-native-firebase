@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isBoolean } from '@react-native-firebase/app/lib/common';
+import { isAndroid, isBoolean, isString, isNull } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -125,7 +125,21 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   async setLanguageCode(code) {
-    await this.native.setLanguageCode(code);
+    if (isAndroid) {
+      if (!isString(code)) {
+        throw new Error(
+          "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string",
+        );
+      }
+    } else {
+      if (!isString(code) && !isNull(code)) {
+        throw new Error(
+          "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
+        );
+      }
+    }
+
+    await this.native.setLanguageCode(null);
     this._languageCode = code;
   }
 
