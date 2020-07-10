@@ -208,6 +208,34 @@ admin.messaging().sendToDevice(
 );
 ```
 
+For iOS specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
+
+```js
+admin.messaging().send({
+    data: {
+      //some data
+    },
+    apns: {
+      payload: {
+        aps: {
+          contentAvailable: true
+        }
+      },
+      headers: {
+        'apns-push-type': 'background',
+        'apns-priority': '5',
+        'apns-topic': '' // your app bundle identifier
+      }
+    },
+    //must include token, topic, or condition
+    //token: //device token
+    //topic: //notification topic
+    //condition: //notification condition
+});
+```
+
+View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
+
 These options can be applied to all FCM messages. View the [Server Integration](/messaging/server-integration) documentation
 to learn more about other available SDKs.
 

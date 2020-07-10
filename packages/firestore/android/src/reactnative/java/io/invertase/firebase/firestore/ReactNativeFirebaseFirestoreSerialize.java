@@ -50,7 +50,8 @@ import javax.annotation.Nullable;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
-class ReactNativeFirebaseFirestoreSerialize {
+// public access for native re-use in brownfield apps
+public class ReactNativeFirebaseFirestoreSerialize {
   private static final String TAG = "FirestoreSerialize";
 
   // Bridge Map
@@ -386,12 +387,13 @@ class ReactNativeFirebaseFirestoreSerialize {
 
   /**
    * Converts a ReadableMap to a usable format for Firestore
+   * (public access for native re-use in brownfield apps)
    *
    * @param firestore   FirebaseFirestore
    * @param readableMap ReadableMap
    * @return Map<>
    */
-  static Map<String, Object> parseReadableMap(
+  public static Map<String, Object> parseReadableMap(
     FirebaseFirestore firestore,
     @Nullable ReadableMap readableMap
   ) {
