@@ -139,7 +139,7 @@ class FirebaseAuthModule extends FirebaseModule {
       }
     }
 
-    await this.native.setLanguageCode(null);
+    await this.native.setLanguageCode(code);
     this._languageCode = code;
   }
 
