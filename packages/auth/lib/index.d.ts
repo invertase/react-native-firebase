@@ -1203,8 +1203,9 @@ export namespace FirebaseAuthTypes {
      * ```
      *
      * @param code An ISO language code.
+     * @ios only allows 'null' value
      */
-    setLanguageCode(languageCode: string);
+    setLanguageCode(languageCode: string | null);
     /**
      * Listen for changes in the users auth state (logging in and out).
      * This method returns a unsubscribe function to stop listening to events.
