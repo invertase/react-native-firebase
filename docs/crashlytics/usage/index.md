@@ -62,12 +62,12 @@ async function onSignIn(user) {
   crashlytics().log('User signed in.');
   await Promise.all([
     crashlytics().setUserId(user.uid),
-    crashlytics().setUserName(user.username),
-    crashlytics().setUserEmail(user.email),
     crashlytics().setAttribute('credits', String(user.credits)),
     crashlytics().setAttributes({
       role: 'admin',
       followers: '13',
+      email: user.email,
+      username: user.username
     }),
   ]);
 }

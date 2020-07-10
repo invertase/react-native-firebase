@@ -15,44 +15,54 @@
  */
 import struct from '@react-native-firebase/app/lib/common/struct';
 
-export const AddToCart = struct({
-  item_id: 'string',
-  item_name: 'string',
-  item_category: 'string',
-  quantity: 'number',
-  price: 'number?',
+const Item = struct({
+  item_brand: 'string?',
+  item_id: 'string?',
+  item_name: 'string?',
+  item_category: 'string?',
+  item_category2: 'string?',
+  item_category3: 'string?',
+  item_category4: 'string?',
+  item_category5: 'string?',
+  item_list_id: 'string?',
+  item_list_name: 'string?',
+  item_location_id: 'string?',
+  item_variant: 'string?',
+});
+
+export const AddPaymentInfo = struct({
+  items: struct.optional([Item]),
   value: 'number?',
   currency: 'string?',
-  origin: 'string?',
-  item_location_id: 'string?',
-  destination: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
+  coupon: 'string?',
+  payment_type: 'string?',
+});
+
+export const AddShippingInfo = struct({
+  items: struct.optional([Item]),
+  value: 'number?',
+  currency: 'string?',
+  coupon: 'string?',
+  shipping_tier: 'string?',
+});
+
+export const AddToCart = struct({
+  items: struct.optional([Item]),
+  value: 'number?',
+  currency: 'string?',
 });
 
 export const AddToWishlist = struct({
-  item_id: 'string',
-  item_name: 'string',
-  item_category: 'string',
-  quantity: 'number',
-  price: 'number?',
+  items: struct.optional([Item]),
   value: 'number?',
   currency: 'string?',
-  item_location_id: 'string?',
 });
 
 export const BeginCheckout = struct({
+  items: struct.optional([Item]),
   value: 'number?',
   currency: 'string?',
-  transaction_id: 'string?',
-  number_of_nights: 'number?',
-  number_of_rooms: 'number?',
-  number_of_passengers: 'number?',
-  origin: 'string?',
-  destination: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
-  travel_class: 'shortDate?',
+  coupon: 'string?',
 });
 
 export const CampaignDetails = struct({
@@ -68,24 +78,6 @@ export const CampaignDetails = struct({
 export const EarnVirtualCurrency = struct({
   virtual_currency_name: 'string',
   value: 'number',
-});
-
-export const EcommercePurchase = struct({
-  currency: 'string?',
-  value: 'number?',
-  transaction_id: 'string?',
-  tax: 'number?',
-  shipping: 'number?',
-  coupon: 'string?',
-  location: 'string?',
-  number_of_nights: 'number?',
-  number_of_rooms: 'number?',
-  number_of_passengers: 'number?',
-  origin: 'string?',
-  destination: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
-  travel_class: 'string?',
 });
 
 export const GenerateLead = struct({
@@ -121,36 +113,32 @@ export const PostScore = struct({
   character: 'string?',
 });
 
-export const PresentOffer = struct({
-  item_id: 'string',
-  item_name: 'string',
-  item_category: 'string',
-  quantity: 'number',
-  price: 'number?',
-  value: 'number?',
+export const Refund = struct({
+  affiliation: 'string?',
+  coupon: 'string?',
   currency: 'string?',
-  item_location_id: 'string?',
+  items: struct.optional([Item]),
+  shipping: 'number?',
+  tax: 'number?',
+  value: 'number?',
+  transaction_id: 'string?',
 });
 
-export const PurchaseRefund = struct({
+export const Purchase = struct({
+  affiliation: 'string?',
+  coupon: 'string?',
   currency: 'string?',
+  items: struct.optional([Item]),
+  shipping: 'number?',
+  tax: 'number?',
   value: 'number?',
   transaction_id: 'string?',
 });
 
 export const RemoveFromCart = struct({
-  item_id: 'string',
-  item_name: 'string',
-  item_category: 'string',
-  quantity: 'number?',
-  value: 'number?',
-  price: 'number?',
   currency: 'string?',
-  item_location_id: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
-  origin: 'string?',
-  destination: 'string?',
+  items: struct.optional([Item]),
+  value: 'number?',
 });
 
 export const Search = struct({
@@ -170,6 +158,22 @@ export const SelectContent = struct({
   item_id: 'string',
 });
 
+export const SelectItem = struct({
+  items: struct.optional([Item]),
+  item_list_id: 'string?',
+  item_list_name: 'string?',
+  content_type: 'string?',
+});
+
+export const SelectPromotion = struct({
+  creative_name: 'string',
+  creative_slot: 'string',
+  items: struct.optional([Item]),
+  location_id: 'string',
+  promotion_id: 'string',
+  promotion_name: 'string',
+});
+
 export const SetCheckoutOption = struct({
   checkout_step: 'number',
   checkout_option: 'string',
@@ -178,6 +182,7 @@ export const SetCheckoutOption = struct({
 export const Share = struct({
   content_type: 'string',
   item_id: 'string',
+  method: 'string',
 });
 
 export const SignUp = struct({
@@ -194,29 +199,31 @@ export const UnlockAchievement = struct({
   achievement_id: 'string',
 });
 
-export const ViewItem = struct({
-  item_id: 'string',
-  item_name: 'string',
-  item_category: 'string',
-  item_location_id: 'string?',
-  price: 'number?',
-  quantity: 'number?',
+export const ViewCart = struct({
   currency: 'string?',
+  items: struct.optional([Item]),
   value: 'number?',
-  flight_number: 'string?',
-  number_of_passengers: 'number?',
-  number_of_nights: 'number?',
-  number_of_rooms: 'number?',
-  origin: 'string?',
-  destination: 'string?',
-  start_date: 'shortDate?',
-  end_date: 'shortDate?',
-  search_term: 'string?',
-  travel_class: 'string?',
+});
+
+export const ViewItem = struct({
+  currency: 'string?',
+  items: struct.optional([Item]),
+  value: 'number?',
 });
 
 export const ViewItemList = struct({
-  item_category: 'string',
+  items: struct.optional([Item]),
+  item_list_id: 'string?',
+  item_list_name: 'string?',
+});
+
+export const ViewPromotion = struct({
+  items: struct.optional([Item]),
+  location_id: 'string?',
+  creative_name: 'string?',
+  creative_slot: 'string?',
+  promotion_id: 'string?',
+  promotion_name: 'string?',
 });
 
 export const ViewSearchResults = struct({
