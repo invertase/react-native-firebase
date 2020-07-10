@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.0.10...react-native-firebase-tests@8.1.0) (2020-07-10)
+
+
+### Features
+
+* **auth:** verifyBeforeUpdateEmail API ([#3862](https://github.com/invertase/react-native-firebase/issues/3862)) ([aaff624](https://github.com/invertase/react-native-firebase/commit/aaff62402544d8783007b6b47b8406019cc48c84))
+
+
+
+
+
 ## [8.0.10](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.0.9...react-native-firebase-tests@8.0.10) (2020-07-09)
 
 **Note:** Version bump only for package react-native-firebase-tests
