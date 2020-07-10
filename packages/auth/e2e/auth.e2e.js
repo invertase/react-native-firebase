@@ -812,16 +812,16 @@ describe('auth()', () => {
   });
 
   describe('languageCode', () => {
-    it('it should change the language code', () => {
-      firebase.auth().languageCode = 'en';
+    it('it should change the language code', async () => {
+      await firebase.auth().setLanguageCode('en');
       if (firebase.auth().languageCode !== 'en') {
         throw new Error('Expected language code to be "en".');
       }
-      firebase.auth().languageCode = 'fr';
+      await firebase.auth().setLanguageCode('fr');
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-      firebase.auth().languageCode = 'en';
+      await firebase.auth().setLanguageCode('en');
     });
   });
 

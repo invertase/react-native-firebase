@@ -95,11 +95,6 @@ class FirebaseAuthModule extends FirebaseModule {
     return this._languageCode;
   }
 
-  set languageCode(code) {
-    this._languageCode = code;
-    this.native.setLanguageCode(code);
-  }
-
   get settings() {
     if (!this._settings) {
       this._settings = new Settings(this);
@@ -127,6 +122,11 @@ class FirebaseAuthModule extends FirebaseModule {
       additionalUserInfo: userCredential.additionalUserInfo,
       user,
     };
+  }
+
+  async setLanguageCode(code) {
+    await this.native.setLanguageCode(code);
+    this._languageCode = code;
   }
 
   onAuthStateChanged(listener) {

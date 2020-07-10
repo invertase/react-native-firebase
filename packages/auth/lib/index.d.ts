@@ -1166,24 +1166,13 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Gets the current language code.
+     * Returns the current language code.
      *
      * #### Example
      *
      * ```js
      * const language = firebase.auth().languageCode;
      * ```
-     * Sets the language code.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Set language to French
-     * firebase.auth().languageCode = 'fr';
-     * ```
-     *
-     * @param code An ISO language code.
-     *
      */
     languageCode: string;
     /**
@@ -1203,7 +1192,19 @@ export namespace FirebaseAuthTypes {
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
-
+    /**
+     * Sets the language code.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Set language to French
+     * await firebase.auth().setLanguageCode('fr');
+     * ```
+     *
+     * @param code An ISO language code.
+     */
+    setLanguageCode(languageCode: string);
     /**
      * Listen for changes in the users auth state (logging in and out).
      * This method returns a unsubscribe function to stop listening to events.
