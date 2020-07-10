@@ -1,6 +1,6 @@
 {
 	"id": 0,
-	"name": "@react-native-firebase/app - v8.0.1",
+	"name": "@react-native-firebase/app - v8.2.0",
 	"kind": 0,
 	"flags": {},
 	"children": [
@@ -937,7 +937,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 1000,
+											"line": 998,
 											"character": 15
 										}
 									]
@@ -1218,7 +1218,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 999,
+									"line": 997,
 									"character": 25
 								},
 								{
@@ -1574,7 +1574,7 @@
 									"sources": [
 										{
 											"fileName": "packages/messaging/lib/index.d.ts",
-											"line": 993,
+											"line": 991,
 											"character": 15
 										}
 									],
@@ -1869,7 +1869,7 @@
 								},
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 992,
+									"line": 990,
 									"character": 20
 								},
 								{
@@ -1968,7 +1968,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 990,
+							"line": 988,
 							"character": 31
 						},
 						{
@@ -2149,7 +2149,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 989,
+					"line": 987,
 					"character": 43
 				},
 				{
@@ -3094,7 +3094,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 979,
+							"line": 977,
 							"character": 21
 						}
 					],
@@ -3128,7 +3128,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 977,
+							"line": 975,
 							"character": 23
 						}
 					],
@@ -3149,7 +3149,7 @@
 					"sources": [
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 976,
+							"line": 974,
 							"character": 27
 						}
 					],
@@ -3182,7 +3182,7 @@
 			"sources": [
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 970,
+					"line": 968,
 					"character": 49
 				}
 			]
@@ -15769,7 +15769,7 @@
 							}
 						},
 						{
-							"id": 808,
+							"id": 805,
 							"name": "currentUser",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15803,8 +15803,8 @@
 							}
 						},
 						{
-							"id": 807,
-							"name": "settings",
+							"id": 803,
+							"name": "languageCode",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -15822,72 +15822,21 @@
 								}
 							],
 							"type": {
-								"type": "reference",
-								"name": "AuthSettings",
-								"id": 749
+								"type": "intrinsic",
+								"name": "string"
 							}
 						},
 						{
-							"id": 803,
-							"name": "languageCode",
-							"kind": 262144,
-							"kindString": "Accessor",
+							"id": 804,
+							"name": "settings",
+							"kind": 1024,
+							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
 							"comment": {
 								"shortText": "Returns the current `AuthSettings`."
 							},
-							"getSignature": [
-								{
-									"id": 804,
-									"name": "__get",
-									"kind": 524288,
-									"kindString": "Get signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Gets the current language code.",
-										"text": "#### Example\n\n```js\nconst language = firebase.auth().languageCode;\n```\n"
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"setSignature": [
-								{
-									"id": 805,
-									"name": "__set",
-									"kind": 1048576,
-									"kindString": "Set signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Sets the language code.",
-										"text": "#### Example\n\n```js\n// Set language to French\nfirebase.auth().languageCode = 'fr';\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 806,
-											"name": "code",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"shortText": "An ISO language code.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
-									}
-								}
-							],
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
@@ -15898,7 +15847,7 @@
 							"type": {
 								"type": "reference",
 								"name": "AuthSettings",
-								"id": 730
+								"id": 749
 							}
 						},
 						{
@@ -16779,6 +16728,52 @@
 							]
 						},
 						{
+							"id": 806,
+							"name": "setLanguageCode",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 807,
+									"name": "setLanguageCode",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the language code.",
+										"text": "#### Example\n\n```js\n// Set language to French\nawait firebase.auth().setLanguageCode('fr');\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 808,
+											"name": "languageCode",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"type": {
+												"type": "intrinsic",
+												"name": "string"
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/auth/lib/index.d.ts",
+									"line": 1207,
+									"character": 19
+								}
+							]
+						},
+						{
 							"id": 826,
 							"name": "signInAnonymously",
 							"kind": 2048,
@@ -17544,15 +17539,9 @@
 							"kind": 1024,
 							"children": [
 								885,
-								808,
-								807
-							]
-						},
-						{
-							"title": "Accessors",
-							"kind": 262144,
-							"children": [
-								803
+								805,
+								803,
+								804
 							]
 						},
 						{
@@ -17570,6 +17559,7 @@
 								819,
 								851,
 								855,
+								806,
 								826,
 								848,
 								845,
@@ -44645,7 +44635,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 939,
+									"line": 937,
 									"character": 15
 								}
 							]
@@ -44775,7 +44765,7 @@
 													"sources": [
 														{
 															"fileName": "packages/messaging/lib/index.d.ts",
-															"line": 918,
+															"line": 916,
 															"character": 40
 														}
 													]
@@ -44792,7 +44782,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 918,
+									"line": 916,
 									"character": 31
 								}
 							]
@@ -44847,7 +44837,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 953,
+									"line": 951,
 									"character": 20
 								}
 							]
@@ -44995,7 +44985,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 966,
+									"line": 964,
 									"character": 24
 								}
 							]
@@ -64198,7 +64188,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1008,
+									"line": 1006,
 									"character": 43
 								}
 							],
@@ -64228,7 +64218,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1009,
+									"line": 1007,
 									"character": 45
 								}
 							],
@@ -64258,7 +64248,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1010,
+									"line": 1008,
 									"character": 40
 								}
 							],
@@ -64288,7 +64278,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1007,
+									"line": 1005,
 									"character": 31
 								}
 							],
@@ -64326,7 +64316,7 @@
 							"sources": [
 								{
 									"fileName": "packages/messaging/lib/index.d.ts",
-									"line": 1019,
+									"line": 1017,
 									"character": 51
 								}
 							],
@@ -64582,7 +64572,7 @@
 						},
 						{
 							"fileName": "packages/messaging/lib/index.d.ts",
-							"line": 1006,
+							"line": 1004,
 							"character": 30
 						},
 						{
@@ -65410,7 +65400,7 @@
 				},
 				{
 					"fileName": "packages/messaging/lib/index.d.ts",
-					"line": 1005,
+					"line": 1003,
 					"character": 29
 				},
 				{
