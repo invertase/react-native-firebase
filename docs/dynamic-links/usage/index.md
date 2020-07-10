@@ -72,7 +72,7 @@ To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple d
 
 ### Dynamic Links With Custom Domains
 
-If you have set up a [custom domain](https://firebase.google.com/docs/dynamic-links/custom-domains) for your Firebase project, you must add the dynamic link url prefix into your iOS project's `info.plist` file by using the  `FirebaseDynamicLinksCustomDomains` key. You can add multiple urls as well.
+If you have set up a [custom domain](https://firebase.google.com/docs/dynamic-links/custom-domains) for your Firebase project, you must add the dynamic link URL prefix into your iOS project's `info.plist` file by using the  `FirebaseDynamicLinksCustomDomains` key. You can add multiple URLs as well.
 
 Example:
 
