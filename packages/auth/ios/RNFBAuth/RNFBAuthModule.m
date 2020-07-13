@@ -329,6 +329,34 @@ RCT_EXPORT_METHOD(sendEmailVerification:
   }
 }
 
+RCT_EXPORT_METHOD(verifyBeforeUpdateEmail:
+  (FIRApp *) firebaseApp
+    :(NSString *) email
+    :(NSDictionary *) actionCodeSettings
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user) {
+    id handler = ^(NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firebaseApp].currentUser;
+        [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+      }
+    };
+    if (actionCodeSettings) {
+       FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+        [user sendEmailVerificationBeforeUpdatingEmail:email actionCodeSettings:settings completion:handler];
+    } else {
+        [user sendEmailVerificationBeforeUpdatingEmail:email completion:handler];
+    }
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
 RCT_EXPORT_METHOD(updateEmail:
   (FIRApp *) firebaseApp
     :(NSString *) email
