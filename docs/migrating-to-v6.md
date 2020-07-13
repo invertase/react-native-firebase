@@ -446,6 +446,16 @@ No breaking changes.
 - `firebase.utils.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.utils.FilePath`.
 - `firebase.utils.Native.*` some properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate.
 
+### RN-Firebase notification
+In v5, `firebase.notifications()` was used to listen when a notification received or clicked, or when the app has been opened from a notification.
+This module doesn't exist anymore.
+Here are the other functions to do the same things:
+- `firebase.notifications().onNotification(Notification => void)` -> `firebase.messaging().onMessage(RemoteMessage => void)`.
+- `firebase.notifications().onNotificationOpened(NotificationOpen => void)` -> `firebase.messaging().onMessage(RemoteMessage => void)`.
+- `firebase.notifications().getInitialNotification()` -> `firebase.messaging().getInitialNotification()`.
+
+
+
 ### ML Kit Natural Language
 
 `@react-native-firebase/ml-natural-language`
