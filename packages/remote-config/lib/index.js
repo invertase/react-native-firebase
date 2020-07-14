@@ -153,7 +153,7 @@ class FirebaseConfigModule extends FirebaseModule {
     );
   }
 
-  get lastFetchTime() {
+  get fetchTimeMillis() {
     // android returns -1 if no fetch yet and iOS returns 0
     return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
   }

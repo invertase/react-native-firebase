@@ -297,13 +297,9 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config backend.
-     */
-    fetchTimeMillis: number;
-    /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
      */
-    lastFetchTime: number;
+    fetchTimeMillis: number;
     /**
      * The status of the latest Remote RemoteConfig fetch action.
      *
@@ -409,7 +405,7 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
      */
-    fetch(expirationDurationSeconds?: number): Promise<null>;
+    fetch(expirationDurationSeconds?: number): Promise<void>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard.
