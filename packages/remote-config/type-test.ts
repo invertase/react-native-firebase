@@ -22,7 +22,7 @@ console.log(firebase.SDK_VERSION);
 console.log(config.firebase.SDK_VERSION);
 
 console.log(firebase.remoteConfig().lastFetchStatus);
-console.log(firebase.remoteConfig().lastFetchTime);
+console.log(firebase.remoteConfig().fetchTimeMillis);
 
 
 const value = firebase.remoteConfig().getValue('example');
