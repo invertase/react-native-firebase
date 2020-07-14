@@ -84,7 +84,12 @@ function convertNativeConfigValues(configValues) {
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
-    this._settings = {};
+    this._settings = {
+      // defaults to 1 minute.
+      fetchTimeoutMillis: 60000,
+      // defaults to 12 hours.
+      minimumFetchIntervalMillis: 43200000,
+    };
     this._lastFetchTime = 0;
   }
 
@@ -172,7 +177,12 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   setConfigSettings(settings) {
-    const nativeSettings = {};
+    const nativeSettings = {
+      // defaults to 1 minute.
+      fetchTimeoutMillis: 60000,
+      // defaults to 12 hours.
+      minimumFetchIntervalMillis: 43200000,
+    };
 
     if (!isObject(settings)) {
       throw new Error('firebase.remoteConfig().setConfigSettings(*): settings must set an object.');

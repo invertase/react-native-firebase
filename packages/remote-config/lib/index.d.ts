@@ -258,11 +258,11 @@ export namespace FirebaseRemoteConfigTypes {
   export interface ConfigSettings {
     /**
      * Indicates the default value in milliseconds to set for the minimum interval that needs to elapse
-     * before a fetch request can again be made to the Remote Config server.
+     * before a fetch request can again be made to the Remote Config server. Defaults to 43200000 (Twelve hours).
      */
     minimumFetchIntervalMillis?: number;
     /**
-     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server.
+     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server. Defaults to 60000 (One minute).
      */
     fetchTimeMillis?: number;
   }
@@ -400,7 +400,7 @@ export namespace FirebaseRemoteConfigTypes {
      * // get remote config values
      * ```
      */
-    ensureInitialized(): Promise<null>;
+    ensureInitialized(): Promise<void>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
@@ -483,7 +483,7 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      *
      */
-    reset(): Promise<null>;
+    reset(): Promise<void>;
   }
 }
 
