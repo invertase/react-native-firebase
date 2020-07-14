@@ -86,7 +86,7 @@ class FirebaseConfigModule extends FirebaseModule {
     super(...args);
     this._settings = {
       // defaults to 1 minute.
-      fetchTimeoutMillis: 60000,
+      fetchTimeMillis: 60000,
       // defaults to 12 hours.
       minimumFetchIntervalMillis: 43200000,
     };
@@ -190,10 +190,9 @@ class FirebaseConfigModule extends FirebaseModule {
 
   setConfigSettings(settings) {
     const nativeSettings = {
-      // defaults to 1 minute.
-      fetchTimeoutMillis: 60000,
-      // defaults to 12 hours.
-      minimumFetchIntervalMillis: 43200000,
+      //iOS & Android expect seconds
+      fetchTimeout: this._settings.fetchTimeMillis / 1000,
+      minimumFetchInterval: this._settings.minimumFetchIntervalMillis / 1000,
     };
 
     if (!isObject(settings)) {
@@ -220,7 +219,6 @@ class FirebaseConfigModule extends FirebaseModule {
           "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
         );
       } else {
-        //iOS & Android expect seconds
         nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
       }
     }
@@ -231,7 +229,6 @@ class FirebaseConfigModule extends FirebaseModule {
           "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeMillis' must be a number type in milliseconds.",
         );
       } else {
-        //iOS & Android expect seconds
         nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
       }
     }

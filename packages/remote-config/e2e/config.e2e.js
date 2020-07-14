@@ -61,7 +61,7 @@ describe('remoteConfig()', () => {
 
       if (device.getPlatform() === 'android') {
         // iOS persists last fetch status so this test will fail sometimes
-        firebase.remoteConfig().lastFetchTime.should.be.a.Number();
+        firebase.remoteConfig().fetchTimeMillis.should.be.a.Number();
       }
 
       await firebase.remoteConfig().fetch(0);
@@ -70,8 +70,8 @@ describe('remoteConfig()', () => {
         .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
       // TODO leave logger here - need to investigate flakey test
       // eslint-disable-next-line no-console
-      console.log(firebase.remoteConfig().lastFetchTime, date);
-      should.equal(firebase.remoteConfig().lastFetchTime >= date, true);
+      console.log(firebase.remoteConfig().fetchTimeMillis, date);
+      should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
     });
     it('without expiration provided', () => firebase.remoteConfig().fetch());
     it('it throws if expiration is not a number', () => {
@@ -110,7 +110,7 @@ describe('remoteConfig()', () => {
     it('should be immediately available', async () => {
       firebase.remoteConfig().lastFetchStatus.should.be.a.String();
       firebase.remoteConfig().lastFetchStatus.should.equal('success');
-      firebase.remoteConfig().lastFetchTime.should.be.a.Number();
+      firebase.remoteConfig().fetchTimeMillis.should.be.a.Number();
     });
   });
 
@@ -467,7 +467,7 @@ describe('remoteConfig()', () => {
       config.defaultConfig;
       config.defaultConfig = {};
       config.settings = {};
-      config.lastFetchTime;
+      config.fetchTimeMillis;
       config.isDeveloperModeEnabled;
       config.minimumFetchInterval;
       config.setLogLevel();
