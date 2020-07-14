@@ -425,7 +425,7 @@ describe('firestore().collection().where()', () => {
     items.length.should.equal(1);
   });
 
-  it.only('should correctly query integer values with array-contains operator', async () => {
+  it('should correctly query integer values with array-contains operator', async () => {
     const ref = firebase.firestore().collection('v6');
 
     await ref.add({ status: [1, 2, 3] });
