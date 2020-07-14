@@ -108,6 +108,18 @@ class FirebaseConfigModule extends FirebaseModule {
     return new Value({ value: `${this._values[key].value}`, source: this._values[key].source });
   }
 
+  getBoolean(key) {
+    return this.getValue(key).asBoolean();
+  }
+
+  getNumber(key) {
+    return this.getValue(key).asNumber();
+  }
+
+  getString(key) {
+    return this.getValue(key).asString();
+  }
+
   getAll() {
     const values = {};
 
