@@ -15,6 +15,10 @@ To learn more about multidex, view the official [Android documentation](https://
 
 ## Enabling Multidex
 
+There are 3 steps involved in enabling multidex.
+
+Steps 1 and 2 tell Gradle to turn on multidex with a directive, and add new dependency.
+
 Open the `/android/app/build.gradle` file. Under `dependencies` we need to add the module, and then enable it
 within the `defaultConfig`:
 
@@ -22,14 +26,27 @@ within the `defaultConfig`:
 android {
     defaultConfig {
         // ...
-        multiDexEnabled true
+        multiDexEnabled true // <-- ADD THIS in the defaultConfig sectino
     }
     // ...
 }
 
 dependencies {
-  implementation 'com.android.support:multidex:1.0.3'
+  implementation 'androidx.multidex:multidex:2.0.1'  // <-- ADD THIS DEPENDENCY
 }
+```
+
+The 3rd step is to alter your `android/app/src/main/java/.../MainApplication.java` file to extend `MultiDexApplication` like so:
+
+```java
+
+// ... all your other imports here
+import androidx.multidex.MultiDexApplication; // <-- ADD THIS IMPORT
+
+
+// Your class definition needs `extends MultiDexApplication` like below
+public class MainApplication extends MultiDexApplication implements ReactApplication {
+
 ```
 
 Once added, rebuild your application: `npx react-native run-android`.
