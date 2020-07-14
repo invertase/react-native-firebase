@@ -297,11 +297,6 @@ export namespace FirebaseRemoteConfigTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Indicates the value in milliseconds set for the minimum interval that needs to elapse
-     * before a fetch request can again be made to the Remote Config backend.
-     */
-    minimumFetchIntervalMillis: number;
-    /**
      * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config backend.
      */
     fetchTimeMillis: number;
@@ -448,8 +443,8 @@ export namespace FirebaseRemoteConfigTypes {
      * Object.entries(values).forEach(($) => {
      *   const [key, entry] = $;
      *   console.log('Key: ', key);
-     *   console.log('Source: ', entry.source);
-     *   console.log('Value: ', entry.value);
+     *   console.log('Source: ', entry.getSource());
+     *   console.log('Value: ', entry.asString());
      * });
      * ```
      *
@@ -463,13 +458,53 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * const configValue = firebase.remoteConfig().getValue('experiment');
-     * console.log('Source: ', configValue.source);
-     * console.log('Value: ', configValue.value);
+     * console.log('Source: ', configValue.getSource());
+     * console.log('Value: ', configValue.asString());
      * ```
      *
      * @param key A key used to retrieve a specific value.
      */
     getValue(key: string): ConfigValue;
+    /**
+     * Gets a config property using the key and converts to a boolean value
+     *
+     * #### Example
+     *
+     * ```js
+     * // true or false depending on truthy or falsy nature of value
+     * const configValue = firebase.remoteConfig().getBoolean('experiment');
+     * ```
+     *
+     * @param key A key used to retrieve a specific value.
+     */
+    getBoolean(key: string): boolean;
+    /**
+     * Gets a config property using the key and converts to a string value
+     *
+     * #### Example
+     *
+     * ```js
+     * // string value of 'experiment' property
+     * const configValue = firebase.remoteConfig().getString('experiment');
+     * ```
+     *
+     * @param key A key used to retrieve a specific value.
+     */
+    getString(key: string): string;
+    /**
+     * Gets a config property using the key and converts to a number value. It
+     * will be 0 if the value is not a number.
+     *
+     * #### Example
+     *
+     * ```js
+     * // number value of 'experiment' property
+     * const configValue = firebase.remoteConfig().getNumber('experiment');
+     * ```
+     *
+     * @param key A key used to retrieve a specific value.
+     */
+    getNumber(key: string): number;
 
     /**
      * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
