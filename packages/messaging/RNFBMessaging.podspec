@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
   # Firebase dependencies
   s.dependency          'Firebase/Analytics', firebase_sdk_version
   s.dependency          'Firebase/Messaging', firebase_sdk_version
+  s.dependency          'GoogleUtilities', '6.6.0' # Workaround: remove with resolution of #3938 - incompatible with firebase-ios-sdk >= 6.28.0
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
