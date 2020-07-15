@@ -410,4 +410,32 @@ describe('firestore().collection().where()', () => {
       return Promise.resolve();
     }
   });
+
+  it('should correctly query integer values with in operator', async () => {
+    const ref = firebase.firestore().collection('v6');
+
+    await ref.add({ status: 1 });
+
+    const items = [];
+    await ref
+      .where('status', 'in', [1, 2])
+      .get()
+      .then($ => $.forEach(doc => items.push(doc.data())));
+
+    items.length.should.equal(1);
+  });
+
+  it('should correctly query integer values with array-contains operator', async () => {
+    const ref = firebase.firestore().collection('v6');
+
+    await ref.add({ status: [1, 2, 3] });
+
+    const items = [];
+    await ref
+      .where('status', 'array-contains', 2)
+      .get()
+      .then($ => $.forEach(doc => items.push(doc.data())));
+
+    items.length.should.equal(1);
+  });
 });
