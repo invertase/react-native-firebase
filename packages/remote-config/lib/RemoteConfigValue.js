@@ -1,7 +1,7 @@
 // as per firebase web sdk specification
-const ConfigValue = ['1', 'true', 't', 'yes', 'y', 'on'];
+const BOOL_VALUES = ['1', 'true', 't', 'yes', 'y', 'on'];
 
-export default class Value {
+export default class ConfigValue {
   constructor({ value, source }) {
     this._value = value;
     this._source = source;
@@ -25,7 +25,7 @@ export default class Value {
     if (this._source === 'static') {
       return false;
     }
-    return ConfigValue.includes(this._value.toLowerCase());
+    return BOOL_VALUES.includes(this._value.toLowerCase());
   }
 
   asNumber() {

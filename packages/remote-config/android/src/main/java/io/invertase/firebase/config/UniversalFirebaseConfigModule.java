@@ -39,9 +39,7 @@ import static com.google.firebase.remoteconfig.FirebaseRemoteConfig.*;
 
 @SuppressWarnings("WeakerAccess")
 public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
-  private static final String STRING_VALUE = "stringValue";
-  private static final String BOOL_VALUE = "boolValue";
-  private static final String NUMBER_VALUE = "numberValue";
+  private static final String VALUE = "value";
   private static final String SOURCE = "source";
 
   UniversalFirebaseConfigModule(Context context, String serviceName) {
@@ -177,21 +175,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
   private Bundle convertRemoteConfigValue(FirebaseRemoteConfigValue value) {
     Bundle convertedConfigBundle = new Bundle(2);
 
-    convertedConfigBundle.putString(STRING_VALUE, value.asString());
-
-    try {
-      boolean booleanValue = value.asBoolean();
-      convertedConfigBundle.putBoolean(BOOL_VALUE, booleanValue);
-    } catch (Exception e) {
-      // ignore
-    }
-
-    try {
-      double numberValue = value.asDouble();
-      convertedConfigBundle.putDouble(NUMBER_VALUE, numberValue);
-    } catch (Exception e) {
-      // ignore
-    }
+    convertedConfigBundle.putString(VALUE, value.asString());
 
     switch (value.getSource()) {
       case FirebaseRemoteConfig.VALUE_SOURCE_DEFAULT:

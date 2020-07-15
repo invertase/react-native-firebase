@@ -48,39 +48,6 @@ const statics = {
 const namespace = 'remoteConfig';
 const nativeModuleName = 'RNFBConfigModule';
 
-function convertNativeConfigValues(configValues) {
-  const convertedValues = {};
-  const entries = Object.entries(configValues);
-
-  for (let i = 0; i < entries.length; i++) {
-    const convertedValue = {};
-    const [key, nativeValue] = entries[i];
-    const { source, boolValue, stringValue, numberValue } = nativeValue;
-    let value = stringValue;
-
-    if (
-      boolValue !== null &&
-      (stringValue === 'true' || stringValue === 'false' || stringValue === null)
-    ) {
-      value = boolValue;
-    } else if (
-      numberValue !== null &&
-      numberValue !== undefined &&
-      (stringValue === null || stringValue === '' || !isNaN(stringValue))
-    ) {
-      value = numberValue;
-    }
-
-    convertedValue.value = value;
-    convertedValue.source = source;
-    Object.freeze(convertedValue);
-    convertedValues[key] = convertedValue;
-  }
-
-  Object.freeze(convertedValues);
-  return convertedValues;
-}
-
 class FirebaseConfigModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
@@ -90,7 +57,7 @@ class FirebaseConfigModule extends FirebaseModule {
       // defaults to 12 hours.
       minimumFetchIntervalMillis: 43200000,
     };
-    this._lastFetchTime = 0;
+    this._lastFetchTime = -1;
   }
 
   getValue(key) {
@@ -155,7 +122,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   get fetchTimeMillis() {
     // android returns -1 if no fetch yet and iOS returns 0
-    return this._lastFetchTime === -1 ? 0 : this._lastFetchTime;
+    return this._lastFetchTime;
   }
 
   get lastFetchStatus() {
@@ -312,7 +279,7 @@ class FirebaseConfigModule extends FirebaseModule {
       minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
     };
 
-    this._values = convertNativeConfigValues(constants.values);
+    this._values = Object.freeze(constants.values);
   }
 
   _promiseWithConstants(promise) {

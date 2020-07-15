@@ -65,9 +65,10 @@ NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
 }
 
 NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
-  return @{@"stringValue": (id) value.stringValue ?: [NSNull null],
-      @"numberValue": (id) value.numberValue ?: [NSNull null], @"boolValue": @(value.boolValue),
-      @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
+  return @{
+    @"value": (id) value.stringValue ?: [NSNull null],
+    @"source": convertFIRRemoteConfigSourceToNSString(value.source)
+  };
 }
 
 #pragma mark -
