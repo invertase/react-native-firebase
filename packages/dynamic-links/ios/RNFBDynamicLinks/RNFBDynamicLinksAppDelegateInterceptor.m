@@ -17,7 +17,12 @@
 
 #import "RNFBDynamicLinksAppDelegateInterceptor.h"
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import <GoogleUtilities/GULAppDelegateSwizzler.h>
+
+ #if __has_include(<GoogleUtilities/GULAppDelegateSwizzler.h>)
+    #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+  #else if __has_include("GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h")
+    #import "GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h"
+  #endif
 
 @implementation RNFBDynamicLinksAppDelegateInterceptor
 

@@ -18,7 +18,12 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
-#import <GoogleUtilities/GULAppDelegateSwizzler.h>
+
+ #if __has_include(<GoogleUtilities/GULAppDelegateSwizzler.h>)
+    #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+  #else if __has_include("GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h")
+    #import "GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h"
+  #endif
 
 #import "RNFBMessaging+FIRMessagingDelegate.h"
 #import "RNFBMessagingSerializer.h"

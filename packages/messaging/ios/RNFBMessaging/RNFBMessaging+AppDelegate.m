@@ -17,7 +17,12 @@
 
 #import <objc/runtime.h>
 #import <Firebase/Firebase.h>
-#import <GoogleUtilities/GULAppDelegateSwizzler.h>
+
+ #if __has_include(<GoogleUtilities/GULAppDelegateSwizzler.h>)
+    #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+  #else if __has_include("GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h")
+    #import "GoogleUtilities/AppDelegateSwizzler/Private/GULAppDelegateSwizzler.h"
+  #endif
 
 #import <React/RCTConvert.h>
 #import <RNFBApp/RNFBSharedUtils.h>
