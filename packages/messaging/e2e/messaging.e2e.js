@@ -60,8 +60,6 @@ describe('messaging()', () => {
   describe('unregisterDeviceForRemoteMessages', () => {
     android.it('resolves on android', async () => {
       await firebase.messaging().unregisterDeviceForRemoteMessages();
-      // check deprecated method also
-      await firebase.messaging().unregisterForRemoteNotifications();
     });
   });
 
@@ -79,8 +77,6 @@ describe('messaging()', () => {
   describe('unregisterDeviceForRemoteMessages', () => {
     android.it('resolves on android', async () => {
       await firebase.messaging().unregisterDeviceForRemoteMessages();
-      // check deprecated method also
-      await firebase.messaging().unregisterForRemoteNotifications();
     });
   });
 
@@ -176,8 +172,6 @@ describe('messaging()', () => {
       const unsubscribe = firebase.messaging().onMessage(spy);
       if (device.getPlatform() === 'ios') {
         await firebase.messaging().registerDeviceForRemoteMessages();
-        // call deprecated method also
-        await firebase.messaging().registerForRemoteNotifications();
       }
       const token = await firebase.messaging().getToken();
       await TestsAPI.messaging().sendToDevice(token, {
