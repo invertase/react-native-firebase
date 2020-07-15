@@ -468,15 +468,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     buildLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a link from the provided DynamicLinkParameters interface.
-     *
-     * @deprecated Use `buildLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     */
-    createDynamicLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
     /**
      * Builds a short Dynamic Link from the provided DynamicLinkParameters interface.
      *
