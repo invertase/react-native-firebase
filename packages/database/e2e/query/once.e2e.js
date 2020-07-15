@@ -181,4 +181,26 @@ describe('database().ref().once()', () => {
     callback.should.be.calledOnce();
     callback.should.be.calledWith({ nuggets: 57 });
   });
+
+  it('guarantee to resolve after child_added', async () => {
+    const successCallback = sinon.spy();
+    const ref = firebase.database().ref(`${TEST_PATH}/guarantee`);
+
+    const initial = {
+      firstChild: 'firstChild',
+      secondChild: 'secondChild',
+    };
+
+    await ref.set(initial);
+
+    ref.on('child_added', () => successCallback('child_added'));
+    ref.once('value').then(() => successCallback('value'));
+
+    await Utils.sleep(5000);
+
+    successCallback.should.be.callCount(3);
+    successCallback.getCall(0).args[0].should.equal('child_added');
+    successCallback.getCall(1).args[0].should.equal('child_added');
+    successCallback.getCall(2).args[0].should.equal('value');
+  });
 });
