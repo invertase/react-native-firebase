@@ -219,6 +219,7 @@ class FirebaseMessagingModule extends FirebaseModule {
       carPlay: true,
       provisional: false,
       sound: true,
+      criticalAlert: false,
     };
 
     if (!permissions) {

@@ -100,13 +100,16 @@ import database from '@react-native-firebase/database';
 function User({ userId }) {
   useEffect(() => {
     const onValueChange = database()
-      .ref(`/users/${userId}`).on('value', snapshot => {
+      .ref(`/users/${userId}`)
+      .on('value', snapshot => {
         console.log('User data: ', snapshot.val());
       });
 
     // Stop listening for updates when no longer required
-    return () => database()
-      .ref(`/users/${userId}`).off('value', onValueChange);
+    return () =>
+      database()
+        .ref(`/users/${userId}`)
+        .off('value', onValueChange);
   }, [userId]);
 }
 ```
@@ -127,13 +130,16 @@ import database from '@react-native-firebase/database';
 function User({ userId }) {
   useEffect(() => {
     const onChildAdd = database()
-      .ref('/users').on('child_added', snapshot => {
+      .ref('/users')
+      .on('child_added', snapshot => {
         console.log('A new node has been added', snapshot.val());
       });
 
     // Stop listening for updates when no longer required
-    return () => database()
-      .ref('/users').off('child_added', onChildAdd);
+    return () =>
+      database()
+        .ref('/users')
+        .off('child_added', onChildAdd);
   }, [userId]);
 }
 ```
@@ -148,7 +154,7 @@ If your application requires more advanced query capabilities, it is recommended
 #### Ordering
 
 By default, results are ordered based on the node [keys](#database-keys). If however you are using custom keys you can use
-one of the `orederByX` methods to order your data.
+one of the `orderByX` methods to order your data.
 
 For example, if all of the nodes children are scalar values (string, number or boolean) you can use the `orderByValue` method,
 and Firebase will automatically order the results. The example below would return the `def` node before the `abc` node:
@@ -356,18 +362,18 @@ secondaryDatabase.ref();
 
 # firebase.json
 
-## Disabling persistence
+## Enabling persistence
 
-By default the Realtime Database persists data on the user application, and is used by the SDKs for offline usage
-and caching. To disable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
+The Realtime Database can be set to persist data on the user application to be used by the SDKs for offline usage
+and caching. To enable this functionality, update the `database_persistence_enabled` key in the `firebase.json` file:
 
 ```json
 // <project-root>/firebase.json
 {
   "react-native": {
-    "database_persistence_enabled": false
+    "database_persistence_enabled": true
   }
 }
 ```
 
-To enable persistence, view the [Offline Support](/database/offline-support) documentation.
+For more on persistence, view the [Offline Support](/database/offline-support) documentation.

@@ -179,6 +179,12 @@ RCT_EXPORT_METHOD(requestPermission:
       options |= UNAuthorizationOptionSound;
     }
 
+    if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
+      if (@available(iOS 12.0, *)) {
+        options |= UNAuthorizationOptionCriticalAlert;
+      }
+    }
+
     if ([permissions[@"provisional"] isEqual:@(YES)]) {
       if (@available(iOS 12.0, *)) {
         options |= UNAuthorizationOptionProvisional;

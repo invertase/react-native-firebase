@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.4.2...@react-native-firebase/firestore@7.4.3) (2020-07-09)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.4.1...@react-native-firebase/firestore@7.4.2) (2020-07-09)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.4.0...@react-native-firebase/firestore@7.4.1) (2020-07-07)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+# [7.4.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.3.0...@react-native-firebase/firestore@7.4.0) (2020-07-07)
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.4...@react-native-firebase/firestore@7.3.0) (2020-07-06)
+
+### Features
+
+- **firestore, android:** allow FirestoreSerializer native use ([#3888](https://github.com/invertase/react-native-firebase/issues/3888)) ([68daf94](https://github.com/invertase/react-native-firebase/commit/68daf945c4dacca954eb8592b94b992ca82d0ffb))
+
+## [7.2.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.3...@react-native-firebase/firestore@7.2.4) (2020-07-05)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.2.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.2...@react-native-firebase/firestore@7.2.3) (2020-06-30)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
 ## [7.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.2.1...@react-native-firebase/firestore@7.2.2) (2020-06-26)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

@@ -55,36 +55,6 @@ describe('crashlytics()', () => {
     });
   });
 
-  describe('setUserName()', () => {
-    it('accepts string values', async () => {
-      await firebase.crashlytics().setUserName('invertase');
-    });
-
-    it('rejects none string values', async () => {
-      try {
-        await firebase.crashlytics().setUserName(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-  });
-
-  describe('setUserEmail()', () => {
-    it('accepts string values', async () => {
-      await firebase.crashlytics().setUserEmail('oss@invertase.io');
-    });
-
-    it('rejects none string values', async () => {
-      try {
-        await firebase.crashlytics().setUserEmail(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-  });
-
   describe('setAttribute()', () => {
     it('accepts string values', async () => {
       await firebase.crashlytics().setAttribute('invertase', '1337');

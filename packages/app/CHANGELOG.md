@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.1.0...@react-native-firebase/app@8.2.0) (2020-07-09)
+
+### Features
+
+- **analytics:** add & deprecate pre-defined analytics events ([#3385](https://github.com/invertase/react-native-firebase/issues/3385)) ([6c53f47](https://github.com/invertase/react-native-firebase/commit/6c53f479d9d86f686d52f258ed51b5dc6a8ef25a))
+
+# [8.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.0.1...@react-native-firebase/app@8.1.0) (2020-07-07)
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+
+## [8.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.0.0...@react-native-firebase/app@8.0.1) (2020-07-05)
+
+### Bug Fixes
+
+- correct androidResolutionForPlayServices API ([afcd794](https://github.com/invertase/react-native-firebase/commit/afcd79479baf6e371719eb1b14e5d7619e4b7ad6)), closes [#3864](https://github.com/invertase/react-native-firebase/issues/3864)
+
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.3.1...@react-native-firebase/app@8.0.0) (2020-06-30)
+
+- feat(crashlytics)!: upgrade to new Firebase Crashlytics SDK (#3580) ([cad58e1](https://github.com/invertase/react-native-firebase/commit/cad58e178b43dea461e17fa4a0a3fecd507ba68a)), closes [#3580](https://github.com/invertase/react-native-firebase/issues/3580)
+
+### BREAKING CHANGES
+
+- This is a breaking change to remove the use of the Fabric SDKs.
+
+Co-authored-by: David Buchan-Swanson <david.buchanswanson@gmail.com>
+Co-authored-by: Mike Diarmid <mike.diarmid@gmail.com>
+[publish]
+
 ## [7.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@7.3.0...@react-native-firebase/app@7.3.1) (2020-06-26)
 
 ### Bug Fixes
