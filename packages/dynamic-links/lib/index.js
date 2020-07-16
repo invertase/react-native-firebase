@@ -70,14 +70,6 @@ class FirebaseLinksModule extends FirebaseModule {
     return this.native.buildShortLink(params, shortLinkType);
   }
 
-  createShortDynamicLink(dynamicLinkParams, shortLinkType) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()',
-    );
-    return this.buildShortLink(dynamicLinkParams, shortLinkType);
-  }
-
   getInitialLink() {
     return this.native.getInitialLink();
   }

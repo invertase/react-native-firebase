@@ -65,14 +65,6 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  describe('createShortDynamicLink()', () => {
-    it('should call buildShortLink()', async () => {
-      const link = await firebase.dynamicLinks().createShortDynamicLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
-    });
-  });
-
   describe('resolveLink()', () => {
     it('resolves a long link', async () => {
       const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);

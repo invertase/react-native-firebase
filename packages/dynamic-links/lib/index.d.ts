@@ -493,18 +493,6 @@ export namespace FirebaseDynamicLinksTypes {
     ): Promise<string>;
 
     /**
-     * **Deprecated**: Creates a short Dynamic Link from the provided DynamicLinkParameters instances.
-     *
-     * @deprecated Use `buildShortLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
-     */
-    createShortDynamicLink(
-      dynamicLinkParams: DynamicLinkParameters,
-      shortLinkType?: ShortLinkType,
-    ): Promise<string>;
-
-    /**
      * Returns the Dynamic Link that the app has been launched from. If the app was not launched from a Dynamic Link the value will be null.
      *
      * > Use {@link auth#isSignInWithEmailLink} to check if an inbound dynamic link is an email sign-in link.
