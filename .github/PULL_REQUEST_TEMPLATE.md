@@ -13,7 +13,7 @@
 
 ### Checklist
 
-- I read the [Contributor Guide](/CONTRIBUTING.md) and followed the process outlined there for submitting PRs.
+- I read the [Contributor Guide](../CONTRIBUTING.md) and followed the process outlined there for submitting PRs.
   - [ ] Yes
 - My change supports the following platforms;
   - [ ] `Android`

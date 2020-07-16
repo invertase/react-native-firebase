@@ -23,3 +23,4 @@ We highly recommend taking the necessary pains to update to v6.
 # Tips
 
 - Advice on supporting multiple environments (for example, dev, prod, maybe also staging, qa) for your React Native Firebase App: [#3504](https://github.com/invertase/react-native-firebase/issues/3504)
+- Using [Fastlane for iOS deployment](https://docs.fastlane.tools/getting-started/ios) together with [RN Firebase Crashlytics](https://rnfirebase.io/crashlytics/usage) within CI has been observed to cause builds that hang indefinitely. Using `setup_ci(force: true)` before building the application may solve the issue.: [#3706](https://github.com/invertase/react-native-firebase/issues/3706)
