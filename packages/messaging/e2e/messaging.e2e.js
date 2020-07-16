@@ -45,14 +45,10 @@ describe('messaging()', () => {
   describe('isDeviceRegisteredForRemoteMessages', () => {
     android.it('returns true on android', () => {
       should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
-      // check deprecated method also
-      should.equal(firebase.messaging().isRegisteredForRemoteNotifications, true);
     });
     it('defaults to false on ios before registering', () => {
       if (device.getPlatform() === 'ios') {
         should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
-        // check deprecated method also
-        should.equal(firebase.messaging().isRegisteredForRemoteNotifications, false);
       }
     });
   });

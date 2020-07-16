@@ -111,18 +111,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this._isRegisteredForRemoteNotifications;
   }
 
-  /**
-   * @platform ios
-   * @deprecated Use isDeviceRegisteredForRemoteMessages.
-   */
-  get isRegisteredForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "isRegisteredForRemoteNotifications" will be deprecated in v7. Use "isDeviceRegisteredForRemoteMessages" instead.',
-    );
-    return this.isDeviceRegisteredForRemoteMessages;
-  }
-
   setAutoInitEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(

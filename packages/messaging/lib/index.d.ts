@@ -727,15 +727,6 @@ export namespace FirebaseMessagingTypes {
      * ```
      */
     registerDeviceForRemoteMessages(): Promise<void>;
-
-    /**
-     * Deprecated. See `isDeviceRegisteredForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See isDeviceRegisteredForRemoteMessages
-     */
-    isRegisteredForRemoteNotifications: boolean;
-
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerDeviceForRemoteMessages()`.
@@ -745,7 +736,7 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
+     * const isDeviceRegisteredForRemoteMessages = firebase.messaging().isDeviceRegisteredForRemoteMessages;
      * ```
      *
      * @platform ios
