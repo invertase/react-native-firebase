@@ -1,10 +1,13 @@
+// Add the Firebase Crashlytics plugin.
+
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
+
+
+
+
 apply plugin: "com.google.firebase.firebase-perf"
 
-crashlytics {
-  enableNdk true
-}
 
 import com.android.build.OutputFile
 
