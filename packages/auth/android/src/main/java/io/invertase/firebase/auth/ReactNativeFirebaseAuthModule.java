@@ -600,6 +600,52 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * verifyBeforeUpdateEmail
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void verifyBeforeUpdateEmail(
+    String appName,
+    String email,
+    ReadableMap actionCodeSettings,
+    final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "verifyBeforeUpdateEmail");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "verifyBeforeUpdateEmail:failure:noCurrentUser");
+    } else {
+      OnCompleteListener<Void> listener = task -> {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "verifyBeforeUpdateEmail:onComplete:success");
+          promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "verifyBeforeUpdateEmail:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      };
+
+      if (actionCodeSettings == null) {
+        user
+          .verifyBeforeUpdateEmail(email)
+          .addOnCompleteListener(getExecutor(), listener);
+      } else {
+        ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+        user
+          .verifyBeforeUpdateEmail(email, settings)
+          .addOnCompleteListener(getExecutor(), listener);
+      }
+    }
+  }
+
+  /**
    * updateEmail
    *
    * @param email
