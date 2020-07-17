@@ -41,6 +41,7 @@ EEA
 Ehesp
 enum
 ESLint
+Fastlane
 FCM
 Firebase
 Firestore
@@ -129,3 +130,5 @@ Wix
 Xcode
 Xcode.
 lifecycle
+SNS
+
