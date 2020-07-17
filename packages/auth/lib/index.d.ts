@@ -1227,7 +1227,7 @@ export namespace FirebaseAuthTypes {
      * ```
      *
      * @param code An ISO language code.
-     * @ios only allows 'null' value
+     * 'null' value will set the language code to the app's current language.
      */
     setLanguageCode(languageCode: string | null);
     /**

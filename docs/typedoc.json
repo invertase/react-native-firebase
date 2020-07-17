@@ -665,7 +665,7 @@
 									"sources": [
 										{
 											"fileName": "packages/auth/lib/index.d.ts",
-											"line": 1663,
+											"line": 1661,
 											"character": 10
 										}
 									]
@@ -1178,7 +1178,7 @@
 								},
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1662,
+									"line": 1660,
 									"character": 25
 								},
 								{
@@ -1326,7 +1326,7 @@
 									"sources": [
 										{
 											"fileName": "packages/auth/lib/index.d.ts",
-											"line": 1660,
+											"line": 1658,
 											"character": 10
 										}
 									],
@@ -1829,7 +1829,7 @@
 								},
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1659,
+									"line": 1657,
 									"character": 20
 								},
 								{
@@ -1928,7 +1928,7 @@
 						},
 						{
 							"fileName": "packages/auth/lib/index.d.ts",
-							"line": 1657,
+							"line": 1655,
 							"character": 31
 						},
 						{
@@ -2109,7 +2109,7 @@
 				},
 				{
 					"fileName": "packages/auth/lib/index.d.ts",
-					"line": 1656,
+					"line": 1654,
 					"character": 43
 				},
 				{
@@ -2198,7 +2198,7 @@
 					"sources": [
 						{
 							"fileName": "packages/auth/lib/index.d.ts",
-							"line": 1646,
+							"line": 1644,
 							"character": 21
 						}
 					],
@@ -2232,7 +2232,7 @@
 					"sources": [
 						{
 							"fileName": "packages/auth/lib/index.d.ts",
-							"line": 1644,
+							"line": 1642,
 							"character": 23
 						}
 					],
@@ -2253,7 +2253,7 @@
 					"sources": [
 						{
 							"fileName": "packages/auth/lib/index.d.ts",
-							"line": 1643,
+							"line": 1641,
 							"character": 27
 						}
 					],
@@ -2286,7 +2286,7 @@
 			"sources": [
 				{
 					"fileName": "packages/auth/lib/index.d.ts",
-					"line": 1637,
+					"line": 1635,
 					"character": 44
 				}
 			]
@@ -15769,7 +15769,7 @@
 							}
 						},
 						{
-							"id": 812,
+							"id": 809,
 							"name": "currentUser",
 							"kind": 1024,
 							"kindString": "Property",
@@ -15783,7 +15783,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1233,
+									"line": 1218,
 									"character": 15
 								}
 							],
@@ -15803,8 +15803,8 @@
 							}
 						},
 						{
-							"id": 811,
-							"name": "settings",
+							"id": 807,
+							"name": "languageCode",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {
@@ -15817,8 +15817,8 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1220,
-									"character": 12
+									"line": 1201,
+									"character": 16
 								}
 							],
 							"type": {
@@ -15827,76 +15827,21 @@
 							}
 						},
 						{
-							"id": 807,
-							"name": "languageCode",
-							"kind": 262144,
-							"kindString": "Accessor",
+							"id": 808,
+							"name": "settings",
+							"kind": 1024,
+							"kindString": "Property",
 							"flags": {
 								"isExported": true
 							},
 							"comment": {
 								"shortText": "Returns the current `AuthSettings`."
 							},
-							"getSignature": [
-								{
-									"id": 808,
-									"name": "__get",
-									"kind": 524288,
-									"kindString": "Get signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Gets the current language code.",
-										"text": "#### Example\n\n```js\nconst language = firebase.auth().languageCode;\n```\n"
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"setSignature": [
-								{
-									"id": 809,
-									"name": "__set",
-									"kind": 1048576,
-									"kindString": "Set signature",
-									"flags": {},
-									"comment": {
-										"shortText": "Sets the language code.",
-										"text": "#### Example\n\n```js\n// Set language to French\nfirebase.auth().languageCode = 'fr';\n```\n"
-									},
-									"parameters": [
-										{
-											"id": 810,
-											"name": "code",
-											"kind": 32768,
-											"kindString": "Parameter",
-											"flags": {},
-											"comment": {
-												"shortText": "An ISO language code.\n"
-											},
-											"type": {
-												"type": "intrinsic",
-												"name": "string"
-											}
-										}
-									],
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
-									}
-								}
-							],
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1201,
-									"character": 20
-								},
-								{
-									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1215,
-									"character": 20
+									"line": 1205,
+									"character": 12
 								}
 							],
 							"type": {
@@ -15973,7 +15918,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1566,
+									"line": 1564,
 									"character": 19
 								}
 							]
@@ -16047,7 +15992,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1584,
+									"line": 1582,
 									"character": 19
 								}
 							]
@@ -16138,7 +16083,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1549,
+									"line": 1547,
 									"character": 24
 								}
 							]
@@ -16226,7 +16171,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1396,
+									"line": 1394,
 									"character": 34
 								}
 							]
@@ -16290,7 +16235,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1602,
+									"line": 1600,
 									"character": 30
 								}
 							]
@@ -16339,7 +16284,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1512,
+									"line": 1510,
 									"character": 25
 								}
 							]
@@ -16404,7 +16349,7 @@
 											"sources": [
 												{
 													"fileName": "packages/auth/lib/index.d.ts",
-													"line": 1257,
+													"line": 1255,
 													"character": 55
 												}
 											]
@@ -16415,7 +16360,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1257,
+									"line": 1255,
 									"character": 22
 								}
 							]
@@ -16480,7 +16425,7 @@
 											"sources": [
 												{
 													"fileName": "packages/auth/lib/index.d.ts",
-													"line": 1279,
+													"line": 1277,
 													"character": 53
 												}
 											]
@@ -16491,7 +16436,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1279,
+									"line": 1277,
 									"character": 20
 								}
 							]
@@ -16562,7 +16507,7 @@
 											"sources": [
 												{
 													"fileName": "packages/auth/lib/index.d.ts",
-													"line": 1305,
+													"line": 1303,
 													"character": 50
 												}
 											]
@@ -16573,7 +16518,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1305,
+									"line": 1303,
 									"character": 17
 								}
 							]
@@ -16675,7 +16620,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1478,
+									"line": 1476,
 									"character": 26
 								}
 							]
@@ -16777,8 +16722,63 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1499,
+									"line": 1497,
 									"character": 25
+								}
+							]
+						},
+						{
+							"id": 810,
+							"name": "setLanguageCode",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {
+								"isExported": true
+							},
+							"signatures": [
+								{
+									"id": 811,
+									"name": "setLanguageCode",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"comment": {
+										"shortText": "Sets the language code.",
+										"text": "#### Example\n\n```js\n// Set language to French\nawait firebase.auth().setLanguageCode('fr');\n```\n"
+									},
+									"parameters": [
+										{
+											"id": 812,
+											"name": "languageCode",
+											"kind": 32768,
+											"kindString": "Parameter",
+											"flags": {},
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "intrinsic",
+														"name": "string"
+													},
+													{
+														"type": "intrinsic",
+														"name": "null"
+													}
+												]
+											}
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "packages/auth/lib/index.d.ts",
+									"line": 1232,
+									"character": 19
 								}
 							]
 						},
@@ -16823,7 +16823,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1332,
+									"line": 1330,
 									"character": 21
 								}
 							]
@@ -16914,7 +16914,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1456,
+									"line": 1454,
 									"character": 24
 								}
 							]
@@ -16980,7 +16980,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1432,
+									"line": 1430,
 									"character": 25
 								}
 							]
@@ -17068,7 +17068,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1413,
+									"line": 1411,
 									"character": 30
 								}
 							]
@@ -17152,7 +17152,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1529,
+									"line": 1527,
 									"character": 23
 								}
 							]
@@ -17259,7 +17259,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1352,
+									"line": 1350,
 									"character": 25
 								}
 							]
@@ -17298,7 +17298,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1319,
+									"line": 1317,
 									"character": 11
 								}
 							]
@@ -17359,7 +17359,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1633,
+									"line": 1631,
 									"character": 22
 								}
 							]
@@ -17432,7 +17432,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1620,
+									"line": 1618,
 									"character": 27
 								}
 							]
@@ -17536,7 +17536,7 @@
 							"sources": [
 								{
 									"fileName": "packages/auth/lib/index.d.ts",
-									"line": 1372,
+									"line": 1370,
 									"character": 21
 								}
 							]
@@ -17548,15 +17548,9 @@
 							"kind": 1024,
 							"children": [
 								889,
-								812,
-								811
-							]
-						},
-						{
-							"title": "Accessors",
-							"kind": 262144,
-							"children": [
-								807
+								809,
+								807,
+								808
 							]
 						},
 						{
@@ -17574,6 +17568,7 @@
 								823,
 								855,
 								859,
+								810,
 								830,
 								852,
 								849,
