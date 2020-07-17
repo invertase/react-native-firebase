@@ -182,7 +182,7 @@ describe('database().ref().once()', () => {
     callback.should.be.calledWith({ nuggets: 57 });
   });
 
-  it('guarantee to resolve after child_added', async () => {
+  it.only('guarantee to resolve after child_added', async () => {
     const successCallback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/guarantee`);
 
@@ -191,10 +191,10 @@ describe('database().ref().once()', () => {
       secondChild: 'secondChild',
     };
 
-    await ref.set(initial);
-
     ref.on('child_added', () => successCallback('child_added'));
-    ref.once('value').then(() => successCallback('value'));
+    ref.on('value', () => successCallback('value'));
+
+    await ref.set(initial);
 
     await Utils.sleep(5000);
 
