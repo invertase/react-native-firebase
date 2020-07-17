@@ -167,9 +167,13 @@ export namespace FirebaseDatabaseTypes {
     child(path: string): Reference;
 
     /**
-     * The last part of the Reference's path.
-     * For example, "ada" is the key for https://<DATABASE_NAME>.firebaseio.com/users/ada.
-     * The key of a root Reference is null.
+     * Returns an `OnDisconnect` object - see
+     * {@link
+     *   https://firebase.google.com/docs/database/web/offline-capabilities
+     *   Enabling Offline Capabilities in JavaScript} for more information on how
+     * to use it.
+     *
+     * @return An `OnDisconnect` object .
      */
     key: string | null;
 
@@ -224,7 +228,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value The value to be written (string, number, boolean, object, array, or null).
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    set(value: any, onComplete?: Function): Promise<void>;
+    set(value: any, onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Writes multiple values to the Database at once.
@@ -264,7 +268,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: value }, onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -282,7 +286,10 @@ export namespace FirebaseDatabaseTypes {
      * @param priority The priority value.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    setPriority(priority: string | number | null, onComplete?: Function): Promise<void>;
+    setPriority(
+      priority: string | number | null,
+      onComplete?: (a: Error | null) => any,
+    ): Promise<void>;
 
     /**
      * Writes data the Database location. Like `set()` but also specifies the priority for that data.
@@ -306,7 +313,7 @@ export namespace FirebaseDatabaseTypes {
     setWithPriority(
       newVal: any,
       newPriority: string | number | null,
-      onComplete?: Function,
+      onComplete?: (a: Error | null) => any,
     ): Promise<void>;
 
     /**
@@ -330,7 +337,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    remove(onComplete?: Function): Promise<void>;
+    remove(onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Atomically modifies the data at this location.
@@ -371,8 +378,8 @@ export namespace FirebaseDatabaseTypes {
      * @param applyLocally By default, events are raised each time the transaction update function runs. So if it is run multiple times, you may see intermediate states. You can set this to false to suppress these intermediate states and instead wait until the transaction has completed before events are raised.
      */
     transaction(
-      transactionUpdate: Function,
-      onComplete?: Function,
+      transactionUpdate: (a: any) => any,
+      onComplete?: (a: Error | null, b: boolean, c: DataSnapshot | null) => any,
       applyLocally?: boolean,
     ): Promise<TransactionResult>;
 
@@ -403,7 +410,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value Optional value to be written at the generated location.
      * @param onComplete Callback called when write to server is complete.
      */
-    push(value?: any, onComplete?: Function): ThenableReference;
+    push(value?: any, onComplete?: (a: Error | null) => any): ThenableReference;
 
     /**
      * Returns an {@link database.OnDisconnect} instance.
@@ -590,109 +597,200 @@ export namespace FirebaseDatabaseTypes {
      * @param callback The callback function that was passed to `on()` or `undefined` to remove all callbacks.
      * @param context The context that was passed to `on()`.
      */
-    off(eventType?: EventType, callback?: Function, context?: Record<string, any>): void;
+    off(
+      eventType?: EventType,
+      callback?: (a: DataSnapshot, b?: string | null) => any,
+      context?: Record<string, any>,
+    ): void;
 
     /**
      * Listens for data changes at a particular location.
      *
-     * This is the primary way to read data from a Database. Your callback will be triggered for the
-     * initial data and again whenever the data changes. Use `off()` to stop receiving updates..
+     * This is the primary way to read data from a Database. Your callback
+     * will be triggered for the initial data and again whenever the data changes.
+     * Use `off( )` to stop receiving updates. See
+     * {@link https://firebase.google.com/docs/database/web/retrieve-data
+     *   Retrieve Data on the Web}
+     * for more details.
      *
-     * **value** event
+     * <h4>value event</h4>
      *
-     * This event will trigger once with the initial data stored at this location, and then trigger
-     * again each time the data changes. The `DataSnapshot` passed to the callback will be for the location
-     * at which on() was called. It won't trigger until the entire contents has been synchronized.
-     * If the location has no data, it will be triggered with an empty `DataSnapshot`
+     * This event will trigger once with the initial data stored at this location,
+     * and then trigger again each time the data changes. The `DataSnapshot` passed
+     * to the callback will be for the location at which `on()` was called. It
+     * won't trigger until the entire contents has been synchronized. If the
+     * location has no data, it will be triggered with an empty `DataSnapshot`
      * (`val()` will return `null`).
      *
-     * **child_added** event
+     * <h4>child_added event</h4>
      *
-     * This event will be triggered once for each initial child at this location, and it will be
-     * triggered again every time a new child is added. The `DataSnapshot` passed into the callback
-     * will reflect the data for the relevant child. For ordering purposes, it is passed a second argument
-     * which is a string containing the key of the previous sibling child by sort order, or `null` if
-     * it is the first child.
+     * This event will be triggered once for each initial child at this location,
+     * and it will be triggered again every time a new child is added. The
+     * `DataSnapshot` passed into the callback will reflect the data for the
+     * relevant child. For ordering purposes, it is passed a second argument which
+     * is a string containing the key of the previous sibling child by sort order
+     * (or `null` if it is the first child).
      *
-     * **child_removed** event
+     * <h4>child_removed event</h4>
      *
-     * This event will be triggered once every time a child is removed. The `DataSnapshot` passed into
-     * the callback will be the old data for the child that was removed. A child will get removed when either:
+     * This event will be triggered once every time a child is removed. The
+     * `DataSnapshot` passed into the callback will be the old data for the child
+     * that was removed. A child will get removed when either:
+     *
      * - a client explicitly calls `remove()` on that child or one of its ancestors
      * - a client calls `set(null)` on that child or one of its ancestors
      * - that child has all of its children removed
-     * - there is a query in effect which now filters out the child (because it's sort order changed or the max limit was hit)
+     * - there is a query in effect which now filters out the child (because it's
+     *   sort order changed or the max limit was hit)
      *
-     * **child_changed** event
+     * <h4>child_changed event</h4>
      *
-     * This event will be triggered when the data stored in a child (or any of its descendants) changes.
-     * Note that a single `child_changed` event may represent multiple changes to the child. The
-     * `DataSnapshot` passed to the callback will contain the new child contents. For ordering purposes,
-     * the callback is also passed a second argument which is a string containing the key of the previous
-     * sibling child by sort order, or `null` if it is the first child.
+     * This event will be triggered when the data stored in a child (or any of its
+     * descendants) changes. Note that a single `child_changed` event may represent
+     * multiple changes to the child. The `DataSnapshot` passed to the callback will
+     * contain the new child contents. For ordering purposes, the callback is also
+     * passed a second argument which is a string containing the key of the previous
+     * sibling child by sort order (or `null` if it is the first child).
      *
-     * **child_moved** event
+     * <h4>child_moved event</h4>
      *
-     * This event will be triggered when a child's sort order changes such that its position relative
-     * to its siblings changes. The `DataSnapshot` passed to the callback will be for the data of the child
-     * that has moved. It is also passed a second argument which is a string containing the key of the
-     * previous sibling child by sort order, or `null` if it is the first child.
+     * This event will be triggered when a child's sort order changes such that its
+     * position relative to its siblings changes. The `DataSnapshot` passed to the
+     * callback will be for the data of the child that has moved. It is also passed
+     * a second argument which is a string containing the key of the previous
+     * sibling child by sort order (or `null` if it is the first child).
      *
-     * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved."
-     * @param callback A callback that fires when the specified event occurs. The callback will be passed a DataSnapshot. For ordering purposes, "child_added", "child_changed", and "child_moved" will also be passed a string containing the key of the previous child, by sort order, or `null` if it is the first child.
-     * @param cancelCallbackOrContext An optional callback that will be notified if your event subscription is ever canceled because your client does not have permission to read this data (or it had permission but has now lost it). This callback will be passed an `Error` object indicating why the failure occurred.
-     * @param context If provided, this object will be used as `this` when calling your callback(s).
-     *
-     */
-    on(
-      eventType?: EventType,
-      callback?: Function,
-      cancelCallbackOrContext?: Record<string, any>,
-      context?: Record<string, any> | null,
-    ): Function;
-
-    /**
-     * Listens for exactly one event of the specified event type, and then stops listening.
-     *
-     * This is equivalent to calling `on()`, and then calling `off()` inside the callback function. See `on()` for details on the event types.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Promise
-     * const snapshot = await firebase.database().ref('users').once('value');
-     * // Callback
-     * firebase.database().ref('users).once('value', (snapshot) => {
-     *   console.log(snapshot.val());
+     * @example
+     * ```javascript
+     * // Handle a new value.
+     * ref.on('value', function(dataSnapshot) {
+     *   ...
      * });
      * ```
      *
-     * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved."
-     * @param successCallback A callback that fires when the specified event occurs. The callback will be passed a DataSnapshot. For ordering purposes, "child_added", "child_changed", and "child_moved" will also be passed a string containing the key of the previous child by sort order, or `null` if it is the first child.
+     * @example
+     * ```javascript
+     * // Handle a new child.
+     * ref.on('child_added', function(childSnapshot, prevChildKey) {
+     *   ...
+     * });
+     * ```
+     *
+     * @example
+     * ```javascript
+     * // Handle child removal.
+     * ref.on('child_removed', function(oldChildSnapshot) {
+     *   ...
+     * });
+     * ```
+     *
+     * @example
+     * ```javascript
+     * // Handle child data changes.
+     * ref.on('child_changed', function(childSnapshot, prevChildKey) {
+     *   ...
+     * });
+     * ```
+     *
+     * @example
+     * ```javascript
+     * // Handle child ordering changes.
+     * ref.on('child_moved', function(childSnapshot, prevChildKey) {
+     *   ...
+     * });
+     * ```
+     *
+     * @param eventType One of the following strings: "value",
+     *   "child_added", "child_changed", "child_removed", or "child_moved."
+     * @param callback A callback that fires when the specified event occurs. The callback is
+     *   passed a DataSnapshot. For ordering purposes, "child_added",
+     *   "child_changed", and "child_moved" will also be passed a string containing
+     *   the key of the previous child, by sort order (or `null` if it is the
+     *   first child).
+     * @param cancelCallbackOrContext An optional
+     *   callback that will be notified if your event subscription is ever canceled
+     *   because your client does not have permission to read this data (or it had
+     *   permission but has now lost it). This callback will be passed an `Error`
+     *   object indicating why the failure occurred.
+     * @param context If provided, this object will be used as `this`
+     *   when calling your callback(s).
+     * @return The provided
+     *   callback function is returned unmodified. This is just for convenience if
+     *   you want to pass an inline function to `on()`,  but store the callback
+     *   function for later passing to `off()`.
      */
-    once(eventType: EventType, successCallback?: Function): Promise<DataSnapshot>;
+    on(
+      eventType?: EventType,
+      callback?: (a: DataSnapshot, b?: string | null) => any,
+      cancelCallbackOrContext?: ((a: Error) => any) | Record<string, any> | null,
+      context?: Record<string, any> | null,
+    ): (a: admin.database.DataSnapshot | null, b?: string) => any;
+
+    /**
+     * Listens for exactly one event of the specified event type, and then stops
+     * listening.
+     *
+     * This is equivalent to calling `on()`, and then calling `off()` inside the
+     * callback function. See `on()` for details on the event types.
+     *
+     * @example
+     * ```javascript
+     * // Basic usage of .once() to read the data located at ref.
+     * ref.once('value')
+     *   .then(function(dataSnapshot) {
+     *     // handle read data.
+     *   });
+     * ```
+     *
+     * @param eventType One of the following strings: "value",
+     *   "child_added", "child_changed", "child_removed", or "child_moved."
+     * @param successCallback A callback that fires when the specified event occurs. The callback is
+     *   passed a `DataSnapshot`. For ordering purposes, "child_added",
+     *   "child_changed", and "child_moved" will also be passed a string containing
+     *   the key of the previous child by sort order (or `null` if it is the
+     *   first child).
+     * @param failureCallbackOrContext An optional
+     *   callback that will be notified if your client does not have permission to
+     *   read the data. This callback will be passed an `Error` object indicating
+     *   why the failure occurred.
+     * @param context If provided, this object will be used as `this`
+     *   when calling your callback(s).
+     * @return {!Promise<admin.database.DataSnapshot>}
+     */
+    once(
+      eventType: EventType,
+      successCallback?: (a: DataSnapshot, b?: string | null) => any,
+      failureCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
+      context?: Record<string, any> | null,
+    ): Promise<DataSnapshot>;
 
     /**
      * Generates a new `Query` object ordered by the specified child key.
      *
-     * Queries can only order by one key at a time. Calling `orderByChild()` multiple times on the same query is an error.
+     * Queries can only order by one key at a time. Calling `orderByChild()`
+     * multiple times on the same query is an error.
      *
-     * Firebase queries allow you to order your data by any child key on the fly. However, if you know in advance what
-     * your indexes will be, you can define them via the [.indexOn](https://firebase.google.com/docs/database/security/indexing-data?authuser=0)
-     * rule in your Security Rules for better performance.
+     * Firebase queries allow you to order your data by any child key on the fly.
+     * However, if you know in advance what your indexes will be, you can define
+     * them via the .indexOn rule in your Security Rules for better performance. See
+     * the {@link https://firebase.google.com/docs/database/security/indexing-data
+     * .indexOn} rule for more information.
      *
-     * You can read more about orderByChild() in [Sort data](https://firebase.google.com/docs/database/web/lists-of-data?authuser=0#sort_data).
+     * You can read more about `orderByChild()` in
+     * {@link
+     *  https://firebase.google.com/docs/database/web/lists-of-data#sort_data
+     *  Sort data}.
      *
-     * #### Example
-     *
-     * ```js
-     * const snapshot = await firebase.database().ref('users').orderByChild('age').once('value');
-     * snapshot.forEach((snapshot) => {
-     *  console.log('Users age:', snapshot.val().age);
+     * @example
+     * ```javascript
+     * var ref = admin.database().ref("dinosaurs");
+     * ref.orderByChild("height").on("child_added", function(snapshot) {
+     *   console.log(snapshot.key + " was " + snapshot.val().height + " m tall");
      * });
      * ```
      *
-     * @param path The child path node to order by.
+     * @param path
+     * @return A new `Query` object.
      */
     orderByChild(path: string): Query;
 
@@ -701,92 +799,130 @@ export namespace FirebaseDatabaseTypes {
      *
      * Sorts the results of a query by their (ascending) key values.
      *
-     * You can read more about `orderByKey()` in [Sort data](https://firebase.google.com/docs/database/web/lists-of-data?authuser=0#sort_data).
+     * You can read more about `orderByKey()` in
+     * {@link
+     *  https://firebase.google.com/docs/database/web/lists-of-data#sort_data
+     *  Sort data}.
      *
-     * #### Example
-     *
-     * ```js
-     * const snapshot = await firebase.database().ref('users').orderByKey().once('value');
-     * snapshot.forEach((snapshot) => {
-     *  console.log('User:', snapshot.val());
+     * @example
+     * ```javascript
+     * var ref = admin.database().ref("dinosaurs");
+     * ref.orderByKey().on("child_added", function(snapshot) {
+     *   console.log(snapshot.key);
      * });
      * ```
+     *
+     * @return A new `Query` object.
      */
     orderByKey(): Query;
 
     /**
-     * Generates a new Query object ordered by priority.
+     * Generates a new `Query` object ordered by priority.
      *
-     * Applications need not use priority but can order collections by ordinary properties
-     * (see [Sort data](https://firebase.google.com/docs/database/web/lists-of-data?authuser=0#sort_data)
-     * for alternatives to priority).
+     * Applications need not use priority but can order collections by
+     * ordinary properties (see
+     * {@link
+     *  https://firebase.google.com/docs/database/web/lists-of-data#sort_data
+     *  Sort data} for alternatives to priority.
+     *
+     * @return A new `Query` object.
      */
     orderByPriority(): Query;
 
     /**
      * Generates a new `Query` object ordered by value.
      *
-     * If the children of a query are all scalar values (string, number, or boolean), you can order
-     * the results by their (ascending) values.
+     * If the children of a query are all scalar values (string, number, or
+     * boolean), you can order the results by their (ascending) values.
      *
-     * You can read more about `orderByValue()` in [Sort data](https://firebase.google.com/docs/database/web/lists-of-data?authuser=0#sort_data).
+     * You can read more about `orderByValue()` in
+     * {@link
+     *  https://firebase.google.com/docs/database/web/lists-of-data#sort_data
+     *  Sort data}.
      *
-     * #### Example
-     *
-     * ```js
-     * await firebase.database().ref('scores').orderByValue().once('value');
+     * @example
+     * ```javascript
+     * var scoresRef = admin.database().ref("scores");
+     * scoresRef.orderByValue().limitToLast(3).on("value", function(snapshot) {
+     *   snapshot.forEach(function(data) {
+     *     console.log("The " + data.key + " score is " + data.val());
+     *   });
+     * });
      * ```
+     *
+     * @return A new `Query` object.
      */
     orderByValue(): Query;
 
     /**
      * Creates a `Query` with the specified starting point.
      *
-     * Using `startAt()`, `endAt()`, and `equalTo()` allows you to choose arbitrary starting and
-     * ending points for your queries.
+     * Using `startAt()`, `endAt()`, and `equalTo()` allows you to choose arbitrary
+     * starting and ending points for your queries.
      *
-     * The starting point is inclusive, so children with exactly the specified value will be included
-     * in the query. The optional key argument can be used to further limit the range of the query.
-     * If it is specified, then children that have exactly the specified value must also have a key
-     * name greater than or equal to the specified key.
+     * The starting point is inclusive, so children with exactly the specified value
+     * will be included in the query. The optional key argument can be used to
+     * further limit the range of the query. If it is specified, then children that
+     * have exactly the specified value must also have a key name greater than or
+     * equal to the specified key.
      *
-     * You can read more about `startAt()` in [Filtering data](https://firebase.google.com/docs/database/web/lists-of-data?authuser=0#filtering_data).
+     * You can read more about `startAt()` in
+     * {@link
+     *  https://firebase.google.com/docs/database/web/lists-of-data#filtering_data
+     *  Filtering data}.
      *
-     * #### Example
-     *
-     * ```js
-     * await firebase.database().ref('users').orderByChild('age').startAt(21).once('value');
+     * @example
+     * ```javascript
+     * // Find all dinosaurs that are at least three meters tall.
+     * var ref = admin.database().ref("dinosaurs");
+     * ref.orderByChild("height").startAt(3).on("child_added", function(snapshot) {
+     *   console.log(snapshot.key)
+     * });
      * ```
      *
-     * @param value The value to start at. The argument type depends on which `orderBy*()` function was used in this query. Specify a value that matches the `orderBy*()` type. When used in combination with `orderByKey()`, the value must be a string.
-     * @param key The child key to start at. This argument is only allowed if ordering by child, value, or priority.
+     * @param value The value to start at. The argument
+     *   type depends on which `orderBy*()` function was used in this query.
+     *   Specify a value that matches the `orderBy*()` type. When used in
+     *   combination with `orderByKey()`, the value must be a string.
+     * @param  key The child key to start at. This argument is allowed if
+     *   ordering by child, value, or priority.
+     * @return A new `Query` object.
      */
     startAt(value: number | string | boolean | null, key?: string): Query;
 
     /**
-     * Returns a JSON-serializable representation of this object.
+     * @return A JSON-serializable representation of this object.
      */
     toJSON(): object;
 
     /**
      * Gets the absolute URL for this location.
      *
-     * The `toString()` method returns a URL that is ready to be put into a browser, curl command, or
-     * a `firebase.database().refFromURL()` call. Since all of those expect the URL to be url-encoded,
-     * `toString()` returns an encoded URL.
+     * The `toString()` method returns a URL that is ready to be put into a browser,
+     * curl command, or a `admin.database().refFromURL()` call. Since all of those
+     * expect the URL to be url-encoded, `toString()` returns an encoded URL.
      *
-     * Append '.json' to the returned URL when typed into a browser to download JSON-formatted data.
-     * If the location is secured (that is, not publicly readable), you will get a permission-denied error.
+     * Append '.json' to the returned URL when typed into a browser to download
+     * JSON-formatted data. If the location is secured (that is, not publicly
+     * readable), you will get a permission-denied error.
      *
-     * #### Example
+     * @example
+     * ```javascript
+     * // Calling toString() on a root Firebase reference returns the URL where its
+     * // data is stored within the Database:
+     * var rootRef = admin.database().ref();
+     * var rootUrl = rootRef.toString();
+     * // rootUrl === "https://sample-app.firebaseio.com/".
      *
-     * ```js
-     * const ref1 = firebase.database().ref();
-     * const ref2 = firebase.database().ref('users').orderByValue();
-     *
-     * ref1.toString(); // https://sample-app.firebaseio.com/
-     * ref2.toString(); // https://sample-app.firebaseio.com/users
+     * // Calling toString() at a deeper Firebase reference returns the URL of that
+     * // deep path within the Database:
+     * var adaRef = rootRef.child('users/ada');
+     * var adaURL = adaRef.toString();
+     * // adaURL === "https://sample-app.firebaseio.com/users/ada".
      * ```
+     *
+     * @return The absolute URL for this location.
+     * @override
      */
     toString(): string;
 
@@ -838,14 +974,14 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    cancel(onComplete?: Function): Promise<void>;
+    cancel(onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Ensures the data at this location is deleted when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    remove(onComplete?: Function): Promise<void>;
+    remove(onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value when the client is disconnected
@@ -867,7 +1003,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value The value to be written to this location on disconnect (can be an object, array, string, number, boolean, or null).
      * @param onComplete An optional callback function that will be called when synchronization to the Database server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    set(value: any, onComplete?: Function): Promise<void>;
+    set(value: any, onComplete?: (a: Error | null) => any): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value and priority when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
@@ -879,7 +1015,7 @@ export namespace FirebaseDatabaseTypes {
     setWithPriority(
       value: any,
       priority: string | number | null,
-      onComplete?: Function,
+      onComplete?: (a: Error | null) => any,
     ): Promise<void>;
 
     /**
@@ -909,7 +1045,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: value }, onComplete?: (a: Error | null) => any): Promise<void>;
   }
 
   export type EventType =
@@ -1006,7 +1142,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param action A function that will be called for each child DataSnapshot. The callback can return true to cancel further enumeration.
      */
-    forEach(action: Function): boolean;
+    forEach(action: (a: DataSnapshot) => boolean | void): boolean;
 
     /**
      * Gets the priority value of the data in this DataSnapshot.
