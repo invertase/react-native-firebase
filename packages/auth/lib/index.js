@@ -125,22 +125,23 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   async setLanguageCode(code) {
-    if (isAndroid) {
-      if (!isString(code)) {
-        throw new Error(
-          "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string",
-        );
-      }
-    } else {
-      if (!isString(code) && !isNull(code)) {
-        throw new Error(
-          "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
-        );
-      }
+    if (!isString(code) && !isNull(code)) {
+      throw new Error(
+        "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
+      );
     }
 
     await this.native.setLanguageCode(code);
-    this._languageCode = code;
+
+    if (code === null) {
+      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+      if (!this.languageCode) {
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      }
+    } else {
+      this._languageCode = code;
+    }
   }
 
   onAuthStateChanged(listener) {
