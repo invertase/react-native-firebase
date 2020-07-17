@@ -823,14 +823,8 @@ describe('auth()', () => {
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-
+      // expect no error
       await firebase.auth().setLanguageCode(null);
-
-      if (firebase.auth().languageCode === null) {
-        throw new Error(
-          'Expected language code to revert to default app language i.e a string value.',
-        );
-      }
 
       try {
         await firebase.auth().setLanguageCode(123);
