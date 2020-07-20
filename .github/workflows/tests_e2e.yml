@@ -29,7 +29,7 @@ jobs:
         run: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
-        run: nohup firebase emulators:start  
+        run: firebase emulators:start &
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
