@@ -25,6 +25,12 @@ jobs:
 
       - uses: actions/setup-node@v1
 
+      - name: Install firebase CLI
+        run: npm i -g firebase-tools
+
+      - name: Start Firestore Emulator
+        run: firebase emulators:start  
+
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
       #  -> https://github.com/actions/cache/issues/187

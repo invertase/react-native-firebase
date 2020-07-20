@@ -24,7 +24,7 @@ import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
-import '@react-native-firebase/firestore';
+import firestore from '@react-native-firebase/firestore';
 import '@react-native-firebase/functions';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/in-app-messaging';
@@ -41,6 +41,10 @@ import { AppRegistry, NativeModules, Text, View } from 'react-native';
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
+
+const db = firestore();
+
+db.settings({ host: 'localhost:8080' });
 
 function Root() {
   return (
