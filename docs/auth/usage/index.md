@@ -147,7 +147,7 @@ then signing them in.
 import auth from '@react-native-firebase/auth';
 
 auth()
-  .createUserWithEmailAndPassword('sarah.lane@gmail.com', 'SuperSecretPassword!')
+  .createUserWithEmailAndPassword('Jane.Doe@gexample.com', 'SuperSecretPassword!')
   .then(() => {
     console.log('User account created & signed in!');
   })
