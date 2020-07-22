@@ -20,6 +20,16 @@ The longer you stay on v5, the more your project will be out of sync with the of
 
 We highly recommend taking the necessary pains to update to v6.
 
+### My CI build hangs at the `Running script '[CP-User] [RNFB] Core Configuration'` step. 
+
+This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. If you don't want to change any of the default React Native Firebase configurations, you can leave it empty in the following way: 
+```
+{
+  "react-native": {
+  }
+}
+```
+
 # Tips
 
 - Advice on supporting multiple environments (for example, dev, prod, maybe also staging, qa) for your React Native Firebase App: [#3504](https://github.com/invertase/react-native-firebase/issues/3504)
