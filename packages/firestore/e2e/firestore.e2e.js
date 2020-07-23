@@ -188,7 +188,6 @@ describe('firestore()', () => {
         .get();
 
       querySnapshot.forEach(ds => {
-        console.log('PPP', ds.ref.path);
         ds.data().value.should.eql(2);
       });
 
@@ -291,7 +290,10 @@ describe('firestore()', () => {
     });
 
     it('accepts an unlimited cache size', () => {
-      firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+      // causes local firestore tests to fail on android
+      if (device.getPlatform() === 'ios') {
+        firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
+      }
     });
 
     it('throws if host is not a string', () => {
