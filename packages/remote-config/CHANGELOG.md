@@ -3,9 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [7.2.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.2...@react-native-firebase/remote-config@7.2.3) (2020-07-23)
+## [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.2...@react-native-firebase/remote-config@8.0.0) (2020-07-23)
 
-**Note:** Version bump only for package @react-native-firebase/remote-config
+This release is aimed at aligning the API to match the Firebase Web SDK as well as introducing support for multiple Firebase apps.
+
+**Pull Request**: [#3537](https://github.com/invertase/react-native-firebase/pull/3537)
+
+### RemoteConfig Module
+
+```js
+const remoteConfig = firebase.remoteConfig();
+```
+
+#### Updates
+-  added `ensureInitialized ` API.
+-  added `reset` API for android only
+- `console.warn()` if user tries to set `defaultConfig` which is part of web sdk.
+- `console.warn()` if user tries to set `settings` which is part of web sdk.
+- `console.warn()` if user tries to set `setLogLevel` which is part of web sdk.
+
+### RemoteConfig.setConfigSettings()
+
+```js
+const remoteConfig = firebase.remoteConfig().setConfigSettings({});
+```
+
+#### Updates
+- can set 'minimumFetchIntervalMillis' in `setConfigSettings` to match web sdk.
+- can set 'fetchTimeMillis' in `setConfigSettings` to match web sdk.
+
+#### Removed
+- `isDeveloperModeEnabled` from config settings and console.warn() if tried to set.
+- `minimumFetchInterval ` config setting and console.warn() if tried to set.
+
+### RemoteConfig.getValue(key)
+
+```js
+const remoteConfig = firebase.remoteConfig().getValue('key');
+```
+
+#### Updates
+
+- `asBoolean()` resolves value to a boolean.
+- `asNumber()` resolves value to a number.
+- `asString()` resolves value to a string.
+- `getSource()` source of the property.
+
+#### Removed
+
+- `value` removed property. Not sure how to warn users it is no longer available
+- `source` removed property. Again, not sure how to warn users.
+
+### Internal Changes
+- Switched to `setConfigSettingsAsync ` for Android, nothing similar for iOS.
+- Switched to `fetchAndActivate` API for both platforms.
+- Switched to async `activate` API for iOS. No changes needed for Android.
+- Multiple Firebase apps now supported on both platforms.
+
 
 ## [7.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.1...@react-native-firebase/remote-config@7.2.2) (2020-07-09)
 
