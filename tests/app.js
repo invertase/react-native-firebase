@@ -44,7 +44,7 @@ jet.exposeContextProperty('module', firebase);
 
 const db = firestore();
 
-db.settings({ host: 'localhost:8080' });
+db.settings({ host: 'localhost:8080', ssl: false, persistence: false });
 
 function Root() {
   return (

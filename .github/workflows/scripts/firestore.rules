@@ -3,9 +3,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
   
   
-  function isUpdateToLikeCount(attr) {
+	function isUpdateToLikeCount(attr) {
     return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes']);
-		}
+	}
 
 		allow update: if isUpdateToLikeCount(request.resource.data);
   
