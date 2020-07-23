@@ -66,8 +66,8 @@ describe('firestore.doc().get()', () => {
     snapshot.metadata.fromCache.should.equal(false);
     await ref.delete();
   });
-  // fails using firestore emulator
-  xit('gets data from cache', async () => {
+
+  it('gets data from cache', async () => {
     const ref = firebase.firestore().doc('v6/get');
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);

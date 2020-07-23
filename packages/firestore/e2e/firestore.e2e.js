@@ -338,8 +338,7 @@ describe('firestore()', () => {
   });
 
   describe('Clear cached data persistence', () => {
-    // fails using firestore emulator
-    xit('should clear any cached data', async () => {
+    it('should clear any cached data', async () => {
       const db = firebase.firestore();
       const id = 'foobar';
       const ref = db.doc(`v6/${id}`);
