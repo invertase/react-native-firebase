@@ -290,10 +290,7 @@ describe('firestore()', () => {
     });
 
     it('accepts an unlimited cache size', () => {
-      // causes local firestore tests to fail on android
-      if (device.getPlatform() === 'ios') {
-        firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
-      }
+      firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
     });
 
     it('throws if host is not a string', () => {
