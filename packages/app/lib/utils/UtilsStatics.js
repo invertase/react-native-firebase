@@ -60,7 +60,6 @@ function processPathConstants(nativeModule) {
 export default {
   SDK_VERSION: require('./../version'),
   get FilePath() {
-    // TODO move from storage native code into utils native code
     return processPathConstants(NativeModules.RNFBUtilsModule);
   },
 };
