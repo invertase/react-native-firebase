@@ -117,6 +117,13 @@ android {
   }
 }
 
+// Can probably remove this when tests upgrades to react-native 0.63
+configurations.all {
+    resolutionStrategy {
+        force "com.facebook.soloader:soloader:0.8.2"
+    }
+}
+
 dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion

@@ -25,6 +25,8 @@
     :(FIRApp *)firebaseApp
                              dbURL:(NSString *)dbURL;
 
++ (dispatch_queue_t)getDispatchQueue;
+
 + (void)setDatabaseConfig:(FIRDatabase *)firDatabase dbURL:(NSString *)dbURL;
 
 + (FIRDatabaseReference *)getReferenceForDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;

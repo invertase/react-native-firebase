@@ -1,8 +1,8 @@
 ---
 title: Release notes
 description: View the latest release notes for React Native Firebase
-next: /migrating-to-v6
-previous: /typescript
+next: /typescript
+previous: /migrating-to-v6
 ---
 
 Starting with version `v6.5.0`; all React Native Firebase packages are now independently versioned with individually generated release notes:

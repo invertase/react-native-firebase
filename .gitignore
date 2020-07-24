@@ -549,8 +549,9 @@ tests/ios/resetXcode.sh
 google-services.json
 GoogleService-Info.plist
 
-# generated file
+# generated files
 RNFBVersion.m
+ReactNativeFirebaseVersion.java
 
 appPlaygrounds/
 app.playground.js
