@@ -58,6 +58,7 @@ export interface AndroidApp {
   packageName: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 export interface IOSApp {
   name: string;
   appId: string;

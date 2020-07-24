@@ -1,5 +1,12 @@
 import { request } from './common';
-import { Account, AndroidSha, Project, ProjectDetail, AndroidApp } from '../../../types/firebase';
+import {
+  Account,
+  AndroidSha,
+  Project,
+  ProjectDetail,
+  AndroidApp,
+  ShaCertificateType,
+} from '../../../types/firebase';
 import { Apps } from '../../../types/cli';
 import { withParameter } from '../../utils';
 import CliError from '../../error';
@@ -138,8 +145,9 @@ async function createAndroidSha(
   if (!hash.match(/^[0-9a-f]{2}(:[0-9a-f]{2})*$/))
     throw new CliError('Invalid SHA hash format. Bytes need to be in hex and seperated by colons.');
   const hashParts = hash.split(':');
-  if (hashParts.length == 20) var type = 'SHA_1';
-  else if (hashParts.length == 32) var type = 'SHA_256';
+  let type: ShaCertificateType;
+  if (hashParts.length == 20) type = 'SHA_1';
+  else if (hashParts.length == 32) type = 'SHA_256';
   else throw new CliError('Invalid SHA hash type. Only SHA-1 and SHA-256 are allowed.');
 
   // TODO: use an actual ID
@@ -147,7 +155,7 @@ async function createAndroidSha(
   const shaCertificate: AndroidSha = {
     name: `${projectDetailAndroidApp.name}/sha/${shaId}`,
     shaHash: hash,
-    certType: 'SHA_1',
+    certType: type,
   };
   const operation = await request(account, {
     url: `${BASE_URL}/${projectDetailAndroidApp.name}/sha`,

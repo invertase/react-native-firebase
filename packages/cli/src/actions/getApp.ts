@@ -17,8 +17,8 @@ export function getAndroidApp(
     if (!selectedAndroidApp) {
       log.warn(
         `Your project ${Chalk.cyanBright(
-          projectDetail.displayName)
-        } does not contain any Android apps that match the package name ${Chalk.cyanBright(
+          projectDetail.displayName,
+        )} does not contain any Android apps that match the package name ${Chalk.cyanBright(
           packageName,
         )}.`,
       );

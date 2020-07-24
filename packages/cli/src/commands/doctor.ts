@@ -10,30 +10,19 @@ import firebase from '../helpers/firebase';
 import { getAndroidApp } from '../actions/getApp';
 import CliError from '../helpers/error';
 import { ProjectDetail } from '../types/firebase';
-import { getPluginList } from '../actions/handleGradle';
-import { getDependency } from '../helpers/gradle';
-import * as gradle from '../helpers/gradle';
+import { getPluginList, getDependencyList } from '../actions/handleGradle';
+import { GradleFile, pluginVersions } from '../helpers/gradle';
+import validateGoogleServices from '../actions/validateGoogleServices';
+import { Status, StatusGroup, FirebaseConfig, AppTypes, StatusItem } from '../types/cli';
+import { getFirebaseConfigRequirements, validateField } from '../actions/handleFirebase';
 
 const display = console.log; // eslint-disable-line no-console
-
-// sorted ASC by severity
-enum Status {
-  Info,
-  Success,
-  Warning,
-  Error,
-}
-
-type CheckItem = [string | null, Status];
-interface CheckGroup {
-  [key: string]: CheckGroup | CheckItem;
-}
 
 function boolStatus(status: any, error: Status = Status.Error): Status {
   return status ? Status.Success : error;
 }
 
-function validateStyle(val: string, status: Status): string {
+function applyStatusColor(val: string, status: Status): string {
   switch (status) {
     case Status.Info:
       return Chalk.blue(val);
@@ -46,7 +35,7 @@ function validateStyle(val: string, status: Status): string {
   }
 }
 
-function validateSymbol(status: Status): string {
+function getStatusSymbol(status: Status): string {
   switch (status) {
     case Status.Success:
       return Chalk.green(' ✓ ');
@@ -95,29 +84,37 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
       web: false,
     }) as Promise<ProjectDetail>);
 
+  const apps: { [type in AppTypes]: boolean } = {
+    android: true,
+    ios: false, // not implemented
+    web: false, // not supported
+  };
+
   const Loader = getLoader();
   const loader = new Loader();
 
   loader.start('Running diagnostics...');
 
-  const plugins = getPluginList(reactNativeConfig);
-
-  const checks: CheckGroup = {};
+  const report: StatusGroup = {};
+  report['Common'] = {};
 
   const packageInfo = require(join(process.cwd(), 'package.json'));
-  const rnfbPackages: CheckGroup = {};
-  const rnPackages: CheckGroup = {};
   const rnfbPrefix = '@react-native-firebase/';
 
+  report['Common']['RNFB Packages'] = {};
   for (const [pkg, version] of Object.entries(packageInfo.dependencies)) {
     if (!pkg.startsWith(rnfbPrefix)) continue;
-    rnfbPackages[pkg.substr(rnfbPrefix.length)] = [version as string, Status.Info];
+    report['Common']['RNFB Packages'][pkg.substr(rnfbPrefix.length)] = [
+      version as string,
+      Status.Info,
+    ];
   }
 
   // this script should not even be able to run without app, but who knows
-  if (!rnfbPackages['app']) rnfbPackages['app'] = ['Not found', Status.Error];
+  if (!report['Common']['RNFB Packages']['app'])
+    report['Common']['RNFB Packages']['app'] = ['Not found', Status.Error];
 
-  rnPackages['react-native'] = {
+  report['Common']['RN Packages'] = {
     react: [
       foundResult(packageInfo.dependencies['react']),
       packageInfo.dependencies['react'] ? Status.Info : Status.Error,
@@ -128,70 +125,123 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
     ],
   };
 
-  checks['Common'] = {
-    'RNFB Packages': rnfbPackages,
-    'React-Native Packages': rnPackages,
-  };
+  report['Common']['firebase.json'] = {};
+  const firebaseConfig = ((await file.readFirebaseConfig(reactNativeConfig)) ||
+    {}) as FirebaseConfig;
+  if (!firebaseConfig['react-native']) firebaseConfig['react-native'] = {};
+  const rnfbConfig = firebaseConfig['react-native'];
 
-  const androidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
-  checks['Android'] = {};
+  const configRequirements = getFirebaseConfigRequirements(reactNativeConfig, apps);
 
-  checks['Android'][`Firebase app`] = [
-    androidApp ? androidApp.name : 'Not found',
-    boolStatus(androidApp),
-  ];
-
-  const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
-
-  checks['Android'][`google-services.json`] = [null, boolStatus(androidGoogleServicesFile)];
-
-  const androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
-  checks['Android'][`build.gradle`] = {};
-  checks['Android'][`build.gradle`]['File'] = [
-    androidGoogleServicesFile ? androidProjectConfig.buildGradlePath : 'Not found',
-    boolStatus(androidBuildGradleFile),
-  ];
-
-  if (androidBuildGradleFile) {
-    for (const plugin of plugins) {
-      const version = gradle.pluginVersions[plugin[0]][plugin[1]];
-      const dependency = await getDependency(plugin[0], plugin[1], androidBuildGradleFile);
-      const outdated = dependency && compareVersion(dependency.version, version);
-      checks['Android'][`build.gradle`][`${plugin[1]} dependency`] = [
-        dependency ? `${dependency.version} >= ${version}` : 'Not configured',
-        dependency ? boolStatus(outdated, Status.Warning) : Status.Error,
-      ];
+  for (const [key, test] of configRequirements) {
+    let reportEntry: StatusItem;
+    if (key instanceof Array) {
+      if (!key.some(k => rnfbConfig[k])) reportEntry = ['Not found', Status.Error];
+      else if (
+        !validateField(
+          key.map(key => rnfbConfig[key]),
+          test,
+        )
+      )
+        reportEntry = ['Invalid configuration', Status.Warning];
+      else reportEntry = [null, Status.Success];
+      report['Common']['firebase.json'][key.join(', ')] = reportEntry;
+    } else {
+      if (rnfbConfig[key] === undefined) reportEntry = ['Not found', Status.Error];
+      else if (!validateField(rnfbConfig[key], test))
+        reportEntry = ['Invalid configuration', Status.Warning];
+      else reportEntry = [null, Status.Success];
+      report['Common']['firebase.json'][key] = reportEntry;
     }
   }
 
-  const androidAppBuildGradleFile = await file.readAndroidAppBuildGradle(androidProjectConfig);
-  checks['Android'][`App build.gradle`] = {};
-  checks['Android'][`App build.gradle`]['File'] = [
-    androidBuildGradleFile
-      ? join(androidProjectConfig.sourceDir, 'app', 'build.gradle')
-      : 'Not found',
-    boolStatus(androidAppBuildGradleFile),
-  ];
-  if (androidAppBuildGradleFile) {
-    for (const plugin of plugins) {
-      const pluginRegistered = gradle.getPlugin(plugin[0], plugin[1], androidAppBuildGradleFile);
-      checks['Android'][`App build.gradle`][`${plugin[1]} plugin`] = [
-        pluginRegistered ? 'Registered' : 'Not registered',
-        boolStatus(pluginRegistered),
-      ];
-    }
+  if (apps.android) {
+    report['Android'] = {};
+
+    const androidApp = getAndroidApp(projectDetail, androidProjectConfig.packageName);
+    report['Android']['Firebase app'] = [
+      androidApp ? androidApp.name : 'Not found',
+      boolStatus(androidApp),
+    ];
+
+    const androidGoogleServicesFile = await file.readAndroidGoogleServices(androidProjectConfig);
+    if (androidGoogleServicesFile) {
+      if (androidApp) {
+        const validationError = validateGoogleServices(
+          androidGoogleServicesFile,
+          projectDetail,
+          androidApp,
+        );
+        report['Android']['google-services.json'] = [
+          validationError || null,
+          boolStatus(!validationError),
+        ];
+      } else {
+        report['Android']['google-services.json'] = ['Unable to validate', Status.Warning];
+      }
+    } else report['Android']['google-services.json'] = ['Not found', Status.Error];
+
+    const androidBuildGradleFile = await file.readAndroidBuildGradle(androidProjectConfig);
+    if (androidBuildGradleFile) {
+      const gradleFile = new GradleFile(androidBuildGradleFile);
+      const dependencies = getDependencyList(reactNativeConfig);
+      const dependencyReport: StatusGroup = {};
+      try {
+        for (const dep of dependencies) {
+          const version = pluginVersions[dep[0]][dep[1]];
+          const dependency = await gradleFile.getDependency(dep[0], dep[1]);
+          dependencyReport[dep[1]] = [
+            dependency ? `${dependency.version} >= ${version}` : 'Not configured',
+            dependency
+              ? boolStatus(!compareVersion(version, dependency.version), Status.Warning)
+              : Status.Error,
+          ];
+        }
+        report['Android']['build.gradle'] = { Dependencies: dependencyReport };
+      } catch (e) {
+        if (e instanceof CliError) {
+          report['Android']['build.gradle'] = ['Invalid format', Status.Error];
+        } else throw e;
+      }
+    } else report['Android']['build.gradle'] = ['Not found', Status.Error];
+
+    const androidAppBuildGradleFile = await file.readAndroidAppBuildGradle(androidProjectConfig);
+    if (androidAppBuildGradleFile) {
+      const pluginReport: StatusGroup = {};
+      const plugins = getPluginList(reactNativeConfig);
+      const gradleFile = new GradleFile(androidAppBuildGradleFile);
+      try {
+        for (const plugin of plugins) {
+          const result = gradleFile.verifyPlugin(...plugin);
+          if (result === null) pluginReport[plugin[1]] = ['Not Found', Status.Error];
+          else
+            pluginReport[plugin[1]] = [
+              result ? null : `not applied at ${plugin[2]}`,
+              boolStatus(result, Status.Warning),
+            ];
+        }
+        report['Android']['App build.gradle'] = { Plugins: pluginReport };
+      } catch (e) {
+        if (e instanceof CliError) {
+          report['Android']['App build.gradle'] = ['Invalid format', Status.Error];
+        } else throw e;
+      }
+    } else report['Android']['App build.gradle'] = ['Not found', Status.Error];
   }
 
-  checks['iOS'] = {};
-  const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
-  checks['iOS'][`GoogleService-Info.plist`] = [null, boolStatus(iosGoogleServicesFile)];
+  if (apps.ios) {
+    report['iOS'] = {};
+
+    const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
+    report['iOS']['GoogleService-Info.plist'] = [null, boolStatus(iosGoogleServicesFile)];
+  }
 
   loader.stop();
 
-  function groupStatus(checks: CheckGroup) {
+  function getGroupStatus(checks: StatusGroup) {
     const statusList: Status[] = [];
 
-    function statusRecursive(checks: CheckGroup) {
+    function statusRecursive(checks: StatusGroup) {
       for (const item of Object.values(checks)) {
         if (Array.isArray(item)) statusList.push(item[1]);
         else statusRecursive(item);
@@ -204,24 +254,25 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
     return status;
   }
 
-  function displayChecksRecursive(checks: CheckGroup, depth = 0) {
+  function displayReportRecursive(checks: StatusGroup, depth = 0) {
     const indent = '  '.repeat(depth);
     for (const [name, value] of Object.entries(checks)) {
       if (Array.isArray(value)) {
         const [result, status] = value;
 
         if (result) {
-          display(`${indent} - ${name}: ${validateStyle(result, status)}`);
+          display(`${indent} - ${name}: ${applyStatusColor(result, status)}`);
         } else {
-          display(`${indent}${validateSymbol(status)}${name}`);
+          display(`${indent}${getStatusSymbol(status)}${name}`);
         }
       } else {
-        const status = groupStatus(value);
-        display(`${indent}${validateSymbol(status)}${name}`);
-        displayChecksRecursive(value, depth + 1);
+        const status = getGroupStatus(value);
+        if (depth) display(`${indent} - ${name}`);
+        else display(`${indent}${getStatusSymbol(status)}${name}`);
+        displayReportRecursive(value, depth + 1);
       }
       if (!depth) display('');
     }
   }
-  displayChecksRecursive(checks);
+  displayReportRecursive(report);
 }

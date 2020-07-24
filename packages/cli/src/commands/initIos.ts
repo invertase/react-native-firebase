@@ -11,7 +11,7 @@ export default async function initIos(
   reactNativeConfig: Config,
 ) {
   const iosProjectConfig = getIosConfig(reactNativeConfig);
-  log.info('Setting up Firebase for your Android app..');
+  log.info('Setting up Firebase for your iOS app..');
 
   const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
   if (iosGoogleServicesFile) {
@@ -24,4 +24,6 @@ export default async function initIos(
       log.error('Not implemented');
     }
   }
+
+  log.info('The Firebase setup for iOS has finished');
 }

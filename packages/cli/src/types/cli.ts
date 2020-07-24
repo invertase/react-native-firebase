@@ -17,3 +17,16 @@ export interface GradleDependency {
   type: string;
   excludes: string[];
 }
+
+// sorted ASC by severity
+export enum Status {
+  Info,
+  Success,
+  Warning,
+  Error,
+}
+
+export type StatusItem = [string | null, Status];
+export interface StatusGroup {
+  [key: string]: StatusGroup | StatusItem;
+}

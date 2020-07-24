@@ -31,12 +31,10 @@
 
 // print out final steps (run-android/ios)
 
-import { join } from 'path';
 import Chalk from 'chalk';
-import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-community/cli-types';
+import { Config } from '@react-native-community/cli-types';
 
 import firebase from '../helpers/firebase';
-import file from '../helpers/file';
 import prompt from '../helpers/prompt';
 import log from '../helpers/log';
 
@@ -46,9 +44,7 @@ import initAndroid from './initAndroid';
 import initIos from './initIos';
 import { trackModified } from '../helpers/tracker';
 import getAccount from '../actions/getAccount';
-import getConfig from '../actions/getConfig';
 import CliError from '../helpers/error';
-import { Account } from '../types/firebase';
 import handleFirebaseConfig from '../actions/handleFirebase';
 
 export default async function initCommand(args: string[], reactNativeConfig: Config) {
@@ -65,13 +61,10 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
   const account = await getAccount();
 
   const apps: { [type in AppTypes]: boolean } = {
-    android: false,
-    ios: false,
+    android: await prompt.confirm('Do you want to setup Android for your app?'),
+    ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not implemented
     web: false, // not supported
   };
-
-  apps.android = await prompt.confirm('Do you want to setup Android for your app?');
-  apps.ios = await prompt.confirm('Do you want to setup iOS for your app?');
 
   // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {
@@ -96,7 +89,7 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
     .api(account)
     .management.getProject(firebaseProject.projectId, apps);
 
-  await handleFirebaseConfig(reactNativeConfig);
+  await handleFirebaseConfig(reactNativeConfig, apps);
 
   if (apps.android) await initAndroid(account, projectDetail, reactNativeConfig);
   if (apps.ios) await initIos(account, projectDetail, reactNativeConfig);

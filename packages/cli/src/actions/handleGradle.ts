@@ -1,24 +1,32 @@
 import { Config } from '@react-native-community/cli-types';
-import * as gradle from '../helpers/gradle';
+import { GradleFile, pluginVersions } from '../helpers/gradle';
 import log from '../helpers/log';
 
+// Compile list of applied plugins to process
 export function getPluginList(reactNativeConfig: Config) {
-  // Compile list of plugins to handle
-  const plugins: [string, string, 'start' | 'end'][] = [
-    ['com.google.gms', 'google-services', 'end'],
+  const plugins: [string, string, 'top' | 'bottom'][] = [
+    ['com.google.gms', 'google-services', 'bottom'],
   ];
   if (reactNativeConfig.dependencies['@react-native-firebase/perf'])
-    plugins.push(['com.google.firebase', 'perf-plugin', 'start']);
+    plugins.push(['com.google.firebase', 'firebase-perf', 'top']);
   return plugins;
+}
+
+// Compile list of dependencies to process
+export function getDependencyList(reactNativeConfig: Config) {
+  const dependencies: [string, string][] = [['com.google.gms', 'google-services']];
+  if (reactNativeConfig.dependencies['@react-native-firebase/perf'])
+    dependencies.push(['com.google.firebase', 'perf-plugin']);
+  return dependencies;
 }
 
 export async function handleGradleDependency(
   namespace: string,
   plugin: string,
-  androidBuildGradleFile: string,
+  gradleFile: GradleFile,
 ) {
-  const dependency = await gradle.getDependency(namespace, plugin, androidBuildGradleFile);
-  const version = gradle.pluginVersions[namespace][plugin];
+  const dependency = await gradleFile.getDependency(namespace, plugin);
+  const version = pluginVersions[namespace][plugin];
 
   if (dependency) {
     if (dependency.version == version) log.success(`${plugin} dependency already set.`);
@@ -26,40 +34,29 @@ export async function handleGradleDependency(
       log.info(
         `${plugin} dependency version ${dependency.version} found instead of ${version}, updating "/android/build.gradle"...`,
       );
-      androidBuildGradleFile = gradle.updatePluginVersion(
-        namespace,
-        plugin,
-        dependency.version,
-        androidBuildGradleFile,
-      );
+      gradleFile.updatePluginVersion(namespace, plugin, dependency.version);
     }
   } else {
-    // Update the file with the added dependency
     log.info(`${plugin} dependency not found, updating "/android/build.gradle"...`);
-    androidBuildGradleFile = gradle.addDependency(namespace, plugin, androidBuildGradleFile);
+    gradleFile.addDependency(namespace, plugin);
   }
-
-  return androidBuildGradleFile;
 }
 
-export async function handleGradlePlugin(
+export function handleGradlePlugin(
   namespace: string,
   plugin: string,
-  position: 'start' | 'end',
-  androidAppBuildGradleFile: string,
+  position: 'top' | 'bottom',
+  gradleFile: GradleFile,
 ) {
-  const registeredPlugin = gradle.getPlugin(namespace, plugin, androidAppBuildGradleFile);
-  // Check whether plugin has been registered
-  if (!registeredPlugin) {
-    log.info(`${plugin} plugin has not been registered, updating "/android/app/build.gradle"`);
-    androidAppBuildGradleFile = gradle.registerPlugin(
-      namespace,
-      plugin,
-      position,
-      androidAppBuildGradleFile,
-    );
-  } else {
+  const registeredPlugin = gradleFile.verifyPlugin(namespace, plugin, position);
+  if (registeredPlugin === null) {
+    log.info(`${plugin} plugin has not been registered, applying at ${position} of Gradle file`);
+    gradleFile.registerPlugin(namespace, plugin, position);
+  } else if (registeredPlugin) {
     log.success(`${plugin} plugin already registered.`);
+  } else {
+    log.warn(`${plugin} registered incorrectly, moving plugin to ${position} of Gradle file`);
+    gradleFile.removePlugin(namespace, plugin);
+    gradleFile.registerPlugin(namespace, plugin, position);
   }
-  return androidAppBuildGradleFile;
 }
