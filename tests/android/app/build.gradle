@@ -1,10 +1,14 @@
+// Add the Firebase Crashlytics plugin.
+
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+
+
+
 apply plugin: "com.google.firebase.firebase-perf"
 
-crashlytics {
-  enableNdk true
-}
 
 import com.android.build.OutputFile
 
@@ -146,5 +150,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
   into 'libs'
 }
 
-apply plugin: 'com.google.gms.google-services'
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
