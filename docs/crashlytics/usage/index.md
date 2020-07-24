@@ -62,12 +62,12 @@ async function onSignIn(user) {
   crashlytics().log('User signed in.');
   await Promise.all([
     crashlytics().setUserId(user.uid),
-    crashlytics().setUserName(user.username),
-    crashlytics().setUserEmail(user.email),
     crashlytics().setAttribute('credits', String(user.credits)),
     crashlytics().setAttributes({
       role: 'admin',
       followers: '13',
+      email: user.email,
+      username: user.username
     }),
   ]);
 }
@@ -153,11 +153,11 @@ As Crashlytics will be sending certain information regarding the user, users may
 This can be done throughout the app with a simple method call to `setCrashlyticsCollectionEnabled`:
 
 ```jsx
-import React from 'react';
-import { View, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 
-function App() {
+export default function App() {
   const [enabled, setEnabled] = useState(crashlytics().isCrashlyticsCollectionEnabled);
 
   async function toggleCrashlytics() {
