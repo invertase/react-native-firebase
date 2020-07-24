@@ -41,6 +41,7 @@ EEA
 Ehesp
 enum
 ESLint
+Fastlane
 FCM
 Firebase
 Firestore
@@ -97,6 +98,7 @@ Realtime
 remarketing
 RN60
 RN61
+RNFB
 RNFirebase
 Salakar
 scalable
@@ -128,3 +130,5 @@ Wix
 Xcode
 Xcode.
 lifecycle
+SNS
+

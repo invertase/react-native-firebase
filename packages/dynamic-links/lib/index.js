@@ -49,12 +49,6 @@ class FirebaseLinksModule extends FirebaseModule {
     return this.native.buildLink(params);
   }
 
-  createDynamicLink(dynamicLinkParams) {
-    // eslint-disable-next-line no-console
-    console.warn('firebase.links().createDynamicLink() is deprecated in favour of buildLink()');
-    return this.buildLink(dynamicLinkParams);
-  }
-
   buildShortLink(dynamicLinkParams, shortLinkType = 'DEFAULT') {
     let params;
     try {
@@ -74,14 +68,6 @@ class FirebaseLinksModule extends FirebaseModule {
     }
 
     return this.native.buildShortLink(params, shortLinkType);
-  }
-
-  createShortDynamicLink(dynamicLinkParams, shortLinkType) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()',
-    );
-    return this.buildShortLink(dynamicLinkParams, shortLinkType);
   }
 
   getInitialLink() {

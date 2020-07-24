@@ -40,7 +40,7 @@
   dispatch_once(&once, ^{
     RNFBMessagingFIRMessagingDelegate *strongSelf = weakSelf;
     [FIRMessaging messaging].delegate = strongSelf;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+    [FIRMessaging messaging].shouldEstablishDirectChannel = NO;
   });
 }
 

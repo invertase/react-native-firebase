@@ -87,7 +87,7 @@ jobs:
           echo "Emulator started"
 
       - name: Detox Test
-        timeout-minutes: 20
+        timeout-minutes: 40
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'

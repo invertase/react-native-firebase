@@ -5,6 +5,7 @@ jest.doMock('react-native', () => {
     {
       Platform: {
         OS: 'android',
+        select: () => {},
       },
       NativeModules: {
         ...ReactNative.NativeModules,
@@ -26,6 +27,10 @@ jest.doMock('react-native', () => {
           ],
         },
         RNFBPerfModule: {},
+        RNFBAdMobModule: {},
+        RNFBAdMobInterstitialModule: {},
+        RNFBAdMobRewardedModule: {},
+        RNFBAdsConsentModule: {},
         RNFBCrashlyticsModule: {},
       },
     },
