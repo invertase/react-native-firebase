@@ -248,17 +248,6 @@ export default class StorageReference extends ReferenceBase {
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
    */
-  // TODO(deprecation) remove in 6.2.
-  downloadFile(filePath) {
-    console.warn(
-      "firebase.storage.Reference.downloadFile() is deprecated, please rename usages to 'writeToFile()'",
-    );
-    return this.writeToFile(toFilePath(filePath));
-  }
-
-  /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference
-   */
   putFile(filePath, metadata) {
     if (!isUndefined(metadata)) {
       validateMetadata(metadata);

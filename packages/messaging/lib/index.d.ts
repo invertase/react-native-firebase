@@ -710,15 +710,6 @@ export namespace FirebaseMessagingTypes {
      * @ios
      */
     requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
-
-    /**
-     * Deprecated. See `registerDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See registerDeviceForRemoteMessages.
-     */
-    registerForRemoteNotifications(): Promise<void>;
-
     /**
      * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
      * with APNs if auto-registration has been disabled.
@@ -736,15 +727,6 @@ export namespace FirebaseMessagingTypes {
      * ```
      */
     registerDeviceForRemoteMessages(): Promise<void>;
-
-    /**
-     * Deprecated. See `isDeviceRegisteredForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See isDeviceRegisteredForRemoteMessages
-     */
-    isRegisteredForRemoteNotifications: boolean;
-
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerDeviceForRemoteMessages()`.
@@ -754,21 +736,12 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
+     * const isDeviceRegisteredForRemoteMessages = firebase.messaging().isDeviceRegisteredForRemoteMessages;
      * ```
      *
      * @platform ios
      */
     isDeviceRegisteredForRemoteMessages: boolean;
-
-    /**
-     * Deprecated. See `unregisterDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See unregisterDeviceForRemoteMessages.
-     */
-    unregisterForRemoteNotifications(): Promise<void>;
-
     /**
      * Unregisters the app from receiving remote notifications.
      *
