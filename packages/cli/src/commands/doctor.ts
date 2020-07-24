@@ -13,7 +13,7 @@ import { ProjectDetail } from '../types/firebase';
 import { getPluginList, getDependencyList } from '../actions/handleGradle';
 import { GradleFile, pluginVersions } from '../helpers/gradle';
 import validateGoogleServices from '../actions/validateGoogleServices';
-import { Status, StatusGroup, FirebaseConfig, AppTypes, StatusItem } from '../types/cli';
+import { Status, StatusGroup, FirebaseConfig, StatusItem, CliOptions, Apps } from '../types/cli';
 import { getFirebaseConfigRequirements, validateField } from '../actions/handleFirebase';
 
 const display = console.log; // eslint-disable-line no-console
@@ -65,7 +65,11 @@ function compareVersion(a: string, b: string) {
   }
 }
 
-export default async function doctorCommand(args: string[], reactNativeConfig: Config) {
+export default async function doctorCommand(
+  args: string[],
+  reactNativeConfig: Config,
+  options: CliOptions,
+) {
   const androidProjectConfig = getAndroidConfig(reactNativeConfig);
   const iosProjectConfig = getIosConfig(reactNativeConfig);
 
@@ -84,10 +88,15 @@ export default async function doctorCommand(args: string[], reactNativeConfig: C
       web: false,
     }) as Promise<ProjectDetail>);
 
-  const apps: { [type in AppTypes]: boolean } = {
-    android: true,
-    ios: false, // not implemented
-    web: false, // not supported
+  const apps: Apps = {
+    android:
+      options.platform == 'android' || options.platform == 'all' || options.platform == 'prompt',
+    ios:
+      false && // not supported
+      (options.platform == 'ios' || options.platform == 'all' || options.platform == 'prompt'),
+    web:
+      false && // not supported
+      (options.platform == 'web' || options.platform == 'all' || options.platform == 'prompt'),
   };
 
   const Loader = getLoader();

@@ -2,6 +2,7 @@ import { PathLike } from 'fs';
 import isGitDirty from 'is-git-dirty';
 import log from '../helpers/log';
 import CliError from './error';
+import box from './box';
 
 interface CliGlobal extends NodeJS.Global {
   filesModified: undefined | Set<PathLike>;
@@ -13,10 +14,16 @@ declare const global: CliGlobal;
 export function trackModified(force = false) {
   if (global.filesModified)
     throw new Error('trackModified() has already been called and can only be called once');
-  if (!force && isGitDirty())
-    throw new CliError(
-      'You have uncomitted files, please stash or commit your changes then try again.',
+
+  if (force)
+    box.warn(
+      'You have opted to skip safety checks, this command may cause you to lose pending changes.',
     );
+  else if (isGitDirty())
+    throw new CliError(
+      'You have pending changes, please stash or commit your changes then try again.',
+    );
+
   global.filesModified = new Set();
 }
 

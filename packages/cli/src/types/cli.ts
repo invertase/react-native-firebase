@@ -4,6 +4,11 @@ export type Apps = { [app in AppTypes]: boolean };
 
 export type TemplateTypes = 'success' | 'failure';
 
+export interface CliOptions {
+  platform: AppTypes | 'all' | 'prompt';
+  force: boolean;
+}
+
 export interface FirebaseConfig {
   'react-native'?: {
     [key: string]: any;

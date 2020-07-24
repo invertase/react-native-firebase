@@ -38,7 +38,7 @@ import firebase from '../helpers/firebase';
 import prompt from '../helpers/prompt';
 import log from '../helpers/log';
 
-import { AppTypes } from '../types/cli';
+import { AppTypes, CliOptions, Apps } from '../types/cli';
 
 import initAndroid from './initAndroid';
 import initIos from './initIos';
@@ -47,8 +47,14 @@ import getAccount from '../actions/getAccount';
 import CliError from '../helpers/error';
 import handleFirebaseConfig from '../actions/handleFirebase';
 
-export default async function initCommand(args: string[], reactNativeConfig: Config) {
+export default async function initCommand(
+  args: string[],
+  reactNativeConfig: Config,
+  options: CliOptions,
+) {
   log.debug('Running "firebase init" command...');
+  trackModified(options.force);
+
   if (
     !(await prompt.confirm(
       'This command is a work in progress, are you sure you want to continue?',
@@ -56,15 +62,26 @@ export default async function initCommand(args: string[], reactNativeConfig: Con
   )
     return;
 
-  trackModified(args.includes('force'));
-
   const account = await getAccount();
 
-  const apps: { [type in AppTypes]: boolean } = {
-    android: await prompt.confirm('Do you want to setup Android for your app?'),
-    ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not implemented
-    web: false, // not supported
-  };
+  let apps: Apps;
+  if (options.platform == 'prompt') {
+    apps = {
+      android: await prompt.confirm('Do you want to setup Android for your app?'),
+      ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not supported
+      web: false && (await prompt.confirm('Do you want to setup web for your app?')), // not supported
+    };
+  } else {
+    apps = {
+      android: options.platform == 'android' || options.platform == 'all',
+      ios:
+        false && // not supported
+        (options.platform == 'ios' || options.platform == 'all'),
+      web:
+        false && // not supported
+        (options.platform == 'web' || options.platform == 'all'),
+    };
+  }
 
   // Quit if no apps need to be setup
   if (!Object.values(apps).includes(true)) {

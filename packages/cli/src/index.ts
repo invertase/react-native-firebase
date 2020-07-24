@@ -1,48 +1,82 @@
 import { Config } from '@react-native-community/cli-types';
+import Chalk from 'chalk';
 import initCommand from './commands/init';
 import doctorCommand from './commands/doctor';
 import playgroundCommand from './commands/playground';
 import log from './helpers/log';
 import { reportModified } from './helpers/tracker';
 import CliError from './helpers/error';
-import helpCommand from './commands/help';
+import { CliOptions } from './types/cli';
 
 const commands = [
   {
-    name: 'firebase',
+    name: 'firebase <command>',
+    description: `A CLI tool to help setup React Native Firebase for your project. It supports the following commands:
+  init  \tInitialise Firebase for the project.
+  doctor\tDiagnose common React Native Firebase issues.`,
     options: [
       {
-        name: 'platform',
-        description: 'Run the init script for a specific platform, e.g. android or ios.',
-        default: '',
+        name: '-p, --platform <platform>',
+        description:
+          'Run the action only for a specific platform. Options: android, ios (not supported), web (not supported), all.',
+        default: 'prompt',
+      },
+      {
+        name: '-f, --force',
+        description:
+          'Bypasses safety checks during potentially destructive operations. (not recommended)',
       },
     ],
     func: firebaseCli,
+    examples: [
+      {
+        desc: 'Initialise Firebase for the project regardless of pending changes',
+        cmd: 'firebase init --force',
+      },
+      {
+        desc: 'Diagnose Firebase for only the Android side of your project',
+        cmd: 'firebase doctor --platform android',
+      },
+    ],
   },
 ];
 
-async function firebaseCli(args: string[], reactNativeConfig: Config) {
+async function firebaseCli(
+  args: string[],
+  reactNativeConfig: Config,
+  options: { platform: string; force: undefined | true },
+) {
   const [command, ...cmdArgs] = args;
+
+  // avoid array.includes, because TS doesn't catch on
+  if (
+    !(options.platform == 'android' || options.platform == 'all' || options.platform == 'prompt')
+  ) {
+    log.error(`Invalid platform "${Chalk.bold(options.platform)}" supplied`);
+    return;
+  }
+  const parsedOptions: CliOptions = {
+    platform: options.platform,
+    force: Boolean(options.force),
+  };
 
   try {
     switch (command) {
       case 'init':
-        await initCommand(cmdArgs, reactNativeConfig);
+        await initCommand(cmdArgs, reactNativeConfig, parsedOptions);
         break;
       case 'doctor':
-        await doctorCommand(cmdArgs, reactNativeConfig);
+        await doctorCommand(cmdArgs, reactNativeConfig, parsedOptions);
         break;
       case 'playground':
-        await playgroundCommand(cmdArgs, reactNativeConfig);
-        break;
-      case undefined:
-      case 'help':
-        await helpCommand(cmdArgs, reactNativeConfig);
+        await playgroundCommand(cmdArgs, reactNativeConfig, parsedOptions);
         break;
       default:
-        log.error(`Unrecognized firebase command "${command}".`);
+        log.error(`Unrecognized Firebase command "${Chalk.bold(command)}".`);
         log.info(
-          'Run "react-native firebase help" to see a list of all available firebase commands.',
+          `Run "${Chalk.bold(
+            'react-native firebase --help',
+          )}" to see a list of all available Firebase commands.`,
         );
     }
   } catch (e) {
