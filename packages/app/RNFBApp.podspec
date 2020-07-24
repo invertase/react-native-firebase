@@ -1,7 +1,7 @@
 require 'json'
 require './firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
-firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 6.27.0'
+firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 6.28.1'
 
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
