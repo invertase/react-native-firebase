@@ -99,17 +99,6 @@ export default class FirestoreTransactionHandler {
     // native emits that the transaction is final
     transaction._pendingResult = pendingResult;
 
-    if (
-      transaction._calledGetCount > 0 &&
-      transaction._calledGetCount !== transaction._commandBuffer.length
-    ) {
-      return meta.reject(
-        new Error(
-          'firebase.firestore().runTransaction() Every document read in a transaction must also be written.',
-        ),
-      );
-    }
-
     // send the buffered update/set/delete commands for native to process
     return this._firestore.native.transactionApplyBuffer(id, transaction._commandBuffer);
   }

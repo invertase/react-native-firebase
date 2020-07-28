@@ -67,10 +67,11 @@ buildscript {
 }
 ```
 
-Lastly, execute the plugin by adding the following to the **very bottom** of your `/android/app/build.gradle` file:
+Lastly, execute the plugin by adding the following to your `/android/app/build.gradle` file:
 
 ```groovy
-apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services' // <- Add this line
 ```
 
 ### 3. iOS Setup
