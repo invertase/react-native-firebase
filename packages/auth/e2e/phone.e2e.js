@@ -114,7 +114,7 @@ describe('auth() => Phone', () => {
       return Promise.resolve();
     });
 
-    it.only('successfully runs and adds emiters', async () => {
+    it('successfully runs and adds emiters', async () => {
       const TEST_PHONE_A = '+447445255123';
       const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
 
