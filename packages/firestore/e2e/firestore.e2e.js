@@ -351,7 +351,7 @@ describe('firestore()', () => {
   });
 
   describe('fetching data is consistent between Android and Ios', () => {
-    it.only('should clear any cached data', async () => {
+    it('should clear any cached data', async () => {
       const ref = firebase
         .firestore()
         .collection('v6')
