@@ -20,9 +20,9 @@ So what are we going to do?
 1. Send a message from a client device.
 2. Intercept using a custom XMPP server.
 3. Push the message to Firebase using firebase-admin
-4. Receive the message and ackowledge on other connected devices.
+4. Receive the message and acknowledge on other connected devices.
 
-## Why can't I send an send and receive messages?
+## Why can't I send and receive messages?
 
 A common instance involves an implementation similar to the following.
 
