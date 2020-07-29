@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.1.2...@react-native-firebase/auth@8.2.0) (2020-07-10)
+
+### Features
+
+- **auth:** verifyBeforeUpdateEmail API ([#3862](https://github.com/invertase/react-native-firebase/issues/3862)) ([aaff624](https://github.com/invertase/react-native-firebase/commit/aaff62402544d8783007b6b47b8406019cc48c84))
+
+## [8.1.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.1.1...@react-native-firebase/auth@8.1.2) (2020-07-09)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [8.1.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.1.0...@react-native-firebase/auth@8.1.1) (2020-07-07)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+# [8.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.10...@react-native-firebase/auth@8.1.0) (2020-07-07)
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+
+## [8.0.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.9...@react-native-firebase/auth@8.0.10) (2020-07-05)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
 ## [8.0.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.0.8...@react-native-firebase/auth@8.0.9) (2020-06-30)
 
 **Note:** Version bump only for package @react-native-firebase/auth

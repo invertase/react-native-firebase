@@ -23,33 +23,7 @@ describe('admob() InterstitialAd', () => {
   });
 
   describe('createForAdRequest', () => {
-    it('throws if adUnitId is invalid', () => {
-      try {
-        InterstitialAd.createForAdRequest(123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'adUnitId' expected an string value");
-        return Promise.resolve();
-      }
-    });
-
     // has own tests
-    it('throws if requestOptions are invalid', () => {
-      try {
-        InterstitialAd.createForAdRequest('123', 123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        return Promise.resolve();
-      }
-    });
-
-    // has own tests
-    it('returns a new instance', () => {
-      const i = InterstitialAd.createForAdRequest('abc');
-      i.constructor.name.should.eql('InterstitialAd');
-      i.adUnitId.should.eql('abc');
-      i.loaded.should.eql(false);
-    });
 
     it('loads with requestOptions', async () => {
       const spy = sinon.spy();
@@ -76,42 +50,7 @@ describe('admob() InterstitialAd', () => {
     });
   });
 
-  describe('show', () => {
-    it('throws if showing before loaded', () => {
-      const i = InterstitialAd.createForAdRequest('abc');
-
-      try {
-        i.show();
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql(
-          'The requested InterstitialAd has not loaded and could not be shown',
-        );
-        return Promise.resolve();
-      }
-    });
-  });
-
   describe('onAdEvent', () => {
-    it('throws if handler is not a function', () => {
-      const i = InterstitialAd.createForAdRequest('abc');
-
-      try {
-        i.onAdEvent('foo');
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'handler' expected a function");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns an unsubscriber function', () => {
-      const i = InterstitialAd.createForAdRequest('abc');
-      const unsub = i.onAdEvent(() => {});
-      unsub.should.be.Function();
-      unsub();
-    });
-
     it('unsubscribe should prevent events', async () => {
       const spy = sinon.spy();
       const i = InterstitialAd.createForAdRequest('abc');

@@ -31,13 +31,14 @@ to manage the users identity. You can however use any datastore or authenticatio
 ## Saving tokens
 
 Once your application has started, you can call the `getToken` method on the Cloud Messaging module to get the unique
-device token:
+device token (if using a different push notification provider, such as Amazon SNS, you will need to call `getAPNSToken` on iOS):
 
 ```jsx
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Platform } from 'react-native';
 
 async function saveTokenToDatabase(token) {
   // Assume user is already signed in
@@ -60,6 +61,10 @@ function App() {
       .then(token => {
         return saveTokenToDatabase(token);
       });
+      
+    // If using other push notification providers (ie Amazon SNS, etc)
+    // you may need to get the APNs token instead for iOS:
+    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
 
     // Listen to whether the token changes
     return messaging().onTokenRefresh(token => {

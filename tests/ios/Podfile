@@ -4,7 +4,7 @@ platform :ios, '9.0'
 $RNFirebaseAsStaticFramework = false
 
 # Version override testing
-$FirebaseSDKVersion = '6.27.0'
+$FirebaseSDKVersion = '6.28.1'
 # $FabricSDKVersion = '1.6.0'
 # $CrashlyticsSDKVersion = '3.1.0'
 
