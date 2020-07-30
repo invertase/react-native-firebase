@@ -57,9 +57,7 @@ Now ensure that both the "Background fetch" and the "Remote notifications" sub-m
 
 # Linking APNs with FCM
 
-Even though FCM a has limited capability to work without linking with APNs, the below steps are strongly recommended
-to ensure the library works as expected. Without linking APNs, your device will not receive messages when in the background
-or when quit.
+Please note: APNs is now required for both `foreground` and `background` messaging.
 
 A few steps are required:
 
