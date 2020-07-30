@@ -192,7 +192,7 @@ describe('database().ref().once()', () => {
     };
 
     ref.on('child_added', () => successCallback('child_added'));
-    ref.on('value', () => successCallback('value'));
+    ref.once('value').then(successCallback('value'));
 
     await ref.set(initial);
 
