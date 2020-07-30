@@ -15,7 +15,7 @@ This module requires that the `@react-native-firebase/app` module is already set
 # Install & setup the app module
 yarn add @react-native-firebase/app
 
-# Install the analytics module
+# Install the storage module
 yarn add @react-native-firebase/storage
 
 # If you're developing your app using iOS, run this command

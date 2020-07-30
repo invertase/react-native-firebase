@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.2...@react-native-firebase/messaging@7.5.0) (2020-07-23)
+
+### Features
+
+- disable direct channels API on iOS, fixes [#3674](https://github.com/invertase/react-native-firebase/issues/3674) ([#3733](https://github.com/invertase/react-native-firebase/issues/3733)) ([8c9f4f5](https://github.com/invertase/react-native-firebase/commit/8c9f4f5e31bac6bfe95d75e1b088df59e51113e9))
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.1...@react-native-firebase/messaging@7.4.2) (2020-07-09)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
