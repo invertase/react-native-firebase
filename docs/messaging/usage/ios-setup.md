@@ -57,7 +57,7 @@ Now ensure that both the "Background fetch" and the "Remote notifications" sub-m
 
 ## Linking APNs with FCM (iOS)
 
-Note: APNs is now required for both `foreground` and `background` messaging to function correctly on iOS.
+> Note: APNs is now required for both `foreground` and `background` messaging to function correctly on iOS.
 
 A few steps are required:
 
