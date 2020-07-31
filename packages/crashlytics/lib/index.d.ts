@@ -106,7 +106,7 @@ export namespace FirebaseCrashlyticsTypes {
      * ```
      *
      */
-    deleteUnsentReports(): void;
+    deleteUnsentReports(): Promise<void>;
     /**
      * Returns a boolean value indicating whether the app crashed during the previous execution.
      *
