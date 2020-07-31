@@ -54,7 +54,6 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@react-native-firebase/app-types": "6.7.2",
     "opencollective-postinstall": "^2.0.1",
     "superstruct": "^0.6.2"
   },
@@ -67,7 +66,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "~> 6.27.0"
+      "firebase": "~> 6.28.1"
     },
     "android": {
       "firebase": "25.5.0"

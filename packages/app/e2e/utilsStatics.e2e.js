@@ -41,28 +41,5 @@ describe('utils()', () => {
       firebase.utils.FilePath.PICTURES_DIRECTORY.should.be.a.String();
       firebase.utils.FilePath.MOVIES_DIRECTORY.should.be.a.String();
     });
-
-    // TODO(salakar) remove in 6.1.0
-    it('provides deprecated Native path strings', () => {
-      firebase.utils.Native.should.be.an.Object();
-      if (device.getPlatform() === 'ios') {
-        firebase.utils.Native.MAIN_BUNDLE_PATH.should.be.a.String();
-      } else {
-        should.equal(firebase.utils.Native.MAIN_BUNDLE_PATH, null);
-      }
-      firebase.utils.Native.CACHES_DIRECTORY_PATH.should.be.a.String();
-      firebase.utils.Native.DOCUMENT_DIRECTORY_PATH.should.be.a.String();
-
-      if (device.getPlatform() === 'android') {
-        firebase.utils.Native.EXTERNAL_DIRECTORY_PATH.should.be.a.String();
-        firebase.utils.Native.EXTERNAL_STORAGE_DIRECTORY_PATH.should.be.a.String();
-      } else {
-        should.equal(firebase.utils.Native.EXTERNAL_DIRECTORY_PATH, null);
-        should.equal(firebase.utils.Native.EXTERNAL_STORAGE_DIRECTORY_PATH, null);
-      }
-
-      firebase.utils.Native.TEMP_DIRECTORY_PATH.should.be.a.String();
-      firebase.utils.Native.LIBRARY_DIRECTORY_PATH.should.be.a.String();
-    });
   });
 });
