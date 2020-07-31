@@ -140,5 +140,5 @@ on the `firebase.json` file at the root of your project directory.
 To re-enable analytics (e.g. once you have the users consent), call the `setAnalyticsCollectionEnabled` method:
 
 ```js
-await firebase.analytics().setAnalyticsCollectionEnabled(true);
+await analytics().setAnalyticsCollectionEnabled(true);
 ```
