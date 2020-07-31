@@ -5,7 +5,7 @@ description: To send and receive messages directly from devices with FCM require
 
 ## Introduction
 
-This is a reference for using the Firebase Messaging service. Although methods are provided for sending and receiving message, additional configuration is needed to ensure a working solution.
+This is a reference for using the Firebase Messaging service to send and receive messages directly between devices. Although methods (e.g. `sendMessage()` are provided for sending and receiving message, additional configuration is needed to ensure a working solution for direct messaging from devices.
 
 > A custom solution is needed to exchange messages between devices (including the message sender device)
 > please ensure a solution from this article has been configured to successfully send and receive messages from a device.
