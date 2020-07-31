@@ -468,15 +468,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     buildLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a link from the provided DynamicLinkParameters interface.
-     *
-     * @deprecated Use `buildLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     */
-    createDynamicLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
     /**
      * Builds a short Dynamic Link from the provided DynamicLinkParameters interface.
      *
@@ -497,18 +488,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     buildShortLink(
-      dynamicLinkParams: DynamicLinkParameters,
-      shortLinkType?: ShortLinkType,
-    ): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a short Dynamic Link from the provided DynamicLinkParameters instances.
-     *
-     * @deprecated Use `buildShortLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
-     */
-    createShortDynamicLink(
       dynamicLinkParams: DynamicLinkParameters,
       shortLinkType?: ShortLinkType,
     ): Promise<string>;

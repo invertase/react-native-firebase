@@ -98,6 +98,11 @@ export namespace FirebaseMessagingTypes {
     ttl?: number;
 
     /**
+     * The time the message was sent, in milliseconds since the start of unix epoch
+     */
+    sentTime?: number;
+
+    /**
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
@@ -705,15 +710,6 @@ export namespace FirebaseMessagingTypes {
      * @ios
      */
     requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
-
-    /**
-     * Deprecated. See `registerDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See registerDeviceForRemoteMessages.
-     */
-    registerForRemoteNotifications(): Promise<void>;
-
     /**
      * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
      * with APNs if auto-registration has been disabled.
@@ -731,15 +727,6 @@ export namespace FirebaseMessagingTypes {
      * ```
      */
     registerDeviceForRemoteMessages(): Promise<void>;
-
-    /**
-     * Deprecated. See `isDeviceRegisteredForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See isDeviceRegisteredForRemoteMessages
-     */
-    isRegisteredForRemoteNotifications: boolean;
-
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerDeviceForRemoteMessages()`.
@@ -749,21 +736,12 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
+     * const isDeviceRegisteredForRemoteMessages = firebase.messaging().isDeviceRegisteredForRemoteMessages;
      * ```
      *
      * @platform ios
      */
     isDeviceRegisteredForRemoteMessages: boolean;
-
-    /**
-     * Deprecated. See `unregisterDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See unregisterDeviceForRemoteMessages.
-     */
-    unregisterForRemoteNotifications(): Promise<void>;
-
     /**
      * Unregisters the app from receiving remote notifications.
      *
@@ -887,14 +865,13 @@ export namespace FirebaseMessagingTypes {
     onSendError(listener: (evt: SendErrorEvent) => any): () => void;
 
     /**
-     * On Android, set a message handler function which is called when the app is in the background
-     * or terminated. A headless task is created, allowing you to access the React Native environment
+     * Set a message handler function which is called when the app is in the background
+     * or terminated. In Android, a headless task is created, allowing you to access the React Native environment
      * to perform tasks such as updating local storage, or sending a network request.
      *
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
      *
-     * > You can safely call this method on iOS without platform checks. It's a no-op on iOS.
      *
      * #### Example
      *
@@ -908,7 +885,6 @@ export namespace FirebaseMessagingTypes {
      * });
      * ```
      *
-     * @android
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
