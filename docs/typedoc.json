@@ -22559,7 +22559,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Determines whether there are any unsent crash reports cached on the device. The callback only executes\nif automatic data collection is disabled.",
-										"text": "#### Example\n\n```js\nasync checkReports(){\n// returns boolean value\n const unsentReports = await firebase.crashlytics().checkForUnsentReports();\n}\n\ncheckReports();\n```\n\n"
+										"text": "#### Example\n\n```js\nasync checkReports() {\n// returns boolean value\n const unsentReports = await firebase.crashlytics().checkForUnsentReports();\n}\n\ncheckReports();\n```\n\n"
 									},
 									"type": {
 										"type": "reference",
@@ -22634,8 +22634,14 @@
 										"text": "#### Example\n\n```js\nfirebase.crashlytics().deleteUnsentReports();\n```\n\n"
 									},
 									"type": {
-										"type": "intrinsic",
-										"name": "void"
+										"type": "reference",
+										"name": "Promise",
+										"typeArguments": [
+											{
+												"type": "intrinsic",
+												"name": "void"
+											}
+										]
 									}
 								}
 							],
@@ -22664,7 +22670,7 @@
 									"flags": {},
 									"comment": {
 										"shortText": "Returns a boolean value indicating whether the app crashed during the previous execution.",
-										"text": "#### Example\n\n```js\nasync didCrashPreviously(){\n// returns boolean value\nconst didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();\n}\n\ndidCrashPreviously();\n```\n\n"
+										"text": "#### Example\n\n```js\nasync didCrashPreviously() {\n// returns boolean value\nconst didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();\n}\n\ndidCrashPreviously();\n```\n\n"
 									},
 									"type": {
 										"type": "reference",
