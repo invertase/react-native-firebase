@@ -233,3 +233,55 @@ export function parseSnapshotArgs(args) {
 
   return { snapshotListenOptions, callback, onNext, onError };
 }
+
+export function parseSnapshotInSyncArgs(args) {
+  if (args.length === 0) {
+    throw new Error('expected at least one argument.');
+  }
+
+  // Ignore onComplete as its never used
+  const NOOP = () => {};
+  let callback = NOOP;
+  let onError = NOOP;
+  let onNext = NOOP;
+
+  /**
+   * .onSnapshot(Function...
+   */
+  if (isFunction(args[0])) {
+    /**
+     * .onSnapshot(() => {}, (error) => {}
+     */
+    if (isFunction(args[1])) {
+      onNext = args[0];
+      onError = args[1];
+    } else {
+      /**
+       * .onSnapshot((snapshot, error) => {})
+       */
+      callback = args[0];
+    }
+  }
+
+  /**
+   * .onSnapshot({ complete: () => {}, error: (e) => {}, next: () => {} })
+   */
+  if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
+    if (args[0].error) {
+      onError = args[0].error;
+    }
+    if (args[0].next) {
+      onNext = args[0].next;
+    }
+  }
+
+  if (!isFunction(onNext)) {
+    throw new Error("'observer.next' or 'onNext' expected a function.");
+  }
+
+  if (!isFunction(onError)) {
+    throw new Error("'observer.error' or 'onError' expected a function.");
+  }
+
+  return { callback, onNext, onError };
+}

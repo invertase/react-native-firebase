@@ -93,6 +93,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     }
 
     ListenerRegistration listenerRegistration = documentReference.addSnapshotListener(
+      getExecutor(),
       metadataChanges,
       listener
     );

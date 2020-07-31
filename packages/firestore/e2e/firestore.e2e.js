@@ -349,4 +349,131 @@ describe('firestore()', () => {
       }
     });
   });
+  describe('onSnapshotsInSync fires after onSnapshot listeners have fired', () => {
+    it('fires after passing in single function', async () => {
+      let snap1 = 0;
+      let snap2 = 0;
+      let sync = 0;
+
+      const unsubscribe = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap1 = Date.now();
+        });
+
+      const unsubscribe2 = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap2 = Date.now();
+        });
+
+      const unsubscribe3 = firebase.firestore().onSnapshotsInSync(() => {
+        sync = Date.now();
+      });
+
+      const ref = await firebase
+        .firestore()
+        .collection('v6')
+        .add({ foo: 'bar' });
+
+      should(snap1).be.belowOrEqual(sync);
+      should(snap2).be.belowOrEqual(sync);
+
+      await ref.delete();
+      unsubscribe();
+      unsubscribe2();
+      unsubscribe3();
+    });
+
+    it('fires after passing in object with functions', async () => {
+      let snap1 = 0;
+      let snap2 = 0;
+      let sync = 0;
+
+      const unsubscribe = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap1 = Date.now();
+        });
+
+      const unsubscribe2 = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap2 = Date.now();
+        });
+
+      const onNext = () => {
+        sync = Date.now();
+      };
+
+      const onError = () => {};
+      const onComplete = () => {};
+
+      const functions = {
+        complete: onComplete,
+        next: onNext,
+        error: onError,
+      };
+
+      const unsubscribe3 = firebase.firestore().onSnapshotsInSync(functions);
+
+      const ref = await firebase
+        .firestore()
+        .collection('v6')
+        .add({ foo: 'bar' });
+
+      should(snap1).be.belowOrEqual(sync);
+      should(snap2).be.belowOrEqual(sync);
+
+      await ref.delete();
+      unsubscribe();
+      unsubscribe2();
+      unsubscribe3();
+    });
+
+    it('fires after passing in two functions', async () => {
+      let snap1 = 0;
+      let snap2 = 0;
+      let sync = 0;
+
+      const unsubscribe = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap1 = Date.now();
+        });
+
+      const unsubscribe2 = firebase
+        .firestore()
+        .collection('v6')
+        .onSnapshot(() => {
+          snap2 = Date.now();
+        });
+
+      const onNext = () => {
+        sync = Date.now();
+      };
+
+      const onError = () => {};
+
+      const unsubscribe3 = firebase.firestore().onSnapshotsInSync(onNext, onError);
+
+      const ref = await firebase
+        .firestore()
+        .collection('v6')
+        .add({ foo: 'bar' });
+
+      should(snap1).be.belowOrEqual(sync);
+      should(snap2).be.belowOrEqual(sync);
+
+      await ref.delete();
+      unsubscribe();
+      unsubscribe2();
+      unsubscribe3();
+    });
+  });
 });

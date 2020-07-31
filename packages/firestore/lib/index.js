@@ -24,6 +24,7 @@ import {
   isUndefined,
   isAndroid,
 } from '@react-native-firebase/app/lib/common';
+import { parseSnapshotInSyncArgs } from './utils';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -52,7 +53,10 @@ const nativeEvents = [
   'firestore_collection_sync_event',
   'firestore_document_sync_event',
   'firestore_transaction_event',
+  'firestore_snapshot_in_sync_event',
 ];
+
+let _id = 0;
 
 class FirebaseFirestoreModule extends FirebaseModule {
   constructor(app, config) {
@@ -71,6 +75,13 @@ class FirebaseFirestoreModule extends FirebaseModule {
     this.emitter.addListener(this.eventNameForApp('firestore_document_sync_event'), event => {
       this.emitter.emit(
         this.eventNameForApp(`firestore_document_sync_event:${event.listenerId}`),
+        event,
+      );
+    });
+
+    this.emitter.addListener(this.eventNameForApp('firestore_snapshot_in_sync_event'), event => {
+      this.emitter.emit(
+        this.eventNameForApp(`firestore_snapshot_in_sync_event:${event.listenerId}`),
         event,
       );
     });
@@ -172,6 +183,53 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     return this._transactionHandler._add(updateFunction);
+  }
+
+  onSnapshotsInSync(...args) {
+    let callback;
+    let onNext;
+    let onError;
+
+    try {
+      const options = parseSnapshotInSyncArgs(args);
+      callback = options.callback;
+      onNext = options.onNext;
+      onError = options.onError;
+    } catch (e) {
+      throw new Error(`firebase.firestore().onSnapshotsInSync(*) ${e.message}`);
+    }
+
+    function handleSuccess() {
+      callback(null);
+      onNext(null);
+    }
+
+    function handleError(error) {
+      callback(null, error);
+      onError(error);
+    }
+
+    const listenerId = _id++;
+
+    const onSnapshotInSyncSubscription = this.emitter.addListener(
+      this.eventNameForApp(`firestore_snapshot_in_sync_event:${listenerId}`),
+      event => {
+        if (event.body.error) {
+          handleError(NativeError.fromEvent(event.body.error, 'firestore'));
+        } else {
+          handleSuccess();
+        }
+      },
+    );
+
+    const unsubscribe = () => {
+      onSnapshotInSyncSubscription.remove();
+      this.native.offOnSnapshotsInSync(listenerId);
+    };
+
+    this.native.onSnapshotsInSync(listenerId);
+
+    return unsubscribe;
   }
 
   settings(settings) {

@@ -1980,6 +1980,35 @@ export namespace FirebaseFirestoreTypes {
      * ```
      */
     terminate(): Promise<void>;
+    /**
+     * Attaches a listener for a snapshots-in-sync event.
+     * The snapshots-in-sync event indicates that all listeners affected by a given change have fired, even
+     * if a single server-generated change affects multiple listeners.
+     *
+     * NOTE: The snapshots-in-sync event only indicates that listeners are in sync with each other, but does
+     * not relate to whether those snapshots are in sync with the server. Use SnapshotMetadata in the individual
+     * listeners to determine if a snapshot is from the cache or the server.
+     *
+     * Returns an unsubscribe function to stop listening to events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().onSnapshotsInSync(()=> {
+     * //this will fire once all `onSnapshot` listeners have fired
+     * }));
+     *
+     * unsubscribe();
+     *
+     * ```
+     *
+     * @param observer A single function that is a callback
+     */
+    onSnapshotsInSync(observer: {
+      complete?: () => void;
+      error?: (error: Error) => void;
+      next?: () => void;
+    }): () => void;
   }
 }
 

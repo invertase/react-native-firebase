@@ -17,23 +17,44 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import android.util.SparseArray;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
+  private static SparseArray<ListenerRegistration> snapshotsInSyncListeners = new SparseArray<>();
   private static final String SERVICE_NAME = "Firestore";
   private final UniversalFirebaseFirestoreModule module;
 
   ReactNativeFirebaseFirestoreModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
     module = new UniversalFirebaseFirestoreModule(reactContext, SERVICE_NAME);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+
+    for (int i = 0, size = snapshotsInSyncListeners.size(); i < size; i++) {
+      int key = snapshotsInSyncListeners.keyAt(i);
+      ListenerRegistration listenerRegistration = snapshotsInSyncListeners.get(key);
+      listenerRegistration.remove();
+    }
+    snapshotsInSyncListeners.clear();
   }
 
   @ReactMethod
@@ -98,5 +119,43 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
         rejectPromiseFirestoreException(promise, task.getException());
       }
     });
+  }
+
+  @ReactMethod
+  public void onSnapshotsInSync(String appName, int listenerId, Promise promise) {
+    if (snapshotsInSyncListeners.get(listenerId) != null) {
+      return;
+    }
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+
+    final Runnable listener = () -> sendOnSnapshotEvent(appName, listenerId);
+
+    ListenerRegistration listenerRegistration = firebaseFirestore.addSnapshotsInSyncListener(getExecutor(), listener);
+
+    snapshotsInSyncListeners.put(listenerId, listenerRegistration);
+  }
+
+  private void sendOnSnapshotEvent(String appName, int listenerId) {
+    ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+    WritableMap body = Arguments.createMap();
+
+    emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
+      ReactNativeFirebaseFirestoreEvent.SNAPSHOT_IN_SYNC,
+      body,
+      appName,
+      listenerId
+    ));
+  }
+
+  @ReactMethod
+  public void offOnSnapshotsInSync(
+    String appName,
+    int listenerId
+  ) {
+    ListenerRegistration listenerRegistration = snapshotsInSyncListeners.get(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+      snapshotsInSyncListeners.remove(listenerId);
+    }
   }
 }

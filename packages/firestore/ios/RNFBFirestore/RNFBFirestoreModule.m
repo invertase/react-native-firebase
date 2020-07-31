@@ -14,11 +14,15 @@
  * limitations under the License.
  *
  */
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
 #import <React/RCTUtils.h>
 #import "RNFBFirestoreModule.h"
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
+
+static __strong NSMutableDictionary *onSnapshotInSyncListeners;
+static NSString *const RNFB_FIRESTORE_ON_SNAPSHOT_IN_SYNC = @"firestore_snapshot_in_sync_event";
 
 @implementation RNFBFirestoreModule
 #pragma mark -
@@ -37,6 +41,53 @@ RCT_EXPORT_MODULE();
 
 #pragma mark -
 #pragma mark Firebase Firestore Methods
+
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  for (NSString *key in [onSnapshotInSyncListeners allKeys]) {
+    id <FIRListenerRegistration> listener = onSnapshotInSyncListeners[key];
+    [listener remove];
+    [onSnapshotInSyncListeners removeObjectForKey:key];
+  }
+}
+
+RCT_EXPORT_METHOD(onSnapshotsInSync:
+  (FIRApp *) firebaseApp
+    :(nonnull NSNumber *)listenerId
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock)reject
+) {
+  __weak RNFBFirestoreModule *weakSelf = self;
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] addSnapshotsInSyncListener:^(void) {
+    id <FIRListenerRegistration> listener = onSnapshotInSyncListeners[listenerId];
+    [weakSelf sendSnapshotInSyncEvent:firebaseApp listenerId:listenerId];
+  }];
+}
+
+RCT_EXPORT_METHOD(offOnSnapshotsInSync:
+  (FIRApp *) firebaseApp
+  :(nonnull NSNumber *)listenerId
+) {
+  id <FIRListenerRegistration> listener = onSnapshotInSyncListeners[listenerId];
+  if (listener) {
+    [listener remove];
+    [onSnapshotInSyncListeners removeObjectForKey:listenerId];
+  }
+}
+
+- (void)sendSnapshotInSyncEvent:
+  (FIRApp *)firApp
+    listenerId:(nonnull NSNumber *)listenerId {
+  [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_ON_SNAPSHOT_IN_SYNC body:@{
+    @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+    @"listenerId": listenerId,
+    @"body":@{}
+  }];
+}
+
 
 RCT_EXPORT_METHOD(setLogLevel:
   (FIRLoggerLevel) loggerLevel
@@ -133,6 +184,8 @@ RCT_EXPORT_METHOD(terminate:
       }
     }];
 }
+
+
 
 
 @end
