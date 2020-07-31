@@ -52,7 +52,7 @@ Permissions are limited on the client meaning an additional solution is required
 
 ## How do I receive messages?
 
-This is where a custom server based on Node XCS
+This is where you will need to deploy a custom server based, for example one based on Node XCS
 
 Below is an example of how to configure a custom XMPP server using `node-xcs`.
 
