@@ -86,22 +86,6 @@ describe('firestore.Transaction', () => {
       }
     });
 
-    it('should throw if get command is called with no writes', async () => {
-      const docRef = firebase.firestore().doc('v6/foo');
-
-      try {
-        await firebase.firestore().runTransaction(t => {
-          return t.get(docRef);
-        });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          'Every document read in a transaction must also be written',
-        );
-        return Promise.resolve();
-      }
-    });
-
     it('should get a document and return a DocumentSnapshot', async () => {
       const docRef = firebase.firestore().doc('v6/transactions/transaction/get-delete');
       await docRef.set({});
