@@ -61,8 +61,8 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     this.native.crash();
   }
 
-  deleteUnsentReports() {
-    this.native.deleteUnsentReports();
+  async deleteUnsentReports() {
+    await this.native.deleteUnsentReports();
   }
 
   didCrashOnPreviousExecution() {

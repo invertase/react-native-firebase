@@ -139,8 +139,8 @@ describe('crashlytics()', () => {
   });
 
   describe('deleteUnsentReports()', () => {
-    it('deletes unsent crashlytics reports', () => {
-      firebase.crashlytics().deleteUnsentReports();
+    it('deletes unsent crashlytics reports', async () => {
+      await firebase.crashlytics().deleteUnsentReports();
     });
   });
 
