@@ -85,7 +85,7 @@ export namespace FirebaseCrashlyticsTypes {
      * #### Example
      *
      * ```js
-     * async checkReports(){
+     * async checkReports() {
      * // returns boolean value
      *  const unsentReports = await firebase.crashlytics().checkForUnsentReports();
      * }
@@ -113,7 +113,7 @@ export namespace FirebaseCrashlyticsTypes {
      * #### Example
      *
      * ```js
-     * async didCrashPreviously(){
+     * async didCrashPreviously() {
      * // returns boolean value
      * const didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();
      * }

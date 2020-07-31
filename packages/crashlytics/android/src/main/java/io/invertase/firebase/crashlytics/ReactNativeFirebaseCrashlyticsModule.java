@@ -38,7 +38,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   @ReactMethod
   public void checkForUnsentReports(Promise promise){
     FirebaseCrashlytics.getInstance().checkForUnsentReports().addOnCompleteListener(task -> {
-      if(task.isSuccessful()){
+      if(task.isSuccessful()) {
         if(task.getResult() != null){
           promise.resolve(task.getResult());
         } else {
