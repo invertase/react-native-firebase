@@ -92,26 +92,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setUserId(userId);
   }
 
-  setUserName(userName) {
-    if (!isString(userName)) {
-      throw new Error(
-        'firebase.crashlytics().setUserName(*): The supplied userName must be a string value.',
-      );
-    }
-
-    return this.native.setUserName(userName);
-  }
-
-  setUserEmail(userEmail) {
-    if (!isString(userEmail)) {
-      throw new Error(
-        'firebase.crashlytics().setUserEmail(*): The supplied userEmail must be a string value.',
-      );
-    }
-
-    return this.native.setUserEmail(userEmail);
-  }
-
   recordError(error) {
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {

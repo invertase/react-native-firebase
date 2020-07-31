@@ -22,7 +22,6 @@
 #import "RCTConvert.h"
 #import "RNFBPreferences.h"
 #import <Firebase/Firebase.h>
-#import <Crashlytics/Crashlytics.h>
 
 @implementation RNFBCrashlyticsModule
 #pragma mark -
@@ -45,13 +44,13 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(crash) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[Crashlytics sharedInstance] crash];
+    assert(NO);
   }
 }
 
 RCT_EXPORT_METHOD(log:
   (NSString *) message) {
-  CLS_LOG(@"%@", message);
+  [[FIRCrashlytics crashlytics] log:message];
 }
 
 RCT_EXPORT_METHOD(logPromise:
@@ -60,7 +59,7 @@ RCT_EXPORT_METHOD(logPromise:
       (RCTPromiseResolveBlock) resolve
       rejecter:
       (RCTPromiseRejectBlock) reject) {
-  CLS_LOG(@"%@", message);
+  [[FIRCrashlytics crashlytics] log:message];
   resolve([NSNull null]);
 }
 
@@ -73,7 +72,7 @@ RCT_EXPORT_METHOD(setAttribute:
       rejecter:
       (RCTPromiseRejectBlock) reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[Crashlytics sharedInstance] setObjectValue:value forKey:key];
+    [[FIRCrashlytics crashlytics] setCustomValue:value forKey:key];
   }
   resolve([NSNull null]);
 }
@@ -88,7 +87,7 @@ RCT_EXPORT_METHOD(setAttributes:
     NSArray *keys = [attributes allKeys];
 
     for (NSString *key in keys) {
-      [[Crashlytics sharedInstance] setObjectValue:attributes[key] forKey:key];
+      [[FIRCrashlytics crashlytics] setCustomValue:attributes[key] forKey:key];
     }
   }
   resolve([NSNull null]);
@@ -101,31 +100,7 @@ RCT_EXPORT_METHOD(setUserId:
       rejecter:
       (RCTPromiseRejectBlock) reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[Crashlytics sharedInstance] setUserIdentifier:userId];
-  }
-  resolve([NSNull null]);
-}
-
-RCT_EXPORT_METHOD(setUserName:
-  (NSString *) userName
-      resolver:
-      (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
-  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[Crashlytics sharedInstance] setUserName:userName];
-  }
-  resolve([NSNull null]);
-}
-
-RCT_EXPORT_METHOD(setUserEmail:
-  (NSString *) userEmail
-      resolver:
-      (RCTPromiseResolveBlock) resolve
-      rejecter:
-      (RCTPromiseRejectBlock) reject) {
-  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    [[Crashlytics sharedInstance] setUserEmail:userEmail];
+    [[FIRCrashlytics crashlytics] setUserID:userId];
   }
   resolve([NSNull null]);
 }
@@ -162,17 +137,12 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
 - (void)recordJavaScriptError:(NSDictionary *)jsErrorDict {
   NSString *message = jsErrorDict[@"message"];
   NSDictionary *stackFrames = jsErrorDict[@"frames"];
-  NSMutableArray *customFrames = [[NSMutableArray alloc] init];
+  NSMutableArray *stackTrace = [[NSMutableArray alloc] init];
   BOOL isUnhandledPromiseRejection = [jsErrorDict[@"isUnhandledRejection"] boolValue];
 
   for (NSDictionary *stackFrame in stackFrames) {
-    CLSStackFrame *customFrame = [CLSStackFrame stackFrame];
-    [customFrame setSymbol:stackFrame[@"fn"]];
-    [customFrame setFileName:stackFrame[@"file"]];
-    [customFrame setLibrary:stackFrame[@"src"]];
-    [customFrame setOffset:(uint64_t) [stackFrame[@"col"] intValue]];
-    [customFrame setLineNumber:(uint32_t) [stackFrame[@"line"] intValue]];
-    [customFrames addObject:customFrame];
+    FIRStackFrame *customFrame = [FIRStackFrame stackFrameWithSymbol:stackFrame[@"fn"] file:stackFrame[@"file"] line:(uint32_t) [stackFrame[@"line"] intValue]];
+    [stackTrace addObject:customFrame];
   }
 
   NSString *name = @"JavaScriptError";
@@ -180,7 +150,10 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
     name = @"UnhandledPromiseRejection";
   }
 
-  [[Crashlytics sharedInstance] recordCustomExceptionName:name reason:message frameArray:customFrames];
+  FIRExceptionModel *exceptionModel = [FIRExceptionModel exceptionModelWithName:name reason:message];
+  exceptionModel.stackTrace = stackTrace;
+  
+  [[FIRCrashlytics crashlytics] recordExceptionModel:exceptionModel];
 }
 
 

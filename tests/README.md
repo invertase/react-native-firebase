@@ -70,14 +70,16 @@ yarn tests:android:build
 ```
 
 #### iOS
+<<<<<<< HEAD
 
 ```bash
 #from /test directory
 pod install --repo-update
 ```
+=======
+>>>>>>> master
 
 ```bash
-#from root directory
 yarn tests:ios:build
 ```
 

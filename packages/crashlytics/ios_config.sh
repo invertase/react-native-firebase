@@ -17,9 +17,9 @@
 set -e
 
 if [[ ${PODS_ROOT} ]]; then
-  echo "info: Exec Fabric Run from Pods"
-  "${PODS_ROOT}/Fabric/run"
+  echo "info: Exec FirebaseCrashlytics Run from Pods"
+  "${PODS_ROOT}/FirebaseCrashlytics/run"
 else
-  echo "info: Exec Fabric Run from framework"
-  "${PROJECT_DIR}/Fabric.framework/run"
+  echo "info: Exec FirebaseCrashlytics Run from framework"
+  "${PROJECT_DIR}/FirebaseCrashlytics.framework/run"
 fi

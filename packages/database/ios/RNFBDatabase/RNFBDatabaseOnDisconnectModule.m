@@ -21,7 +21,6 @@
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseOnDisconnectModule.h"
 
-
 @implementation RNFBDatabaseOnDisconnectModule
 #pragma mark -
 #pragma mark Module Setup
@@ -29,7 +28,7 @@
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+  return [RNFBDatabaseCommon getDispatchQueue];
 }
 
 #pragma mark -

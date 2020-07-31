@@ -83,6 +83,10 @@ static RNFBPreferences *sharedInstance;
   [_userDefaults removePersistentDomainForName:RNFBDomainIdentifier];
 }
 
+- (void)remove:(NSString *)key {
+  [_userDefaults removeObjectForKey:key];
+}
+
 + (RNFBPreferences *)shared {
   return sharedInstance;
 }

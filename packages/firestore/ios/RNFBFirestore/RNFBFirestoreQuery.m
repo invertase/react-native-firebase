@@ -90,6 +90,10 @@
   if (_options[@"limit"]) {
     _query = [_query queryLimitedTo:[_options[@"limit"] intValue]];
   }
+    
+  if (_options[@"limitToLast"]) {
+    _query = [_query queryLimitedToLast:[_options[@"limitToLast"] intValue]];
+  }
 
   if (_options[@"startAt"]) {
     NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore array:_options[@"startAt"]];

@@ -18,10 +18,10 @@ package io.invertase.firebase.firestore;
  */
 
 import android.content.Context;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
+import static  io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.instanceCache;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
@@ -52,35 +53,44 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
         UniversalFirebasePreferences.getSharedInstance().setIntValue(
           UniversalFirebaseFirestoreStatics.FIRESTORE_CACHE_SIZE + "_" + appName,
-          Objects.requireNonNull(cacheSizeBytesDouble).intValue()
-        );
+          Objects.requireNonNull(cacheSizeBytesDouble).intValue());
       }
 
       // settings.host
       if (settings.containsKey("host")) {
         UniversalFirebasePreferences.getSharedInstance().setStringValue(
-          UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName,
-          (String) settings.get("host")
-        );
+          UniversalFirebaseFirestoreStatics.FIRESTORE_HOST + "_" + appName, (String) settings.get("host"));
       }
 
       // settings.persistence
       if (settings.containsKey("persistence")) {
         UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
           UniversalFirebaseFirestoreStatics.FIRESTORE_PERSISTENCE + "_" + appName,
-          (boolean) settings.get("persistence")
-        );
+          (boolean) settings.get("persistence"));
       }
 
       // settings.ssl
       if (settings.containsKey("ssl")) {
         UniversalFirebasePreferences.getSharedInstance().setBooleanValue(
-          UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName,
-          (boolean) settings.get("ssl")
-        );
+          UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName, (boolean) settings.get("ssl"));
       }
 
       return null;
     });
+  }
+
+  Task<Void> clearPersistence(String appName) {
+    return getFirestoreForApp(appName).clearPersistence();
+  }
+
+  Task<Void> terminate(String appName) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+
+    if (instanceCache.get(appName) != null) {
+      instanceCache.get(appName).clear();
+      instanceCache.remove(appName);
+    }
+
+    return firebaseFirestore.terminate();
   }
 }
