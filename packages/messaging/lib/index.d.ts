@@ -84,7 +84,6 @@ export namespace FirebaseMessagingTypes {
      * The message type of the message.
      */
     messageType?: string;
-    
     /**
     * The topic name or message identifier.
     */
