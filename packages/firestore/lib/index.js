@@ -56,7 +56,7 @@ const nativeEvents = [
   'firestore_snapshot_in_sync_event',
 ];
 
-let _id = 0;
+let _id = 1000;
 
 class FirebaseFirestoreModule extends FirebaseModule {
   constructor(app, config) {
