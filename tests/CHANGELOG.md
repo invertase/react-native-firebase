@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.3.0](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.2.1...react-native-firebase-tests@8.3.0) (2020-08-03)
+
+
+### Features
+
+* **crashlytics:** add new APIs `checkForUnsentReports`, `deleteUnsentReports`,`didCrashOnPreviousExecution`,`sendUnsentReports` ([#4009](https://github.com/invertase/react-native-firebase/issues/4009)) ([52eeed3](https://github.com/invertase/react-native-firebase/commit/52eeed31b3436b0f90767298dcc515b0897ba942))
+
+
+
+
+
 ## [8.2.1](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.2.0...react-native-firebase-tests@8.2.1) (2020-08-03)
 
 **Note:** Version bump only for package react-native-firebase-tests
