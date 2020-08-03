@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.3...@react-native-firebase/remote-config@8.1.0) (2020-08-03)
+
+### Features
+
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+
 ## [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.2...@react-native-firebase/remote-config@8.0.0) (2020-07-23)
 
 This release is aimed at aligning the API to match the Firebase Web SDK as well as introducing support for multiple Firebase apps.
@@ -16,8 +22,9 @@ const remoteConfig = firebase.remoteConfig();
 ```
 
 #### Updates
--  added `ensureInitialized ` API.
--  added `reset` API for android only
+
+- added `ensureInitialized` API.
+- added `reset` API for android only
 - `console.warn()` if user tries to set `defaultConfig` which is part of web sdk.
 - `console.warn()` if user tries to set `settings` which is part of web sdk.
 - `console.warn()` if user tries to set `setLogLevel` which is part of web sdk.
@@ -29,12 +36,14 @@ const remoteConfig = firebase.remoteConfig().setConfigSettings({});
 ```
 
 #### Updates
+
 - can set 'minimumFetchIntervalMillis' in `setConfigSettings` to match web sdk.
 - can set 'fetchTimeMillis' in `setConfigSettings` to match web sdk.
 
 #### Removed
+
 - `isDeveloperModeEnabled` from config settings and console.warn() if tried to set.
-- `minimumFetchInterval ` config setting and console.warn() if tried to set.
+- `minimumFetchInterval` config setting and console.warn() if tried to set.
 
 ### RemoteConfig.getValue(key)
 
@@ -55,11 +64,11 @@ const remoteConfig = firebase.remoteConfig().getValue('key');
 - `source` removed property. Again, not sure how to warn users.
 
 ### Internal Changes
-- Switched to `setConfigSettingsAsync ` for Android, nothing similar for iOS.
+
+- Switched to `setConfigSettingsAsync` for Android, nothing similar for iOS.
 - Switched to `fetchAndActivate` API for both platforms.
 - Switched to async `activate` API for iOS. No changes needed for Android.
 - Multiple Firebase apps now supported on both platforms.
-
 
 ## [7.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@7.2.1...@react-native-firebase/remote-config@7.2.2) (2020-07-09)
 
