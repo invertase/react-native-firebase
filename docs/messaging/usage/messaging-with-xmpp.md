@@ -1,6 +1,6 @@
 ---
 title: Messaging with XMPP
-description: To send and receive messages directly from devices with FCM requires you to create and deploy an XMPP server.
+description: Send and receive FCM messages directly between devices & your server with a XMPP server.
 ---
 
 ## Introduction
