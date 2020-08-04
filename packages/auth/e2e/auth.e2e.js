@@ -58,6 +58,45 @@ describe('auth()', () => {
     });
   });
 
+  describe('reload()', () => {
+    it('Meta data returns as expected with annonymous sign in', async () => {
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+
+    it('Meta data returns as expected with email and password sign in', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email1 = `${random}@${random}.com`;
+      const pass = random;
+
+      await firebase.auth().createUserWithEmailAndPassword(email1, pass);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      const anotherRandom = Utils.randString(12, '#aA');
+      const email2 = `${anotherRandom}@${anotherRandom}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email2, pass);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+  });
+
   describe('verifyPasswordResetCode()', () => {
     it('errors on invalid code', async () => {
       try {
@@ -345,7 +384,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await Utils.sleep(50);
+      await Utils.sleep(500);
 
       // Assertions
 
