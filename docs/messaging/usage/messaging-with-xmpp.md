@@ -89,7 +89,7 @@ app();
 
 ## How do I send messages?
 
-An ability to post to firebase with the correct permissions, for this we can use `Firebase-admin`.
+For sending messages we can use the Firebase Admin SDK.
 
 ```js
 const admin = require('firebase-admin');
