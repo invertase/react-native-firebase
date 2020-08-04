@@ -29,7 +29,7 @@ jobs:
         run: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
-        run: cd ./.github/workflows/scripts sh ./start-firestore-emulator.sh
+        run: cd ./.github/workflows/scripts ./start-firestore-emulator.sh
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
@@ -145,7 +145,7 @@ jobs:
         run: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
-        run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+        run: cd ./.github/workflows/scripts && ./start-firestore-emulator.sh
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
