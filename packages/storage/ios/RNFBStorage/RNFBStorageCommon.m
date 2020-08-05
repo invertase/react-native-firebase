@@ -81,7 +81,7 @@
     PHAsset *asset = [RNFBUtilsModule fetchAssetForPath:localFilePath];
       
   if (!asset) {
-    completion(@[@"asset-library-removed", @"iOS asset-library methodology has been removed, please provide the correct path to resource."], nil, nil);
+    completion(@[@"asset-library-removed", @"iOS 'asset-library://' & 'ph://' URLs have been removed, please provide the correct path to resource."], nil, nil);
       
     return;
   }
