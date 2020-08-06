@@ -98,7 +98,8 @@ public class SharedUtils {
 
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
-    Date date = new Date(timestamp + calendar.getTimeZone().getOffset(timestamp));
+    long millisTimestamp = timestamp * 1000;
+    Date date = new Date(millisTimestamp + calendar.getTimeZone().getOffset(millisTimestamp));
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     format.setTimeZone(TimeZone.getTimeZone("UTC"));
     return format.format(date);
