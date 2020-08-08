@@ -38,6 +38,8 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 
 ```bash
 yarn add @invertase/react-native-apple-authentication
+
+cd ios && pod install
 ```
 
 You will not have to manually link this module as it supports React Native auto-linking.
