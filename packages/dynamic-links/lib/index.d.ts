@@ -149,12 +149,6 @@ export namespace FirebaseDynamicLinksTypes {
    * #### Example
    *
    * ```js
-   * const linkParams = firebase.dynamicLinks().newDynamicLinkParameters('https://invertase.io', 'https://xyz.page.link');
-   * linkParams
-   *   .ios.setBundleId('io.invertase.testing')
-   *   .ios.setAppStoreId('123456789')
-   *   .ios.setMinimumVersion('18');
-   *
    *  const link = await firebase.dynamicLinks().buildLink({
    *    link: 'https://invertase.io',
    *    domainUriPrefix: 'https://xyz.page.link',
