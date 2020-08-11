@@ -104,7 +104,7 @@ To do this, open your `/ios/{projectName}/AppDelegate.m` file, and add the follo
 At the top of the file, import the Firebase SDK:
 
 ```
-#import <Firebase.h>
+@import Firebase;
 ```
 
 Within your existing `didFinishLaunchingWithOptions` method, add the following to the top of the method:
