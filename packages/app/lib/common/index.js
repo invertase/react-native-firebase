@@ -65,7 +65,7 @@ export function isError(value) {
 }
 
 export function hasOwnProperty(target, property) {
-  return Object.hasOwnProperty.call(target, property);
+  return typeof target === 'object' && Object.hasOwnProperty.call(target, property);
 }
 
 /**
