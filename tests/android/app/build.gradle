@@ -1,10 +1,14 @@
+// Add the Firebase Crashlytics plugin.
+
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+
+
+
 apply plugin: "com.google.firebase.firebase-perf"
 
-crashlytics {
-  enableNdk true
-}
 
 import com.android.build.OutputFile
 
@@ -117,6 +121,13 @@ android {
   }
 }
 
+// Can probably remove this when tests upgrades to react-native 0.63
+configurations.all {
+    resolutionStrategy {
+        force "com.facebook.soloader:soloader:0.8.2"
+    }
+}
+
 dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
@@ -139,5 +150,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
   into 'libs'
 }
 
-apply plugin: 'com.google.gms.google-services'
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

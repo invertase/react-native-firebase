@@ -70,6 +70,31 @@ To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple d
 
 ![iOS dynamic link fifth step](https://images.prismic.io/invertase/cb029ba6-ad40-494e-a3f6-2aacaff494d1_Screenshot+2020-05-07+at+10.16.16.png?auto=compress,format)
 
+### Dynamic Links With Custom Domains
+
+If you have set up a [custom domain](https://firebase.google.com/docs/dynamic-links/custom-domains) for your Firebase project, you must add the dynamic link URL prefix into your iOS project's `info.plist` file by using the  `FirebaseDynamicLinksCustomDomains` key. You can add multiple URLs as well.
+
+Example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>FirebaseDynamicLinksCustomDomains</key>
+  <array>
+    <string>https://custom.domain.io/bla</string>
+    <string>https://custom.domain.io/bla2</string>
+  </array>
+  
+  ...other settings
+  
+</dict>
+</plist>
+```
+
+If you don't add this, the dynamic link will invoke your app, but you cannot retrieve any deep link data you may need within your app, as the deep link will be completely ignored.
+
 ## iOS Testing Your Dynamic Link
 
 To test your dynamic link, you will need to use a real device as it will not work on a simulator.
@@ -96,7 +121,7 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 ![iOS troubleshooting second step](https://images.prismic.io/invertase/4af777b7-7a2e-48a8-a0dc-23cea50e1a4b_Screenshot+2020-05-22+at+09.40.18.png?auto=compress,format)
 
-3. Paste your link into the iOS Notes app. Long press the link which will open the menu and ensure you click "Open in [YOUR APP NAME]". Be sure *not* to press "Open in Safari" as that will disable that dynamic link domain for your device.
+3. Paste your link into the iOS Notes app. Long press the link which will open the menu and ensure you click "Open in [YOUR APP NAME]". Be sure _not_ to press "Open in Safari" as that will disable that dynamic link domain for your device.
 
 ![iOS troubleshooting third step](https://images.prismic.io/invertase/1f8b049d-e54c-4901-a369-e7f6a19a444c_FA031D26-E14F-4A92-87F2-442191455537.png?auto=compress,format)
 

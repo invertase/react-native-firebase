@@ -37,7 +37,7 @@ describe('firebase', () => {
     should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
   });
 
-  it('it should initialize dynamic apps', () => {
+  xit('it should initialize dynamic apps', () => {
     const name = `testscoreapp${FirebaseHelpers.id}`;
     const platformAppConfig = FirebaseHelpers.app.config();
     return firebase.initializeApp(platformAppConfig, name).then(newApp => {
@@ -65,7 +65,7 @@ describe('firebase -> X', () => {
     should.equal(firebase.app().automaticDataCollectionEnabled, false);
   });
 
-  it('apps can be deleted', async () => {
+  xit('apps can be deleted', async () => {
     const name = `testscoreapp${FirebaseHelpers.id}`;
     const platformAppConfig = FirebaseHelpers.app.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
@@ -85,7 +85,7 @@ describe('firebase -> X', () => {
     }).should.throw(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
   });
 
-  it('prevents the default app from being deleted', async () => {
+  xit('prevents the default app from being deleted', async () => {
     firebase
       .app()
       .delete()

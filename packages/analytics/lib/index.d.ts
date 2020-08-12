@@ -50,143 +50,124 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace FirebaseAnalyticsTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
-  export interface AddToCartEventParameters {
+  export interface Item {
+    /**
+     * The item's brand.
+     */
+    item_brand?: string;
     /**
      * An item ID.
      */
-    item_id: string;
+    item_id?: string;
     /**
      * An item name.
      */
-    item_name: string;
+    item_name?: string;
     /**
-     * An item category.
+     * First class item category.
      */
-    item_category: string;
+    item_category?: string;
     /**
-     * Purchase quantity.
+     * Second class item category.
      */
-    quantity: number;
+    item_category2?: string;
     /**
-     * Purchase price.
+     * Third class item category.
      */
-    price?: number;
+    item_category3?: string;
     /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
+     * Fourth class item category.
      */
-    value?: number;
+    item_category4?: string;
     /**
-     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     * Fifth class item category.
      */
-    currency?: string;
+    item_category5?: string;
     /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
+     * The ID of the list in which the item was presented to the user.
      */
-    origin?: string;
+    item_list_id?: string;
+    /**
+     * The name of the list in which the item was presented to the user.
+     */
+    item_list_name?: string;
     /**
      * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
      */
     item_location_id?: string;
     /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
+     * The Item variant.
      */
-    destination?: string;
+    item_variant?: string;
+  }
+  export interface AddPaymentInfoEventParameters {
+    items?: Item[];
     /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    start_date?: string;
+    currency?: string;
+    value?: number;
     /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
+     * Coupon code for a purchasable item.
      */
-    end_date?: string;
+    coupon?: string;
+    /**
+     * The chosen method of payment
+     */
+    payment_type?: string;
+  }
+
+  export interface AddShippingInfoEventParameters {
+    items?: Item[];
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+    value?: number;
+    /**
+     * Coupon code for a purchasable item.
+     */
+    coupon?: string;
+    /**
+     * The shipping tier (e.g. Ground, Air, Next-day) selected for delivery of the purchased item
+     */
+    shipping_tier?: string;
+  }
+
+  export interface AddToCartEventParameters {
+    items?: Item[];
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+    /**
+     * value of item
+     */
+    value?: number;
   }
 
   export interface AddToWishlistEventParameters {
-    /**
-     * An item ID.
-     */
-    item_id: string;
-    /**
-     * An item name.
-     */
-    item_name: string;
-    /**
-     * An item category.
-     */
-    item_category: string;
-    /**
-     * Purchase quantity.
-     */
-    quantity: number;
-    /**
-     * Purchase price.
-     */
-    price?: number;
-    /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
-    value?: number;
+    items?: Item[];
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
     currency?: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
-     */
-    item_location_id?: string;
+    value?: number;
   }
 
   export interface BeginCheckoutEventParameters {
     /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
-    value?: number;
-    /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
+    //TODO if value is a param, so must currency: https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-add_to_wishlist
     currency?: string;
+    value?: number;
     /**
-     * A single ID for a ecommerce group transaction.
+     * Coupon code for a purchasable item.
      */
-    transaction_id?: string;
-    /**
-     * Number of nights staying at hotel.
-     */
-    number_of_nights?: number;
-    /**
-     * Number of rooms for travel events.
-     */
-    number_of_rooms?: number;
-    /**
-     * Number of passengers traveling.
-     */
-    number_of_passengers?: number;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
+    coupon?: string;
+
+    items?: Item[];
   }
 
   export interface CampaignDetailsEventParameters {
@@ -217,6 +198,15 @@ export namespace FirebaseAnalyticsTypes {
     cp1?: string;
   }
 
+  /**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-checkout_progress
+   */
+  // export interface CheckoutProgressEventParameters {
+  //   checkout_step: string;
+  //   checkout_options: string;
+  // }
+
   export interface EarnVirtualCurrencyEventParameters {
     /**
      * Name of virtual currency type. E.g. `gems`.
@@ -228,72 +218,6 @@ export namespace FirebaseAnalyticsTypes {
      */
     value: number;
   }
-
-  export interface EcommercePurchaseEventParameters {
-    /**
-     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
-     */
-    currency?: string;
-    /**
-     * A context-specific numeric value which is accumulated automatically for each event type. Values
-     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
-     * parameter should also be defined.
-     */
-    value?: number;
-    /**
-     * A single ID for a ecommerce group transaction.
-     */
-    transaction_id?: string;
-    /**
-     * Tax amount.
-     */
-    tax?: number;
-    /**
-     * Shipping cost.
-     */
-    shipping?: number;
-    /**
-     * Coupon code for a purchasable item.
-     */
-    coupon?: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated event. Alternatively, you can supply your own custom Location ID.
-     */
-    location?: string;
-    /**
-     * Number of nights staying at hotel.
-     */
-    number_of_nights?: number;
-    /**
-     * Number of rooms for travel events.
-     */
-    number_of_rooms?: number;
-    /**
-     * Number of passengers traveling.
-     */
-    number_of_passengers?: number;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
-  }
-
   export interface GenerateLeadEventParameters {
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
@@ -365,26 +289,64 @@ export namespace FirebaseAnalyticsTypes {
     character?: string;
   }
 
-  export interface PresentOfferEventParameters {
+  export interface PurchaseEventParameters {
     /**
-     * Score in game.
+     * A product affiliation to designate a supplying company or brick and mortar store location
      */
-    score: number;
+    affiliation?: string;
     /**
-     * Level in game.
+     * Coupon code for a purchasable item.
      */
-    level?: number;
-    /**
-     * Character used in game.
-     */
-    character?: string;
-  }
-
-  export interface PurchaseRefundEventParameters {
+    coupon?: string;
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
     currency?: string;
+
+    items?: Item[];
+    /**
+     * Shipping cost.
+     */
+    shipping?: number;
+    /**
+     * Tax amount.
+     */
+    tax?: number;
+    /**
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
+     */
+    value?: number;
+    /**
+     * A single ID for a ecommerce group transaction.
+     */
+    transaction_id?: string;
+  }
+
+  export interface RefundEventParameters {
+    /**
+     * A product affiliation to designate a supplying company or brick and mortar store location
+     */
+    affiliation?: string;
+    /**
+     * Coupon code for a purchasable item.
+     */
+    coupon?: string;
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+
+    items?: Item[];
+    /**
+     * Shipping cost.
+     */
+    shipping?: number;
+    /**
+     * Tax amount.
+     */
+    tax?: number;
     /**
      * A context-specific numeric value which is accumulated automatically for each event type. Values
      * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
@@ -398,22 +360,7 @@ export namespace FirebaseAnalyticsTypes {
   }
 
   export interface RemoveFromCartEventParameters {
-    /**
-     * An item ID.
-     */
-    item_id: string;
-    /**
-     * An item name.
-     */
-    item_name: string;
-    /**
-     * An item category.
-     */
-    item_category: string;
-    /**
-     * Purchase quantity.
-     */
-    quantity?: number;
+    items?: Item[];
     /**
      * A context-specific numeric value which is accumulated automatically for each event type. Values
      * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
@@ -421,33 +368,9 @@ export namespace FirebaseAnalyticsTypes {
      */
     value?: number;
     /**
-     * Purchase price.
-     */
-    price?: number;
-    /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
-     */
+    x */
     currency?: string;
-    /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
-     */
-    item_location_id?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
   }
 
   export interface SearchEventParameters {
@@ -494,15 +417,41 @@ export namespace FirebaseAnalyticsTypes {
     item_id: string;
   }
 
-  export interface SetCheckoutOptionEventParameters {
+  export interface SelectItemEventParameters {
+    items?: Item[];
+    content_type: string;
     /**
-     * The checkout step (1..N).
+     * The ID of the list in which the item was presented to the user
      */
-    checkout_step: number;
+    item_list_id: string;
     /**
-     * Some option on a step in an ecommerce flow.
+     * The name of the list in which the item was presented to the user
      */
-    checkout_option: string;
+    item_list_name: string;
+  }
+
+  export interface SelectPromotionEventParameters {
+    /**
+     * The name of a creative used in a promotional spot
+     */
+    creative_name: string;
+    /**
+     * The name of a creative slot
+     */
+    creative_slot: string;
+    items?: Item[];
+    /**
+     * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
+     */
+    location_id: string;
+    /**
+     * The ID of a product promotion
+     */
+    promotion_id: string;
+    /**
+     * The name of a product promotion
+     */
+    promotion_name: string;
   }
 
   export interface ShareEventParameters {
@@ -514,6 +463,10 @@ export namespace FirebaseAnalyticsTypes {
      * An item ID.
      */
     item_id: string;
+    /**
+     * A particular approach used in an operation; for example, "facebook" or "email" in the context of a sign_up or login event.
+     */
+    method: string;
   }
 
   export interface SignUpEventParameters {
@@ -539,7 +492,6 @@ export namespace FirebaseAnalyticsTypes {
      */
     value: number;
   }
-
   export interface UnlockAchievementEventParameters {
     /**
      * Game achievement ID (String).
@@ -547,31 +499,79 @@ export namespace FirebaseAnalyticsTypes {
     achievement_id: string;
   }
 
+  export interface ViewCartEventParameters {
+    items?: Item[];
+    /**
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
+     */
+    currency?: string;
+    /**
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
+     */
+    value?: number;
+  }
+
   export interface ViewItemEventParameters {
+    items?: Item[];
     /**
-     * An item ID.
+     * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
-    item_id: string;
+    currency?: string;
     /**
-     * An item name.
+     * A context-specific numeric value which is accumulated automatically for each event type. Values
+     * can include revenue, distance, time and points. When a value is set, the accompanying `currency`
+     * parameter should also be defined.
      */
-    item_name: string;
+    value?: number;
+  }
+
+  export interface ViewSearchResultsParameters {
     /**
-     * An item category.
+     * The search string/keywords used.
      */
-    item_category: string;
+    search_term: string;
+  }
+
+  export interface ViewItemListEventParameters {
+    items?: Item[];
     /**
-     * The Google [Place ID](https://developers.google.com/places/place-id) that corresponds to the associated item (String). Alternatively, you can supply your own custom Location ID.
+     * The ID of the list in which the item was presented to the user
      */
-    item_location_id?: string;
+    item_list_id?: string;
     /**
-     * Purchase price.
+     * The name of the list in which the item was presented to the user
      */
-    price?: number;
+    item_list_name?: string;
+  }
+
+  export interface ViewPromotionEventParameters {
+    items?: Item[];
     /**
-     * Purchase quantity.
+     * The location associated with the event. Preferred to be the Google Place ID that corresponds to the associated item but could be overridden to a custom location ID string
      */
-    quantity?: number;
+    location_id?: string;
+    /**
+     * The name of a creative used in a promotional spot
+     */
+    creative_name?: string;
+    /**
+     * The name of a creative slot
+     */
+    creative_slot?: string;
+    /**
+     * The ID of a product promotion
+     */
+    promotion_id?: string;
+    /**
+     * The name of a product promotion
+     */
+    promotion_name?: string;
+  }
+
+  export interface AddShippingInfoParameters {
+    items?: Item[];
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
      */
@@ -583,60 +583,24 @@ export namespace FirebaseAnalyticsTypes {
      */
     value?: number;
     /**
-     * Flight number for travel events.
+     * Coupon code for a purchasable item.
      */
-    flight_number?: string;
+    coupon?: string;
     /**
-     * Number of passengers traveling.
+     * The shipping tier (e.g. Ground, Air, Next-day) selected for delivery of the purchased item
      */
-    number_of_passengers?: number;
-    /**
-     * Number of nights staying at hotel.
-     */
-    number_of_nights?: number;
-    /**
-     * Number of rooms for travel events.
-     */
-    number_of_rooms?: number;
-    /**
-     * Flight or Travel origin. E.g. `Mountain View, CA`.
-     */
-    origin?: string;
-    /**
-     * Flight or Travel destination. E.g. `Mountain View, CA`.
-     */
-    destination?: string;
-    /**
-     * The departure date, check-in date, or rental start date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    start_date?: string;
-    /**
-     * The arrival date, check-out date, or rental end date for the item (String). The parameter expects a date formatted as YYYY-MM-DD.
-     */
-    end_date?: string;
-    /**
-     * The search string/keywords used.
-     */
-    search_term?: string;
-    /**
-     * Travel class. E.g. `business`.
-     */
-    travel_class?: string;
+    shipping_tier?: string;
   }
-
-  export interface ViewItemListEventParameters {
-    /**
-     * An item category.
-     */
-    item_category: string;
-  }
-
-  export interface ViewSearchResults {
-    /**
-     * The search string/keywords used.
-     */
-    search_term: string;
-  }
+  /**
+   * Unsupported in "Enhanced Ecommerce reports":
+   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
+   */
+  // export interface ViewSearchResults {
+  //   /**
+  //    * The search string/keywords used.
+  //    */
+  //   search_term: string;
+  // }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
@@ -795,25 +759,58 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     resetAnalyticsData(): Promise<void>;
-
+    /**
+     * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
+     * automatically for Google Play-based apps.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `purchase`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logPurchase({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     */
+    logPurchase(params: PurchaseEventParameters): Promise<void>;
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
      * Logged event name: `add_payment_info`
      *
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logAddPaymentInfo();
+     * await firebase.analytics().logAddPaymentInfo({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
      * ```
      */
-    logAddPaymentInfo(): Promise<void>;
+    logAddPaymentInfo(params: AddPaymentInfoEventParameters): Promise<void>;
 
     /**
-     * E-Commerce Add To Cart event. This event signifies that an item was added to a cart for purchase.
-     * Add this event to a funnel with {@link analytics#logEcommercePurchase} to gauge the effectiveness of your checkout process.
+     * E-Commerce Add To Cart event.
      *
-     * If you supply the VALUE parameter, you must also supply the CURRENCY parameter so that revenue metrics can be computed accurately.
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
      * Logged event name: `add_to_cart`
      *
@@ -821,10 +818,14 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logAddToCart({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt 1',
-     *   item_category: 'shirts',
-     *   quantity: 2,
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
@@ -844,16 +845,47 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logAddToWishlist({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt 1',
-     *   item_category: 'shirts',
-     *   quantity: 2,
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
      * @param params See {@link analytics.AddToWishlistEventParameters}.
      */
     logAddToWishlist(params: AddToWishlistEventParameters): Promise<void>;
+
+    /**
+     * E-Commerce Add Shipping Info event. This event signifies that a user has submitted their shipping information.
+     * Use this event to identify popular gift items in your app.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `add_shipping_info`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logAddShippingInfo({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.AddShippingInfoParameters}.
+     */
+    logAddShippingInfo(params: AddShippingInfoParameters): Promise<void>;
 
     /**
      * App Open event. By logging this event when an App is moved to the foreground, developers can
@@ -873,8 +905,7 @@ export namespace FirebaseAnalyticsTypes {
 
     /**
      * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of
-     * checking out. Add this event to a funnel with your {@link analytics#logEcommercePurchase} event to gauge the
-     * effectiveness of your checkout process.
+     * checking out.
      *
      * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
      *
@@ -884,7 +915,14 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logBeginCheckout({
-     *  travel_class: 'business',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
@@ -910,6 +948,26 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.CampaignDetailsEventParameters}.
      */
     logCampaignDetails(params: CampaignDetailsEventParameters): Promise<void>;
+    /**
+     * View Promotion event. This event signifies that a promotion was shown to a user.
+     *
+     * Logged event name: `view_promotion`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logViewPromotion({
+     *   creative_name: 'the promotion',
+     *   creative_slot: 'evening',
+     *   location_id: 'london',
+     *   promotion_id: '230593',
+     *   promotion_name: 'london evening event',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.ViewPromotionEventParameters}.
+     */
+    logViewPromotion(params: ViewPromotionEventParameters): Promise<void>;
 
     /**
      * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with
@@ -929,27 +987,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.EarnVirtualCurrencyEventParameters}.
      */
     logEarnVirtualCurrency(params: EarnVirtualCurrencyEventParameters): Promise<void>;
-
-    /**
-     * E-Commerce Purchase event. This event signifies that an item was purchased by a user. This is
-     * different from the in-app purchase event, which is reported automatically for Google Play-based apps.
-     *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `ecommerce_purchase`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logEcommercePurchase({
-     *   coupon: 'BOGOFF',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.EcommercePurchaseEventParameters}.
-     */
-    logEcommercePurchase(params?: EcommercePurchaseEventParameters): Promise<void>;
-
     /**
      * Generate Lead event. Log this event when a lead has been generated in the app to understand
      * the efficacy of your install and re-engagement campaigns.
@@ -1061,49 +1098,25 @@ export namespace FirebaseAnalyticsTypes {
     logLogin(params: LoginEventParameters): Promise<void>;
 
     /**
-     * Present Offer event. This event signifies that the app has presented a purchase offer to a user.
-     * Add this event to a funnel with the {@link analytics#logAddToCart} and {@link analytics#logEcommercePurchase}
-     * to gauge your conversion process.
+     * Post Score event. Log this event when the user posts a score in your gaming app. This event can
+     * help you understand how users are actually performing in your game and it can help you correlate
+     * high scores with certain audiences or behaviors.
      *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `present_offer`
+     * Logged event name: `post_score`
      *
      * #### Example
      *
      * ```js
-     * await firebase.analytics().logPresentOffer({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt',
-     *   item_category: 'shirts',
-     *   quantity: 1,
-     *   price: 9.99,
+     * await firebase.analytics().logPostScore({
+     *   score: 567334,
+     *   level: 3,
+     *   character: 'Pete',
      * });
      * ```
      *
-     * @param params See {@link analytics.PresentOfferEventParameters}.
+     * @param params See {@link analytics.PostScoreEventParameters}.
      */
-    logPresentOffer(params: PresentOfferEventParameters): Promise<void>;
-
-    /**
-     * E-Commerce Purchase Refund event. This event signifies that an item purchase was refunded.
-     *
-     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
-     *
-     * Logged event name: `purchase_refund`
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().logPurchaseRefund({
-     *  transaction_id: 'abcd',
-     * });
-     * ```
-     *
-     * @param params See {@link analytics.PurchaseRefundEventParameters}.
-     */
-    logPurchaseRefund(params?: PurchaseRefundEventParameters): Promise<void>;
-
+    logPostScore(params: PostScoreEventParameters): Promise<void>;
     /**
      * Remove from cart event.
      *
@@ -1113,15 +1126,43 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logRemoveFromCart({
-     *   item_id: 'abcd',
-     *   item_name: 't-shirt',
-     *   item_category: 'shirts',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
      * @param params See {@link analytics.RemoveFromCartEventParameters}.
      */
     logRemoveFromCart(params: RemoveFromCartEventParameters): Promise<void>;
+    /**
+     * E-Commerce Refund event. This event signifies that a refund was issued.
+     *
+     * Logged event name: `remove_from_cart`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logRefund({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.RefundEventParameters}.
+     */
+    logRefund(params: RefundEventParameters): Promise<void>;
 
     /**
      * Search event. Apps that support search features can use this event to contextualize search
@@ -1141,14 +1182,13 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SearchEventParameters}.
      */
     logSearch(params: SearchEventParameters): Promise<void>;
-
     /**
      * Select Content event. This general purpose event signifies that a user has selected some
      * content of a certain type in an app. The content can be any object in your app. This event
      * can help you identify popular content and categories of content in your app.
      *
      * Logged event name: `select_content`
-     *
+     *ana
      * #### Example
      *
      * ```js
@@ -1161,7 +1201,26 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SelectContentEventParameters}.
      */
     logSelectContent(params: SelectContentEventParameters): Promise<void>;
-
+    /**
+     * Select Content event. This general purpose event signifies that a user has selected some
+     * content of a certain type in an app. The content can be any object in your app. This event
+     * can help you identify popular content and categories of content in your app.
+     *
+     * Logged event name: `select_content`
+     *ana
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logSelectItem({
+     *  item_list_id: '54690834',
+     *  item_list_name: 'purple baseball cap',
+     *  content_type: 'cap',
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.SelectItemEventParameters}.
+     */
+    logSelectItem(params: SelectItemEventParameters): Promise<void>;
     /**
      * Set checkout option event.
      *
@@ -1269,6 +1328,27 @@ export namespace FirebaseAnalyticsTypes {
     logTutorialComplete(): Promise<void>;
 
     /**
+     * Select promotion event. This event signifies that a user has selected a promotion offer. Use the
+     * appropriate parameters to contextualize the event, such as the item(s) for which the promotion applies.
+     *
+     * Logged event name: `select_promotion`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logSelectPromotion({
+     *   creative_name: 'the promotion',
+     *   creative_slot: 'evening',
+     *   location_id: 'london',
+     *   promotion_id: '230593',
+     *   promotion_name: 'london evening event',
+     * });
+     * ```
+     * @param params See {@link analytics.SelectPromotionEventParameters}.
+     */
+    logSelectPromotion(params: SelectPromotionEventParameters): Promise<void>;
+
+    /**
      * Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.
      * Since achievements generally represent the breadth of a gaming experience, this event can help
      * you understand how many users are experiencing all that your game has to offer.
@@ -1300,15 +1380,45 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logViewItem({
-     *  item_id: 'abcd',
-     *  item_name: 't-shirt',
-     *  item_category: 'shirts',
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
      * @param params See {@link analytics.ViewItemEventParameters}.
      */
     logViewItem(params: ViewItemEventParameters): Promise<void>;
+    /**
+     * E-commerce View Cart event. This event signifies that a user has viewed their cart. Use this to analyze your purchase funnel.
+     *
+     * If you supply the `value` parameter, you must also supply the `currency` parameter so that revenue metrics can be computed accurately.
+     *
+     * Logged event name: `view_cart`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logViewCart({
+     *   value: 100,
+     *   currency: 'usd',
+     *   items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
+     * });
+     * ```
+     *
+     * @param params See {@link analytics.ViewCartEventParameters}.
+     */
+    logViewCart(params: ViewCartEventParameters): Promise<void>;
 
     /**
      * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
@@ -1319,14 +1429,13 @@ export namespace FirebaseAnalyticsTypes {
      *
      * ```js
      * await firebase.analytics().logViewItemList({
-     *   item_category: 't-shirts',
+     *   item_list_name: 't-shirts',
      * });
      * ```
      *
      * @param params See {@link analytics.ViewItemListEventParameters}.
      */
     logViewItemList(params: ViewItemListEventParameters): Promise<void>;
-
     /**
      * View Search Results event. Log this event when the user has been presented with the results of a search.
      *
@@ -1340,9 +1449,9 @@ export namespace FirebaseAnalyticsTypes {
      * });
      * ```
      *
-     * @param params See {@link analytics.ViewSearchResults}.
+     * @param params See {@link analytics.ViewSearchResultsParameters}.
      */
-    logViewSearchResults(params: ViewSearchResults): Promise<void>;
+    logViewSearchResults(params: ViewSearchResultsParameters): Promise<void>;
   }
 }
 

@@ -2,7 +2,7 @@
 title: Usage with FlatLists
 description: Using Cloud Firestore collections with FlatLists.
 next: /functions/usage
-previous: /firestore/usage
+previous: /firestore/emulator
 ---
 
 Cloud Firestore provides out of the box support for subscribing to [realtime changes](/firestore/usage#realtime-changes)

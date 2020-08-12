@@ -26,6 +26,11 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
+    // Add a RemoteMessage if the message contains a notification payload
+    if (remoteMessage.getNotification() != null) {
+      notifications.put(remoteMessage.getMessageId(), remoteMessage);
+    }
+
     //  |-> ---------------------
     //      App in Foreground
     //   ------------------------
@@ -38,11 +43,6 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     //  |-> ---------------------
     //    App in Background/Quit
     //   ------------------------
-
-    // Add a RemoteMessage if the message contains a notification payload
-    if (remoteMessage.getNotification() != null) {
-      notifications.put(remoteMessage.getMessageId(), remoteMessage);
-    }
 
     try {
       Intent backgroundIntent = new Intent(context, ReactNativeFirebaseMessagingHeadlessService.class);

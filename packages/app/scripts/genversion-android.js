@@ -1,3 +1,16 @@
+const fs = require('fs');
+const path = require('path');
+
+const version = require('../lib/version');
+const outputPath = path.resolve(
+  __dirname,
+  '..',
+  'android',
+  'src/reactnative/java/io/invertase/firebase/app',
+  'ReactNativeFirebaseVersion.java',
+);
+const template = `
+package io.invertase.firebase.app;
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -14,18 +27,10 @@
  * limitations under the License.
  *
  */
-
-/**
- * @firebase firebase
- */
-declare module 'react-native-firebase' {
-  import type { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types/index.js.flow';
-
-  declare export default {} & ReactNativeFirebaseNamespace;
+// generated file - do not modify or commit
+public class ReactNativeFirebaseVersion {
+  public static String VERSION = "version_number";
 }
+`;
 
-declare module '@react-native-firebase/app-types' {
-  declare interface ReactNativeFirebaseNamespace {}
-
-  declare interface FirebaseApp {}
-}
+fs.writeFileSync(outputPath, template.replace('version_number', `${version}`), 'utf8');
