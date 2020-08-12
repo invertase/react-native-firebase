@@ -45,14 +45,6 @@ describe('dynamicLinks()', () => {
     });
   });
 
-  describe('createDynamicLink()', () => {
-    it('should call buildLink()', async () => {
-      const link = await firebase.dynamicLinks().createDynamicLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
-    });
-  });
-
   describe('buildShortLink()', () => {
     it('returns a short link', async () => {
       const link = await firebase.dynamicLinks().buildShortLink(baseParams);
@@ -70,14 +62,6 @@ describe('dynamicLinks()', () => {
         );
         return Promise.resolve();
       }
-    });
-  });
-
-  describe('createShortDynamicLink()', () => {
-    it('should call buildShortLink()', async () => {
-      const link = await firebase.dynamicLinks().createShortDynamicLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
     });
   });
 

@@ -15,7 +15,7 @@ This module requires that the `@react-native-firebase/app` module is already set
 # Install & setup the app module
 yarn add @react-native-firebase/app
 
-# Install the analytics module
+# Install the storage module
 yarn add @react-native-firebase/storage
 
 # If you're developing your app using iOS, run this command
@@ -77,7 +77,7 @@ import storage from '@react-native-firebase/storage';
 
 function App() {
   // create bucket storage reference to not yet existing image
-  const reference = firebase.storage().ref('black-t-shirt-sm.png');
+  const reference = storage().ref('black-t-shirt-sm.png');
 
   return (
     <View>

@@ -42,10 +42,31 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Crashlytics Methods
 
+RCT_EXPORT_METHOD(checkForUnsentReports:
+  (RCTPromiseResolveBlock) resolve
+  rejecter:
+  (RCTPromiseRejectBlock) reject) {
+  [[FIRCrashlytics crashlytics] checkForUnsentReportsWithCompletion:^(BOOL unsentReports){
+    resolve([NSNumber numberWithBool:unsentReports]);
+  }];
+}
+
 RCT_EXPORT_METHOD(crash) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     assert(NO);
   }
+}
+
+RCT_EXPORT_METHOD(deleteUnsentReports) {
+  [[FIRCrashlytics crashlytics] deleteUnsentReports];
+}
+
+RCT_EXPORT_METHOD(didCrashOnPreviousExecution:
+  (RCTPromiseResolveBlock) resolve
+  rejecter:
+  (RCTPromiseRejectBlock) reject) {
+  BOOL didCrash = [[FIRCrashlytics crashlytics] didCrashDuringPreviousExecution];
+  resolve([NSNumber numberWithBool:didCrash]);
 }
 
 RCT_EXPORT_METHOD(log:
@@ -61,6 +82,10 @@ RCT_EXPORT_METHOD(logPromise:
       (RCTPromiseRejectBlock) reject) {
   [[FIRCrashlytics crashlytics] log:message];
   resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(sendUnsentReports) {
+  [[FIRCrashlytics crashlytics] sendUnsentReports];
 }
 
 RCT_EXPORT_METHOD(setAttribute:

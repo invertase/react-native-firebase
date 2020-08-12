@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.6.0...@react-native-firebase/messaging@7.6.1) (2020-08-03)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.6.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.5.0...@react-native-firebase/messaging@7.6.0) (2020-08-03)
+
+### Bug Fixes
+
+- **messaging:** added missing `from` property in Remote Message type ([#4030](https://github.com/invertase/react-native-firebase/issues/4030)) ([ce39abf](https://github.com/invertase/react-native-firebase/commit/ce39abf9c0affe00ea13e2ad1580ac42bbb54a30))
+
+### Features
+
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+- **messaging,android:** save notification payload for messages that arrive in the foreground ([#3896](https://github.com/invertase/react-native-firebase/issues/3896)) ([ff768fc](https://github.com/invertase/react-native-firebase/commit/ff768fce54b2185a67958ea7d253a18ba40404b8))
+
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.2...@react-native-firebase/messaging@7.5.0) (2020-07-23)
+
+### Features
+
+- disable direct channels API on iOS, fixes [#3674](https://github.com/invertase/react-native-firebase/issues/3674) ([#3733](https://github.com/invertase/react-native-firebase/issues/3733)) ([8c9f4f5](https://github.com/invertase/react-native-firebase/commit/8c9f4f5e31bac6bfe95d75e1b088df59e51113e9))
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.4.1...@react-native-firebase/messaging@7.4.2) (2020-07-09)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
