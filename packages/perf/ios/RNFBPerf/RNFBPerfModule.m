@@ -44,11 +44,11 @@ static __strong NSMutableDictionary *httpMetrics;
 
   - (void)dealloc {
     @synchronized ([self class]) {
-      for (NSString *key in traces) {
+      for (NSString *key in [traces allKeys]) {
         [traces removeObjectForKey:key];
       }
 
-      for (NSString *key in httpMetrics) {
+      for (NSString *key in [httpMetrics allKeys]) {
         [httpMetrics removeObjectForKey:key];
       }
     }

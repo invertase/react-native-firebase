@@ -111,7 +111,7 @@ if (awesomeNewFeature.asNumber() === 5) {
 // resolves value to boolean
 // if value is any of the following: '1', 'true', 't', 'yes', 'y', 'on', it will resolve to true
 // if source is 'static', value will be false
-if (awesomeNewFeature.asNumber() === true) {
+if (awesomeNewFeature.asBoolean() === true) {
   enableAwesomeNewFeature();
 }
 ```

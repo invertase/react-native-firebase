@@ -18,7 +18,7 @@ of the method is the "Ad Unit ID". For testing, we can use a Test ID, however fo
 Google AdMob dashboard under "Ad units" should be used:
 
 ```js
-import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
+import { InterstitialAd, TestIds, AdEventType } from '@react-native-firebase/admob';
 
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
