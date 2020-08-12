@@ -19,11 +19,11 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
@@ -40,14 +40,14 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
@@ -108,12 +108,18 @@ jobs:
           ./node_modules/.bin/codecov
         shell: bash
 
+      - name: Compress Emulator Log
+        if: always()
+        run: |
+            gzip -9 adb-log.txt
+        shell: bash
+  
       - name: Upload Logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: always()
         with:
           name: adb_logs
-          path: adb-log.txt
+          path: adb-log.txt.gz
 
   # ------------------
   #        iOS
@@ -129,11 +135,11 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_11.4.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
@@ -145,20 +151,20 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Cache Pods
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
