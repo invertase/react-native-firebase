@@ -501,7 +501,7 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
-  - RNFBAdMob (7.3.2):
+  - RNFBAdMob (7.3.3):
     - Firebase/AdMob (= 6.28.1)
     - PersonalizedAdConsent (~> 1.0.4)
     - React
@@ -549,7 +549,7 @@ PODS:
     - Firebase/InAppMessaging (= 6.28.1)
     - React
     - RNFBApp
-  - RNFBMessaging (7.4.2):
+  - RNFBMessaging (7.5.0):
     - Firebase/Analytics (= 6.28.1)
     - Firebase/Messaging (= 6.28.1)
     - React
@@ -569,11 +569,11 @@ PODS:
     - Firebase/MLVisionTextModel (= 6.28.1)
     - React
     - RNFBApp
-  - RNFBPerf (7.2.2):
+  - RNFBPerf (7.2.3):
     - Firebase/Performance (= 6.28.1)
     - React
     - RNFBApp
-  - RNFBRemoteConfig (7.2.2):
+  - RNFBRemoteConfig (8.0.0):
     - Firebase/Analytics (= 6.28.1)
     - Firebase/RemoteConfig (= 6.28.1)
     - React
@@ -837,7 +837,7 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  RNFBAdMob: 2a4ce34f33b184b305e84d5596a96bb3abff419f
+  RNFBAdMob: d04fe1a087a7bed659e871aced36b7d6ed76d166
   RNFBAnalytics: b60cf02f43ff3547cb1a642be7a8786524109c38
   RNFBApp: ce217f932091295ed048451326817a29fb4cb48f
   RNFBAuth: 732feaeae0604a3df9c2351a0d2b52cfadd34148
@@ -848,11 +848,11 @@ SPEC CHECKSUMS:
   RNFBFunctions: 325b8be36afad5a424d43b8f39e379eaee0b86be
   RNFBIid: bb061f08b96880eb5fd599c06a92cfe2c164a5e7
   RNFBInAppMessaging: bb5ac95b411f46755ffbc425566822afc0bff78f
-  RNFBMessaging: 6bdab64e89a79afb36f58d75807166e574c489e8
+  RNFBMessaging: e06217e17539a3328e5f06ca34a83010a73af384
   RNFBMLNaturalLanguage: 901aa0ecffbaeca9a26cc38d6dda3a6a2f2dd8ec
   RNFBMLVision: 46a088cab0f986f3359d9340d416e998f0458379
-  RNFBPerf: 20a0ab92075834bb4c88537677b2fffcb023b04c
-  RNFBRemoteConfig: fb46148a3b985697f3538b8c4d3e586a14bb4570
+  RNFBPerf: 3d185f43c89d4159649c6a35813c337857a2e941
+  RNFBRemoteConfig: 96917b7defbb474ffc774f43454686de7df09a9b
   RNFBStorage: ee1bafd9e83d30feaa4af266f2782f109284be9a
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
 
