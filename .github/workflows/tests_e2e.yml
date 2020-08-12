@@ -98,9 +98,9 @@ jobs:
           echo "Packager is online!"
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
-          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E' > adb-log.txt" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --configuration android.emu.debug --cleanup
         shell: bash
 
       - name: Submit Coverage
