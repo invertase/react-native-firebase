@@ -88,6 +88,10 @@ jobs:
 
       - name: Detox Test
         timeout-minutes: 40
+        # Prebuild the bundle so that's fast when the app starts.
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+        # But if you send them before the app is ready, there is a chance react-native comes alive with an ACTION_UP and no ACTION_DOWN, which hangs everything.
+        # So we wait 180 seconds, which seems to be enough for the app to come up.
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -97,7 +101,7 @@ jobs:
           done
           echo "Packager is online!"
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
-          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
+          nohup sh -c "sleep 180 && until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
           nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --configuration android.emu.debug --cleanup
