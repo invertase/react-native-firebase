@@ -141,6 +141,10 @@ export function parseSetOptions(options) {
 //   };
 // }
 
+function isPartialObserver(input) {
+  return isFunction(input.next) || isFunction(input.error) || isFunction(input.complete);
+}
+
 export function parseSnapshotArgs(args) {
   if (args.length === 0) {
     throw new Error('expected at least one argument.');
@@ -174,19 +178,20 @@ export function parseSnapshotArgs(args) {
   /**
    * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
    */
-  if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
-    if (args[0].error) {
-      onError = args[0].error;
+  if (isObject(args[0]) && isPartialObserver(args[0])) {
+    const observer = args[0];
+    if (observer.error) {
+      onError = observer.error.bind(observer);
     }
-    if (args[0].next) {
-      onNext = args[0].next;
+    if (observer.next) {
+      onNext = observer.next.bind(observer);
     }
   }
 
   /**
    * .onSnapshot(SnapshotListenOptions, ...
    */
-  if (isObject(args[0]) && args[0].includeMetadataChanges !== undefined) {
+  if (isObject(args[0]) && !isPartialObserver(args[0])) {
     snapshotListenOptions.includeMetadataChanges = args[0].includeMetadataChanges;
     if (isFunction(args[1])) {
       /**
@@ -208,11 +213,12 @@ export function parseSnapshotArgs(args) {
       /**
        * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
        */
-      if (isFunction(args[1].error)) {
-        onError = args[1].error;
+      const observer = args[1];
+      if (isFunction(observer.error)) {
+        onError = observer.error.bind(observer);
       }
-      if (isFunction(args[1].next)) {
-        onNext = args[1].next;
+      if (isFunction(observer.next)) {
+        onNext = observer.next.bind(observer);
       }
     }
   }
