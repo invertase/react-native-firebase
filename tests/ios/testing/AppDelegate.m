@@ -16,7 +16,7 @@
  */
 
 #import "AppDelegate.h"
-
+#import "RNFBMessagingModule.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
@@ -32,9 +32,11 @@
   NSURL *jsCodeLocation;
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 
+  NSMutableDictionary *appProperties = [RNFBMessagingModule initializeAppProps:nil launchOptions:launchOptions];
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"testing"
-                                               initialProperties:nil
+                                               initialProperties:appProperties
                                                    launchOptions:launchOptions];
 
 
