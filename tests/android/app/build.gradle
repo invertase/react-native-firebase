@@ -1,14 +1,7 @@
-// Add the Firebase Crashlytics plugin.
-
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
-
-
-
-
 apply plugin: "com.google.firebase.firebase-perf"
-
 
 import com.android.build.OutputFile
 
@@ -140,7 +133,7 @@ dependencies {
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-  androidTestImplementation('com.wix:detox:+')
+    androidTestImplementation(project(path: ":detox"))
 }
 
 // Run this once to be able to run the application with BUCK
