@@ -136,7 +136,7 @@
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        if(![appPropertiesDict objectForKey:@"isHeadless"]) {
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
           appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
           rctRootView.appProperties = appPropertiesDict;
         }
@@ -154,17 +154,20 @@
     } else {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-        rctRootView.appProperties = appPropertiesDict;
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+          rctRootView.appProperties = appPropertiesDict;
+        }
+        
       }
     }
   } else {
     if (rctRootView != nil) {
       NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        if(![appPropertiesDict objectForKey:@"isHeadless"]) {
-          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-          rctRootView.appProperties = appPropertiesDict;
-        }
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
       
     }
   }
@@ -181,7 +184,7 @@
     RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
     if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
-      if(![appPropertiesDict objectForKey:@"isHeadless"]) {
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
         appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
         rctRootView.appProperties = appPropertiesDict;
       }

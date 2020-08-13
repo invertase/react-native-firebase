@@ -32,7 +32,7 @@
   NSURL *jsCodeLocation;
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 
-  NSMutableDictionary *appProperties = [RNFBMessagingModule initializeAppProps:nil launchOptions:launchOptions];
+  NSMutableDictionary * appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
   
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"testing"

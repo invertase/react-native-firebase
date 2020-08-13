@@ -44,8 +44,8 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
-+ (NSMutableDictionary *) initializeAppProps: (NSDictionary *)existingProps launchOptions: (NSDictionary *) launchOptions  {
-    NSMutableDictionary *appProperties = existingProps != nil ? [existingProps mutableCopy] : [NSMutableDictionary dictionary];
++ (NSMutableDictionary *) addCustomPropsToUserProps: (NSDictionary *)userProps withLaunchOptions: (NSDictionary *) launchOptions  {
+    NSMutableDictionary *appProperties = userProps != nil ? [userProps mutableCopy] : [NSMutableDictionary dictionary];
     appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
         
     if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
