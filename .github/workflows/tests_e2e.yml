@@ -195,7 +195,7 @@ jobs:
           echo "Packager is online!"
 
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
         shell: bash
 
       - name: Submit Coverage
