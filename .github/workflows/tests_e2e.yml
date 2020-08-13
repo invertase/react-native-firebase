@@ -25,17 +25,6 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
 
-      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      #  -> https://github.com/actions/cache/issues/187
-      - name: Clean Yarn cache directory
-        run: yarn cache clean
-
-      # Gradle cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      - name: Clean Gradle cache directory
-        run: rm -rf ~/.gradle/caches
-
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -144,12 +133,6 @@ jobs:
           fetch-depth: 1
 
       - uses: actions/setup-node@v2-beta
-
-      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      #  -> https://github.com/actions/cache/issues/187
-      - name: Clean Yarn cache directory
-        run: yarn cache clean
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
