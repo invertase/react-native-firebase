@@ -19,11 +19,11 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
@@ -40,14 +40,14 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
@@ -88,6 +88,10 @@ jobs:
 
       - name: Detox Test
         timeout-minutes: 40
+        # Prebuild the bundle so that's fast when the app starts.
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+        # But if you send them before the app is ready, there is a chance react-native comes alive with an ACTION_UP and no ACTION_DOWN, which hangs everything.
+        # So we wait 180 seconds, which seems to be enough for the app to come up.
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -97,10 +101,10 @@ jobs:
           done
           echo "Packager is online!"
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
-          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
-          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E' > adb-log.txt" &
+          nohup sh -c "sleep 180 && until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --configuration android.emu.debug --cleanup
         shell: bash
 
       - name: Submit Coverage
@@ -108,12 +112,18 @@ jobs:
           ./node_modules/.bin/codecov
         shell: bash
 
+      - name: Compress Emulator Log
+        if: always()
+        run: |
+            gzip -9 adb-log.txt
+        shell: bash
+  
       - name: Upload Logs
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         if: always()
         with:
           name: adb_logs
-          path: adb-log.txt
+          path: adb-log.txt.gz
 
   # ------------------
   #        iOS
@@ -129,11 +139,11 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_11.4.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
       # Yarn cache directory on macOS GH Action virtual environment isn't empty;
       #  -> https://github.com/actions/virtual-environments/issues/427
@@ -145,20 +155,20 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Cache Pods
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
