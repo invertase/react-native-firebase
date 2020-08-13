@@ -192,7 +192,7 @@ export function parseSnapshotArgs(args) {
    * .onSnapshot(SnapshotListenOptions, ...
    */
   if (isObject(args[0]) && !isPartialObserver(args[0])) {
-    snapshotListenOptions.includeMetadataChanges = args[0].includeMetadataChanges;
+    snapshotListenOptions.includeMetadataChanges = Boolean(args[0].includeMetadataChanges);
     if (isFunction(args[1])) {
       /**
        * .onSnapshot(SnapshotListenOptions, Function);
