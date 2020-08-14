@@ -197,7 +197,7 @@ describe('auth()', () => {
         next(user) {
           // Test this access
           this.onNext();
-          this.user = user
+          this.user = user;
         },
       };
 
