@@ -10,7 +10,7 @@ with each landmark's geographic coordinates and the region of the image the land
 
 The Machine Learning service is only offered as a cloud based one, and no on-device service exists.
 
-Given an image file, the Landmark Recognition service will attempt to recognise one or more landmarks, offering information
+Given an image file, the Landmark Recognition service will attempt to recognize one or more landmarks, offering information
 such as:
 
 - The 4-point coordinates of the landmarks on the image.

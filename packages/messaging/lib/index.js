@@ -72,6 +72,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
+        // eslint-disable-next-line no-console
         console.warn(
           'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
         );
@@ -83,6 +84,7 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isIOS) {
       this.emitter.addListener('messaging_message_received_background', remoteMessage => {
         if (!backgroundMessageHandler) {
+          // eslint-disable-next-line no-console
           console.warn(
             'No background message handler has been set. Set a handler via the "setBackgroundMessageHandler" method.',
           );
@@ -107,18 +109,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     return this._isRegisteredForRemoteNotifications;
-  }
-
-  /**
-   * @platform ios
-   * @deprecated Use isDeviceRegisteredForRemoteMessages.
-   */
-  get isRegisteredForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "isRegisteredForRemoteNotifications" will be deprecated in v7. Use "isDeviceRegisteredForRemoteMessages" instead.',
-    );
-    return this.isDeviceRegisteredForRemoteMessages;
   }
 
   setAutoInitEnabled(enabled) {
@@ -196,19 +186,8 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     const subscription = this.emitter.addListener('messaging_token_refresh', event => {
-      // TODO remove after v7.0.0, see: https://github.com/invertase/react-native-firebase/issues/2889
       const { token } = event;
-      const tokenStringWithTokenAccessor = new String(token);
-      Object.defineProperty(tokenStringWithTokenAccessor, 'token', {
-        enumerable: false,
-        get() {
-          console.warn(
-            'firebase.messaging().onTokenRefresh(event => event.token) is deprecated, use onTokenRefresh(token => token) or call getToken() instead',
-          );
-          return token;
-        },
-      });
-      listener(tokenStringWithTokenAccessor);
+      listener(token);
     });
     return () => subscription.remove();
   }
@@ -228,6 +207,7 @@ class FirebaseMessagingModule extends FirebaseModule {
       carPlay: true,
       provisional: false,
       sound: true,
+      criticalAlert: false,
     };
 
     if (!permissions) {
@@ -261,23 +241,18 @@ class FirebaseMessagingModule extends FirebaseModule {
     if (isAndroid) {
       return Promise.resolve();
     }
+
+    const autoRegister = this.firebaseJson['messaging_ios_auto_register_for_remote_messages'];
+    if (autoRegister === undefined || autoRegister === true) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Usage of "messaging().registerDeviceForRemoteMessages()" is not required. You only need to register if auto-registration is disabled in your 'firebase.json' configuration file via the 'messaging_ios_auto_register_for_remote_messages' property.`,
+      );
+    }
+
     this._isRegisteredForRemoteNotifications = true;
     return this.native.registerForRemoteNotifications();
   }
-
-  /**
-   * @platform ios
-   * @deprecated
-   */
-  registerForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "registerForRemoteNotifications" will be removed in v7. Use "registerDeviceForRemoteMessages" instead.',
-    );
-
-    return this.registerDeviceForRemoteMessages();
-  }
-
   /**
    * @platform ios
    */
@@ -287,19 +262,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
     this._isRegisteredForRemoteNotifications = false;
     return this.native.unregisterForRemoteNotifications();
-  }
-
-  /**
-   * @platform ios
-   * @deprecated
-   */
-  unregisterForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "unregisterForRemoteNotifications" will be removed in v7. Use "unregisterDeviceForRemoteMessages" instead.',
-    );
-
-    return this.unregisterDeviceForRemoteMessages();
   }
 
   /**

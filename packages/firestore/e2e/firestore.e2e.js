@@ -318,4 +318,35 @@ describe('firestore()', () => {
       }
     });
   });
+
+  describe('Clear cached data persistence', () => {
+    it('should clear any cached data', async () => {
+      const db = firebase.firestore();
+      const id = 'foobar';
+      const ref = db.doc(`v6/${id}`);
+      await ref.set({ foo: 'bar' });
+
+      try {
+        await db.clearPersistence();
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.code.should.equal('firestore/failed-precondition');
+      }
+
+      const doc = await ref.get({ source: 'cache' });
+
+      should(doc.id).equal(id);
+
+      await db.terminate();
+      await db.clearPersistence();
+
+      try {
+        await ref.get({ source: 'cache' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.code.should.equal('firestore/unavailable');
+        return Promise.resolve();
+      }
+    });
+  });
 });

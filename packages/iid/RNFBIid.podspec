@@ -1,7 +1,17 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
-firebase_sdk_version = '~> 6.13.0'
+coreVersionDetected = appPackage['version']
+coreVersionRequired = package['peerDependencies'][appPackage['name']]
+if appPackage['sdkVersions']
+  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
+else
+  firebase_sdk_version = '~> 6.28.1'
+end
+if coreVersionDetected != coreVersionRequired
+  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
+end
 
 Pod::Spec.new do |s|
   s.name                = "RNFBIid"
@@ -28,7 +38,8 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Core', firebase_sdk_version
+  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
+  s.dependency          'FirebaseInstanceID'
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

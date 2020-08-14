@@ -31,13 +31,14 @@ to manage the users identity. You can however use any datastore or authenticatio
 ## Saving tokens
 
 Once your application has started, you can call the `getToken` method on the Cloud Messaging module to get the unique
-device token:
+device token (if using a different push notification provider, such as Amazon SNS, you will need to call `getAPNSToken` on iOS):
 
 ```jsx
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Platform } from 'react-native';
 
 async function saveTokenToDatabase(token) {
   // Assume user is already signed in
@@ -60,6 +61,10 @@ function App() {
       .then(token => {
         return saveTokenToDatabase(token);
       });
+      
+    // If using other push notification providers (ie Amazon SNS, etc)
+    // you may need to get the APNs token instead for iOS:
+    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
 
     // Listen to whether the token changes
     return messaging().onTokenRefresh(token => {
@@ -142,7 +147,7 @@ by default. To enable this functionality, you must set the "priority" to `high` 
 
 > If using the FCM REST API, see the [following documentation](https://firebase.google.com/docs/cloud-messaging/http-server-ref) on setting `priority` and `content-available`!
 
-The `data` property can send an object of key-value pairs totaling 4KB as string values (hence the `JSON.stringify`).
+The `data` property can send an object of key-value pairs totaling `4KB` as string values (hence the `JSON.stringify`).
 
 Back within our application, as explained in the [Usage](/messaging) documentation, our message handlers will receive a
 [`RemoteMessage`](/reference/messaging/remotemessage) payload containing the message details sent from the server:

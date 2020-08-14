@@ -1,7 +1,7 @@
 ---
 title: Barcode Scanning
 description: Get started with ML Kit Vision Barcode Scanning.
-next: /ml-vision/image-labelling
+next: /ml-vision/image-labeling
 previous: /ml-vision/landmark-recognition
 ---
 
@@ -10,7 +10,7 @@ and doesn't require a network connection. It's a convenient way to pass informat
 
 The Machine Learning service is only offered on the device, and no cloud service exists.
 
-Given an image file, the Barcode Scanning service will attempt to recognise one or more barcodes, offering information
+Given an image file, the Barcode Scanning service will attempt to recognize one or more barcodes, offering information
 such as:
 
 - The 4-point coordinates of the barcodes on the image.

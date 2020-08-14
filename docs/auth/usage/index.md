@@ -15,7 +15,7 @@ module, view the [Getting Started](/) documentation.
 # Install & setup the app module
 yarn add @react-native-firebase/app
 
-# Install the analytics module
+# Install the authentication module
 yarn add @react-native-firebase/auth
 
 # If you're developing your app using iOS, run this command
@@ -94,7 +94,7 @@ the hook is no longer in use.
 
 ## Persisting authentication state
 
-On web based applications, the Firebase Web SDK takes advantage of features such as cookies and localstorage to persist
+On web based applications, the Firebase Web SDK takes advantage of features such as cookies and local storage to persist
 the users authenticated state across sessions. The native Firebase SDKs also provide this functionality using device native SDKs,
 ensuring that a users previous authentication state between app sessions is persisted.
 
@@ -140,14 +140,14 @@ or sign in to an existing account with `signInWithEmailAndPassword`.
 
 Ensure the "Email/Password" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-The `createUserWithEmailAndPassword` performs to operations; first creating the user if they do not already exist, and
+The `createUserWithEmailAndPassword` performs two operations; first creating the user if they do not already exist, and
 then signing them in.
 
 ```js
 import auth from '@react-native-firebase/auth';
 
 auth()
-  .createUserWithEmailAndPassword('sarah.lane@gmail.com', 'SuperSecretPassword!')
+  .createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
   .then(() => {
     console.log('User account created & signed in!');
   })

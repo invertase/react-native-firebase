@@ -298,7 +298,7 @@ export namespace FirebaseAuthTypes {
      * Returns an Object containing IDP-specific user data if the provider is one of Facebook,
      * GitHub, Google, Twitter, Microsoft, or Yahoo.
      */
-    profile?: Object;
+    profile?: Record<string, any>;
     /**
      * Returns the provider ID for specifying which provider the information in `profile` is for.
      */
@@ -312,7 +312,7 @@ export namespace FirebaseAuthTypes {
   /**
    * A structure containing a User, an AuthCredential, the operationType, and any additional user
    * information that was returned from the identity provider. operationType could be 'signIn' for
-   * a sign-in operation, 'link' for a linking operation and 'reauthenticate' for a reauthentication operation.
+   * a sign-in operation, 'link' for a linking operation and 'reauthenticate' for a re-authentication operation.
    *
    * TODO @salakar; missing credential, operationType
    */
@@ -486,7 +486,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param verificationCode The code sent to the users device from Firebase.
      */
-    confirm(verificationCode: string): Promise<User | null>;
+    confirm(verificationCode: string): Promise<UserCredential | null>;
   }
 
   /**
@@ -851,7 +851,7 @@ export namespace FirebaseAuthTypes {
    * ```js
    * firebase.auth().onAuthStateChanged((user) => {
    *   if (user) {
-   *     console.log('User email: ', user.email');
+   *     console.log('User email: ', user.email);
    *   }
    * });
    * ```
@@ -862,7 +862,7 @@ export namespace FirebaseAuthTypes {
    * const user = firebase.auth().currentUser;
    *
    * if (user) {
-   *  console.log('User email: ', user.email');
+   *  console.log('User email: ', user.email);
    * }
    * ```
    */
@@ -1037,6 +1037,30 @@ export namespace FirebaseAuthTypes {
      * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
      */
     sendEmailVerification(actionCodeSettings?: ActionCodeSettings): Promise<void>;
+    /**
+     * Sends a link to the user's email address, when clicked, the user's Authentication email address will be updated to whatever
+     * was passed as the first argument.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().currentUser.verifyBeforeUpdateEmail(
+     * 'foo@emailaddress.com',
+     * {
+     *   handleCodeInApp: true,
+     * });
+     * ```
+     *
+     * > This will Promise reject if the user is anonymous.
+     *
+     * @error auth/missing-android-pkg-name An Android package name must be provided if the Android app is required to be installed.
+     * @error auth/missing-continue-uri A continue URL must be provided in the request.
+     * @error auth/missing-ios-bundle-id An iOS bundle ID must be provided if an App Store ID is provided.
+     * @error auth/invalid-continue-uri The continue URL provided in the request is invalid.
+     * @error auth/unauthorized-continue-uri The domain of the continue URL is not whitelisted. Whitelist the domain in the Firebase console.
+     * @param actionCodeSettings Any optional additional settings to be set before sending the verification email.
+     */
+    verifyBeforeUpdateEmail(email: string, actionCodeSettings?: ActionCodeSettings): Promise<void>;
 
     /**
      * Returns a JSON-serializable representation of this object.
