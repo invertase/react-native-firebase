@@ -107,7 +107,7 @@
   }
   #endif
   
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"customNotificationHook" object:userInfo];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RNFBMessagingDidReceiveRemoteNotification" object:userInfo];
     
   if (userInfo[@"gcm.message_id"]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
