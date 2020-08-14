@@ -161,7 +161,9 @@ export default function validateAdRequestOptions(options) {
 
   if (options.serverSideVerificationOptions) {
     if (!isObject(options.serverSideVerificationOptions)) {
-      throw new Error("'options.serverSideVerificationOptions' expected an object of key/value pairs");
+      throw new Error(
+        "'options.serverSideVerificationOptions' expected an object of key/value pairs",
+      );
     }
 
     const ssvOptions = options.serverSideVerificationOptions;
