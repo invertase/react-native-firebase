@@ -1,4 +1,6 @@
 *.xcodeproj binary
 *.xcworkspace binary
+*.pbxproj -text
 docs/typedoc.json merge=theirs linguist-vendored
 docs/typedoc.min.json merge=theirs linguist-vendored
+*.bat text eol=crlf

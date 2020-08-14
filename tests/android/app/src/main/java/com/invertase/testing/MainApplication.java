@@ -23,8 +23,12 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new JetPackage());
       return packages;
+    }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
     }
   };
 
@@ -37,16 +41,16 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative", getApplicationContext());
-    SoLoader.init(this, false);
+    SoLoader.init(this, /* native exopackage */ false);
 
-    // TODO move to jet
-    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()
-      .getReactInstanceManager()
-      .getDevSupportManager()
-      .getDevSettings();
-
-    if (settings != null) {
-      settings.setBundleDeltasEnabled(false);
-    }
+//    // TODO move to jet
+//    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()
+//      .getReactInstanceManager()
+//      .getDevSupportManager()
+//      .getDevSettings();
+//
+//    if (settings != null) {
+//      settings.setBundleDeltasEnabled(false);
+//    }
   }
 }

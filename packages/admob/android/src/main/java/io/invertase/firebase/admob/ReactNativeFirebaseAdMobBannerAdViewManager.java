@@ -87,13 +87,11 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
   @ReactProp(name = "unitId")
   public void setUnitId(ReactViewGroup reactViewGroup, String value) {
     unitId = value;
-    requestAd(reactViewGroup);
   }
 
   @ReactProp(name = "request")
   public void setRequest(ReactViewGroup reactViewGroup, ReadableMap value) {
     request = ReactNativeFirebaseAdMobCommon.buildAdRequest(value);
-    requestAd(reactViewGroup);
   }
 
   @ReactProp(name = "size")

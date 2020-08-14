@@ -1,7 +1,7 @@
 ---
 title: TypeScript
 description: Using TypeScript with React Native Firebase
-next: /migrating-to-v6
+next: /releases
 previous:
 ---
 
@@ -57,14 +57,14 @@ For example, we may need to store the `User` in local state. Manually defining a
 
 We can easily access the types manually through the module though, for example:
 
-```jsx
+```ts
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 function App() {
-  const [loading, setLoading] = useState < boolean > true;
-  const [user, setUser] = (useState < FirebaseAuthTypes.User) | (null > null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   useEffect(() => {
     auth().onAuthStateChanged(userState => {
@@ -75,8 +75,6 @@ function App() {
       }
     });
   }, []);
-
-  // ...
 }
 
 export default App;
@@ -94,7 +92,7 @@ Attempting to set `user` state to anything other than the `User` or `null` will 
 
 ## Definitions
 
-The full set of TypeScript definitions for each module can be found on the [invertase/react-native-firebase](https://github.com/invertase/react-native-firebase)
+The full set of TypeScript definitions for each module can be found on the [`invertase/react-native-firebase`](https://github.com/invertase/react-native-firebase)
 repository within each package.
 
 For example, the `auth` module definitions are located at [`react-native-firebase/packages/auth/lib/index.d.ts`](https://github.com/invertase/react-native-firebase/blob/master/packages/auth/lib/index.d.ts).

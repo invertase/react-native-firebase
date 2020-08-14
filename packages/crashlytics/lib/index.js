@@ -48,8 +48,25 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this._isCrashlyticsCollectionEnabled;
   }
 
+  checkForUnsentReports() {
+    if (this.isCrashlyticsCollectionEnabled) {
+      throw new Error(
+        "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
+      );
+    }
+    return this.native.checkForUnsentReports();
+  }
+
   crash() {
     this.native.crash();
+  }
+
+  async deleteUnsentReports() {
+    await this.native.deleteUnsentReports();
+  }
+
+  didCrashOnPreviousExecution() {
+    return this.native.didCrashOnPreviousExecution();
   }
 
   log(message) {
@@ -92,26 +109,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setUserId(userId);
   }
 
-  setUserName(userName) {
-    if (!isString(userName)) {
-      throw new Error(
-        'firebase.crashlytics().setUserName(*): The supplied userName must be a string value.',
-      );
-    }
-
-    return this.native.setUserName(userName);
-  }
-
-  setUserEmail(userEmail) {
-    if (!isString(userEmail)) {
-      throw new Error(
-        'firebase.crashlytics().setUserEmail(*): The supplied userEmail must be a string value.',
-      );
-    }
-
-    return this.native.setUserEmail(userEmail);
-  }
-
   recordError(error) {
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
@@ -121,6 +118,12 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
       console.warn(
         'firebase.crashlytics().recordError(*) expects an instance of Error. Non Errors will be ignored.',
       );
+    }
+  }
+
+  sendUnsentReports() {
+    if (this.isCrashlyticsCollectionEnabled) {
+      this.native.sendUnsentReports();
     }
   }
 

@@ -1,3 +1,5 @@
+import io.invertase.gradle.common.PackageJson
+
 buildscript {
   // The Android Gradle plugin is only required when opening the android folder stand-alone.
   // This avoids unnecessary downloads and potential conflicts when the library is included as a
@@ -9,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:3.5.2")
+      classpath("com.android.tools.build:gradle:4.0.0")
     }
   }
 }
@@ -17,6 +19,27 @@ buildscript {
 plugins {
   id "io.invertase.gradle.build" version "1.4"
 }
+
+def appProject
+if (findProject(':@react-native-firebase_app')) {
+  appProject = project(':@react-native-firebase_app')
+} else if (findProject(':react-native-firebase_app')) {
+  appProject = project(':react-native-firebase_app')
+} else {
+  throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+}
+def packageJson = PackageJson.getForProject(project)
+def appPackageJson = PackageJson.getForProject(appProject)
+def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "25.5.0" // ALIGN CONCRETE VERSION BELOW WHEN CHANGING THIS
+def coreVersionDetected = appPackageJson['version']
+def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
+// Only log after build completed so log warning appears at the end
+if (coreVersionDetected != coreVersionRequired) {
+  gradle.buildFinished {
+    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
+  }
+}
+
 
 project.ext {
   set('react-native', [
@@ -31,7 +54,7 @@ project.ext {
       ],
 
       firebase: [
-        bom: "24.1.0",
+        bom: firebaseBomVersion,
       ],
     ],
   ])
@@ -62,15 +85,13 @@ repositories {
 }
 
 dependencies {
-  if (findProject(':@react-native-firebase_app')) {
-    api project(':@react-native-firebase_app')
-  } else if (findProject(':react-native-firebase_app')) {
-    api project(':react-native-firebase_app')
-  } else {
-    throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
-  }
+  api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-iid"
+  // TODO Must put the concrete version here as the BoM no longer publishes the IID version, align it with the BoM change above
+  // Upstream issue: https://github.com/firebase/firebase-android-sdk/issues/1077
+  // Issue: https://github.com/invertase/react-native-firebase/issues/3918
+  // Example of where to find concrete version to match BoM: https://firebase.google.com/support/release-notes/android#iid_v20-2-1
+  implementation "com.google.firebase:firebase-iid:20.2.1" // NEED CONCRETE VERSION HERE TO MATCH BOM RELEASE
 }
 
 ReactNative.shared.applyPackageVersion()

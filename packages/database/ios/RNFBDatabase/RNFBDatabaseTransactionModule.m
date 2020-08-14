@@ -33,7 +33,7 @@ static NSString *const RNFB_DATABASE_TRANSACTION_EVENT = @"database_transaction_
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+  return [RNFBDatabaseCommon getDispatchQueue];
 }
 
 - (id)init {

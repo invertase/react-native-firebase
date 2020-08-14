@@ -108,7 +108,7 @@ RCT_EXPORT_METHOD(transactionDispose:
     }
 
     dispatch_semaphore_t semaphore = transactionState[@"semaphore"];
-    transactionState[@"abort"] = @(true);
+    transactionState[@"aborted"] = @(true);
     dispatch_semaphore_signal(semaphore);
   }
 }
@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(transactionApplyBuffer:
     :(NSArray *)commandBuffer
 ) {
   @synchronized (transactions[[transactionId stringValue]]) {
-    __block NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
+    NSMutableDictionary *transactionState = transactions[[transactionId stringValue]];
 
     if (!transactionState) {
       DLog(@"transactionGetDocument called for non-existent transactionId %@", transactionId);
@@ -138,7 +138,6 @@ RCT_EXPORT_METHOD(transactionBegin:
 ) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
   __block BOOL aborted = false;
-  __block BOOL completed = false;
   __block NSMutableDictionary *transactionState = [NSMutableDictionary new];
 
   id transactionBlock = ^id(FIRTransaction *transaction, NSError **errorPointer) {
@@ -172,7 +171,7 @@ RCT_EXPORT_METHOD(transactionBegin:
 
     @synchronized (transactionState) {
       aborted = (BOOL) transactionState[@"aborted"];
-
+      
       if (transactionState[@"semaphore"] != semaphore) {
         return nil;
       }
@@ -184,10 +183,6 @@ RCT_EXPORT_METHOD(transactionBegin:
 
       if (timedOut == YES) {
         *errorPointer = [NSError errorWithDomain:FIRFirestoreErrorDomain code:FIRFirestoreErrorCodeDeadlineExceeded userInfo:@{}];
-        return nil;
-      }
-
-      if (completed == YES) {
         return nil;
       }
 
@@ -223,12 +218,6 @@ RCT_EXPORT_METHOD(transactionBegin:
   };
 
   id completionBlock = ^(id result, NSError *error) {
-    if (completed == YES) {
-      return;
-    }
-
-    completed = YES;
-
     @synchronized (transactionState) {
       if (aborted == NO) {
         NSMutableDictionary *eventMap = [NSMutableDictionary new];

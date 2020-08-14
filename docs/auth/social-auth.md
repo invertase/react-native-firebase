@@ -7,9 +7,9 @@ previous: /auth/usage
 
 React Native Firebase provides support for integrating with different social platforms. The authentication with these
 different platforms is left to the developer to implement due to the various implementations and flows possible using
-their oAuth APIs.
+their OAuth APIs.
 
-# Social provides
+# Social providers
 
 ## Apple
 
@@ -42,7 +42,7 @@ function AppleSignIn() {
         width: 160,
         height: 45,
       }}
-      onPress={() => onAppleButtonPress().then(() => console.log('Apple sign-in complete!')}
+      onPress={() => onAppleButtonPress().then(() => console.log('Apple sign-in complete!'))}
     />
   );
 }
@@ -104,7 +104,7 @@ function FacebookSignIn() {
   return (
     <Button
       title="Facebook Sign-In"
-      onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!')}
+      onPress={() => onFacebookButtonPress().then(() => console.log('Signed in with Facebook!'))}
     />
   );
 }
@@ -162,7 +162,7 @@ RNTwitterSignIn.init('TWITTER_CONSUMER_KEY', 'TWITTER_CONSUMER_SECRET').then(() 
 );
 ```
 
-Once initalized, setup your application to trigger a sign-in request with Twitter using the `login` method.
+Once initialized, setup your application to trigger a sign-in request with Twitter using the `login` method.
 
 ```jsx
 import React from 'react';
@@ -172,7 +172,7 @@ function TwitterSignIn() {
   return (
     <Button
       title="Twitter Sign-In"
-      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!')}
+      onPress={() => onTwitterButtonPress().then(() => console.log('Signed in with Twitter!'))}
     />
   );
 }
@@ -212,13 +212,13 @@ documentation.
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
 Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
-`webClientId`, which can be found on the Firebase Console Settings, as "Web API Key".
+`webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`).
 
 ```js
 import { GoogleSignin } from '@react-native-community/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '', // From Firebase Console Settings
+  webClientId: '',
 });
 ```
 
@@ -232,7 +232,7 @@ function GoogleSignIn() {
   return (
     <Button
       title="Google Sign-In"
-      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!')}
+      onPress={() => onGoogleButtonPress().then(() => console.log('Signed in with Google!'))}
     />
   );
 }

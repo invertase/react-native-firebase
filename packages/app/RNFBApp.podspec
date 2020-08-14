@@ -1,8 +1,7 @@
 require 'json'
 require './firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
-
-firebase_sdk_version = '~> 6.13.0'
+firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 6.28.1'
 
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
@@ -28,7 +27,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Core', firebase_sdk_version
+  s.dependency          'Firebase/CoreOnly', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"

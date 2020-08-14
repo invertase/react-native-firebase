@@ -1,6 +1,6 @@
 ---
 title: Phone Authentication
-description: Sign-in with users with their phone number.
+description: Sign-in users with their phone number.
 next: /firestore/usage
 previous: /auth/social-auth
 ---
@@ -26,7 +26,7 @@ a code. Based on whether the code is correct for the device, the method rejects 
 The example below demonstrates how you could setup such a flow within your own application:
 
 ```jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, TextInput } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
@@ -44,7 +44,7 @@ function PhoneSignIn() {
 
   async function confirmCode() {
     try {
-      await confirmation.confirm('12345');
+      await confirm.confirm(code);
     } catch (error) {
       console.log('Invalid code.');
     }

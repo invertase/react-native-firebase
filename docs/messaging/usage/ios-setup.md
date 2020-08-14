@@ -8,15 +8,15 @@ There are also a number of prerequisites which are required to be able to enable
 
 - You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
 - You must have a physical iOS device to receive messages.
-  - Firebase Cloud Messaging integrates with the [Apple Push Notification Service (APNs)](https://developer.apple.com/notifications/),
+  - Firebase Cloud Messaging integrates with the [Apple Push Notification service (APNs)](https://developer.apple.com/notifications/),
     however APNs only works with real devices.
 
-# Configuring your app
+## Configuring your app
 
 Before your application can start to receive messages, you must explicitly enable "Push Notifications" and "Background Modes"
-within XCode.
+within Xcode.
 
-Open your project's workspace file via XCode (found within the `/ios` directory). The file name is prefixed with your project name,
+Open your project's workspace file via Xcode (found within the `/ios` directory). The file name is prefixed with your project name,
 for example `/ios/myapp.xcworkspace`. Once open, follow the steps below:
 
 1. Select your project.
@@ -25,7 +25,7 @@ for example `/ios/myapp.xcworkspace`. Once open, follow the steps below:
 
 ![Example with Steps](https://images.prismic.io/invertase/c954c8ed-a6bf-42f3-9b1d-c9eac937f9ec_xcode-signing-tab.png?auto=format)
 
-## Enable Push Notifications
+### Enable Push Notifications
 
 Next the "Push Notifications" capability needs to be added to the project. This can be done via the "Capability" option on the
 "Signing & Capabilities" tab:
@@ -38,7 +38,7 @@ Next the "Push Notifications" capability needs to be added to the project. This 
 Once selected, the capability will be shown below the other enabled capabilities. If no option appears when searching, the
 capability may already be enabled.
 
-## Enable Background Modes
+### Enable Background Modes
 
 Next the "Background Modes" capability needs to be enabled, along with both the "Background fetch" and "Remote notifications" sub-modes.
 This can be added via the "Capability" option on the "Signing & Capabilities" tab:
@@ -55,11 +55,9 @@ Now ensure that both the "Background fetch" and the "Remote notifications" sub-m
 
 ![Enabling the sub-modes](https://images.prismic.io/invertase/3a618574-dd9f-4478-9f39-9834d142b2e5_xcode-background-modes-check.gif?auto=compress,format)
 
-# Linking APNs with FCM
+## Linking APNs with FCM (iOS)
 
-Even though FCM a has limited capability to work without linking with APNs, the below steps are strongly recommended
-to ensure the library works as expected. Without linking APNs, your device will not receive messages when in the background
-or when quit.
+> Note: APNs is now required for both `foreground` and `background` messaging to function correctly on iOS.
 
 A few steps are required:
 
@@ -73,10 +71,10 @@ tab on the account sidebar:
 
 ![Certificates, Identifiers & Profiles menu item](https://images.prismic.io/invertase/c0a795c8-ebca-41c3-9a8d-23f09deb625f_apple-dev-tab.png?auto=format)
 
-## 1. Registering a key
+### 1. Registering a key
 
-A key can be generated which gives the FCM full access over the Apple Push Notification (APNs) service. On the "Keys" menu item,
-register a new key. The name of the key can be anything, however you must ensure the "Apple Push Notification (APNs)" service
+A key can be generated which gives the FCM full access over the Apple Push Notification service (APNs). On the "Keys" menu item,
+register a new key. The name of the key can be anything, however you must ensure the APNs service
 is enabled:
 
 ![Enable "Apple Push Notification (APNs)"](https://images.prismic.io/invertase/01fefe19-132f-4b88-8c17-9dc40357e4ce_apple-key.png?auto=format)
@@ -93,7 +91,7 @@ Upload the downloaded file and enter the Key ID:
 
 ![Upload the key & Key ID](https://images.prismic.io/invertase/7539b8ec-c310-40dd-91e5-69f19009786f_apple-fcm-upload-key.gif?auto=format)
 
-## 2. Registering an App Identifier
+### 2. Registering an App Identifier
 
 For messaging to work when your app is built for production, you must create a new App Identifier which is linked to the
 application that you're developing.
@@ -101,7 +99,7 @@ application that you're developing.
 On the "Identifiers" menu item, register a App Identifier. Select the "App IDs" option and click "Continue".
 
 The following screen enables you to link the identifier to your application via the "Bundle ID". This is a unique string
-which was generated when starting your new React Native project. Your Bundle ID can be obtained within XCode, under the
+which was generated when starting your new React Native project. Your Bundle ID can be obtained within Xcode, under the
 "General" tab for your project target:
 
 ![Project Bundle ID](https://images.prismic.io/invertase/7108ff7f-ce94-4452-851d-fa5dde668a9a_xcode-bundle-id.png?auto=compress,format)
@@ -109,14 +107,14 @@ which was generated when starting your new React Native project. Your Bundle ID 
 Next, follow these steps:
 
 1. Enter a description for the identifier.
-2. Enter the "Bundle ID" copied from XCode.
+2. Enter the "Bundle ID" copied from Xcode.
 3. Scroll down and enable the "Push Notifications" capability (along with any others your app uses).
 
 ![Create an identifier](https://images.prismic.io/invertase/0e711691-ccd2-43ab-9c0c-7696b6790153_apple-identifier.gif?auto=format)
 
 Save the identifier, it'll be used when creating a provisioning profile in the next step.
 
-## 3. Generating a provisioning profile
+### 3. Generating a provisioning profile
 
 A provisioning profile enables signed communicate between Apple and your application. Since messaging can only be used on
 real devices, a signed certificate ensures that the app being installed on a device is genuine and has the correct
@@ -137,17 +135,17 @@ To create a new Certificate, follow the [Apple documentation](https://help.apple
 the Certificate has been downloaded, upload it to the Apple Developer console via the "Certificates" menu item.
 
 The created provisioning profile can now be used when building your application (in both debug and release mode) onto a
-real device (using XCode). Back within XCode, select your project target and select the "Signing & Capabilities" tab.
-If XCode (via Preferences) is linked to your Apple Account, XCode can automatically sync the profile created above. Otherwise,
+real device (using Xcode). Back within Xcode, select your project target and select the "Signing & Capabilities" tab.
+If Xcode (via Preferences) is linked to your Apple Account, Xcode can automatically sync the profile created above. Otherwise,
 you must manually add the profile from the Apple Developer console:
 
 1. Select the project.
 2. Select the project target.
 3. Assign the provisioning profile.
 
-![Assign the provisioning profile via XCode](https://images.prismic.io/invertase/50349f49-19a0-45f4-b899-e6bc3015c509_xcode-assign-profile.png?auto=format)
+![Assign the provisioning profile via Xcode](https://images.prismic.io/invertase/50349f49-19a0-45f4-b899-e6bc3015c509_xcode-assign-profile.png?auto=format)
 
-# Next steps
+## Next steps
 
 Once the above has been completed, you're ready to get started receiving messages on your iOS device for both
 testing and production. To rebuild your app, run the following command:

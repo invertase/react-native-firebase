@@ -939,7 +939,7 @@ export namespace FirebaseStorageTypes {
    */
   export interface ListResult {
     /**
-     * Objects in this directory. You can call `getMetadate()` and `getDownloadUrl()` on them.
+     * Objects in this directory. You can call `getMetadata()` and `getDownloadUrl()` on them.
      */
     items: Reference[];
 

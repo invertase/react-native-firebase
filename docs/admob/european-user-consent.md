@@ -7,8 +7,8 @@ previous: /admob/displaying-ads
 
 Under the Google [EU User Consent Policy](https://www.google.com/about/company/consentstaging.html), you must make
 certain disclosures to your users in the European Economic Area (EEA) and obtain their consent to use cookies or
-other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy
-reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).
+other local storage, where legally required, and to use personal data (such as `AdID`) to serve ads. This policy
+reflects the requirements of the `EU ePrivacy Directive` and the `General Data Protection Regulation` (GDPR).
 
 The React Native Firebase AdMob module provides out of the box support for helping to manage your users consent
 within your application. The `AdsConsent` helper which comes with the module wraps the Google Consent SDK for both
@@ -197,7 +197,7 @@ To invalidate the users consent status (e.g. if the providers list changes since
 
 ### Testing
 
-When developing the consent flow, the behaviour of the `AdsConsent` responses may not be reliable due to the environment
+When developing the consent flow, the behavior of the `AdsConsent` responses may not be reliable due to the environment
 (e.g. using an emulator vs real device). It is possible to set a debug location to test the various responses from the
 Consent SDK.
 

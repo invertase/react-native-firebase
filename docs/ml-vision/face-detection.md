@@ -11,7 +11,7 @@ from a user's photo.
 
 The Machine Learning service is only offered on the device, and no cloud service exists.
 
-Given an image file, the Face Detection service will attempt to recognise one or faces, offering information
+Given an image file, the Face Detection service will attempt to recognize one or more faces, offering information
 such as:
 
 - Face contour coordinates.
@@ -20,7 +20,7 @@ such as:
 - The probability that the face is smiling.
 - A list of face features (e.g. eyes, nose, mouth etc) and their positions on the face.
 
-# On-device Barcode Scanning
+# On-device Face Detection
 
 ## Enable the model
 

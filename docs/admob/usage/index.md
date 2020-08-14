@@ -116,7 +116,7 @@ admob()
   });
 ```
 
-To learn more about the request configuration settings, view the [RequestConfiguration](/reference/admob/requestconfiguration) documentation.
+To learn more about the request configuration settings, view the [`RequestConfiguration`](/reference/admob/requestconfiguration) documentation.
 
 ## European User Consent
 
@@ -125,7 +125,7 @@ It is up to the developer to implement and handle this on a user-by-user basis. 
 being served both personalized and non-personalized adverts before showing them. For more information, see
 [Requesting Consent from European Users](https://developers.google.com/admob/android/eu-consent).
 
-The AdMob module provides a AdConsent helper to help developers quickly implement consent flows within their application.
+The AdMob module provides a `AdConsent` helper to help developers quickly implement consent flows within their application.
 See the [European User Consent page](/admob/european-user-consent) for full examples of how to integrate the helper into your application.
 
 ## Test ads

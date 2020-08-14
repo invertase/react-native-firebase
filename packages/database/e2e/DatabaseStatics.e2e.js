@@ -15,13 +15,51 @@
  *
  */
 
+const { PATH, wipe } = require('./helpers');
+
+const TEST_PATH = `${PATH}/statics`;
+
 describe('database.X', () => {
+  after(() => wipe(TEST_PATH));
+
   describe('ServerValue.TIMESTAMP', () => {
     it('returns a valid object', () => {
       const { TIMESTAMP } = firebase.database.ServerValue;
       should.equal(Object.keys(TIMESTAMP).length, 1);
       TIMESTAMP.should.have.property('.sv');
       TIMESTAMP['.sv'].should.eql('timestamp');
+    });
+  });
+
+  describe('ServerValue.increment', () => {
+    it('returns a valid object', () => {
+      const incrementObject = firebase.database.ServerValue.increment(1);
+      should.equal(Object.keys(incrementObject).length, 1);
+      incrementObject.should.have.property('.sv');
+      incrementObject['.sv'].should.have.property('increment');
+    });
+
+    it('increments on the server', async () => {
+      const ref = firebase.database().ref(`${TEST_PATH}/increment`);
+
+      await ref.set({ increment: 0 });
+
+      const res1 = await ref.once('value');
+      res1.val().increment.should.equal(0);
+
+      await ref.set({ increment: firebase.database.ServerValue.increment(1) });
+
+      const res2 = await ref.once('value');
+      res2.val().increment.should.equal(1);
+    });
+
+    it('increments on the server when no value is present', async () => {
+      const ref = firebase.database().ref(`${TEST_PATH}/increment-empty`);
+
+      await ref.set({ increment: firebase.database.ServerValue.increment(2) });
+
+      const res = await ref.once('value');
+      res.val().increment.should.equal(2);
     });
   });
 });

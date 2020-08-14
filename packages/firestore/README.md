@@ -40,7 +40,7 @@ yarn add @react-native-firebase/firestore
 
 ### Additional Topics
 
-- [Usage with FlatLists](https://rnfirebase.io/firestore/usage-with-flatlists)
+- [Usage with `FlatList`](https://rnfirebase.io/firestore/usage-with-flatlists)
 
 ## License
 
