@@ -15,7 +15,7 @@ This module requires that the `@react-native-firebase/app` module is already set
 # Install & setup the app module
 yarn add @react-native-firebase/app
 
-# Install the analytics module
+# Install the storage module
 yarn add @react-native-firebase/storage
 
 # If you're developing your app using iOS, run this command
@@ -77,7 +77,7 @@ import storage from '@react-native-firebase/storage';
 
 function App() {
   // create bucket storage reference to not yet existing image
-  const reference = firebase.storage().ref('black-t-shirt-sm.png');
+  const reference = storage().ref('black-t-shirt-sm.png');
 
   return (
     <View>
@@ -103,7 +103,7 @@ such as the current upload progress:
 const task = reference.putFile(pathToFile);
 
 task.on('state_changed', taskSnapshot => {
-  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${task.totalBytes}`);
+  console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
 });
 
 task.then(() => {
@@ -183,8 +183,9 @@ is passed to the `storage` instance. To switch buckets, provide the module with 
 Firebase Console, under Storage > Files.
 
 ```js
-import storage from '@react-native-firebase/storage';
+
+import storage, { firebase } from '@react-native-firebase/storage';
 
 const defaultStorageBucket = storage();
-const secondaryStorageBucket = storage('gs://my-secondary-bucket.appspot.com');
+const secondaryStorageBucket = firebase.app().storage('gs://my-secondary-bucket.appspot.com');
 ```

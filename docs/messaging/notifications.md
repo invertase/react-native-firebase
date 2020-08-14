@@ -167,6 +167,8 @@ function App() {
 The call to `getInitialNotification` should happen within a React lifecycle method after mounting (e.g. `componentDidMount` or `useEffect`).
 If it's called too soon (e.g. within a class constructor or global scope), the notification data may not be available.
 
+**Quick Tip:** On `Android` you can test receiving remote notifications on the emulator but on `iOS` you will need to use a real device as the iOS simulator does not support receiving remote notifications.
+
 # Notifee - Advanced Notifications
 
 FCM provides support for displaying basic notifications to users with minimal integration required. If however you require

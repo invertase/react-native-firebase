@@ -40,7 +40,7 @@
   dispatch_once(&once, ^{
     RNFBMessagingFIRMessagingDelegate *strongSelf = weakSelf;
     [FIRMessaging messaging].delegate = strongSelf;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = YES;
+    [FIRMessaging messaging].shouldEstablishDirectChannel = NO;
   });
 }
 
@@ -49,6 +49,9 @@
 
 // JS -> `onTokenRefresh`
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+  if (fcmToken == nil) { // Don't crash when the token is reset
+    return;
+  }
   [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh" body:@{
       @"token": fcmToken
   }];
