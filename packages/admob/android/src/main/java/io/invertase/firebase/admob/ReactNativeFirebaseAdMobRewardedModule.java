@@ -16,6 +16,7 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.rewarded.ServerSideVerificationOptions;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
