@@ -80,6 +80,25 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
         }
       };
 
+      if (adRequestOptions.hasKey("serverSideVerificationOptions")) {
+        ReadableMap serverSideVerificationOptions = adRequestOptions.getMap("serverSideVerificationOptions");
+
+        if (serverSideVerificationOptions != null) {
+          ServerSideVerificationOptions.Builder options = new ServerSideVerificationOptions.Builder();
+
+          if (serverSideVerificationOptions.hasKey("userId")) {
+            options.setUserId(serverSideVerificationOptions.getString("userId"));
+          }
+
+
+          if (serverSideVerificationOptions.hasKey("customData")) {
+            options.setCustomData(serverSideVerificationOptions.getString("customData"));
+          }
+
+          rewardedAd.setServerSideVerificationOptions(options.build());
+        }
+      }
+
       rewardedAd.loadAd(buildAdRequest(adRequestOptions), adLoadCallback);
       rewardedAdArray.put(requestId, rewardedAd);
     });
