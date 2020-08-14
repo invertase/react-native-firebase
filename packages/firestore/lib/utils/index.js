@@ -142,7 +142,10 @@ export function parseSetOptions(options) {
 // }
 
 function isPartialObserver(input) {
-  return isFunction(input.next) || isFunction(input.error) || isFunction(input.complete);
+  if (input == null) {
+    return false;
+  }
+  return input.next != null || input.error != null || input.complete != null;
 }
 
 export function parseSnapshotArgs(args) {
@@ -181,10 +184,10 @@ export function parseSnapshotArgs(args) {
   if (isObject(args[0]) && isPartialObserver(args[0])) {
     const observer = args[0];
     if (observer.error) {
-      onError = observer.error.bind(observer);
+      onError = isFunction(observer.error) ? observer.error.bind(observer) : observer.error;
     }
     if (observer.next) {
-      onNext = observer.next.bind(observer);
+      onNext = isFunction(observer.next) ? observer.next.bind(observer) : observer.next;
     }
   }
 
@@ -210,16 +213,16 @@ export function parseSnapshotArgs(args) {
          */
         callback = args[1];
       }
-    } else if (isObject(args[1])) {
+    } else if (isPartialObserver(args[1])) {
       /**
        * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
        */
       const observer = args[1];
-      if (isFunction(observer.error)) {
-        onError = observer.error.bind(observer);
+      if (observer.error) {
+        onError = isFunction(observer.error) ? observer.error.bind(observer) : observer.error;
       }
-      if (isFunction(observer.next)) {
-        onNext = observer.next.bind(observer);
+      if (observer.next) {
+        onNext = isFunction(observer.next) ? observer.next.bind(observer) : observer.next;
       }
     }
   }
