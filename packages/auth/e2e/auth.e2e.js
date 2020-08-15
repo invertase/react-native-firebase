@@ -187,6 +187,42 @@ describe('auth()', () => {
       unsubscribe();
     });
 
+    it('accept observer instead callback as well', async () => {
+      await firebase.auth().signInAnonymously();
+
+      await Utils.sleep(50);
+
+      // Test
+      const observer = {
+        next(user) {
+          // Test this access
+          this.onNext();
+          this.user = user;
+        },
+      };
+
+      let unsubscribe;
+      await new Promise(resolve => {
+        observer.onNext = resolve;
+        unsubscribe = firebase.auth().onAuthStateChanged(observer);
+      });
+      should.exist(observer.user);
+
+      // Sign out
+
+      await firebase.auth().signOut();
+
+      // Assertions
+
+      await Utils.sleep(50);
+
+      should.not.exist(observer.user);
+
+      // Tear down
+
+      unsubscribe();
+    });
+
     it('stops listening when unsubscribed', async () => {
       await firebase.auth().signInAnonymously();
 
