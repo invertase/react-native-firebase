@@ -21,6 +21,11 @@
 #import "RNFBMessaging+UNUserNotificationCenter.h"
 
 @implementation RNFBMessagingUNUserNotificationCenter
+struct {
+  unsigned int willPresentNotification:1;
+  unsigned int didReceiveNotificationResponse:1;
+  unsigned int openSettingsForNotification:1;
+} originalDelegateRespondsTo;
 
 + (instancetype)sharedInstance {
   static dispatch_once_t once;
@@ -38,6 +43,12 @@
   dispatch_once(&once, ^{
     RNFBMessagingUNUserNotificationCenter *strongSelf = weakSelf;
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    if (center.delegate != nil) {
+      _originalDelegate = center.delegate;
+      originalDelegateRespondsTo.openSettingsForNotification = (unsigned int) [_originalDelegate respondsToSelector:@selector(userNotificationCenter:openSettingsForNotification:)];
+      originalDelegateRespondsTo.willPresentNotification = (unsigned int) [_originalDelegate respondsToSelector:@selector(userNotificationCenter:willPresentNotification:withCompletionHandler:)];
+      originalDelegateRespondsTo.didReceiveNotificationResponse = (unsigned int) [_originalDelegate respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)];
+    }
     center.delegate = strongSelf;
   });
 }
@@ -65,6 +76,12 @@
     // TODO in a later version allow customising completion options in JS code
     completionHandler(UNNotificationPresentationOptionNone);
   }
+
+  if (_originalDelegate != nil && originalDelegateRespondsTo.willPresentNotification) {
+    [_originalDelegate userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
+  } else {
+    completionHandler(UNNotificationPresentationOptionNone);
+  }
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
@@ -73,7 +90,18 @@
     NSDictionary *notificationDict = [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:notificationDict];
     _initialNotification = notificationDict;
+  }
+
+  if (_originalDelegate != nil && originalDelegateRespondsTo.didReceiveNotificationResponse) {
+    [_originalDelegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+  } else {
     completionHandler();
+  }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center openSettingsForNotification:(nullable UNNotification *)notification {
+  if (_originalDelegate != nil && originalDelegateRespondsTo.openSettingsForNotification) {
+    [_originalDelegate userNotificationCenter:center openSettingsForNotification:notification];
   }
 }
 

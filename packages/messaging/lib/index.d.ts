@@ -84,7 +84,10 @@ export namespace FirebaseMessagingTypes {
      * The message type of the message.
      */
     messageType?: string;
-
+    /**
+     * The topic name or message identifier.
+     */
+    from?: string;
     /**
      * The address for the message.
      */
@@ -98,6 +101,11 @@ export namespace FirebaseMessagingTypes {
     ttl?: number;
 
     /**
+     * The time the message was sent, in milliseconds since the start of unix epoch
+     */
+    sentTime?: number;
+
+    /**
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
@@ -108,14 +116,14 @@ export namespace FirebaseMessagingTypes {
     notification?: Notification;
 
     /**
-     * Whether the iOS APNS message was configured as a background update notification.
+     * Whether the iOS APNs message was configured as a background update notification.
      *
      * @platform ios iOS
      */
     contentAvailable?: boolean;
 
     /**
-     * Whether the iOS APNS `mutable-content` property on the message was set
+     * Whether the iOS APNs `mutable-content` property on the message was set
      * allowing the app to modify the notification via app extensions.
      *
      * @platform ios iOS
@@ -142,15 +150,45 @@ export namespace FirebaseMessagingTypes {
     title?: string;
 
     /**
+     * The native localization key for the notification title.
+     */
+    titleLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by titleLocKey.
+     */
+    titleLocArgs?: string[];
+
+    /**
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * The native localization key for the notification body content.
+     */
+    bodyLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by bodyLocKey.
+     */
+    bodyLocArgs?: string[];
 
     ios?: {
       /**
        * The notification's subtitle.
        */
       subtitle?: string;
+
+      /**
+       * The native localization key for the notification's subtitle.
+       */
+      subtitleLocKey?: string;
+
+      /**
+       * Any arguments that should be formatted into the resource specified by subtitleLocKey.
+       */
+      subtitleLocArgs?: string[];
 
       /**
        * The value of the badge on the home screen app icon.
@@ -344,6 +382,7 @@ export namespace FirebaseMessagingTypes {
    * An interface representing all the available permissions that can be requested by your app via
    * the `requestPermission` API.
    */
+  // eslint-disable-next-line @typescript-eslint/interface-name-prefix
   export interface IOSPermissions {
     /**
      * Request permission to display alerts.
@@ -367,6 +406,13 @@ export namespace FirebaseMessagingTypes {
      * Defaults to true.
      */
     badge?: boolean;
+
+    /**
+     * Request permission for critical alerts.
+     *
+     * Defaults to false.
+     */
+    criticalAlert?: boolean;
 
     /**
      * Request permission to display notifications in a CarPlay environment.
@@ -506,6 +552,10 @@ export namespace FirebaseMessagingTypes {
      *
      * See `onNotificationOpenedApp` to subscribe to when the notification is opened when the app
      * is in a background state.
+     *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
      */
     getInitialNotification(): Promise<RemoteMessage | null>;
 
@@ -610,9 +660,13 @@ export namespace FirebaseMessagingTypes {
      * See `getInitialNotification` to see how to watch for when a notification opens the app from a
      * quit state.
      *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
+     *
      * @param listener Called with a `RemoteMessage` when a notification press opens the application.
      */
-    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): void;
+    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
@@ -667,19 +721,9 @@ export namespace FirebaseMessagingTypes {
      * @ios
      */
     requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
-
     /**
-     * Deprecated. See `registerDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See registerDeviceForRemoteMessages.
-     */
-    registerForRemoteNotifications(): Promise<void>;
-
-    /**
-     * On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register
-     * this request with APNS. For example if you want to display alerts, play sounds
-     * or perform other user-facing actions (via the Notification library), you must call this method.
+     * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
+     * with APNs if auto-registration has been disabled.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
      *
@@ -694,15 +738,6 @@ export namespace FirebaseMessagingTypes {
      * ```
      */
     registerDeviceForRemoteMessages(): Promise<void>;
-
-    /**
-     * Deprecated. See `isDeviceRegisteredForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See isDeviceRegisteredForRemoteMessages
-     */
-    isRegisteredForRemoteNotifications: boolean;
-
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
      * `registerDeviceForRemoteMessages()`.
@@ -712,21 +747,12 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
+     * const isDeviceRegisteredForRemoteMessages = firebase.messaging().isDeviceRegisteredForRemoteMessages;
      * ```
      *
      * @platform ios
      */
     isDeviceRegisteredForRemoteMessages: boolean;
-
-    /**
-     * Deprecated. See `unregisterDeviceForRemoteMessages` instead.
-     *
-     * @platform ios
-     * @deprecated See unregisterDeviceForRemoteMessages.
-     */
-    unregisterForRemoteNotifications(): Promise<void>;
-
     /**
      * Unregisters the app from receiving remote notifications.
      *
@@ -745,7 +771,7 @@ export namespace FirebaseMessagingTypes {
     unregisterDeviceForRemoteMessages(): Promise<void>;
 
     /**
-     * On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your
+     * On iOS, it is possible to get the users APNs token. This may be required if you want to send messages to your
      * iOS devices without using the FCM service.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.
@@ -756,7 +782,7 @@ export namespace FirebaseMessagingTypes {
      * const apnsToken = await firebase.messaging().getAPNSToken();
      *
      * if (apnsToken) {
-     *   console.log('User APNS Token:', apnsToken);
+     *   console.log('User APNs Token:', apnsToken);
      * }
      * ```
      *
@@ -850,14 +876,13 @@ export namespace FirebaseMessagingTypes {
     onSendError(listener: (evt: SendErrorEvent) => any): () => void;
 
     /**
-     * On Android, set a message handler function which is called when the app is in the background
-     * or terminated. A headless task is created, allowing you to access the React Native environment
+     * Set a message handler function which is called when the app is in the background
+     * or terminated. In Android, a headless task is created, allowing you to access the React Native environment
      * to perform tasks such as updating local storage, or sending a network request.
      *
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
      *
-     * > You can safely call this method on iOS without platform checks. It's a no-op on iOS.
      *
      * #### Example
      *
@@ -871,7 +896,6 @@ export namespace FirebaseMessagingTypes {
      * });
      * ```
      *
-     * @android
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
@@ -966,5 +990,14 @@ namespace ReactNativeFirebase {
     messaging_android_headless_task_timeout?: number;
     messaging_android_notification_channel_id?: string;
     messaging_android_notification_color?: string;
+    /**
+     * Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`
+     * automatically on app launch (recommended) - defaults to true.
+     *
+     * If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`
+     * early on in your app startup - otherwise you will NOT receive remote messages/notifications
+     * in your app.
+     */
+    messaging_ios_auto_register_for_remote_messages?: boolean;
   }
 }

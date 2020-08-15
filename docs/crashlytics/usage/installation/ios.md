@@ -27,7 +27,7 @@ for more information.
 
 ## 3. Update Pods & rebuild the project
 
-You may need to update your local Pods repo in order for the Pods to be installed in your project:
+You may need to update your local Pods repository in order for the Pods to be installed in your project:
 
 ```bash
 $ cd ios/

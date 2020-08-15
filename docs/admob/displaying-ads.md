@@ -11,14 +11,14 @@ The AdMob package allows you to display three types of adverts; Interstitial, Re
 
 Interstitials are full-screen ads that cover the interface of an app until closed by the user. These type of ads are
 programmatically loaded and then shown at a suitable point during your application flow (e.g. after a level on a gaming
-app has been completed, or game over). The ads can be pre-loaded in the background to ensure they're ready to go when needed.
+app has been completed, or game over). The ads can be preloaded in the background to ensure they're ready to go when needed.
 
 To create a new interstitial, call the `createForAdRequest` method from the `InterstitialAd` class. The first argument
 of the method is the "Ad Unit ID". For testing, we can use a Test ID, however for production the ID from the
 Google AdMob dashboard under "Ad units" should be used:
 
 ```js
-import { InterstitialAd, TestIds } from '@react-native-firebase/admob';
+import { InterstitialAd, TestIds, AdEventType } from '@react-native-firebase/admob';
 
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
 
@@ -195,6 +195,27 @@ To learn more, view the [`RewardedAdEventType`](/reference/admob/rewardedadevent
 
 If needed, you can reuse the existing instance of the `RewardedAd` class to load more adverts and show them when required.
 
+While the `EARNED_REWARD` event only occurs on the client, Server Side Verification (or SSV) can be used for confirming a user completed an advert action. For this, you have to specify the Server Side Verification callback URL in your Ads dashboard.
+
+You can customize SSV parameters when your SSV callback is called by setting the `serverSideVerificationOptions` field in your [`RequestOptions`](/reference/admob/requestoptions) parameter.
+
+```js
+const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+  serverSideVerificationOptions: {
+    userId: '9999',
+    customData: 'my-custom-data',
+  },
+});
+```
+
+If you request an Advert as in the example above, AdMob will call your server with the `userId` and `customData` fields as shown below:
+
+```
+[14/Aug/2020 12:51:43] "GET /views/admob-ssv/?ad_network=...&ad_unit=...&custom_data=my-custom-data&reward_amount=1&reward_item=test_reward_item&timestamp=1597377102267&transaction_id=148cc85...&user_id=9999&signature=MEUCIQCQSi3cQ2PlxlEAkpN...&key_id=3335... HTTP/1.1" 200 0
+```
+
+You still need to verify these incoming requests yourself to ensure they are genuine. To learn more about callback parameters and verifying, see the [AdMob SDK Server Side Verification(SSV) documentation](https://developers.google.com/admob/android/rewarded-video-ssv).
+
 ## Banner Ads
 
 Banner ads are partial adverts which can be integrated within your existing application. Unlike Interstitial and Rewarded Ads,
@@ -213,7 +234,7 @@ const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyy
 function App() {
   return (
     <BannerAd
-      unitId={TestIds.BANNER}
+      unitId={adUnitId}
       size={BannerAdSize.FULL_BANNER}
       requestOptions={{
         requestNonPersonalizedAdsOnly: true,

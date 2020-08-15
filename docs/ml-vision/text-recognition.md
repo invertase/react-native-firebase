@@ -14,12 +14,12 @@ meta-data such as:
 
 - The 4-point coordinates of the box on the document.
 - Paragraphs within the block.
-- Recognised languages within the block/document.
+- Recognized languages within the block/document.
 - The confidence the Machine Learning service has in it's own results.
 
 # Cloud Text Recognition
 
-The cloud based text recognition service uploads a given document to the Firebase services, processes the results and returns them.
+The cloud based text recognition service uploads a given document to the remote Firebase service which processes the results and returns them.
 To get started, call the `cloudDocumentTextRecognizerProcessImage` method with a path to a local file on your device:
 
 ```js

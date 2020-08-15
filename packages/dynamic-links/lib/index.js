@@ -23,7 +23,13 @@ import {
 import builder from './builder';
 import version from './version';
 
-const statics = {};
+const statics = {
+  ShortLinkType: {
+    SHORT: 'SHORT',
+    UNGUESSABLE: 'UNGUESSABLE',
+    DEFAULT: 'DEFAULT',
+  },
+};
 
 const namespace = 'dynamicLinks';
 
@@ -41,12 +47,6 @@ class FirebaseLinksModule extends FirebaseModule {
     }
 
     return this.native.buildLink(params);
-  }
-
-  createDynamicLink(dynamicLinkParams) {
-    // eslint-disable-next-line no-console
-    console.warn('firebase.links().createDynamicLink() is deprecated in favour of buildLink()');
-    return this.buildLink(dynamicLinkParams);
   }
 
   buildShortLink(dynamicLinkParams, shortLinkType = 'DEFAULT') {
@@ -70,14 +70,6 @@ class FirebaseLinksModule extends FirebaseModule {
     return this.native.buildShortLink(params, shortLinkType);
   }
 
-  createShortDynamicLink(dynamicLinkParams, shortLinkType) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.links().createShortDynamicLink() is deprecated in favour of buildShortLink()',
-    );
-    return this.buildShortLink(dynamicLinkParams, shortLinkType);
-  }
-
   getInitialLink() {
     return this.native.getInitialLink();
   }
@@ -92,6 +84,13 @@ class FirebaseLinksModule extends FirebaseModule {
     return () => {
       subscription.remove();
     };
+  }
+
+  resolveLink(link) {
+    if (!link) {
+      throw new Error('firebase.dynamicLinks().resolve(*) Invalid link parameter');
+    }
+    return this.native.resolveLink(link);
   }
 }
 

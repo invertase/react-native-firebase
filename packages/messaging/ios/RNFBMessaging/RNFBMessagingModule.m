@@ -44,6 +44,19 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
++ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps withLaunchOptions:(NSDictionary *_Nullable)launchOptions  {
+    NSMutableDictionary *appProperties = userProps != nil ? [userProps mutableCopy] : [NSMutableDictionary dictionary];
+    appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        
+    if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+      if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+      }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:appProperties];
+}
+
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
@@ -177,6 +190,12 @@ RCT_EXPORT_METHOD(requestPermission:
 
     if ([permissions[@"sound"] isEqual:@(YES)]) {
       options |= UNAuthorizationOptionSound;
+    }
+
+    if ([permissions[@"criticalAlert"] isEqual:@(YES)]) {
+      if (@available(iOS 12.0, *)) {
+        options |= UNAuthorizationOptionCriticalAlert;
+      }
     }
 
     if ([permissions[@"provisional"] isEqual:@(YES)]) {

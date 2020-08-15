@@ -52,15 +52,6 @@ NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_col
 }
 
 + (void)configureWithApp:(FIRApp *)app {
-  if ([app isDefaultApp]) {
-    // TODO(salakar): 6.x/7.x Option to disable auto init
-    // TODO(salakar): If disabled; when the default app is initialized from JS land then init crashlytics (register a block handler somehow in RNFBApp?)
-    if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
-      [Crashlytics sharedInstance].debugMode = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
-    }
-
-    [Fabric with:@[[Crashlytics class]]];
-  }
 }
 
 @end

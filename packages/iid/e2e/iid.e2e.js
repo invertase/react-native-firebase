@@ -37,8 +37,8 @@ describe('iid()', () => {
         .app('secondaryFromNative')
         .iid()
         .app.name.should.equal('secondaryFromNative');
-
       await Utils.sleep(1000);
+
       const defaultToken = await firebase.iid().getToken();
       await Utils.sleep(1000);
 
@@ -50,8 +50,11 @@ describe('iid()', () => {
       defaultToken.should.be.a.String();
       secondaryToken.should.be.a.String();
 
-      // same token as currently using the same messagingSenderId for both apps
-      secondaryToken.should.equal(defaultToken);
+      if (device.getPlatform() === 'ios') {
+        secondaryToken.should.equal(defaultToken);
+      } else if (device.getPlatform() === 'android') {
+        secondaryToken.should.not.equal(defaultToken);
+      }
     });
   });
 
@@ -63,7 +66,7 @@ describe('iid()', () => {
   });
 
   describe('delete()', () => {
-    it('deletes the current instance id', async () => {
+    android.it('deletes the current instance id', async () => {
       const iidBefore = await firebase.iid().get();
       await Utils.sleep(1000);
       await firebase.iid().delete();
@@ -98,18 +101,18 @@ describe('iid()', () => {
   });
 
   describe('deleteToken()', () => {
-    it('should return nil from deleteToken with arguments', async () => {
+    android.it('should return nil from deleteToken with arguments', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
       const token = await firebase.iid().deleteToken(authorizedEntity, '*');
       should.not.exist(token);
     });
 
-    it('should return nil from deleteToken without arguments', async () => {
+    android.it('should return nil from deleteToken without arguments', async () => {
       const token = await firebase.iid().deleteToken();
       should.not.exist(token);
     });
 
-    it('should return nil from deleteToken with 1 argument', async () => {
+    android.it('should return nil from deleteToken with 1 argument', async () => {
       const authorizedEntity = firebase.iid().app.options.messagingSenderId;
       const token = await firebase.iid().deleteToken(authorizedEntity);
       should.not.exist(token);

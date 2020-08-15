@@ -15,20 +15,20 @@ then you have not correctly setup Crashlytics in your app (see [Usage](/crashlyt
 
 Upon running the first two examples under [usage](crashlytics/usage), you will be shown a display similar to following image.
 ![](https://i.imgur.com/YIQ88ZF.png)
-In this example the [Crash Attributes](crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](#error-reports) example three times, in addition to several miscellaneous exceptions that have occured during the writeup.
+In this example the [Crash Attributes](crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](#error-reports) example three times, in addition to several miscellaneous exceptions that have occurred during the write-up.
 
 > If you are certain that your app has produced error reports, but none are visible, try restarting your app fully. Crashlytics only uploads reports upon launching the app.
 
 ## Issues
 
-Under issues, Firebase has gathered all the reports from your app and organised them into separate issues, where each
-issue is an unique crash or stack trace in your app. One of the issues visible in the example shown originates from `CrashTest.java`,
+Under issues, Firebase has gathered all the reports from your app and organized them into separate issues, where each
+issue is a unique crash or stack trace in your app. One of the issues visible in the example shown originates from `CrashTest.java`,
 which is the Android module responsible for testing Crashlytics through the `crash` method, throwing an uncaught exception
 to crash the app. Using this method on the same platform will always add reports to the same issue.
 
 # Managing issues
 
-By clicking on an specific issue, you can view its statistics and all the associated reports in more detail. In this example
+By clicking on a specific issue, you can view its statistics and all the associated reports in more detail. In this example
 we're viewing the `CrashTest.java` issue.
 
 ![Crash Example](https://i.imgur.com/XYBNuJx.png)
@@ -43,6 +43,6 @@ about the associated user. Under keys you can see the custom attributes that we 
 
 Note that in the top right there is a button that says 'Close'. After having addressed an issue you can close it, allowing
 you to filter it out in the overview by selecting 'Open' under 'Issue state', when clicking on the 'Filter issues' button.
-This is visible in the first example, where we're displaying only 3 relevant non-fatal events out of the 12 that occured.
+This is visible in the first example, where we're displaying only 3 relevant non-fatal events out of the 12 that occurred.
 When the same issue re-occurs, it will automatically open again. By clicking the arrow next to the button we can mute the
 issue, preventing this from happening.

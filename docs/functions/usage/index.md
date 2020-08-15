@@ -41,7 +41,7 @@ For more information on use cases, view the [Firebase Cloud Functions](https://f
 
 # Usage
 
-The Cloud Functions module provides the functionality to directly trigger deployed HTTPs callable functions, without worrying
+The Cloud Functions module provides the functionality to directly trigger deployed HTTPS callable functions, without worrying
 about security or implementing a HTTP request library.
 
 Functions deployed to Firebase have unique names, allowing you to easily identify which endpoint you wish to send a request to.
@@ -53,9 +53,12 @@ Assuming we have a deployed a callable endpoint named `listProducts`, to call th
 `httpsCallable` method. For example:
 
 ```js
-// Deployed HTTPs callable
+// Deployed HTTPS callable
 exports.listProducts = functions.https.onCall(() => {
-  return [...]; // Return some data
+  return [
+    /* ... */
+    // Return some data
+  ];
 });
 ```
 

@@ -22,8 +22,8 @@ yarn add @react-native-firebase/messaging
 cd ios/ && pod install
 ```
 
-> iOS requires further configuration steps to be carried out before you can start receiving and sending
-> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Messagig](/messaging/usage/ios-setup).
+> iOS requires further configuration before you can start receiving and sending
+> messages through Firebase. Read the documentation on how to [setup iOS with Firebase Cloud Messaging](/messaging/usage/ios-setup).
 
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
@@ -40,40 +40,25 @@ The module also provides basic support for displaying local notifications, to le
 
 # Usage
 
-Before receiving messages from the FCM service, you must first register your device and to use the service on iOS, you need to request the explicit users
-permission to accept incoming messages.
-
-## Registering devices with FCM
-
-Before devices can receive and send messages via FCM, they must be registered. The library exposes a `registerDeviceForRemoteMessages`
-method which should be called early on in your apps life-cycle. It is recommended that this method is called on every app
-boot:
-
-```js
-import messaging from '@react-native-firebase/messaging';
-
-async function registerAppWithFCM() {
-  await messaging().registerDeviceForRemoteMessages();
-}
-```
-
 ## iOS - Requesting permissions
 
-iOS prevents messages from being delivered to devices unless you have received explicit permission from the user. This includes
-messages which include data payloads and/or notification payloads.
+iOS prevents messages containing notification (or 'alert') payloads from being displayed unless you have received explicit permission from the user.
 
 > To learn more about local notifications, view the [Notifications](/messaging/notifications) documentation.
 
-The module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
+This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
 import messaging from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
-  const settings = await messaging().requestPermission();
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  if (settings) {
-    console.log('Permission settings:', settings);
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
   }
 }
 ```
@@ -89,7 +74,7 @@ FCM messages can be sent to devices via a number of methods (see below). A messa
 be used however you see fit within your application. Common use-cases for handling messages could be:
 
 - Displaying a notification (see [Notifications](/messaging/notifications)).
-- Syncing message data silently on the device (e.g. via AsyncStorage).
+- Syncing message data silently on the device (e.g. via `AsyncStorage`).
 - Updating the application's UI.
 
 > To learn about how to send messages to devices from your own server setup, view the
@@ -195,14 +180,14 @@ any custom data via the `data` property. To learn more, view the [`RemoteMessage
 API reference.
 
 If the `RemoteMessage` payload contains a `notification` property when sent to the `setBackgroundMessageHandler` handler, the device
-will have displayed a [notification](/messaging/notififications) to the user.
+will have displayed a [notification](/messaging/notifications) to the user.
 
 #### Data-only messages
 
 When an incoming message is "data-only" (contains no `notification` option), both Android & iOS regard it as low priority
 and will prevent the application from waking (ignoring the message). To allow data-only messages to trigger the background
 handler, you must set the "priority" to "high" on Android, and enable the `content-available` flag on iOS. For example,
-if using the NodeJS [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
+if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a message:
 
 ```js
 admin.messaging().sendToDevice(
@@ -223,6 +208,34 @@ admin.messaging().sendToDevice(
 );
 ```
 
+For iOS specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
+
+```js
+admin.messaging().send({
+    data: {
+      //some data
+    },
+    apns: {
+      payload: {
+        aps: {
+          contentAvailable: true
+        }
+      },
+      headers: {
+        'apns-push-type': 'background',
+        'apns-priority': '5',
+        'apns-topic': '' // your app bundle identifier
+      }
+    },
+    //must include token, topic, or condition
+    //token: //device token
+    //topic: //notification topic
+    //condition: //notification condition
+});
+```
+
+View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
+
 These options can be applied to all FCM messages. View the [Server Integration](/messaging/server-integration) documentation
 to learn more about other available SDKs.
 
@@ -233,7 +246,7 @@ Although the library supports handling messages in background/quit states, the u
 On Android, a [Headless JS](https://reactnative.dev/docs/headless-js-android) task (an Android only feature) is created that runs separately to your main React component; allowing your background handler code to run without mounting your root component.
 
 On iOS however, when a message is received the device silently starts your application in a background state. At this point, your background handler (via `setBackgroundMessageHandler`) is triggered, but your root React component also gets mounted. This can be problematic for some users since any side-effects will be called inside of your app (e.g. `useEffects`, analytics events/triggers etc). To get around this problem,
-the messaging module injects a `isHeadless` prop to your root component which you can conditionally use to render/do "nothing" if your app is launched in the background:
+you can configure your `AppDelegate.m` file (see instructions below) to inject a `isHeadless` prop into your root component.  Use this property to conditionally render `null` ("nothing") if your app is launched in the background:
 
 ```jsx
 // index.js
@@ -260,7 +273,26 @@ function App{) {
 AppRegistry.registerComponent('app', () => HeadlessCheck);
 ```
 
-On Android, this prop will not exist.
+To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
+ 
+```obj-c
+// add this import statement at the top of your `AppDelegate.m` file
+#import "RNFBMessagingModule.h"
+
+// in "(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions" method
+// Use `addCustomPropsToUserProps` to pass in props for initialization of your app
+// Or pass in `nil` if you have none as per below example
+// For `withLaunchOptions` please pass in `launchOptions` object
+NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+
+// Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
+RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                             moduleName:@"nameOfYourApp"
+                                             initialProperties:appProperties];
+```
+
+
+On Android, the `isHeadless` prop will not exist.
 
 ### Topics
 
@@ -294,7 +326,7 @@ messaging()
 
 #### Unsubscribing to topics
 
-To unsubscribe from a topic, call the `subscribeToTopic` method with the topic name:
+To unsubscribe from a topic, call the `unsubscribeFromTopic` method with the topic name:
 
 ```js
 messaging()
@@ -306,11 +338,36 @@ messaging()
 
 Messaging can be further configured to provide more control over how FCM is handled internally within your application.
 
+## Auto Registration (iOS)
+
+React Native Firebase Messaging automatically registers the device with APNs to receive remote messages. If you need
+to manually control registration you can disable this via the `firebase.json` file:
+
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_ios_auto_register_for_remote_messages": false
+  }
+}
+```
+
+Once auto-registration is disabled you must manually call `registerDeviceForRemoteMessages` in your JavaScript code as
+early as possible in your application startup;
+
+```js
+import messaging from '@react-native-firebase/messaging';
+
+async function registerAppWithFCM() {
+  await messaging().registerDeviceForRemoteMessages();
+}
+```
+
 ## Auto initialization
 
 Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.
 When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases,
-you do not need to change this behaviour.
+you do not need to change this behavior.
 
 If you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics:
 
@@ -329,7 +386,7 @@ To re-enable initialization (e.g. once requested permission) call the `messaging
 ## Background handler timeout (Android)
 
 On Android, a background event sent to `setBackgroundMessageHandler` has 60 seconds to resolve before it is automatically
-cancelled to free up device resources. If you wish to override this value, set the number of milliseconds in your config:
+canceled to free up device resources. If you wish to override this value, set the number of milliseconds in your config:
 
 ```json
 // <projectRoot>/firebase.json

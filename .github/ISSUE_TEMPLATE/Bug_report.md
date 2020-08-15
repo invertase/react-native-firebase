@@ -1,7 +1,6 @@
 ---
 name: ⚠️ Bug/Issue report - React Native
-about: Please provide as much detail as possible to help us with a bug or issue. Issues
-  are likely to be closed and locked if they do not follow the template.
+about: Please provide as much detail as possible. Issues may be closed if they do not follow the template. Note V5 is deprecated, V5 issues are unlikely to get attention
 ---
 
 <!---

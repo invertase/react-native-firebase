@@ -3,14 +3,16 @@
   - '/'
 - - TypeScript
   - '/typescript'
-- - Migrating to v6
-  - '/migrating-to-v6'
 - - Release Notes
   - '/releases'
+- - Migrating to v6
+  - '/migrating-to-v6'
+- - FAQs and Tips
+  - '/faqs-and-tips'
 - - Feature Requests
   - 'https://invertase.canny.io/react-native-firebase'
 - - Contributing
-  - '/contributing'
+  - 'https://github.com/invertase/react-native-firebase/blob/master/CONTRIBUTING.md'
 - - Legacy Docs (<= v5)
   - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
 - - AdMob
@@ -40,6 +42,8 @@
 - - Cloud Firestore
   - - - Usage
       - '/firestore/usage'
+    - - Usage with Emulator
+      - '/firestore/emulator'  
     - - Usage with FlatLists
       - '/firestore/usage-with-flatlists'
     - - Building a "TODO" app
@@ -110,8 +114,8 @@
       - '/ml-vision/landmark-recognition'
     - - Barcode Scanning
       - '/ml-vision/barcode-scanning'
-    - - Image Labelling
-      - '/ml-vision/image-labelling'
+    - - Image Labeling
+      - '/ml-vision/image-labeling'
     - - Face Detection
       - '/ml-vision/face-detection'
   - '//static.invertase.io/assets/firebase/ml-kit.svg'

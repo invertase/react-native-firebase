@@ -22,10 +22,9 @@ yarn add @react-native-firebase/crashlytics
 cd ios/ && pod install
 ```
 
-Once installed, you must complete the following additional setup steps for both Android & iOS:
+Once installed, you must complete the following additional setup steps for Android:
 
 - [Android Additional Setup](/crashlytics/android-setup).
-- [iOS Additional Setup](/crashlytics/ios-setup).
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
@@ -36,7 +35,7 @@ Crashlytics helps you to collect analytics and details about crashes and errors 
 
 - **Logs**: Log events in your app to be sent with the crash report for context if your app crashes.
 - **Crash reports**: Every crash is automatically turned into a crash report and sent.
-- **Stack traces**: Even when an error is caught and your app recovers, the Javascript stack trace can still be sent.
+- **Stack traces**: Even when an error is caught and your app recovers, the JavaScript stack trace can still be sent.
 
 <Youtube id="k_mdNRZzd30" />
 
@@ -52,7 +51,7 @@ Crashlytics also supports sending JavaScript stack traces to the Firebase consol
 
 ## Crash Attributes
 
-There are various methods to set attributse for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
+There are various methods to set attributes for the crash report, in order to provide analytics for crashes and help you review them. You can use set methods to set predefined attributes, but you can also set your own custom attributes.
 
 ```js
 import React, { useEffect } from 'react';
@@ -63,12 +62,12 @@ async function onSignIn(user) {
   crashlytics().log('User signed in.');
   await Promise.all([
     crashlytics().setUserId(user.uid),
-    crashlytics().setUserName(user.username),
-    crashlytics().setUserEmail(user.email),
     crashlytics().setAttribute('credits', String(user.credits)),
     crashlytics().setAttributes({
       role: 'admin',
       followers: '13',
+      email: user.email,
+      username: user.username
     }),
   ]);
 }
@@ -154,11 +153,11 @@ As Crashlytics will be sending certain information regarding the user, users may
 This can be done throughout the app with a simple method call to `setCrashlyticsCollectionEnabled`:
 
 ```jsx
-import React from 'react';
-import { View, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 
-function App() {
+export default function App() {
   const [enabled, setEnabled] = useState(crashlytics().isCrashlyticsCollectionEnabled);
 
   async function toggleCrashlytics() {

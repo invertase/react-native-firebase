@@ -2,7 +2,7 @@
 title: Usage with FlatLists
 description: Using Cloud Firestore collections with FlatLists.
 next: /functions/usage
-previous: /firestore/usage
+previous: /firestore/emulator
 ---
 
 Cloud Firestore provides out of the box support for subscribing to [realtime changes](/firestore/usage#realtime-changes)
@@ -34,7 +34,7 @@ function Users() {
 }
 ```
 
-# useEffect hook
+# `useEffect` hook
 
 Next, we'll setup a hook with `useEffect`. This hook will trigger when our components mount, and we'll then subscribe to
 the "Users" collection documents:

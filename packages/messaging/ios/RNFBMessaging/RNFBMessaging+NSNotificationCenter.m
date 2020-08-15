@@ -18,6 +18,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTConvert.h>
 #import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <RNFBApp/RNFBJSON.h>
 
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
@@ -124,33 +125,50 @@
   ) {
     rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
   }
+  
+  #if !(TARGET_IPHONE_SIMULATOR)
+  if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages" defaultValue:YES]) {
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+  }
+  #endif
 
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
-        rctRootView.appProperties = appPropertiesDict;
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+          rctRootView.appProperties = appPropertiesDict;
+        }
       }
+      
       #if !(TARGET_IPHONE_SIMULATOR)
       // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
       // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
       // was called early during app initialization - we call it here in this scenario as the user can only call this via JS, at which point
       // it'd be too late resulting in the app being terminated.
+      // called irregardless of `messaging_ios_auto_register_for_remote_messages` as this is most likely an app launching
+      // as a result of a remote notification - so has been registered previously
       [[UIApplication sharedApplication] registerForRemoteNotifications];
       #endif
     } else {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-        rctRootView.appProperties = appPropertiesDict;
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+          rctRootView.appProperties = appPropertiesDict;
+        }
+        
       }
     }
   } else {
     if (rctRootView != nil) {
       NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-      rctRootView.appProperties = appPropertiesDict;
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
+      
     }
   }
 }
@@ -166,8 +184,10 @@
     RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
     if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
-      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-      rctRootView.appProperties = appPropertiesDict;
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
     }
   }
 }
