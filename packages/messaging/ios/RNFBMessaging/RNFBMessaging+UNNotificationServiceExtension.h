@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,8 @@
  *
  */
 
-/**
- * @firebase firebase
- */
-declare module 'react-native-firebase' {
-  import type { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types/index.js.flow';
+#import <UserNotifications/UserNotifications.h>
 
-  declare export default {} & ReactNativeFirebaseNamespace;
-}
+@interface RNFBMessagingNotificationServiceExtension : UNNotificationServiceExtension
 
-declare module '@react-native-firebase/app-types' {
-  declare interface ReactNativeFirebaseNamespace {}
-
-  declare interface FirebaseApp {}
-}
+@end /* RNFBMessaging_UNNotificationServiceExtension_h */

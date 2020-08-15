@@ -141,6 +141,13 @@ export function parseSetOptions(options) {
 //   };
 // }
 
+function isPartialObserver(input) {
+  if (input == null) {
+    return false;
+  }
+  return input.next != null || input.error != null || input.complete != null;
+}
+
 export function parseSnapshotArgs(args) {
   if (args.length === 0) {
     throw new Error('expected at least one argument.');
@@ -174,20 +181,22 @@ export function parseSnapshotArgs(args) {
   /**
    * .onSnapshot({ complete: () => {}, error: (e) => {}, next: (snapshot) => {} })
    */
-  if (isObject(args[0]) && args[0].includeMetadataChanges === undefined) {
-    if (args[0].error) {
-      onError = args[0].error;
+  if (isObject(args[0]) && isPartialObserver(args[0])) {
+    const observer = args[0];
+    if (observer.error) {
+      onError = isFunction(observer.error) ? observer.error.bind(observer) : observer.error;
     }
-    if (args[0].next) {
-      onNext = args[0].next;
+    if (observer.next) {
+      onNext = isFunction(observer.next) ? observer.next.bind(observer) : observer.next;
     }
   }
 
   /**
    * .onSnapshot(SnapshotListenOptions, ...
    */
-  if (isObject(args[0]) && args[0].includeMetadataChanges !== undefined) {
-    snapshotListenOptions.includeMetadataChanges = args[0].includeMetadataChanges;
+  if (isObject(args[0]) && !isPartialObserver(args[0])) {
+    snapshotListenOptions.includeMetadataChanges =
+      args[0].includeMetadataChanges == null ? false : args[0].includeMetadataChanges;
     if (isFunction(args[1])) {
       /**
        * .onSnapshot(SnapshotListenOptions, Function);
@@ -204,15 +213,16 @@ export function parseSnapshotArgs(args) {
          */
         callback = args[1];
       }
-    } else if (isObject(args[1])) {
+    } else if (isPartialObserver(args[1])) {
       /**
        * .onSnapshot(SnapshotListenOptions, { complete: () => {}, error: (e) => {}, next: (snapshot) => {} });
        */
-      if (isFunction(args[1].error)) {
-        onError = args[1].error;
+      const observer = args[1];
+      if (observer.error) {
+        onError = isFunction(observer.error) ? observer.error.bind(observer) : observer.error;
       }
-      if (isFunction(args[1].next)) {
-        onNext = args[1].next;
+      if (observer.next) {
+        onNext = isFunction(observer.next) ? observer.next.bind(observer) : observer.next;
       }
     }
   }
