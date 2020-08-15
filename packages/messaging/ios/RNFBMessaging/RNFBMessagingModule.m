@@ -44,6 +44,19 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
++ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps withLaunchOptions:(NSDictionary *_Nullable)launchOptions  {
+    NSMutableDictionary *appProperties = userProps != nil ? [userProps mutableCopy] : [NSMutableDictionary dictionary];
+    appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        
+    if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+      if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+      }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:appProperties];
+}
+
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
