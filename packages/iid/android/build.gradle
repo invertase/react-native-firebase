@@ -30,7 +30,7 @@ if (findProject(':@react-native-firebase_app')) {
 }
 def packageJson = PackageJson.getForProject(project)
 def appPackageJson = PackageJson.getForProject(appProject)
-def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "25.5.0"
+def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "25.5.0" // ALIGN CONCRETE VERSION BELOW WHEN CHANGING THIS
 def coreVersionDetected = appPackageJson['version']
 def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
 // Only log after build completed so log warning appears at the end
@@ -87,7 +87,11 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-iid"
+  // TODO Must put the concrete version here as the BoM no longer publishes the IID version, align it with the BoM change above
+  // Upstream issue: https://github.com/firebase/firebase-android-sdk/issues/1077
+  // Issue: https://github.com/invertase/react-native-firebase/issues/3918
+  // Example of where to find concrete version to match BoM: https://firebase.google.com/support/release-notes/android#iid_v20-2-1
+  implementation "com.google.firebase:firebase-iid:20.2.1" // NEED CONCRETE VERSION HERE TO MATCH BOM RELEASE
 }
 
 ReactNative.shared.applyPackageVersion()

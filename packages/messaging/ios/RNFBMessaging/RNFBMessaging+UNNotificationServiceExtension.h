@@ -15,10 +15,8 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import <UserNotifications/UserNotifications.h>
 
+@interface RNFBMessagingNotificationServiceExtension : UNNotificationServiceExtension
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
-+ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
-@end
+@end /* RNFBMessaging_UNNotificationServiceExtension_h */
