@@ -246,7 +246,7 @@ Although the library supports handling messages in background/quit states, the u
 On Android, a [Headless JS](https://reactnative.dev/docs/headless-js-android) task (an Android only feature) is created that runs separately to your main React component; allowing your background handler code to run without mounting your root component.
 
 On iOS however, when a message is received the device silently starts your application in a background state. At this point, your background handler (via `setBackgroundMessageHandler`) is triggered, but your root React component also gets mounted. This can be problematic for some users since any side-effects will be called inside of your app (e.g. `useEffects`, analytics events/triggers etc). To get around this problem,
-the messaging module injects a `isHeadless` prop to your root component which you can conditionally use to render/do "nothing" if your app is launched in the background:
+you can configure your `AppDelegate.m` file (see instructions below) to inject a `isHeadless` prop into your root component.  Use this property to conditionally render `null` ("nothing") if your app is launched in the background:
 
 ```jsx
 // index.js
@@ -273,7 +273,26 @@ function App{) {
 AppRegistry.registerComponent('app', () => HeadlessCheck);
 ```
 
-On Android, this prop will not exist.
+To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
+ 
+```obj-c
+// add this import statement at the top of your `AppDelegate.m` file
+#import "RNFBMessagingModule.h"
+
+// in "(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions" method
+// Use `addCustomPropsToUserProps` to pass in props for initialization of your app
+// Or pass in `nil` if you have none as per below example
+// For `withLaunchOptions` please pass in `launchOptions` object
+NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+
+// Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
+RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                             moduleName:@"nameOfYourApp"
+                                             initialProperties:appProperties];
+```
+
+
+On Android, the `isHeadless` prop will not exist.
 
 ### Topics
 
