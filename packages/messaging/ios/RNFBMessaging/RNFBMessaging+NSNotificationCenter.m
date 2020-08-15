@@ -136,9 +136,12 @@
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
-        rctRootView.appProperties = appPropertiesDict;
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+          rctRootView.appProperties = appPropertiesDict;
+        }
       }
+      
       #if !(TARGET_IPHONE_SIMULATOR)
       // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
       // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
@@ -151,15 +154,21 @@
     } else {
       if (rctRootView != nil) {
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-        rctRootView.appProperties = appPropertiesDict;
+        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+          rctRootView.appProperties = appPropertiesDict;
+        }
+        
       }
     }
   } else {
     if (rctRootView != nil) {
       NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-      rctRootView.appProperties = appPropertiesDict;
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
+      
     }
   }
 }
@@ -175,8 +184,10 @@
     RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
     if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
-      appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
-      rctRootView.appProperties = appPropertiesDict;
+      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        rctRootView.appProperties = appPropertiesDict;
+      }
     }
   }
 }
