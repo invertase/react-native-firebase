@@ -60,7 +60,7 @@ Below is an example of how to configure a custom XMPP server using `node-xcs`.
 const Sender = require('node-xcs').Sender;
 
 async function operation() {
-  return new Promise((resolve, reject) => {
+  return () => {
     console.log('Listening >>>');
 
     // Enter firebase credentials here. {SenderID, ServerKey}
