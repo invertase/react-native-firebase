@@ -20,5 +20,5 @@
 
 
 @interface RNFBMessagingModule : NSObject <RCTBridgeModule>
-+ (NSMutableDictionary *) addCustomPropsToUserProps: (NSDictionary *__nullable)userProps withLaunchOptions: (NSDictionary *__nullable) launchOptions;
++ (NSDictionary *) addCustomPropsToUserProps: (NSDictionary *__nullable)userProps withLaunchOptions: (NSDictionary *__nullable) launchOptions;
 @end
