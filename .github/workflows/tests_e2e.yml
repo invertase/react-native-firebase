@@ -247,9 +247,14 @@ jobs:
         shell: bash
 
       - name: Submit Coverage
-        run: |
-          ./node_modules/.bin/codecov
-        shell: bash
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
+
 #      - name: Upload App
 #        uses: actions/upload-artifact@v1
 #        with:
