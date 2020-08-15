@@ -121,7 +121,7 @@ jobs:
   ios:
     name: iOS
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 35
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
