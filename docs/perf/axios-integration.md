@@ -20,14 +20,17 @@ import axios from 'axios';
 import perf from '@react-native-firebase/perf';
 
 axios.interceptors.request.use(async function(config) {
-  const httpMetric = perf().newHttpMetric(config.url, config.method);
-  config.metadata = { httpMetric };
+  try {
+    const httpMetric = perf().newHttpMetric(config.url, config.method);
+    config.metadata = { httpMetric };
 
-  // add any extra metric attributes, if required
-  // httpMetric.putAttribute('userId', '12345678');
+    // add any extra metric attributes, if required
+    // httpMetric.putAttribute('userId', '12345678');
 
-  await httpMetric.start();
-  return config;
+    await httpMetric.start();
+  } finally {
+    return config;
+  }
 });
 ```
 
@@ -44,33 +47,37 @@ import axios from 'axios';
 
 axios.interceptors.response.use(
   async function(response) {
-    // Request was successful, e.g. HTTP code 200
+    try {
+      // Request was successful, e.g. HTTP code 200
 
-    const { httpMetric } = response.config.metadata;
+      const { httpMetric } = response.config.metadata;
 
-    // add any extra metric attributes if needed
-    // httpMetric.putAttribute('userId', '12345678');
+      // add any extra metric attributes if needed
+      // httpMetric.putAttribute('userId', '12345678');
 
-    httpMetric.setHttpResponseCode(response.status);
-    httpMetric.setResponseContentType(response.headers['content-type']);
-    await httpMetric.stop();
-
-    return response;
+      httpMetric.setHttpResponseCode(response.status);
+      httpMetric.setResponseContentType(response.headers['content-type']);
+      await httpMetric.stop();
+    } finally {
+      return response;
+    }
   },
   async function(error) {
-    // Request failed, e.g. HTTP code 500
+    try {
+      // Request failed, e.g. HTTP code 500
 
-    const { httpMetric } = error.config.metadata;
+      const { httpMetric } = error.config.metadata;
 
-    // add any extra metric attributes if needed
-    // httpMetric.putAttribute('userId', '12345678');
+      // add any extra metric attributes if needed
+      // httpMetric.putAttribute('userId', '12345678');
 
-    httpMetric.setHttpResponseCode(error.response.status);
-    httpMetric.setResponseContentType(error.response.headers['content-type']);
-    await httpMetric.stop();
-
-    // Ensure failed requests throw after interception
-    return Promise.reject(error);
+      httpMetric.setHttpResponseCode(error.response.status);
+      httpMetric.setResponseContentType(error.response.headers['content-type']);
+      await httpMetric.stop();
+    } finally {
+      // Ensure failed requests throw after interception
+      return Promise.reject(error);
+    }
   },
 );
 ```
