@@ -197,7 +197,7 @@ If needed, you can reuse the existing instance of the `RewardedAd` class to load
 
 While the `EARNED_REWARD` event only occurs on the client, Server Side Verification (or SSV) can be used for confirming a user completed an advert action. For this, you have to specify the Server Side Verification callback URL in your Ads dashboard.
 
-You can also customize parameters when your SSV callback is called by setting `serverSideVerificationOptions` in [`RequestOptions`](/reference/admob/requestoptions) parameter.
+You can customize SSV parameters when your SSV callback is called by setting the `serverSideVerificationOptions` field in your [`RequestOptions`](/reference/admob/requestoptions) parameter.
 
 ```js
 const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
