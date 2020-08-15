@@ -25,6 +25,12 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
 
+      - name: Install firebase CLI
+        run: npm i -g firebase-tools
+
+      - name: Start Firestore Emulator
+        run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -179,8 +185,13 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-
       - uses: actions/setup-node@v2-beta
+      
+      - name: Install firebase CLI
+        run: npm i -g firebase-tools
+
+      - name: Start Firestore Emulator
+        run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
