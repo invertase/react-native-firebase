@@ -72,6 +72,27 @@ RCT_EXPORT_METHOD(rewardedLoad
     :(NSDictionary *)adRequestOptions
 ) {
   RNFBGADRewarded *rewarded = [[RNFBGADRewarded alloc] initWithAdUnitID:adUnitId];
+
+  NSDictionary *serverSideVerificationOptions = [adRequestOptions objectForKey:@"serverSideVerificationOptions"];
+
+  if (serverSideVerificationOptions != nil) {
+    GADServerSideVerificationOptions *options = [[GADServerSideVerificationOptions alloc] init];
+
+    NSString *userId = [serverSideVerificationOptions valueForKey:@"userId"];
+
+    if (userId != nil) {
+        options.userIdentifier = userId;
+    }
+
+    NSString *customData = [serverSideVerificationOptions valueForKey:@"customData"];
+
+    if (customData != nil) {
+      options.customRewardString = customData;
+    }
+
+    [rewarded setServerSideVerificationOptions:options];
+  }
+
   [rewarded setRequestId:requestId];
   GADRequest *request = [RNFBAdMobCommon buildAdRequest:adRequestOptions];
   rewardedMap[requestId] = rewarded;
