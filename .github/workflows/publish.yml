@@ -1,13 +1,14 @@
 name: Publish
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
 
 jobs:
   publish_npm:
-    if: "contains(toJSON(github.event.commits.*.message), '[publish]')"
+    if: "(github.event_name == 'workflow_displatch') || ((github.event_name == 'push') && contains(toJSON(github.event.commits.*.message), '[publish]'))"
     name: 'NPM'
     timeout-minutes: 5
     runs-on: ubuntu-latest

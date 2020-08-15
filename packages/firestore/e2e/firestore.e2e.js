@@ -15,11 +15,7 @@
  *
  */
 
-const { wipe } = require('./helpers');
-
 describe('firestore()', () => {
-  before(() => wipe());
-
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -167,16 +163,22 @@ describe('firestore()', () => {
       const docRef1 = firebase.firestore().doc('v6/collectionGroup1');
       const docRef2 = firebase.firestore().doc('v6/collectionGroup2');
       const docRef3 = firebase.firestore().doc('v6/collectionGroup3');
+      const subRef1 = docRef1.collection('collectionGroup').doc('ref');
+      const subRef2 = docRef1.collection('collectionGroup').doc('ref2');
+      const subRef3 = docRef2.collection('collectionGroup').doc('ref');
+      const subRef4 = docRef2.collection('collectionGroup').doc('ref2');
+      const subRef5 = docRef3.collection('collectionGroup').doc('ref');
+      const subRef6 = docRef3.collection('collectionGroup').doc('ref2');
 
       await Promise.all([
-        docRef1.collection('collectionGroup').add({ value: 1 }),
-        docRef1.collection('collectionGroup').add({ value: 2 }),
+        subRef1.set({ value: 1 }),
+        subRef2.set({ value: 2 }),
 
-        docRef2.collection('collectionGroup').add({ value: 1 }),
-        docRef2.collection('collectionGroup').add({ value: 2 }),
+        subRef3.set({ value: 1 }),
+        subRef4.set({ value: 2 }),
 
-        docRef3.collection('collectionGroup').add({ value: 1 }),
-        docRef3.collection('collectionGroup').add({ value: 2 }),
+        subRef5.set({ value: 1 }),
+        subRef6.set({ value: 2 }),
       ]);
 
       const querySnapshot = await firebase
@@ -185,32 +187,45 @@ describe('firestore()', () => {
         .where('value', '==', 2)
         .get();
 
-      querySnapshot.size.should.eql(3);
       querySnapshot.forEach(ds => {
         ds.data().value.should.eql(2);
       });
+
+      querySnapshot.size.should.eql(3);
+
+      await Promise.all([
+        subRef1.delete(),
+        subRef2.delete(),
+
+        subRef3.delete(),
+        subRef4.delete(),
+
+        subRef5.delete(),
+        subRef6.delete(),
+      ]);
     });
 
     it('performs a collection group query with cursor queries', async () => {
       const docRef = firebase.firestore().doc('v6/collectionGroupCursor');
 
-      await docRef.collection('collectionGroup').add({ value: 1 });
-      const startAt = await docRef.collection('collectionGroup').add({ value: 2 });
-      await docRef.collection('collectionGroup').add({ value: 3 });
+      const ref1 = await docRef.collection('collectionGroup').add({ number: 1 });
+      const startAt = await docRef.collection('collectionGroup').add({ number: 2 });
+      const ref3 = await docRef.collection('collectionGroup').add({ number: 3 });
 
       const ds = await startAt.get();
 
       const querySnapshot = await firebase
         .firestore()
         .collectionGroup('collectionGroup')
-        .orderBy('value')
+        .orderBy('number')
         .startAt(ds)
         .get();
 
       querySnapshot.size.should.eql(2);
       querySnapshot.forEach((d, i) => {
-        d.data().value.should.eql(i + 2);
+        d.data().number.should.eql(i + 2);
       });
+      await Promise.all([ref1.delete(), ref3.delete(), startAt.delete()]);
     });
   });
 

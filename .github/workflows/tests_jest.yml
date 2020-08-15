@@ -16,16 +16,16 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
         with:
           node-version: 12
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
@@ -38,6 +38,10 @@ jobs:
       - name: Jest
         run: yarn run tests:jest-coverage
       - name: Submit Coverage
-        run: |
-          ./node_modules/.bin/codecov
-        shell: bash
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
