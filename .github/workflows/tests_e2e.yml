@@ -4,9 +4,14 @@ on:
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - "docs/**"
+
   push:
     branches:
       - master
+    paths-ignore:
+      - "docs/**"
 
 jobs:
   # ------------------
