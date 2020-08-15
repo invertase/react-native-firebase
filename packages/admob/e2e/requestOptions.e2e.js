@@ -378,4 +378,49 @@ describe('admob() requestOptions', () => {
       v.requestAgent.should.eql('CoolAds');
     });
   });
+
+  describe('serverSideVerificationOptions', () => {
+    it('throws if userId is not a string', () => {
+      try {
+        validator({
+          serverSideVerificationOptions: {
+            userId: 111,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'options.serverSideVerificationOptions.userId' expected a string value",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if customData is not a string', () => {
+      try {
+        validator({
+          serverSideVerificationOptions: {
+            customData: 1111,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'options.serverSideVerificationOptions.customData' expected a string value",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts a serverSideVerificationOptions', () => {
+      const v = validator({
+        serverSideVerificationOptions: {
+          userId: '1',
+          customData: 'my-custom-data',
+        },
+      });
+      v.serverSideVerificationOptions.userId.should.eql('1');
+      v.serverSideVerificationOptions.customData.should.eql('my-custom-data');
+    });
+  });
 });
