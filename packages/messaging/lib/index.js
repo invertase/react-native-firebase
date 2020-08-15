@@ -111,18 +111,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this._isRegisteredForRemoteNotifications;
   }
 
-  /**
-   * @platform ios
-   * @deprecated Use isDeviceRegisteredForRemoteMessages.
-   */
-  get isRegisteredForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "isRegisteredForRemoteNotifications" will be deprecated in v7. Use "isDeviceRegisteredForRemoteMessages" instead.',
-    );
-    return this.isDeviceRegisteredForRemoteMessages;
-  }
-
   setAutoInitEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
@@ -265,20 +253,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     this._isRegisteredForRemoteNotifications = true;
     return this.native.registerForRemoteNotifications();
   }
-
-  /**
-   * @platform ios
-   * @deprecated
-   */
-  registerForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "registerForRemoteNotifications" will be removed in v7. Use "registerDeviceForRemoteMessages" instead.',
-    );
-
-    return this.registerDeviceForRemoteMessages();
-  }
-
   /**
    * @platform ios
    */
@@ -288,19 +262,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
     this._isRegisteredForRemoteNotifications = false;
     return this.native.unregisterForRemoteNotifications();
-  }
-
-  /**
-   * @platform ios
-   * @deprecated
-   */
-  unregisterForRemoteNotifications() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      '[deprecation] Usage of "unregisterForRemoteNotifications" will be removed in v7. Use "unregisterDeviceForRemoteMessages" instead.',
-    );
-
-    return this.unregisterDeviceForRemoteMessages();
   }
 
   /**

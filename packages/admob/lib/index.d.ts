@@ -736,6 +736,26 @@ export namespace FirebaseAdMobTypes {
      * ```
      */
     requestAgent?: string;
+
+    /**
+     * Server Side Verification(SSV) Options
+     * See [Google Mobile SDK Docs](https://developers.google.com/admob/android/rewarded-video-ssv) for more information.
+     */
+    serverSideVerificationOptions?: ServerSideVerificationOptions;
+  }
+
+  export interface ServerSideVerificationOptions {
+    /**
+     * User identifier.
+     * If no user identifier is provided by the app, this query parameter will not be present in the SSV callback.
+     */
+    userId?: string;
+
+    /**
+     * Custom data string.
+     * If no custom data string is provided by the app, this query parameter value will not be present in the SSV callback.
+     */
+    customData?: string;
   }
 
   /**

@@ -140,5 +140,7 @@ on the `firebase.json` file at the root of your project directory.
 To re-enable analytics (e.g. once you have the users consent), call the `setAnalyticsCollectionEnabled` method:
 
 ```js
+import { firebase } from '@react-native-firebase/analytics';
+// ...
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
 ```

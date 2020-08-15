@@ -16,6 +16,7 @@ import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.rewarded.ServerSideVerificationOptions;
 
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.database.ReactNativeFirebaseAdMobEvent;
@@ -79,6 +80,25 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
           sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
         }
       };
+
+      if (adRequestOptions.hasKey("serverSideVerificationOptions")) {
+        ReadableMap serverSideVerificationOptions = adRequestOptions.getMap("serverSideVerificationOptions");
+
+        if (serverSideVerificationOptions != null) {
+          ServerSideVerificationOptions.Builder options = new ServerSideVerificationOptions.Builder();
+
+          if (serverSideVerificationOptions.hasKey("userId")) {
+            options.setUserId(serverSideVerificationOptions.getString("userId"));
+          }
+
+
+          if (serverSideVerificationOptions.hasKey("customData")) {
+            options.setCustomData(serverSideVerificationOptions.getString("customData"));
+          }
+
+          rewardedAd.setServerSideVerificationOptions(options.build());
+        }
+      }
 
       rewardedAd.loadAd(buildAdRequest(adRequestOptions), adLoadCallback);
       rewardedAdArray.put(requestId, rewardedAd);

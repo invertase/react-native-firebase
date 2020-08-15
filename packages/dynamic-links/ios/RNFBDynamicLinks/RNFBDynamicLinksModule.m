@@ -204,10 +204,16 @@ RCT_EXPORT_METHOD(resolveLink:
           @"message":[error localizedDescription]
       }];
     }
-};
+  };
 
   NSURL *linkURL = [NSURL URLWithString:link];
-  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
+  BOOL success = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
+  if (!success) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+        @"code": @"not-found",
+        @"message": @"Dynamic link not found"
+    }];
+  }
 }
 
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {

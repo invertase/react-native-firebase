@@ -49,16 +49,6 @@ describe('storage() -> StorageTask', () => {
       meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
       meta.bytesTransferred.should.eql(meta.totalBytes);
     });
-
-    it('downloads a file using deprecated downloadFile method', async () => {
-      const meta = await firebase
-        .storage()
-        .ref('/ok.jpeg')
-        .downloadFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
-
-      meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
-      meta.bytesTransferred.should.eql(meta.totalBytes);
-    });
   });
 
   describe('putString()', () => {

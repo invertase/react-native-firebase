@@ -22,10 +22,9 @@ yarn add @react-native-firebase/crashlytics
 cd ios/ && pod install
 ```
 
-Once installed, you must complete the following additional setup steps for both Android & iOS:
+Once installed, you must complete the following additional setup steps for Android:
 
 - [Android Additional Setup](/crashlytics/android-setup).
-- [iOS Additional Setup](/crashlytics/ios-setup).
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
@@ -63,12 +62,12 @@ async function onSignIn(user) {
   crashlytics().log('User signed in.');
   await Promise.all([
     crashlytics().setUserId(user.uid),
-    crashlytics().setUserName(user.username),
-    crashlytics().setUserEmail(user.email),
     crashlytics().setAttribute('credits', String(user.credits)),
     crashlytics().setAttributes({
       role: 'admin',
       followers: '13',
+      email: user.email,
+      username: user.username
     }),
   ]);
 }
@@ -154,11 +153,11 @@ As Crashlytics will be sending certain information regarding the user, users may
 This can be done throughout the app with a simple method call to `setCrashlyticsCollectionEnabled`:
 
 ```jsx
-import React from 'react';
-import { View, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
 import crashlytics from '@react-native-firebase/crashlytics';
 
-function App() {
+export default function App() {
   const [enabled, setEnabled] = useState(crashlytics().isCrashlyticsCollectionEnabled);
 
   async function toggleCrashlytics() {

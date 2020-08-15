@@ -24,6 +24,7 @@ const TEST_LINK =
   'https://reactnativefirebase.page.link/?link=https://rnfirebase.io&apn=com.invertase.testing';
 const TEST_LINK2 =
   'https://reactnativefirebase.page.link/?link=https://invertase.io/hire-us&apn=com.invertase.testing';
+const TEST_LINK3 = 'https://invertase.io';
 
 module.exports.baseParams = baseParams;
 
@@ -39,14 +40,6 @@ describe('dynamicLinks()', () => {
   describe('buildLink()', () => {
     it('returns a dynamic link', async () => {
       const link = await firebase.dynamicLinks().buildLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
-    });
-  });
-
-  describe('createDynamicLink()', () => {
-    it('should call buildLink()', async () => {
-      const link = await firebase.dynamicLinks().createDynamicLink(baseParams);
       link.should.be.String();
       link.length.should.be.greaterThan(6);
     });
@@ -69,14 +62,6 @@ describe('dynamicLinks()', () => {
         );
         return Promise.resolve();
       }
-    });
-  });
-
-  describe('createShortDynamicLink()', () => {
-    it('should call buildShortLink()', async () => {
-      const link = await firebase.dynamicLinks().createShortDynamicLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
     });
   });
 
@@ -122,6 +107,16 @@ describe('dynamicLinks()', () => {
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.code.should.containEql('not-found');
+        e.message.should.containEql('Dynamic link not found');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws on static links', async () => {
+      try {
+        await firebase.dynamicLinks().resolveLink(TEST_LINK3);
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
         e.message.should.containEql('Dynamic link not found');
         return Promise.resolve();
       }
