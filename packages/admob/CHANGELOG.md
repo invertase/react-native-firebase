@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.4.1...@react-native-firebase/admob@7.5.0) (2020-08-15)
+
+### Features
+
+- **admob:** implement support for Server Side Verification ([#4083](https://github.com/invertase/react-native-firebase/issues/4083)) ([51dbbc3](https://github.com/invertase/react-native-firebase/commit/51dbbc3385bd9a180e691e9974121f5c40fd051c))
+
 ## [7.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.4.0...@react-native-firebase/admob@7.4.1) (2020-08-03)
 
 **Note:** Version bump only for package @react-native-firebase/admob
