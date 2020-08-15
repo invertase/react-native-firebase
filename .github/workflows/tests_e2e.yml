@@ -6,12 +6,18 @@ on:
       - '**'
     paths-ignore:
       - "docs/**"
+      - "website/**"
+      - ".spellcheck.dict.txt"
+      - "**/*.md"
 
   push:
     branches:
       - master
     paths-ignore:
       - "docs/**"
+      - "website/**"
+      - ".spellcheck.dict.txt"
+      - "**/*.md"
 
 jobs:
   # ------------------
