@@ -77,7 +77,7 @@ async function operation() {
     });
 
     xcs.on('error', e => console.warn('XMPP error.', e));
-  });
+  };
 }
 
 async function app() {
