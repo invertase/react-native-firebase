@@ -236,9 +236,8 @@ admin
 # Send messages with image
 Both the Notifications composer and the FCM API support image links in the message payload.
 
-
 ## iOS
-To sucessfully send an image using the Admin SDK it's important that the `ApnsConfig` options are set:
+To successfully send an image using the Admin SDK it's important that the `ApnsConfig` options are set:
 
 ```js
 const payload = {
@@ -259,7 +258,7 @@ const payload = {
 };
 ```
 
-> Check out the [official firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the the list of available configuration for iOS.
+> Check out the [official Firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the list of available configuration for iOS.
 
 
 ## Android
