@@ -195,6 +195,27 @@ To learn more, view the [`RewardedAdEventType`](/reference/admob/rewardedadevent
 
 If needed, you can reuse the existing instance of the `RewardedAd` class to load more adverts and show them when required.
 
+While `EARNED_REWARD` event is only happening on the client side, Server Side Verification (SSV) can be used for ensuring user is actually completed advert action. For this, you have to specify Server Side Verification callback URL in dashboard.
+
+You can also customize parameters when your SSV callback is called by setting `serverSideVerificationOptions` in [`RequestOptions`](/reference/admob/requestoptions) parameter.
+
+```js
+const rewardedAd = RewardedAd.createForAdRequest(adUnitId, {
+  serverSideVerificationOptions: {
+    userId: '9999',
+    customData: 'my-custom-data',
+  },
+});
+```
+
+If you request ad like the code above, AdMob will call your server with `userId` and `customData` like below:
+
+```
+[14/Aug/2020 12:51:43] "GET /views/admob-ssv/?ad_network=...&ad_unit=...&custom_data=my-custom-data&reward_amount=1&reward_item=test_reward_item&timestamp=1597377102267&transaction_id=148cc85...&user_id=9999&signature=MEUCIQCQSi3cQ2PlxlEAkpN...&key_id=3335... HTTP/1.1" 200 0
+```
+
+You still have to verify requests for ensuring it's not spoofed. To learn more about callback parameters and verifying, see [AdMob SDK Server Side Verification(SSV) documentation](https://developers.google.com/admob/android/rewarded-video-ssv).
+
 ## Banner Ads
 
 Banner ads are partial adverts which can be integrated within your existing application. Unlike Interstitial and Rewarded Ads,
