@@ -552,6 +552,10 @@ export namespace FirebaseMessagingTypes {
      *
      * See `onNotificationOpenedApp` to subscribe to when the notification is opened when the app
      * is in a background state.
+     *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
      */
     getInitialNotification(): Promise<RemoteMessage | null>;
 
@@ -655,6 +659,10 @@ export namespace FirebaseMessagingTypes {
      *
      * See `getInitialNotification` to see how to watch for when a notification opens the app from a
      * quit state.
+     *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
      *
      * @param listener Called with a `RemoteMessage` when a notification press opens the application.
      */
