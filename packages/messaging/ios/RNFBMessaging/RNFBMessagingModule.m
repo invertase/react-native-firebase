@@ -44,7 +44,7 @@ RCT_EXPORT_MODULE();
   return YES;
 }
 
-+ (NSMutableDictionary *) addCustomPropsToUserProps: (NSDictionary *)userProps withLaunchOptions: (NSDictionary *) launchOptions  {
++ (NSDictionary *) addCustomPropsToUserProps:(NSDictionary *)userProps withLaunchOptions:(NSDictionary *)launchOptions  {
     NSMutableDictionary *appProperties = userProps != nil ? [userProps mutableCopy] : [NSMutableDictionary dictionary];
     appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
         
@@ -54,7 +54,7 @@ RCT_EXPORT_MODULE();
       }
     }
     
-    return appProperties;
+    return [NSDictionary dictionaryWithDictionary:appProperties];
 }
 
 - (NSDictionary *)constantsToExport {
