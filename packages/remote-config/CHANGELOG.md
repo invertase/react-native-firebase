@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.1.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.1.2...@react-native-firebase/remote-config@8.1.3) (2020-08-15)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [8.1.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.1.1...@react-native-firebase/remote-config@8.1.2) (2020-08-15)
 
 ### Bug Fixes
