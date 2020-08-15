@@ -78,6 +78,51 @@ export namespace FirebaseCrashlyticsTypes {
      *
      */
     isCrashlyticsCollectionEnabled: true;
+    /**
+     * Determines whether there are any unsent crash reports cached on the device. The callback only executes
+     * if automatic data collection is disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * async checkReports() {
+     * // returns boolean value
+     *  const unsentReports = await firebase.crashlytics().checkForUnsentReports();
+     * }
+     *
+     * checkReports();
+     * ```
+     *
+     */
+    checkForUnsentReports(): Promise<boolean>;
+    /**
+     * Deletes any unsent reports on the device. This method only applies if automatic data collection is
+     * disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.crashlytics().deleteUnsentReports();
+     * ```
+     *
+     */
+    deleteUnsentReports(): Promise<void>;
+    /**
+     * Returns a boolean value indicating whether the app crashed during the previous execution.
+     *
+     * #### Example
+     *
+     * ```js
+     * async didCrashPreviously() {
+     * // returns boolean value
+     * const didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();
+     * }
+     *
+     * didCrashPreviously();
+     * ```
+     *
+     */
+    didCrashOnPreviousExecution(): Promise<boolean>;
 
     /**
      * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
@@ -123,6 +168,17 @@ export namespace FirebaseCrashlyticsTypes {
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
      */
     recordError(error: Error): void;
+    /**
+     * Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
+     * automatic data collection is disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.crashlytics().sendUnsentReports();
+     * ```
+     */
+    sendUnsentReports(): void;
 
     /**
      * Specify a user identifier which will be visible in the Firebase Crashlytics console.

@@ -31,13 +31,14 @@ to manage the users identity. You can however use any datastore or authenticatio
 ## Saving tokens
 
 Once your application has started, you can call the `getToken` method on the Cloud Messaging module to get the unique
-device token:
+device token (if using a different push notification provider, such as Amazon SNS, you will need to call `getAPNSToken` on iOS):
 
 ```jsx
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { Platform } from 'react-native';
 
 async function saveTokenToDatabase(token) {
   // Assume user is already signed in
@@ -60,6 +61,10 @@ function App() {
       .then(token => {
         return saveTokenToDatabase(token);
       });
+      
+    // If using other push notification providers (ie Amazon SNS, etc)
+    // you may need to get the APNs token instead for iOS:
+    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
 
     // Listen to whether the token changes
     return messaging().onTokenRefresh(token => {
@@ -227,3 +232,103 @@ admin
     console.log('Error sending message:', error);
   });
 ```
+
+# Send messages with image
+
+Both the Notifications composer and the FCM API support image links in the message payload.
+
+## iOS
+
+To successfully send an image using the Admin SDK it's important that the `ApnsConfig` options are set:
+
+```js
+const payload = {
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  apns: {
+    payload: {
+      aps: {
+        'mutable-content': 1, // 1 or true
+      },
+    },
+    fcm_options: {
+      image: 'image-url',
+    },
+  },
+};
+```
+
+> Check out the [official Firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the list of available configuration for iOS.
+
+
+## Android
+
+Similarly to iOS, some configurations specific to Android are needed:
+
+```js
+const payload = {
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  android: {
+    notification: {
+      image: "image-url",
+    },
+  },
+};
+```
+
+> If you want to know more about sending an image on Android have a look at [the documentation](https://firebase.google.com/docs/cloud-messaging/android/send-image).
+
+## Pulling it all together
+
+It's possible to send one notification that will be delivered to both platforms using the Admin SDK:
+
+```js
+const admin = require('firebase-admin');
+
+// Create a list containing up to 500 registration tokens.
+// These registration tokens come from the client FCM SDKs.
+const registrationTokens = [
+  'YOUR_REGISTRATION_TOKEN_1',
+  'YOUR_REGISTRATION_TOKEN_2',
+];
+
+const message = {
+  tokens: registrationTokens,
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  apns: {
+    payload: {
+      aps: {
+        'mutable-content': 1,
+      },
+    },
+    fcm_options: {
+      image: 'image-url',
+    },
+  },
+  android: {
+    notification: {
+      image: "image-url",
+    },
+  },
+};
+
+admin
+  .messaging()
+  .send(message)
+  .then(response => {
+    console.log('Successfully sent message:', response);
+  })
+  .catch(error => {
+    console.log('Error sending message:', error);
+  });
+```
+
+If you want to read more about building send requests with the Admin SDK check out [this link](https://firebase.google.com/docs/cloud-messaging/send-message).

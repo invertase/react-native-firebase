@@ -175,7 +175,7 @@ export namespace FirebaseRemoteConfigTypes {
   }
 
   /**
-   * An Interface representing a Remote RemoteConfig value.
+   * An Interface representing a RemoteConfig value.
    */
   export interface ConfigValue {
     /**
@@ -191,22 +191,43 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * const configValue = firebase.remoteConfig().getValue('beta_enabled');
-     * console.log('Value source: ', configValue.source);
+     * console.log('Value source: ', configValue.getSource());
      * ```
      */
-    source: 'remote' | 'default' | 'static';
-
+    getSource(): 'remote' | 'default' | 'static';
     /**
      * The returned value.
      *
      * #### Example
      *
      * ```js
-     * const configValue = firebase.remoteConfig().getValue('beta_enabled');
-     * console.log('Value: ', configValue.value);
+     * const configValue = firebase.remoteConfig().getValue('dev_mode');
+     * console.log('Boolean: ', configValue.asBoolean());
      * ```
      */
-    value: undefined | number | boolean | string;
+    asBoolean(): true | false;
+    /**
+     * The returned value.
+     *
+     * #### Example
+     *
+     * ```js
+     * const configValue = firebase.remoteConfig().getValue('user_count');
+     * console.log('Count: ', configValue.asNumber());
+     * ```
+     */
+    asNumber(): number;
+    /**
+     * The returned value.
+     *
+     * #### Example
+     *
+     * ```js
+     * const configValue = firebase.remoteConfig().getValue('username');
+     * console.log('Name: ', configValue.asString());
+     * ```
+     */
+    asString(): string;
   }
 
   /**
@@ -227,29 +248,27 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * #### Example
    *
-   * The example below makes use of the React Native `__DEV__` global JavaScript variable which
-   * is exposed.
+   * The example below shows how to set a time limit to the length of time the request for remote config values
    *
-   * ```js
    * await firebase.remoteConfig().setConfigSettings({
-   *   isDeveloperModeEnabled: __DEV__,
+   *    fetchTimeoutMillis: 6000,
    * });
    * ```
    */
   export interface ConfigSettings {
     /**
-     * If enabled, default behaviour such as caching is disabled for a better debugging
-     * experience.
+     * Indicates the default value in milliseconds to set for the minimum interval that needs to elapse
+     * before a fetch request can again be made to the Remote Config server. Defaults to 43200000 (Twelve hours).
      */
-    isDeveloperModeEnabled: boolean;
+    minimumFetchIntervalMillis?: number;
     /**
-     * The time that remote config should cache flags for.
+     * Indicates the default value in milliseconds to abandon a pending fetch request made to the Remote Config server. Defaults to 60000 (One minute).
      */
-    minimumFetchInterval?: number;
+    fetchTimeMillis?: number;
   }
 
   /**
-   * An Interface representing a RemoteConfig Defaults object.
+   * Set default config values by updating `defaultConfig` with an object & the properties you require as default.
    *
    * #### Example
    *
@@ -280,17 +299,68 @@ export namespace FirebaseRemoteConfigTypes {
     /**
      * The number of milliseconds since the last Remote RemoteConfig fetch was performed.
      */
-    lastFetchTime: number;
-    /**
-     * Whether developer mode is enabled. This is set manually via {@link config#setConfigSettings}
-     */
-    isDeveloperModeEnabled: boolean;
+    fetchTimeMillis: number;
     /**
      * The status of the latest Remote RemoteConfig fetch action.
      *
      * See the `LastFetchStatus` statics definition.
      */
     lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+
+    /**
+     * Provides an object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
+     * using setConfigSettings({ fetchTimeMillis: number, minimumFetchIntervalMillis: number }). A description of the properties
+     * can be found above
+     *
+     */
+    settings: { fetchTimeMillis: number; minimumFetchIntervalMillis: number };
+
+    /**
+     * Set the Remote RemoteConfig settings, currently able to set `fetchTimeMillis` & `minimumFetchIntervalMillis`
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().setConfigSettings({
+     *   minimumFetchIntervalMillis: 30000,
+     * });
+     * ```
+     *
+     * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
+     */
+    setConfigSettings(configSettings: ConfigSettings): Promise<void>;
+
+    /**
+     * Sets default values for the app to use when accessing values.
+     * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().setDefaults({
+     *   experiment_enabled: false,
+     * });
+     * ```
+     *
+     * @param defaults A ConfigDefaults instance used to set default values.
+     */
+    setDefaults(defaults: ConfigDefaults): Promise<null>;
+
+    /**
+     * Sets the default values from a resource file.
+     * On iOS this is a plist file and on Android this is an XML defaultsMap file.
+     *
+     * ```js
+     * // put in either your iOS or Android directory without the file extension included (.plist or .xml)
+     *  await firebase.remoteConfig().setDefaultsFromResource('config_resource');
+     *
+     * // resource values will now be loaded in with your other config values
+     * const config = firebase.remoteConfig().getAll();
+     * ```
+     *
+     * @param resourceName The plist/xml file name with no extension.
+     */
+    setDefaultsFromResource(resourceName: string): Promise<null>;
 
     /**
      * Moves fetched data to the apps active config.
@@ -311,6 +381,17 @@ export namespace FirebaseRemoteConfigTypes {
      * ```
      */
     activate(): Promise<boolean>;
+    /**
+     * Ensures the last activated config are available to the getters.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().ensureInitialized();
+     * // get remote config values
+     * ```
+     */
+    ensureInitialized(): Promise<void>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
@@ -324,7 +405,7 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * @param expirationDurationSeconds Duration in seconds to cache the data for. To skip cache, use a duration of 0.
      */
-    fetch(expirationDurationSeconds?: number): Promise<null>;
+    fetch(expirationDurationSeconds?: number): Promise<void>;
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard.
@@ -358,8 +439,8 @@ export namespace FirebaseRemoteConfigTypes {
      * Object.entries(values).forEach(($) => {
      *   const [key, entry] = $;
      *   console.log('Key: ', key);
-     *   console.log('Source: ', entry.source);
-     *   console.log('Value: ', entry.value);
+     *   console.log('Source: ', entry.getSource());
+     *   console.log('Value: ', entry.asString());
      * });
      * ```
      *
@@ -373,56 +454,67 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * const configValue = firebase.remoteConfig().getValue('experiment');
-     * console.log('Source: ', configValue.source);
-     * console.log('Value: ', configValue.value);
+     * console.log('Source: ', configValue.getSource());
+     * console.log('Value: ', configValue.asString());
      * ```
      *
      * @param key A key used to retrieve a specific value.
      */
     getValue(key: string): ConfigValue;
-
     /**
-     * Set the Remote RemoteConfig settings, specifically the `isDeveloperModeEnabled` flag.
+     * Gets a config property using the key and converts to a boolean value
      *
      * #### Example
      *
      * ```js
-     * await firebase.remoteConfig().setConfigSettings({
-     *   isDeveloperModeEnabled: __DEV__,
-     * });
+     * // true or false depending on truthy or falsy nature of value
+     * const configValue = firebase.remoteConfig().getBoolean('experiment');
      * ```
      *
-     * @param configSettings A ConfigSettingsWrite instance used to set Remote RemoteConfig settings.
+     * @param key A key used to retrieve a specific value.
      */
-    setConfigSettings(configSettings: ConfigSettings): Promise<void>;
-
+    getBoolean(key: string): boolean;
     /**
-     * Sets default values for the app to use when accessing values.
-     * Any data fetched and activated will override any default values. Any values in the defaults but not on Firebase will be untouched.
+     * Gets a config property using the key and converts to a string value
      *
      * #### Example
      *
      * ```js
-     * await firebase.remoteConfig().setDefaults({
-     *   experiment_enabled: false,
-     * });
+     * // string value of 'experiment' property
+     * const configValue = firebase.remoteConfig().getString('experiment');
      * ```
      *
-     * @param defaults A ConfigDefaults instance used to set default values.
+     * @param key A key used to retrieve a specific value.
      */
-    setDefaults(defaults: ConfigDefaults): Promise<null>;
-
+    getString(key: string): string;
     /**
-     * Sets the default values from a resource file.
-     * On iOS this is a plist file and on Android this is an XML defaultsMap file.
+     * Gets a config property using the key and converts to a number value. It
+     * will be 0 if the value is not a number.
+     *
+     * #### Example
      *
      * ```js
-     *  // TODO @ehesp
+     * // number value of 'experiment' property
+     * const configValue = firebase.remoteConfig().getNumber('experiment');
      * ```
      *
-     * @param resourceName The plist/xml file name with no extension.
+     * @param key A key used to retrieve a specific value.
      */
-    setDefaultsFromResource(resourceName: string): Promise<null>;
+    getNumber(key: string): number;
+
+    /**
+     * Deletes all activated, fetched and defaults configs and resets all Firebase Remote Config settings.
+     * @android Android only - iOS returns Promise<null> but does not reset anything
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.remoteConfig().reset();
+     * // get remote config values
+     * ```
+     *
+     */
+    reset(): Promise<void>;
   }
 }
 
