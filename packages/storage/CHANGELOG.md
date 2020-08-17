@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.3.2...@react-native-firebase/storage@7.3.3) (2020-08-15)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [7.3.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.3.1...@react-native-firebase/storage@7.3.2) (2020-08-15)
+
+### Bug Fixes
+
+- **Storage:** AL (asset library) methodology deprecated since iOS 8 ([#4054](https://github.com/invertase/react-native-firebase/issues/4054)) ([bf3b252](https://github.com/invertase/react-native-firebase/commit/bf3b25220cde1ae8d5fdbabc217fe20957dbdf8e))
+
+## [7.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.3.0...@react-native-firebase/storage@7.3.1) (2020-08-03)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [7.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.2.2...@react-native-firebase/storage@7.3.0) (2020-08-03)
+
+### Features
+
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+
 ## [7.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.2.1...@react-native-firebase/storage@7.2.2) (2020-07-09)
 
 **Note:** Version bump only for package @react-native-firebase/storage

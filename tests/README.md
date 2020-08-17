@@ -146,6 +146,16 @@ yarn validate:all:flow
 
 ---
 
+### Debugging E2E JS Tests (VSCode)
+
+1. Add a breakpoint in the JS file where you will need to debug.
+2. Select the debug icon under 'NPM Scripts' when selecting one of the following scripts...
+
+- tests:ios:test:debug (iOS)
+- tests:android:test:debug (Android)
+
+---
+
 <p>
   <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
   <p align="left">

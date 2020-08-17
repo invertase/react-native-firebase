@@ -144,7 +144,14 @@ class FirebaseAuthModule extends FirebaseModule {
     }
   }
 
-  onAuthStateChanged(listener) {
+  _parseListener(listenerOrObserver) {
+    return typeof listenerOrObserver === 'object'
+      ? listenerOrObserver.next.bind(listenerOrObserver)
+      : listenerOrObserver;
+  }
+
+  onAuthStateChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
@@ -158,7 +165,8 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onIdTokenChanged(listener) {
+  onIdTokenChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
@@ -172,7 +180,8 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onUserChanged(listener) {
+  onUserChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
       Promise.resolve().then(() => {

@@ -16,7 +16,7 @@ package io.invertase.firebase.crashlytics;
  * limitations under the License.
  *
  */
- 
+
 import android.os.Handler;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
@@ -36,6 +36,23 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
+  public void checkForUnsentReports(Promise promise){
+    FirebaseCrashlytics.getInstance().checkForUnsentReports().addOnCompleteListener(task -> {
+      if(task.isSuccessful()) {
+        if(task.getResult() != null){
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithCodeAndMessage(promise, "unknown","Unknown result of check for unsent reports");
+        }
+
+      } else {
+        String message = task.getException() != null ?  task.getException().getMessage() : "checkForUnsentReports() request error";
+        rejectPromiseWithCodeAndMessage(promise, "unknown", message);
+      }
+    });
+  }
+
+  @ReactMethod
   public void crash() {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       // async task so as not to get caught by the React Native redbox handler in debug
@@ -46,6 +63,16 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
         }
       }, 50);
     }
+  }
+
+  @ReactMethod
+  public void deleteUnsentReports() {
+    FirebaseCrashlytics.getInstance().deleteUnsentReports();
+  }
+
+  @ReactMethod
+  public void didCrashOnPreviousExecution(Promise promise) {
+    promise.resolve(FirebaseCrashlytics.getInstance().didCrashOnPreviousExecution());
   }
 
   @ReactMethod
@@ -86,6 +113,11 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     }
 
     promise.resolve(null);
+  }
+
+  @ReactMethod
+  public void sendUnsentReports() {
+    FirebaseCrashlytics.getInstance().sendUnsentReports();
   }
 
 

@@ -1252,7 +1252,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param listener A listener function which triggers when auth state changed (for example signing out).
      */
-    onAuthStateChanged(listener: AuthListenerCallback): () => void;
+    onAuthStateChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Listen for changes in ID token.
@@ -1274,7 +1274,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param listener A listener function which triggers when the users ID token changes.
      */
-    onIdTokenChanged(listener: AuthListenerCallback): () => void;
+    onIdTokenChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Adds a listener to observe changes to the User object. This is a superset of everything from
@@ -1300,7 +1300,7 @@ export namespace FirebaseAuthTypes {
      * @react-native-firebase
      * @param listener A listener function which triggers when the users data changes.
      */
-    onUserChanged(listener: AuthListenerCallback): () => void;
+    onUserChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Signs the user out.
@@ -1631,6 +1631,8 @@ export namespace FirebaseAuthTypes {
     useUserAccessGroup(userAccessGroup: string): Promise<null>;
   }
 }
+
+type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
 declare module '@react-native-firebase/auth' {
   // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work

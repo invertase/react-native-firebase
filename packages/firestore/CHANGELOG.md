@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.5.2...@react-native-firebase/firestore@7.5.3) (2020-08-15)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.5.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.5.1...@react-native-firebase/firestore@7.5.2) (2020-08-15)
+
+### Bug Fixes
+
+- making auth and firestore observable compatible ([#4078](https://github.com/invertase/react-native-firebase/issues/4078)) ([d8410df](https://github.com/invertase/react-native-firebase/commit/d8410dfdae345f60ed7ea21fbe7f6af7632127e3))
+
+## [7.5.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.5.0...@react-native-firebase/firestore@7.5.1) (2020-08-03)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.4.3...@react-native-firebase/firestore@7.5.0) (2020-08-03)
+
+### Features
+
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+
 ## [7.4.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.4.2...@react-native-firebase/firestore@7.4.3) (2020-07-09)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
