@@ -70,8 +70,10 @@ On Android, you do not need to request user permission. This method can still be
 
 ## Receiving messages
 
-FCM messages can be sent to devices via a number of methods (see below). A message is simply a payload of data which can
-be used however you see fit within your application. Common use-cases for handling messages could be:
+FCM messages can be sent to *real* devices (iOS simulators do *not* handle cloud messages, in particular) via a number of methods (see below).
+A message is simply a payload of data which can be used however you see fit within your application.
+
+Common use-cases for handling messages could be:
 
 - Displaying a notification (see [Notifications](/messaging/notifications)).
 - Syncing message data silently on the device (e.g. via `AsyncStorage`).
