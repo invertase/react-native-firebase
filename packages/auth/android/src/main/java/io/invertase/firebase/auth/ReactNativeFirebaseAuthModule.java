@@ -1594,7 +1594,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.setLanguageCode(code);
+    if(code == null){
+      firebaseAuth.useAppLanguage();
+    } else {
+      firebaseAuth.setLanguageCode(code);
+    }
   }
 
   /**
