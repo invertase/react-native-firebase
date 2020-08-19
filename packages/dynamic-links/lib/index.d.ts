@@ -371,28 +371,26 @@ export namespace FirebaseDynamicLinksTypes {
    *  const link = await firebase.dynamicLinks().buildShortLink({
    *    link: 'https://invertase.io',
    *    domainUriPrefix: 'https://xyz.page.link',
-   *  }, firebase.dynamicLinks.ShortLinkType.UNGUESSABLE);
+   *  }, FirebaseDynamicLinksTypes.ShortLinkType.UNGUESSABLE);
    * ```
    */
-  export interface ShortLinkType {
+  export enum ShortLinkType {
     /**
      * Shorten the path to a string that is only as long as needed to be unique, with a minimum length
      * of 4 characters. Use this if sensitive information would not be exposed if a short
      * Dynamic Link URL were guessed.
      */
-    SHORT: 'SHORT';
-
+    SHORT = 'SHORT',
     /**
      * Shorten the path to an unguessable string. Such strings are created by base62-encoding randomly
      * generated 96-bit numbers, and consist of 17 alphanumeric characters. Use unguessable strings
      * to prevent your Dynamic DynamicLinks from being crawled, which can potentially expose sensitive information.
      */
-    UNGUESSABLE: 'UNGUESSABLE';
-
+    UNGUESSABLE = 'UNGUESSABLE',
     /**
      * By default, Firebase returns a standard formatted link.
      */
-    DEFAULT: 'DEFAULT';
+    DEFAULT = 'DEFAULT',
   }
 
   /**
@@ -405,9 +403,14 @@ export namespace FirebaseDynamicLinksTypes {
     url: string;
 
     /**
-     * The minimum app version requested to process the dynamic link.
+     * The minimum app version (not system version) requested to process the dynamic link.
+     * This is retrieved from the imv= parameter of the Dynamic Link URL.
      *
-     * Returns `null` if not specified.
+     * If the app version of the opening app is less than the value of this property,
+     * then the app is expected to open AppStore to allow user to download most recent version.
+     * App can notify or ask the user before opening AppStore.
+     *
+     * Returns `null` if not specified
      *
      * #### Android
      *
@@ -415,8 +418,7 @@ export namespace FirebaseDynamicLinksTypes {
      *
      * #### iOS
      *
-     * On iOS this returns a string value representing the minimum app version (not the iOS system version). If the app version of the opening app is less than the value of this property, then the app is expected to open AppStore to allow user to download most recent version. App can notify or ask the user before opening AppStore.
-     *
+     * On iOS this returns a string value representing the minimum app version (not the iOS system version).
      */
     minimumAppVersion: number | string | null;
   }
@@ -430,9 +432,9 @@ export namespace FirebaseDynamicLinksTypes {
    */
   export interface Statics {
     /**
-     * Returns the {@link links.ShortLinkType} interface.
+     * Returns the {@link links.ShortLinkType} enum.
      */
-    ShortLinkType: ShortLinkType;
+    ShortLinkType: typeof ShortLinkType;
   }
 
   /**
@@ -466,15 +468,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     buildLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a link from the provided DynamicLinkParameters interface.
-     *
-     * @deprecated Use `buildLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     */
-    createDynamicLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
     /**
      * Builds a short Dynamic Link from the provided DynamicLinkParameters interface.
      *
@@ -495,18 +488,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     buildShortLink(
-      dynamicLinkParams: DynamicLinkParameters,
-      shortLinkType?: ShortLinkType,
-    ): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a short Dynamic Link from the provided DynamicLinkParameters instances.
-     *
-     * @deprecated Use `buildShortLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
-     */
-    createShortDynamicLink(
       dynamicLinkParams: DynamicLinkParameters,
       shortLinkType?: ShortLinkType,
     ): Promise<string>;
@@ -560,6 +541,28 @@ export namespace FirebaseDynamicLinksTypes {
      * @param listener The listener callback, called with Dynamic Link instances.
      */
     onLink(listener: Function<DynamicLink>): Function;
+
+    /**
+     * Resolve a given dynamic link (short or long) directly.
+     *
+     * This mimics the result of external link resolution, app open, and the DynamicLink you
+     * would get from {@link dynamic-links#getInitialLink}
+     *
+     * #### Example
+     *
+     * ```js
+     * const link = await firebase.dynamicLinks().resolveLink('https://reactnativefirebase.page.link/76adfasdf');
+     * console.log('Received link with URL: ' + link.url);
+     * ```
+     *
+     * Can throw error with message 'Invalid link parameter' if link parameter is null
+     * Can throw error with code 'not-found' if the link does not resolve
+     * Can throw error with code 'resolve-link-error' if there is a processing error
+
+     * @returns the resolved Dynamic Link
+     * @param link The Dynamic Link URL to resolve, either short or long
+     */
+    resolveLink(link: string): Promise<DynamicLink>;
   }
 }
 

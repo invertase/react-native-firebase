@@ -17,7 +17,13 @@ package io.invertase.firebase.messaging;
  *
  */
 
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+
 import androidx.core.app.NotificationManagerCompat;
+
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
@@ -25,16 +31,58 @@ import com.facebook.react.bridge.ReadableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModule {
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
+
+public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModule implements ActivityEventListener {
   private static final String TAG = "Messaging";
+  RemoteMessage initialNotification = null;
+  private HashMap<String, Boolean> initialNotificationMap = new HashMap<>();
 
   ReactNativeFirebaseMessagingModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+    reactContext.addActivityEventListener(this);
+  }
+
+  @ReactMethod
+  public void getInitialNotification(Promise promise) {
+    if (initialNotification != null) {
+      promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(initialNotification));
+      initialNotification = null;
+      return;
+    } else {
+      Activity activity = getCurrentActivity();
+
+      if (activity != null) {
+        Intent intent = activity.getIntent();
+
+        if (intent != null && intent.getExtras() != null) {
+          // messageId can be either one...
+          String messageId = intent.getExtras().getString("google.message_id");
+          if (messageId == null) messageId = intent.getExtras().getString("message_id");
+
+          // only handle non-consumed initial notifications
+          if (messageId != null && initialNotificationMap.get(messageId) == null) {
+            RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+
+            if (remoteMessage != null) {
+              promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
+              initialNotificationMap.put(messageId, true);
+              return;
+            }
+          }
+        }
+      } else {
+        Log.w(TAG, "Attempt to call getInitialNotification failed. The current activity is not ready, try calling the method later in the React lifecycle.");
+      }
+    }
+
+    promise.resolve(null);
   }
 
   @ReactMethod
@@ -88,7 +136,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       .call(getExecutor(), () -> NotificationManagerCompat.from(getReactApplicationContext()).areNotificationsEnabled())
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
+          promise.resolve(task.getResult() ? 1 : 0);
         } else {
           rejectPromiseWithExceptionMap(promise, task.getException());
         }
@@ -145,5 +193,30 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       FirebaseMessaging.getInstance().isAutoInitEnabled()
     );
     return constants;
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // noop
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    if (intent != null && intent.getExtras() != null) {
+      String messageId = intent.getExtras().getString("google.message_id");
+      if (messageId == null) messageId = intent.getExtras().getString("message_id");
+
+      if (messageId != null) {
+        RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+
+        if (remoteMessage != null) {
+          initialNotification = remoteMessage;
+          ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
+
+          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+          emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageToEvent(remoteMessage, true));
+        }
+      }
+    }
   }
 }

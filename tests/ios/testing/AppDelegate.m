@@ -16,7 +16,7 @@
  */
 
 #import "AppDelegate.h"
-
+#import "RNFBMessagingModule.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <Firebase/Firebase.h>
@@ -32,10 +32,13 @@
   NSURL *jsCodeLocation;
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
 
+  NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"testing"
-                                               initialProperties:nil
+                                               initialProperties:appProperties
                                                    launchOptions:launchOptions];
+
 
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
 
@@ -58,6 +61,22 @@
   (nonnull void (^)(NSArray *_Nullable))restorationHandler {
 #endif
   return NO;
+}
+
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
+  NSLog(@"TESTING1");
+  [self aTest];
+  NSLog(@"TESTING2");
+}
+
+- (void)aTest {
+  NSLog(@"TESTING3");
+}
+
+- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
+  NSLog(@"TESTING1");
+  [self aTest];
+  NSLog(@"TESTING2");
 }
 
 @end

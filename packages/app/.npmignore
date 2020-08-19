@@ -61,7 +61,6 @@ e2e/
 .nyc_output
 android/.settings
 *.coverage.json
-.circleci
 .eslintignore
 type-test.ts
 scripts

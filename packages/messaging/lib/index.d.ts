@@ -58,7 +58,9 @@ export namespace FirebaseMessagingTypes {
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
   export interface Statics {
-    // firebase.messaging.* static props go here
+    AuthorizationStatus: typeof AuthorizationStatus;
+    NotificationAndroidPriority: typeof NotificationAndroidPriority;
+    NotificationAndroidVisibility: typeof NotificationAndroidVisibility;
   }
 
   /**
@@ -82,7 +84,10 @@ export namespace FirebaseMessagingTypes {
      * The message type of the message.
      */
     messageType?: string;
-
+    /**
+     * The topic name or message identifier.
+     */
+    from?: string;
     /**
      * The address for the message.
      */
@@ -96,9 +101,379 @@ export namespace FirebaseMessagingTypes {
     ttl?: number;
 
     /**
+     * The time the message was sent, in milliseconds since the start of unix epoch
+     */
+    sentTime?: number;
+
+    /**
      * Any additional data sent with the message.
      */
     data?: { [key: string]: string };
+
+    /**
+     * Additional Notification data sent with the message
+     */
+    notification?: Notification;
+
+    /**
+     * Whether the iOS APNs message was configured as a background update notification.
+     *
+     * @platform ios iOS
+     */
+    contentAvailable?: boolean;
+
+    /**
+     * Whether the iOS APNs `mutable-content` property on the message was set
+     * allowing the app to modify the notification via app extensions.
+     *
+     * @platform ios iOS
+     */
+    mutableContent?: boolean;
+
+    /**
+     * The iOS category this notification is assigned to.
+     *
+     * @platform ios iOS
+     */
+    category?: string;
+
+    /**
+     * An iOS app specific identifier used for notification grouping.
+     */
+    threadId?: string;
+  }
+
+  export interface Notification {
+    /**
+     * The notification title.
+     */
+    title?: string;
+
+    /**
+     * The native localization key for the notification title.
+     */
+    titleLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by titleLocKey.
+     */
+    titleLocArgs?: string[];
+
+    /**
+     * The notification body content.
+     */
+    body?: string;
+
+    /**
+     * The native localization key for the notification body content.
+     */
+    bodyLocKey?: string;
+
+    /**
+     * Any arguments that should be formatted into the resource specified by bodyLocKey.
+     */
+    bodyLocArgs?: string[];
+
+    ios?: {
+      /**
+       * The notification's subtitle.
+       */
+      subtitle?: string;
+
+      /**
+       * The native localization key for the notification's subtitle.
+       */
+      subtitleLocKey?: string;
+
+      /**
+       * Any arguments that should be formatted into the resource specified by subtitleLocKey.
+       */
+      subtitleLocArgs?: string[];
+
+      /**
+       * The value of the badge on the home screen app icon.
+       * If not specified, the badge is not changed.
+       * If set to 0, the badge has been removed.
+       */
+      badge?: string;
+
+      /**
+       * The sound played when the notification was delivered on the device (if permissions permit).
+       */
+      sound?: string | NotificationIOSCriticalSound;
+    };
+
+    /**
+     * Additional Android specific properties set on the notification.
+     */
+    android?: {
+      /**
+       * The sound played when the notification was delivered on the device (channel settings permitted).
+       *
+       * Set as "default" if the default device notification sound was used.
+       */
+      sound?: string;
+
+      /**
+       * The channel ID set on the notification. If not set, the notification uses the default
+       * "Miscellaneous" channel set by FCM.
+       */
+      channelId?: string;
+
+      /**
+       * The custom color used to tint the notification content.
+       */
+      color?: string;
+
+      /**
+       * The custom small icon used to display on the notification. If not set, uses the default
+       * application icon defined in the AndroidManifest file.
+       */
+      smallIcon?: string;
+
+      /**
+       * The custom image was provided and displayed in the notification body.
+       */
+      imageUrl?: string;
+
+      /**
+       * Deep link URL provided to the notification.
+       */
+      link?: string;
+
+      /**
+       * The current unread notification count for this application, managed by the device.
+       */
+      count?: number;
+
+      /**
+       * Name of the click action set on the notification.
+       */
+      clickAction?: string;
+
+      /**
+       * The notification priority.
+       *
+       * Note; on devices which have channel support (Android 8.0 (API level 26) +),
+       * this value will be ignored. Instead, the channel "importance" level is used.
+       */
+      priority?:
+        | NotificationAndroidPriority.PRIORITY_MIN
+        | NotificationAndroidPriority.PRIORITY_LOW
+        | NotificationAndroidPriority.PRIORITY_DEFAULT
+        | NotificationAndroidPriority.PRIORITY_HIGH
+        | NotificationAndroidPriority.PRIORITY_MAX;
+
+      /**
+       * Ticker text set on the notification.
+       *
+       * Ticker text is used for devices with accessibility enabled (e.g. to read out the message).
+       */
+      ticker?: string;
+
+      /**
+       * The visibility of a notification. This value determines how the notification is shown on the users
+       * devices (e.g. on the lock-screen).
+       */
+      visibility?:
+        | NotificationAndroidVisibility.VISIBILITY_SECRET
+        | NotificationAndroidVisibility.VISIBILITY_PRIVATE
+        | NotificationAndroidVisibility.VISIBILITY_PUBLIC;
+    };
+  }
+
+  /**
+   * Represents a critical sound configuration that can be included in the
+   * `aps` dictionary of an APNs payload.
+   */
+  export interface NotificationIOSCriticalSound {
+    /**
+     * The critical alert flag. Set to `true` to enable the critical alert.
+     */
+    critical?: boolean;
+
+    /**
+     * The name of a sound file in the app's main bundle or in the `Library/Sounds`
+     * folder of the app's container directory. Specify the string "default" to play
+     * the system sound.
+     */
+    name: string;
+
+    /**
+     * The volume for the critical alert's sound. Must be a value between 0.0
+     * (silent) and 1.0 (full volume).
+     */
+    volume?: number;
+  }
+
+  /**
+   * The enum representing a notification priority.
+   *
+   * Note; on devices which have channel support (Android 8.0 (API level 26) +),
+   * this value will be ignored. Instead, the channel "importance" level is used.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidPriority.PRIORITY_MIN;
+   * ```
+   */
+  export enum NotificationAndroidPriority {
+    /**
+     The application small icon will not show up in the status bar, or alert the user. The notification
+     will be in a collapsed state in the notification shade and placed at the bottom of the list.
+     */
+    PRIORITY_MIN = -2,
+
+    /**
+     * The application small icon will show in the device status bar, however the notification will
+     * not alert the user (no sound or vibration). The notification will show in it's expanded state
+     * when the notification shade is pulled down.
+     */
+    PRIORITY_LOW = -1,
+
+    /**
+     * When a notification is received, the device smallIcon will appear in the notification shade.
+     * When the user pulls down the notification shade, the content of the notification will be shown
+     * in it's expanded state.
+     */
+    PRIORITY_DEFAULT = 0,
+
+    /**
+     * Notifications will appear on-top of applications, allowing direct interaction without pulling
+     * own the notification shade. This level is used for urgent notifications, such as
+     * incoming phone calls, messages etc, which require immediate attention.
+     */
+    PRIORITY_HIGH = 1,
+
+    /**
+     * The priority highest level a notification can be set at.
+     */
+    PRIORITY_MAX = 2,
+  }
+
+  /**
+   * The enum representing the visibility of a notification.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.NotificationAndroidVisibility.VISIBILITY_SECRET;
+   * ```
+   */
+  export enum NotificationAndroidVisibility {
+    /**
+     * Do not reveal any part of this notification on a secure lock-screen.
+     */
+    VISIBILITY_SECRET = -1,
+
+    /**
+     * Show this notification on all lock-screens, but conceal sensitive or private information on secure lock-screens.
+     */
+    VISIBILITY_PRIVATE = 0,
+
+    /**
+     * Show this notification in its entirety on all lock-screens.
+     */
+    VISIBILITY_PUBLIC = 1,
+  }
+
+  /**
+   * An interface representing all the available permissions that can be requested by your app via
+   * the `requestPermission` API.
+   */
+  // eslint-disable-next-line @typescript-eslint/interface-name-prefix
+  export interface IOSPermissions {
+    /**
+     * Request permission to display alerts.
+     *
+     * Defaults to true.
+     */
+    alert?: boolean;
+
+    /**
+     * Request permission for Siri to automatically read out notification messages over AirPods.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 13
+     */
+    announcement?: boolean;
+
+    /**
+     * Request permission to update the application badge.
+     *
+     * Defaults to true.
+     */
+    badge?: boolean;
+
+    /**
+     * Request permission for critical alerts.
+     *
+     * Defaults to false.
+     */
+    criticalAlert?: boolean;
+
+    /**
+     * Request permission to display notifications in a CarPlay environment.
+     *
+     * Defaults to true.
+     */
+    carPlay?: boolean;
+
+    /**
+     * Request permission to provisionally create non-interrupting notifications.
+     *
+     * Defaults to false.
+     *
+     * @platform ios iOS >= 12
+     */
+    provisional?: boolean;
+
+    /**
+     * Request permission to play sounds.
+     *
+     * Defaults to true.
+     */
+    sound?: boolean;
+  }
+
+  /**
+   * An enum representing the notification authorization status for this app on the device.
+   *
+   * Value is truthy if authorized, compare against an exact status (e.g. iOS PROVISIONAL) for a more
+   * granular status.
+   *
+   * Example:
+   *
+   * ```js
+   * firebase.messaging.AuthorizationStatus.NOT_DETERMINED;
+   * ```
+   */
+  export enum AuthorizationStatus {
+    /**
+     * The app user has not yet chosen whether to allow the application to create notifications. Usually
+     * this status is returned prior to the first call of `requestPermission`.
+     *
+     * @platform ios iOS
+     */
+    NOT_DETERMINED = -1,
+
+    /**
+     * The app is not authorized to create notifications.
+     */
+    DENIED = 0,
+
+    /**
+     * The app is authorized to create notifications.
+     */
+    AUTHORIZED = 1,
+
+    /**
+     * The app is currently authorized to post non-interrupting user notifications
+     * @platform ios iOS >= 12
+     */
+    PROVISIONAL = 2,
   }
 
   /**
@@ -171,20 +546,34 @@ export namespace FirebaseMessagingTypes {
     setAutoInitEnabled(enabled: boolean): Promise<void>;
 
     /**
+     * When a notification from FCM has triggered the application to open from a quit state,
+     * this method will return a `RemoteMessage` containing the notification data, or `null` if
+     * the app was opened via another method.
+     *
+     * See `onNotificationOpenedApp` to subscribe to when the notification is opened when the app
+     * is in a background state.
+     *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
+     */
+    getInitialNotification(): Promise<RemoteMessage | null>;
+
+    /**
      * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
      * or scope to tailor tokens to your own use-case.
      *
      * It is recommended you call this method on app start and update your backend with the new token.
      *
      * On iOS you'll need to register for remote notifications before calling this method, you can do
-     * this by calling `registerForRemoteNotifications` or `requestPermission` as part of your app
+     * this by calling `registerDeviceForRemoteMessages` or `requestPermission` as part of your app
      * startup. If you have not registered and you call this method you will receive an 'unregistered'
      * error code.
      *
      * #### Example - Default token
      *
      * ```js
-     * await firebase.messaging().registerForRemoteNotifications();
+     * await firebase.messaging().registerDeviceForRemoteMessages();
      * const fcmToken = await firebase.messaging().getToken();
      *
      * // Update backend (e.g. Firestore) with our scoped token for the user
@@ -265,6 +654,21 @@ export namespace FirebaseMessagingTypes {
     onMessage(listener: (message: RemoteMessage) => any): () => void;
 
     /**
+     * When the user presses a notification displayed via FCM, this listener will be called if the app
+     * has opened from a background state.
+     *
+     * See `getInitialNotification` to see how to watch for when a notification opens the app from a
+     * quit state.
+     *
+     * Beware of this [issue](https://github.com/invertase/react-native-firebase/issues/3469#issuecomment-660121376) when integrating with splash screen modules. If you are using
+     * `react-native-splash-screen` we strongly recommend you migrate to `react-native-bootsplash`
+     * which is actively maintained and avoids these issues
+     *
+     * @param listener Called with a `RemoteMessage` when a notification press opens the application.
+     */
+    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void;
+
+    /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
      * token expires or when the server invalidates the token.
      *
@@ -316,12 +720,10 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(): Promise<boolean>;
-
+    requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
     /**
-     * On iOS, if your app wants to receive remote messages from FCM (via APNS), you must explicitly register
-     * this request with APNS. For example if you want to display alerts, play sounds
-     * or perform other user-facing actions (via the Notification library), you must call this method.
+     * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
+     * with APNs if auto-registration has been disabled.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `void`.
      *
@@ -330,31 +732,27 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * if (!firebase.messaging().isRegisteredForRemoteNotifications) {
-     *   await firebase.messaging().registerForRemoteNotifications();
+     * if (!firebase.messaging().isDeviceRegisteredForRemoteMessages) {
+     *   await firebase.messaging().registerDeviceForRemoteMessages();
      * }
      * ```
-     *
-     * @ios
      */
-    registerForRemoteNotifications(): Promise<void>;
-
+    registerDeviceForRemoteMessages(): Promise<void>;
     /**
      * Returns a boolean value whether the user has registered for remote notifications via
-     * `registerForRemoteNotifications()`.
+     * `registerDeviceForRemoteMessages()`.
      *
      * > You can safely access this property on Android without platform checks. Android returns `true` only.
      *
      * #### Example
      *
      * ```js
-     * const isRegisteredForRemoteNotifications = firebase.messaging().isRegisteredForRemoteNotifications;
+     * const isDeviceRegisteredForRemoteMessages = firebase.messaging().isDeviceRegisteredForRemoteMessages;
      * ```
      *
-     * @ios
+     * @platform ios
      */
-    isRegisteredForRemoteNotifications: boolean;
-
+    isDeviceRegisteredForRemoteMessages: boolean;
     /**
      * Unregisters the app from receiving remote notifications.
      *
@@ -363,17 +761,17 @@ export namespace FirebaseMessagingTypes {
      * #### Example
      *
      * ```js
-     * if (firebase.messaging().isRegisteredForRemoteNotifications) {
-     *   await firebase.messaging().unregisterForRemoteNotifications();
+     * if (firebase.messaging().isDeviceRegisteredForRemoteMessages) {
+     *   await firebase.messaging().unregisterDeviceForRemoteMessages();
      * }
      * ```
      *
-     * @ios
+     * @platform ios
      */
-    unregisterForRemoteNotifications(): Promise<void>;
+    unregisterDeviceForRemoteMessages(): Promise<void>;
 
     /**
-     * On iOS, it is possible to get the users APNS token. This may be required if you want to send messages to your
+     * On iOS, it is possible to get the users APNs token. This may be required if you want to send messages to your
      * iOS devices without using the FCM service.
      *
      * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.
@@ -384,7 +782,7 @@ export namespace FirebaseMessagingTypes {
      * const apnsToken = await firebase.messaging().getAPNSToken();
      *
      * if (apnsToken) {
-     *   console.log('User APNS Token:', apnsToken);
+     *   console.log('User APNs Token:', apnsToken);
      * }
      * ```
      *
@@ -393,15 +791,19 @@ export namespace FirebaseMessagingTypes {
     getAPNSToken(): Promise<string | null>;
 
     /**
-     * Returns a boolean value as to whether the user has messaging permission for this app.
+     * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
      *
      * #### Example
      *
      * ```js
-     * const hasPermission = await firebase.messaging().hasPermission();
+     * const authStatus = await firebase.messaging().hasPermission();
+     * if (authStatus === firebase.messaging.AuthorizationStatus.AUTHORIZED) {
+     *   // yay
+     * }
+     *
      * ```
      */
-    hasPermission(): Promise<boolean>;
+    hasPermission(): Promise<AuthorizationStatus>;
 
     /**
      * Called when the FCM server deletes pending messages. This may be due to:
@@ -474,14 +876,13 @@ export namespace FirebaseMessagingTypes {
     onSendError(listener: (evt: SendErrorEvent) => any): () => void;
 
     /**
-     * On Android, set a message handler function which is called when the app is in the background
-     * or terminated. A headless task is created, allowing you to access the React Native environment
+     * Set a message handler function which is called when the app is in the background
+     * or terminated. In Android, a headless task is created, allowing you to access the React Native environment
      * to perform tasks such as updating local storage, or sending a network request.
      *
      * This method must be called **outside** of your application lifecycle, e.g. alongside your
      * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
      *
-     * > You can safely call this method on iOS without platform checks. It's a no-op on iOS.
      *
      * #### Example
      *
@@ -495,7 +896,6 @@ export namespace FirebaseMessagingTypes {
      * });
      * ```
      *
-     * @android
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>);
 
@@ -586,7 +986,18 @@ declare module '@react-native-firebase/app' {
 
 namespace ReactNativeFirebase {
   interface FirebaseJsonConfig {
-    messaging_auto_init_enabled: boolean;
-    messaging_android_headless_task_timeout: number;
+    messaging_auto_init_enabled?: boolean;
+    messaging_android_headless_task_timeout?: number;
+    messaging_android_notification_channel_id?: string;
+    messaging_android_notification_color?: string;
+    /**
+     * Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`
+     * automatically on app launch (recommended) - defaults to true.
+     *
+     * If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`
+     * early on in your app startup - otherwise you will NOT receive remote messages/notifications
+     * in your app.
+     */
+    messaging_ios_auto_register_for_remote_messages?: boolean;
   }
 }

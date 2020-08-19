@@ -109,9 +109,7 @@ class FirebaseMlKitLanguageModule extends FirebaseModule {
         validated.push(validateTextMessage(messages[i]));
       } catch (e) {
         throw new Error(
-          `firebase.naturalLanguage().suggestReplies(*) 'messages' object at index ${i} threw an error. ${
-            e.message
-          }.`,
+          `firebase.naturalLanguage().suggestReplies(*) 'messages' object at index ${i} threw an error. ${e.message}.`,
         );
       }
     }

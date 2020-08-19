@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invertase.io/oss/react-native-firebase">
+  <a href="https://rnfirebase.io">
     <img width="160px" src="https://i.imgur.com/JIyBtKW.png"><br/>
   </a>
   <h2 align="center">React Native Firebase - Performance Monitoring</h2>
@@ -35,9 +35,12 @@ yarn add @react-native-firebase/perf
 
 ## Documentation
 
-- [Quick Start](https://invertase.io/oss/react-native-firebase/v6/perf/quick-start)
-- [Guides](https://invertase.io/oss/react-native-firebase/guides?tags=perf)
-- [Reference](https://invertase.io/oss/react-native-firebase/v6/perf/reference)
+- [Quick Start](https://rnfirebase.io/perf/usage)
+- [Reference](https://rnfirebase.io/reference/perf)
+
+### Additional Topics
+
+- [Axios Integration](https://rnfirebase.io/perf/axios-integration)
 
 ## License
 
@@ -46,14 +49,9 @@ yarn add @react-native-firebase/perf
 ---
 
 <p>
-  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png"> 
-  <p align="left">  
+  <img align="left" width="75px" src="https://static.invertase.io/assets/invertase-logo-small.png">
+  <p align="left">
     Built and maintained with 💛 by <a href="https://invertase.io">Invertase</a>.
-  </p>
-  <p align="left">  
-    <a href="https://invertase.io/hire-us">💼 Hire Us</a> | 
-    <a href="https://opencollective.com/react-native-firebase">☕️ Sponsor Us</a> | 
-    <a href="https://opencollective.com/jobs">‍💻 Work With Us</a>
   </p>
 </p>
 

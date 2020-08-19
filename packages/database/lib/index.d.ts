@@ -73,6 +73,21 @@ export namespace FirebaseDatabaseTypes {
      * ```
      */
     TIMESTAMP: object;
+
+    /**
+     * Returns a placeholder value that can be used to atomically increment the current database value by the provided delta.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.database().ref('posts/123').update({
+     *   likes: firebase.database.ServerValue.increment(1),
+     * });
+     * ```
+     *
+     * @param delta The amount to modify the current value atomically.
+     */
+    increment(delta: number): object;
   }
 
   /**
@@ -404,7 +419,7 @@ export namespace FirebaseDatabaseTypes {
     onDisconnect(): OnDisconnect;
   }
 
-  export interface ThenableReference extends Reference {}
+  export type ThenableReference = Reference;
 
   /**
    * A Query sorts and filters the data at a Database location so only a subset of the child data
@@ -575,7 +590,7 @@ export namespace FirebaseDatabaseTypes {
      * @param callback The callback function that was passed to `on()` or `undefined` to remove all callbacks.
      * @param context The context that was passed to `on()`.
      */
-    off(eventType?: EventType, callback?: Function, context?: Object): void;
+    off(eventType?: EventType, callback?: Function, context?: Record<string, any>): void;
 
     /**
      * Listens for data changes at a particular location.
@@ -632,8 +647,8 @@ export namespace FirebaseDatabaseTypes {
     on(
       eventType?: EventType,
       callback?: Function,
-      cancelCallbackOrContext?: Object,
-      context?: Object | null,
+      cancelCallbackOrContext?: Record<string, any>,
+      context?: Record<string, any> | null,
     ): Function;
 
     /**

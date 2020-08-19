@@ -39,7 +39,8 @@ export function handleStorageEvent(storageInstance, event) {
 }
 
 export function getHttpUrlParts(url) {
-  const parts = url.match(/\/b\/(.*)\.appspot.com\/o\/([a-zA-Z0-9./\-_]+)(.*)/);
+  const decoded = decodeURIComponent(url);
+  const parts = decoded.match(/\/b\/(.*)\.appspot.com\/o\/([a-zA-Z0-9./\-_]+)(.*)/);
 
   if (!parts || parts.length < 3) {
     return null;

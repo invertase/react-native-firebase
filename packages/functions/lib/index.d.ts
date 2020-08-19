@@ -145,6 +145,30 @@ export namespace FirebaseFunctionsTypes {
   }
 
   /**
+   * An HttpsCallableOptions object that can be passed as the second argument to `firebase.functions().httpsCallable(name, HttpsCallableOptions)`.
+   **/
+  export interface HttpsCallableOptions {
+    /**
+     * The timeout property allows you to control how long the application will wait for the cloud function to respond in milliseconds.
+     *
+     * #### Example
+     *
+     *```js
+     * // The below will wait 7 seconds for a response from the cloud function before an error is thrown
+     * try {
+     *  const instance = firebase.functions().httpsCallable('order', { timeout: 7000 });
+     *  const response = await instance({
+     *    id: '12345',
+     *  });
+     * } catch (e) {
+     *  console.log(e);
+     * }
+     * ```
+     */
+    timeout?: number;
+  }
+
+  /**
    * An HttpsError wraps a single error from a function call.
    *
    * #### Example
@@ -312,7 +336,7 @@ export namespace FirebaseFunctionsTypes {
      * @param name The name of the https callable function.
      * @return The `HttpsCallable` instance.
      */
-    httpsCallable(name: string): HttpsCallable;
+    httpsCallable(name: string, options?: HttpsCallableOptions): HttpsCallable;
 
     /**
      * Changes this instance to point to a Cloud Functions emulator running

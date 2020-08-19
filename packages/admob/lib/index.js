@@ -89,14 +89,14 @@ export default createModuleNamespace({
 
 export const firebase = getFirebaseRoot();
 
-export AdsConsentDebugGeography from './AdsConsentDebugGeography';
-export AdsConsentStatus from './AdsConsentStatus';
-export MaxAdContentRating from './MaxAdContentRating';
-export TestIds from './TestIds';
-export AdEventType from './AdEventType';
-export BannerAdSize from './BannerAdSize';
-export RewardedAdEventType from './RewardedAdEventType';
-export AdsConsent from './AdsConsent';
-export InterstitialAd from './ads/InterstitialAd';
-export RewardedAd from './ads/RewardedAd';
-export BannerAd from './ads/BannerAd';
+export { default as AdsConsentDebugGeography } from './AdsConsentDebugGeography';
+export { default as AdsConsentStatus } from './AdsConsentStatus';
+export { default as MaxAdContentRating } from './MaxAdContentRating';
+export { default as TestIds } from './TestIds';
+export { default as AdEventType } from './AdEventType';
+export { default as BannerAdSize } from './BannerAdSize';
+export { default as RewardedAdEventType } from './RewardedAdEventType';
+export { default as AdsConsent } from './AdsConsent';
+export { default as InterstitialAd } from './ads/InterstitialAd';
+export { default as RewardedAd } from './ads/RewardedAd';
+export { default as BannerAd } from './ads/BannerAd';

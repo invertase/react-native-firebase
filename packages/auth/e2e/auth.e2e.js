@@ -58,6 +58,45 @@ describe('auth()', () => {
     });
   });
 
+  describe('reload()', () => {
+    it('Meta data returns as expected with annonymous sign in', async () => {
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+
+    it('Meta data returns as expected with email and password sign in', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email1 = `${random}@${random}.com`;
+      const pass = random;
+
+      await firebase.auth().createUserWithEmailAndPassword(email1, pass);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      const anotherRandom = Utils.randString(12, '#aA');
+      const email2 = `${anotherRandom}@${anotherRandom}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email2, pass);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+  });
+
   describe('verifyPasswordResetCode()', () => {
     it('errors on invalid code', async () => {
       try {
@@ -142,6 +181,42 @@ describe('auth()', () => {
 
       callback.should.be.calledWith(null);
       callback.should.be.calledTwice();
+
+      // Tear down
+
+      unsubscribe();
+    });
+
+    it('accept observer instead callback as well', async () => {
+      await firebase.auth().signInAnonymously();
+
+      await Utils.sleep(50);
+
+      // Test
+      const observer = {
+        next(user) {
+          // Test this access
+          this.onNext();
+          this.user = user;
+        },
+      };
+
+      let unsubscribe;
+      await new Promise(resolve => {
+        observer.onNext = resolve;
+        unsubscribe = firebase.auth().onAuthStateChanged(observer);
+      });
+      should.exist(observer.user);
+
+      // Sign out
+
+      await firebase.auth().signOut();
+
+      // Assertions
+
+      await Utils.sleep(50);
+
+      should.not.exist(observer.user);
 
       // Tear down
 
@@ -345,7 +420,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await Utils.sleep(50);
+      await Utils.sleep(500);
 
       // Assertions
 
@@ -812,16 +887,28 @@ describe('auth()', () => {
   });
 
   describe('languageCode', () => {
-    it('it should change the language code', () => {
-      firebase.auth().languageCode = 'en';
+    it('it should change the language code', async () => {
+      await firebase.auth().setLanguageCode('en');
+
       if (firebase.auth().languageCode !== 'en') {
         throw new Error('Expected language code to be "en".');
       }
-      firebase.auth().languageCode = 'fr';
+      await firebase.auth().setLanguageCode('fr');
+
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-      firebase.auth().languageCode = 'en';
+      // expect no error
+      await firebase.auth().setLanguageCode(null);
+
+      try {
+        await firebase.auth().setLanguageCode(123);
+        return Promise.reject('It did not error');
+      } catch (e) {
+        e.message.should.containEql("expected 'languageCode' to be a string or null value");
+      }
+
+      await firebase.auth().setLanguageCode('en');
     });
   });
 

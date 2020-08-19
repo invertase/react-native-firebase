@@ -176,6 +176,24 @@ export namespace FirebaseFirestoreTypes {
   export type DocumentChangeType = 'added' | 'removed' | 'modified';
 
   /**
+   * The types for a DocumentSnapshot field that are supported by Firestore.
+   */
+  export type DocumentFieldType =
+    | string
+    | number
+    | boolean
+    | { [key: string]: DocumentFieldType }
+    | DocumentFieldType[]
+    | null
+    | Timestamp
+    | GeoPoint
+    | Blob
+    | FieldPath
+    | FieldValue
+    | DocumentReference
+    | CollectionReference;
+
+  /**
    * A `DocumentReference` refers to a document location in a Firestore database and can be used to write, read, or listen
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
@@ -258,7 +276,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * // false
      * alovelace.isEqual(dsmith);
-     * ``
+     * ```
      *
      * @param other The `DocumentReference` to compare against.
      */
@@ -399,7 +417,7 @@ export namespace FirebaseFirestoreTypes {
      *   age: 30,
      *   city: 'LON',
      * });
-     * ``
+     * ```
      *
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.
@@ -499,7 +517,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
      */
-    get(fieldPath: string | FieldPath): any;
+    get<fieldType extends DocumentFieldType>(fieldPath: string | FieldPath): fieldType;
 
     /**
      * Returns true if this `DocumentSnapshot` is equal to the provided one.
@@ -953,6 +971,25 @@ export namespace FirebaseFirestoreTypes {
      * @param limit The maximum number of items to return.
      */
     limit(limit: number): Query;
+    /**
+     * Creates and returns a new Query where the results are limited to the specified number of documents
+     * starting from the last document. The order is dependent on the second parameter for the `orderBy`
+     * method. If `desc` is used, the order is reversed. `orderBy` method call is required when calling `limitToLast`.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get the last 10 users in reverse order of age
+     * const querySnapshot = firebase.firestore()
+     *   .collection('users')
+     *   .orderBy('age', 'desc')
+     *   .limitToLast(10)
+     *   .get();
+     * ```
+     *
+     * @param limitToLast The maximum number of items to return.
+     */
+    limitToLast(limitToLast: number): Query;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.
@@ -1921,6 +1958,28 @@ export namespace FirebaseFirestoreTypes {
      * @param settings A `Settings` object.
      */
     settings(settings: Settings): Promise<void>;
+    /**
+     * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+     * are made.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().clearPersistence();
+     * ```
+     */
+    clearPersistence(): Promise<void>;
+    /**
+     * Typically called to ensure a new Firestore instance is initialized before calling
+     * `firebase.firestore().clearPersistence()`.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().terminate();
+     * ```
+     */
+    terminate(): Promise<void>;
   }
 }
 

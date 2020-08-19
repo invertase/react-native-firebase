@@ -83,7 +83,8 @@
   if (firebaseJsonRaw == nil) {
     return @"{}";
   }
-
-  return firebaseJsonRaw;
+  
+  NSData *data = [[NSData alloc] initWithBase64EncodedString:firebaseJsonRaw options:0];
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];;
 }
 @end

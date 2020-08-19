@@ -1,10 +1,9 @@
 ---
 name: ⚠️ Bug/Issue report - Expo
-labels: 
+labels:
   - Platform: Expo
   - Resolution: Invalid
-about:
-  Report an issue with using React Native Firebase in Expo.
+about: Report an issue with using React Native Firebase in Expo.
 ---
 
 <!---
@@ -30,9 +29,7 @@ General Expo issues are no longer be allowed on the React Native Firebase issue 
 <!-- Include code snippets that show your usages of the library in the context of your project. -->
 <!-- Snippets that also show how and where the library is imported in JS are useful to debug issues relating to importing or methods not found issues -->
 
-
 Describe your issue here
-
 
 ---
 
@@ -80,6 +77,7 @@ Describe your issue here
 #### Have you converted to AndroidX?
 
 <!--- Mark any options that apply below -->
+
 - [ ] my application is an AndroidX application?
 - [ ] I am using `android/gradle.settings` `jetifier=true` for Android compatibility?
 - [ ] I am using the NPM package `jetifier` for react-native compatibility?
@@ -117,7 +115,6 @@ Describe your issue here
 </p>
 </details>
 
-
 ---
 
 ## Environment
@@ -149,10 +146,9 @@ Describe your issue here
   - `Y/N` & `VERSION`
 - **Are you using `Expo`?**
   - `Y` & `SDK VERSION`
-  
+
 </p>
 </details>
-
 
 <!-- Thanks for reading this far down ❤️  -->
 <!-- High quality, detailed issues are much easier to triage for maintainers -->
@@ -162,7 +158,4 @@ Describe your issue here
 
 ---
 
-Think `react-native-firebase` is great? Please consider supporting all of the project maintainers and contributors by donating via our [Open Collective](https://opencollective.com/react-native-firebase/donate) where all contributors can submit expenses. [[Learn More]](https://invertase.io/oss/react-native-firebase/contributing/donations-expenses)
-
 - 👉 Check out [`React Native Firebase`](https://twitter.com/rnfirebase) and [`Invertase`](https://twitter.com/invertaseio) on Twitter for updates on the library.
-

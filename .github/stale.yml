@@ -15,16 +15,16 @@ exemptLabels:
   - Help: Good First Issue
   - Impact: Web Implementation
 # Label to use when marking an issue as stale
-staleLabel: "Type: Stale"
+staleLabel: 'Type: Stale'
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
-  Hello 👋, to help manage issues we automatically close stale issues. 
-  
+  Hello 👋, to help manage issues we automatically close stale issues.
+
   This issue has been automatically marked as stale because it has not had activity for quite some time.
-  Has this issue been fixed, or does it still require the community's attention? 
-  
-  > This issue will be closed in 15 days if no further activity occurs. 
-  
+  Has this issue been fixed, or does it still require the community's attention?
+
+  > This issue will be closed in 15 days if no further activity occurs.
+
   Thank you for your contributions.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >

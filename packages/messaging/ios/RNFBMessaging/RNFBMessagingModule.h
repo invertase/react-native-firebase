@@ -16,10 +16,9 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import <React/RCTBridgeModule.h>
-#import <Firebase/Firebase.h>
 
-@interface RNFBMessagingModule : NSObject <RCTBridgeModule, FIRMessagingDelegate>
 
+@interface RNFBMessagingModule : NSObject <RCTBridgeModule>
++ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
 @end

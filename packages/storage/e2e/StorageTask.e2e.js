@@ -15,6 +15,15 @@
  *
  */
 
+function snapshotProperties(snapshot) {
+  snapshot.should.have.property('state');
+  snapshot.should.have.property('metadata');
+  snapshot.should.have.property('ref');
+  snapshot.should.have.property('task');
+  snapshot.should.have.property('totalBytes');
+  snapshot.should.have.property('bytesTransferred');
+}
+
 describe('storage() -> StorageTask', () => {
   describe('writeToFile()', () => {
     it('errors if permission denied', async () => {
@@ -36,16 +45,6 @@ describe('storage() -> StorageTask', () => {
         .storage()
         .ref('/ok.jpeg')
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
-
-      meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
-      meta.bytesTransferred.should.eql(meta.totalBytes);
-    });
-
-    it('downloads a file using deprecated downloadFile method', async () => {
-      const meta = await firebase
-        .storage()
-        .ref('/ok.jpeg')
-        .downloadFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
 
       meta.state.should.eql(firebase.storage.TaskState.SUCCESS);
       meta.bytesTransferred.should.eql(meta.totalBytes);
@@ -255,6 +254,25 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
+
+    it('should have access to the snapshot values outside of the Task thennable', async () => {
+      const jsonDerulo = JSON.stringify({ foo: 'bar' });
+
+      const bob = new jet.context.Blob([jsonDerulo], {
+        type: 'application/json',
+      });
+
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .put(bob);
+
+      await uploadTaskSnapshot;
+
+      const snapshot = uploadTaskSnapshot.snapshot;
+
+      snapshotProperties(snapshot);
+    });
   });
 
   describe('putFile()', () => {
@@ -340,6 +358,38 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
       uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
       uploadTaskSnapshot.metadata.should.be.an.Object();
+    });
+
+    it('should have access to the snapshot values outside of the Task thennable', async () => {
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
+
+      await uploadTaskSnapshot;
+
+      const snapshot = uploadTaskSnapshot.snapshot;
+
+      snapshotProperties(snapshot);
+    });
+
+    it('should have access to the snapshot values outside of the event subscriber', async () => {
+      const uploadTaskSnapshot = firebase
+        .storage()
+        .ref('/putStringBlob.json')
+        .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
+
+      const { resolve, promise } = Promise.defer();
+
+      uploadTaskSnapshot.on('state_changed', {
+        next: snapshot => {
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            snapshotProperties(snapshot);
+            resolve();
+          }
+        },
+      });
+      await promise;
     });
   });
 

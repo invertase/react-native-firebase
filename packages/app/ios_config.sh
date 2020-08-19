@@ -99,7 +99,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
     echo "Disabled Crashlytics auto disabler." # do nothing
   else
-    _PLIST_ENTRY_KEYS+=("firebase_crashlytics_collection_enabled")
+    _PLIST_ENTRY_KEYS+=("FirebaseCrashlyticsCollectionEnabled")
     _PLIST_ENTRY_TYPES+=("bool")
     _PLIST_ENTRY_VALUES+=("NO")
   fi

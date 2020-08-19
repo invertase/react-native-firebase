@@ -65,9 +65,10 @@ NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
 }
 
 NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
-  return @{@"stringValue": (id) value.stringValue ?: [NSNull null],
-      @"numberValue": (id) value.numberValue ?: [NSNull null], @"boolValue": @(value.boolValue),
-      @"source": convertFIRRemoteConfigSourceToNSString(value.source)};
+  return @{
+    @"value": (id) value.stringValue ?: [NSNull null],
+    @"source": convertFIRRemoteConfigSourceToNSString(value.source)
+  };
 }
 
 #pragma mark -
@@ -86,9 +87,25 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Config Methods
 
+RCT_EXPORT_METHOD(ensureInitialized:
+(FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
+    : (RCTPromiseRejectBlock) reject) {
+FIRRemoteConfigInitializationCompletion completionHandler = ^(NSError *__nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+      resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
+    }
+  };
+
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] ensureInitializedWithCompletionHandler: completionHandler];
+}
+
 RCT_EXPORT_METHOD(fetch:
-  (nonnull
-    NSNumber *)expirationDuration
+(FIRApp *) firebaseApp
+    : (nonnull
+        NSNumber *)expirationDuration
     : (RCTPromiseResolveBlock)resolve
     : (RCTPromiseRejectBlock)reject
 ) {
@@ -98,74 +115,97 @@ RCT_EXPORT_METHOD(fetch:
           @"code": convertFIRRemoteConfigFetchStatusToNSString(status),
           @"message": convertFIRRemoteConfigFetchStatusToNSStringDescription(status)} mutableCopy]];
     } else {
-      resolve([self resultWithConstants:[NSNull null]]);
+      resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
     }
   };
 
   if (expirationDuration == @(-1)) {
-    [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:completionHandler];
   } else {
-    [[FIRRemoteConfig remoteConfig] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
   }
 }
 
 RCT_EXPORT_METHOD(fetchAndActivate:
-  (RCTPromiseResolveBlock) resolve
+(FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock)reject
 ) {
-  FIRRemoteConfigFetchCompletion completionHandler = ^(FIRRemoteConfigFetchStatus status, NSError *__nullable error) {
+  FIRRemoteConfigFetchAndActivateCompletion completionHandler = ^(FIRRemoteConfigFetchAndActivateStatus status, NSError *__nullable error) {
     if (error) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{
-          @"code": convertFIRRemoteConfigFetchStatusToNSString(status),
-          @"message": convertFIRRemoteConfigFetchStatusToNSStringDescription(status)} mutableCopy]];
+       if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
+          resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      } else {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+        }
     } else {
-      resolve([self resultWithConstants:@([[FIRRemoteConfig remoteConfig] activateFetched])]);
+      resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
     }
   };
 
-  [[FIRRemoteConfig remoteConfig] fetchWithCompletionHandler:completionHandler];
+  [[FIRRemoteConfig remoteConfig] fetchAndActivateWithCompletionHandler:completionHandler];
 }
 
+
 RCT_EXPORT_METHOD(activate:
-  (RCTPromiseResolveBlock) resolve
+(FIRApp *) firebaseApp
+    : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  BOOL status = [[FIRRemoteConfig remoteConfig] activateFetched];
-  resolve([self resultWithConstants:@(status)]);
+  FIRRemoteConfigActivateCompletion completionHandler = ^(NSError *__nullable error) {
+    if(error){
+      if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
+          resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      } else {
+        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+      }
+      
+    } else {
+      resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+    }
+  };
+    
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletionHandler:completionHandler];
 }
 
 RCT_EXPORT_METHOD(setConfigSettings:
-  (NSDictionary *) configSettings
+(FIRApp *) firebaseApp
+    : (NSDictionary *) configSettings
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
   FIRRemoteConfigSettings *remoteConfigSettings =
-      [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:[configSettings[@"isDeveloperModeEnabled"] boolValue]];
+      [[FIRRemoteConfigSettings alloc] init];
 
   if ([configSettings objectForKey:@"minimumFetchInterval"]) {
     remoteConfigSettings.minimumFetchInterval = [configSettings[@"minimumFetchInterval"] doubleValue];
   }
 
-  [FIRRemoteConfig remoteConfig].configSettings = remoteConfigSettings;
-  resolve([self resultWithConstants:[NSNull null]]);
+  if ([configSettings objectForKey:@"fetchTimeout"]) {
+    remoteConfigSettings.fetchTimeout = [configSettings[@"fetchTimeout"] doubleValue];
+  }
+
+  [FIRRemoteConfig remoteConfigWithApp:firebaseApp].configSettings = remoteConfigSettings;
+  resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
 
 RCT_EXPORT_METHOD(setDefaults:
-  (NSDictionary *) defaults
+(FIRApp *) firebaseApp
+    : (NSDictionary *) defaults
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  [[FIRRemoteConfig remoteConfig] setDefaults:defaults];
-  resolve([self resultWithConstants:[NSNull null]]);
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaults:defaults];
+  resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
 }
-
 RCT_EXPORT_METHOD(setDefaultsFromResource:
-  (NSString *) fileName
+(FIRApp *) firebaseApp
+    : (NSString *) fileName
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject) {
   if ([[NSBundle mainBundle] pathForResource:fileName ofType:@"plist"] != nil) {
-    [[FIRRemoteConfig remoteConfig] setDefaultsFromPlistFileName:fileName];
-    resolve([self resultWithConstants:[NSNull null]]);
+    [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] setDefaultsFromPlistFileName:fileName];
+    resolve([self resultWithConstants:[NSNull null] firebaseApp:firebaseApp]);
   } else {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:[@{@"code": @"resource_not_found",
         @"message": @"The specified resource name was not found."} mutableCopy]];
@@ -175,33 +215,32 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
 #pragma mark -
 #pragma mark Internal Helper Methods
 
-- (NSDictionary *)resultWithConstants:(id)result {
+- (NSDictionary *)resultWithConstants:(id) result firebaseApp:(FIRApp *) firebaseApp {
   NSMutableDictionary *responseDict = [NSMutableDictionary new];
   responseDict[@"result"] = result;
-  responseDict[@"constants"] = [self getConstantsForApp];
+  responseDict[@"constants"] = [self getConstantsForApp:firebaseApp];
   return responseDict;
 }
 
-// TODO only for default app, add support for multiple apps once SDK supports it
-- (NSDictionary *)getConstantsForApp {
-  FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfig];
+- (NSDictionary *)getConstantsForApp:(FIRApp *) firebaseApp {
+  FIRRemoteConfig *remoteConfig = [FIRRemoteConfig remoteConfigWithApp:firebaseApp];
 
   NSDate *lastFetchTime = remoteConfig.lastFetchTime;
-  BOOL isDeveloperModeEnabled = [RCTConvert BOOL:@([remoteConfig configSettings].isDeveloperModeEnabled)];
   NSString *lastFetchStatus = convertFIRRemoteConfigFetchStatusToNSString(remoteConfig.lastFetchStatus);
   double minimumFetchInterval = [RCTConvert double:@([remoteConfig configSettings].minimumFetchInterval)];
+  double fetchTimeout = [RCTConvert double:@([remoteConfig configSettings].fetchTimeout)];
 
   NSMutableDictionary *values = [NSMutableDictionary new];
-  NSSet *keys = [[FIRRemoteConfig remoteConfig] keysWithPrefix:nil];
+  NSSet *keys = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] keysWithPrefix:nil];
   for (NSString *key in keys) {
-    FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
+    FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] configValueForKey:key];
     values[key] = convertFIRRemoteConfigValueToNSDictionary(value);
   }
 
   NSArray *defaultKeys = [remoteConfig allKeysFromSource:FIRRemoteConfigSourceDefault namespace:FIRNamespaceGoogleMobilePlatform];
   for (NSString *key in defaultKeys) {
     if ([values valueForKey:key] == nil) {
-      FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfig] configValueForKey:key];
+      FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] configValueForKey:key];
       values[key] = convertFIRRemoteConfigValueToNSDictionary(value);
     }
   }
@@ -209,21 +248,10 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
   return @{
       @"values": values,
       @"lastFetchStatus": lastFetchStatus,
-      @"isDeveloperModeEnabled": @(isDeveloperModeEnabled),
       @"lastFetchTime": @(round([lastFetchTime timeIntervalSince1970] * 1000.0)),
-      @"minimumFetchInterval": @(minimumFetchInterval)
+      @"minimumFetchInterval": @(minimumFetchInterval),
+      @"fetchTimeout": @(fetchTimeout)
   };
-}
-
-- (NSDictionary *)constantsToExport {
-  NSDictionary *firApps = [FIRApp allApps];
-  NSMutableDictionary *constants = [NSMutableDictionary new];
-  NSMutableDictionary *constantsForApps = [NSMutableDictionary new];
-  for (id key in firApps) {
-    constantsForApps[[RNFBSharedUtils getAppJavaScriptName:key]] = [self getConstantsForApp];
-  }
-  constants[@"REMOTE_CONFIG_APP_CONSTANTS"] = constantsForApps;
-  return constants;
 }
 
 @end

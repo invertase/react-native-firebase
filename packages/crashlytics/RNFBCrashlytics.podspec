@@ -1,28 +1,17 @@
 require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
 # Firebase SDK Override
-firebase_sdk_version = '~> 6.13.0'
-using_custom_firebase_sdk_version = defined? $FirebaseSDKVersion
-if using_custom_firebase_sdk_version
-  Pod::UI.puts "RNFBCrashlytics: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
-  firebase_sdk_version = $FirebaseSDKVersion
+coreVersionDetected = appPackage['version']
+coreVersionRequired = package['peerDependencies'][appPackage['name']]
+if appPackage['sdkVersions']
+  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
+else
+  firebase_sdk_version = '~> 6.28.1'
 end
-
-# Fabric SDK Override
-fabric_sdk_version = '~> 1.10.2'
-using_custom_fabric_sdk_version = defined? $FabricSDKVersion
-if using_custom_fabric_sdk_version
-  Pod::UI.puts "RNFBCrashlytics: Using user specified Fabric SDK version '#{$FabricSDKVersion}'"
-  fabric_sdk_version = $FabricSDKVersion
-end
-
-# Crashlytics SDK Override
-crashlytics_sdk_version = '~> 3.14.0'
-using_custom_crashlytics_sdk_version = defined? $CrashlyticsSDKVersion
-if using_custom_crashlytics_sdk_version
-  Pod::UI.puts "RNFBCrashlytics: Using user specified Crashlytics SDK version '#{$CrashlyticsSDKVersion}'"
-  crashlytics_sdk_version = $CrashlyticsSDKVersion
+if coreVersionDetected != coreVersionRequired
+  Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
 end
 
 Pod::Spec.new do |s|
@@ -39,10 +28,25 @@ Pod::Spec.new do |s|
   s.social_media_url    = 'http://twitter.com/invertaseio'
   s.ios.deployment_target = "9.0"
   s.source_files        = 'ios/**/*.{h,m}'
+
+  # React Native dependencies
   s.dependency          'React'
-  s.dependency          'Fabric', fabric_sdk_version
-  s.dependency          'Firebase/Core', firebase_sdk_version
-  s.dependency          'Crashlytics', crashlytics_sdk_version
   s.dependency          'RNFBApp'
-  s.static_framework    = false
+
+  if defined?($FirebaseSDKVersion)
+    Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
+    firebase_sdk_version = $FirebaseSDKVersion
+  end
+
+  # Firebase dependencies
+  s.dependency          'Firebase/Core', firebase_sdk_version
+  s.dependency          'Firebase/Crashlytics', firebase_sdk_version
+
+  if defined?($RNFirebaseAsStaticFramework)
+    Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
+    s.static_framework = $RNFirebaseAsStaticFramework
+  else
+    s.static_framework = false
+  end
+
 end

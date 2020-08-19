@@ -67,6 +67,7 @@ RCT_EXPORT_METHOD(buildLink:
         @"code": @"build-failed",
         @"message": @"Failed to build dynamic link for unknown reason",
     }];
+    return;
   }
 
   resolve(linkComponents.url.absoluteString);
@@ -99,7 +100,7 @@ RCT_EXPORT_METHOD(buildShortLink:
   } else {
     componentsOptions.pathLength = FIRShortDynamicLinkPathLengthDefault;
   }
-
+  linkComponents.options = componentsOptions;
 
   [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
     if (error) {
@@ -178,6 +179,40 @@ RCT_EXPORT_METHOD(getInitialLink:
     });
   } else {
     resolve([NSNull null]);
+  }
+}
+
+RCT_EXPORT_METHOD(resolveLink:
+  (NSString *) link
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject)
+{
+  id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
+    if (!error && dynamicLink && dynamicLink.url) {
+        resolve(@{
+            @"url": dynamicLink.url.absoluteString,
+            @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+        });
+    } else if (!error) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"not-found",
+          @"message": @"Dynamic link not found"
+      }];
+    } else {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+          @"code": @"resolve-link-error",
+          @"message":[error localizedDescription]
+      }];
+    }
+  };
+
+  NSURL *linkURL = [NSURL URLWithString:link];
+  BOOL success = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
+  if (!success) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+        @"code": @"not-found",
+        @"message": @"Dynamic link not found"
+    }];
   }
 }
 

@@ -395,4 +395,47 @@ describe('firestore().collection().where()', () => {
     const data = snapshot.docs[0].data();
     should.equal(data.map['foo.bar@gmail.com'], true);
   });
+
+  it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async () => {
+    try {
+      firebase
+        .firestore()
+        .collection('v6')
+        .where(firebase.firestore.FieldPath.documentId(), 'in', ['document-id'])
+        .orderBy('differentOrderBy', 'desc');
+
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("'FirestoreFieldPath' cannot be used in conjunction");
+      return Promise.resolve();
+    }
+  });
+
+  it('should correctly query integer values with in operator', async () => {
+    const ref = firebase.firestore().collection('v6');
+
+    await ref.add({ status: 1 });
+
+    const items = [];
+    await ref
+      .where('status', 'in', [1, 2])
+      .get()
+      .then($ => $.forEach(doc => items.push(doc.data())));
+
+    items.length.should.equal(1);
+  });
+
+  it('should correctly query integer values with array-contains operator', async () => {
+    const ref = firebase.firestore().collection('v6');
+
+    await ref.add({ status: [1, 2, 3] });
+
+    const items = [];
+    await ref
+      .where('status', 'array-contains', 2)
+      .get()
+      .then($ => $.forEach(doc => items.push(doc.data())));
+
+    items.length.should.equal(1);
+  });
 });
