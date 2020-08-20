@@ -5,19 +5,19 @@ on:
     branches:
       - '**'
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
   push:
     branches:
       - master
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
 jobs:
   # ------------------
@@ -168,7 +168,7 @@ jobs:
         if: always()
         run: gzip -9 adb-log.txt
         shell: bash
-  
+
       - name: Upload Emulator Log
         uses: actions/upload-artifact@v2
         if: always()
@@ -197,7 +197,7 @@ jobs:
         with:
           fetch-depth: 1
       - uses: actions/setup-node@v2-beta
-      
+
       - name: Install firebase CLI
         run: npm i -g firebase-tools
 
@@ -276,9 +276,3 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./node_modules/.bin/codecov
-
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: ios_app
-#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
