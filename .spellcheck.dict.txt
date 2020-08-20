@@ -43,6 +43,7 @@ enum
 ESLint
 Fastlane
 FCM
+firebase
 Firebase
 Firestore
 GDPR
@@ -131,5 +132,7 @@ Xcode
 Xcode.
 lifecycle
 SNS
+XMPP
+XCS
+firebase-admin
 SSV
-

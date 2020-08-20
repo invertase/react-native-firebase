@@ -25,6 +25,8 @@ cd ios/ && pod install
 > iOS requires further configuration before you can start receiving and sending
 > messages through Firebase. Read the documentation on how to [setup iOS with Firebase Cloud Messaging](/messaging/usage/ios-setup).
 
+> Use of the `sendMessage()` API and it's associated listeners requires a custom `XMPP` server. Read the documentation on how to [Messaging with XMPP](/messaging/usage/messaging-with-xmpp).
+
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
 
