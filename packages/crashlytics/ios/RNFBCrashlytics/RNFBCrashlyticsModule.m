@@ -53,7 +53,7 @@ RCT_EXPORT_METHOD(checkForUnsentReports:
 
 RCT_EXPORT_METHOD(crash) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
-    assert(NO);
+    @[][1];
   }
 }
 
