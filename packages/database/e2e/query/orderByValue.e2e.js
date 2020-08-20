@@ -32,12 +32,12 @@ describe('database().ref().orderByValue()', () => {
         .orderByValue();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You can't combine multiple orderBy calls`);
+      error.message.should.containEql("You can't combine multiple orderBy calls");
       return Promise.resolve();
     }
   });
-
-  it('order by value', async () => {
+  // TODO potentially flakey on CI iOS - possible crash
+  xit('order by value', async () => {
     const ref = firebase
       .database()
       .ref(TEST_PATH)

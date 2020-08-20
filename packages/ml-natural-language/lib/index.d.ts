@@ -15,33 +15,29 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase ML Kit package for React Native.
  *
  * #### Example 1
  *
- * Access the firebase export from the `mlKitLanguage` package:
+ * Access the firebase export from the `naturalLanguage` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * #### Example 2
  *
- * Using the default export from the `mlKitLanguage` package:
+ * Using the default export from the `naturalLanguage` package:
  *
  * ```js
- * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
+ * import naturalLanguage from '@react-native-firebase/ml-natural-language';
  *
- * // mlKitLanguage().X
+ * // naturalLanguage().X
  * ```
  *
  * #### Example 3
@@ -52,12 +48,15 @@ import {
  * import firebase from '@react-native-firebase/app';
  * import '@react-native-firebase/ml-natural-language';
  *
- * // firebase.mlKitLanguage().X
+ * // firebase.naturalLanguage().X
  * ```
  *
  * @firebase ml-natural-language
  */
-export namespace MlKitLanguage {
+export namespace FirebaseLanguageTypes {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
 
   /**
@@ -92,100 +91,30 @@ export namespace MlKitLanguage {
   }
 
   /**
-   * An interface representing a suggest reply, an array of these are returned from `SmartReplyConversation.getSuggestedReplies`
+   * An interface representing a suggested reply, an array of these are returned from `suggestReplies`.
    *
    * #### Example
    *
    * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-   * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
+   * const replies = await firebase.naturalLanguage().suggestReplies([
+   *   { text: "Hey, long time no speak!", },
+   *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
+   *   { text: 'We should catchup some time!', },
+   *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
+   * ]);
    *
-   * const suggestedReplies = await conversation.getSuggestedReplies();
-   * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
+   * replies.forEach(reply => {
+   *   console.log(reply.text);
+   * });
+   *
    * ```
+   *
    */
   export interface SuggestedReply {
+    /**
+     * The smart reply text.
+     */
     text: string;
-  }
-
-  /**
-   * A class representing a Smart Reply conversation in your app.
-   *
-   * #### Example
-   *
-   * ```js
-   * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-   * ```
-   *
-   */
-  export class SmartReplyConversation {
-    /**
-     * Add a local message to this conversation, e.g. for the currently signed in user on this device.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('Hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     * conversation.addLocalUserMessage('That sounds great!');
-     * conversation.addRemoteUserMessage('Great, does 12pm work for you?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     *
-     * @param text The local users message text.
-     * @param timestamp The timestamp of when the message was created.
-     */
-    addLocalUserMessage(text: string, timestamp?: number): void;
-
-    /**
-     * Add a remote message to this conversation, e.g. for a user that's not on this device.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     *
-     * @param text The remote users message text.
-     * @param timestamp The timestamp of when the message was received.
-     * @param remoteUserId The remote users identifier in your app.
-     */
-    addRemoteUserMessage(text: string, timestamp: number, remoteUserId: string): void;
-
-    /**
-     * Get suggested replies for the current conversation.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     *
-     * const suggestedReplies = await conversation.getSuggestedReplies();
-     * console.log(suggestedReplies); // [ { text: 'Sure' }, ...etc ]
-     * ```
-     */
-    getSuggestedReplies(): Promise<SuggestedReply[]>;
-
-    /**
-     * Removes all messages from this conversation, e.g. all messages added via `addLocalUserMessage` and `addRemoteUserMessage`.
-     *
-     * #### Example
-     *
-     * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
-     * conversation.addRemoteUserMessage('hey, want to get lunch today?', Date.now(), 'jimBobTheGreat');
-     * // start over
-     * conversation.clearMessages();
-     * ```
-     */
-    clearMessages(): void;
   }
 
   /**
@@ -198,10 +127,10 @@ export namespace MlKitLanguage {
    * Get the ML Kit service for the default app:
    *
    * ```js
-   * const defaultAppMLKit = firebase.mlKitLanguage();
+   * const defaultAppMLKit = firebase.naturalLanguage();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Identifies the main language for the given text.
      *
@@ -212,10 +141,10 @@ export namespace MlKitLanguage {
      * #### Example
      *
      * ```js
-     * const language = await firebase.mlKitLanguage().identifyLanguage('Hello there. General Kenobi.');
+     * const language = await firebase.naturalLanguage().identifyLanguage('Hello there. General Kenobi.');
      * console.warn(language); // en
      *
-     * const unknownLanguage = await firebase.mlKitLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
+     * const unknownLanguage = await firebase.naturalLanguage().identifyLanguage('foo bar baz', { confidenceThreshold: 0.9 });
      * console.warn(language); // und
      * ```
      *
@@ -230,7 +159,7 @@ export namespace MlKitLanguage {
      * #### Example
      *
      * ```js
-     * const identifiedLanguages = firebase.mlKitLanguage().identifyPossibleLanguages('hello world');
+     * const identifiedLanguages = firebase.naturalLanguage().identifyPossibleLanguages('hello world');
      * console.warn(identifiedLanguages[0].language); // en
      * ```
      *
@@ -243,63 +172,104 @@ export namespace MlKitLanguage {
     ): Promise<IdentifiedLanguage[]>;
 
     /**
-     * Returns a new instance of SmartReplyConversation.
+     * Returns suggested replies for a conversation.
      *
      * #### Example
      *
      * ```js
-     * const conversation = firebase.mlKitLanguage().newSmartReplyConversation();
+     * const replies = await firebase.naturalLanguage().suggestReplies([
+     *   { text: "Hey, long time no speak!", },
+     *   { text: 'I know right, it has been a while..', userId: 'xxxx', isLocalUser: false },
+     *   { text: 'We should catchup some time!', },
+     *   { text: 'Definitely, how about we go for lunch this week?', userId: 'xxxx', isLocalUser: false },
+     * ]);
      * ```
      *
-     * @param messageHistoryLimit Optional value to specify the number of messages to keep in history, messages in history are used with `SmartReplyConversation.getSuggestedReplies` and are sent natively every time this method is called. Defaults to 30.
+     * @param messages An array of `TextMessage` interfaces.
      */
-    newSmartReplyConversation(messageHistoryLimit?: number): SmartReplyConversation;
+    suggestReplies(messages: TextMessage[]): Promise<SuggestedReply[]>;
+  }
+
+  /**
+   * A `TextMessage` interface provided to `suggestReplies()`.
+   */
+  export interface TextMessage {
+    /**
+     * The message text.
+     *
+     * This is required and must not be an empty string.
+     */
+    text: string;
+
+    /**
+     * Whether the message is a local user. If false, a `userId` must be provided for the message.
+     *
+     * Defaults to true.
+     */
+    isLocalUser?: boolean;
+
+    /**
+     * A user ID of a remote user.
+     *
+     * Used to help better identify users to provide more accurate replies.
+     */
+    userId?: string;
+
+    /**
+     * The timestamp of the message in milliseconds.
+     *
+     * Defaults to now (`Date.now()`).
+     */
+    timestamp?: number;
   }
 }
 
 declare module '@react-native-firebase/ml-natural-language' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/ml-natural-language';
-   * firebase.mlKitLanguage().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const MlKitLanguageDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    MlKitLanguage.Module,
-    MlKitLanguage.Statics
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseLanguageTypes.Module,
+    FirebaseLanguageTypes.Statics
   >;
-  /**
-   * @example
-   * ```js
-   * import mlKitLanguage from '@react-native-firebase/ml-natural-language';
-   * mlKitLanguage().X(...);
-   * ```
-   */
-  export default MlKitLanguageDefaultExport;
+  export default defaultExport;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * MlKitLanguage
-     */
-    mlKitLanguage: ReactNativeFirebaseModuleAndStatics<MlKitLanguage.Module, MlKitLanguage.Statics>;
-  }
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  interface FirebaseApp {
+    interface Module {
+      naturalLanguage: FirebaseModuleWithStaticsAndApp<
+        FirebaseLanguageTypes.Module,
+        FirebaseLanguageTypes.Statics
+      >;
+    }
+
+    interface FirebaseApp {
+      naturalLanguage(): FirebaseLanguageTypes.Module;
+    }
+  }
+}
+
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
     /**
-     * MlKitLanguage
+     * If `true`, the Language ID Model will be installed onto the device.
      */
-    mlKitLanguage(): MlKitLanguage.Module;
+    ml_natural_language_language_id_model: boolean;
+
+    /**
+     * If `true`, the Smart Reply Model will be installed onto the device.
+     */
+    ml_natural_language_smart_reply_model: boolean;
   }
 }

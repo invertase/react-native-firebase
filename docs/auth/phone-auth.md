@@ -1,64 +1,86 @@
 ---
-title: Phone Auth
-description: React Native Firebase provides integration with Firebase Phone Authentication.
+title: Phone Authentication
+description: Sign-in users with their phone number.
+next: /firestore/usage
+previous: /auth/social-auth
 ---
 
-# Phone Auth
-
 Phone authentication allows users to sign in to Firebase using their phone as the authenticator. An SMS message is sent
-to the user via their phone number containing a unique code. Once the code has been authorized, the user is able to 
-sign in to Firebase.
+to the user via their phone number containing a unique code. Once the code has been authorized, the user is able to sign
+in to Firebase.
 
-> Firebase Phone Auth is not supported in all countries. Please see their [FAQs](https://firebase.google.com/support/faq/#develop) for more information. 
+Phone numbers that end users provide for authentication will be sent and stored by Google to improve our spam and abuse
+prevention across Google services, including but not limited to Firebase. Developers should ensure they have appropriate
+end-user consent prior to using the Firebase Authentication phone number sign-in service.
 
-React Native Firebase provides two separate integration flows:
+> Firebase Phone Auth is not supported in all countries. Please see their [FAQs](https://firebase.google.com/support/faq/#develop) for more information.
 
-- **`signInWithPhoneNumber`**: The recommended flow, provides a straightforward API for authenticating.
-- **`verifyPhoneNumber`**: A custom flow, gives full control to the developer to implement. Suitable for custom 
-authentication flows.
+Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-## signInWithPhoneNumber
+# Sign-in
 
-The `signInWithPhoneNumber` method handles the entire authentication flow, however provides less flexibility over
-error handling. Some Android devices may also automatically handle the incoming SMS code and authenticate the user
-automatically.
+The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the
+user with a code, which they must then confirm. The `signInWithPhoneNumber` method returns a confirmation method which accepts
+a code. Based on whether the code is correct for the device, the method rejects or resolves.
 
-**Step 1**: Trigger phone auth
+The example below demonstrates how you could setup such a flow within your own application:
 
-Whilst testing, ensure you [whitelist your device](https://firebase.google.com/docs/auth/ios/phone-auth#test-with-whitelisted-phone-numbers).
-
-```js
+```jsx
+import React, { useState } from 'react';
+import { Button, TextInput } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
-const { confirm } = await auth().signInWithPhoneNumber('+1 650-555-3434');
-``` 
+function PhoneSignIn() {
+  // If null, no SMS has been sent
+  const [confirm, setConfirm] = useState(null);
 
-**Step 2**: Confirm code
+  const [code, setCode] = useState('');
 
-Once the message has been received, the user will need to input it manually within your login flow.
-
-```js
-try {
-  await confirm('12345'); // User entered code
-  // Successful login - onAuthStateChanged is triggered
-} catch (e) {
-  console.error(e); // Invalid code
-}
-``` 
-
-**Step 3**: Android automatic verification
-
-Some Android devices may automatically verify codes received via SMS. If this happens, the `onAuthStateChanged` method
-is triggered, meaning no manual code verification is required.
-
-```js
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    // Stop the login flow / Navigate to next page
+  // Handle the button press
+  async function signInWithPhoneNumber(phoneNumber) {
+    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
   }
-});
+
+  async function confirmCode() {
+    try {
+      await confirm.confirm(code);
+    } catch (error) {
+      console.log('Invalid code.');
+    }
+  }
+
+  if (!confirm) {
+    return (
+      <Button
+        title="Phone Number Sign In"
+        onPress={() => signInWithPhoneNumber('+1 650-555-3434')}
+      />
+    );
+  }
+
+  return (
+    <>
+      <TextInput value={code} onChangeText={text => setCode(text)} />
+      <Button title="Confirm Code" onPress={() => confirmCode()} />
+    </>
+  );
+}
 ```
 
-## verifyPhoneNumber
+Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
+with the new authentication state of the user.
 
-*TODO* @ehesp @salakar
+# Testing
+
+Firebase provides support for locally testing phone numbers. For local testing to work, you must have ensured your local
+machine SHA1 debug key was added whilst creating your application on the Firebase Console. View the [Getting Started](/)
+guide on how to set this up.
+
+On the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers), select the "Phone" authentication provider and click on the
+"Phone numbers for testing" dropdown.
+
+Enter a new phone number (e.g. `+44 7444 555666`) and a test code (e.g. `123456`).
+
+Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will
+cause a successful sign-in.

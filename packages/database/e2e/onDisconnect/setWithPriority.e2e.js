@@ -36,7 +36,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
       ref.setWithPriority();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'value' must be defined`);
+      error.message.should.containEql("'value' must be defined");
       return Promise.resolve();
     }
   });
@@ -50,7 +50,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
       ref.setWithPriority(null, { foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'priority' must be a number, string or null value`);
+      error.message.should.containEql("'priority' must be a number, string or null value");
       return Promise.resolve();
     }
   });
@@ -64,7 +64,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
       ref.setWithPriority(null, 1, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

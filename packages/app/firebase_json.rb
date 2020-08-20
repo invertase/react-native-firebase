@@ -47,7 +47,7 @@ unless $firebase_json_path
       begin
         $firebase_json_config = JSON.parse(File.read(firebase_json))['react-native']
         Pod::UI.puts "Using firebase.json from '#{firebase_json}'"
-        Pod::UI.puts $firebase_json_config
+        # Pod::UI.puts $firebase_json_config
       rescue => error
         Pod::UI.warn "An error occurred parsing the firebase.json located at '#{firebase_json}':"
         Pod::UI.warn error

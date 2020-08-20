@@ -16,7 +16,8 @@
  */
 
 #import <Foundation/Foundation.h>
-
+#import <Firebase/Firebase.h>
+#import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBFirestoreModule : NSObject <RCTBridgeModule>

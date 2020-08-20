@@ -75,6 +75,8 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
       signalled = true;
       data = updateData;
       condition.signalAll();
+    } catch (Exception e) {
+      // do nothing
     } finally {
       lock.unlock();
     }

@@ -31,7 +31,7 @@ describe('database().ref().setPriority()', () => {
         .setPriority({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'priority' must be a number, string or null value`);
+      error.message.should.containEql("'priority' must be a number, string or null value");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().setPriority()', () => {
         .setPriority(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

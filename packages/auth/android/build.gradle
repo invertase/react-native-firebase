@@ -1,21 +1,50 @@
+import io.invertase.gradle.common.PackageJson
+
 buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.0'
+  // The Android Gradle plugin is only required when opening the android folder stand-alone.
+  // This avoids unnecessary downloads and potential conflicts when the library is included as a
+  // module dependency in an application project.
+  if (project == rootProject) {
+    repositories {
+      google()
+      jcenter()
+    }
+
+    dependencies {
+      classpath("com.android.tools.build:gradle:4.0.0")
+    }
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.3"
+  id "io.invertase.gradle.build" version "1.4"
 }
+
+def appProject
+if (findProject(':@react-native-firebase_app')) {
+  appProject = project(':@react-native-firebase_app')
+} else if (findProject(':react-native-firebase_app')) {
+  appProject = project(':react-native-firebase_app')
+} else {
+  throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+}
+def packageJson = PackageJson.getForProject(project)
+def appPackageJson = PackageJson.getForProject(appProject)
+def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "25.5.0"
+def coreVersionDetected = appPackageJson['version']
+def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
+// Only log after build completed so log warning appears at the end
+if (coreVersionDetected != coreVersionRequired) {
+  gradle.buildFinished {
+    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
+  }
+}
+
 
 project.ext {
   set('react-native', [
     versions: [
-      android           : [
+      android : [
         minSdk    : 16,
         targetSdk : 28,
         compileSdk: 28,
@@ -23,13 +52,8 @@ project.ext {
         // overriding here though to match the version RN uses
         buildTools: "28.0.3"
       ],
-
-      googlePlayServices: [
-        base: "16.1.0",
-      ],
-
       firebase          : [
-        auth: "17.0.0"
+        bom : firebaseBomVersion,
       ],
     ],
   ])
@@ -55,9 +79,9 @@ repositories {
 }
 
 dependencies {
-  api project(':@react-native-firebase_app')
-  implementation "com.google.firebase:firebase-auth:${ReactNative.ext.getVersion("firebase", "auth")}"
-  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
+  api appProject
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-auth"
 }
 
 ReactNative.shared.applyPackageVersion()

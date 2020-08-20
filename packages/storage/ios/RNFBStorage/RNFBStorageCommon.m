@@ -21,32 +21,9 @@
 
 #import "RNFBStorageCommon.h"
 #import "RNFBSharedUtils.h"
+#import "RNFBUtilsModule.h"
 
 @implementation RNFBStorageCommon
-
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath {
-  return [localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"];
-}
-
-+ (BOOL)unused_isHeic:(NSString *)localFilePath {
-  return [[localFilePath pathExtension] caseInsensitiveCompare:@"heic"] == NSOrderedSame;
-}
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  PHAsset *asset;
-
-  if ([localFilePath hasPrefix:@"assets-library://"]) {
-    NSURL *localFile = [[NSURL alloc] initWithString:localFilePath];
-    asset = [[PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil] firstObject];
-  } else {
-    NSURLComponents *components = [NSURLComponents componentsWithString:localFilePath];
-    NSArray *queryItems = components.queryItems;
-    NSString *assetId = [self valueForKey:@"id" fromQueryItems:queryItems];
-    asset = [[PHAsset fetchAssetsWithLocalIdentifiers:@[assetId] options:nil] firstObject];
-  }
-
-  return asset;
-}
 
 + (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format {
   if ([format isEqualToString:@"base64"]) {
@@ -69,12 +46,6 @@
   }
 
   return nil;
-}
-
-+ (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
-  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
-  NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
-  return queryItem.value;
 }
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI {
@@ -106,8 +77,14 @@
     NSURL *temporaryFileUrl,
     NSString *contentType
 ))completion {
-  if ([RNFBStorageCommon isRemoteAsset:localFilePath]) {
-    PHAsset *asset = [RNFBStorageCommon fetchAssetForPath:localFilePath];
+  if ([RNFBUtilsModule isRemoteAsset:localFilePath]) {
+    PHAsset *asset = [RNFBUtilsModule fetchAssetForPath:localFilePath];
+      
+  if (!asset) {
+    completion(@[@"asset-library-removed", @"iOS 'asset-library://' & 'ph://' URLs have been removed, please provide the correct path to resource."], nil, nil);
+      
+    return;
+  }
     NSURL *temporaryFileUrl = [RNFBStorageCommon createTempFileUrl];
     [RNFBStorageCommon downloadAsset:asset toURL:temporaryFileUrl completion:^(
         NSArray *errorCodeMessageArray,
@@ -211,9 +188,17 @@
 
       NSArray<PHAssetResource *> *resources = [PHAssetResource assetResourcesForAsset:asset];
       for (PHAssetResource *resource in resources) {
-        exportSession.outputFileType = resource.uniformTypeIdentifier;
-        if (exportSession.outputFileType != nil)
-          break;
+        if (resources.count > 1) {
+          if (resource.type != PHAssetResourceTypeVideo) {
+            continue;
+          } else {
+            exportSession.outputFileType = resource.uniformTypeIdentifier;
+          }
+        } else {
+          exportSession.outputFileType = resource.uniformTypeIdentifier;
+        }
+
+        if (exportSession.outputFileType != nil) break;
       }
 
       [exportSession exportAsynchronouslyWithCompletionHandler:^{
@@ -299,6 +284,25 @@
   return storageMetadata;
 }
 
++ (NSDictionary *)listResultToDict:(FIRStorageListResult *)listResult {
+  NSMutableArray *items = [[NSMutableArray alloc]init];
+  NSMutableArray *prefixes = [[NSMutableArray alloc]init];
+
+  for (FIRStorageReference *ref in listResult.items) {
+    [items addObject:[ref fullPath]];
+  }
+
+  for (FIRStorageReference *ref in listResult.prefixes) {
+    [prefixes addObject:[ref fullPath]];
+  }
+
+  return @{
+    @"nextPageToken": [listResult pageToken] != nil ? (id) [listResult pageToken] : [NSNull null],
+    @"items": items,
+    @"prefixes": prefixes,
+  };
+}
+
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
   if (task == nil) {
     return [@{
@@ -318,7 +322,7 @@
 
   return [@{
       @"bytesTransferred": @(task.progress.completedUnitCount),
-      @"metadata": storageMetadata,
+      @"metadata": storageMetadata != nil ? storageMetadata : [NSNull null],
       @"state": state,
       @"totalBytes": @(task.progress.totalUnitCount)
   } mutableCopy];

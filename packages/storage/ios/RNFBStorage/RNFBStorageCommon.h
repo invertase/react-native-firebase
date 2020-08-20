@@ -25,6 +25,8 @@
 
 + (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata;
 
++ (NSDictionary *)listResultToDict:(FIRStorageListResult *)listResult;
+
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI;

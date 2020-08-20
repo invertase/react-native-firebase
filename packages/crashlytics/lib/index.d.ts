@@ -15,18 +15,12 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Crashlytics package for React Native.
  *
- * #### Example 1
- *
- * Access the firebase export from the `crashlytics` package:
+ * #### Example: Access the firebase export from the `crashlytics` package:
  *
  * ```js
  * import { firebase } from '@react-native-firebase/crashlytics';
@@ -34,9 +28,7 @@ import {
  * // firebase.crashlytics().X
  * ```
  *
- * #### Example 2
- *
- * Using the default export from the `crashlytics` package:
+ * #### Example: Using the default export from the `crashlytics` package:
  *
  * ```js
  * import crashlytics from '@react-native-firebase/crashlytics';
@@ -44,9 +36,7 @@ import {
  * // crashlytics().X
  * ```
  *
- * #### Example 3
- *
- * Using the default export from the `app` package:
+ * #### Example: Using the default export from the `app` package:
  *
  * ```js
  * import firebase from '@react-native-firebase/app';
@@ -57,7 +47,10 @@ import {
  *
  * @firebase crashlytics
  */
-export namespace Crashlytics {
+export namespace FirebaseCrashlyticsTypes {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
 
   /**
@@ -73,7 +66,7 @@ export namespace Crashlytics {
    * const defaultAppCrashlytics = firebase.crashlytics();
    * ```
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
      * Whether Crashlytics reporting is enabled.
      *
@@ -85,9 +78,54 @@ export namespace Crashlytics {
      *
      */
     isCrashlyticsCollectionEnabled: true;
+    /**
+     * Determines whether there are any unsent crash reports cached on the device. The callback only executes
+     * if automatic data collection is disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * async checkReports() {
+     * // returns boolean value
+     *  const unsentReports = await firebase.crashlytics().checkForUnsentReports();
+     * }
+     *
+     * checkReports();
+     * ```
+     *
+     */
+    checkForUnsentReports(): Promise<boolean>;
+    /**
+     * Deletes any unsent reports on the device. This method only applies if automatic data collection is
+     * disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.crashlytics().deleteUnsentReports();
+     * ```
+     *
+     */
+    deleteUnsentReports(): Promise<void>;
+    /**
+     * Returns a boolean value indicating whether the app crashed during the previous execution.
+     *
+     * #### Example
+     *
+     * ```js
+     * async didCrashPreviously() {
+     * // returns boolean value
+     * const didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();
+     * }
+     *
+     * didCrashPreviously();
+     * ```
+     *
+     */
+    didCrashOnPreviousExecution(): Promise<boolean>;
 
     /**
-     * Cause your app to crash for testing purposes.
+     * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
      *
      * #### Example
      *
@@ -104,7 +142,7 @@ export namespace Crashlytics {
      * #### Example
      *
      * ```js
-     * firebase.crashlytics().logEvent('Testing a crash');
+     * firebase.crashlytics().log('Testing a crash');
      * firebase.crashlytics().crash();
      * ```
      *
@@ -116,6 +154,8 @@ export namespace Crashlytics {
      * Record a JavaScript Error.
      *
      * The JavaScript stack trace is converted into a mock native iOS or Android exception before submission.
+     * The line numbers in the stack trace (if available) will be relative to the javascript bundle built by your packager,
+     * after whatever transpilation or minimization steps happen. You will need to maintain sourcemaps to decode them if desired.
      *
      * #### Example
      *
@@ -128,6 +168,17 @@ export namespace Crashlytics {
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
      */
     recordError(error: Error): void;
+    /**
+     * Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
+     * automatic data collection is disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.crashlytics().sendUnsentReports();
+     * ```
+     */
+    sendUnsentReports(): void;
 
     /**
      * Specify a user identifier which will be visible in the Firebase Crashlytics console.
@@ -149,36 +200,6 @@ export namespace Crashlytics {
      * @param userId An arbitrary string that ties an end-user to a record in your system e.g. a database record id.
      */
     setUserId(userId: string): Promise<null>;
-
-    /**
-     * Optionally specify a user name which will be visible in the Firebase Crashlytics console.
-     *
-     * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.crashlytics().setUserName('Alias');
-     * ```
-     *
-     * @param userName A string representing an end-user's name or app username
-     */
-    setUserName(userName: string): Promise<null>;
-
-    /**
-     * Optionally specify a user email which will be visible in the Firebase Crashlytics console.
-     *
-     * If you choose to collect contact information it is strongly recommend that you disclose this in your apps privacy policy.
-     *
-     * #### Example
-     *
-     * ```js
-     * firebase.crashlytics().setUserEmail('user@gmail.com');
-     * ```
-     *
-     * @param userEmail A users email address.
-     */
-    setUserEmail(userEmail: string): Promise<null>;
 
     /**
      * Sets a string value to be associated with the given attribute name which will be visible in the Firebase Crashlytics console.
@@ -229,50 +250,43 @@ export namespace Crashlytics {
 }
 
 declare module '@react-native-firebase/crashlytics' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  /**
-   * @example
-   * ```js
-   * import { firebase } from '@react-native-firebase/crashlytics';
-   * firebase.crashlytics().X(...);
-   * ```
-   */
-  export const firebase = FirebaseNamespaceExport;
-
-  const CrashlyticsDefaultExport: ReactNativeFirebaseModuleAndStatics<
-    Crashlytics.Module,
-    Crashlytics.Statics
+  const defaultExport: FirebaseModuleWithStatics<
+    FirebaseCrashlyticsTypes.Module,
+    FirebaseCrashlyticsTypes.Statics
   >;
-  /**
-   * @example
-   * ```js
-   * import crashlytics from '@react-native-firebase/crashlytics';
-   * crashlytics().X(...);
-   * ```
-   */
-  export default CrashlyticsDefaultExport;
+  export default defaultExport;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    /**
-     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
-     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
-     */
-    crashlytics: ReactNativeFirebaseModuleAndStatics<Crashlytics.Module, Crashlytics.Statics>;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+    interface Module {
+      crashlytics: FirebaseModuleWithStatics<
+        FirebaseCrashlyticsTypes.Module,
+        FirebaseCrashlyticsTypes.Statics
+      >;
+    }
+    interface FirebaseApp {
+      crashlytics(): FirebaseCrashlyticsTypes.Module;
+    }
   }
+}
 
-  interface FirebaseApp {
-    /**
-     * Firebase Crashlytics helps you track, prioritize, and fix stability issues that erode app quality, in realtime.
-     * Spend less time triaging and troubleshooting crashes and more time building app features that delight users.
-     */
-    crashlytics(): Crashlytics.Module;
+namespace ReactNativeFirebase {
+  interface FirebaseJsonConfig {
+    crashlytics_ndk_enabled: boolean;
+    crashlytics_debug_enabled: boolean;
+    crashlytics_auto_collection_enabled: boolean;
   }
 }

@@ -15,10 +15,9 @@
  *
  */
 
-import StackTrace from 'stacktrace-js';
+import { isError, once } from '@react-native-firebase/app/lib/common';
 import tracking from 'promise/setimmediate/rejection-tracking';
-
-import { isError, once } from '@react-native-firebase/common';
+import StackTrace from 'stacktrace-js';
 
 export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   const nativeObj = {};
@@ -29,17 +28,22 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
   nativeObj.frames = [];
   for (let i = 0; i < stackFrames.length; i++) {
     const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
-    const subStrLen = fileName.indexOf('?') < 0 ? fileName.length : fileName.indexOf('?');
-    const fileNameParsed =
-      fileName && fileName.length ? fileName.substring(0, subStrLen) : '<unknown>';
+    let fileNameParsed = '<unknown>';
+    if (fileName) {
+      const subStrLen = fileName.indexOf('?');
+      if (subStrLen < 0) {
+        fileNameParsed = fileName;
+      } else if (subStrLen > 0) {
+        fileNameParsed = fileName.substring(0, subStrLen);
+      }
+    }
 
     nativeObj.frames.push({
       src: source,
       line: lineNumber || 0,
       col: columnNumber || 0,
       fn: functionName || '<unknown>',
-      file: `${fileNameParsed.length ? fileNameParsed : '<unknown>'}:${lineNumber ||
-        0}:${columnNumber || 0}`,
+      file: `${fileNameParsed}:${lineNumber || 0}:${columnNumber || 0}`,
     });
   }
 
@@ -50,7 +54,9 @@ export const setGlobalErrorHandler = once(nativeModule => {
   const originalHandler = ErrorUtils.getGlobalHandler();
 
   async function handler(error, fatal) {
-    if (__DEV__) return originalHandler(error, fatal);
+    if (__DEV__) {
+      return originalHandler(error, fatal);
+    }
 
     if (!isError(error)) {
       await nativeModule.logPromise(`Unknown Error: ${error}`);

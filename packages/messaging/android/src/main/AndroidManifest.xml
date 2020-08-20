@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="io.invertase.firebase.messaging">
+
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+  <application>
+    <service android:name=".ReactNativeFirebaseMessagingHeadlessService" />
+    <service android:name=".ReactNativeFirebaseMessagingService"
+             android:exported="false">
+      <intent-filter>
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>
+    </service>
+    <receiver
+      android:name=".ReactNativeFirebaseMessagingReceiver"
+      android:exported="true"
+      android:permission="com.google.android.c2dm.permission.SEND">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+      </intent-filter>
+    </receiver>
+
+    <meta-data
+      android:name="firebase_messaging_auto_init_enabled"
+      android:value="${firebaseJsonAutoInitEnabled}"/>
+    <meta-data
+      android:name="com.google.firebase.messaging.default_notification_channel_id"
+      android:value="${firebaseJsonNotificationChannelId}" />
+    <meta-data
+      android:name="com.google.firebase.messaging.default_notification_color"
+      android:resource="${firebaseJsonNotificationColor}" />
+  </application>
+</manifest>

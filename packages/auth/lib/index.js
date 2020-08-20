@@ -15,29 +15,28 @@
  *
  */
 
+import { isAndroid, isBoolean, isString, isNull } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
-import { isAndroid } from '@react-native-firebase/common';
-
+import ConfirmationResult from './ConfirmationResult';
+import PhoneAuthListener from './PhoneAuthListener';
 import EmailAuthProvider from './providers/EmailAuthProvider';
-import PhoneAuthProvider from './providers/PhoneAuthProvider';
-import GoogleAuthProvider from './providers/GoogleAuthProvider';
-import GithubAuthProvider from './providers/GithubAuthProvider';
-import OAuthProvider from './providers/OAuthProvider';
-import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import FacebookAuthProvider from './providers/FacebookAuthProvider';
-
+import GithubAuthProvider from './providers/GithubAuthProvider';
+import GoogleAuthProvider from './providers/GoogleAuthProvider';
+import OAuthProvider from './providers/OAuthProvider';
+import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import TwitterAuthProvider from './providers/TwitterAuthProvider';
+import AppleAuthProvider from './providers/AppleAuthProvider';
+import Settings from './Settings';
 import User from './User';
 import version from './version';
-import Settings from './Settings';
-import PhoneAuthListener from './PhoneAuthListener';
-import ConfirmationResult from './ConfirmationResult';
 
 const statics = {
+  AppleAuthProvider,
   EmailAuthProvider,
   PhoneAuthProvider,
   GoogleAuthProvider,
@@ -96,13 +95,10 @@ class FirebaseAuthModule extends FirebaseModule {
     return this._languageCode;
   }
 
-  set languageCode(code) {
-    this._languageCode = code;
-    this.native.setLanguageCode(code);
-  }
-
   get settings() {
-    if (!this._settings) this._settings = new Settings(this);
+    if (!this._settings) {
+      this._settings = new Settings(this);
+    }
     return this._settings;
   }
 
@@ -128,29 +124,70 @@ class FirebaseAuthModule extends FirebaseModule {
     };
   }
 
-  onAuthStateChanged(listener) {
+  async setLanguageCode(code) {
+    if (!isString(code) && !isNull(code)) {
+      throw new Error(
+        "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
+      );
+    }
+
+    await this.native.setLanguageCode(code);
+
+    if (code === null) {
+      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+      if (!this.languageCode) {
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      }
+    } else {
+      this._languageCode = code;
+    }
+  }
+
+  _parseListener(listenerOrObserver) {
+    return typeof listenerOrObserver === 'object'
+      ? listenerOrObserver.next.bind(listenerOrObserver)
+      : listenerOrObserver;
+  }
+
+  onAuthStateChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
     );
 
-    if (this._authResult) listener(this._user || null);
+    if (this._authResult) {
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
+    }
     return () => subscription.remove();
   }
 
-  onIdTokenChanged(listener) {
+  onIdTokenChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
     );
 
-    if (this._authResult) listener(this._user || null);
+    if (this._authResult) {
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
+    }
     return () => subscription.remove();
   }
 
-  onUserChanged(listener) {
+  onUserChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
-    if (this._authResult) listener(this._user || null);
+    if (this._authResult) {
+      Promise.resolve().then(() => {
+        listener(this._user || null);
+      });
+    }
 
     return () => {
       subscription.remove();
@@ -218,11 +255,11 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  sendPasswordResetEmail(email, actionCodeSettings) {
+  sendPasswordResetEmail(email, actionCodeSettings = null) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }
 
-  sendSignInLinkToEmail(email, actionCodeSettings) {
+  sendSignInLinkToEmail(email, actionCodeSettings = {}) {
     return this.native.sendSignInLinkToEmail(email, actionCodeSettings);
   }
 
@@ -260,6 +297,13 @@ class FirebaseAuthModule extends FirebaseModule {
 
   verifyPasswordResetCode(code) {
     return this.native.verifyPasswordResetCode(code);
+  }
+
+  useUserAccessGroup(userAccessGroup) {
+    if (isAndroid) {
+      return Promise.resolve();
+    }
+    return this.native.useUserAccessGroup(userAccessGroup);
   }
 
   getRedirectResult() {

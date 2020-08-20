@@ -15,7 +15,7 @@
  *
  */
 
-import { getNativeModule, getAppModule } from './registry/nativeModule';
+import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 
 let firebaseJson = null;
@@ -33,7 +33,9 @@ export default class FirebaseModule {
   }
 
   get firebaseJson() {
-    if (firebaseJson) return firebaseJson;
+    if (firebaseJson) {
+      return firebaseJson;
+    }
     firebaseJson = JSON.parse(getAppModule().FIREBASE_RAW_JSON);
     return firebaseJson;
   }
@@ -48,7 +50,9 @@ export default class FirebaseModule {
   }
 
   get native() {
-    if (this._nativeModule) return this._nativeModule;
+    if (this._nativeModule) {
+      return this._nativeModule;
+    }
     this._nativeModule = getNativeModule(this);
     return this._nativeModule;
   }

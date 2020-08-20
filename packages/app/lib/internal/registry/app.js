@@ -15,11 +15,10 @@
  *
  */
 
-import { isObject, isNull, isString, isUndefined } from '@react-native-firebase/common';
-
+import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
-import { getAppModule } from './nativeModule';
 import { DEFAULT_APP_NAME } from '../constants';
+import { getAppModule } from './nativeModule';
 
 const APP_REGISTRY = {};
 let onAppCreateFn = null;
@@ -76,7 +75,9 @@ export function initializeNativeApps() {
  * @param name
  */
 export function getApp(name = DEFAULT_APP_NAME) {
-  if (!initializedNativeApps) initializeNativeApps();
+  if (!initializedNativeApps) {
+    initializeNativeApps();
+  }
   const app = APP_REGISTRY[name];
 
   if (!app) {
@@ -90,7 +91,9 @@ export function getApp(name = DEFAULT_APP_NAME) {
  * Gets all app instances, used for `firebase.apps`
  */
 export function getApps() {
-  if (!initializedNativeApps) initializeNativeApps();
+  if (!initializedNativeApps) {
+    initializeNativeApps();
+  }
   return Object.values(APP_REGISTRY);
 }
 
@@ -132,33 +135,33 @@ export function initializeApp(options = {}, configOrName) {
   }
 
   if (!isString(options.apiKey)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'apiKey'.`));
+    return Promise.reject(new Error("Missing or invalid FirebaseOptions property 'apiKey'."));
   }
 
   if (!isString(options.appId)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'appId'.`));
+    return Promise.reject(new Error("Missing or invalid FirebaseOptions property 'appId'."));
   }
 
   // TODO - make required only if database module exists - init app on native ios&android needs changing also
   if (!isString(options.databaseURL)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'databaseURL'.`));
+    return Promise.reject(new Error("Missing or invalid FirebaseOptions property 'databaseURL'."));
   }
 
   // TODO - make required only if messaging/notifications module exists - init app on native ios&android needs changing also
   if (!isString(options.messagingSenderId)) {
     return Promise.reject(
-      new Error(`Missing or invalid FirebaseOptions property 'messagingSenderId'.`),
+      new Error("Missing or invalid FirebaseOptions property 'messagingSenderId'."),
     );
   }
 
   if (!isString(options.projectId)) {
-    return Promise.reject(new Error(`Missing or invalid FirebaseOptions property 'projectId'.`));
+    return Promise.reject(new Error("Missing or invalid FirebaseOptions property 'projectId'."));
   }
 
   // TODO - make required only if database module exists - init app on native ios&android needs changing also
   if (!isString(options.storageBucket)) {
     return Promise.reject(
-      new Error(`Missing or invalid FirebaseOptions property 'storageBucket'.`),
+      new Error("Missing or invalid FirebaseOptions property 'storageBucket'."),
     );
   }
 
@@ -170,7 +173,7 @@ export function initializeApp(options = {}, configOrName) {
   return getAppModule()
     .initializeApp(options, { name })
     .then(() => {
-      app._intialized = true;
+      app._initialized = true;
       return app;
     });
 }

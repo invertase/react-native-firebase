@@ -15,6 +15,8 @@
  *
  */
 
+import { isObject, isString, isUndefined, isBoolean } from '@react-native-firebase/app/lib/common';
+
 export default class User {
   constructor(auth, user) {
     this._auth = auth;
@@ -38,7 +40,12 @@ export default class User {
   }
 
   get metadata() {
-    return this._user.metadata;
+    const { metadata } = this._user;
+
+    return {
+      lastSignInTime: new Date(metadata.lastSignInTime).toISOString(),
+      creationTime: new Date(metadata.creationTime).toISOString(),
+    };
   }
 
   get phoneNumber() {
@@ -94,6 +101,76 @@ export default class User {
   }
 
   sendEmailVerification(actionCodeSettings) {
+    if (isObject(actionCodeSettings)) {
+      if (!isString(actionCodeSettings.url)) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.url' expected a string value.",
+        );
+      }
+
+      if (
+        !isUndefined(actionCodeSettings.dynamicLinkDomain) &&
+        !isString(actionCodeSettings.dynamicLinkDomain)
+      ) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+      }
+
+      if (
+        !isUndefined(actionCodeSettings.handleCodeInApp) &&
+        !isBoolean(actionCodeSettings.handleCodeInApp)
+      ) {
+        throw new Error(
+          "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
+        );
+      }
+
+      if (!isUndefined(actionCodeSettings.iOS)) {
+        if (!isObject(actionCodeSettings.iOS)) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.iOS' expected an object value.",
+          );
+        }
+        if (!isString(actionCodeSettings.iOS.bundleId)) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.iOS.bundleId' expected a string value.",
+          );
+        }
+      }
+
+      if (!isUndefined(actionCodeSettings.android)) {
+        if (!isObject(actionCodeSettings.android)) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android' expected an object value.",
+          );
+        }
+        if (!isString(actionCodeSettings.android.packageName)) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.packageName' expected a string value.",
+          );
+        }
+
+        if (
+          !isUndefined(actionCodeSettings.android.installApp) &&
+          !isBoolean(actionCodeSettings.android.installApp)
+        ) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.installApp' expected a boolean value.",
+          );
+        }
+
+        if (
+          !isUndefined(actionCodeSettings.android.minimumVersion) &&
+          !isString(actionCodeSettings.android.minimumVersion)
+        ) {
+          throw new Error(
+            "firebase.auth.User.sendEmailVerification(*) 'actionCodeSettings.android.minimumVersion' expected a string value.",
+          );
+        }
+      }
+    }
+
     return this._auth.native.sendEmailVerification(actionCodeSettings).then(user => {
       this._auth._setUser(user);
     });
@@ -129,6 +206,88 @@ export default class User {
 
   updateProfile(updates) {
     return this._auth.native.updateProfile(updates).then(user => {
+      this._auth._setUser(user);
+    });
+  }
+
+  verifyBeforeUpdateEmail(newEmail, actionCodeSettings) {
+    if (!isString(newEmail)) {
+      throw new Error(
+        "firebase.auth.User.verifyBeforeUpdateEmail(*) 'newEmail' expected a string value.",
+      );
+    }
+
+    if (isObject(actionCodeSettings)) {
+      if (!isString(actionCodeSettings.url)) {
+        throw new Error(
+          "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.url' expected a string value.",
+        );
+      }
+
+      if (
+        !isUndefined(actionCodeSettings.dynamicLinkDomain) &&
+        !isString(actionCodeSettings.dynamicLinkDomain)
+      ) {
+        throw new Error(
+          "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.dynamicLinkDomain' expected a string value.",
+        );
+      }
+
+      if (
+        !isUndefined(actionCodeSettings.handleCodeInApp) &&
+        !isBoolean(actionCodeSettings.handleCodeInApp)
+      ) {
+        throw new Error(
+          "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.handleCodeInApp' expected a boolean value.",
+        );
+      }
+
+      if (!isUndefined(actionCodeSettings.iOS)) {
+        if (!isObject(actionCodeSettings.iOS)) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.iOS' expected an object value.",
+          );
+        }
+        if (!isString(actionCodeSettings.iOS.bundleId)) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.iOS.bundleId' expected a string value.",
+          );
+        }
+      }
+
+      if (!isUndefined(actionCodeSettings.android)) {
+        if (!isObject(actionCodeSettings.android)) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android' expected an object value.",
+          );
+        }
+        if (!isString(actionCodeSettings.android.packageName)) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.packageName' expected a string value.",
+          );
+        }
+
+        if (
+          !isUndefined(actionCodeSettings.android.installApp) &&
+          !isBoolean(actionCodeSettings.android.installApp)
+        ) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.installApp' expected a boolean value.",
+          );
+        }
+
+        if (
+          !isUndefined(actionCodeSettings.android.minimumVersion) &&
+          !isString(actionCodeSettings.android.minimumVersion)
+        ) {
+          throw new Error(
+            "firebase.auth.User.verifyBeforeUpdateEmail(_, *) 'actionCodeSettings.android.minimumVersion' expected a string value.",
+          );
+        }
+      }
+    }
+
+    return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
       this._auth._setUser(user);
     });
   }

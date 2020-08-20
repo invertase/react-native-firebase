@@ -20,28 +20,23 @@ export const APP_NATIVE_MODULE = 'RNFBAppModule';
 export const DEFAULT_APP_NAME = '[DEFAULT]';
 
 export const KNOWN_NAMESPACES = [
-  // with APIs
   'admob',
   'auth',
   'analytics',
-  'config',
+  'remoteConfig',
   'crashlytics',
   'database',
-  'fiam',
+  'inAppMessaging',
   'firestore',
   'functions',
   'iid',
-  'invites',
   'indexing',
   'storage',
-  'links',
+  'dynamicLinks',
   'messaging',
-  'mlKitLanguage',
-  'mlKitVision',
+  'naturalLanguage',
+  'vision',
   'notifications',
   'perf',
   'utils',
-  // documentation only
-  // 'predictions',
-  // 'ab-testing'
 ];

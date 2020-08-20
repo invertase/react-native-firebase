@@ -17,7 +17,7 @@
 
 const aCoolUrl = 'https://invertase.io';
 
-describe('perf()', () => {
+android.describe('perf()', () => {
   describe('HttpMetric', () => {
     describe('start()', () => {
       it('correctly starts with internal flag ', async () => {
@@ -61,6 +61,19 @@ describe('perf()', () => {
         await Utils.sleep(100);
         await httpMetric.stop();
         should.equal(await httpMetric.stop(), null);
+      });
+
+      it('handles floating point numbers', async () => {
+        const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
+        await httpMetric.start();
+        const floatingPoint = 500.447553;
+
+        httpMetric.setHttpResponseCode(floatingPoint);
+        httpMetric.setResponsePayloadSize(floatingPoint);
+        httpMetric.setRequestPayloadSize(floatingPoint);
+
+        await Utils.sleep(100);
+        await httpMetric.stop();
       });
     });
 

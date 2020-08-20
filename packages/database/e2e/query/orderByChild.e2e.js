@@ -31,7 +31,7 @@ describe('database().ref().orderByChild()', () => {
         .orderByChild({ foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'path' must be a string value`);
+      error.message.should.containEql("'path' must be a string value");
       return Promise.resolve();
     }
   });
@@ -44,7 +44,7 @@ describe('database().ref().orderByChild()', () => {
         .orderByChild('/');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'path' cannot be empty. Use orderByValue instead`);
+      error.message.should.containEql("'path' cannot be empty. Use orderByValue instead");
       return Promise.resolve();
     }
   });
@@ -58,7 +58,7 @@ describe('database().ref().orderByChild()', () => {
         .orderByChild('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You can't combine multiple orderBy calls`);
+      error.message.should.containEql("You can't combine multiple orderBy calls");
       return Promise.resolve();
     }
   });

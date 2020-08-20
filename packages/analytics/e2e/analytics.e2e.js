@@ -1,4 +1,3 @@
-/* eslint-disable consistent-return */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -17,94 +16,19 @@
  */
 
 describe('analytics()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
-      const app = firebase.app();
-      should.exist(app.analytics);
-      app.analytics().logEvent.should.be.a.Function();
-      app.analytics().emitter.should.be.a.Object();
-    });
-
-    it('throws if non default app arg provided to firebase.analytics(APP)', () => {
-      const app = firebase.app('secondaryFromNative');
-      try {
-        firebase.analytics(app);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
-        e.message.should.containEql('does not support multiple Firebase Apps');
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if analytics access from a non default app', () => {
-      const app = firebase.app('secondaryFromNative');
-      try {
-        app.analytics();
-        return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
-        e.message.should.containEql('does not support multiple Firebase Apps');
-        return Promise.resolve();
-      }
-    });
-
-    // TODO in app/registry/namespace.js - if (!hasCustomUrlOrRegionSupport)
-    xit('throws if args provided to firebase.app().analytics(ARGS)', () => {
-      try {
-        firebase.app().analytics('foo', 'arg2');
-        return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
-        e.message.should.containEql('does not support multiple Firebase Apps');
-        return Promise.resolve();
-      }
-    });
-  });
+  describe('namespace', () => {});
 
   describe('logEvent()', () => {
-    it('errors on using a reserved name', () => {
-      try {
-        firebase.analytics().logEvent('session_start');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('reserved event');
-      }
-    });
-
-    it('errors if name not alphanumeric', () => {
-      try {
-        firebase.analytics().logEvent('!@£$%^&*');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('is invalid');
-      }
-    });
-
-    it('errors if more than 25 params provided', () => {
-      try {
-        firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1)));
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('Maximum number of parameters exceeded');
-      }
-    });
-
-    it('errors if name is not a string', () => {
-      (() => {
-        firebase.analytics().logEvent(13377331);
-      }).should.throw(
-        `firebase.analytics().logEvent(*): First argument 'name' is required and must be a string value.`,
-      );
-    });
-
-    it('errors if params is not an object', () => {
-      (() => {
-        firebase.analytics().logEvent('invertase_event', 'this should be an object');
-      }).should.throw(
-        `firebase.analytics().logEvent(_, *): Second optional argument 'params' must be an object if provided.`,
-      );
-    });
-
     it('log an event without parameters', async () => {
       await firebase.analytics().logEvent('invertase_event');
+    });
+
+    it('log an event with parameters', async () => {
+      await firebase.analytics().logEvent('invertase_event', {
+        boolean: true,
+        number: 1,
+        string: 'string',
+      });
     });
 
     it('log an event with parameters', async () => {
@@ -140,24 +64,6 @@ describe('analytics()', () => {
     it('screenName with screenClassOverride', async () => {
       await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
     });
-
-    it('errors if screenName not a string', async () => {
-      try {
-        await firebase.analytics().setCurrentScreen(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-
-    it('errors if screenClassOverride not a string', async () => {
-      try {
-        await firebase.analytics().setCurrentScreen('invertase screen', 666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be undefined or a string');
-      }
-    });
   });
 
   describe('setMinimumSessionDuration()', () => {
@@ -188,15 +94,6 @@ describe('analytics()', () => {
     it('accepts string values', async () => {
       await firebase.analytics().setUserId('rn-firebase');
     });
-
-    it('rejects none string none null values', async () => {
-      try {
-        await firebase.analytics().setUserId(666.1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
   });
 
   describe('setUserProperty()', () => {
@@ -207,42 +104,322 @@ describe('analytics()', () => {
     it('accepts string values', async () => {
       await firebase.analytics().setUserProperty('invertase2', 'rn-firebase');
     });
-
-    it('rejects none string none null values', async () => {
-      try {
-        await firebase.analytics().setUserProperty('invertase3', 33.3333);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
-
-    it('errors if property name is not a string', async () => {
-      try {
-        await firebase.analytics().setUserProperty(1337, 'invertase');
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be a string');
-      }
-    });
   });
 
   describe('setUserProperties()', () => {
-    it('errors if arg is not an object', async () => {
-      try {
-        await firebase.analytics().setUserProperties(1337);
-        return Promise.reject(new Error('Did not throw.'));
-      } catch (e) {
-        e.message.should.containEql('must be an object');
-      }
-    });
-
     it('allows null values to be set', async () => {
-      await firebase.analytics().setUserProperties({ invertase: null });
+      await firebase.analytics().setUserProperties({ invertase2: null });
     });
 
     it('accepts string values', async () => {
-      await firebase.analytics().setUserProperties({ invertase2: 'rn-firebase' });
+      await firebase.analytics().setUserProperties({ invertase3: 'rn-firebase' });
+    });
+  });
+
+  describe('logAddPaymentInfo()', () => {
+    it('calls logAddPaymentInfo', async () => {
+      await firebase.analytics().logAddPaymentInfo({
+        value: 123,
+        currency: 'USD',
+        items: [],
+      });
+    });
+  });
+
+  describe('logAddToCart()', () => {
+    it('calls logAddToCart', async () => {
+      await firebase.analytics().logAddToCart({
+        value: 123,
+        currency: 'GBP',
+      });
+    });
+  });
+
+  describe('logAddShippingInfo()', () => {
+    it('calls logAddShippingInfo', async () => {
+      await firebase.analytics().logAddShippingInfo({
+        value: 123,
+        currency: 'GBP',
+      });
+    });
+  });
+
+  describe('logAddToWishlist()', () => {
+    it('calls logAddToWishlist', async () => {
+      await firebase.analytics().logAddToWishlist({
+        items: [
+          {
+            item_id: 'foo',
+            item_name: 'foo',
+            item_category: 'foo',
+            item_location_id: 'foo',
+          },
+        ],
+        value: 123,
+        currency: 'GBP',
+      });
+    });
+  });
+
+  describe('logAppOpen()', () => {
+    it('calls logAppOpen', async () => {
+      await firebase.analytics().logAppOpen();
+    });
+  });
+
+  describe('logBeginCheckout()', () => {
+    it('calls logBeginCheckout', async () => {
+      await firebase.analytics().logBeginCheckout();
+    });
+  });
+
+  describe('logCampaignDetails()', () => {
+    it('calls logCampaignDetails', async () => {
+      await firebase.analytics().logCampaignDetails({
+        source: 'foo',
+        medium: 'bar',
+        campaign: 'baz',
+      });
+    });
+  });
+
+  describe('logEarnVirtualCurrency()', () => {
+    it('calls logEarnVirtualCurrency', async () => {
+      await firebase.analytics().logEarnVirtualCurrency({
+        virtual_currency_name: 'foo',
+        value: 123,
+      });
+    });
+  });
+
+  describe('logPurchase()', () => {
+    it('calls logPurchase', async () => {
+      await firebase.analytics().logPurchase({
+        currency: 'USD',
+        value: 123,
+        affiliation: 'affiliation',
+      });
+    });
+  });
+
+  describe('logViewPromotion()', () => {
+    it('calls logViewPromotion', async () => {
+      await firebase.analytics().logViewPromotion({
+        creative_name: 'creative_name',
+        creative_slot: 'creative_slot',
+      });
+    });
+  });
+
+  describe('logGenerateLead()', () => {
+    it('calls logGenerateLead', async () => {
+      await firebase.analytics().logGenerateLead({
+        currency: 'USD',
+        value: 123,
+      });
+    });
+  });
+
+  describe('logJoinGroup()', () => {
+    it('calls logJoinGroup', async () => {
+      await firebase.analytics().logJoinGroup({
+        group_id: '123',
+      });
+    });
+  });
+
+  describe('logLevelEnd()', () => {
+    it('calls logLevelEnd', async () => {
+      await firebase.analytics().logLevelEnd({
+        level: 123,
+        success: 'yes',
+      });
+    });
+  });
+
+  describe('logLevelStart()', () => {
+    it('calls logLevelEnd', async () => {
+      await firebase.analytics().logLevelStart({
+        level: 123,
+      });
+    });
+  });
+
+  describe('logLevelUp()', () => {
+    it('calls logLevelUp', async () => {
+      await firebase.analytics().logLevelUp({
+        level: 123,
+        character: 'foo',
+      });
+    });
+  });
+
+  describe('logLogin()', () => {
+    it('calls logLogin', async () => {
+      await firebase.analytics().logLogin({
+        method: 'facebook.com',
+      });
+    });
+  });
+
+  describe('logPostScore()', () => {
+    it('calls logPostScore', async () => {
+      await firebase.analytics().logPostScore({
+        score: 123,
+      });
+    });
+  });
+
+  describe('logRemoveFromCart()', () => {
+    it('calls logRemoveFromCart', async () => {
+      await firebase.analytics().logRemoveFromCart({
+        value: 123,
+        currency: 'USD',
+      });
+    });
+  });
+
+  describe('logSearch()', () => {
+    it('calls logSearch', async () => {
+      await firebase.analytics().logSearch({
+        search_term: 'foo',
+      });
+    });
+  });
+
+  describe('logSetCheckoutOption()', () => {
+    it('calls logSelectContent', async () => {
+      await firebase.analytics().logSetCheckoutOption({
+        checkout_step: 123,
+        checkout_option: 'foo',
+      });
+    });
+  });
+
+  describe('logSelectItem()', () => {
+    it('calls logSelectItem', async () => {
+      await firebase.analytics().logSelectItem({
+        item_list_id: 'foo',
+        item_list_name: 'foo',
+        content_type: 'foo',
+      });
+    });
+  });
+
+  describe('logShare()', () => {
+    it('calls logShare', async () => {
+      await firebase.analytics().logShare({
+        content_type: 'foo',
+        item_id: 'foo',
+        method: 'foo',
+      });
+    });
+  });
+
+  describe('logSignUp()', () => {
+    it('calls logSignUp', async () => {
+      await firebase.analytics().logSignUp({
+        method: 'facebook.com',
+      });
+    });
+  });
+
+  describe('logSpendVirtualCurrency()', () => {
+    it('calls logSpendVirtualCurrency', async () => {
+      await firebase.analytics().logSpendVirtualCurrency({
+        item_name: 'foo',
+        virtual_currency_name: 'foo',
+        value: 123,
+      });
+    });
+  });
+
+  describe('logTutorialBegin()', () => {
+    it('calls logTutorialBegin', async () => {
+      await firebase.analytics().logTutorialBegin();
+    });
+  });
+
+  describe('logTutorialComplete()', () => {
+    it('calls logTutorialComplete', async () => {
+      await firebase.analytics().logTutorialComplete();
+    });
+  });
+
+  describe('logUnlockAchievement()', () => {
+    it('calls logUnlockAchievement', async () => {
+      await firebase.analytics().logUnlockAchievement({
+        achievement_id: 'foo',
+      });
+    });
+  });
+
+  describe('logViewCart()', () => {
+    it('calls logViewCart', async () => {
+      await firebase.analytics().logViewCart();
+    });
+  });
+
+  describe('logViewItem()', () => {
+    it('calls logViewItem', async () => {
+      await firebase.analytics().logViewItem({
+        items: [
+          {
+            item_id: 'foo',
+            item_name: 'foo',
+            item_category: 'foo',
+            item_location_id: 'foo',
+          },
+        ],
+        value: 123,
+        currency: 'GBP',
+      });
+    });
+  });
+
+  describe('logViewItemList()', () => {
+    it('calls logViewItemList', async () => {
+      await firebase.analytics().logViewItemList({
+        item_list_name: 'foo',
+      });
+    });
+  });
+
+  describe('logRefund()', () => {
+    it('calls logRefund', async () => {
+      await firebase.analytics().logRefund({
+        affiliation: 'affiliation',
+        coupon: 'coupon',
+      });
+    });
+  });
+
+  describe('logSelectContent()', () => {
+    it('calls logSelectContent', async () => {
+      await firebase.analytics().logSelectContent({
+        content_type: 'clothing',
+        item_id: 'abcd',
+      });
+    });
+  });
+
+  describe('logSelectPromotion()', () => {
+    it('calls logSelectPromotion', async () => {
+      await firebase.analytics().logSelectPromotion({
+        creative_name: 'string',
+        creative_slot: 'string',
+        location_id: 'string',
+        promotion_id: 'string',
+        promotion_name: 'string',
+      });
+    });
+  });
+
+  describe('logViewSearchResults()', () => {
+    it('calls logViewSearchResults', async () => {
+      await firebase.analytics().logViewSearchResults({
+        search_term: 'promotion',
+      });
     });
   });
 });

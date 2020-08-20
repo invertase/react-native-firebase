@@ -17,22 +17,16 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashTest;
-import com.crashlytics.android.core.CrashlyticsCore;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import android.os.Handler;
+
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.facebook.react.bridge.*;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Crashlytics";
@@ -42,77 +36,119 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
+  public void checkForUnsentReports(Promise promise){
+    FirebaseCrashlytics.getInstance().checkForUnsentReports().addOnCompleteListener(task -> {
+      if(task.isSuccessful()) {
+        if(task.getResult() != null){
+          promise.resolve(task.getResult());
+        } else {
+          rejectPromiseWithCodeAndMessage(promise, "unknown","Unknown result of check for unsent reports");
+        }
+
+      } else {
+        String message = task.getException() != null ?  task.getException().getMessage() : "checkForUnsentReports() request error";
+        rejectPromiseWithCodeAndMessage(promise, "unknown", message);
+      }
+    });
+  }
+
+  @ReactMethod
   public void crash() {
-    Crashlytics.getInstance().core.log("Crash Test");
-    (new CrashTest()).crashAsyncTask(50);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      // async task so as not to get caught by the React Native redbox handler in debug
+      new Handler().postDelayed(new Runnable() {
+        @Override
+        public void run() {
+          throw new RuntimeException("Crash Test");
+        }
+      }, 50);
+    }
+  }
+
+  @ReactMethod
+  public void deleteUnsentReports() {
+    FirebaseCrashlytics.getInstance().deleteUnsentReports();
+  }
+
+  @ReactMethod
+  public void didCrashOnPreviousExecution(Promise promise) {
+    promise.resolve(FirebaseCrashlytics.getInstance().didCrashOnPreviousExecution());
   }
 
   @ReactMethod
   public void log(String message) {
-    Crashlytics.getInstance().core.log(message);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      FirebaseCrashlytics.getInstance().log(message);
+    }
   }
 
   // For internal use only.
   @ReactMethod
   public void logPromise(String message, Promise promise) {
-    Crashlytics.getInstance().core.log(message);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      FirebaseCrashlytics.getInstance().log(message);
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void setAttribute(String key, String value, Promise promise) {
-    Crashlytics.getInstance().core.setString(key, value);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      FirebaseCrashlytics.getInstance().setCustomKey(key, value);
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
   public void setAttributes(ReadableMap keyValuesMap, Promise promise) {
-    ReadableMapKeySetIterator iterator = keyValuesMap.keySetIterator();
-    CrashlyticsCore crashlyticsCore = Crashlytics.getInstance().core;
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      ReadableMapKeySetIterator iterator = keyValuesMap.keySetIterator();
+      FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
 
-    while (iterator.hasNextKey()) {
-      String key = iterator.nextKey();
-      String value = keyValuesMap.getString(key);
-      crashlyticsCore.setString(key, value);
+      while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        String value = keyValuesMap.getString(key);
+        crashlytics.setCustomKey(key, value);
+      }
     }
 
     promise.resolve(null);
   }
 
+  @ReactMethod
+  public void sendUnsentReports() {
+    FirebaseCrashlytics.getInstance().sendUnsentReports();
+  }
+
 
   @ReactMethod
   public void setUserId(String userId, Promise promise) {
-    Crashlytics.getInstance().core.setUserIdentifier(userId);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      FirebaseCrashlytics.getInstance().setUserId(userId);
+    }
     promise.resolve(null);
   }
 
   @ReactMethod
-  public void setUserName(String userName, Promise promise) {
-    Crashlytics.getInstance().core.setUserName(userName);
-    promise.resolve(null);
-  }
-
-  @ReactMethod
-  public void setUserEmail(String userEmail, Promise promise) {
-    Crashlytics.getInstance().core.setUserEmail(userEmail);
-    promise.resolve(null);
-  }
-
-  @ReactMethod
-  public void setCrashlyticsCollectionEnabled(Boolean enabled) {
+  public void setCrashlyticsCollectionEnabled(Boolean enabled, Promise promise) {
     ReactNativeFirebasePreferences
       .getSharedInstance()
       .setBooleanValue(Constants.KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, enabled);
+    promise.resolve(null);
   }
 
   @ReactMethod
   public void recordError(ReadableMap jsErrorMap) {
-    recordJavaScriptError(jsErrorMap);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      recordJavaScriptError(jsErrorMap);
+    }
   }
 
   @ReactMethod
   public void recordErrorPromise(ReadableMap jsErrorMap, Promise promise) {
-    recordJavaScriptError(jsErrorMap);
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      recordJavaScriptError(jsErrorMap);
+    }
     promise.resolve(null);
   }
 
@@ -121,7 +157,6 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     ReadableArray stackFrames = Objects.requireNonNull(jsErrorMap.getArray("frames"));
     boolean isUnhandledPromiseRejection = jsErrorMap.getBoolean("isUnhandledRejection");
 
-    @SuppressWarnings("ThrowableNotThrown")
     Exception customException;
     if (isUnhandledPromiseRejection) {
       customException = new UnhandledPromiseRejection(message);
@@ -140,7 +175,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
 
     customException.setStackTrace(stackTraceElements);
 
-    Crashlytics.getInstance().core.logException(customException);
+    FirebaseCrashlytics.getInstance().recordException(customException);
   }
 
   @Override

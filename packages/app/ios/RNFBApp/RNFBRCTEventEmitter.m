@@ -30,6 +30,13 @@ NSString *const RNFBRCTEventBodyKey = @"body";
 
 @implementation RNFBRCTEventEmitter
 
+- (void)invalidate {
+  self.jsReady = FALSE;
+  self.queuedEvents = [NSMutableArray array];
+  self.jsListeners = [NSMutableDictionary dictionary];
+  self.jsListenerCount = 0;
+}
+
 + (instancetype)shared {
   static dispatch_once_t once;
   static RNFBRCTEventEmitter *sharedInstance;

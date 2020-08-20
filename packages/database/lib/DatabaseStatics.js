@@ -20,5 +20,12 @@ export default {
     TIMESTAMP: {
       '.sv': 'timestamp',
     },
+    increment(delta: number) {
+      return {
+        '.sv': {
+          increment: delta,
+        },
+      };
+    },
   },
 };

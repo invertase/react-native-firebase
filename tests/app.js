@@ -15,152 +15,45 @@
  *
  */
 
-import React, { Component } from 'react';
-import { AppRegistry, Image, NativeModules, StyleSheet, Text, View } from 'react-native';
-
-import jet from 'jet/platform/react-native';
-import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
-
-import '@react-native-firebase/auth';
-import '@react-native-firebase/database';
+import '@react-native-firebase/admob';
 import '@react-native-firebase/analytics';
-import '@react-native-firebase/config';
-import '@react-native-firebase/utils';
-import '@react-native-firebase/crashlytics';
-import '@react-native-firebase/fiam';
-import '@react-native-firebase/links';
-import '@react-native-firebase/functions';
-import '@react-native-firebase/ml-natural-language';
-import '@react-native-firebase/storage';
-import '@react-native-firebase/iid';
-import '@react-native-firebase/indexing';
-import '@react-native-firebase/invites';
-import '@react-native-firebase/perf';
 import firebase from '@react-native-firebase/app';
+import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
+import '@react-native-firebase/app/lib/utils';
+import '@react-native-firebase/auth';
+import '@react-native-firebase/crashlytics';
+import '@react-native-firebase/database';
+import '@react-native-firebase/dynamic-links';
+import '@react-native-firebase/firestore';
+import '@react-native-firebase/functions';
+import '@react-native-firebase/iid';
+import '@react-native-firebase/in-app-messaging';
+import '@react-native-firebase/messaging';
+import '@react-native-firebase/ml-natural-language';
+import '@react-native-firebase/ml-vision';
+import '@react-native-firebase/perf';
+import '@react-native-firebase/remote-config';
+import '@react-native-firebase/storage';
+import jet from 'jet/platform/react-native';
+import React from 'react';
+import { AppRegistry, NativeModules, Text, View } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 
-class Root extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentTest: null,
-    };
+const firestore = firebase.firestore();
+firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
 
-    jet.exposeContextProperty('root', this);
-  }
-
-  render() {
-    const { currentTest } = this.state;
-
-    if (!currentTest) {
-      return (
-        <View style={[styles.container, styles.horizontal]}>
-          <Image
-            source={{
-              uri:
-                'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/ReactNativeFirebase.png',
-            }}
-            style={[styles.logo]}
-          />
-          <Text style={[styles.item, styles.module]} testID="module">
-            {'No Tests Started'}
-          </Text>
-          <Text style={styles.item} testID="group">
-            {'N/A'}
-          </Text>
-          <Text style={styles.item} testID="title">
-            {"Ensure you're running the Jet Packager together with the Detox test command."}
-          </Text>
-        </View>
-      );
-    }
-
-    const module = (() => {
-      if (currentTest.parent && currentTest.parent.parent) {
-        return currentTest.parent.parent.title;
-      }
-      return currentTest.parent.title;
-    })();
-
-    const group = (() => {
-      if (currentTest.parent && currentTest.parent.parent) {
-        return currentTest.parent.title;
-      }
-      return '';
-    })();
-
-    const retrying = (() => {
-      const retry = currentTest.currentRetry();
-      if (retry > 0) {
-        return `⚠️ Test failed, retrying... (${retry})`;
-      }
-      return null;
-    })();
-
-    return (
-      <View style={[styles.container, styles.horizontal]}>
-        <Image
-          source={{
-            uri:
-              'https://github.com/invertase/react-native-firebase-starter/raw/master/assets/RNFirebase.png',
-          }}
-          style={[styles.logo]}
-        />
-        <Text style={[styles.item, styles.module]} testID="module">
-          {module}
-        </Text>
-        <Text style={styles.item} testID="group">
-          {group}
-        </Text>
-        <Text style={styles.item} testID="title">
-          {currentTest.title}
-        </Text>
-        {retrying && (
-          <Text style={[styles.retry, styles.item]} testID="title">
-            {retrying}
-          </Text>
-        )}
-      </View>
-    );
-  }
+function Root() {
+  return (
+    <View
+      testID="welcome"
+      style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
+    >
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>Testing App</Text>
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  horizontal: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  item: {
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  retry: {
-    marginTop: 10,
-    fontSize: 20,
-    color: '#cccc33',
-  },
-  module: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  group: {
-    fontSize: 16,
-    color: 'grey',
-  },
-  logo: {
-    height: 120,
-    marginBottom: 16,
-    width: 135,
-  },
-});
 
 AppRegistry.registerComponent('testing', () => Root);

@@ -15,17 +15,16 @@
  *
  */
 
+import { isNumber, isString } from '@react-native-firebase/app/lib/common';
 import {
+  createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
-  createModuleNamespace,
 } from '@react-native-firebase/app/lib/internal';
-import { isNumber, isString } from '@react-native-firebase/common';
-
-import version from './version';
-import StorageStatics from './StorageStatics';
 import StorageReference from './StorageReference';
-import { getUrlParts, handleStorageEvent } from './utils';
+import StorageStatics from './StorageStatics';
+import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
+import version from './version';
 
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
@@ -34,10 +33,11 @@ const nativeModuleName = 'RNFBStorageModule';
 class FirebaseStorageModule extends FirebaseModule {
   constructor(app, config, bucketUrl) {
     super(app, config, bucketUrl);
-    if (bucketUrl === undefined) this._customUrlOrRegion = `gs://${app.options.storageBucket}`;
-    else if (!isString(bucketUrl) || !bucketUrl.startsWith('gs://')) {
+    if (bucketUrl === undefined) {
+      this._customUrlOrRegion = `gs://${app.options.storageBucket}`;
+    } else if (!isString(bucketUrl) || !bucketUrl.startsWith('gs://')) {
       throw new Error(
-        `firebase.app().storage(*) bucket url must be a string and begin with 'gs://'`,
+        "firebase.app().storage(*) bucket url must be a string and begin with 'gs://'",
       );
     }
 
@@ -77,7 +77,7 @@ class FirebaseStorageModule extends FirebaseModule {
    */
   ref(path = '/') {
     if (!isString(path)) {
-      throw new Error(`firebase.storage().ref(*) 'path' must be a string value.`);
+      throw new Error("firebase.storage().ref(*) 'path' must be a string value.");
     }
 
     return new StorageReference(this, path);
@@ -87,13 +87,27 @@ class FirebaseStorageModule extends FirebaseModule {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#refFromURL
    */
   refFromURL(url) {
-    if (!isString(url) || !url.startsWith('gs://')) {
+    if (!isString(url) || (!url.startsWith('gs://') && !url.startsWith('http'))) {
       throw new Error(
-        `firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://'.`,
+        "firebase.storage().refFromURL(*) 'url' must be a string value and begin with 'gs://' or 'https://'.",
       );
     }
 
-    const { bucket, path } = getUrlParts(url);
+    let path;
+    let bucket;
+
+    if (url.startsWith('http')) {
+      const parts = getHttpUrlParts(url);
+      if (!parts) {
+        throw new Error(
+          "firebase.storage().refFromURL(*) unable to parse 'url', ensure it's a valid storage url'.",
+        );
+      }
+      ({ bucket, path } = parts);
+    } else {
+      ({ bucket, path } = getGsUrlParts(url));
+    }
+
     const storageInstance = this.app.storage(bucket);
     return new StorageReference(storageInstance, path);
   }
@@ -104,7 +118,7 @@ class FirebaseStorageModule extends FirebaseModule {
   setMaxOperationRetryTime(time) {
     if (!isNumber(time)) {
       throw new Error(
-        `firebase.storage().setMaxOperationRetryTime(*) 'time' must be a number value.`,
+        "firebase.storage().setMaxOperationRetryTime(*) 'time' must be a number value.",
       );
     }
 
@@ -117,7 +131,7 @@ class FirebaseStorageModule extends FirebaseModule {
    */
   setMaxUploadRetryTime(time) {
     if (!isNumber(time)) {
-      throw new Error(`firebase.storage().setMaxUploadRetryTime(*) 'time' must be a number value.`);
+      throw new Error("firebase.storage().setMaxUploadRetryTime(*) 'time' must be a number value.");
     }
 
     this._maxUploadRetryTime = time;
@@ -130,7 +144,7 @@ class FirebaseStorageModule extends FirebaseModule {
   setMaxDownloadRetryTime(time) {
     if (!isNumber(time)) {
       throw new Error(
-        `firebase.storage().setMaxDownloadRetryTime(*) 'time' must be a number value.`,
+        "firebase.storage().setMaxDownloadRetryTime(*) 'time' must be a number value.",
       );
     }
 

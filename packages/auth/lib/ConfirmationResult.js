@@ -24,10 +24,10 @@ export default class ConfirmationResult {
   confirm(verificationCode) {
     return this._auth.native
       .confirmationResultConfirm(verificationCode)
-      .then(user => this._auth._setUser(user));
+      .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
-  get verificationId(): string | null {
+  get verificationId() {
     return this._verificationId;
   }
 }

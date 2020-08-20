@@ -16,15 +16,15 @@
  */
 
 // TODO not available on iOS until SDK 6.0.0
-// xdescribe('mlKitLanguage() -> Translate', () => {
+// xdescribe('naturalLanguage() -> Translate', () => {
 //   before(async () => {
-//     await firebase.mlKitLanguage().translateModelManager.downloadRemoteModelIfNeeded('de');
+//     await firebase.naturalLanguage().translateModelManager.downloadRemoteModelIfNeeded('de');
 //   });
 //
 //   describe('translate()', () => {
 //     it('translates test from the specified sourceLanguage to targetLanguage', async () => {
 //       const translatedText = await firebase
-//         .mlKitLanguage()
+//         .naturalLanguage()
 //         .translate('Hello world', { sourceLanguage: 'en', targetLanguage: 'de' });
 //       translatedText.should.equal('Hallo Welt');
 //     });
@@ -32,7 +32,7 @@
 //
 //   describe('translateModelManager()', () => {
 //     it('returns a new instance of TranslateModelManager', async () => {
-//       const { translateModelManager } = firebase.mlKitLanguage();
+//       const { translateModelManager } = firebase.naturalLanguage();
 //       translateModelManager.should.be.instanceOf(
 //         jet.require('packages/ml-natural-language/lib/TranslateModelManager'),
 //       );
@@ -42,7 +42,7 @@
 //   describe('TranslateModelManager', () => {
 //     describe('downloadRemoteModelIfNeeded()', () => {
 //       it('downloads the specified language model', async () => {
-//         const { translateModelManager } = firebase.mlKitLanguage();
+//         const { translateModelManager } = firebase.naturalLanguage();
 //         await translateModelManager.downloadRemoteModelIfNeeded('de');
 //       });
 //     });

@@ -55,7 +55,7 @@ describe('storage()', () => {
         firebase.app().storage(bucket);
         return Promise.reject(new Error('Did not throw.'));
       } catch (error) {
-        error.message.should.containEql(`bucket url must be a string and begin with 'gs://'`);
+        error.message.should.containEql("bucket url must be a string and begin with 'gs://'");
         return Promise.resolve();
       }
     });
@@ -99,20 +99,48 @@ describe('storage()', () => {
         firebase.storage().ref({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'path' must be a string value`);
+        error.message.should.containEql("'path' must be a string value");
         return Promise.resolve();
       }
     });
   });
 
   describe('refFromURL', () => {
-    it('accepts a custom url', async () => {
+    it('accepts a gs url', async () => {
       const url = 'gs://foo/bar/baz.png';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
     });
 
-    it('accepts a custom url without a fullPath', async () => {
+    it('accepts a https url', async () => {
+      const url =
+        'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
+      const ref = firebase.storage().refFromURL(url);
+      ref.bucket.should.equal('react-native-firebase-testing');
+      ref.name.should.equal('1mbTestFile.gif');
+      ref.toString().should.equal('gs://react-native-firebase-testing/1mbTestFile.gif');
+    });
+
+    it('accepts a https encoded url', async () => {
+      const url =
+        'https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Freact-native-firebase-testing.appspot.com%2Fo%2F1mbTestFile.gif%3Falt%3Dmedia';
+      const ref = firebase.storage().refFromURL(url);
+      ref.bucket.should.equal('react-native-firebase-testing');
+      ref.name.should.equal('1mbTestFile.gif');
+      ref.toString().should.equal('gs://react-native-firebase-testing/1mbTestFile.gif');
+    });
+
+    it('throws an error if https url could not be parsed', async () => {
+      try {
+        firebase.storage().refFromURL('https://invertase.io');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("unable to parse 'url'");
+        return Promise.resolve();
+      }
+    });
+
+    it('accepts a gs url without a fullPath', async () => {
       const url = 'gs://some-bucket';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
@@ -123,17 +151,17 @@ describe('storage()', () => {
         firebase.storage().refFromURL({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'url' must be a string value`);
+        error.message.should.containEql("'url' must be a string value");
         return Promise.resolve();
       }
     });
 
-    it('throws an error if url does not start with gs://', async () => {
+    it('throws an error if url does not start with gs:// or https://', async () => {
       try {
         firebase.storage().refFromURL('bs://foo/bar/cat.gif');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`begin with 'gs://'`);
+        error.message.should.containEql("begin with 'gs://'");
         return Promise.resolve();
       }
     });
@@ -151,7 +179,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxOperationRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });
@@ -169,7 +197,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxUploadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });
@@ -187,7 +215,7 @@ describe('storage()', () => {
         await firebase.storage().setMaxDownloadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
-        error.message.should.containEql(`'time' must be a number value`);
+        error.message.should.containEql("'time' must be a number value");
         return Promise.resolve();
       }
     });

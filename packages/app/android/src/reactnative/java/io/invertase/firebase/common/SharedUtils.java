@@ -51,8 +51,8 @@ public class SharedUtils {
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
   public static int[] rectToIntArray(@Nullable Rect rect) {
-    if (rect == null) return new int[]{};
-    return new int[]{rect.top, rect.left, rect.bottom, rect.right};
+    if (rect == null || rect.isEmpty()) return new int[]{};
+    return new int[]{rect.left, rect.top, rect.right, rect.bottom};
   }
 
   public static int[] pointToIntArray(@Nullable Point point) {
@@ -85,9 +85,21 @@ public class SharedUtils {
   }
 
 
+  public static WritableMap getExceptionMap(Exception exception) {
+    WritableMap exceptionMap = Arguments.createMap();
+    String code = "unknown";
+    String message = exception.getMessage();
+    exceptionMap.putString("code", code);
+    exceptionMap.putString("nativeErrorCode", code);
+    exceptionMap.putString("message", message);
+    exceptionMap.putString("nativeErrorMessage", message);
+    return exceptionMap;
+  }
+
   public static String timestampToUTC(long timestamp) {
     Calendar calendar = Calendar.getInstance();
-    Date date = new Date((timestamp + calendar.getTimeZone().getOffset(timestamp)) * 1000);
+    long millisTimestamp = timestamp * 1000;
+    Date date = new Date(millisTimestamp + calendar.getTimeZone().getOffset(millisTimestamp));
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     format.setTimeZone(TimeZone.getTimeZone("UTC"));
     return format.format(date);

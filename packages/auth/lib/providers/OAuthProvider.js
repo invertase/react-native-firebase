@@ -26,7 +26,7 @@ export default class OAuthProvider {
     return providerId;
   }
 
-  static credential(idToken, accessToken): AuthCredential {
+  static credential(idToken, accessToken) {
     return {
       token: idToken,
       secret: accessToken,

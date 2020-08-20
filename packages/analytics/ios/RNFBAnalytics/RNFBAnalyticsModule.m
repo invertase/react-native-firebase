@@ -59,7 +59,7 @@
         rejecter:
         (RCTPromiseRejectBlock) reject) {
     @try {
-      [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+      [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
     } @catch (NSException *exception) {
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }

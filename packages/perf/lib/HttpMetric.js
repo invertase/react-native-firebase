@@ -15,7 +15,7 @@
  *
  */
 
-import { isString, isNumber, isNull } from '@react-native-firebase/common';
+import { isNull, isNumber, isString } from '@react-native-firebase/app/lib/common';
 import MetricWithAttributes from './MetricWithAttributes';
 
 export default class HttpMetric extends MetricWithAttributes {
@@ -37,7 +37,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setHttpResponseCode(code) {
     if (!isNumber(code) && !isNull(code)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.`,
+        "firebase.perf.HttpMetric.setHttpResponseCode(*) 'code' must be a number or null.",
       );
     }
 
@@ -47,7 +47,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setRequestPayloadSize(bytes) {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.`,
+        "firebase.perf.HttpMetric.setRequestPayloadSize(*) 'bytes' must be a number or null.",
       );
     }
 
@@ -57,7 +57,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setResponsePayloadSize(bytes) {
     if (!isNumber(bytes) && !isNull(bytes)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.`,
+        "firebase.perf.HttpMetric.setResponsePayloadSize(*) 'bytes' must be a number or null.",
       );
     }
 
@@ -67,7 +67,7 @@ export default class HttpMetric extends MetricWithAttributes {
   setResponseContentType(contentType) {
     if (!isString(contentType) && !isNull(contentType)) {
       throw new Error(
-        `firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.`,
+        "firebase.perf.HttpMetric.setResponseContentType(*) 'contentType' must be a string or null.",
       );
     }
 
@@ -75,14 +75,18 @@ export default class HttpMetric extends MetricWithAttributes {
   }
 
   start() {
-    if (this._started) return Promise.resolve(null);
+    if (this._started) {
+      return Promise.resolve(null);
+    }
     this._started = true;
 
     return this.native.startHttpMetric(this._id, this._url, this._httpMethod);
   }
 
   stop() {
-    if (this._stopped) return Promise.resolve(null);
+    if (this._stopped) {
+      return Promise.resolve(null);
+    }
     this._stopped = true;
 
     const metricData = {
@@ -94,17 +98,19 @@ export default class HttpMetric extends MetricWithAttributes {
     } else {
       // eslint-disable-next-line no-console
       console.warn(
-        `Warning: A firebase.perf.HttpMetric (${this._httpMethod}: ${
-          this._url
-        }) failed to provide a httpResponseCode; this metric will not be visible on the Firebase console.`,
+        `Warning: A firebase.perf.HttpMetric (${this._httpMethod}: ${this._url}) failed to provide a httpResponseCode; this metric will not be visible on the Firebase console.`,
       );
     }
 
-    if (!isNull(this._requestPayloadSize)) metricData.requestPayloadSize = this._requestPayloadSize;
-    if (!isNull(this._responsePayloadSize))
+    if (!isNull(this._requestPayloadSize)) {
+      metricData.requestPayloadSize = this._requestPayloadSize;
+    }
+    if (!isNull(this._responsePayloadSize)) {
       metricData.responsePayloadSize = this._responsePayloadSize;
-    if (!isNull(this._responseContentType))
+    }
+    if (!isNull(this._responseContentType)) {
       metricData.responseContentType = this._responseContentType;
+    }
 
     return this.native.stopHttpMetric(this._id, metricData);
   }

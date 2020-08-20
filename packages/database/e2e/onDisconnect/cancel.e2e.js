@@ -36,7 +36,7 @@ describe('database().ref().onDisconnect().cancel()', () => {
       ref.cancel('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'onComplete' must be a function if provided`);
+      error.message.should.containEql("'onComplete' must be a function if provided");
       return Promise.resolve();
     }
   });

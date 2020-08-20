@@ -15,14 +15,16 @@
  *
  */
 
-import { isFunction, isObject, isNull } from '@react-native-firebase/common';
+import { isFunction, isNull, isObject } from '@react-native-firebase/app/lib/common';
 import StorageStatics from './StorageStatics';
 
 let TASK_ID = 0;
 
 function wrapErrorEventListener(listenerFn, unsubscribe) {
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
+    if (unsubscribe) {
+      setTimeout(() => unsubscribe(), 0);
+    } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       listenerFn(event.error);
     }
@@ -30,24 +32,35 @@ function wrapErrorEventListener(listenerFn, unsubscribe) {
 }
 
 function wrapSnapshotEventListener(task, listenerFn, unsubscribe) {
-  if (!isFunction(listenerFn)) return null;
+  if (!isFunction(listenerFn)) {
+    return null;
+  }
   return event => {
-    if (unsubscribe) setTimeout(() => unsubscribe(), 0); // 1 frame = 16ms, pushing to next frame
+    if (unsubscribe) {
+      setTimeout(() => unsubscribe(), 0);
+    } // 1 frame = 16ms, pushing to next frame
     if (isFunction(listenerFn)) {
       const snapshot = Object.assign({}, event);
       snapshot.task = task;
       snapshot.ref = task._ref;
 
       if (snapshot.metadata) {
-        if (!snapshot.metadata.generation) snapshot.metadata.generation = '';
-        if (!snapshot.metadata.bucket) snapshot.metadata.bucket = task._ref.bucket;
-        if (!snapshot.metadata.metageneration) snapshot.metadata.metageneration = '';
+        if (!snapshot.metadata.generation) {
+          snapshot.metadata.generation = '';
+        }
+        if (!snapshot.metadata.bucket) {
+          snapshot.metadata.bucket = task._ref.bucket;
+        }
+        if (!snapshot.metadata.metageneration) {
+          snapshot.metadata.metageneration = '';
+        }
         // // TODO(salakar): these are always here, cannot repro without, remove in 6.1.0 if no issues:
         // if (!snapshot.metadata.name) snapshot.metadata.name = task._ref.name;
         // if (!snapshot.metadata.fullPath) snapshot.metadata.fullPath = task._ref.fullPath;
       }
 
       Object.freeze(snapshot);
+      task._snapshot = snapshot;
 
       listenerFn(snapshot);
     }
@@ -77,9 +90,15 @@ function subscribeToEvents(task, nextOrObserver, error, complete) {
   let _completeSubscription;
 
   const unsubscribe = () => {
-    if (_nextSubscription) _nextSubscription.remove();
-    if (_errorSubscription) _errorSubscription.remove();
-    if (_completeSubscription) _completeSubscription.remove();
+    if (_nextSubscription) {
+      _nextSubscription.remove();
+    }
+    if (_errorSubscription) {
+      _errorSubscription.remove();
+    }
+    if (_completeSubscription) {
+      _completeSubscription.remove();
+    }
   };
 
   if (isFunction(nextOrObserver)) {
@@ -95,7 +114,7 @@ function subscribeToEvents(task, nextOrObserver, error, complete) {
     _complete = wrapSnapshotEventListener(task, complete, unsubscribe);
   } else {
     throw new Error(
-      `firebase.storage.StorageTask.on(*, _) 'nextOrObserver' must be a Function, an Object or Null.`,
+      "firebase.storage.StorageTask.on(*, _) 'nextOrObserver' must be a Function, an Object or Null.",
     );
   }
 
@@ -122,22 +141,41 @@ export default class StorageTask {
     this._ref = storageRef;
     this._beginTask = beginTaskFn;
     this._storage = storageRef._storage;
+    this._snapshot = null;
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#then
    */
   get then() {
-    if (!this._promise) this._promise = this._beginTask(this);
-    return this._promise.then.bind(this._promise);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
+
+    return new Promise((resolve, reject) => {
+      const boundPromise = this._promise.then.bind(this._promise);
+
+      boundPromise(response => {
+        this._snapshot = { ...response, ref: this._ref, task: this };
+        resolve(response);
+      }).catch(error => {
+        reject(error);
+      });
+    }).then.bind(this._promise);
   }
 
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.UploadTask#catch
    */
   get catch() {
-    if (!this._promise) this._promise = this._beginTask(this);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
     return this._promise.catch.bind(this._promise);
+  }
+
+  get snapshot() {
+    return this._snapshot;
   }
 
   // // NOT on Web SDK
@@ -155,13 +193,13 @@ export default class StorageTask {
   on(event, nextOrObserver, error, complete) {
     if (event !== StorageStatics.TaskEvent.STATE_CHANGED) {
       throw new Error(
-        `firebase.storage.StorageTask.on event argument must be a string with a value of '${
-          StorageStatics.TaskEvent.STATE_CHANGED
-        }'`,
+        `firebase.storage.StorageTask.on event argument must be a string with a value of '${StorageStatics.TaskEvent.STATE_CHANGED}'`,
       );
     }
 
-    if (!this._promise) this._promise = this._beginTask(this);
+    if (!this._promise) {
+      this._promise = this._beginTask(this);
+    }
 
     // if only event provided return the subscriber function
     if (!nextOrObserver && !error && !complete) {

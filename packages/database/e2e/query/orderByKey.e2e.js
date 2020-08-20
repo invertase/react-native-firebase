@@ -32,7 +32,7 @@ describe('database().ref().orderByKey()', () => {
         .orderByKey();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`You can't combine multiple orderBy calls`);
+      error.message.should.containEql("You can't combine multiple orderBy calls");
       return Promise.resolve();
     }
   });

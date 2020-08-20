@@ -32,7 +32,7 @@ static NSString *const RNFB_DATABASE_SYNC = @"database_sync_event";
 RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_queue_create("io.invertase.firebase.database", DISPATCH_QUEUE_SERIAL);
+  return [RNFBDatabaseCommon getDispatchQueue];
 }
 
 - (id)init {
@@ -49,7 +49,8 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)invalidate {
-  for (NSString *key in queryDictionary) {
+  NSArray *queryKeys = [queryDictionary allKeys];
+  for (NSString *key in queryKeys) {
     RNFBDatabaseQuery *query = queryDictionary[key];
     [query removeAllEventListeners];
     [queryDictionary removeObjectForKey:key];
@@ -130,7 +131,6 @@ RCT_EXPORT_MODULE();
                registration:(NSDictionary *)registration
                    snapshot:(FIRDataSnapshot *)dataSnapshot
           previousChildName:(NSString *)previousChildName {
-  NSLog(@"HANDLE DB EVENT");
   NSDictionary *data;
   if ([eventType isEqualToString:@"value"]) {
     data = [RNFBDatabaseCommon snapshotToDictionary:dataSnapshot];
@@ -151,7 +151,6 @@ RCT_EXPORT_MODULE();
 - (void)handleDatabaseEventError:(NSString *)key
                     registration:(NSDictionary *)registration
                            error:(NSError *)error {
-  NSLog(@"HANDLE DB ERROR");
   NSArray *codeAndMessage = [RNFBDatabaseCommon getCodeAndMessage:error];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_SYNC body:@{
       @"body": @{

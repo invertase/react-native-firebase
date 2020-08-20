@@ -42,6 +42,7 @@ static NSString *const keyMinVersion = @"minimumVersion";
 static NSString *const constAppLanguage = @"APP_LANGUAGE";
 static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
+static NSString *const keyDynamicLinkDomain = @"dynamicLinkDomain";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
@@ -79,14 +80,14 @@ RCT_EXPORT_MODULE();
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
 
     [[FIRAuth authWithApp:firebaseApp] removeAuthStateDidChangeListener:[authStateHandlers valueForKey:key]];
-    [authStateHandlers removeObjectForKey:key];
   }
+  [authStateHandlers removeAllObjects];
 
   for (NSString *key in idTokenHandlers) {
     FIRApp *firebaseApp = [RCTConvert firAppFromString:key];
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
-    [idTokenHandlers removeObjectForKey:key];
   }
+  [idTokenHandlers removeAllObjects];
 }
 
 #pragma mark -
@@ -109,7 +110,7 @@ RCT_EXPORT_METHOD(addAuthStateListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_STATE_CHANGED_EVENT body:@{}];
           }
         }];
-    authStateHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    authStateHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 
@@ -138,8 +139,7 @@ RCT_EXPORT_METHOD(addIdTokenListener:
             [RNFBSharedUtils sendJSEventForApp:firebaseApp name:AUTH_ID_TOKEN_CHANGED_EVENT body:@{}];
           }
         }];
-
-    idTokenHandlers[firebaseApp.name] = [NSValue valueWithNonretainedObject:newListenerHandle];
+    idTokenHandlers[firebaseApp.name] = newListenerHandle;
   }
 }
 
@@ -157,6 +157,23 @@ RCT_EXPORT_METHOD(setAppVerificationDisabledForTesting:
     :(BOOL) disabled
 ) {
   [FIRAuth authWithApp:firebaseApp].settings.appVerificationDisabledForTesting = disabled;
+}
+
+RCT_EXPORT_METHOD(useUserAccessGroup:
+  (FIRApp *) firebaseApp
+    :(NSString *) userAccessGroup
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  NSError *error;
+  [[FIRAuth authWithApp:firebaseApp] useUserAccessGroup:userAccessGroup error:&error];
+
+  if(!error){
+    [self promiseNoUser:resolve rejecter:reject isError:NO];
+  } else {
+    [self promiseRejectAuthException:reject error:error];
+  }
+  return;
 }
 
 RCT_EXPORT_METHOD(signOut:
@@ -306,6 +323,34 @@ RCT_EXPORT_METHOD(sendEmailVerification:
       [user sendEmailVerificationWithActionCodeSettings:settings completion:handler];
     } else {
       [user sendEmailVerificationWithCompletion:handler];
+    }
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
+RCT_EXPORT_METHOD(verifyBeforeUpdateEmail:
+  (FIRApp *) firebaseApp
+    :(NSString *) email
+    :(NSDictionary *) actionCodeSettings
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user) {
+    id handler = ^(NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firebaseApp].currentUser;
+        [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+      }
+    };
+    if (actionCodeSettings) {
+       FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+        [user sendEmailVerificationBeforeUpdatingEmail:email actionCodeSettings:settings completion:handler];
+    } else {
+        [user sendEmailVerificationBeforeUpdatingEmail:email completion:handler];
     }
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
@@ -724,7 +769,7 @@ RCT_EXPORT_METHOD(confirmationResultConfirm:
     if (error) {
       [self promiseRejectAuthException:reject error:error];
     } else {
-      [self promiseWithUser:resolve rejecter:reject user:authResult.user];
+      [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
     }
   }];
 }
@@ -842,7 +887,12 @@ RCT_EXPORT_METHOD(setLanguageCode:
   (FIRApp *) firebaseApp
     :(NSString *) code
 ) {
-  [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    if(code){
+        [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    } else {
+        [[FIRAuth authWithApp:firebaseApp] useAppLanguage];
+    }
+  
 }
 
 RCT_EXPORT_METHOD(useDeviceLanguage:
@@ -878,6 +928,8 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken accessToken:authTokenSecret];
+  } else if ([provider compare:@"apple.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+    credential = [FIROAuthProvider credentialWithProviderID:provider IDToken:authToken rawNonce:authTokenSecret];
   } else if ([provider compare:@"password" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIREmailAuthProvider credentialWithEmail:authToken password:authTokenSecret];
   } else if ([provider compare:@"emailLink" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
@@ -1132,31 +1184,32 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
 }
 
 - (FIRActionCodeSettings *)buildActionCodeSettings:(NSDictionary *)actionCodeSettings {
-  NSString *url = actionCodeSettings[keyUrl];
-  NSDictionary *ios = actionCodeSettings[keyIOS];
-  NSDictionary *android = actionCodeSettings[keyAndroid];
-  BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
-
   FIRActionCodeSettings *settings = [[FIRActionCodeSettings alloc] init];
 
-  if (android) {
-    NSString *packageName = android[keyPackageName];
-    NSString *minimumVersion = android[keyMinVersion];
-    BOOL installApp = [android[keyInstallApp] boolValue];
+  NSString *url = actionCodeSettings[keyUrl];
+  [settings setURL:[NSURL URLWithString:url]];
 
-    [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
-  }
-
-  if (handleCodeInApp) {
+  if (actionCodeSettings[keyHandleCodeInApp]) {
+    BOOL handleCodeInApp = [actionCodeSettings[keyHandleCodeInApp] boolValue];
     [settings setHandleCodeInApp:handleCodeInApp];
   }
 
-  if (ios && ios[keyBundleId]) {
-    [settings setIOSBundleID:ios[keyBundleId]];
+  if (actionCodeSettings[keyDynamicLinkDomain]) {
+    NSString *dynamicLinkDomain = actionCodeSettings[keyDynamicLinkDomain];
+    [settings setDynamicLinkDomain:dynamicLinkDomain];
   }
 
-  if (url) {
-    [settings setURL:[NSURL URLWithString:url]];
+  if (actionCodeSettings[keyAndroid]) {
+    NSDictionary *android = actionCodeSettings[keyAndroid];
+    NSString *packageName = android[keyPackageName];
+    NSString *minimumVersion = android[keyMinVersion];
+    BOOL installApp = [android[keyInstallApp] boolValue];
+    [settings setAndroidPackageName:packageName installIfNotAvailable:installApp minimumVersion:minimumVersion];
+  }
+
+  if (actionCodeSettings[keyIOS]) {
+    NSDictionary *ios = actionCodeSettings[keyIOS];
+    [settings setIOSBundleID:ios[keyBundleId]];
   }
 
   return settings;

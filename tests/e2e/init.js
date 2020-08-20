@@ -15,49 +15,15 @@
  * limitations under the License.
  *
  */
-
-// DO NOT USE EXCEPT FOR THIS REACT NATIVE FIREBASE TESTING PROJECT - YOU HAVE
-// BEEN WARNED 🙃
-require('@react-native-firebase/private-tests-helpers');
+require('./globals');
 
 const detox = require('detox');
 const jet = require('jet/platform/node');
 
-const { requirePackageTests } = require('./helpers');
 const { detox: config } = require('../package.json');
 
-config.configurations['android.emu.debug'].name =
-  process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].name;
-
-console.log(`Android AVD: ${config.configurations['android.emu.debug'].name}`);
-
-const PACKAGES = [
-  'app',
-  'links',
-  'iid',
-  'perf',
-  'fiam',
-  'functions',
-  'analytics',
-  'config',
-  'crashlytics',
-  'utils',
-  'ml-natural-language',
-  'invites',
-  'fiam',
-  'auth',
-  'database',
-  'storage',
-  'indexing',
-  // 'firestore',
-  // 'messaging',
-  // 'ml-vision',
-  // 'ml-automl',
-];
-
-for (let i = 0; i < PACKAGES.length; i++) {
-  requirePackageTests(PACKAGES[i]);
-}
+config.configurations['android.emu.debug'].device.avdName =
+  process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].device.avdName;
 
 before(async () => {
   await detox.init(config);
@@ -65,12 +31,6 @@ before(async () => {
 });
 
 beforeEach(async function beforeEach() {
-  if (jet.context && jet.root && jet.root.setState) {
-    jet.root.setState({
-      currentTest: this.currentTest,
-    });
-  }
-
   const retry = this.currentTest.currentRetry();
 
   if (retry > 0) {
@@ -85,7 +45,7 @@ beforeEach(async function beforeEach() {
     }
 
     console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
-    await Utils.sleep(1000 * retry);
+    await Utils.sleep(5000 * retry);
   }
 });
 

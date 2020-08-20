@@ -1,30 +1,5 @@
 rootProject.name = '@react-native-firebase_tests'
-
-def firebasePackages = [
-  'app',
-  'auth',
-  'database',
-  'analytics',
-  'config',
-  'crashlytics',
-  'functions',
-  'fiam',
-  'iid',
-  'invites',
-  'links',
-  'ml-natural-language',
-  'storage',
-  'perf',
-  'links',
-  'utils'
-]
-
-firebasePackages.each { firebasePackage ->
-  include ":@react-native-firebase_${firebasePackage}"
-  project(":@react-native-firebase_${firebasePackage}").projectDir = new File(rootProject.projectDir, "./../../packages/${firebasePackage}/android")
-}
-
-include ':jet'
-project(':jet').projectDir = new File(rootProject.projectDir, './../node_modules/jet/android')
-
+include ':detox'
+project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'

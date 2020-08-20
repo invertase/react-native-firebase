@@ -32,6 +32,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.AuthCredential;
@@ -598,6 +600,52 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * verifyBeforeUpdateEmail
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void verifyBeforeUpdateEmail(
+    String appName,
+    String email,
+    ReadableMap actionCodeSettings,
+    final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "verifyBeforeUpdateEmail");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "verifyBeforeUpdateEmail:failure:noCurrentUser");
+    } else {
+      OnCompleteListener<Void> listener = task -> {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "verifyBeforeUpdateEmail:onComplete:success");
+          promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "verifyBeforeUpdateEmail:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      };
+
+      if (actionCodeSettings == null) {
+        user
+          .verifyBeforeUpdateEmail(email)
+          .addOnCompleteListener(getExecutor(), listener);
+      } else {
+        ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+        user
+          .verifyBeforeUpdateEmail(email, settings)
+          .addOnCompleteListener(getExecutor(), listener);
+      }
+    }
+  }
+
+  /**
    * updateEmail
    *
    * @param email
@@ -953,7 +1001,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           TAG,
           "confirmationResultConfirm:signInWithCredential:onComplete:success"
         );
-        promiseWithUser(Objects.requireNonNull(task.getResult()).getUser(), promise);
+        promiseWithAuthResult(Objects.requireNonNull(task.getResult()), promise);
       } else {
         Exception exception = task.getException();
         Log.e(
@@ -1546,7 +1594,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.setLanguageCode(code);
+    if(code == null){
+      firebaseAuth.useAppLanguage();
+    } else {
+      firebaseAuth.setLanguageCode(code);
+    }
   }
 
   /**
@@ -1773,9 +1825,16 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       }
     }
 
-    if (code.equals("UNKNOWN") && exception instanceof FirebaseAuthInvalidCredentialsException) {
-      code = "INVALID_EMAIL";
-      message = invalidEmail;
+    if (code.equals("UNKNOWN")) {
+      if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+        code = "INVALID_EMAIL";
+        message = invalidEmail;
+      } else if (exception instanceof FirebaseNetworkException) {
+        code = "NETWORK_REQUEST_FAILED";
+      } else if (exception instanceof FirebaseTooManyRequestsException) {
+        code = "TOO_MANY_REQUESTS";
+        message = message;
+      }
     }
 
     code = code
@@ -1910,27 +1969,35 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   private ActionCodeSettings buildActionCodeSettings(ReadableMap actionCodeSettings) {
     ActionCodeSettings.Builder builder = ActionCodeSettings.newBuilder();
-    ReadableMap android = actionCodeSettings.getMap("android");
-    ReadableMap ios = actionCodeSettings.getMap("iOS");
+
+    // Required
     String url = actionCodeSettings.getString("url");
-    if (android != null) {
-      boolean installApp = android.hasKey("installApp") && android.getBoolean("installApp");
+    builder = builder.setUrl(Objects.requireNonNull(url));
+
+    if (actionCodeSettings.hasKey("handleCodeInApp")) {
+      builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
+    }
+
+    if (actionCodeSettings.hasKey("dynamicLinkDomain")) {
+      builder = builder.setDynamicLinkDomain(actionCodeSettings.getString("dynamicLinkDomain"));
+    }
+
+    if (actionCodeSettings.hasKey("android")) {
+      ReadableMap android = actionCodeSettings.getMap("android");
+      boolean installApp = Objects.requireNonNull(android).hasKey("installApp") && android.getBoolean("installApp");
       String minimumVersion = android.hasKey("minimumVersion") ? android.getString("minimumVersion") : null;
       String packageName = android.getString("packageName");
+
       builder = builder.setAndroidPackageName(
         Objects.requireNonNull(packageName),
         installApp,
         minimumVersion
       );
     }
-    if (actionCodeSettings.hasKey("handleCodeInApp")) {
-      builder = builder.setHandleCodeInApp(actionCodeSettings.getBoolean("handleCodeInApp"));
-    }
-    if (ios != null && ios.hasKey("bundleId")) {
+
+    if (actionCodeSettings.hasKey("iOS")) {
+      ReadableMap ios = actionCodeSettings.getMap("iOS");
       builder = builder.setIOSBundleId(Objects.requireNonNull(ios.getString("bundleId")));
-    }
-    if (url != null) {
-      builder = builder.setUrl(url);
     }
 
     return builder.build();

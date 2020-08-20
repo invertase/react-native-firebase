@@ -31,7 +31,7 @@ describe('database().ref().limitToFirst()', () => {
         .limitToFirst('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'limit' must be a positive integer value`);
+      error.message.should.containEql("'limit' must be a positive integer value");
       return Promise.resolve();
     }
   });
@@ -46,7 +46,7 @@ describe('database().ref().limitToFirst()', () => {
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
-        `Limit was already set (by another call to limitToFirst, or limitToLast)`,
+        'Limit was already set (by another call to limitToFirst, or limitToLast)',
       );
       return Promise.resolve();
     }

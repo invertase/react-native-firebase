@@ -16,21 +16,19 @@
  *
  */
 
+import { isBoolean, isError, isObject, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-
 import StackTrace from 'stacktrace-js';
-import { isBoolean, isError, isObject, isString } from '@react-native-firebase/common';
-
-import version from './version';
 import {
   createNativeErrorObj,
   setGlobalErrorHandler,
   setOnUnhandledPromiseRejectionHandler,
 } from './handlers';
+import version from './version';
 
 const statics = {};
 
@@ -50,8 +48,25 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this._isCrashlyticsCollectionEnabled;
   }
 
+  checkForUnsentReports() {
+    if (this.isCrashlyticsCollectionEnabled) {
+      throw new Error(
+        "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) has been set to 'true', all reports are automatically sent.",
+      );
+    }
+    return this.native.checkForUnsentReports();
+  }
+
   crash() {
     this.native.crash();
+  }
+
+  async deleteUnsentReports() {
+    await this.native.deleteUnsentReports();
+  }
+
+  didCrashOnPreviousExecution() {
+    return this.native.didCrashOnPreviousExecution();
   }
 
   log(message) {
@@ -94,26 +109,6 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setUserId(userId);
   }
 
-  setUserName(userName) {
-    if (!isString(userName)) {
-      throw new Error(
-        'firebase.crashlytics().setUserName(*): The supplied userName must be a string value.',
-      );
-    }
-
-    return this.native.setUserName(userName);
-  }
-
-  setUserEmail(userEmail) {
-    if (!isString(userEmail)) {
-      throw new Error(
-        'firebase.crashlytics().setUserEmail(*): The supplied userEmail must be a string value.',
-      );
-    }
-
-    return this.native.setUserEmail(userEmail);
-  }
-
   recordError(error) {
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
@@ -126,10 +121,16 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     }
   }
 
+  sendUnsentReports() {
+    if (this.isCrashlyticsCollectionEnabled) {
+      this.native.sendUnsentReports();
+    }
+  }
+
   setCrashlyticsCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
-        `firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.`,
+        "firebase.crashlytics().setCrashlyticsCollectionEnabled(*) 'enabled' must be a boolean.",
       );
     }
 

@@ -1,8 +1,8 @@
 {
   "name": "@react-native-firebase/storage",
-  "version": "6.0.0-alpha.25",
+  "version": "7.3.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
-  "description": "React Native Firebase - Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service built for Google scale.",
+  "description": "React Native Firebase - React Native Firebase provides native integration with Cloud Storage, providing support to upload and download files directly from your device and from your Firebase Cloud Storage bucket.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -29,20 +29,8 @@
     "download"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "*"
+    "@react-native-firebase/app": "8.3.1"
   },
-  "dependencies": {
-    "@react-native-firebase/app-types": "6.0.0-alpha.25",
-    "@react-native-firebase/common": "6.0.0-alpha.25"
-  },
-  "rnpm": {
-    "android": {
-      "buildPatch": "implementation project(':@react-native-firebase_storage')",
-      "packageImportPath": "import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;",
-      "packageInstance": "new ReactNativeFirebaseStoragePackage()"
-    }
-  },
-  "gitHead": "c2bb4fb41200861c831e51231c5fadbb1acf90c9",
   "publishConfig": {
     "access": "public"
   }

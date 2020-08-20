@@ -19,22 +19,14 @@ package io.invertase.firebase.common;
 
 import android.app.Activity;
 import android.content.Context;
+import com.facebook.react.bridge.*;
+import io.invertase.firebase.interfaces.ContextProvider;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.WritableMap;
-
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.annotation.Nonnull;
-
-import io.invertase.firebase.interfaces.ContextProvider;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
   private static Map<String, ExecutorService> executors = new HashMap<>();
@@ -48,19 +40,8 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     this.moduleName = moduleName;
   }
 
-  static WritableMap getExceptionMap(Exception exception) {
-    WritableMap exceptionMap = Arguments.createMap();
-    String code = "unknown";
-    String message = exception.getMessage();
-    exceptionMap.putString("code", code);
-    exceptionMap.putString("nativeErrorCode", code);
-    exceptionMap.putString("message", message);
-    exceptionMap.putString("nativeErrorMessage", message);
-    return exceptionMap;
-  }
-
   public static void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
-    promise.reject(exception, getExceptionMap(exception));
+    promise.reject(exception, SharedUtils.getExceptionMap(exception));
   }
 
   public static void rejectPromiseWithCodeAndMessage(Promise promise, String code, String message) {

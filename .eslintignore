@@ -1,8 +1,9 @@
 src/version.js
 packages/**/node_modules/**
-**/*.ts
 node_modules
 scripts/
 coverage
 docs
 packages/template/project/**
+app.playground.js
+type-test.ts

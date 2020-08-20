@@ -426,10 +426,6 @@ buck-out/
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 ### WebStorm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
@@ -544,10 +540,22 @@ Pods/*
 .idea/**/*
 **/Pods/**
 **/dist/
-**/version.js
+packages/**/version.js
 typedoc.raw.json
 tests/ios/Firebase
+tests/ios/resetXcode.sh
 .tmp
 
 google-services.json
 GoogleService-Info.plist
+
+# generated files
+RNFBVersion.m
+ReactNativeFirebaseVersion.java
+
+appPlaygrounds/
+app.playground.js
+app.admob.js
+app.smartreply.js
+eslint-report.json
+yarn.lock

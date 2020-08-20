@@ -15,12 +15,7 @@
  *
  */
 
-import {
-  NativeFirebaseError,
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseModuleAndStatics,
-  ReactNativeFirebaseNamespace,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase Cloud Storage package for React Native.
@@ -58,7 +53,10 @@ import {
  *
  * @firebase storage
  */
-export namespace Storage {
+export namespace FirebaseStorageTypes {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
+
   /**
    * Possible string formats used for uploading via `StorageReference.putString()`
    *
@@ -197,120 +195,6 @@ export namespace Storage {
   }
 
   /**
-   * A collection of native device file paths to aid in the usage of file path based storage methods.
-   *
-   * Concatenate a file path with your target file name when using `putFile` or `getFile`.
-   *
-   * ```js
-   * firebase.storage.Path;
-   * ```
-   */
-  export interface Path {
-    /**
-     * Returns an absolute path to the applications main bundle.
-     *
-     * ```js
-     * firebase.storage.Path.MainBundle;
-     * ```
-     *
-     * @ios iOS only
-     */
-    MainBundle: string;
-
-    /**
-     * Returns an absolute path to the application specific cache directory on the filesystem.
-     *
-     * The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
-     *
-     * ```js
-     * firebase.storage.Path.CachesDirectory;
-     * ```
-     */
-    CachesDirectory: string;
-
-    /**
-     * Returns an absolute path to the users Documents directory.
-     *
-     * Use this directory to place documents that have been created by the user.
-     *
-     * ```js
-     * firebase.storage.Path.DocumentDirectory;
-     * ```
-     */
-    DocumentDirectory: string;
-
-    /**
-     * Returns an absolute path to a temporary directory.
-     *
-     * Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
-     *
-     * ```js
-     * firebase.storage.Path.TempDirectory;
-     * ```
-     */
-    TempDirectory: string;
-
-    /**
-     * Returns an absolute path to the apps library/resources directory.
-     *
-     * E.g. this can be used for things like documentation, support files, and configuration files and generic resources.
-     *
-     * ```js
-     * firebase.storage.Path.LibraryDirectory;
-     * ```
-     */
-    LibraryDirectory: string;
-
-    /**
-     * Returns an absolute path to the directory on the primary shared/external storage device.
-     *
-     * Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
-     *
-     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
-     *
-     * ```js
-     * firebase.storage.Path.ExternalDirectory;
-     * ```
-     *
-     * @android Android only - iOS returns null
-     */
-    ExternalDirectory: string | null;
-
-    /**
-     * Returns an absolute path to the primary shared/external storage directory.
-     *
-     * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
-     *
-     * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
-     *
-     * ```js
-     * firebase.storage.Path.ExternalStorageDirectory;
-     * ```
-     *
-     * @android Android only - iOS returns null
-     */
-    ExternalStorageDirectory: string | null;
-
-    /**
-     * Returns an absolute path to a directory in which to place pictures that are available to the user.
-     *
-     * ```js
-     * firebase.storage.Path.PicturesDirectory;
-     * ```
-     */
-    PicturesDirectory: string;
-
-    /**
-     * Returns an absolute path to a directory in which to place movies that are available to the user.
-     *
-     * ```js
-     * firebase.storage.Path.MoviesDirectory;
-     * ```
-     */
-    MoviesDirectory: string;
-  }
-
-  /**
    * Cloud Storage statics.
    *
    * #### Example
@@ -352,17 +236,6 @@ export namespace Storage {
      * ```
      */
     TaskEvent: TaskEvent;
-
-    /**
-     * A collection of native device file paths to aid in the usage of file path based storage methods.
-     *
-     * #### Example
-     *
-     * ```js
-     * firebase.storage.Path;
-     * ```
-     */
-    Path: Path;
   }
 
   /**
@@ -659,13 +532,56 @@ export namespace Storage {
     getMetadata(): Promise<FullMetadata>;
 
     /**
+     * List items (files) and prefixes (folders) under this storage reference.
+     *
+     * List API is only available for Firebase Rules Version 2.
+     *
+     * GCS is a key-blob store. Firebase Storage imposes the semantic of '/' delimited folder structure.
+     * Refer to GCS's List API if you want to learn more.
+     *
+     * To adhere to Firebase Rules's Semantics, Firebase Storage does not support objects whose paths
+     * end with "/" or contain two consecutive "/"s. Firebase Storage List API will filter these unsupported objects.
+     * list() may fail if there are too many unsupported objects in the bucket.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('/');
+     * const results = await ref.list({
+     *   maxResults: 30,
+     * });
+     * ```
+     *
+     * @param options An optional ListOptions interface.
+     */
+    list(options?: ListOptions): Promise<ListResult>;
+
+    /**
+     * List all items (files) and prefixes (folders) under this storage reference.
+     *
+     * This is a helper method for calling list() repeatedly until there are no more results. The default pagination size is 1000.
+     *
+     * Note: The results may not be consistent if objects are changed while this operation is running.
+     *
+     * Warning: `listAll` may potentially consume too many resources if there are too many results.
+     *
+     * #### Example
+     *
+     * ```js
+     * const ref = firebase.storage().ref('/');
+     * const results = await ref.listAll();
+     * ```
+     */
+    listAll(): Promise<ListResult>;
+
+    /**
      * Puts a file from local disk onto the storage bucket.
      *
      * #### Example
      *
      * ```js
      * const ref = firebase.storage().ref('invertase/new-logo.png');
-     * const path = `${firebase.storage.Path.DocumentDirectory}/new-logo.png`;
+     * const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/new-logo.png`;
      * const task = ref.putFile(path, {
      *   cacheControl: 'no-store', // disable caching
      * });
@@ -684,13 +600,13 @@ export namespace Storage {
      * Get a Download Storage task to download a file:
      *
      * ```js
-     * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/foobar.json`;
+     * const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/foobar.json`;
      *
-     * const task = firebase.storage().ref('/foo/bar.json').getFile(downloadTo);
+     * const task = firebase.storage().ref('/foo/bar.json').writeToFile(downloadTo);
      * ```
      * @param localFilePath
      */
-    getFile(localFilePath: string): Task;
+    writeToFile(localFilePath: string): Task;
 
     /**
      * Puts data onto the storage bucket.
@@ -725,7 +641,11 @@ export namespace Storage {
      * @param format The format type of the string, e.g. a Base64 format string.
      * @param metadata Any additional `SettableMetadata` for this task.
      */
-    putString(data: string, format?: StringFormat, metadata?: SettableMetadata): Task;
+    putString(
+      data: string,
+      format?: 'raw' | 'base64' | 'base64url' | 'data_url',
+      metadata?: SettableMetadata,
+    ): Task;
 
     /**
      * Updates the metadata for this reference object on the storage bucket.
@@ -809,15 +729,20 @@ export namespace Storage {
    * Get a Download Storage task to download a file:
    *
    * ```js
-   * const downloadTo = `${firebase.storage.Path.DocumentDirectory}/bar.json`;
+   * const downloadTo = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/bar.json`;
    *
    * const task = firebase
    *  .storage()
    *  .ref('/foo/bar.json')
-   *  .getFile(downloadTo);
+   *  .writeToFile(downloadTo);
    * ```
    */
   export interface Task {
+    /**
+     * Initial state of Task.snapshot is `null`. Once uploading begins, it updates to a `TaskSnapshot` object.
+     */
+    snapshot: null | TaskSnapshot;
+
     /**
      * Pause the current Download or Upload task.
      *
@@ -884,12 +809,13 @@ export namespace Storage {
      * const task = firebase
      *  .storage()
      *  .ref('/foo/bar.json')
-     *  .getFile(downloadTo);
+     *  .writeToFile(downloadTo);
      *
      * task.on('state_changed', (taskSnapshot) => {
      *   console.log(taskSnapshot.state);
-     * })
-     * .then(() => {]
+     * });
+     *
+     * task.then(() => {]
      *   console.log('Task complete');
      * })
      * .catch((error) => {
@@ -907,7 +833,7 @@ export namespace Storage {
       nextOrObserver?: TaskSnapshotObserver | null | ((a: TaskSnapshot) => any),
       error?: ((a: NativeFirebaseError) => any) | null,
       complete?: (() => void) | null,
-    ): Function;
+    ): () => void;
 
     // /**
     //  * @ignore May not exist in RN JS Environment yet so we'll hide from docs.
@@ -994,6 +920,43 @@ export namespace Storage {
   }
 
   /**
+   * The options `list()` accepts.
+   */
+  export interface ListOptions {
+    /**
+     * If set, limits the total number of `prefixes` and `items` to return. The default and maximum maxResults is 1000.
+     */
+    maxResults?: number;
+
+    /**
+     * The `nextPageToken` from a previous call to `list()`. If provided, listing is resumed from the previous position.
+     */
+    pageToken?: string;
+  }
+
+  /**
+   * Result returned by `list()`.
+   */
+  export interface ListResult {
+    /**
+     * Objects in this directory. You can call `getMetadata()` and `getDownloadUrl()` on them.
+     */
+    items: Reference[];
+
+    /**
+     * If set, there might be more results for this list. Use this token to resume the list.
+     */
+    nextPageToken: string | null;
+
+    /**
+     * References to prefixes (sub-folders). You can call `list()` on them to get its contents.
+     *
+     * Folders are implicit based on '/' in the object paths. For example, if a bucket has two objects '/a/b/1' and '/a/b/2', list('/a') will return '/a/b' as a prefix.
+     */
+    prefixes: Reference[];
+  }
+
+  /**
    * The Cloud Storage service is available for the default app, a given app or a specific storage bucket.
    *
    * #### Example 1
@@ -1026,9 +989,9 @@ export namespace Storage {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     /**
-     * Returns the maximum time to retry an upload if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry an upload if a failure occurs.
      *
      * #### Example
      *
@@ -1039,20 +1002,20 @@ export namespace Storage {
     maxUploadRetryTime: number;
 
     /**
-     * Sets the maximum time to retry an upload if a failure occurs.
+     * Sets the maximum time in milliseconds to retry an upload if a failure occurs.
      *
      * #### Example
      *
      * ```js
-     * await firebase.storage().setMaxUploadRetryTime(3);
+     * await firebase.storage().setMaxUploadRetryTime(25000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum upload retry time in milliseconds.
      */
-    setMaxUploadRetryTime(time: number): Promise<null>;
+    setMaxUploadRetryTime(time: number): Promise<void>;
 
     /**
-     * Returns the maximum time to retry a download if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry a download if a failure occurs.
      *
      * #### Example
      *
@@ -1063,20 +1026,20 @@ export namespace Storage {
     maxDownloadRetryTime: number;
 
     /**
-     * Sets the maximum time to retry a download if a failure occurs.
+     * Sets the maximum time in milliseconds to retry a download if a failure occurs.
      *
      * #### Example
      *
      * ```js
-     * await firebase.storage().setMaxDownloadRetryTime(5000);
+     * await firebase.storage().setMaxDownloadRetryTime(25000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum download retry time in milliseconds.
      */
-    setMaxDownloadRetryTime(time: number): Promise<null>;
+    setMaxDownloadRetryTime(time: number): Promise<void>;
 
     /**
-     * Returns the maximum time to retry operations other than upload and download if a failure occurs.
+     * Returns the current maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -1087,7 +1050,7 @@ export namespace Storage {
     maxOperationRetryTime: number;
 
     /**
-     * Sets the maximum time to retry operations other than upload and download if a failure occurs.
+     * Sets the maximum time in milliseconds to retry operations other than upload and download if a failure occurs.
      *
      * #### Example
      *
@@ -1095,9 +1058,9 @@ export namespace Storage {
      * await firebase.storage().setMaxOperationRetryTime(5000);
      * ```
      *
-     * @param time The number of times to retry.
+     * @param time The new maximum operation retry time in milliseconds.
      */
-    setMaxOperationRetryTime(time: number): Promise<null>;
+    setMaxOperationRetryTime(time: number): Promise<void>;
 
     /**
      * Returns a new {@link storage.Reference} instance.
@@ -1105,7 +1068,7 @@ export namespace Storage {
      * #### Example
      *
      * ```js
-     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * const ref = firebase.storage().ref('cats.gif');
      * ```
      *
      * @param path An optional string pointing to a location on the storage bucket. If no path
@@ -1119,37 +1082,51 @@ export namespace Storage {
      * #### Example
      *
      * ```js
-     * const maxOperationRetryTime = firebase.storage().maxOperationRetryTime;
+     * const gsUrl = 'gs://react-native-firebase-testing/cats.gif';
+     * const httpUrl = 'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif';
+     *
+     * const refFromGsUrl = firebase.storage().refFromURL(gsUrl);
+     * // or
+     * const refFromHttpUrl = firebase.storage().refFromURL(httpUrl);
      * ```
      *
-     * @param url A storage bucket URL pointing to a single file or location. Must start with `gs://`,
-     * e.g. `gs://assets/logo.png` or `gs://assets`.
+     * @param url A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url,
+     * e.g. `gs://assets/logo.png` or `https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif`.
      */
     refFromURL(url: string): Reference;
   }
 }
 
 declare module '@react-native-firebase/storage' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
+  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
+  import { ReactNativeFirebase } from '@react-native-firebase/app';
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
 
-  export const firebase = FirebaseNamespaceExport;
-
-  const StorageDefaultExport: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
-
-  export default StorageDefaultExport;
+  const defaultExport: FirebaseModuleWithStaticsAndApp<
+    FirebaseStorageTypes.Module,
+    FirebaseStorageTypes.Statics
+  >;
+  export default defaultExport;
 }
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    storage: ReactNativeFirebaseModuleAndStatics<Storage.Module, Storage.Statics>;
-  }
-
-  interface FirebaseApp {
-    storage?(bucket?: string): Storage.Module;
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      storage: FirebaseModuleWithStaticsAndApp<
+        FirebaseStorageTypes.Module,
+        FirebaseStorageTypes.Statics
+      >;
+    }
+    interface FirebaseApp {
+      storage(bucket?: string): FirebaseStorageTypes.Module;
+    }
   }
 }

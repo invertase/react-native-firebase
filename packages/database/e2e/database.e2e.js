@@ -56,7 +56,7 @@ describe('database()', () => {
         firebase.database().ref({ foo: 'bar' });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'path' must be a string value`);
+        error.message.should.containEql("'path' must be a string value");
         return Promise.resolve();
       }
     });
@@ -67,7 +67,7 @@ describe('database()', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          `Paths must be non-empty strings and can't contain ".", "#", "$", "[", or "]"`,
+          'Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]"',
         );
         return Promise.resolve();
       }
@@ -80,7 +80,7 @@ describe('database()', () => {
         firebase.database().refFromURL('foobar');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'url' must be a valid database URL`);
+        error.message.should.containEql("'url' must be a valid database URL");
         return Promise.resolve();
       }
     });
@@ -90,7 +90,7 @@ describe('database()', () => {
         firebase.database().refFromURL('https://foobar.firebaseio.com');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'url' must be the same domain as the current instance`);
+        error.message.should.containEql("'url' must be the same domain as the current instance");
         return Promise.resolve();
       }
     });
@@ -130,7 +130,7 @@ describe('database()', () => {
         firebase.database().setPersistenceEnabled('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'enabled' must be a boolean value`);
+        error.message.should.containEql("'enabled' must be a boolean value");
         return Promise.resolve();
       }
     });
@@ -147,7 +147,7 @@ describe('database()', () => {
         firebase.database().setLoggingEnabled('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'enabled' must be a boolean value`);
+        error.message.should.containEql("'enabled' must be a boolean value");
         return Promise.resolve();
       }
     });
@@ -164,7 +164,7 @@ describe('database()', () => {
         firebase.database().setPersistenceCacheSizeBytes('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'bytes' must be a number value`);
+        error.message.should.containEql("'bytes' must be a number value");
         return Promise.resolve();
       }
     });
@@ -174,7 +174,7 @@ describe('database()', () => {
         firebase.database().setPersistenceCacheSizeBytes(1234);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'bytes' must be greater than 1048576 bytes (1MB)`);
+        error.message.should.containEql("'bytes' must be greater than 1048576 bytes (1MB)");
         return Promise.resolve();
       }
     });
@@ -184,7 +184,7 @@ describe('database()', () => {
         firebase.database().setPersistenceCacheSizeBytes(100000000000000);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql(`'bytes' must be less than 104857600 bytes (100MB)`);
+        error.message.should.containEql("'bytes' must be less than 104857600 bytes (100MB)");
         return Promise.resolve();
       }
     });

@@ -24,7 +24,7 @@ describe('database().ref().keepSynced()', () => {
         .keepSynced('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql(`'bool' value must be a boolean value.`);
+      error.message.should.containEql("'bool' value must be a boolean value.");
       return Promise.resolve();
     }
   });

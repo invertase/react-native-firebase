@@ -1,0 +1,35 @@
+{
+  "name": "@react-native-firebase/in-app-messaging",
+  "version": "7.3.2",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Firebase In-App Messaging helps you engage your app's active users by sending them targeted, contextual messages that encourage them to use key app features. React Native Firebase provides support for both native Android & iOS integration with a simple JavaScript API.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/in-app-messaging"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "in-app messaging",
+    "analytics",
+    "predictions",
+    "engage",
+    "active users",
+    "inAppMessaging"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "8.3.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

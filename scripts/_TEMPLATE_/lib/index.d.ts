@@ -15,11 +15,7 @@
  *
  */
 
-import {
-  ReactNativeFirebaseModule,
-  ReactNativeFirebaseNamespace,
-  ReactNativeFirebaseModuleAndStatics,
-} from '@react-native-firebase/app-types';
+import { ReactNativeFirebase } from '@react-native-firebase/app';
 
 /**
  * Firebase _Template_ package for React Native.
@@ -58,6 +54,8 @@ import {
  * @firebase _template_
  */
 export namespace _Template_ {
+  import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+
   export interface Statics {
     // firebase._template_.* static props go here
   }
@@ -99,28 +97,33 @@ export namespace _Template_ {
    * ```
    *
    */
-  export class Module extends ReactNativeFirebaseModule {
+  export class Module extends FirebaseModule {
     // firebase._template_().* methods & props go here
   }
 }
 
 declare module '@react-native-firebase/_template_' {
-  import { ReactNativeFirebaseNamespace } from '@react-native-firebase/app-types';
-  const FirebaseNamespaceExport: {} & ReactNativeFirebaseNamespace;
-  export const firebase = FirebaseNamespaceExport;
-  const _Template_DefaultExport: ReactNativeFirebaseModuleAndStatics<
-    _Template_.Module,
-    _Template_.Statics
-  >;
-  export default _Template_DefaultExport;
+  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
+  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
+  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
+  export const firebase = firebaseNamedExport;
+
+  const module: FirebaseModuleWithStaticsAndApp<_Template_.Module, _Template_.Statics>;
+  export default module;
 }
 
-declare module '@react-native-firebase/app-types' {
-  interface ReactNativeFirebaseNamespace {
-    _template_: ReactNativeFirebaseModuleAndStatics<_Template_.Module, _Template_.Statics>;
-  }
-
-  interface FirebaseApp {
-    _template_(): _Template_.Module;
+/**
+ * Attach namespace to `firebase.` and `FirebaseApp.`.
+ */
+declare module '@react-native-firebase/app' {
+  namespace ReactNativeFirebase {
+    import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+    interface Module {
+      _template_: FirebaseModuleWithStaticsAndApp<_Template_.Module, _Template_.Statics>;
+    }
+    interface FirebaseApp {
+      _template_(): _Template_.Module;
+    }
   }
 }

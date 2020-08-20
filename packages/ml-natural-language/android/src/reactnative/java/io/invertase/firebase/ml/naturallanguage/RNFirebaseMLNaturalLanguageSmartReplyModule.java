@@ -44,9 +44,9 @@ class RNFirebaseMLNaturalLanguageSmartReplyModule extends ReactNativeFirebaseMod
    * @url https://firebase.google.com/docs/reference/android/com/google/firebase/ml/naturallanguage/smartreply/FirebaseSmartReply.html#public-tasksmartreplysuggestionresultsuggestreplieslistfirebasetextmessage-textmessages
    */
   @ReactMethod
-  public void getSuggestedReplies(String appName, ReadableArray messages, Promise promise) {
+  public void suggestReplies(String appName, ReadableArray messages, Promise promise) {
     module
-      .getSuggestedReplies(appName, messages.toArrayList())
+      .suggestReplies(appName, messages.toArrayList())
       .addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(Arguments.fromList(Objects.requireNonNull(task.getResult())));

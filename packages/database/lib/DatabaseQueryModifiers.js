@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -16,7 +15,7 @@
  *
  */
 
-import { isNull, isNumber, isString } from '@react-native-firebase/common';
+import { isNull, isNumber, isString } from '@react-native-firebase/app/lib/common';
 
 const CONSTANTS = {
   VIEW_FROM_LEFT: 'left',
@@ -30,6 +29,16 @@ export default class DatabaseQueryModifiers {
     this._startAt = undefined;
     this._endAt = undefined;
     this._modifiers = [];
+  }
+
+  _copy() {
+    const newInstance = new DatabaseQueryModifiers();
+    newInstance._limit = this._limit;
+    newInstance._orderBy = this._orderBy;
+    newInstance._startAt = this._startAt;
+    newInstance._endAt = this._endAt;
+    newInstance._modifiers = [...this._modifiers];
+    return newInstance;
   }
 
   /**
@@ -99,7 +108,7 @@ export default class DatabaseQueryModifiers {
 
   orderByKey() {
     const newOrder = {
-      id: `order-orderByKey`,
+      id: 'order-orderByKey',
       type: 'orderBy',
       name: 'orderByKey',
     };
@@ -115,7 +124,7 @@ export default class DatabaseQueryModifiers {
 
   orderByPriority() {
     const newOrder = {
-      id: `order-orderByPriority`,
+      id: 'order-orderByPriority',
       type: 'orderBy',
       name: 'orderByPriority',
     };
@@ -127,7 +136,7 @@ export default class DatabaseQueryModifiers {
 
   orderByValue() {
     const newOrder = {
-      id: `order-orderByValue`,
+      id: 'order-orderByValue',
       type: 'orderBy',
       name: 'orderByValue',
     };
@@ -188,15 +197,21 @@ export default class DatabaseQueryModifiers {
 
   // Converts the modifier list to a string representation
   toString() {
-    const sorted = this._modifiers.sort((a, b) => {
-      if (a.id < b.id) return -1;
-      if (a.id > b.id) return 1;
+    const sorted = [].concat(this._modifiers).sort((a, b) => {
+      if (a.id < b.id) {
+        return -1;
+      }
+      if (a.id > b.id) {
+        return 1;
+      }
       return 0;
     });
 
     let key = '{';
     for (let i = 0; i < sorted.length; i++) {
-      if (i !== 0) key += ',';
+      if (i !== 0) {
+        key += ',';
+      }
       key += sorted[i].id;
     }
     key += '}';

@@ -19,7 +19,7 @@
 #define RNFBSharedUtils_h
 
 #import <FirebaseCore/FirebaseCore.h>
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 
 #ifdef DEBUG
 #define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
@@ -47,6 +47,8 @@ extern NSString *const DEFAULT_APP_NAME;
 + (void)sendJSEventForApp:(FIRApp *)app name:(NSString *)name body:(NSDictionary *)body;
 
 + (void)rejectPromiseWithExceptionDict:(RCTPromiseRejectBlock)reject exception:(NSException *)exception;
+
++ (void)rejectPromiseWithNSError:(RCTPromiseRejectBlock)reject error:(NSError *)error;
 
 + (void)rejectPromiseWithUserInfo:(RCTPromiseRejectBlock)reject userInfo:(NSMutableDictionary *)userInfo;
 

@@ -1,21 +1,32 @@
+import io.invertase.gradle.common.PackageJson
+
 buildscript {
-  repositories {
-    google()
-    jcenter()
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.0'
+  // The Android Gradle plugin is only required when opening the android folder stand-alone.
+  // This avoids unnecessary downloads and potential conflicts when the library is included as a
+  // module dependency in an application project.
+  if (project == rootProject) {
+    repositories {
+      google()
+      jcenter()
+    }
+
+    dependencies {
+      classpath("com.android.tools.build:gradle:4.0.0")
+    }
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.3"
+  id "io.invertase.gradle.build" version "1.4"
 }
+
+def packageJson = PackageJson.getForProject(project)
+def firebaseBomVersion = packageJson['sdkVersions']['android']['firebase']
 
 project.ext {
   set('react-native', [
     versions: [
-      android           : [
+      android : [
         minSdk    : 16,
         targetSdk : 28,
         compileSdk: 28,
@@ -24,13 +35,8 @@ project.ext {
         buildTools: "28.0.3"
       ],
 
-      googlePlayServices: [
-        base: "16.1.0",
-      ],
-
-      firebase          : [
-        core  : "16.0.9",
-        common: "17.0.0"
+      firebase: [
+        bom: firebaseBomVersion,
       ],
     ],
   ])
@@ -62,9 +68,9 @@ repositories {
 }
 
 dependencies {
-  implementation "com.google.firebase:firebase-core:${ReactNative.ext.getVersion("firebase", "core")}"
-  implementation "com.google.firebase:firebase-common:${ReactNative.ext.getVersion("firebase", "common")}"
-  implementation "com.google.android.gms:play-services-base:${ReactNative.ext.getVersion("googlePlayServices", "base")}"
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-core"
+  implementation "com.google.firebase:firebase-common"
 }
 
 apply from: file("./firebase-json.gradle")

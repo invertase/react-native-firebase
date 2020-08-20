@@ -15,7 +15,7 @@
  *
  */
 
-describe(`database().ref('.info/connected')`, () => {
+describe("database().ref('.info/connected')", () => {
   after(() => firebase.database().goOnline());
 
   it('returns false when used with once', async () => {
