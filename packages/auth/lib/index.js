@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isBoolean } from '@react-native-firebase/app/lib/common';
+import { isAndroid, isBoolean, isString, isNull } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -95,11 +95,6 @@ class FirebaseAuthModule extends FirebaseModule {
     return this._languageCode;
   }
 
-  set languageCode(code) {
-    this._languageCode = code;
-    this.native.setLanguageCode(code);
-  }
-
   get settings() {
     if (!this._settings) {
       this._settings = new Settings(this);
@@ -129,7 +124,34 @@ class FirebaseAuthModule extends FirebaseModule {
     };
   }
 
-  onAuthStateChanged(listener) {
+  async setLanguageCode(code) {
+    if (!isString(code) && !isNull(code)) {
+      throw new Error(
+        "firebase.auth().setLanguageCode(*) expected 'languageCode' to be a string or null value",
+      );
+    }
+
+    await this.native.setLanguageCode(code);
+
+    if (code === null) {
+      this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+
+      if (!this.languageCode) {
+        this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
+      }
+    } else {
+      this._languageCode = code;
+    }
+  }
+
+  _parseListener(listenerOrObserver) {
+    return typeof listenerOrObserver === 'object'
+      ? listenerOrObserver.next.bind(listenerOrObserver)
+      : listenerOrObserver;
+  }
+
+  onAuthStateChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onAuthStateChanged'),
       listener,
@@ -143,7 +165,8 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onIdTokenChanged(listener) {
+  onIdTokenChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(
       this.eventNameForApp('onIdTokenChanged'),
       listener,
@@ -157,7 +180,8 @@ class FirebaseAuthModule extends FirebaseModule {
     return () => subscription.remove();
   }
 
-  onUserChanged(listener) {
+  onUserChanged(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
     const subscription = this.emitter.addListener(this.eventNameForApp('onUserChanged'), listener);
     if (this._authResult) {
       Promise.resolve().then(() => {

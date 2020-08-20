@@ -232,3 +232,103 @@ admin
     console.log('Error sending message:', error);
   });
 ```
+
+# Send messages with image
+
+Both the Notifications composer and the FCM API support image links in the message payload.
+
+## iOS
+
+To successfully send an image using the Admin SDK it's important that the `ApnsConfig` options are set:
+
+```js
+const payload = {
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  apns: {
+    payload: {
+      aps: {
+        'mutable-content': 1, // 1 or true
+      },
+    },
+    fcm_options: {
+      image: 'image-url',
+    },
+  },
+};
+```
+
+> Check out the [official Firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the list of available configuration for iOS.
+
+
+## Android
+
+Similarly to iOS, some configurations specific to Android are needed:
+
+```js
+const payload = {
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  android: {
+    notification: {
+      image: "image-url",
+    },
+  },
+};
+```
+
+> If you want to know more about sending an image on Android have a look at [the documentation](https://firebase.google.com/docs/cloud-messaging/android/send-image).
+
+## Pulling it all together
+
+It's possible to send one notification that will be delivered to both platforms using the Admin SDK:
+
+```js
+const admin = require('firebase-admin');
+
+// Create a list containing up to 500 registration tokens.
+// These registration tokens come from the client FCM SDKs.
+const registrationTokens = [
+  'YOUR_REGISTRATION_TOKEN_1',
+  'YOUR_REGISTRATION_TOKEN_2',
+];
+
+const message = {
+  tokens: registrationTokens,
+  notification: {
+    body: 'This is an FCM notification that displays an image!',
+    title: 'FCM Notification',
+  },
+  apns: {
+    payload: {
+      aps: {
+        'mutable-content': 1,
+      },
+    },
+    fcm_options: {
+      image: 'image-url',
+    },
+  },
+  android: {
+    notification: {
+      image: "image-url",
+    },
+  },
+};
+
+admin
+  .messaging()
+  .send(message)
+  .then(response => {
+    console.log('Successfully sent message:', response);
+  })
+  .catch(error => {
+    console.log('Error sending message:', error);
+  });
+```
+
+If you want to read more about building send requests with the Admin SDK check out [this link](https://firebase.google.com/docs/cloud-messaging/send-message).
