@@ -44,20 +44,20 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     //    App in Background/Quit
     //   ------------------------
 
-    try {
-      Intent backgroundIntent = new Intent(context, ReactNativeFirebaseMessagingHeadlessService.class);
-      backgroundIntent.putExtra("message", remoteMessage);
-      ComponentName name = context.startService(backgroundIntent);
-      if (name != null) {
-        HeadlessJsTaskService.acquireWakeLockNow(context);
-      }
-    } catch (IllegalStateException ex) {
-      // By default, data only messages are "default" priority and cannot trigger Headless tasks
-      Log.e(
-        TAG,
-        "Background messages only work if the message priority is set to 'high'",
-        ex
-      );
-    }
+    // try {
+    //   Intent backgroundIntent = new Intent(context, ReactNativeFirebaseMessagingHeadlessService.class);
+    //   backgroundIntent.putExtra("message", remoteMessage);
+    //   ComponentName name = context.startService(backgroundIntent);
+    //   if (name != null) {
+    //     HeadlessJsTaskService.acquireWakeLockNow(context);
+    //   }
+    // } catch (IllegalStateException ex) {
+    //   // By default, data only messages are "default" priority and cannot trigger Headless tasks
+    //   Log.e(
+    //     TAG,
+    //     "Background messages only work if the message priority is set to 'high'",
+    //     ex
+    //   );
+    // }
   }
 }
