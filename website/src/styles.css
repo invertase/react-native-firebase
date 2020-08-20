@@ -34,7 +34,8 @@ table code {
 
 blockquote p {
   @apply text-white;
-  a, a:hover {
+  a,
+  a:hover {
     border-bottom-color: #fff;
   }
 }
@@ -56,8 +57,13 @@ table {
   }
 }
 
-h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
-  font-size: .9em;
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+  font-size: 0.9em;
   padding: 0 6px;
 }
 

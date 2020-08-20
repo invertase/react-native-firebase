@@ -1,5 +1,3 @@
-import { MdxNextPrevious } from './docs';
-
 export interface PageScreencastQuery {
   screenCast: Screencast;
   allScreenCast: {

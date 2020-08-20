@@ -20,7 +20,7 @@ function EntityTable({ entities }: Props) {
     <div className="my-4 bg-gray-100 rounded p-4 shadow-lg">
       <Ul className="leading-loose">
         {entities.map(entity => (
-          <li className="truncate no-whitespace-no-wrap">
+          <li className="truncate no-whitespace-no-wrap" key={entity.name}>
             <Link to={`#${entity.hash}`}>{entity.name}</Link>
           </li>
         ))}

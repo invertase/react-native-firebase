@@ -4,6 +4,7 @@ import { LocationContext } from './context';
 export function useBodyClassToggle(className: string): () => void {
   return () => {
     if (!window?.document?.body) {
+      // eslint-disable-next-line no-console
       console.warn('useMenuToggle: failed to find document body');
       return;
     }

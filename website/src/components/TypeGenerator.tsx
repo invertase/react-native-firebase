@@ -53,7 +53,7 @@ function TypeGenerator({ type }: Props) {
   if (exposed.type === 'stringLiteral') {
     out.push(
       <span key={`intrinsic-${exposed.name}`} className="type">
-        "{exposed.value}"
+        &quot;{exposed.value}&quot;
       </span>,
     );
   }

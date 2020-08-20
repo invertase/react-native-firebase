@@ -1,7 +1,7 @@
 import React, { CSSProperties, ReactElement, useState } from 'react';
 import cx from 'classnames';
 import styled from '@emotion/styled';
-import { Scrollbar, icons, Divider } from '@invertase/ui';
+import { Scrollbar, icons } from '@invertase/ui';
 import { Match } from '@reach/router';
 
 import { Link } from './Link';
@@ -230,7 +230,7 @@ function Group({ title, collapsible, icon, items }: GroupProps) {
         className="text-sm text-gray-700 mt-2 ml-5"
       >
         {items.map(({ to, text, exact }) => (
-          <ListItem to={to} match={exact ? undefined : `${to}/*`}>
+          <ListItem to={to} key={to} match={exact ? undefined : `${to}/*`}>
             {text}
           </ListItem>
         ))}

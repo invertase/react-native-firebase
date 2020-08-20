@@ -45,7 +45,11 @@ function ScreenCasts({ location }: Props) {
         <Divider />
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-8">
           {screencasts.nodes.map((cast: any) => (
-            <Link to={cast.slug} className="border-transparent hover:border-transparent">
+            <Link
+              to={cast.slug}
+              key={cast.slug}
+              className="border-transparent hover:border-transparent"
+            >
               <div
                 key={cast.id}
                 className="border rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-150 overflow-hidden"

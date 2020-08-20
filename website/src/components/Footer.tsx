@@ -85,7 +85,7 @@ function List({ items }: { items: [string, string][] }) {
   return (
     <ul>
       {items.map(i => (
-        <li className="mb-2">
+        <li className="mb-2" key={i[0]}>
           <Link to={i[1]} className="text-sm hover:underline">
             {i[0]}
           </Link>
