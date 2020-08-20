@@ -559,3 +559,7 @@ app.admob.js
 app.smartreply.js
 eslint-report.json
 yarn.lock
+
+# Gatsby / Website
+website/.cache
+website/public

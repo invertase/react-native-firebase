@@ -887,7 +887,12 @@ RCT_EXPORT_METHOD(setLanguageCode:
   (FIRApp *) firebaseApp
     :(NSString *) code
 ) {
-  [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    if(code){
+        [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    } else {
+        [[FIRAuth authWithApp:firebaseApp] useAppLanguage];
+    }
+  
 }
 
 RCT_EXPORT_METHOD(useDeviceLanguage:
