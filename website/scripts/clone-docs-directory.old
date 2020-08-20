@@ -1,0 +1,56 @@
+/**
+ * Old script used to clone in the remote repository to a local 
+ * directory.
+ */
+
+// const fs = require('fs');
+// const rimraf = require('rimraf');
+// const Git = require('nodegit');
+// const ncp = require('ncp').ncp;
+
+// const localTempDirectory = '.tmp';
+// const localDirectory = 'content';
+
+// const remoteDirectory = 'docs';
+// const remoteBranch = 'master';
+
+// module.exports = async function cloneDocsDirectory({ reporter }) {
+//   reporter.info('Removing any existing docs directories.');
+//   rimraf.sync(localTempDirectory);
+//   rimraf.sync(localDirectory);
+
+//   reporter.info(
+//     `Cloning git repository (branch: ${remoteBranch}) into directory "${localTempDirectory}".`
+//   );
+//   await Git.Clone(
+//     'https://github.com/invertase/react-native-firebase',
+//     localTempDirectory,
+//     {
+//       checkoutBranch: remoteBranch,
+//     }
+//   );
+
+//   if (!fs.existsSync(localDirectory)) {
+//     fs.mkdirSync(localDirectory);
+//   }
+
+//   reporter.info(
+//     `Moving directory "${remoteDirectory}" from clone into directory "${localDirectory}".`
+//   );
+//   await new Promise((resolve, reject) => {
+//     ncp(
+//       `${localTempDirectory}/${remoteDirectory}`,
+//       localDirectory,
+//       {
+//         stopOnErr: true,
+//       },
+//       (error) => {
+//         if (error) return reject(error);
+//         return resolve();
+//       }
+//     );
+//   });
+
+//   reporter.info(`Performing directory cleanup.`);
+//   rimraf.sync(localTempDirectory);
+// };
