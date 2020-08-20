@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2016-present Invertase Limited & Contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this library except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 const babel = require('@babel/core');
 const mdx = require('@mdx-js/mdx');
 const prism = require('@mapbox/rehype-prism');
@@ -7,10 +24,7 @@ const slug = require('slug');
 // Use Babel to transform JSX into JS
 function transformJsx(jsx) {
   return babel.transform(jsx, {
-    plugins: [
-      '@babel/plugin-transform-react-jsx',
-      '@babel/plugin-proposal-object-rest-spread',
-    ],
+    plugins: ['@babel/plugin-transform-react-jsx', '@babel/plugin-proposal-object-rest-spread'],
   }).code;
 }
 
@@ -89,7 +103,7 @@ module.exports.camelCaseToDash = function camelCaseToDash(myStr) {
 };
 
 module.exports.extractSourceFile = function extractSourceFile(sources = []) {
-  return sources.map((source) => {
+  return sources.map(source => {
     if (!source) return '';
     if (source.fileName.includes('node_modules')) return '';
     return `https://github.com/invertase/react-native-firebase/blob/master/${
@@ -98,9 +112,7 @@ module.exports.extractSourceFile = function extractSourceFile(sources = []) {
   });
 };
 
-module.exports.extractCommonEntityProps = function extractCommonEntityProps(
-  entity
-) {
+module.exports.extractCommonEntityProps = function extractCommonEntityProps(entity) {
   const props = {
     id: entity.id.toString(), // GQL node IDs must be strings
     name: entity.name,
@@ -119,9 +131,7 @@ module.exports.extractCommonEntityProps = function extractCommonEntityProps(
   return props;
 };
 
-module.exports.extractInherited = function extractInherited(
-  inheritedFrom = {}
-) {
+module.exports.extractInherited = function extractInherited(inheritedFrom = {}) {
   let value = '';
   if (inheritedFrom.id) value = inheritedFrom.name.replace('.', '#');
   return {

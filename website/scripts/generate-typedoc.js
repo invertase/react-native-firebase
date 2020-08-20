@@ -39,5 +39,4 @@ module.exports.generateTypedoc = function generateTypedoc() {
   unlinkSync(tempOutput);
 
   return JSON.parse(output);
-}
-
+};
