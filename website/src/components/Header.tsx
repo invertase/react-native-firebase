@@ -35,11 +35,7 @@ function Header({ onMenuToggle }: Props) {
             </Link>
           </li>
           <li>
-            <Link
-              to="https://twitter.com/rnfirebase"
-              target="_blank"
-              className="inline-flex ml-4"
-            >
+            <Link to="https://twitter.com/rnfirebase" target="_blank" className="inline-flex ml-4">
               <Twitter
                 size={26}
                 className="text-blue-400 opacity-75 hover:opacity-100 transition-opacity duration-100"

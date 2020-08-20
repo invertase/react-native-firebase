@@ -15,12 +15,12 @@ function Statics({ prefix, statics }: { prefix: string; statics: Static[] }) {
         Statics
       </HeadingLink>
       <EntityTable
-        entities={statics.map((stat) => ({
+        entities={statics.map(stat => ({
           name: stat.name,
           hash: stat.hash,
         }))}
       />
-      {statics.map((stat) => (
+      {statics.map(stat => (
         <div key={stat.id}>
           <div className="flex items-end">
             <HeadingLink id={stat.hash} size="h4" className="flex-1">
@@ -30,10 +30,7 @@ function Statics({ prefix, statics }: { prefix: string; statics: Static[] }) {
           </div>
           <MdxRaw raw={stat.description} />
           {stat.kind === 'property' && (
-            <ReferenceProperty
-              name={`${prefix}.${stat.name}`}
-              type={stat.type}
-            />
+            <ReferenceProperty name={`${prefix}.${stat.name}`} type={stat.type} />
           )}
           {stat.kind === 'method' && stat.signatures && (
             <>

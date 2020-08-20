@@ -1,12 +1,7 @@
 import React from 'react';
 import { Page } from '../components/Page';
 import { PageReferenceQuery } from '../types/reference';
-import {
-  Divider,
-  HeadingLink,
-  Scrollbar,
-  TableOfContents,
-} from '@invertase/ui';
+import { Divider, HeadingLink, Scrollbar, TableOfContents } from '@invertase/ui';
 import { graphql } from 'gatsby';
 import { MdxRaw } from '../components/Mdx';
 import { generateReferenceSidebarFromModules, stringToColour } from './utils';
@@ -26,15 +21,10 @@ function ReferenceTemplate({ location, data }: Props) {
       <div className="mt-4 text-gray-500 uppercase tracking-wider font-bold text-base lg:text-xs tracking-wide">
         Modules
       </div>
-      <Scrollbar
-        className="overflow-y-auto pr-1"
-        style={{ maxHeight: 'calc(100vh - 340px)' }}
-      >
+      <Scrollbar className="overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 340px)' }}>
         <TableOfContents
           scrollspy
-          renderLink={(url: string, text: string) => (
-            <Link to={url}>{text}</Link>
-          )}
+          renderLink={(url: string, text: string) => <Link to={url}>{text}</Link>}
           items={allModule.nodes.map(({ module }) => ({
             url: `#${module}`,
             title: module,
@@ -58,16 +48,16 @@ function ReferenceTemplate({ location, data }: Props) {
       <main>
         <h1 className="flex-1 text-5xl font-hairline">Reference API</h1>
         <p className="mt-6">
-          Page containing the full index of all React Native Firebase reference
-          API types. All reference pages are automatically generated from the
-          TypeScript ambient declaration files found in the GitHub repository.
+          Page containing the full index of all React Native Firebase reference API types. All
+          reference pages are automatically generated from the TypeScript ambient declaration files
+          found in the GitHub repository.
         </p>
         <p className="mt-6">
-          All contributions to help improve the TypeScript implementation of the
-          library are welcome!
+          All contributions to help improve the TypeScript implementation of the library are
+          welcome!
         </p>
         <Divider />
-        {allModule.nodes.map((module) => (
+        {allModule.nodes.map(module => (
           <>
             <HeadingLink id={module.module} size="h3">
               {module.module}
@@ -81,7 +71,7 @@ function ReferenceTemplate({ location, data }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {module.entities.map((entity) => (
+                {module.entities.map(entity => (
                   <tr key={entity.id}>
                     <td>
                       <Link to={entity.slug}>
@@ -90,20 +80,12 @@ function ReferenceTemplate({ location, data }: Props) {
                     </td>
                     <td>
                       {!!entity.kind ? (
-                        <Tag
-                          size="sm"
-                          background={stringToColour(entity.kind)}
-                          foreground="#fff"
-                        >
+                        <Tag size="sm" background={stringToColour(entity.kind)} foreground="#fff">
                           {entity.kind}
                         </Tag>
                       ) : null}
                     </td>
-                    <td>
-                      {!!entity.description ? (
-                        <MdxRaw raw={entity.description} />
-                      ) : null}
-                    </td>
+                    <td>{!!entity.description ? <MdxRaw raw={entity.description} /> : null}</td>
                   </tr>
                 ))}
               </tbody>

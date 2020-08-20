@@ -53,20 +53,14 @@ const components = {
   },
 
   // Code
-  pre: ({ className, children }: any) => (
-    <CodeBlock className={className}>{children}</CodeBlock>
-  ),
+  pre: ({ className, children }: any) => <CodeBlock className={className}>{children}</CodeBlock>,
   code: ({ className, ...props }: any) => {
     return <code {...props} className={className || 'language-text'} />;
   },
 
   // Lists
-  ul: (props: any) => (
-    <ul {...props} className="list-disc list-inside pl-4 font-light" />
-  ),
-  ol: (props: any) => (
-    <ul {...props} className="list-decimal list-inside pl-4 font-light" />
-  ),
+  ul: (props: any) => <ul {...props} className="list-disc list-inside pl-4 font-light" />,
+  ol: (props: any) => <ul {...props} className="list-decimal list-inside pl-4 font-light" />,
   li: (props: any) => <li {...props} className={cx('mb-2 font-light', text)} />,
 
   // Table
@@ -123,11 +117,7 @@ function Mdx({ body }: Props) {
 function MdxRaw({ raw }: { raw: string }) {
   let fn;
   try {
-    fn = new Function(
-      'React',
-      'mdx',
-      `${raw}; return React.createElement(MDXContent)`
-    );
+    fn = new Function('React', 'mdx', `${raw}; return React.createElement(MDXContent)`);
   } catch (e) {
     throw e;
   }

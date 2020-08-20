@@ -1,15 +1,7 @@
 import React from 'react';
 import { graphql } from 'gatsby';
-import {
-  Divider,
-  Scrollbar,
-  TableOfContents,
-} from '@invertase/ui';
-import {
-  Entity,
-  PageContext,
-  PageEntityQuery,
-} from '../types/reference';
+import { Divider, Scrollbar, TableOfContents } from '@invertase/ui';
+import { Entity, PageContext, PageEntityQuery } from '../types/reference';
 import { Page } from '../components/Page';
 import { PreviousNext, PreviousOrNextType } from '../components/PreviousNext';
 import {
@@ -39,7 +31,7 @@ function EntityTemplate({ location, data, pageContext }: Props) {
   const { module, allModule } = data;
 
   // Grab the entity from the module
-  const entity = module.entities.find((e) => e.id === id) as Entity;
+  const entity = module.entities.find(e => e.id === id) as Entity;
 
   // Whether the current entity is the root one
   const isRootEntityPage = entity.name === module.module;
@@ -57,15 +49,10 @@ function EntityTemplate({ location, data, pageContext }: Props) {
       <div className="text-gray-500 uppercase tracking-wider font-bold text-base lg:text-xs tracking-wide">
         On this page
       </div>
-      <Scrollbar
-        className="overflow-y-auto pr-1"
-        style={{ maxHeight: 'calc(100vh - 340px)' }}
-      >
+      <Scrollbar className="overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 340px)' }}>
         <TableOfContents
           scrollspy
-          renderLink={(url: string, text: string) => (
-            <Link to={url}>{text}</Link>
-          )}
+          renderLink={(url: string, text: string) => <Link to={url}>{text}</Link>}
           items={generateTableOfContentsFromEntities({
             members: entity.members || null,
             properties: entity.properties || null,
@@ -101,9 +88,7 @@ function EntityTemplate({ location, data, pageContext }: Props) {
           </Link>
         </div>
         <div className="flex items-center">
-          <h1 className="flex-1 text-5xl font-hairline truncate">
-            {entity.name}
-          </h1>
+          <h1 className="flex-1 text-5xl font-hairline truncate">{entity.name}</h1>
 
           {!!entity.kind ? (
             <div>
@@ -140,9 +125,7 @@ function EntityTemplate({ location, data, pageContext }: Props) {
         ) : null}
         {entity.type ? <Type type={entity.type} /> : null}
         {entity.members?.length ? <Enum members={entity.members} /> : null}
-        {entity.properties?.length ? (
-          <Properties properties={entity.properties} />
-        ) : null}
+        {entity.properties?.length ? <Properties properties={entity.properties} /> : null}
         {entity.methods?.length ? <Methods methods={entity.methods} /> : null}
         {isRootEntityPage && !!module.statics?.length && (
           <Statics prefix={module.module} statics={module.statics} />

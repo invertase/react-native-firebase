@@ -9,8 +9,7 @@ interface Props {
 }
 
 const EXTERNAL_TYPES: { [key: string]: string } = {
-  Error:
-    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
 };
@@ -46,7 +45,7 @@ function TypeGenerator({ type }: Props) {
     out.push(
       <span key={`intrinsic-${exposed.name}`} className="type">
         {exposed.name}
-      </span>
+      </span>,
     );
   }
 
@@ -55,7 +54,7 @@ function TypeGenerator({ type }: Props) {
     out.push(
       <span key={`intrinsic-${exposed.name}`} className="type">
         "{exposed.value}"
-      </span>
+      </span>,
     );
   }
 
@@ -76,27 +75,20 @@ function TypeGenerator({ type }: Props) {
     if (exposed.name && EXTERNAL_TYPES[exposed.name]) {
       out.push(
         <span key={`reference-${exposed.name}`}>
-          <Link
-            to={EXTERNAL_TYPES[exposed.name]}
-            target="_blank"
-            className="reference"
-          >
+          <Link to={EXTERNAL_TYPES[exposed.name]} target="_blank" className="reference">
             {exposed.name}
           </Link>
-        </span>
+        </span>,
       );
     }
     // Internal link references
     else if (exposed.name && exposed.id && entityMap[exposed.id]) {
       out.push(
-        <span
-          key={`reference-${exposed.name}-${exposed.id}`}
-          className="reference"
-        >
+        <span key={`reference-${exposed.name}-${exposed.id}`} className="reference">
           <Link to={entityMap[exposed.id]} className="reference">
             {exposed.name}
           </Link>
-        </span>
+        </span>,
       );
     }
     // Unlinkable references
@@ -104,7 +96,7 @@ function TypeGenerator({ type }: Props) {
       out.push(
         <span key={`reference-${exposed.name}`} className="reference">
           {exposed.name}
-        </span>
+        </span>,
       );
     }
   }
@@ -126,9 +118,7 @@ function TypeGenerator({ type }: Props) {
       out.push(<span key={`reflection-index-open-${isi}`}>{'['}</span>);
 
       indexSignature.parameters.forEach((parameter, pi) => {
-        out.push(
-          <span key={`reflection-index-param-${pi}`}>{parameter.name}</span>
-        );
+        out.push(<span key={`reflection-index-param-${pi}`}>{parameter.name}</span>);
         out.push(<span key={`reflection-index-divider-${pi}`}>{': '}</span>);
         out.push(<TypeGenerator type={parameter.type} />);
 
@@ -142,9 +132,7 @@ function TypeGenerator({ type }: Props) {
       out.push(<TypeGenerator type={indexSignature.type} />);
 
       if (isi + 1 < indexSignatureLength) {
-        out.push(
-          <span key={`reflection-index-divider-params-${isi}`}>{', '}</span>
-        );
+        out.push(<span key={`reflection-index-divider-params-${isi}`}>{', '}</span>);
       }
     });
 
@@ -158,37 +146,23 @@ function TypeGenerator({ type }: Props) {
         out.push(
           <span className="foo" key={`reflection-signature-${si}`}>
             {'('}
-          </span>
+          </span>,
         );
 
         if (signature.parameters) {
           signature.parameters.forEach((parameter, pi) => {
-            out.push(
-              <span key={`reflection-signature-index-param-${pi}`}>
-                {parameter.name}
-              </span>
-            );
-            out.push(
-              <span key={`reflection-signature-index-divider-${pi}`}>
-                {': '}
-              </span>
-            );
+            out.push(<span key={`reflection-signature-index-param-${pi}`}>{parameter.name}</span>);
+            out.push(<span key={`reflection-signature-index-divider-${pi}`}>{': '}</span>);
             out.push(<TypeGenerator type={parameter.type} />);
 
             if (pi + 1 < signature.parameters.length) {
-              out.push(
-                <span key={`reflection-signature-index-divider-${pi}`}>
-                  {', '}
-                </span>
-              );
+              out.push(<span key={`reflection-signature-index-divider-${pi}`}>{', '}</span>);
             }
           });
         }
 
         out.push(<span key={`reflection-signature-${si}`}>{')'}</span>);
-        out.push(
-          <span key={`reflection-signature-function-callable`}>{' => '}</span>
-        );
+        out.push(<span key={`reflection-signature-function-callable`}>{' => '}</span>);
       }
 
       out.push(<TypeGenerator type={signature.type} />);
@@ -200,32 +174,19 @@ function TypeGenerator({ type }: Props) {
     const reflectionChildrenLength = exposed.declaration?.children.length;
     exposed.declaration?.children.forEach((signature, si) => {
       out.push(
-        <span
-          key={`reflection-children-variable-${signature.name}`}
-          className="type"
-        >
+        <span key={`reflection-children-variable-${signature.name}`} className="type">
           {signature.name}
-        </span>
+        </span>,
       );
 
       if (signature.optional) {
-        out.push(
-          <span key={`reflection-children-variable-optional-${signature.name}`}>
-            ?
-          </span>
-        );
+        out.push(<span key={`reflection-children-variable-optional-${signature.name}`}>?</span>);
       }
-      out.push(
-        <span key={`reflection-children-variable-cursor-${signature.name}`}>
-          {': '}
-        </span>
-      );
+      out.push(<span key={`reflection-children-variable-cursor-${signature.name}`}>{': '}</span>);
       out.push(<TypeGenerator type={signature.type} />);
 
       if (si + 1 < reflectionChildrenLength) {
-        out.push(
-          <span key={`reflection-children-divider-params-${si}`}>{', '}</span>
-        );
+        out.push(<span key={`reflection-children-divider-params-${si}`}>{', '}</span>);
       }
     });
 

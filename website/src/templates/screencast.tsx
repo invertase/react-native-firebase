@@ -1,8 +1,6 @@
 import React from 'react';
 import { Page } from '../components/Page';
-import {
-  Divider,
-} from '@invertase/ui';
+import { Divider } from '@invertase/ui';
 import { graphql } from 'gatsby';
 import { PageScreencastQuery } from '../types/screencast';
 import { PreviousNext, PreviousOrNextType } from '../components/PreviousNext';
@@ -31,9 +29,7 @@ function ScreencastTemplate({ location, data }: Props) {
     >
       <main>
         <div>
-          <h1 className="flex-1 text-5xl font-hairline truncate">
-            {cast.title}
-          </h1>
+          <h1 className="flex-1 text-5xl font-hairline truncate">{cast.title}</h1>
           <p className="mt-6">{cast.description}</p>
           <div className="inline-flex flex-wrap space-x-2 mt-6 text-sm">
             {cast.tags?.map((tag: any) => (
@@ -43,10 +39,7 @@ function ScreencastTemplate({ location, data }: Props) {
             ))}
           </div>
           <Divider />
-          <div
-            className="relative"
-            style={{ paddingBottom: '56.25%', paddingTop: 25, height: 0 }}
-          >
+          <div className="relative" style={{ paddingBottom: '56.25%', paddingTop: 25, height: 0 }}>
             <iframe
               src={`https://www.youtube-nocookie.com/embed/${data.screenCast.vid}?autoplay=1&modestbranding=1`}
               frameBorder="0"
@@ -60,17 +53,17 @@ function ScreencastTemplate({ location, data }: Props) {
             previous={
               previous
                 ? ({
-                  title: previous.title,
-                  slug: previous.slug,
-                } as PreviousOrNextType)
+                    title: previous.title,
+                    slug: previous.slug,
+                  } as PreviousOrNextType)
                 : undefined
             }
             next={
               next
                 ? ({
-                  title: next.title,
-                  slug: next.slug,
-                } as PreviousOrNextType)
+                    title: next.title,
+                    slug: next.slug,
+                  } as PreviousOrNextType)
                 : undefined
             }
           />
@@ -98,11 +91,11 @@ export const pageQuery = graphql`
         slug
       }
     }
-    next: screenCast( slug: { eq: $next }) {
+    next: screenCast(slug: { eq: $next }) {
       title
       slug
     }
-    previous: screenCast( slug: { eq: $previous }) {
+    previous: screenCast(slug: { eq: $previous }) {
       title
       slug
     }

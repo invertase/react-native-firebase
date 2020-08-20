@@ -22,13 +22,9 @@ const Link = ({
   partiallyActiveClass = false,
   ...other
 }: Props) => {
-  function shouldHaveActiveClass({
-    isCurrent,
-    isPartiallyCurrent,
-  }: LinkGetProps): object {
+  function shouldHaveActiveClass({ isCurrent, isPartiallyCurrent }: LinkGetProps): object {
     if (activeClass && isCurrent) return { className: 'active' };
-    if (partiallyActiveClass && isPartiallyCurrent)
-      return { className: 'active' };
+    if (partiallyActiveClass && isPartiallyCurrent) return { className: 'active' };
     return {};
   }
 
@@ -79,7 +75,6 @@ const Link = ({
   );
 };
 
-Link.isInternal = (test: string): boolean =>
-  /^(?!([a-z][a-z0-9+\-.]*:)?\/\/)/.test(test); // test for uri not starting with valid scheme
+Link.isInternal = (test: string): boolean => /^(?!([a-z][a-z0-9+\-.]*:)?\/\/)/.test(test); // test for uri not starting with valid scheme
 
 export { Link };

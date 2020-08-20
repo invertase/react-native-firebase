@@ -21,18 +21,13 @@ function Reference({
     out.push(
       <span key={`parameter-${parameter.name}`} className="parameter">
         {parameter.name}
-      </span>
+      </span>,
     );
     if (parameter.optional) {
       out.push(<span key={`parameter-optional-${parameter.name}`}>?</span>);
     }
     out.push(<span key={`parameter-cursor-${parameter.name}`}>{': '}</span>);
-    out.push(
-      <TypeGenerator
-        key={`parameter-type-${parameter.name}`}
-        type={parameter.type}
-      />
-    );
+    out.push(<TypeGenerator key={`parameter-type-${parameter.name}`} type={parameter.type} />);
 
     if (i + 1 < parameters.length) {
       out.push(<span key={`parameter-divider`}>{', '}</span>);
@@ -58,12 +53,12 @@ function Methods({ methods }: { methods: Method[] }) {
         Methods
       </HeadingLink>
       <EntityTable
-        entities={methods.map((method) => ({
+        entities={methods.map(method => ({
           name: method.name,
           hash: method.name,
         }))}
       />
-      {methods.map((method) => (
+      {methods.map(method => (
         <div key={method.id}>
           <div className="flex items-end">
             <HeadingLink id={method.name} size="h4" className="flex-1">
@@ -77,11 +72,7 @@ function Methods({ methods }: { methods: Method[] }) {
                 <>
                   {method.signatures.length > 1 && (
                     <div className="flex items-end">
-                      <HeadingLink
-                        id={`${signature.hash}-${si + 1}`}
-                        size="h6"
-                        className="flex-1"
-                      >
+                      <HeadingLink id={`${signature.hash}-${si + 1}`} size="h6" className="flex-1">
                         <span>Signature {si + 1}</span>
                       </HeadingLink>
                       <SourceLink source={signature.source} />

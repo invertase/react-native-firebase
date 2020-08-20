@@ -9,18 +9,9 @@ function Footer() {
           <Heading>GitHub</Heading>
           <List
             items={[
-              [
-                'Repository',
-                'https://github.com/invertase/react-native-firebase',
-              ],
-              [
-                'License',
-                'https://github.com/invertase/react-native-firebase/blob/master/LICENSE',
-              ],
-              [
-                'Pull Requests',
-                'https://github.com/invertase/react-native-firebase/pulls',
-              ],
+              ['Repository', 'https://github.com/invertase/react-native-firebase'],
+              ['License', 'https://github.com/invertase/react-native-firebase/blob/master/LICENSE'],
+              ['Pull Requests', 'https://github.com/invertase/react-native-firebase/pulls'],
               [
                 'Contributors',
                 'https://github.com/invertase/react-native-firebase/graphs/contributors',
@@ -67,21 +58,19 @@ function Footer() {
       </div>
       <div className="max-w-4xl mx-auto text-center text-xs mt-8">
         <p>
-          Copyright © 2017-2020 Invertase Limited. Except as otherwise noted,
-          the content of this page is licensed under the{' '}
+          Copyright © 2017-2020 Invertase Limited. Except as otherwise noted, the content of this
+          page is licensed under the{' '}
           <Link to="http://creativecommons.org/licenses/by/3.0/">
             Creative Commons Attribution 3.0 License
           </Link>
-          , and code samples are licensed under the Apache 2.0 License. Some
-          partial documentation, under the Creative Commons Attribution 3.0
-          License, may have been sourced from{' '}
+          , and code samples are licensed under the Apache 2.0 License. Some partial documentation,
+          under the Creative Commons Attribution 3.0 License, may have been sourced from{' '}
           <Link to="https://firebase.google.com/docs">Firebase</Link>.
         </p>
         <p className="mt-4">
-          All product names, logos, and brands are property of their respective
-          owners. All company, product and service names used in this website
-          are for identification purposes only. Use of these names, logos, and
-          brands does not imply endorsement.
+          All product names, logos, and brands are property of their respective owners. All company,
+          product and service names used in this website are for identification purposes only. Use
+          of these names, logos, and brands does not imply endorsement.
         </p>
       </div>
     </footer>
@@ -95,7 +84,7 @@ function Heading({ children }: { children: string }) {
 function List({ items }: { items: [string, string][] }) {
   return (
     <ul>
-      {items.map((i) => (
+      {items.map(i => (
         <li className="mb-2">
           <Link to={i[1]} className="text-sm hover:underline">
             {i[0]}

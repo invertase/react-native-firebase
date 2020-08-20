@@ -1,11 +1,4 @@
-import {
-  Entity,
-  EnumMember,
-  Method,
-  Module,
-  Property,
-  Static,
-} from '../types/reference';
+import { Entity, EnumMember, Method, Module, Property, Static } from '../types/reference';
 
 /**
  * Returns an icon for a module
@@ -59,12 +52,9 @@ function dashCaseToCamelCase(str: string) {
  * @param modules
  * @param findBySlug
  */
-function extractEntityFromModules(
-  modules: Module[],
-  findBySlug: string
-): Entity | null {
+function extractEntityFromModules(modules: Module[], findBySlug: string): Entity | null {
   modules.forEach(({ entities }) => {
-    entities.forEach((e) => {
+    entities.forEach(e => {
       if (e.slug === findBySlug) return e;
     });
   });
@@ -116,7 +106,7 @@ function generateTableOfContentsFromEntities({
     items.push({
       url: '#members',
       title: 'Members',
-      items: members.map((member) => ({
+      items: members.map(member => ({
         url: `#${member.name.toLowerCase()}`,
         title: member.name,
       })),
@@ -127,7 +117,7 @@ function generateTableOfContentsFromEntities({
     items.push({
       url: '#properties',
       title: 'Properties',
-      items: properties.map((property) => ({
+      items: properties.map(property => ({
         url: `#${property.hash}`,
         title: property.name,
       })),
@@ -137,13 +127,11 @@ function generateTableOfContentsFromEntities({
   if (methods?.length) {
     const signatures: any = [];
 
-    methods.forEach((method) => {
+    methods.forEach(method => {
       const signaturesTotal = method.signatures?.length || 0;
       method.signatures?.forEach((signature, si) => {
         signatures.push({
-          title: `${signature.name}${
-            signaturesTotal < 2 ? '' : ` (${si + 1})`
-          }`,
+          title: `${signature.name}${signaturesTotal < 2 ? '' : ` (${si + 1})`}`,
           url: `#${signature.hash}${signaturesTotal < 2 ? '' : `-${si + 1}`}`,
         });
       });
@@ -160,7 +148,7 @@ function generateTableOfContentsFromEntities({
     items.push({
       url: '#statics',
       title: 'Statics',
-      items: statics.map((stat) => ({
+      items: statics.map(stat => ({
         url: `#${stat.hash}`,
         title: stat.name,
       })),

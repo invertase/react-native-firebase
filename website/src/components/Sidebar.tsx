@@ -18,13 +18,7 @@ const Aside = styled.aside`
     right: 0;
     width: 999em;
     height: 100%;
-    background: -webkit-gradient(
-      linear,
-      left bottom,
-      left top,
-      from(#fff),
-      to(#f5f5fa)
-    );
+    background: -webkit-gradient(linear, left bottom, left top, from(#fff), to(#f5f5fa));
     background: linear-gradient(0deg, #fff, #f5f5fa);
   }
 `;
@@ -40,23 +34,14 @@ interface Props {
   style?: CSSProperties;
 }
 
-function Sidebar({
-  items,
-  collapsible,
-  className,
-  innerClassName,
-  style = {},
-}: Props) {
+function Sidebar({ items, collapsible, className, innerClassName, style = {} }: Props) {
   return (
     <>
       <Aside className={cx('relative pl-1', className)}>
         <Scrollbar
           id="sidebar"
           width={2}
-          className={cx(
-            'sticky overflow-y-auto overflow-x-hidden pb-16',
-            innerClassName
-          )}
+          className={cx('sticky overflow-y-auto overflow-x-hidden pb-16', innerClassName)}
           style={{ height: '100vh', top: 0, ...style }}
         >
           <Link
@@ -100,7 +85,7 @@ function Sidebar({
                       collapsible={collapsible}
                       title={title}
                       icon={icon as string}
-                      items={items.map((item) => ({
+                      items={items.map(item => ({
                         // @ts-ignore
                         to: item[1] as string,
                         // @ts-ignore
@@ -122,20 +107,9 @@ function Sidebar({
   );
 }
 
-function Heading({
-  to,
-  icon,
-  children,
-}: {
-  to: string;
-  icon: ReactElement;
-  children: string;
-}) {
+function Heading({ to, icon, children }: { to: string; icon: ReactElement; children: string }) {
   return (
-    <Link
-      to={to}
-      className="flex items-center mt-1 hover:bg-gray-200 rounded px-2 py-1"
-    >
+    <Link to={to} className="flex items-center mt-1 hover:bg-gray-200 rounded px-2 py-1">
       <span className="mr-3">{React.cloneElement(icon, { size: 18 })}</span>
       <span className="font-semibold">{children}</span>
     </Link>
@@ -168,11 +142,7 @@ function ListItem({
             })}
           >
             <span className="flex-1 truncate">{children}</span>
-            {isInternal ? (
-              <span />
-            ) : (
-              <LinkIcon className="text-gray-500" size={16} />
-            )}
+            {isInternal ? <span /> : <LinkIcon className="text-gray-500" size={16} />}
           </Link>
         )}
       </Match>
@@ -198,7 +168,7 @@ const GroupList = styled.ul<{
 }>`
   overflow: hidden;
 
-  ${(props) =>
+  ${props =>
     props.collapsible && props.collapsed
       ? css`
           max-height: 0;
@@ -210,7 +180,7 @@ const GroupList = styled.ul<{
 
 const Chevron = styled.span<{ collapsed: boolean }>`
   transition: transform 0.3s;
-  ${(props) =>
+  ${props =>
     props.collapsed
       ? css`
           transform: rotate(-90deg);
@@ -225,7 +195,7 @@ function Group({ title, collapsible, icon, items }: GroupProps) {
 
   // When rendered, check if the current page is one in the items list so we can
   // open it by default
-  const isPageInItems = items.find((i) => i.to === location.pathname);
+  const isPageInItems = items.find(i => i.to === location.pathname);
   const [collapsed, setCollapsed] = useState<boolean>(!isPageInItems);
 
   return (
@@ -235,7 +205,7 @@ function Group({ title, collapsible, icon, items }: GroupProps) {
           'cursor-pointer': collapsible,
         })}
         onClick={() => {
-          if (collapsible) setCollapsed(($) => !$);
+          if (collapsible) setCollapsed($ => !$);
         }}
       >
         <span className="flex-1 flex items-center">

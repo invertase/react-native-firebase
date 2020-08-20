@@ -102,7 +102,7 @@ export interface Signature extends ReferenceType {
   parameters: Parameter[];
 }
 
-export interface Parameter extends ReferenceType {}
+export type Parameter = ReferenceType;
 
 type TypeScriptType =
   | 'intersection'

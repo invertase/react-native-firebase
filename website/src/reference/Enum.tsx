@@ -11,7 +11,7 @@ function Enum({ members }: { members: EnumMember[] }) {
         Members
       </HeadingLink>
       <Divider />
-      {members.map((member) => (
+      {members.map(member => (
         <>
           <HeadingLink id={member.name.toLowerCase()} size="h4">
             {member.name}

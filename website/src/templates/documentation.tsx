@@ -23,15 +23,10 @@ function DocumentationTemplate({ location, data }: Props) {
       <div className="text-gray-500 uppercase tracking-wider font-bold text-base lg:text-xs tracking-wide">
         On this page
       </div>
-      <Scrollbar
-        className="overflow-y-auto pr-1"
-        style={{ maxHeight: 'calc(100vh - 340px)' }}
-      >
+      <Scrollbar className="overflow-y-auto pr-1" style={{ maxHeight: 'calc(100vh - 340px)' }}>
         <TableOfContents
           scrollspy
-          renderLink={(url: string, text: string) => (
-            <Link to={url}>{text}</Link>
-          )}
+          renderLink={(url: string, text: string) => <Link to={url}>{text}</Link>}
           items={mdx.tableOfContents?.items || []}
         />
       </Scrollbar>
@@ -67,9 +62,7 @@ function DocumentationTemplate({ location, data }: Props) {
           {mdx.frontmatter?.icon ? (
             <img src={mdx.frontmatter.icon} alt="Icon" className="h-10 mr-4" />
           ) : null}
-          <h1 className="flex-1 text-5xl font-hairline">
-            {mdx.frontmatter.title}
-          </h1>
+          <h1 className="flex-1 text-5xl font-hairline">{mdx.frontmatter.title}</h1>
         </div>
         <p className="mt-6">{mdx.frontmatter.description}</p>
         <PreviousNext

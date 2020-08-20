@@ -24,15 +24,7 @@ interface Props {
   aside?: ReactElement;
 }
 
-function Page({
-  title,
-  description,
-  noindex,
-  children,
-  sidebar,
-  aside,
-  location,
-}: Props) {
+function Page({ title, description, noindex, children, sidebar, aside, location }: Props) {
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const meta: { [key: string]: string } = {
     title: title ? `${title} | React Native Firebase` : 'React Native Firebase',
@@ -71,11 +63,7 @@ function Page({
           <ToTop />
           <Mask visible={showSidebar} onClose={() => setShowSidebar(false)}>
             <div className="pl-2 w-64 fixed top-0 left-0 bottom-0 z-50">
-              <Sidebar
-                collapsible={sidebar.collapsible}
-                items={sidebar.items}
-                className="w-full"
-              />
+              <Sidebar collapsible={sidebar.collapsible} items={sidebar.items} className="w-full" />
             </div>
           </Mask>
           <div className="relative">

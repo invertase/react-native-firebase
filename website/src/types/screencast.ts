@@ -1,10 +1,10 @@
-import { MdxNextPrevious } from "./docs";
+import { MdxNextPrevious } from './docs';
 
 export interface PageScreencastQuery {
   screenCast: Screencast;
   allScreenCast: {
     nodes: Screencast[];
-  },
+  };
   next?: {
     title: string;
     slug: string;

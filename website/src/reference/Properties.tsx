@@ -25,12 +25,12 @@ function Properties({ properties }: { properties: Property[] }) {
         Properties
       </HeadingLink>
       <EntityTable
-        entities={properties.map((property) => ({
+        entities={properties.map(property => ({
           name: property.name,
           hash: property.hash,
         }))}
       />
-      {properties.map((property) => (
+      {properties.map(property => (
         <div key={property.id}>
           <div className="flex items-end">
             <HeadingLink id={property.hash} size="h4" className="flex-1">
