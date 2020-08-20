@@ -16,7 +16,7 @@ yarn
 Run the website in development mode:
 
 ```bash
-npm run develop
+yarn develop
 ```
 
 Note; the initial build may take a couple of minutes to complete due to the volume of content being generated.
