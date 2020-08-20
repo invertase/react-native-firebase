@@ -183,7 +183,7 @@ jobs:
     name: iOS
     runs-on: macos-latest
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
@@ -254,7 +254,7 @@ jobs:
         shell: bash
 
       - name: Detox Test
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
