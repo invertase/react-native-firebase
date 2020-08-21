@@ -15,9 +15,10 @@
  *
  */
 
-#import <FirebaseMessaging/FIRMessagingExtensionHelper.h>
+
 #import "RNFBMessaging+UNNotificationServiceExtension.h"
 #import "FirebaseMessaging.h"
+#import "FIRMessagingExtensionHelper.h"
 
 API_AVAILABLE(ios(10.0))
 @interface RNFBMessagingNotificationServiceExtension ()
