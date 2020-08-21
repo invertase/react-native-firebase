@@ -5,19 +5,19 @@ on:
     branches:
       - '**'
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
   push:
     branches:
       - master
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
 jobs:
   # ------------------
@@ -30,6 +30,10 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
+      - uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
@@ -168,7 +172,7 @@ jobs:
         if: always()
         run: gzip -9 adb-log.txt
         shell: bash
-  
+
       - name: Upload Emulator Log
         uses: actions/upload-artifact@v2
         if: always()
@@ -183,7 +187,7 @@ jobs:
     name: iOS
     runs-on: macos-latest
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
       # Use the latest version of xcode for rnfirebase
       # See link below for available versions;
@@ -193,11 +197,15 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_11.6.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
+      - uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
       - uses: actions/setup-node@v2-beta
-      
+
       - name: Install firebase CLI
         run: npm i -g firebase-tools
 
@@ -253,8 +261,17 @@ jobs:
           applesimutils --list
         shell: bash
 
+      - name: Boot Simulator
+        # Note this is referenced in package.json::detox::ios.ci section by name, they must match
+        run: xcrun simctl boot "iPhone 11"
+        shell: bash
+
+      - name: Create Simulator Log
+        run: nohup xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &
+        shell: bash
+
       - name: Detox Test
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -268,6 +285,18 @@ jobs:
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
         shell: bash
 
+      - name: Compress Simulator Log
+        if: always()
+        run: gzip -9 simulator.log
+        shell: bash
+
+      - name: Upload Simulator Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: simulator_logs
+          path: simulator.log.gz
+
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
         uses: nick-invision/retry@v1
@@ -276,9 +305,3 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./node_modules/.bin/codecov
-
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: ios_app
-#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
