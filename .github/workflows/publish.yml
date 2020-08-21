@@ -44,8 +44,3 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Deploy Documentation
-        env:
-          NETLIFY_TRIGGER_URL: ${{ secrets.NETLIFY_TRIGGER_URL }}
-        run: |
-          curl -X POST -d {} "$NETLIFY_TRIGGER_URL"
