@@ -29,6 +29,8 @@ jobs:
     timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
+      EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
       - uses: styfle/cancel-workflow-action@0.4.1
         with:
@@ -86,8 +88,9 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing javascript bundle..."
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready."
 
       - name: Download Emulator Image
         # This can fail on network request, wrap with retry
@@ -108,7 +111,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 1
@@ -119,9 +122,9 @@ jobs:
         run: |
           echo "Starting emulator, second attempt"
           $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 qemu-system-x86_64-headless || true
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 2
@@ -132,9 +135,9 @@ jobs:
         run: |
           echo "Starting emulator, third attempt"
           $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 qemu-system-x86_64-headless || true
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Emulator Status
@@ -189,12 +192,6 @@ jobs:
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
     timeout-minutes: 40
     env:
-      # Use the latest version of xcode for rnfirebase
-      # See link below for available versions;
-      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
-      # TODO they update image default quickly, version is only used to differentiate detox cache, should fetch dynamically so we don't have to worry about it:
-      #       `xcodebuild -version|tail -1|cut -f3 -d' '` gets the build code, then put that as output for a step and then use that output in detox cache key differentiator
-      DEVELOPER_DIR: /Applications/Xcode_11.6.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: styfle/cancel-workflow-action@0.4.1
@@ -211,6 +208,10 @@ jobs:
 
       - name: Start Firestore Emulator
         run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+
+      - name: Get Xcode version
+        id: xcode-version
+        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -233,7 +234,7 @@ jobs:
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
-          key: ${{ runner.os }}-detox-framework-cache-${{ env.DEVELOPER_DIR }}
+          key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
 
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
@@ -261,17 +262,7 @@ jobs:
           applesimutils --list
         shell: bash
 
-      - name: Boot Simulator
-        # Note this is referenced in package.json::detox::ios.ci section by name, they must match
-        run: xcrun simctl boot "iPhone 11"
-        shell: bash
-
-      - name: Create Simulator Log
-        run: nohup xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &
-        shell: bash
-
-      - name: Detox Test
-        timeout-minutes: 30
+      - name: Pre-fetch Javascript bundle
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -279,16 +270,25 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
 
+      - name: Create Simulator Log
+        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
+        continue-on-error: true
+        run: nohup sh -c "sleep 10 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Detox Test
+        timeout-minutes: 30
+        run: |
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
-        shell: bash
 
       - name: Compress Simulator Log
         if: always()
         run: gzip -9 simulator.log
-        shell: bash
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v2
