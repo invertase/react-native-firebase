@@ -15,7 +15,6 @@
  *
  */
 
-
 #import "RNFBMessaging+UNNotificationServiceExtension.h"
 #import "FirebaseMessaging.h"
 #import "FIRMessagingExtensionHelper.h"
