@@ -261,6 +261,15 @@ jobs:
           applesimutils --list
         shell: bash
 
+      - name: Boot Simulator
+        # Note this is referenced in package.json::detox::ios.ci section by name, they must match
+        run: xcrun simctl boot "iPhone 11"
+        shell: bash
+
+      - name: Create Simulator Log
+        run: nohup xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &
+        shell: bash
+
       - name: Detox Test
         timeout-minutes: 30
         run: |
@@ -275,6 +284,18 @@ jobs:
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
         shell: bash
+
+      - name: Compress Simulator Log
+        if: always()
+        run: gzip -9 simulator.log
+        shell: bash
+
+      - name: Upload Simulator Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: simulator_logs
+          path: simulator.log.gz
 
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
