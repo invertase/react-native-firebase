@@ -88,8 +88,9 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing javascript bundle..."
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready."
 
       - name: Download Emulator Image
         # This can fail on network request, wrap with retry
@@ -263,17 +264,7 @@ jobs:
           applesimutils --list
         shell: bash
 
-      - name: Boot Simulator
-        # Note this is referenced in package.json::detox::ios.ci section by name, they must match
-        run: xcrun simctl boot "iPhone 11"
-        shell: bash
-
-      - name: Create Simulator Log
-        run: nohup xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &
-        shell: bash
-
-      - name: Detox Test
-        timeout-minutes: 30
+      - name: Pre-fetch Javascript bundle
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -281,16 +272,25 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
 
+      - name: Create Simulator Log
+        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
+        continue-on-error: true
+        run: nohup sh -c "sleep 10 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Detox Test
+        timeout-minutes: 30
+        run: |
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
-        shell: bash
 
       - name: Compress Simulator Log
         if: always()
         run: gzip -9 simulator.log
-        shell: bash
 
       - name: Upload Simulator Log
         uses: actions/upload-artifact@v2
