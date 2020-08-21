@@ -108,7 +108,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 1
@@ -121,7 +121,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           sudo killall -9 qemu-system-x86_64-headless || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 2
@@ -134,7 +134,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           sudo killall -9 qemu-system-x86_64-headless || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Emulator Status
