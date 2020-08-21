@@ -8,11 +8,14 @@ on:
 
 jobs:
   publish_npm:
-    if: "(github.event_name == 'workflow_dispatch') || ((github.event_name == 'push') && contains(toJSON(github.event.commits.*.message), '[publish]'))"
+    if: "(github.repository == 'invertase/react-native-firebase') && ((github.event_name == 'workflow_dispatch') || ((github.event_name == 'push') && contains(toJSON(github.event.commits.*.message), '[publish]')))"
     name: 'NPM'
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
+      - uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
         with:
           ref: 'master'
@@ -41,8 +44,3 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Deploy Documentation
-        env:
-          NETLIFY_TRIGGER_URL: ${{ secrets.NETLIFY_TRIGGER_URL }}
-        run: |
-          curl -X POST -d {} "$NETLIFY_TRIGGER_URL"
