@@ -39,9 +39,18 @@ describe('auth()', () => {
   });
 
   describe('applyActionCode()', () => {
+    xit('works as expected', async () => {
+      await firebase
+        .auth()
+        .applyActionCode('fooby shooby dooby')
+        .then($ => $);
+    });
     it('errors on invalid code', async () => {
       try {
-        await firebase.auth().applyActionCode('fooby shooby dooby');
+        await firebase
+          .auth()
+          .applyActionCode('fooby shooby dooby')
+          .then($ => $);
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
@@ -118,36 +127,42 @@ describe('auth()', () => {
   });
 
   describe('signInWithCustomToken()', () => {
-    // TODO(salakar) use new testing api to create a custom token
-    xit('signs in with a admin sdk created custom auth token', async () => {
-      const customUID = 'zdwHCjbpzraRoNK7d64FYWv5AH02';
-      const token = await firebaseAdmin.auth().createCustomToken(customUID, {
-        test: null,
-        roles: [
-          {
-            role: 'validated',
-            scheme_id: null,
-          },
-          {
-            role: 'member',
-            scheme_id: 1,
-          },
-          {
-            role: 'member',
-            scheme_id: 2,
-          },
-        ],
-      });
-      const { user } = await firebase.auth().signInWithCustomToken(token);
+    it('signs in with a admin sdk created custom auth token', async () => {
+      const email = 'test@test.com';
+      const pass = 'test1234';
 
-      user.uid.should.equal(customUID);
-      firebase.auth().currentUser.uid.should.equal(customUID);
+      const successCb = currentUserCredential => {
+        const currentUser = currentUserCredential.user;
+        currentUser.should.be.an.Object();
+        currentUser.uid.should.be.a.String();
+        currentUser.toJSON().should.be.an.Object();
+        currentUser.toJSON().email.should.eql(email);
+        currentUser.isAnonymous.should.equal(false);
+        currentUser.providerId.should.equal('firebase');
+        currentUser.should.equal(firebase.auth().currentUser);
 
-      const { claims } = await firebase.auth().currentUser.getIdTokenResult(true);
+        const { additionalUserInfo } = currentUserCredential;
+        additionalUserInfo.should.be.an.Object();
+        additionalUserInfo.isNewUser.should.equal(false);
 
-      claims.roles.should.be.an.Array();
+        return currentUser;
+      };
 
-      await firebase.auth().signOut();
+      const user = await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, pass)
+        .then(successCb);
+
+      const IdToken = await firebase.auth().currentUser.getIdToken();
+
+      firebase.auth().signOut();
+      await Utils.sleep(50);
+
+      const token = await new TestAdminApi(IdToken).auth().createCustomToken(user.uid, {});
+
+      await firebase.auth().signInWithCustomToken(token);
+
+      firebase.auth().currentUser.email.should.equal('test@test.com');
     });
   });
 
@@ -395,6 +410,21 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
       await Utils.sleep(50);
+    });
+
+    it('listens to a null user when auth result is not defined', async () => {
+      let unsubscribe;
+
+      const callback = sinon.spy();
+
+      await new Promise(resolve => {
+        unsubscribe = firebase.auth().onIdTokenChanged(user => {
+          callback(user);
+          resolve();
+        });
+
+        unsubscribe();
+      });
     });
   });
 
@@ -942,8 +972,7 @@ describe('auth()', () => {
     });
   });
 
-  // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
-  xdescribe('sendPasswordResetEmail()', () => {
+  describe('sendPasswordResetEmail()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;

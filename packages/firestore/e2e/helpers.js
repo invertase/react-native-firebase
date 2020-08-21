@@ -21,7 +21,7 @@ exports.wipe = async function wipe(collection = 'v6', debug = false) {
   if (debug) {
     console.time('wipe');
   }
-  await TestAdminApi.firestore().clearCollection(collection);
+  await new TestAdminApi().firestore().clearCollection(collection);
   if (debug) {
     console.timeEnd('wipe');
   }
