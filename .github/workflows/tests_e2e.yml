@@ -192,12 +192,6 @@ jobs:
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
     timeout-minutes: 40
     env:
-      # Use the latest version of xcode for rnfirebase
-      # See link below for available versions;
-      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
-      # TODO they update image default quickly, version is only used to differentiate detox cache, should fetch dynamically so we don't have to worry about it:
-      #       `xcodebuild -version|tail -1|cut -f3 -d' '` gets the build code, then put that as output for a step and then use that output in detox cache key differentiator
-      DEVELOPER_DIR: /Applications/Xcode_11.6.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: styfle/cancel-workflow-action@0.4.1
@@ -214,6 +208,10 @@ jobs:
 
       - name: Start Firestore Emulator
         run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+
+      - name: Get Xcode version
+        id: xcode-version
+        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -236,7 +234,7 @@ jobs:
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
-          key: ${{ runner.os }}-detox-framework-cache-${{ env.DEVELOPER_DIR }}
+          key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
 
       - name: Yarn Install
         run: yarn --no-audit --prefer-offline
