@@ -25,6 +25,8 @@ cd ios/ && pod install
 > iOS requires further configuration before you can start receiving and sending
 > messages through Firebase. Read the documentation on how to [setup iOS with Firebase Cloud Messaging](/messaging/usage/ios-setup).
 
+> Use of the `sendMessage()` API and it's associated listeners requires a custom `XMPP` server. Read the documentation on how to [Messaging with XMPP](/messaging/usage/messaging-with-xmpp).
+
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
 
@@ -70,8 +72,10 @@ On Android, you do not need to request user permission. This method can still be
 
 ## Receiving messages
 
-FCM messages can be sent to devices via a number of methods (see below). A message is simply a payload of data which can
-be used however you see fit within your application. Common use-cases for handling messages could be:
+FCM messages can be sent to *real* Android/iOS devices and Android emulators (iOS simulators however do *not* handle cloud messages) via a number of methods (see below).
+A message is simply a payload of data which can be used however you see fit within your application.
+
+Common use-cases for handling messages could be:
 
 - Displaying a notification (see [Notifications](/messaging/notifications)).
 - Syncing message data silently on the device (e.g. via `AsyncStorage`).
@@ -275,7 +279,7 @@ AppRegistry.registerComponent('app', () => HeadlessCheck);
 
 To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
  
-```obj-c
+```objectivec
 // add this import statement at the top of your `AppDelegate.m` file
 #import "RNFBMessagingModule.h"
 
