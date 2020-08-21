@@ -42,6 +42,9 @@ jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 
+const firestore = firebase.firestore();
+firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
+
 function Root() {
   return (
     <View

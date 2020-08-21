@@ -10,7 +10,12 @@ jobs:
     name: 'Spelling & Grammar'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: styfle/cancel-workflow-action@0.4.1
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
       - name: Install Dependencies
         run: |
           sudo npm install --global spellchecker-cli

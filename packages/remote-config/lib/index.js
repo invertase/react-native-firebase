@@ -65,7 +65,7 @@ class FirebaseConfigModule extends FirebaseModule {
       throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");
     }
 
-    if (!hasOwnProperty(this._values, key)) {
+    if (typeof this._values === 'undefined' || !hasOwnProperty(this._values, key)) {
       return new Value({
         value: '',
         source: 'static',

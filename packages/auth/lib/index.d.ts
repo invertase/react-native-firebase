@@ -1190,7 +1190,7 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Gets the current language code.
+     * Returns the current language code.
      *
      * #### Example
      *
@@ -1198,22 +1198,7 @@ export namespace FirebaseAuthTypes {
      * const language = firebase.auth().languageCode;
      * ```
      */
-    get languageCode(): string;
-
-    /**
-     * Sets the language code.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Set language to French
-     * firebase.auth().languageCode = 'fr';
-     * ```
-     *
-     * @param code An ISO language code.
-     */
-    set languageCode(code: string);
-
+    languageCode: string;
     /**
      * Returns the current `AuthSettings`.
      */
@@ -1231,7 +1216,20 @@ export namespace FirebaseAuthTypes {
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
-
+    /**
+     * Sets the language code.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Set language to French
+     * await firebase.auth().setLanguageCode('fr');
+     * ```
+     *
+     * @param code An ISO language code.
+     * 'null' value will set the language code to the app's current language.
+     */
+    setLanguageCode(languageCode: string | null): Promise<void>;
     /**
      * Listen for changes in the users auth state (logging in and out).
      * This method returns a unsubscribe function to stop listening to events.
@@ -1254,7 +1252,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param listener A listener function which triggers when auth state changed (for example signing out).
      */
-    onAuthStateChanged(listener: AuthListenerCallback): () => void;
+    onAuthStateChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Listen for changes in ID token.
@@ -1276,7 +1274,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param listener A listener function which triggers when the users ID token changes.
      */
-    onIdTokenChanged(listener: AuthListenerCallback): () => void;
+    onIdTokenChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Adds a listener to observe changes to the User object. This is a superset of everything from
@@ -1302,7 +1300,7 @@ export namespace FirebaseAuthTypes {
      * @react-native-firebase
      * @param listener A listener function which triggers when the users data changes.
      */
-    onUserChanged(listener: AuthListenerCallback): () => void;
+    onUserChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
      * Signs the user out.
@@ -1633,6 +1631,8 @@ export namespace FirebaseAuthTypes {
     useUserAccessGroup(userAccessGroup: string): Promise<null>;
   }
 }
+
+type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
 declare module '@react-native-firebase/auth' {
   // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work

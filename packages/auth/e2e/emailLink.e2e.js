@@ -25,6 +25,13 @@ describe('auth() -> emailLink Provider', () => {
       };
       await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
     });
+
+    xit('should send email with defaults', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+
+      await firebase.auth().sendSignInLinkToEmail(email);
+    });
   });
 
   describe('isSignInWithEmailLink', () => {
