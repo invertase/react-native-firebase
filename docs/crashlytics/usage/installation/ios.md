@@ -20,12 +20,7 @@ target 'app' do
 end
 ```
 
-## 2. iOS Additional Steps
-
-iOS requires additional steps in order to complete setup. View the [iOS Setup](crashlytics/ios-setup) documentation
-for more information.
-
-## 3. Update Pods & rebuild the project
+## 2. Update Pods & rebuild the project
 
 You may need to update your local Pods repository in order for the Pods to be installed in your project:
 
