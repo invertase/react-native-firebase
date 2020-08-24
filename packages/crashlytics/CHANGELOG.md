@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.2...@react-native-firebase/crashlytics@8.3.3) (2020-08-24)
+
+### Bug Fixes
+
+- **ios, crashlytics:** use NSInternalInconsistencyException to crash w/o redbox ([#4126](https://github.com/invertase/react-native-firebase/issues/4126)) ([2cbab5c](https://github.com/invertase/react-native-firebase/commit/2cbab5cf91f4e8542c30a237637d071c14bbcde5))
+
 ## [8.3.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.1...@react-native-firebase/crashlytics@8.3.2) (2020-08-20)
 
 ### Bug Fixes
