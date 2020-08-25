@@ -1,15 +1,18 @@
 ---
 name: "⚠️ Bug/Issue report - React Native"
 about: Please provide as much detail as possible. Issues may be closed if they do
-  not follow the template. Note V5 is deprecated, V5 issues are unlikely to get attention
+  not follow the template.
 title: "[\U0001F41B] Bug Report Title - CHANGE ME "
-labels: 'Impact: Bug, Help: Needs Triage'
+labels: 'Help: Needs Triage, Impact: Bug'
 assignees: ''
 
 ---
 
 <!---
+**Note <= v5 is deprecated, v5 issues are unlikely to get attention. Feel free to ask in discussions instead.**
+
 Hello there you awesome person;
+
 Please note that the issue list of this repo is exclusively for bug reports;
 
 1) For feature requests, questions and general support please use [GitHub Discussions](https://github.com/invertase/react-native-firebase/discussions).

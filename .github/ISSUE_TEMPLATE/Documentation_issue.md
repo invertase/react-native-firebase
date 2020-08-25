@@ -2,7 +2,7 @@
 name: "\U0001F4D6 Documentation Feedback"
 about: Report an issue with the documentation or suggest an improvement.
 title: "[\U0001F4DA] Documentation Issue Title - CHANGE ME "
-labels: 'Type: Docs, Help: Good First Issue'
+labels: 'Help: Good First Issue, Type: Docs'
 assignees: ''
 
 ---
