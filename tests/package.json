@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "8.3.6",
+  "version": "8.3.7",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
@@ -12,7 +12,7 @@
     "@react-native-firebase/app": "8.3.1",
     "@react-native-firebase/app-types": "6.7.2",
     "@react-native-firebase/auth": "9.0.0",
-    "@react-native-firebase/crashlytics": "8.3.3",
+    "@react-native-firebase/crashlytics": "8.3.4",
     "@react-native-firebase/database": "7.4.2",
     "@react-native-firebase/dynamic-links": "7.4.3",
     "@react-native-firebase/firestore": "7.5.3",
