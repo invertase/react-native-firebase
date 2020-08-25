@@ -1,49 +1,7 @@
 {
   "indexes": [
     {
-      "collectionGroup": "firebasePerfTest",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "democratic",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "totalPopulation",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "playground",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "age",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "foo",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "playground",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "status",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "finished_at",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "v6",
+      "collectionGroup": "firestore",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -107,46 +65,6 @@
         {
           "order": "DESCENDING",
           "queryScope": "COLLECTION_GROUP"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "playground",
-      "fieldPath": "age",
-      "indexes": [
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "DESCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "arrayConfig": "CONTAINS",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION_GROUP"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "playground",
-      "fieldPath": "createdDate",
-      "indexes": [
-        {
-          "order": "ASCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "order": "DESCENDING",
-          "queryScope": "COLLECTION"
-        },
-        {
-          "arrayConfig": "CONTAINS",
-          "queryScope": "COLLECTION"
         }
       ]
     }

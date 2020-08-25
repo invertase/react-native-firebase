@@ -14,27 +14,25 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.collection()', () => {
   before(() => wipe());
-
   it('returns the firestore instance', () => {
-    const instance = firebase.firestore().collection('foo');
+    const instance = firebase.firestore().collection(COLLECTION);
     instance.firestore.app.name.should.eql('[DEFAULT]');
   });
 
   it('returns the collection id', () => {
-    const id = 'foobar';
-    const instance1 = firebase.firestore().collection(id);
-    const instance2 = firebase.firestore().collection(`${id}/bar/baz`);
-    instance1.id.should.eql(id);
+    const instance1 = firebase.firestore().collection(COLLECTION);
+    const instance2 = firebase.firestore().collection(`${COLLECTION}/bar/baz`);
+    instance1.id.should.eql(COLLECTION);
     instance2.id.should.eql('baz');
   });
 
   it('returns the collection parent', () => {
-    const instance1 = firebase.firestore().collection('foo');
+    const instance1 = firebase.firestore().collection(COLLECTION);
     should.equal(instance1.parent, null);
     const instance2 = firebase
       .firestore()
@@ -45,13 +43,13 @@ describe('firestore.collection()', () => {
   });
 
   it('returns the firestore path', () => {
-    const instance1 = firebase.firestore().collection('foo');
-    instance1.path.should.eql('foo');
+    const instance1 = firebase.firestore().collection(COLLECTION);
+    instance1.path.should.eql(COLLECTION);
     const instance2 = firebase
       .firestore()
-      .collection('foo')
+      .collection(COLLECTION)
       .doc('bar')
-      .collection('baz');
-    instance2.path.should.eql('foo/bar/baz');
+      .collection(COLLECTION);
+    instance2.path.should.eql(`${COLLECTION}/bar/${COLLECTION}`);
   });
 });

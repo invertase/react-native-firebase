@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
+const NO_RULE_COLLECTION = 'no_rules';
 
 describe('firestore.Transaction', () => {
   it('should throw if updateFunction is not a Promise', async () => {
@@ -58,7 +60,7 @@ describe('firestore.Transaction', () => {
   });
 
   it('should reject a native error', async () => {
-    const docRef = firebase.firestore().doc('nope/foo');
+    const docRef = firebase.firestore().doc(`${NO_RULE_COLLECTION}/foo`);
 
     try {
       await firebase.firestore().runTransaction(async t => {
@@ -87,7 +89,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should get a document and return a DocumentSnapshot', async () => {
-      const docRef = firebase.firestore().doc('v6/transactions/transaction/get-delete');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/transactions/transaction/get-delete`);
       await docRef.set({});
 
       await firebase.firestore().runTransaction(async t => {
@@ -115,10 +117,14 @@ describe('firestore.Transaction', () => {
     });
 
     it('should delete documents', async () => {
-      const docRef1 = firebase.firestore().doc('v6/transactions/transaction/delete-delete1');
+      const docRef1 = firebase
+        .firestore()
+        .doc(`${COLLECTION}/transactions/transaction/delete-delete1`);
       await docRef1.set({});
 
-      const docRef2 = firebase.firestore().doc('v6/transactions/transaction/delete-delete2');
+      const docRef2 = firebase
+        .firestore()
+        .doc(`${COLLECTION}/transactions/transaction/delete-delete2`);
       await docRef2.set({});
 
       await firebase.firestore().runTransaction(async t => {
@@ -148,7 +154,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should throw if update args are invalid', async () => {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
       try {
         await firebase.firestore().runTransaction(async t => {
@@ -164,13 +170,17 @@ describe('firestore.Transaction', () => {
     it('should update documents', async () => {
       const value = Date.now();
 
-      const docRef1 = firebase.firestore().doc('v6/transactions/transaction/delete-delete1');
+      const docRef1 = firebase
+        .firestore()
+        .doc(`${COLLECTION}/transactions/transaction/delete-delete1`);
       await docRef1.set({
         foo: 'bar',
         bar: 'baz',
       });
 
-      const docRef2 = firebase.firestore().doc('v6/transactions/transaction/delete-delete2');
+      const docRef2 = firebase
+        .firestore()
+        .doc(`${COLLECTION}/transactions/transaction/delete-delete2`);
       await docRef2.set({
         foo: 'bar',
         bar: 'baz',
@@ -212,7 +222,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should throw if set data is invalid', async () => {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
       try {
         await firebase.firestore().runTransaction(async t => {
@@ -226,7 +236,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should throw if set options are invalid', async () => {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
       try {
         await firebase.firestore().runTransaction(async t => {
@@ -247,7 +257,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should set data', async () => {
-      const docRef = firebase.firestore().doc('v6/transactions/transaction/set');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/transactions/transaction/set`);
       await docRef.set({
         foo: 'bar',
       });
@@ -264,7 +274,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should set data with merge', async () => {
-      const docRef = firebase.firestore().doc('v6/transactions/transaction/set-merge');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/transactions/transaction/set-merge`);
       await docRef.set({
         foo: 'bar',
         bar: 'baz',
@@ -291,7 +301,9 @@ describe('firestore.Transaction', () => {
     });
 
     it('should set data with merge fields', async () => {
-      const docRef = firebase.firestore().doc('v6/transactions/transaction/set-mergefields');
+      const docRef = firebase
+        .firestore()
+        .doc(`${COLLECTION}/transactions/transaction/set-mergefields`);
       await docRef.set({
         foo: 'bar',
         bar: 'baz',
@@ -321,7 +333,7 @@ describe('firestore.Transaction', () => {
     });
 
     it('should roll back any updates that failed', async () => {
-      const docRef = firebase.firestore().doc('v6/transactions/transaction/rollback');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/transactions/transaction/rollback`);
 
       await docRef.set({
         turn: 0,

@@ -14,17 +14,15 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-
 describe('firestore().collection().startAfter()', () => {
   before(() => wipe());
-
   it('throws if no argument provided', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .startAfter();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -39,7 +37,7 @@ describe('firestore().collection().startAfter()', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .orderBy('foo')
         .startAfter('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -53,11 +51,11 @@ describe('firestore().collection().startAfter()', () => {
     try {
       const doc = await firebase
         .firestore()
-        .doc('v6/foo')
+        .doc(`${COLLECTION}/foo`)
         .get();
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .startAfter(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -70,11 +68,11 @@ describe('firestore().collection().startAfter()', () => {
     try {
       const doc = await firebase
         .firestore()
-        .doc('v6/idonotexist')
+        .doc(`${COLLECTION}/idonotexist`)
         .get();
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .startAfter(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -85,13 +83,13 @@ describe('firestore().collection().startAfter()', () => {
 
   it('throws if order used with snapshot but fields do not exist', async () => {
     try {
-      const doc = firebase.firestore().doc('v6/iexist');
+      const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
       await doc.set({ foo: { bar: 'baz' } });
       const snap = await doc.get();
 
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .orderBy('foo.baz')
         .startAfter(snap);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -104,7 +102,7 @@ describe('firestore().collection().startAfter()', () => {
   });
 
   it('starts after field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAfter/collection');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -125,7 +123,7 @@ describe('firestore().collection().startAfter()', () => {
   });
 
   it('starts after snapshot field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAfter/snapshotFields');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -148,7 +146,7 @@ describe('firestore().collection().startAfter()', () => {
   });
 
   it('startAfter snapshot', async () => {
-    const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -164,7 +162,7 @@ describe('firestore().collection().startAfter()', () => {
   });
 
   it('runs startAfter & endBefore in the same query', async () => {
-    const colRef = firebase.firestore().collection('v6/startAfter/snapshot');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');

@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore().collection().get()', () => {
   before(() => wipe());
-
   it('throws if get options is not an object', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -37,7 +36,7 @@ describe('firestore().collection().get()', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get({
           source: 'foo',
         });
@@ -53,7 +52,7 @@ describe('firestore().collection().get()', () => {
   it('returns a QuerySnapshot', async () => {
     const docRef = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .doc('nestedcollection');
     const colRef = docRef.collection('get');
     const snapshot = await colRef.get();
@@ -64,7 +63,7 @@ describe('firestore().collection().get()', () => {
   it('returns a correct cache setting (true)', async () => {
     const docRef = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .doc('nestedcollection');
     const colRef = docRef.collection('get');
     const snapshot = await colRef.get({
@@ -78,7 +77,7 @@ describe('firestore().collection().get()', () => {
   it('returns a correct cache setting (false)', async () => {
     const docRef = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .doc('nestedcollection');
     const colRef = docRef.collection('get');
     await colRef.get(); // Puts it in cache
