@@ -216,6 +216,8 @@ The operation couldn’t be completed. (com.apple.AuthenticationServices.Authori
 
 In the case you are using the function `getCredentialStateForUser` on a simulator, this error will always be fired. You should test your code on a real device.
 
+If you are seeing this error while using the simulator, you can try going to https://appleid.apple.com/account/manage and scroll down to where it shows my Devices that are signed in with this ID. Click on "Simulator" and choose "Remove from Account".  Then sign in again. 
+
 
 ## License
 
