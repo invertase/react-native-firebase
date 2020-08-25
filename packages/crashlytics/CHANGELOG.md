@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.3.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.3...@react-native-firebase/crashlytics@8.3.4) (2020-08-25)
+
+### Bug Fixes
+
+- **ios, crashlytics:** allow Crashlytics inclusion w/o Analytics ([#4134](https://github.com/invertase/react-native-firebase/issues/4134)) ([e023b71](https://github.com/invertase/react-native-firebase/commit/e023b71486d6834ba175e91ee5809af36a03588d))
+
 ## [8.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.2...@react-native-firebase/crashlytics@8.3.3) (2020-08-24)
 
 ### Bug Fixes
