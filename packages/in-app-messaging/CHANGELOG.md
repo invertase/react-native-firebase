@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.3.2...@react-native-firebase/in-app-messaging@7.3.3) (2020-08-25)
+
+### Bug Fixes
+
+- **ios, analytics:** remove now-optional analytics dependencies ([#4131](https://github.com/invertase/react-native-firebase/issues/4131)) ([fdb5e9f](https://github.com/invertase/react-native-firebase/commit/fdb5e9f5786822343b11d3257d9f466a9d593fa4))
+
 ## [7.3.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.3.1...@react-native-firebase/in-app-messaging@7.3.2) (2020-08-15)
 
 **Note:** Version bump only for package @react-native-firebase/in-app-messaging
