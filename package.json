@@ -16,7 +16,6 @@
     "tests:jest": "jest",
     "tests:jest-watch": "jest --watch",
     "tests:jest-coverage": "jest --coverage",
-    "gen:reference": "node scripts/generate-typedoc.js",
     "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
     "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache --no-interactive",
@@ -60,7 +59,6 @@
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.3",
     "ts-jest": "^25.4.0",
-    "typedoc": "^0.15.0",
     "typescript": "^3.8.3"
   },
   "workspaces": {
