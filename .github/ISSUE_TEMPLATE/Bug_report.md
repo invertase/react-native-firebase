@@ -1,15 +1,19 @@
 ---
-name: ⚠️ Bug/Issue report - React Native
-about: Please provide as much detail as possible. Issues may be closed if they do not follow the template. Note V5 is deprecated, V5 issues are unlikely to get attention
+name: "⚠️ Bug/Issue report - React Native"
+about: Please provide as much detail as possible. Issues may be closed if they do
+  not follow the template. Note V5 is deprecated, V5 issues are unlikely to get attention
+title: "[\U0001F41B] Bug Report Title - CHANGE ME "
+labels: 'Impact: Bug, Help: Needs Triage'
+assignees: ''
+
 ---
 
 <!---
 Hello there you awesome person;
 Please note that the issue list of this repo is exclusively for bug reports;
 
-1) For feature requests please visit our [Feature Request Board](https://boards.invertase.io/react-native-firebase).
-2) For questions and support please use our Discord chat: https://discord.gg/C9aK28N or Stack Overflow: https://stackoverflow.com/questions/tagged/react-native-firebase
-3) If this is a setup issue then please make sure you've correctly followed the setup guides, most setup issues such as 'duplicate dex files', 'default app has not been initialized' etc are all down to an incorrect setup as the guides haven't been correctly followed.
+1) For feature requests, questions and general support please use [GitHub Discussions](https://github.com/invertase/react-native-firebase/discussions).
+2) If this is a setup issue then please make sure you've correctly followed the setup guides, most setup issues such as 'duplicate dex files', 'default app has not been initialized' etc are all down to an incorrect setup as the guides haven't been correctly followed.
 -->
 
 <!-- NOTE: You can change any of the `[ ]` to `[x]` to mark an option(s) as selected -->
