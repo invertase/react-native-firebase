@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
   - name: Feature Request
-    url: https://github.com/invertase/react-native-firebase/discussions/new
+    url: https://github.com/invertase/react-native-firebase/discussions/new?category_id=66161
     about: Share ideas for new features.
   - name: Ask a Question
-    url: https://github.com/invertase/react-native-firebase/discussions/new
+    url: https://github.com/invertase/react-native-firebase/discussions/new?category_id=66160
     about: Ask the community for help.
   - name: Show and tell
     url: https://github.com/invertase/react-native-firebase/discussions/4106
-    about: Showcase what you've built with React Native Firebase.
+    about: Share what you've built with React Native Firebase.
