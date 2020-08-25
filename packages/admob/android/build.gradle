@@ -57,7 +57,8 @@ project.ext {
       ],
 
       ads     : [
-        consent: "1.0.6"
+        consent: "1.0.6",
+        "play-services-ads": "19.3.0"
       ],
     ],
   ])
@@ -102,8 +103,7 @@ repositories {
 
 dependencies {
   api appProject
-  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-ads"
+  implementation "com.google.android.gms:play-services-ads:${ReactNative.ext.getVersion("ads", "play-services-ads")}"
   implementation "com.google.android.ads.consent:consent-library:${ReactNative.ext.getVersion("ads", "consent")}"
 }
 
