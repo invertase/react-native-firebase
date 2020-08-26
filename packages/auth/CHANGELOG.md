@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.1.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.0.0...@react-native-firebase/auth@9.1.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
 # [9.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@8.3.3...@react-native-firebase/auth@9.0.0) (2020-08-20)
 
 - refactor(auth)!: setLanguageCode no longer a setter (#3922) ([400cfb4](https://github.com/invertase/react-native-firebase/commit/400cfb4007984bb0fa944ec75005bb6bd2f0231b)), closes [#3922](https://github.com/invertase/react-native-firebase/issues/3922)
