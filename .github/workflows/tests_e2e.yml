@@ -43,7 +43,12 @@ jobs:
       - uses: actions/setup-node@v2-beta
 
       - name: Install firebase CLI
-        run: npm i -g firebase-tools
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
         run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
@@ -66,9 +71,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
 
       - name: Yarn Install
-        run: |
-          export DETOX_DISABLE_POSTINSTALL=1
-          yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
 
       - name: Verify JDK 1.8
         # OpenJDK1.8 is the default in GitHub macOS 10.15 runner, setup is not required
@@ -204,7 +212,12 @@ jobs:
       - uses: actions/setup-node@v2-beta
 
       - name: Install firebase CLI
-        run: npm i -g firebase-tools
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
         run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
@@ -237,14 +250,28 @@ jobs:
           key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
 
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
+
+      - name: Update Ruby build tools
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods xcodeproj
 
       - name: Pod Install
-        run: |
-          gem update cocoapods xcodeproj
-          cd tests/ios
-          pod install
-        shell: bash
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: cd tests/ios && pod install
 
       - name: Build iOS App
         run: |
@@ -255,12 +282,12 @@ jobs:
         shell: bash
 
       - name: Install applesimutils
-        run: |
-          export HOMEBREW_NO_AUTO_UPDATE=1
-          brew tap wix/brew
-          brew install applesimutils
-          applesimutils --list
-        shell: bash
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils && applesimutils --list
 
       - name: Pre-fetch Javascript bundle
         run: |
