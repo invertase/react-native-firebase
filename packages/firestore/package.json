@@ -27,7 +27,7 @@
     "firestore"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.3.1"
+    "@react-native-firebase/app": "8.4.0"
   },
   "publishConfig": {
     "access": "public"
