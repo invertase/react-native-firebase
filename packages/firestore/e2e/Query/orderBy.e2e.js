@@ -106,7 +106,7 @@ describe('firestore().collection().orderBy()', () => {
       return Promise.resolve();
     }
   });
-  
+
   it('orders by a value ASC', async () => {
     const colRef = firebase.firestore().collection(`${COLLECTION}/order/asc`);
 

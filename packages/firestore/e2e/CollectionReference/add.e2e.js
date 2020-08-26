@@ -15,7 +15,7 @@
  *
  */
 const { wipe } = require('../helpers');
- const COLLECTION = 'firestore';
+const COLLECTION = 'firestore';
 
 describe('firestore.collection().add()', () => {
   before(() => wipe());
