@@ -56,16 +56,6 @@ describe('analytics()', () => {
     });
   });
 
-  describe('setCurrentScreen()', () => {
-    it('screenName only', async () => {
-      await firebase.analytics().setCurrentScreen('invertase screen');
-    });
-
-    it('screenName with screenClassOverride', async () => {
-      await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
-    });
-  });
-
   describe('setMinimumSessionDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setMinimumSessionDuration();
@@ -113,6 +103,14 @@ describe('analytics()', () => {
 
     it('accepts string values', async () => {
       await firebase.analytics().setUserProperties({ invertase3: 'rn-firebase' });
+    });
+  });
+
+  describe('logScreenView()', () => {
+    it('calls logScreenView', async () => {
+      await firebase
+        .analytics()
+        .logScreenView({ screen_name: 'invertase screen', screen_class: 'invertase class' });
     });
   });
 

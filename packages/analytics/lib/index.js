@@ -102,20 +102,10 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
-  setCurrentScreen(screenName, screenClassOverride) {
-    if (!isString(screenName)) {
-      throw new Error(
-        "firebase.analytics().setCurrentScreen(*) 'screenName' expected a string value.",
-      );
-    }
-
-    if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
-      throw new Error(
-        "firebase.analytics().setCurrentScreen(_, *) 'screenClassOverride' expected a string value.",
-      );
-    }
-
-    return this.native.setCurrentScreen(screenName, screenClassOverride);
+  setCurrentScreen() {
+    console.warn(
+      'firebase.analytics().setCurrentScreen(), is now deprecated. Please use firebase.analytics().logScreenView() instead',
+    );
   }
 
   setMinimumSessionDuration(milliseconds = 10000) {
@@ -211,6 +201,19 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent(
       'add_payment_info',
       validateStruct(object, structs.AddPaymentInfo, 'firebase.analytics().logAddPaymentInfo(*):'),
+    );
+  }
+
+  logScreenView(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logScreenView(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'screen_view',
+      validateStruct(object, structs.ScreenView, 'firebase.analytics().logScreenView(*):'),
     );
   }
 

@@ -324,6 +324,17 @@ export namespace FirebaseAnalyticsTypes {
     transaction_id?: string;
   }
 
+  export interface ScreenViewParameters {
+    /**
+     * Screen name the user is currently viewing.
+     */
+    screen_name?: string;
+    /**
+     * Current class associated with the view the user is currently viewing.
+     */
+    screen_class?: string;
+  }
+
   export interface RefundEventParameters {
     /**
      * A product affiliation to designate a supplying company or brick and mortar store location
@@ -651,26 +662,6 @@ export namespace FirebaseAnalyticsTypes {
      * @param enabled A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.
      */
     setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
-
-    /**
-     * Sets the current screen name.
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
-     * ```
-     *
-     * > Whilst screenClassOverride is optional, it is recommended it is
-     * always sent as your current class name. For example on Android it will always
-     * show as 'MainActivity' if you do not specify it.
-     *
-     * @param screenName A screen name, e.g. Product.
-     * @param screenClassOverride On Android, React Native runs in a single activity called
-     * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
-     */
-    setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
-
     /**
      * Sets the minimum engagement time required before starting a session.
      *
@@ -783,6 +774,20 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     logPurchase(params: PurchaseEventParameters): Promise<void>;
+    /**
+     * Sets the current screen name the user is currently viewing & the class associated with the view.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logScreenView({
+     *   screen_class: 'ProductScreen',
+     *   screen_name: 'ProductScreen',
+     * });
+     * ```
+     *
+     */
+    logScreenView(params: ScreenViewParameters): Promise<void>;
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
