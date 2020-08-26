@@ -17,8 +17,12 @@ jobs:
         with:
           fetch-depth: 1
       - name: Install Dependencies
-        run: |
-          sudo npm install --global spellchecker-cli
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: sudo npm install --global spellchecker-cli
       - name: Spell check
         run: |
           spellchecker --quiet --files="docs/**/*.md" --dictionaries="./.spellcheck.dict.txt" --reports="spelling.json" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter

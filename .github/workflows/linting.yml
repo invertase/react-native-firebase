@@ -35,7 +35,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
       - name: Lint
         run: yarn run lint
       - name: Save Code Linting Report JSON
@@ -80,6 +85,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
       - name: Lint
         run: yarn run tsc:compile

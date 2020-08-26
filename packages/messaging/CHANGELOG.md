@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.0...@react-native-firebase/messaging@7.8.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.8.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.4...@react-native-firebase/messaging@7.8.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+## [7.7.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.3...@react-native-firebase/messaging@7.7.4) (2020-08-26)
+
+### Bug Fixes
+
+- undelivered background data message ios ([#4144](https://github.com/invertase/react-native-firebase/issues/4144)) ([415dba4](https://github.com/invertase/react-native-firebase/commit/415dba496ddf0551019e1bcfea4080809c300980))
+
 ## [7.7.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.2...@react-native-firebase/messaging@7.7.3) (2020-08-25)
 
 ### Bug Fixes
