@@ -37,14 +37,14 @@ def enableSeparateBuildPerCPUArchitecture = false
 def useIntlJsc = false
 
 android {
-  compileSdkVersion 28
+  compileSdkVersion 29
   aaptOptions {
     noCompress "tflite"
   }
   defaultConfig {
     applicationId "com.invertase.testing"
     minSdkVersion 21
-    targetSdkVersion 28
+    targetSdkVersion 29
     versionCode 1
     versionName "1.0"
 
@@ -125,7 +125,7 @@ dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
   // JSC from node_modules
   implementation jscFlavor

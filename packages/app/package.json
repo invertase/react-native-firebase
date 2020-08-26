@@ -57,19 +57,21 @@
     "opencollective-postinstall": "^2.0.1",
     "superstruct": "^0.6.2"
   },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/react-native-firebase"
-  },
   "publishConfig": {
     "access": "public"
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "~> 6.28.1"
+      "firebase": "~> 6.30.0"
     },
     "android": {
-      "firebase": "25.5.0"
+      "minSdk": 16,
+      "targetSdk": 29,
+      "compileSdk": 29,
+      "buildTools": "29.0.3",
+      "firebase": "25.7.0",
+      "iid": "20.2.1",
+      "playServicesAuth": "16.0.1"
     }
   }
 }
