@@ -119,7 +119,7 @@
       // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
       // TODO   so we just delay sending the event for a few seconds as a workaround
       // TODO   most likely Remote Debugging causing bridge to be invalidated
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       });
     } else {
