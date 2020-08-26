@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   s.dependency          'Firebase/DynamicLinks', firebase_sdk_version
+  s.dependency          'GoogleUtilities/AppDelegateSwizzler'
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
