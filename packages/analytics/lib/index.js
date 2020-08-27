@@ -102,10 +102,14 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
-  setCurrentScreen() {
+  setCurrentScreen(screenName, screenClassOverride) {
     console.warn(
       'firebase.analytics().setCurrentScreen(), is now deprecated. Please use firebase.analytics().logScreenView() instead',
     );
+    return this.logScreenView({
+      screen_name: screenName,
+      screen_class: screenClassOverride,
+    });
   }
 
   setMinimumSessionDuration(milliseconds = 10000) {

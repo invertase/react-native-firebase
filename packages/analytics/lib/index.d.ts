@@ -662,6 +662,26 @@ export namespace FirebaseAnalyticsTypes {
      * @param enabled A boolean value representing whether Analytics collection is enabled or disabled. Analytics collection is enabled by default.
      */
     setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
+
+    /**
+     * Sets the current screen name.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
+     * ```
+     *
+     * > Whilst screenClassOverride is optional, it is recommended it is
+     * always sent as your current class name. For example on Android it will always
+     * show as 'MainActivity' if you do not specify it.
+     *
+     * @param screenName A screen name, e.g. Product.
+     * @param screenClassOverride On Android, React Native runs in a single activity called
+     * @deprecated
+     * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
+     */
+    setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
     /**
      * Sets the minimum engagement time required before starting a session.
      *

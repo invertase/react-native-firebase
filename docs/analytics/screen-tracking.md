@@ -22,12 +22,12 @@ import { NavigationContainer } from '@react-navigation/native';
 
 <NavigationContainer
   ref={navigationRef}
-  onStateChange={state => {
+  onStateChange={async (state) => {
     const previousRouteName = routeNameRef.current;
     const currentRouteName = getActiveRouteName(state);
 
     if (previousRouteName !== currentRouteName) {
-      analytics().logScreenView({
+      await analytics().logScreenView({
         screen_name: currentRouteName,
       });
     }
@@ -46,9 +46,9 @@ for React Native apps. To manually track screens, you need to setup a `component
 import analytics from '@react-native-firebase/analytics';
 import { Navigation } from 'react-native-navigation';
 
-Navigation.events().registerComponentDidAppearListener(({ componentName, componentType }) => {
+Navigation.events().registerComponentDidAppearListener(async ({ componentName, componentType }) => {
   if (componentType === 'Component') {
-    analytics().logScreenView({
+    await analytics().logScreenView({
         screen_name: componentName,
         screen_class: componentName,
       });
