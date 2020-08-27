@@ -775,7 +775,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     logPurchase(params: PurchaseEventParameters): Promise<void>;
     /**
-     * Sets the current screen name the user is currently viewing & the class associated with the view.
+     * Sets or clears the screen name and class the user is currently viewing
      *
      * #### Example
      *
