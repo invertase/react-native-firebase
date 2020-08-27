@@ -270,7 +270,7 @@ function HeadlessCheck({ isHeadless }) {
   return <App />;
 }
 
-function App{) {
+function App() {
   // Your application
 }
 
