@@ -26,7 +26,7 @@ within the `defaultConfig`:
 android {
     defaultConfig {
         // ...
-        multiDexEnabled true // <-- ADD THIS in the defaultConfig sectino
+        multiDexEnabled true // <-- ADD THIS in the defaultConfig section
     }
     // ...
 }
