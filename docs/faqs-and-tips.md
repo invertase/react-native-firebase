@@ -31,7 +31,7 @@ This may be fixed by creating a `firebase.json` file at the root of your project
 ```
 
 
-### I have a custom Analytics param called 'items' and it's not showing up on the Firebase console. How come?
+### I have a custom Analytics parameter called 'items' and it's not showing up on the Firebase console. How come?
 
 This happens to be a known problem with the upstream Analytics SDKs. The Firebase team doesn't have any plans to fix it soon. More information about this can be found [here](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
 
