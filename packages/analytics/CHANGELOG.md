@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.6.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.5.1...@react-native-firebase/analytics@7.6.0) (2020-08-28)
+
+### Features
+
+- **analytics:** add 'logScreenView' API and deprecate `setCurrentScreen` API. ([#4145](https://github.com/invertase/react-native-firebase/issues/4145)) ([81c4e3b](https://github.com/invertase/react-native-firebase/commit/81c4e3b7d2ce956ed6a2cc2f40a323ec5379d6a1))
+
 ## [7.5.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.5.0...@react-native-firebase/analytics@7.5.1) (2020-08-26)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
