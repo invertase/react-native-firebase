@@ -3,7 +3,6 @@ title: FAQs and Tips
 description: Learn about top tips from and common problems faced by the React Native Firebase community.
 next: /releases
 previous: /migrating-to-v6
-
 ---
 
 Over the years, there’s been a lot of discussions on our [GitHub](https://github.com/invertase/react-native-firebase) and [Discord](https://invertase.link/discord). Many of them have been about common problems developers face when using our package, and some of them resulted in very good advice being given.
@@ -44,4 +43,4 @@ This happens to be a known problem with the upstream Analytics SDKs. The Firebas
   - Build processes are costly and complex, so caching is used a lot. As a result, certain changes that you make in your app can cause cache conflicts in subsequent builds. Deal with this via `npx react-native-clean-project`. This does solve a lot of problems.
   - Try an isolate the problem with a template React Native Firebase app. This [bash script](https://github.com/mikehardy/rnfbdemo/blob/master/make-demo.sh) is particularly helpful in making an empty template app.
 - Advice on supporting multiple environments (for example, dev, prod, maybe also staging, qa) for your React Native Firebase App: [#3504](https://github.com/invertase/react-native-firebase/issues/3504)
-- Using [Fastlane for iOS deployment](https://docs.fastlane.tools/getting-started/ios) together with [RN Firebase Crashlytics](https://rnfirebase.io/crashlytics/usage) within CI has been observed to cause builds that hang indefinitely. Using `setup_ci(force: true)` before building the application may solve the issue.: [#3706](
+- Using [Fastlane for iOS deployment](https://docs.fastlane.tools/getting-started/ios) together with [RN Firebase Crashlytics](https://rnfirebase.io/crashlytics/usage) within CI has been observed to cause builds that hang indefinitely. Using `setup_ci(force: true)` before building the application may solve the issue.: [#3706](https://github.com/invertase/react-native-firebase/issues/3706)
