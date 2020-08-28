@@ -376,7 +376,7 @@ export namespace FirebaseRemoteConfigTypes {
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('Fetched values were already activated.');
      * }
      * ```
      */
@@ -416,12 +416,12 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await firebase.remoteConfig().fetchAndActivate();
+     * const fetchedRemotely = await firebase.remoteConfig().fetchAndActivate();
      *
-     * if (activated) {
-     *  console.log('Fetched values successfully activated.');
+     * if (fetchedRemotely) {
+     *   console.log('Configs were retrieved from the backend and activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('No configs were fetched from the backend, and the local configs were already activated');
      * }
      * ```
      *
