@@ -17,13 +17,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
--     fetchAndActivate
+#### fetchAndActivate
         Previous behaviour returned a boolean indicating if config values were activated
         New behaviour returns a boolean indicating if any config values were fetched remotely.
 
-  activate
-  Previous behaviour returned a boolean indicating if config values were activated
-  New behaviour returns a boolean indicating if any local config values were activated.
+#### activate
+        Previous behaviour returned a boolean indicating if config values were activated
+        New behaviour returns a boolean indicating if any local config values were activated.
 
 ## [8.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.2.0...@react-native-firebase/remote-config@8.2.1) (2020-08-26)
 
