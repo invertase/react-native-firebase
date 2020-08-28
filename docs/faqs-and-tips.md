@@ -20,7 +20,7 @@ The longer you stay on v5, the more your project will be out of sync with the of
 
 We highly recommend taking the necessary pains to update to v6.
 
-### My CI build hangs at the `Running script '[CP-User] [RNFB] Core Configuration'` step. 
+### My CI build hangs at the "Running script '[CP-User] [RNFB] Core Configuration'" step. 
 
 This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. If you don't want to change any of the default React Native Firebase configurations, you can leave it empty in the following way: 
 ```
@@ -29,6 +29,12 @@ This may be fixed by creating a `firebase.json` file at the root of your project
   }
 }
 ```
+
+
+### I have a custom Analytics parameter called 'items' and it's not showing up on the Firebase console. How come?
+
+This happens to be a known problem with the upstream Analytics SDKs. The Firebase team doesn't have any plans to fix it soon. More information about this can be found [here](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
+
 
 # Tips
 
