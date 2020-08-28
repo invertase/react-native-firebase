@@ -678,8 +678,8 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param screenName A screen name, e.g. Product.
      * @param screenClassOverride On Android, React Native runs in a single activity called
+     *        'MainActivity'. Setting this parameter overrides the default name shown on logs.
      * @deprecated
-     * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
      */
     setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
     /**

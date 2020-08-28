@@ -49,9 +49,9 @@ import { Navigation } from 'react-native-navigation';
 Navigation.events().registerComponentDidAppearListener(async ({ componentName, componentType }) => {
   if (componentType === 'Component') {
     await analytics().logScreenView({
-        screen_name: componentName,
-        screen_class: componentName,
-      });
+      screen_name: componentName,
+      screen_class: componentName,
+    });
   }
 });
 ```
