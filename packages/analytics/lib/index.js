@@ -103,6 +103,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
   }
 
   setCurrentScreen(screenName, screenClassOverride) {
+    // eslint-disable-next-line no-console
     console.warn(
       'firebase.analytics().setCurrentScreen(), is now deprecated. Please use firebase.analytics().logScreenView() instead',
     );

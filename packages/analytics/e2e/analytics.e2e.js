@@ -56,6 +56,16 @@ describe('analytics()', () => {
     });
   });
 
+  describe('setCurrentScreen()', () => {
+    it('screenName only', async () => {
+      await firebase.analytics().setCurrentScreen('invertase screen');
+    });
+
+    it('screenName with screenClassOverride', async () => {
+      await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
+    });
+  });
+
   describe('setMinimumSessionDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setMinimumSessionDuration();
