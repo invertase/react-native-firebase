@@ -139,7 +139,12 @@ RCT_EXPORT_METHOD(fetchAndActivate:
         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
         }
     } else {
-      resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      if(status == FIRRemoteConfigFetchAndActivateStatusSuccessFetchedFromRemote) {
+        resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+        return;
+      }
+      // if no data fetched remotely, return false
+      resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
     }
   };
 
@@ -155,7 +160,7 @@ RCT_EXPORT_METHOD(activate:
   FIRRemoteConfigActivateCompletion completionHandler = ^(NSError *__nullable error) {
     if(error){
       if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
-          resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+          resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
       } else {
         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
       }

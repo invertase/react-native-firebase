@@ -82,11 +82,11 @@ remoteConfig()
     awesome_new_feature: 'disabled',
   })
   .then(() => remoteConfig().fetchAndActivate())
-  .then(activated => {
-    if (activated) {
-      console.log('Defaults set, fetched & activated!');
-    } else {
-      console.log('Defaults set, however activation failed.');
+  .then(fetchedRemotely => {
+    if (fetchedRemotely) {
+      console.log('Configs were retrieved from the backend and activated.');
+      } else {
+      console.log('No configs were fetched from the backend, and the local configs were already activated');
     }
   });
 ```
