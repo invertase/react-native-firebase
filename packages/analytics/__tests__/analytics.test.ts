@@ -46,20 +46,6 @@ describe('Analytics', () => {
     });
   });
 
-  it('errors if screenName not a string', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setCurrentScreen(666.1337)).toThrowError(
-      "'screenName' expected a string value",
-    );
-  });
-
-  it('errors if screenClassOverride not a string', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setCurrentScreen('invertase screen', 666.1337)).toThrowError(
-      "'screenClassOverride' expected a string value",
-    );
-  });
-
   it('errors if milliseconds not a number', () => {
     // @ts-ignore test
     expect(() => firebase.analytics().setMinimumSessionDuration('123')).toThrowError(
@@ -184,6 +170,15 @@ describe('Analytics', () => {
       ).toThrowError(
         "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
       );
+    });
+
+    describe('logScreenView()', () => {
+      it('errors if param is not an object', () => {
+        // @ts-ignore test
+        expect(() => firebase.analytics().logScreenView(123)).toThrowError(
+          'firebase.analytics().logScreenView(*):',
+        );
+      });
     });
 
     describe('logAddPaymentInfo()', () => {

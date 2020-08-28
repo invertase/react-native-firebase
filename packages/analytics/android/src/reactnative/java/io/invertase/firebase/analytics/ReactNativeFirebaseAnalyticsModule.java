@@ -60,23 +60,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void setCurrentScreen(
-    String screenName,
-    @Nullable String screenClassOverride,
-    Promise promise
-  ) {
-    module
-      .setAnalyticsCollectionEnabled(getCurrentActivity(), screenName, screenClassOverride)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
-  }
-
-  @ReactMethod
   public void setMinimumSessionDuration(double milliseconds, Promise promise) {
     module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {

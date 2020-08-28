@@ -52,20 +52,6 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Void> setAnalyticsCollectionEnabled(
-    Activity currentActivity,
-    String screenName,
-    @Nullable String screenClassOverride
-  ) {
-    return Tasks.call(() -> {
-      if (currentActivity == null) return null;
-      FirebaseAnalytics
-        .getInstance(getContext())
-        .setCurrentScreen(currentActivity, screenName, screenClassOverride);
-      return null;
-    });
-  }
-
   Task<Void> setMinimumSessionDuration(long milliseconds) {
     return Tasks.call(() -> {
       FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration(milliseconds);

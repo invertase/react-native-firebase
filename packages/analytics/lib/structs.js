@@ -30,6 +30,11 @@ const Item = struct({
   item_variant: 'string?',
 });
 
+export const ScreenView = struct({
+  screen_class: 'string?',
+  screen_name: 'string?',
+});
+
 export const AddPaymentInfo = struct({
   items: struct.optional([Item]),
   value: 'number?',
