@@ -29,6 +29,7 @@ import { NavigationContainer } from '@react-navigation/native';
     if (previousRouteName !== currentRouteName) {
       await analytics().logScreenView({
         screen_name: currentRouteName,
+        screen_class: currentRouteName,
       });
     }
 ```
