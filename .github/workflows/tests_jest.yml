@@ -21,7 +21,7 @@ on:
 jobs:
   jest:
     name: Jest
-    timeout-minutes: 5
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
       - name: Yarn Install
         uses: nick-invision/retry@v1
         with:
-          timeout_minutes: 10
+          timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
@@ -59,7 +59,7 @@ jobs:
         # This can fail on timeouts etc, wrap with retry
         uses: nick-invision/retry@v1
         with:
-          timeout_minutes: 10
+          timeout_minutes: 3
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./node_modules/.bin/codecov
