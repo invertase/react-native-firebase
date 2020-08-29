@@ -228,10 +228,9 @@ If you are using a simulator, go to [Mange Apple Account](https://appleid.apple.
 
 Search for "Devices", select "Simulator" and press "Remove from Account".
 
-  ![show-devices](https://github.com/invertase/react-native-apple-authentication/blob/troubleshouting-update-readme/docs/images/devices-list.jpg)
+  ![show-devices](https://raw.githubusercontent.com/invertase/react-native-apple-authentication/master/docs/images/devices-list.jpg)
 
-  ![remove-from-manager](https://github.com/invertase/react-native-apple-authentication/blob/troubleshouting-update-readme/docs/images/remove-simulator-devices-list.jpg
-  )
+  ![remove-from-manager](https://raw.githubusercontent.com/invertase/react-native-apple-authentication/master/docs/images/remove-simulator-devices-list.jpg)
 
 It should work fine.
 
