@@ -214,10 +214,26 @@ So it is recommended when logging out to just clear all data you have from a use
 The operation couldn’t be completed. (com.apple.AuthenticationServices.AuthorizationError error 1000.)
 ```
 
-In the case you are using the function `getCredentialStateForUser` on a simulator, this error will always be fired. You should test your code on a real device.
+###### Case 1:
+Check that the connection settings have been made correctly.
+The setup can be found here: [Initial Setup](https://github.com/invertase/react-native-apple-authentication/blob/master/docs/INITIAL_SETUP.md)
 
-If you are seeing this error while using the simulator, you can try going to https://appleid.apple.com/account/manage and scroll down to where it shows my Devices that are signed in with this ID. Click on "Simulator" and choose "Remove from Account".  Then sign in again. 
+###### Case 2:
+If you are using the function `getCredentialStateForUser` on a simulator, this error will always be triggered, for the reason that this function verifies the authenticity of the device.
 
+You must test your code on a real device.
+
+###### Case 3:
+If you are using a simulator, go to [Mange Apple Account](https://appleid.apple.com/account/manage).
+
+Search for "Devices", select "Simulator" and press "Remove from Account".
+
+  ![show-devices](https://github.com/invertase/react-native-apple-authentication/blob/troubleshouting-update-readme/docs/images/devices-list.jpg)
+
+  ![remove-from-manager](https://github.com/invertase/react-native-apple-authentication/blob/troubleshouting-update-readme/docs/images/remove-simulator-devices-list.jpg
+  )
+
+It should work fine.
 
 ## License
 
