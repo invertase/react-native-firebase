@@ -29,7 +29,7 @@ import { NavigationContainer } from '@react-navigation/native';
     if (previousRouteName !== currentRouteName) {
       await analytics().logScreenView({
         screen_name: currentRouteName,
-        screen_class: currentRouteName
+        screen_class: currentRouteName,
       });
     }
 ```
@@ -51,7 +51,7 @@ Navigation.events().registerComponentDidAppearListener(async ({ componentName, c
   if (componentType === 'Component') {
     await analytics().logScreenView({
       screen_name: componentName,
-      screen_class: componentName
+      screen_class: componentName,
     });
   }
 });
