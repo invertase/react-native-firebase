@@ -1,70 +1,92 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "0.0.1",
+  "version": "8.4.3",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start --platforms ios,android",
-    "android:dev": "react-native run-android",
-    "android:prod": "react-native run-android --configuration=release",
-    "ios:dev": "react-native run-ios",
-    "ios:prod": "react-native run-ios --configuration=release",
-    "ios:pod:install": "cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && pod install && cd ..",
-    "test": "echo 'Tests should be run from within the RN application.\n\rSee https://github.com/invertase/react-native-firebase-tests/blob/master/tests/README.md for more info.'",
-    "build-lib-for-tests": "babel --presets=es2015-mod,es3,react-native ./lib/ -d ./__tests__/build/lib/ --source-maps",
-    "internal-tests": "npm run build-lib-for-tests && babel --presets=es2015-mod,es3 ./__tests__/src/ -d ./__tests__/build/ --source-maps && node ./__tests__/build/index.js"
+    "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
+    "prepare": "patch-package"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/invertase/react-native-firebase.git"
-  },
-  "bugs": {
-    "url": "https://github.com/invertase/react-native-firebase/issues"
-  },
-  "homepage": "https://github.com/invertase/react-native-firebase/tests/#readme",
   "dependencies": {
-    "babel-preset-es2015-mod": "^6.6.0",
-    "babel-preset-es3": "^1.0.1",
-    "bluebird": "^3.5.0",
-    "bows": "^1.6.0",
-    "cuid": "^1.3.8",
-    "deeps": "^1.4.4",
-    "firebase": "^3.7.0",
-    "js-beautify": "^1.6.11",
-    "lodash.groupby": "^4.6.0",
-    "lodash.some": "^4.6.0",
-    "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-native": "^0.49.0-rc.6",
-    "react-native-vector-icons": "^4.0.0",
-    "react-navigation": "^1.0.0-beta.9",
-    "react-redux": "^5.0.3",
-    "react-test-renderer": "16.0.0-alpha.12",
-    "redux": "^3.6.0",
-    "redux-logger": "^2.8.2",
-    "redux-persist": "^4.4.2",
-    "redux-thunk": "^2.2.0",
-    "should": "^11.2.0",
-    "should-sinon": "^0.0.5",
-    "sinon": "^3.2.1"
+    "@react-native-firebase/admob": "7.6.2",
+    "@react-native-firebase/analytics": "7.6.1",
+    "@react-native-firebase/app": "8.4.1",
+    "@react-native-firebase/app-types": "6.7.2",
+    "@react-native-firebase/auth": "9.1.2",
+    "@react-native-firebase/crashlytics": "8.4.2",
+    "@react-native-firebase/database": "7.5.3",
+    "@react-native-firebase/dynamic-links": "7.5.2",
+    "@react-native-firebase/firestore": "7.6.2",
+    "@react-native-firebase/functions": "7.4.2",
+    "@react-native-firebase/iid": "7.4.2",
+    "@react-native-firebase/in-app-messaging": "7.4.2",
+    "@react-native-firebase/messaging": "7.8.3",
+    "@react-native-firebase/ml-natural-language": "7.4.2",
+    "@react-native-firebase/ml-vision": "7.4.2",
+    "@react-native-firebase/perf": "7.4.2",
+    "@react-native-firebase/remote-config": "9.0.1",
+    "@react-native-firebase/storage": "7.4.2",
+    "react": "16.11.0",
+    "react-native": "0.62.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-eslint": "^7.1.1",
-    "babel-jest": "19.0.0",
-    "babel-plugin-flow-react-proptypes": "^0.21.0",
-    "babel-plugin-istanbul": "^4.1.5",
-    "babel-preset-react-native": "1.9.1",
-    "colors": "^1.1.2",
-    "eslint": "^3.16.1",
-    "eslint-config-airbnb": "^14.1.0",
-    "eslint-plugin-flowtype": "^2.30.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.10.0",
-    "jest": "19.0.2",
-    "redux-immutable-state-invariant": "^1.2.4"
+    "@react-native-firebase/private-tests-helpers": "0.0.13",
+    "a2a": "^0.2.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "detox": "16.7.2",
+    "jet": "^0.6.6-0",
+    "mocha": "^6.1.4",
+    "nyc": "^15.0.1",
+    "patch-package": "^6.2.2",
+    "react-native-port-patcher": "^1.0.4",
+    "should": "^13.2.3",
+    "should-sinon": "0.0.6",
+    "sinon": "^9.0.2"
   },
-  "jest": {
-    "preset": "react-native"
+  "detox": {
+    "test-runner": "mocha",
+    "specs": "e2e",
+    "runner-config": "e2e/mocha.opts",
+    "configurations": {
+      "ios.sim.debug": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "type": "ios.simulator",
+        "device": {
+          "type": "iPhone 8"
+        }
+      },
+      "ios.ci": {
+        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
+        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
+        "type": "ios.simulator",
+        "device": {
+          "type": "iPhone 11"
+        }
+      },
+      "android.emu.debug": {
+        "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
+        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "TestingAVD"
+        }
+      },
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "type": "ios.simulator",
+        "device": {
+          "type": "iPhone X"
+        }
+      },
+      "android.emu.release": {
+        "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+        "build": "pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
+        "type": "android.emulator",
+        "device": {
+          "avdName": "TestingAVD"
+        }
+      }
+    }
   }
 }

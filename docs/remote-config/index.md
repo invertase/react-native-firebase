@@ -1,0 +1,3 @@
+---
+redirect: /remote-config/usage
+---

@@ -1,46 +1,45 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.reactnativefirebasedemo">
+  xmlns:tools="http://schemas.android.com/tools"
+  android:installLocation="auto"
+  package="com.invertase.testing">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name=".MainApplication"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:launchMode="singleTop"
-        android:theme="@style/AppTheme">
-        <service
-            android:name="io.invertase.firebase.messaging.MessagingService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+  <application
+    android:name=".MainApplication"
+    android:hardwareAccelerated="false"
+    android:allowBackup="false"
+    android:icon="@drawable/ic_launcher"
+    android:label="@string/app_name"
+    android:launchMode="singleTask"
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="true"
+    tools:targetApi="m">
+    <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
+    <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
+    <meta-data android:name="rnfirebase_meta_testing_boolean_true" android:value="true" />
 
-        <service android:name="io.invertase.firebase.messaging.InstanceIdService" android:exported="false">
-          <intent-filter>
-            <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-          </intent-filter>
-        </service>
+    <activity
+      android:name=".MainActivity"
+      android:label="@string/app_name"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:launchMode="singleTask"
+      android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+      <!-- Dynamic DynamicLinks Test -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
 
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-    </application>
-
+        <data
+          android:host="invertase.io"
+          android:scheme="https" />
+      </intent-filter>
+    </activity>
+    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+  </application>
 </manifest>

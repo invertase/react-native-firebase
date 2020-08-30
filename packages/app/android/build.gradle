@@ -1,0 +1,91 @@
+import io.invertase.gradle.common.PackageJson
+
+buildscript {
+  // The Android Gradle plugin is only required when opening the android folder stand-alone.
+  // This avoids unnecessary downloads and potential conflicts when the library is included as a
+  // module dependency in an application project.
+  if (project == rootProject) {
+    repositories {
+      google()
+      jcenter()
+    }
+
+    dependencies {
+      classpath("com.android.tools.build:gradle:4.0.1")
+    }
+  }
+}
+
+plugins {
+  id "io.invertase.gradle.build" version "1.4"
+}
+
+def packageJson = PackageJson.getForProject(project)
+def firebaseBomVersion = packageJson['sdkVersions']['android']['firebase']
+def playServicesAuthVersion = packageJson['sdkVersions']['android']['playServicesAuth']
+def jsonMinSdk = packageJson['sdkVersions']['android']['minSdk']
+def jsonTargetSdk = packageJson['sdkVersions']['android']['targetSdk']
+def jsonCompileSdk = packageJson['sdkVersions']['android']['compileSdk']
+def jsonBuildTools = packageJson['sdkVersions']['android']['buildTools']
+
+project.ext {
+  set('react-native', [
+    versions: [
+      android : [
+        minSdk    : jsonMinSdk,
+        targetSdk : jsonTargetSdk,
+        compileSdk: jsonCompileSdk,
+        // optional as gradle.buildTools comes with one by default
+        // overriding here though to match the version RN uses
+        buildTools: jsonBuildTools
+      ],
+
+      firebase: [
+        bom: firebaseBomVersion,
+      ],
+
+      play     : [
+        "play-services-auth": playServicesAuthVersion,
+      ],
+    ],
+  ])
+}
+
+android {
+  defaultConfig {
+    multiDexEnabled true
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+}
+
+dependencies {
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-core"
+  implementation "com.google.firebase:firebase-common"
+  implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
+}
+
+apply from: file("./firebase-json.gradle")
+
+ReactNative.shared.applyPackageVersion()
+ReactNative.shared.applyDefaultExcludes()
+ReactNative.module.applyAndroidVersions()
+ReactNative.module.applyReactNativeDependency("api")

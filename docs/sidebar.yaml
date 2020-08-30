@@ -1,0 +1,131 @@
+---
+- - Getting Started
+  - '/'
+- - TypeScript
+  - '/typescript'
+- - Release Notes
+  - '/releases'
+- - Migrating to v6
+  - '/migrating-to-v6'
+- - FAQs and Tips
+  - '/faqs-and-tips'
+- - Feature Requests
+  - 'https://invertase.canny.io/react-native-firebase'
+- - Contributing
+  - 'https://github.com/invertase/react-native-firebase/blob/master/CONTRIBUTING.md'
+- - Legacy Docs (<= v5)
+  - 'https://v5.rnfirebase.io/docs/v5.x.x/getting-started'
+- - AdMob
+  - - - Usage
+      - '/admob/usage'
+    - - Displaying Adverts
+      - '/admob/displaying-ads'
+    - - European User Consent
+      - '/admob/european-user-consent'
+  - '//static.invertase.io/assets/firebase/google-admob.svg'
+- - Analytics
+  - - - Usage
+      - '/analytics/usage'
+    - - Screen Tracking
+      - '/analytics/screen-tracking'
+    - - Building an Analytics Funnel
+      - 'https://blog.theodo.com/2018/01/building-google-analytics-funnel-firebase-react-native'
+  - '//static.invertase.io/assets/firebase/analytics.svg'
+- - Authentication
+  - - - Usage
+      - '/auth/usage'
+    - - Social Auth
+      - '/auth/social-auth'
+    - - Phone Auth
+      - '/auth/phone-auth'
+  - '//static.invertase.io/assets/firebase/authentication.svg'
+- - Cloud Firestore
+  - - - Usage
+      - '/firestore/usage'
+    - - Usage with Emulator
+      - '/firestore/emulator'  
+    - - Usage with FlatLists
+      - '/firestore/usage-with-flatlists'
+    - - Building a "TODO" app
+      - 'https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native'
+  - '//static.invertase.io/assets/firebase/cloud-firestore.svg'
+- - Cloud Functions
+  - - - Usage
+      - '/functions/usage'
+    - - Writing & Deploying Functions
+      - '/functions/writing-deploying-functions'
+  - '//static.invertase.io/assets/firebase/cloud-functions.svg'
+- - Cloud Messaging
+  - - - Usage
+      - '/messaging/usage'
+    - - iOS Permissions
+      - '/messaging/ios-permissions'
+    - - Notifications
+      - '/messaging/notifications'
+    - - Server Integration
+      - '/messaging/server-integration'
+  - '//static.invertase.io/assets/firebase/cloud-messaging.svg'
+- - Cloud Storage
+  - - - Usage
+      - '/storage/usage'
+  - '//static.invertase.io/assets/firebase/cloud-storage.svg'
+- - Core / App
+  - - - Usage
+      - '/app/usage'
+    - - Utils
+      - '/app/utils'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
+- - Crashlytics
+  - - - Usage
+      - '/crashlytics/usage'
+    - - Viewing crash reports
+      - '/crashlytics/crash-reports'
+  - '//static.invertase.io/assets/firebase/crashlytics.svg'
+- - Realtime Database
+  - - - Usage
+      - '/database/usage'
+    - - Offline Support
+      - '/database/offline-support'
+    - - Presence Detection
+      - '/database/presence-detection'
+  - '//static.invertase.io/assets/firebase/realtime-database.svg'
+- - Dynamic Links
+  - - - Usage
+      - '/dynamic-links/usage'
+  - '//static.invertase.io/assets/firebase/dynamic-links.svg'
+- - Instance ID
+  - - - Usage
+      - '/iid/usage'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
+- - In-App Messaging
+  - - - Usage
+      - '/in-app-messaging/usage'
+  - '//static.invertase.io/assets/firebase/in-app-messaging.svg'
+- - ML Kit Natural Language
+  - - - Usage
+      - '/ml-natural-language/usage'
+  - '//static.invertase.io/assets/firebase/ml-kit.svg'
+- - ML Kit Vision
+  - - - Usage
+      - '/ml-vision/usage'
+    - - Text Recognition
+      - '/ml-vision/text-recognition'
+    - - Landmark Recognition
+      - '/ml-vision/landmark-recognition'
+    - - Barcode Scanning
+      - '/ml-vision/barcode-scanning'
+    - - Image Labeling
+      - '/ml-vision/image-labeling'
+    - - Face Detection
+      - '/ml-vision/face-detection'
+  - '//static.invertase.io/assets/firebase/ml-kit.svg'
+- - Remote Config
+  - - - Usage
+      - '/remote-config/usage'
+  - '//static.invertase.io/assets/firebase/remote-config.svg'
+- - Performance Monitoring
+  - - - Usage
+      - '/perf/usage'
+    - - Axios Integration
+      - '/perf/axios-integration'
+  - '//static.invertase.io/assets/firebase/performance-monitoring.svg'

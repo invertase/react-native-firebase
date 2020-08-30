@@ -1,0 +1,99 @@
+import io.invertase.gradle.common.PackageJson
+
+buildscript {
+  // The Android Gradle plugin is only required when opening the android folder stand-alone.
+  // This avoids unnecessary downloads and potential conflicts when the library is included as a
+  // module dependency in an application project.
+  if (project == rootProject) {
+    repositories {
+      google()
+      jcenter()
+    }
+
+    dependencies {
+      classpath("com.android.tools.build:gradle:4.0.1")
+    }
+  }
+}
+
+plugins {
+  id "io.invertase.gradle.build" version "1.4"
+}
+
+def appProject
+if (findProject(':@react-native-firebase_app')) {
+  appProject = project(':@react-native-firebase_app')
+} else if (findProject(':react-native-firebase_app')) {
+  appProject = project(':react-native-firebase_app')
+} else {
+  throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+}
+def packageJson = PackageJson.getForProject(project)
+def appPackageJson = PackageJson.getForProject(appProject)
+def firebaseBomVersion = appPackageJson['sdkVersions']['android']['firebase']
+def jsonMinSdk = appPackageJson['sdkVersions']['android']['minSdk']
+def jsonTargetSdk = appPackageJson['sdkVersions']['android']['targetSdk']
+def jsonCompileSdk = appPackageJson['sdkVersions']['android']['compileSdk']
+def jsonBuildTools = appPackageJson['sdkVersions']['android']['buildTools']
+def coreVersionDetected = appPackageJson['version']
+def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
+// Only log after build completed so log warning appears at the end
+if (coreVersionDetected != coreVersionRequired) {
+  gradle.buildFinished {
+    project.logger.warn("ReactNativeFirebase WARNING: NPM package '${packageJson['name']}' depends on '${appPackageJson['name']}' v${coreVersionRequired} but found v${coreVersionDetected}, this might cause build issues or runtime crashes.")
+  }
+}
+
+project.ext {
+  set('react-native', [
+    versions: [
+      android : [
+        minSdk    : jsonMinSdk,
+        targetSdk : jsonTargetSdk,
+        compileSdk: jsonCompileSdk,
+        // optional as gradle.buildTools comes with one by default
+        // overriding here though to match the version RN uses
+        buildTools: jsonBuildTools
+      ],
+
+      firebase: [
+        bom: firebaseBomVersion,
+      ],
+    ],
+  ])
+}
+
+android {
+  defaultConfig {
+    multiDexEnabled true
+  }
+  lintOptions {
+    disable 'GradleCompatible'
+    abortOnError false
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+  sourceSets {
+    main {
+      java.srcDirs = ['src/main/java', 'src/reactnative/java']
+    }
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+}
+
+dependencies {
+  api appProject
+  implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  implementation "com.google.firebase:firebase-firestore"
+}
+
+ReactNative.shared.applyPackageVersion()
+ReactNative.shared.applyDefaultExcludes()
+ReactNative.module.applyAndroidVersions()
+ReactNative.module.applyReactNativeDependency("api")

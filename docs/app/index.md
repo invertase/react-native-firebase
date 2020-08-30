@@ -1,0 +1,3 @@
+---
+redirect: /dynamic-links/usage
+---

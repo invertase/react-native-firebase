@@ -1,0 +1,3 @@
+---
+redirect: /functions/usage
+---

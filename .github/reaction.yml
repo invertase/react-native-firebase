@@ -1,0 +1,25 @@
+# Configuration for reaction-comments - https://github.com/dessant/reaction-comments
+
+# Issues and pull requests with these labels accept reaction comments.
+# Set to `[]` to disable
+exemptLabels: []
+
+# Replace matching comments with this message, `{comment-author}` is an
+# optional placeholder. Set to `false` to disable
+reactionComment: >
+  :wave: @{comment-author}, did you mean to use
+  a [reaction](https://git.io/vhzhC) instead?
+
+# Limit to only `issues` or `pulls`
+# only: issues
+
+# Optionally, specify configuration settings just for `issues` or `pulls`
+# issues:
+#   exemptLabels:
+#     - party-parrot
+
+# pulls:
+#   reactionComment: false
+
+# Repository to extend settings from
+# _extends: repo

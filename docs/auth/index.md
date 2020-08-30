@@ -1,0 +1,3 @@
+---
+redirect: /auth/usage
+---

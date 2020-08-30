@@ -1,0 +1,3 @@
+---
+redirect: /analytics/usage
+---

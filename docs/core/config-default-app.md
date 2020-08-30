@@ -1,4 +1,0 @@
-<!-- TODO -->
-
-### Enable Database Persistence
-
