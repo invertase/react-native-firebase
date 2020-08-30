@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.7.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.2...@react-native-firebase/firestore@7.7.0) (2020-08-30)
+
+### Features
+
+- **firestore:** support waitForPendingWrites() API ([#4176](https://github.com/invertase/react-native-firebase/issues/4176)) ([6a4b45e](https://github.com/invertase/react-native-firebase/commit/6a4b45e441344a8c645552cfdef8c8bd88e56ca2))
+
 ## [7.6.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.1...@react-native-firebase/firestore@7.6.2) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
