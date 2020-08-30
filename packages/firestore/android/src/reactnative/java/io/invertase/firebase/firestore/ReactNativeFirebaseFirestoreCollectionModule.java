@@ -95,6 +95,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     };
 
     ListenerRegistration listenerRegistration = firestoreQuery.query.addSnapshotListener(
+      getExecutor(),
       metadataChanges,
       listener
     );
