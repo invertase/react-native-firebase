@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.1...@react-native-firebase/remote-config@9.0.2) (2020-08-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [9.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.0...@react-native-firebase/remote-config@9.0.1) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config
@@ -18,10 +22,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### BREAKING CHANGES
 
 #### fetchAndActivate
+
         Previous behaviour returned a boolean indicating if config values were activated
         New behaviour returns a boolean indicating if any config values were fetched remotely.
 
 #### activate
+
         Previous behaviour returned a boolean indicating if config values were activated
         New behaviour returns a boolean indicating if any local config values were activated.
 

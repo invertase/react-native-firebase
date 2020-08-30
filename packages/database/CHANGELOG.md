@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.3...@react-native-firebase/database@7.5.4) (2020-08-30)
+
+### Bug Fixes
+
+- **database:** `.` is a valid character in ref path ([#4177](https://github.com/invertase/react-native-firebase/issues/4177)) ([a0d01b5](https://github.com/invertase/react-native-firebase/commit/a0d01b5c37f3be9b3091aff6eff7f101be201958))
+
 ## [7.5.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.2...@react-native-firebase/database@7.5.3) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/database
