@@ -397,6 +397,7 @@ describe('firestore()', () => {
       ]);
 
       should(timedOutWithNetworkDisabled).equal(true);
+      await Utils.sleep(2000);
       should(rejected).equal(false);
 
       //if we sign in as a different user then it should reject the promise
