@@ -1970,7 +1970,6 @@ export namespace FirebaseFirestoreTypes {
      */
     clearPersistence(): Promise<void>;
     /**
-    /**
      * Waits until all currently pending writes for the active user have been acknowledged by the
      * backend.
      *
