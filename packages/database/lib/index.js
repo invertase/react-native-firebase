@@ -76,9 +76,9 @@ class FirebaseDatabaseModule extends FirebaseModule {
       throw new Error("firebase.app().database().ref(*) 'path' must be a string value.");
     }
 
-    if (/[.#$\[\]'?]/g.test(path)) {
+    if (/[#$\[\]'?]/g.test(path)) {
       throw new Error(
-        "Paths must be non-empty strings and can't contain '.', '#', '$', '[', or ']'",
+        `Paths must be non-empty strings and can't contain #, $, [, ], ' or ? | path: ${path}`,
       );
     }
 
