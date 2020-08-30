@@ -364,4 +364,42 @@ describe('firestore()', () => {
       }
     });
   });
+
+  describe('wait for pending writes', () => {
+    it('waits for pending writes', async () => {
+
+      const waitForPromiseMs = 500;
+      const testTimeoutMs = 10000;
+
+      await firebase.firestore().disableNetwork();
+
+      //set up a pending write
+
+      const db = firebase.firestore();
+      const id = 'foobar';
+      const ref = db.doc(`v6/${id}`);
+      ref.set({ foo: 'bar' });
+
+      //waitForPendingWrites should never resolve, but unfortunately we can only 
+      //test that this is not returning within X ms
+
+      const timedOutWithNetworkDisabled = await Promise.race([
+        firebase.firestore().waitForPendingWrites().then(() => false),
+        new Promise(resolve => setTimeout(resolve, waitForPromiseMs)).then(() => true)
+      ]);
+
+      should(timedOutWithNetworkDisabled).equal(true);
+
+      await firebase.firestore().enableNetwork();
+
+      const timedOutWithNetworkEnabled = await Promise.race([
+        firebase.firestore().waitForPendingWrites().then(() => false),
+        new Promise(resolve => setTimeout(resolve, testTimeoutMs)).then(() => true)
+      ]);
+
+      should(timedOutWithNetworkEnabled).equal(false);
+
+    });
+  });
+
 });
