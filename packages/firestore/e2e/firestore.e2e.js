@@ -374,14 +374,17 @@ describe('firestore()', () => {
 
       //set up a pending write
 
+      console.log("pending-writes-1");
       const db = firebase.firestore();
       const id = 'foobar';
       const ref = db.doc(`v6/${id}`);
       ref.set({ foo: 'bar' });
+      console.log("pending-writes-2");
 
       //waitForPendingWrites should never resolve, but unfortunately we can only
       //test that this is not returning within X ms
 
+      console.log("pending-writes-3");
       let rejected = false;
       const timedOutWithNetworkDisabled = await Promise.race([
         firebase
@@ -395,18 +398,25 @@ describe('firestore()', () => {
           ),
         Utils.sleep(waitForPromiseMs).then(() => true),
       ]);
+      console.log("pending-writes-4");
 
+      console.log(timedOutWithNetworkDisabled);
       should(timedOutWithNetworkDisabled).equal(true);
-      await Utils.sleep(2000);
+      console.log("pending-writes-5");
+      console.log(rejected);
       should(rejected).equal(false);
+      console.log("pending-writes-6");
 
       //if we sign in as a different user then it should reject the promise
       await firebase.auth().signOut();
       await firebase.auth().signInAnonymously();
+      console.log("pending-writes-7");
+      console.log(rejected);
       should(rejected).equal(true);
 
       //now if we enable the network then waitForPendingWrites should return immediately
       await firebase.firestore().enableNetwork();
+      console.log("pending-writes-8");
 
       const timedOutWithNetworkEnabled = await Promise.race([
         firebase
@@ -416,7 +426,9 @@ describe('firestore()', () => {
         Utils.sleep(testTimeoutMs).then(() => true),
       ]);
 
+      console.log(timedOutWithNetworkEnabled);
       should(timedOutWithNetworkEnabled).equal(false);
+      console.log("pending-writes-9");
     });
   });
 });
