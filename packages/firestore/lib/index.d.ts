@@ -1978,7 +1978,7 @@ export namespace FirebaseFirestoreTypes {
      * session), but it does not wait for writes that were added after the method is called. If you
      * want to wait for additional writes, call `waitForPendingWrites()` again.
      *
-     * Any outstanding `waitForPendingWrites()` Promises are rejected during user changes.
+     * Any outstanding `waitForPendingWrites()` Promises are rejected when the logged-in user changes.
      *
      * #### Example
      *
