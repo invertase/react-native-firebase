@@ -67,7 +67,7 @@ describe('database()', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          "Paths must be non-empty strings and can't contain '.', '#', '$', '[', or ']'",
+          "Paths must be non-empty strings and can't contain #, $, [, ], ' or ?",
         );
         return Promise.resolve();
       }
@@ -208,7 +208,7 @@ describe('database()', () => {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql(
-          "Paths must be non-empty strings and can't contain '.', '#', '$', '[', or ']'",
+          "Paths must be non-empty strings and can't contain #, $, [, ], ' or ?",
         );
         return Promise.resolve();
       }
