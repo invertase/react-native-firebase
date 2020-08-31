@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.3...@react-native-firebase/messaging@7.8.4) (2020-08-31)
+
+### Bug Fixes
+
+- **ios, messaging:** register background handler task for FCM events ([#4180](https://github.com/invertase/react-native-firebase/issues/4180)) ([cf706c6](https://github.com/invertase/react-native-firebase/commit/cf706c683dd1d23860f15df636cc345cb6f3b60a))
+
 ## [7.8.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.2...@react-native-firebase/messaging@7.8.3) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
