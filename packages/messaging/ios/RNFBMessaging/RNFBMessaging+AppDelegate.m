@@ -111,7 +111,7 @@
     
   if (userInfo[@"gcm.message_id"]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-      //If app is in background state, register background task
+      // If app is in background state, register background task to guarantee async queues aren't frozen.
       UIBackgroundTaskIdentifier __block backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
             if (backgroundTaskId != UIBackgroundTaskInvalid) {
                 [application endBackgroundTask:backgroundTaskId];
@@ -122,7 +122,7 @@
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (25 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         completionHandler(UIBackgroundFetchResultNewData);
 
-        //Stoping background task here, as this is longest timeout, so we are sure that it is executed
+        // Stop background task after the longest timeout, async queue is okay to freeze again after handling period
         if (backgroundTaskId != UIBackgroundTaskInvalid) {
             [application endBackgroundTask:backgroundTaskId];
             backgroundTaskId = UIBackgroundTaskInvalid;
