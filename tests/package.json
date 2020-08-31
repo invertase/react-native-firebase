@@ -1,6 +1,6 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "8.4.5",
+  "version": "8.4.6",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
@@ -19,7 +19,7 @@
     "@react-native-firebase/functions": "7.4.2",
     "@react-native-firebase/iid": "7.4.2",
     "@react-native-firebase/in-app-messaging": "7.4.2",
-    "@react-native-firebase/messaging": "7.8.3",
+    "@react-native-firebase/messaging": "7.8.4",
     "@react-native-firebase/ml-natural-language": "7.4.2",
     "@react-native-firebase/ml-vision": "7.4.2",
     "@react-native-firebase/perf": "7.4.2",
