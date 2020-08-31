@@ -461,7 +461,7 @@ export namespace FirebaseAuthTypes {
     /**
      * An optional photo URL for the user.
      */
-    photoURL?: string;
+    photoURL?: string | null;
   }
 
   /**
