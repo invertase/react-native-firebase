@@ -111,9 +111,22 @@
     
   if (userInfo[@"gcm.message_id"]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      //If app is in background state, register background task
+      UIBackgroundTaskIdentifier __block backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
+            if (backgroundTaskId != UIBackgroundTaskInvalid) {
+                [application endBackgroundTask:backgroundTaskId];
+                backgroundTaskId = UIBackgroundTaskInvalid;
+            }
+      }];
       // TODO add support in a later version for calling completion handler directly from JS when user JS code complete
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (25 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         completionHandler(UIBackgroundFetchResultNewData);
+
+        //Stoping background task here, as this is longest timeout, so we are sure that it is executed
+        if (backgroundTaskId != UIBackgroundTaskInvalid) {
+            [application endBackgroundTask:backgroundTaskId];
+            backgroundTaskId = UIBackgroundTaskInvalid;
+        }
       });
 
       // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
