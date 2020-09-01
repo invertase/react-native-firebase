@@ -1396,6 +1396,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         return TwitterAuthProvider.getCredential(authToken, authSecret);
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
+      case "apple.com":
+        return OAuthProvider.newCredentialBuilder(provider).setIdTokenWithRawNonce(authToken, authSecret).build();
       case "oauth":
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
