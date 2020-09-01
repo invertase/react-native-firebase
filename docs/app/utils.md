@@ -58,7 +58,7 @@ async function checkPlayServicesExample() {
     isAvailable,
     hasResolution,
     isUserResolvableError,
-  } = utils.playServicesAvailability;
+  } = utils().playServicesAvailability;
   // all good and valid \o/
   if (isAvailable) return Promise.resolve();
   // if the user can resolve the issue i.e by updating play services
