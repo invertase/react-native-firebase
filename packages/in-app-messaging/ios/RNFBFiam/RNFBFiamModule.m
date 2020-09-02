@@ -62,5 +62,16 @@
     [FIRInAppMessaging inAppMessaging].messageDisplaySuppressed = (BOOL) enabled;
     resolve([NSNull null]);
   }
+  
+  RCT_EXPORT_METHOD(triggerEvent:
+    (NSString) eventId
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    [[FIRInAppMessaging inAppMessaging] triggerEvent: eventId];
+    resolve([NSNull null]);
+  }
+
 
 @end
