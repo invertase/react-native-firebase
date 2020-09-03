@@ -69,7 +69,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           // only handle non-consumed initial notifications
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
             RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
-
+            if (remoteMessage == null) {
+              remoteMessage = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore().getFirebaseMessage(messageId);
+            }
             if (remoteMessage != null) {
               promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
               initialNotificationMap.put(messageId, true);

@@ -1,0 +1,38 @@
+package io.invertase.firebase.messaging;
+
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import io.invertase.firebase.common.UniversalFirebasePreferences;
+
+import static io.invertase.firebase.messaging.JsonConvert.jsonToReact;
+import static io.invertase.firebase.messaging.JsonConvert.reactToJSON;
+import static io.invertase.firebase.messaging.ReactNativeFirebaseMessagingSerializer.remoteMessageFromReadableMap;
+import static io.invertase.firebase.messaging.ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap;
+
+public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebaseMessagingStore {
+
+  @Override
+  public void storeFirebaseMessage(RemoteMessage remoteMessage) {
+    try {
+      UniversalFirebasePreferences.getSharedInstance().setStringValue(remoteMessage.getMessageId(), reactToJSON(remoteMessageToWritableMap(remoteMessage)).toString());
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Override
+  public RemoteMessage getFirebaseMessage(String remoteMessageId) {
+    String remoteMessageString = UniversalFirebasePreferences.getSharedInstance().getStringValue(remoteMessageId, null);
+    if (remoteMessageString != null) {
+      try {
+        return remoteMessageFromReadableMap(jsonToReact(new JSONObject(remoteMessageString)));
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
+  }
+}

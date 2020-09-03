@@ -29,6 +29,7 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     // Add a RemoteMessage if the message contains a notification payload
     if (remoteMessage.getNotification() != null) {
       notifications.put(remoteMessage.getMessageId(), remoteMessage);
+      ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore().storeFirebaseMessage(remoteMessage);
     }
 
     //  |-> ---------------------
