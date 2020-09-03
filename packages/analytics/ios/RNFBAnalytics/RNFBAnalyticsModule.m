@@ -67,24 +67,6 @@
     return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setCurrentScreen:
-    (NSString *) screenName
-        screenClass:
-        (NSString *) screenClassOverview
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      @try {
-        [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
-      } @catch (NSException *exception) {
-        return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-      }
-      return resolve([NSNull null]);
-    });
-  }
-
   RCT_EXPORT_METHOD(setUserId:
     (NSString *) id
         resolver:

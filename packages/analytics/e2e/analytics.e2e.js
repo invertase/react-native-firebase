@@ -116,6 +116,14 @@ describe('analytics()', () => {
     });
   });
 
+  describe('logScreenView()', () => {
+    it('calls logScreenView', async () => {
+      await firebase
+        .analytics()
+        .logScreenView({ screen_name: 'invertase screen', screen_class: 'invertase class' });
+    });
+  });
+
   describe('logAddPaymentInfo()', () => {
     it('calls logAddPaymentInfo', async () => {
       await firebase.analytics().logAddPaymentInfo({

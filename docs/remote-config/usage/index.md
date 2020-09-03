@@ -82,11 +82,11 @@ remoteConfig()
     awesome_new_feature: 'disabled',
   })
   .then(() => remoteConfig().fetchAndActivate())
-  .then(activated => {
-    if (activated) {
-      console.log('Defaults set, fetched & activated!');
-    } else {
-      console.log('Defaults set, however activation failed.');
+  .then(fetchedRemotely => {
+    if (fetchedRemotely) {
+      console.log('Configs were retrieved from the backend and activated.');
+      } else {
+      console.log('No configs were fetched from the backend, and the local configs were already activated');
     }
   });
 ```
@@ -111,7 +111,7 @@ if (awesomeNewFeature.asNumber() === 5) {
 // resolves value to boolean
 // if value is any of the following: '1', 'true', 't', 'yes', 'y', 'on', it will resolve to true
 // if source is 'static', value will be false
-if (awesomeNewFeature.asNumber() === true) {
+if (awesomeNewFeature.asBoolean() === true) {
   enableAwesomeNewFeature();
 }
 ```

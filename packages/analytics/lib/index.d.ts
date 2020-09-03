@@ -324,6 +324,17 @@ export namespace FirebaseAnalyticsTypes {
     transaction_id?: string;
   }
 
+  export interface ScreenViewParameters {
+    /**
+     * Screen name the user is currently viewing.
+     */
+    screen_name?: string;
+    /**
+     * Current class associated with the view the user is currently viewing.
+     */
+    screen_class?: string;
+  }
+
   export interface RefundEventParameters {
     /**
      * A product affiliation to designate a supplying company or brick and mortar store location
@@ -667,10 +678,10 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param screenName A screen name, e.g. Product.
      * @param screenClassOverride On Android, React Native runs in a single activity called
-     * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
+     *        'MainActivity'. Setting this parameter overrides the default name shown on logs.
+     * @deprecated
      */
     setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
-
     /**
      * Sets the minimum engagement time required before starting a session.
      *
@@ -783,6 +794,20 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     logPurchase(params: PurchaseEventParameters): Promise<void>;
+    /**
+     * Sets or clears the screen name and class the user is currently viewing
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logScreenView({
+     *   screen_class: 'ProductScreen',
+     *   screen_name: 'ProductScreen',
+     * });
+     * ```
+     *
+     */
+    logScreenView(params: ScreenViewParameters): Promise<void>;
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *

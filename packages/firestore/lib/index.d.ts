@@ -1970,6 +1970,24 @@ export namespace FirebaseFirestoreTypes {
      */
     clearPersistence(): Promise<void>;
     /**
+     * Waits until all currently pending writes for the active user have been acknowledged by the
+     * backend.
+     *
+     * The returned Promise resolves immediately if there are no outstanding writes. Otherwise, the
+     * Promise waits for all previously issued writes (including those written in a previous app
+     * session), but it does not wait for writes that were added after the method is called. If you
+     * want to wait for additional writes, call `waitForPendingWrites()` again.
+     *
+     * Any outstanding `waitForPendingWrites()` Promises are rejected when the logged-in user changes.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().waitForPendingWrites();
+     * ```
+     */
+    waitForPendingWrites(): Promise<void>;
+    /**
      * Typically called to ensure a new Firestore instance is initialized before calling
      * `firebase.firestore().clearPersistence()`.
      *

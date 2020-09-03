@@ -57,6 +57,17 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void waitForPendingWrites(String appName, Promise promise) {
+    module.waitForPendingWrites(appName).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(null);
+      } else {
+        rejectPromiseFirestoreException(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
   public void disableNetwork(String appName, Promise promise) {
     module.disableNetwork(appName).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {

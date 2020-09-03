@@ -39,9 +39,18 @@ describe('auth()', () => {
   });
 
   describe('applyActionCode()', () => {
+    xit('works as expected', async () => {
+      await firebase
+        .auth()
+        .applyActionCode('fooby shooby dooby')
+        .then($ => $);
+    });
     it('errors on invalid code', async () => {
       try {
-        await firebase.auth().applyActionCode('fooby shooby dooby');
+        await firebase
+          .auth()
+          .applyActionCode('fooby shooby dooby')
+          .then($ => $);
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
@@ -55,6 +64,45 @@ describe('auth()', () => {
       } catch (e) {
         e.message.should.containEql('code is invalid');
       }
+    });
+  });
+
+  describe('reload()', () => {
+    it('Meta data returns as expected with annonymous sign in', async () => {
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      await firebase.auth().signInAnonymously();
+      await Utils.sleep(50);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
+    });
+
+    it('Meta data returns as expected with email and password sign in', async () => {
+      const random = Utils.randString(12, '#aA');
+      const email1 = `${random}@${random}.com`;
+      const pass = random;
+
+      await firebase.auth().createUserWithEmailAndPassword(email1, pass);
+      const firstUser = firebase.auth().currentUser;
+      await firstUser.reload();
+
+      await firebase.auth().signOut();
+
+      const anotherRandom = Utils.randString(12, '#aA');
+      const email2 = `${anotherRandom}@${anotherRandom}.com`;
+
+      await firebase.auth().createUserWithEmailAndPassword(email2, pass);
+      const secondUser = firebase.auth().currentUser;
+      await secondUser.reload();
+
+      firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
     });
   });
 
@@ -79,36 +127,42 @@ describe('auth()', () => {
   });
 
   describe('signInWithCustomToken()', () => {
-    // TODO(salakar) use new testing api to create a custom token
-    xit('signs in with a admin sdk created custom auth token', async () => {
-      const customUID = 'zdwHCjbpzraRoNK7d64FYWv5AH02';
-      const token = await firebaseAdmin.auth().createCustomToken(customUID, {
-        test: null,
-        roles: [
-          {
-            role: 'validated',
-            scheme_id: null,
-          },
-          {
-            role: 'member',
-            scheme_id: 1,
-          },
-          {
-            role: 'member',
-            scheme_id: 2,
-          },
-        ],
-      });
-      const { user } = await firebase.auth().signInWithCustomToken(token);
+    it('signs in with a admin sdk created custom auth token', async () => {
+      const email = 'test@test.com';
+      const pass = 'test1234';
 
-      user.uid.should.equal(customUID);
-      firebase.auth().currentUser.uid.should.equal(customUID);
+      const successCb = currentUserCredential => {
+        const currentUser = currentUserCredential.user;
+        currentUser.should.be.an.Object();
+        currentUser.uid.should.be.a.String();
+        currentUser.toJSON().should.be.an.Object();
+        currentUser.toJSON().email.should.eql(email);
+        currentUser.isAnonymous.should.equal(false);
+        currentUser.providerId.should.equal('firebase');
+        currentUser.should.equal(firebase.auth().currentUser);
 
-      const { claims } = await firebase.auth().currentUser.getIdTokenResult(true);
+        const { additionalUserInfo } = currentUserCredential;
+        additionalUserInfo.should.be.an.Object();
+        additionalUserInfo.isNewUser.should.equal(false);
 
-      claims.roles.should.be.an.Array();
+        return currentUser;
+      };
 
-      await firebase.auth().signOut();
+      const user = await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, pass)
+        .then(successCb);
+
+      const IdToken = await firebase.auth().currentUser.getIdToken();
+
+      firebase.auth().signOut();
+      await Utils.sleep(50);
+
+      const token = await new TestAdminApi(IdToken).auth().createCustomToken(user.uid, {});
+
+      await firebase.auth().signInWithCustomToken(token);
+
+      firebase.auth().currentUser.email.should.equal('test@test.com');
     });
   });
 
@@ -142,6 +196,42 @@ describe('auth()', () => {
 
       callback.should.be.calledWith(null);
       callback.should.be.calledTwice();
+
+      // Tear down
+
+      unsubscribe();
+    });
+
+    it('accept observer instead callback as well', async () => {
+      await firebase.auth().signInAnonymously();
+
+      await Utils.sleep(50);
+
+      // Test
+      const observer = {
+        next(user) {
+          // Test this access
+          this.onNext();
+          this.user = user;
+        },
+      };
+
+      let unsubscribe;
+      await new Promise(resolve => {
+        observer.onNext = resolve;
+        unsubscribe = firebase.auth().onAuthStateChanged(observer);
+      });
+      should.exist(observer.user);
+
+      // Sign out
+
+      await firebase.auth().signOut();
+
+      // Assertions
+
+      await Utils.sleep(50);
+
+      should.not.exist(observer.user);
 
       // Tear down
 
@@ -321,6 +411,21 @@ describe('auth()', () => {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     });
+
+    it('listens to a null user when auth result is not defined', async () => {
+      let unsubscribe;
+
+      const callback = sinon.spy();
+
+      await new Promise(resolve => {
+        unsubscribe = firebase.auth().onIdTokenChanged(user => {
+          callback(user);
+          resolve();
+        });
+
+        unsubscribe();
+      });
+    });
   });
 
   describe('onUserChanged()', () => {
@@ -345,7 +450,7 @@ describe('auth()', () => {
 
       await firebase.auth().signOut();
 
-      await Utils.sleep(50);
+      await Utils.sleep(500);
 
       // Assertions
 
@@ -812,16 +917,28 @@ describe('auth()', () => {
   });
 
   describe('languageCode', () => {
-    it('it should change the language code', () => {
-      firebase.auth().languageCode = 'en';
+    it('it should change the language code', async () => {
+      await firebase.auth().setLanguageCode('en');
+
       if (firebase.auth().languageCode !== 'en') {
         throw new Error('Expected language code to be "en".');
       }
-      firebase.auth().languageCode = 'fr';
+      await firebase.auth().setLanguageCode('fr');
+
       if (firebase.auth().languageCode !== 'fr') {
         throw new Error('Expected language code to be "fr".');
       }
-      firebase.auth().languageCode = 'en';
+      // expect no error
+      await firebase.auth().setLanguageCode(null);
+
+      try {
+        await firebase.auth().setLanguageCode(123);
+        return Promise.reject('It did not error');
+      } catch (e) {
+        e.message.should.containEql("expected 'languageCode' to be a string or null value");
+      }
+
+      await firebase.auth().setLanguageCode('en');
     });
   });
 
@@ -855,8 +972,7 @@ describe('auth()', () => {
     });
   });
 
-  // TODO temporarily disabled tests, these are flakey on CI and sometimes fail - needs investigation
-  xdescribe('sendPasswordResetEmail()', () => {
+  describe('sendPasswordResetEmail()', () => {
     it('should not error', async () => {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;

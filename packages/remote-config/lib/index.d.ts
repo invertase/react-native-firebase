@@ -364,7 +364,7 @@ export namespace FirebaseRemoteConfigTypes {
 
     /**
      * Moves fetched data to the apps active config.
-     * Resolves with a boolean value of whether the fetched config was moved successfully.
+     * Resolves with a boolean value true if new local values were activated
      *
      * #### Example
      *
@@ -376,7 +376,7 @@ export namespace FirebaseRemoteConfigTypes {
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('Fetched values were already activated.');
      * }
      * ```
      */
@@ -395,6 +395,7 @@ export namespace FirebaseRemoteConfigTypes {
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
+     * Returns true only if new values were fetched, false otherwise.
      *
      * #### Example
      *
@@ -410,18 +411,18 @@ export namespace FirebaseRemoteConfigTypes {
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard.
      *
-     * Once fetching is complete this method immediately calls activate and returns a boolean value of the activation status.
+     * Once fetching is complete this method immediately calls activate and returns a boolean value true if new values were fetched
      *
      * #### Example
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await firebase.remoteConfig().fetchAndActivate();
+     * const fetchedRemotely = await firebase.remoteConfig().fetchAndActivate();
      *
-     * if (activated) {
-     *  console.log('Fetched values successfully activated.');
+     * if (fetchedRemotely) {
+     *   console.log('New configs were retrieved from the backend and activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('No new configs were fetched from the backend, and the local configs were already activated');
      * }
      * ```
      *

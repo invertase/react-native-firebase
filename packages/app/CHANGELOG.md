@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.0...@react-native-firebase/app@8.4.1) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+# [8.4.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.3.1...@react-native-firebase/app@8.4.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+**NOTE: UPDATE ALL REACT-NATIVE-FIREBASE PACKAGES TO CURRENT STABLE FOR COMPATIBILITY - [#4154](https://github.com/invertase/react-native-firebase/issues/4154)**
+
+## [8.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.3.0...@react-native-firebase/app@8.3.1) (2020-08-15)
+
+### Bug Fixes
+
+- **android, timezones:** timezone offset already millis, do not adjust it ([#4055](https://github.com/invertase/react-native-firebase/issues/4055)) ([8b0e189](https://github.com/invertase/react-native-firebase/commit/8b0e1893b8dc20abcf8c3a09a512c2e8ff6707b1)), closes [#4053](https://github.com/invertase/react-native-firebase/issues/4053)
+- **core:** timezone offset issues in utils ([cb6a1d4](https://github.com/invertase/react-native-firebase/commit/cb6a1d41cc8e89fba8a8f81d50cea1c65e7e49ef))
+- **Storage:** AL (asset library) methodology deprecated since iOS 8 ([#4054](https://github.com/invertase/react-native-firebase/issues/4054)) ([bf3b252](https://github.com/invertase/react-native-firebase/commit/bf3b25220cde1ae8d5fdbabc217fe20957dbdf8e))
+
+# [8.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.2.0...@react-native-firebase/app@8.3.0) (2020-08-03)
+
+### Features
+
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+
 # [8.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.1.0...@react-native-firebase/app@8.2.0) (2020-07-09)
 
 ### Features
