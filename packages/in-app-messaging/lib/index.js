@@ -15,7 +15,7 @@
  *
  */
 
-import { isBoolean } from '@react-native-firebase/app/lib/common';
+import { isBoolean, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -64,6 +64,13 @@ class FirebaseFiamModule extends FirebaseModule {
 
     this._isAutomaticDataCollectionEnabled = enabled;
     return this.native.setAutomaticDataCollectionEnabled(enabled);
+  }
+
+  triggerEvent(eventId) {
+    if (!isString(eventId)) {
+      throw new Error("firebase.inAppMessaging().triggerEvent(*) 'eventId' must be a string.");
+    }
+    return this.native.triggerEvent(eventId);
   }
 }
 
