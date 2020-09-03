@@ -26,11 +26,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-<<<<<<< HEAD
-    timeout-minutes: 40
-=======
     timeout-minutes: 60
->>>>>>> master
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
@@ -293,12 +289,7 @@ jobs:
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils && applesimutils --list
 
-<<<<<<< HEAD
-      - name: Detox Test
-        timeout-minutes: 40
-=======
       - name: Pre-fetch Javascript bundle
->>>>>>> master
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
