@@ -70,7 +70,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
             RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
             if (remoteMessage == null) {
-              remoteMessage = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore().getFirebaseMessage(messageId);
+              ReactNativeFirebaseMessagingStore messagingStore = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore();
+              remoteMessage = messagingStore.getFirebaseMessage(messageId);
+              messagingStore.clearFirebaseMessage(messageId);
             }
             if (remoteMessage != null) {
               promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));

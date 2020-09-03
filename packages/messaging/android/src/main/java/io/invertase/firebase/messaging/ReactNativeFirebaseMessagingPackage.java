@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+
 @SuppressWarnings("unused")
 public class ReactNativeFirebaseMessagingPackage implements ReactPackage {
   @Override
