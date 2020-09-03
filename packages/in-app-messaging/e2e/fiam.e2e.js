@@ -84,4 +84,11 @@ describe('inAppMessaging()', () => {
       }
     });
   });
+
+  xdescribe('triggerEvent()', () => {
+    it('no exceptions thrown', async () => {
+      await device.launchApp();
+      await firebase.inAppMessaging().triggerEvent('eventName');
+    });
+  });
 });

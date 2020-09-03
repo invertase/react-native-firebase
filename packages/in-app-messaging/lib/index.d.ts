@@ -130,6 +130,20 @@ export namespace FirebaseInAppMessagingTypes {
      * @param enabled Whether automatic data collection is enabled.
      */
     setAutomaticDataCollectionEnabled(enabled: boolean): Promise<null>;
+
+    /**
+     * Trigger in-app messages programmatically
+     *
+     * #### Example
+     *
+     * ```js
+     * // Suppress messages
+     * await firebase.inAppMessaging().triggerEvent("exampleTrigger");
+     * ```
+     *
+     * @param eventId The id of the event.
+     */
+    triggerEvent(eventId: string): Promise<null>;
   }
 }
 
