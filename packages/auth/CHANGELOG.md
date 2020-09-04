@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.0...@react-native-firebase/auth@9.2.1) (2020-09-04)
+
+### Bug Fixes
+
+- **auth, types:** allow null in photo and name for profile update ([#4179](https://github.com/invertase/react-native-firebase/issues/4179)) ([b4436ea](https://github.com/invertase/react-native-firebase/commit/b4436ea26212f3f5b7d3bdb47ab1891c31ebe59e))
+
 # [9.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.1.2...@react-native-firebase/auth@9.2.0) (2020-09-02)
 
 ### Features
