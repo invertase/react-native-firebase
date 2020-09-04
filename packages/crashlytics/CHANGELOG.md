@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.1...@react-native-firebase/crashlytics@8.4.2) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/crashlytics
+
+## [8.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.0...@react-native-firebase/crashlytics@8.4.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/crashlytics
+
+# [8.4.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.4...@react-native-firebase/crashlytics@8.4.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+## [8.3.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.3...@react-native-firebase/crashlytics@8.3.4) (2020-08-25)
+
+### Bug Fixes
+
+- **ios, crashlytics:** allow Crashlytics inclusion w/o Analytics ([#4134](https://github.com/invertase/react-native-firebase/issues/4134)) ([e023b71](https://github.com/invertase/react-native-firebase/commit/e023b71486d6834ba175e91ee5809af36a03588d))
+
+## [8.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.2...@react-native-firebase/crashlytics@8.3.3) (2020-08-24)
+
+### Bug Fixes
+
+- **ios, crashlytics:** use NSInternalInconsistencyException to crash w/o redbox ([#4126](https://github.com/invertase/react-native-firebase/issues/4126)) ([2cbab5c](https://github.com/invertase/react-native-firebase/commit/2cbab5cf91f4e8542c30a237637d071c14bbcde5))
+
 ## [8.3.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.3.1...@react-native-firebase/crashlytics@8.3.2) (2020-08-20)
 
 ### Bug Fixes

@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.0.0")
+      classpath("com.android.tools.build:gradle:4.0.1")
     }
   }
 }
@@ -30,7 +30,11 @@ if (findProject(':@react-native-firebase_app')) {
 }
 def packageJson = PackageJson.getForProject(project)
 def appPackageJson = PackageJson.getForProject(appProject)
-def firebaseBomVersion = appPackageJson['sdkVersions'] ? appPackageJson['sdkVersions']['android']['firebase'] : "25.5.0"
+def firebaseBomVersion = appPackageJson['sdkVersions']['android']['firebase']
+def jsonMinSdk = appPackageJson['sdkVersions']['android']['minSdk']
+def jsonTargetSdk = appPackageJson['sdkVersions']['android']['targetSdk']
+def jsonCompileSdk = appPackageJson['sdkVersions']['android']['compileSdk']
+def jsonBuildTools = appPackageJson['sdkVersions']['android']['buildTools']
 def coreVersionDetected = appPackageJson['version']
 def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
 // Only log after build completed so log warning appears at the end
@@ -40,17 +44,16 @@ if (coreVersionDetected != coreVersionRequired) {
   }
 }
 
-
 project.ext {
   set('react-native', [
     versions: [
       android : [
-        minSdk    : 16,
-        targetSdk : 28,
-        compileSdk: 28,
+        minSdk    : jsonMinSdk,
+        targetSdk : jsonTargetSdk,
+        compileSdk: jsonCompileSdk,
         // optional as gradle.buildTools comes with one by default
         // overriding here though to match the version RN uses
-        buildTools: "28.0.3"
+        buildTools: jsonBuildTools
       ],
 
       firebase: [

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.3...@react-native-firebase/database@7.5.4) (2020-08-30)
+
+### Bug Fixes
+
+- **database:** `.` is a valid character in ref path ([#4177](https://github.com/invertase/react-native-firebase/issues/4177)) ([a0d01b5](https://github.com/invertase/react-native-firebase/commit/a0d01b5c37f3be9b3091aff6eff7f101be201958))
+
+## [7.5.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.2...@react-native-firebase/database@7.5.3) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [7.5.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.1...@react-native-firebase/database@7.5.2) (2020-08-28)
+
+### Bug Fixes
+
+- **database:** correctly handle invalid keys as a reference ([#4100](https://github.com/invertase/react-native-firebase/issues/4100)) ([4df5f87](https://github.com/invertase/react-native-firebase/commit/4df5f87db51b169acbe17b4d7eb7e8fed59b8a66))
+
+## [7.5.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.5.0...@react-native-firebase/database@7.5.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.4.2...@react-native-firebase/database@7.5.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/database@7.4.1...@react-native-firebase/database@7.4.2) (2020-08-15)
 
 **Note:** Version bump only for package @react-native-firebase/database

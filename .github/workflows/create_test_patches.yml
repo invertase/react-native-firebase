@@ -1,0 +1,102 @@
+name: 'Create Test Patches'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+jobs:
+  main:
+    name: Create patch-package Patches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Future ideas:
+      # - make into an action, parameterize directories to pack, and package names to install
+      # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
+
+      - uses: actions/setup-node@v2-beta
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+
+      - name: Yarn Install
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+
+      - name: Create Patches
+        run: |
+          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites'`
+          mkdir $HOME/packages
+          for PACKAGE in $PACKAGE_LIST; do
+            echo "Packing PR version of package $PACKAGE"
+            pushd packages/$PACKAGE;
+            yarn pack;
+            mv *tgz $HOME/packages;
+            ls -la $HOME/packages/*${PACKAGE}*
+            popd;
+          done
+          ls -la $HOME/packages/
+          cd $HOME
+          npx react-native init template
+          cd template
+          yarn add patch-package --save-dev
+          mkdir patches || true
+          for PACKAGE in $PACKAGE_LIST; do
+            echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
+            yarn add @react-native-firebase/$PACKAGE
+            pushd node_modules/@react-native-firebase
+            \rm -fr $PACKAGE
+            tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
+            mv package $PACKAGE
+            popd
+            npx patch-package @react-native-firebase/$PACKAGE || true
+          done
+          ls -la $HOME/template/patches
+        shell: bash
+
+      - name: Upload Test Patches
+        uses: actions/upload-artifact@v2
+        with:
+          name: patches
+          path: ~/template/patches/
+  
+      # create a comment on the PR and any related issues with a direct link to the archive,
+      # a call for testers, and perhaps a paste-able set of commands to install them 
+      # (mkdir patches, curl -o etc, npx patch-package)
+      # You need an artifact id to get a download link for it.
+      # You need a workflow run id to get an artifact id.
+      # You need to list out all runs for a workflow and filter to get the run id.
+      # This action does all of that but needs a tweak to just kick out the URL instead of downloading:
+      # https://github.com/dawidd6/action-download-artifact/blob/master/main.js#L102
+      # Best strategy is to run this patch generator on pull_request
+      # Then run the issue commenter that dynamically de-references the artifact on workflow_run
+      # - name: Post Comment with Download Link
+      #   run: echo ${{ toJson(github) }}

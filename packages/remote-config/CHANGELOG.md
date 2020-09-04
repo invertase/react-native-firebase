@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.2...@react-native-firebase/remote-config@9.0.3) (2020-09-02)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.1...@react-native-firebase/remote-config@9.0.2) (2020-08-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.0...@react-native-firebase/remote-config@9.0.1) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [9.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.2.1...@react-native-firebase/remote-config@9.0.0) (2020-08-28)
+
+- docs(remote-config)!: update docs to be explicit about new behavior (#4169) ([02527a0](https://github.com/invertase/react-native-firebase/commit/02527a06b8ee4d2b68e8ece739ac8d60e46b371c)), closes [#4169](https://github.com/invertase/react-native-firebase/issues/4169)
+
+### Bug Fixes
+
+- **remote-config:** fetch/activate boolean ([#4157](https://github.com/invertase/react-native-firebase/issues/4157)) ([9058dca](https://github.com/invertase/react-native-firebase/commit/9058dca0f66f7dead8c11831c0819528a868e3ae))
+
+### BREAKING CHANGES
+
+#### fetchAndActivate
+
+        Previous behaviour returned a boolean indicating if config values were activated
+        New behaviour returns a boolean indicating if any config values were fetched remotely.
+
+#### activate
+
+        Previous behaviour returned a boolean indicating if config values were activated
+        New behaviour returns a boolean indicating if any local config values were activated.
+
+## [8.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.2.0...@react-native-firebase/remote-config@8.2.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [8.2.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.1.4...@react-native-firebase/remote-config@8.2.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+## [8.1.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.1.3...@react-native-firebase/remote-config@8.1.4) (2020-08-25)
+
+### Bug Fixes
+
+- **ios, analytics:** remove now-optional analytics dependencies ([#4131](https://github.com/invertase/react-native-firebase/issues/4131)) ([fdb5e9f](https://github.com/invertase/react-native-firebase/commit/fdb5e9f5786822343b11d3257d9f466a9d593fa4))
+
 ## [8.1.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@8.1.2...@react-native-firebase/remote-config@8.1.3) (2020-08-15)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config
