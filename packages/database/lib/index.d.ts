@@ -669,8 +669,14 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved."
      * @param successCallback A callback that fires when the specified event occurs. The callback will be passed a DataSnapshot. For ordering purposes, "child_added", "child_changed", and "child_moved" will also be passed a string containing the key of the previous child by sort order, or `null` if it is the first child.
+       @param failureCallbackContext An optional callback that will be notified if your client does not have permission to read the data. This callback will be passed an Error object indicating why the failure occurred.
      */
-    once(eventType: EventType, successCallback?: Function): Promise<DataSnapshot>;
+
+    once(
+      eventType: EventType,
+      successCallback?: (a: DataSnapshot, b?: string | null) => any,
+      failureCallbackContext?: ((a: Error) => void) | Record<string, any> | null,
+    ): Promise<DataSnapshot>;
 
     /**
      * Generates a new `Query` object ordered by the specified child key.
