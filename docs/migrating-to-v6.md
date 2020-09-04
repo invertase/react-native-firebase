@@ -446,13 +446,13 @@ No breaking changes.
 - `firebase.utils.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.utils.FilePath`.
 - `firebase.utils.Native.*` some properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate.
 
-### RN-Firebase notification
-In v5, `firebase.notifications()` was used to listen when a notification received or clicked, or when the app has been opened from a notification.
-This module doesn't exist anymore.
-Here are the other functions to do the same things:
-- `firebase.notifications().onNotification(Notification => void)` -> `firebase.messaging().onMessage(RemoteMessage => void)`.
-- `firebase.notifications().onNotificationOpened(NotificationOpen => void)` -> `firebase.messaging().onMessage(RemoteMessage => void)`.
-- `firebase.notifications().getInitialNotification()` -> `firebase.messaging().getInitialNotification()`.
+### Notifications
+In v5, `firebase.notifications()` had APIs for notification received or clicked, or when the app has been opened from a notification.
+This module doesn't exist anymore, a full-featured notification package should be used in it's place (for example [Notifee](notifee.app/), [react-native-push-notification](https://github.com/zo0r/react-native-push-notification) or [react-native-notifications](https://github.com/wix/react-native-notifications) may all work)
+This is the general upgrade path for notifications APIs:
+- `firebase.notifications().onNotification(Notification => void)` -> Use a 3rd party notifications module API.
+- `firebase.notifications().onNotificationOpened(NotificationOpen => void)` -> Use a 3rd party notifications module API.
+- `firebase.notifications().getInitialNotification()` -> `firebase.messaging().onNotificationOpenedApp()`.
 
 
 
