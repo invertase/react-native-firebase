@@ -607,8 +607,9 @@ describe('auth()', () => {
     });
 
     it('it should error on login if user not found', () => {
-      const email = 'randomSomeone@fourOhFour.com';
-      const pass = 'test1234';
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const pass = random;
 
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
