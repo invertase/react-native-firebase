@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.4.2...@react-native-firebase/in-app-messaging@7.5.0) (2020-09-04)
+
+### Features
+
+- **inappmessaging:** add support for triggering custom events ([#4201](https://github.com/invertase/react-native-firebase/issues/4201)) ([fe8cbc1](https://github.com/invertase/react-native-firebase/commit/fe8cbc1648b7b991673811e11a5e87808c43c85e))
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/in-app-messaging@7.4.1...@react-native-firebase/in-app-messaging@7.4.2) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/in-app-messaging
