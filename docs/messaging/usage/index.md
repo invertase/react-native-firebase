@@ -278,7 +278,7 @@ AppRegistry.registerComponent('app', () => HeadlessCheck);
 ```
 
 To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
- 
+
 ```objectivec
 // add this import statement at the top of your `AppDelegate.m` file
 #import "RNFBMessagingModule.h"
@@ -425,7 +425,7 @@ On Android, any messages which display a [Notification](/messaging/notifications
 (such as the small icon, title etc). To provide a custom tint color, update the `messaging_android_notification_color` property
 with a Android color resource name.
 
-The library provides a set of default [HTML colors](https://www.w3schools.com/colors/colors_names.asp) (in lowercase) for ease, for example:
+The library provides a set of [predefined colors](https://github.com/invertase/react-native-firebase/blob/master/packages/messaging/android/src/main/res/values/colors.xml) corresponding to the [HTML colors](https://www.w3schools.com/colors/colors_names.asp) for convenience, for example:
 
 ```json
 // <projectRoot>/firebase.json
@@ -434,4 +434,25 @@ The library provides a set of default [HTML colors](https://www.w3schools.com/co
     "messaging_android_notification_color": "@color/hotpink"
   }
 }
+```
+
+Note that only predefined colors can be used in `firebase.json`. If you want to use a custom color defined in your application resources, then you should set it in the `AndroidManifest.xml` instead.
+
+```xml
+<!-- <projectRoot>/android/app/src/main/res/values/colors.xml -->
+<resources>
+  <color name="my-custom-color">#123456</color>
+</resources>
+
+<!-- <projectRoot>/android/app/src/main/AndroidManifest.xml -->
+<manifest>
+  <application>
+      <!-- ... -->
+
+      <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/my-custom-color"
+            tools:replace="android:resource" />
+  </application>
+</manifest>
 ```
