@@ -29,7 +29,6 @@ jobs:
     timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
       - uses: styfle/cancel-workflow-action@0.4.1
@@ -119,7 +118,7 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -nojni -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -timezone 'Europe/London' -qemu -smp 2 -m 2G &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 1
@@ -132,7 +131,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           sudo killall -9 $EMULATOR_EXECUTABLE || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -nojni -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -timezone 'Europe/London' -qemu -smp 2 -m 2G &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Start Android Emulator Retry 2
@@ -145,7 +144,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           sudo killall -9 $EMULATOR_EXECUTABLE || true
           sleep 2
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -nojni -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -timezone 'Europe/London' -qemu -smp 2 -m 2G &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
 
       - name: Emulator Status
@@ -167,6 +166,7 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
           nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
           nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
+          $ANDROID_HOME/platform-tools/adb shell setprop debug.checkjni 0
           yarn tests:android:test-cover --cleanup
         shell: bash
 
