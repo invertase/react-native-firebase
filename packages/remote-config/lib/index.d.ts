@@ -395,7 +395,6 @@ export namespace FirebaseRemoteConfigTypes {
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard. If duration is defined (seconds), data will be locally cached for this duration.
-     * Returns true only if new values were fetched, false otherwise.
      *
      * #### Example
      *
