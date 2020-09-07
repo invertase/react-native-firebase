@@ -5,17 +5,12 @@ next: /messaging/server-integration
 previous: /messaging/notifications
 ---
 
-This is a quick guide to display an image in an incoming notification. Android handles this out of the box, this extra setup is **only necessary on iOS**.
-
-> If you want to know more about this setup read the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
-
-The following steps will guide you through how to add a new target to your application to support payloads with an image. Open Xcode and let's get started.
-This is a quick guide to display an image in an incoming notification. Android handles this out of the box, this extra setup is **only necessary for iOS**.
+This is a quick guide to display an image in an incoming notification. Android handles this out of the box so this extra setup is **only necessary for iOS**.
 
 > If you want to know more about the specifics of this setup read the [official Firebase docs](https://firebase.google.com/docs/cloud-messaging/ios/send-image).
 
 **🚨 Before you start**
-Be sure you already have Cloud Messaging installed and setup. In case you don't [get started here](/messaging/usage).
+Be sure you already have Cloud Messaging installed and set up. In case you don't [get started here](/messaging/usage).
 
 **🏁 Ready to start**
 The following steps will guide you through how to add a new target to your application to support payloads with an image. Open Xcode and let's get started.
@@ -25,7 +20,7 @@ The following steps will guide you through how to add a new target to your appli
 - From Xcode top menu go to: **File > New > Target...**
 - A modal will present a list of possible targets, scroll down or use the filter to select `Notification Service Extension`. Press **Next**.
 - Add a product name (use `ImageNotification` to follow along) and click **Finish**
-- Enable the scheme by clicking on **Activate**
+- Enable the scheme by clicking **Activate**
 
 ![step-1](https://s8.gifyu.com/images/step-1d286ce6b8260eb24.gif)
 
@@ -58,7 +53,7 @@ At this point everything should still be running normally. This is the final ste
 + #import "FirebaseMessaging.h"
 ```
 
-- and then replace everything from line 25 to 28 with the extension helper
+- then replace everything from line 25 to 28 with the extension helper
 
 ```diff
 - // Modify the notification content here...
@@ -71,4 +66,4 @@ At this point everything should still be running normally. This is the final ste
 ![step-3](https://s8.gifyu.com/images/step-3.gif)
 
 ## All done
-This is it, run the app and check it builds successfully – **make sure you have the correct target selected**. Now you can use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (300KB max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read this page to send [messages from a server](/messaging/server-integration).
+Run the app and check it builds successfully – **make sure you have the correct target selected**. Now you can use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (300KB max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read this page to send [messages from a server](/messaging/server-integration).
