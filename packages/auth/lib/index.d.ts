@@ -455,13 +455,13 @@ export namespace FirebaseAuthTypes {
    */
   export interface UpdateProfile {
     /**
-     * An optional display name for the user.
+     * An optional display name for the user. Explicitly pass null to clear the displayName.
      */
-    displayName?: string;
+    displayName?: string | null;
     /**
-     * An optional photo URL for the user.
+     * An optional photo URL for the user. Explicitly pass null to clear the photoURL.
      */
-    photoURL?: string;
+    photoURL?: string | null;
   }
 
   /**

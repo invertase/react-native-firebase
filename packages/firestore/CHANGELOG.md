@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.8.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.7.0...@react-native-firebase/firestore@7.8.0) (2020-09-04)
+
+### Features
+
+- **firestore, types:** support Generic Types ([#3810](https://github.com/invertase/react-native-firebase/issues/3810)) ([f81e08e](https://github.com/invertase/react-native-firebase/commit/f81e08ee2c1dcfebf8f82eebd4e1883313d582e2))
+
 # [7.7.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.2...@react-native-firebase/firestore@7.7.0) (2020-08-30)
 
 ### Features
