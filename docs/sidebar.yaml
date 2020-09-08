@@ -62,6 +62,7 @@
       - '/messaging/ios-permissions'
     - - Notifications
       - '/messaging/notifications'
+      - '/messaging/notifications-with-image'
     - - Server Integration
       - '/messaging/server-integration'
   - '//static.invertase.io/assets/firebase/cloud-messaging.svg'
