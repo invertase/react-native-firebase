@@ -21,7 +21,6 @@
 #import "RNFBCrashlyticsInitProvider.h"
 #import "RCTConvert.h"
 #import "RNFBPreferences.h"
-#import "RNFBApp/RNFBSharedUtils.h"
 #import <Firebase/Firebase.h>
 
 @implementation RNFBCrashlyticsModule
@@ -181,7 +180,7 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
 
   FIRExceptionModel *exceptionModel = [FIRExceptionModel exceptionModelWithName:name reason:message];
   exceptionModel.stackTrace = stackTrace;
-
+  
   [[FIRCrashlytics crashlytics] recordExceptionModel:exceptionModel];
 }
 
