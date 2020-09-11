@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.4...@react-native-firebase/messaging@7.8.5) (2020-09-11)
+
+### Bug Fixes
+
+- **ios, messaging:** remove UNNotificationServiceExtension / use local target extension ([#4226](https://github.com/invertase/react-native-firebase/issues/4226)) ([1be2a39](https://github.com/invertase/react-native-firebase/commit/1be2a3915ad4e5062779e86e7c9b78c970ca9c64))
+
 ## [7.8.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.3...@react-native-firebase/messaging@7.8.4) (2020-08-31)
 
 ### Bug Fixes
