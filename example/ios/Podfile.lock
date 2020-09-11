@@ -217,7 +217,7 @@ PODS:
     - React-cxxreact (= 0.61.5)
     - React-jsi (= 0.61.5)
     - ReactCommon/jscallinvoker (= 0.61.5)
-  - RNAppleAuthentication (1.1.0):
+  - RNAppleAuthentication (1.1.2):
     - React
   - Yoga (1.14.0)
 
@@ -336,7 +336,7 @@ SPEC CHECKSUMS:
   React-RCTText: 9ccc88273e9a3aacff5094d2175a605efa854dbe
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
-  RNAppleAuthentication: a895967f8e0883d400f7ea3d5cf1923935fe96f4
+  RNAppleAuthentication: 473b2c076f1a48a537610580a168c1fb6d0a90c6
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
 PODFILE CHECKSUM: b1d11349ce6cf63de2878e6ee443202d7fc02a23

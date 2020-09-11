@@ -18,14 +18,7 @@
 
 import React from 'react';
 import { AppRegistry, StyleSheet, View, Text } from 'react-native';
-import appleAuth, {
-  AppleButton,
-  AppleAuthError,
-  AppleAuthRequestScope,
-  AppleAuthRealUserStatus,
-  AppleAuthCredentialState,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
+import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 
 class Tester extends React.Component {
@@ -67,10 +60,10 @@ class Tester extends React.Component {
     // start a login request
     try {
       const appleAuthRequestResponse = await appleAuth.performRequest({
-        requestedOperation: AppleAuthRequestOperation.LOGIN,
+        requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [
-          AppleAuthRequestScope.EMAIL,
-          AppleAuthRequestScope.FULL_NAME,
+          appleAuth.Scope.EMAIL,
+          appleAuth.Scope.FULL_NAME,
         ],
       });
 
@@ -99,13 +92,13 @@ class Tester extends React.Component {
         // no token - failed sign-in?
       }
 
-      if (realUserStatus === AppleAuthRealUserStatus.LIKELY_REAL) {
+      if (realUserStatus === appleAuth.UserStatus.LIKELY_REAL) {
         console.log("I'm a real person!");
       }
 
       console.warn(`Apple Authentication Completed, ${this.user}, ${email}`);
     } catch (error) {
-      if (error.code === AppleAuthError.CANCELED) {
+      if (error.code === appleAuth.Error.CANCELED) {
         console.warn('User canceled Apple Sign in.');
       } else {
         console.error(error);
@@ -118,7 +111,7 @@ class Tester extends React.Component {
       this.setState({ credentialStateForUser: 'N/A' });
     } else {
       const credentialState = await appleAuth.getCredentialStateForUser(this.user);
-      if (credentialState === AppleAuthCredentialState.AUTHORIZED) {
+      if (credentialState === appleAuth.State.AUTHORIZED) {
         this.setState({ credentialStateForUser: 'AUTHORIZED' });
       } else {
         this.setState({ credentialStateForUser: credentialState });

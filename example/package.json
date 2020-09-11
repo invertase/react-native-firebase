@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "react": "16.9.0",
-    "react-native": "0.61.5"
+    "react-native": "0.61.5",
+    "react-native-get-random-values": "^1.5.0",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "patch-package": "^6.1.0",
-    "@react-native-community/cli": "^3.0.4"
+    "@react-native-community/cli": "^3.0.4",
+    "patch-package": "^6.1.0"
   }
 }

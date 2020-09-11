@@ -6,15 +6,15 @@ This library integrates well with the [`@react-native-firebase/auth`](https://ww
 
 The `@invertase/react-native-apple-authentication` library will not work if you do not ensure the following:
 
-- You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
-
 - You are using React Native version `0.60` or higher.
 
-- You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13`, the only version possible for authenticating with Apple.
+- (iOS only) You have setup react-native iOS development environment on your machine (Will only work on Mac). If not, please follow the official React Native documentation for getting started: [React Native getting started documentation](https://facebook.github.io/react-native/docs/getting-started).
+
+- (iOS only) You are using Xcode version `11` or higher. This will allow you to develop using iOS version `13` or higher, when the Sign In with Apple APIs first became available.
 
 - **Once you're sure you've met the above, please follow our [Initial development environment setup](INITIAL_SETUP.md) guide.**
 
-# v6 example
+# iOS example
 
 > To use this with React Native Firebase v6 and above, version `v6.2.0` of the [`@react-native-firebase/auth`](https://www.npmjs.com/package/@react-native-firebase/auth) package is required.
 
@@ -22,11 +22,7 @@ The `@invertase/react-native-apple-authentication` library will not work if you 
 import React from 'react';
 import { View } from 'react-native';
 import { firebase } from '@react-native-firebase/auth';
-import appleAuth, {
-  AppleButton,
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
+import { appleAuth, AppleButton } from '@invertase/react-native-apple-authentication';
 
 /**
  * Note the sign in request can error, e.g. if the user cancels the sign-in.
@@ -35,8 +31,8 @@ import appleAuth, {
 async function onAppleButtonPress() {
   // 1). start a apple sign-in request
   const appleAuthRequestResponse = await appleAuth.performRequest({
-    requestedOperation: AppleAuthRequestOperation.LOGIN,
-    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
   });
 
   // 2). if the request was successful, extract the token and nonce

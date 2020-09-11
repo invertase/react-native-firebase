@@ -59,3 +59,8 @@ For the purpose of demonstration, suppose we created a fresh React Native projec
 - Register your key, download it and keep it secure. Initial setup is now complete.
 
 ![complete key registration](images/complete-registration.png)
+
+
+### If you're also enabling Android support, a few extra steps are necessary.
+
+Check out [the guide](ANDROID_EXTRA.md) for more information.

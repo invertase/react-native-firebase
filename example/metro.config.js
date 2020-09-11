@@ -16,7 +16,6 @@
  */
 
 const { resolve, join } = require('path');
-
 const { createBlacklist } = require('metro');
 
 const rootDir = resolve(__dirname, '..');
