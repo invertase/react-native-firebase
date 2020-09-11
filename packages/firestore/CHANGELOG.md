@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.0...@react-native-firebase/firestore@7.8.1) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
 # [7.8.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.7.0...@react-native-firebase/firestore@7.8.0) (2020-09-04)
 
 ### Features
