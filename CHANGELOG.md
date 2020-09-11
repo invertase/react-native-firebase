@@ -2,6 +2,14 @@
 
 # Release Notes
 
+## 2.0.0-beta.0
+
+- feat!: add android support (#136, thanks @dburdan!)
+- docs(README): add info about 1000 error to troubleshouting section (#132, thanks @SnowLew!)
+- docs: update troubleshooting error 1000 (#131, thanks @bell-steven!)
+- docs: add comment that height style is required (#128, thanks @saintplay)
+- docs: add missing installation instruction (#124, thanks @hwrdtm)
+
 ## 1.1.2
 
 - fix(dependencies): move 'np' to devDependencies (thanks @mikehardy and @hsource!)
