@@ -62,7 +62,7 @@
       - '/messaging/ios-permissions'
     - - Notifications
       - '/messaging/notifications'
-    - - Notifications with Images
+    - - iOS Notification Images
       - '/messaging/notifications-with-image'
     - - Server Integration
       - '/messaging/server-integration'

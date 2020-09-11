@@ -1,6 +1,6 @@
 ---
-title: Notifications with Image
-description: Displaying an image in a notification.
+title: iOS Notification Images
+description: Displaying an image in an iOS notification.
 next: /messaging/server-integration
 previous: /messaging/notifications
 ---
