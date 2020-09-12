@@ -54,8 +54,8 @@ function App() {
     <View>
       <Button
         title="Add To Basket"
-        onPress={() =>
-          analytics().logEvent('basket', {
+        onPress={async () =>
+          await analytics().logEvent('basket', {
             id: 3745092,
             item: 'mens grey t-shirt',
             description: ['round neck', 'long sleeved'],
@@ -89,8 +89,8 @@ function App() {
         title="Press me"
         // Logs in the firebase analytics console as "select_content" event
         // only accepts the two object properties which accept strings.
-        onPress={() =>
-          analytics().logSelectContent({
+        onPress={async () =>
+          await analytics().logSelectContent({
             content_type: 'clothing',
             item_id: 'abcd',
           })
