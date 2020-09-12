@@ -84,6 +84,7 @@ OpenID
 perf
 performant
 personalization
+Podfile
 plist
 pre-fetched
 pre-rendered
