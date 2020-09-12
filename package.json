@@ -1,6 +1,6 @@
 {
   "name": "@invertase/react-native-apple-authentication",
-  "version": "2.0.0-beta.0",
+  "version": "2.0.0-beta.1",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A complete Apple Authentication services API for React Native iOS apps.",
   "main": "lib/index.js",
