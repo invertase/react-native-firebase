@@ -1,7 +1,7 @@
 ---
 title: Notifications
 description: Displaying & handling notifications from FCM.
-next: /messaging/notifications-with-image
+next: /messaging/ios-notification-images
 previous: /messaging/ios-permissions
 ---
 

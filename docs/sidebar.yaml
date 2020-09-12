@@ -63,7 +63,7 @@
     - - Notifications
       - '/messaging/notifications'
     - - iOS Notification Images
-      - '/messaging/notifications-with-image'
+      - '/messaging/ios-notification-images'
     - - Server Integration
       - '/messaging/server-integration'
   - '//static.invertase.io/assets/firebase/cloud-messaging.svg'
