@@ -98,89 +98,97 @@ export default RootComponent = () => {
 
   return (
     <View style={[styles.container, styles.horizontal]}>
-      <Text style={styles.header}>Buttons</Text>
+      {appleAuthAndroid.isSupported && (
+        <View>
+          <Text style={styles.header}>Buttons</Text>
 
-      <Text style={{ marginBottom: 8 }}>Continue Styles</Text>
-      <AppleButton
-        style={{ marginBottom: 10 }}
-        cornerRadius={5}
-        buttonStyle={AppleButton.Style.WHITE}
-        buttonType={AppleButton.Type.CONTINUE}
-        onPress={() => doAppleLogin()}
-        leftView={(
-          <Image
-            style={{
-              alignSelf: 'center',
-              width: 14,
-              height: 14,
-              marginRight: 7,
-              resizeMode: 'contain',
-            }}
-            source={appleLogoBlack}
+          <Text style={{ marginBottom: 8 }}>Continue Styles</Text>
+          <AppleButton
+            style={{ marginBottom: 10 }}
+            cornerRadius={5}
+            buttonStyle={AppleButton.Style.WHITE}
+            buttonType={AppleButton.Type.CONTINUE}
+            onPress={() => doAppleLogin()}
+            leftView={(
+              <Image
+                style={{
+                  alignSelf: 'center',
+                  width: 14,
+                  height: 14,
+                  marginRight: 7,
+                  resizeMode: 'contain',
+                }}
+                source={appleLogoBlack}
+              />
+            )}
           />
-        )}
-      />
-      <AppleButton
-        style={{ marginBottom: 10 }}
-        cornerRadius={0}
-        buttonStyle={AppleButton.Style.WHITE_OUTLINE}
-        buttonType={AppleButton.Type.CONTINUE}
-        onPress={() => doAppleLogin()}
-        leftView={(
-          <Image
-            style={{
-              alignSelf: 'center',
-              width: 14,
-              height: 14,
-              marginRight: 7,
-              resizeMode: 'contain',
-            }}
-            source={appleLogoBlack}
+          <AppleButton
+            style={{ marginBottom: 10 }}
+            cornerRadius={0}
+            buttonStyle={AppleButton.Style.WHITE_OUTLINE}
+            buttonType={AppleButton.Type.CONTINUE}
+            onPress={() => doAppleLogin()}
+            leftView={(
+              <Image
+                style={{
+                  alignSelf: 'center',
+                  width: 14,
+                  height: 14,
+                  marginRight: 7,
+                  resizeMode: 'contain',
+                }}
+                source={appleLogoBlack}
+              />
+            )}
           />
-        )}
-      />
-      <AppleButton
-        style={{ marginBottom: 16 }}
-        cornerRadius={30}
-        buttonStyle={AppleButton.Style.BLACK}
-        buttonType={AppleButton.Type.CONTINUE}
-        onPress={() => doAppleLogin()}
-        leftView={(
-          <Image
-            style={{
-              alignSelf: 'center',
-              width: 14,
-              height: 14,
-              marginRight: 7,
-              resizeMode: 'contain',
-            }}
-            source={appleLogoWhite}
+          <AppleButton
+            style={{ marginBottom: 16 }}
+            cornerRadius={30}
+            buttonStyle={AppleButton.Style.BLACK}
+            buttonType={AppleButton.Type.CONTINUE}
+            onPress={() => doAppleLogin()}
+            leftView={(
+              <Image
+                style={{
+                  alignSelf: 'center',
+                  width: 14,
+                  height: 14,
+                  marginRight: 7,
+                  resizeMode: 'contain',
+                }}
+                source={appleLogoWhite}
+              />
+            )}
           />
-        )}
-      />
 
-      <Text style={{ marginBottom: 8 }}>Sign-in Styles</Text>
-      <AppleButton
-        style={{ marginBottom: 10 }}
-        cornerRadius={5}
-        buttonStyle={AppleButton.Style.WHITE}
-        buttonType={AppleButton.Type.SIGN_IN}
-        onPress={() => doAppleLogin()}
-      />
-      <AppleButton
-        style={{ marginBottom: 10 }}
-        cornerRadius={5}
-        buttonStyle={AppleButton.Style.WHITE_OUTLINE}
-        buttonType={AppleButton.Type.SIGN_IN}
-        onPress={() => doAppleLogin()}
-      />
-      <AppleButton
-        style={{ marginBottom: 10 }}
-        cornerRadius={5}
-        buttonStyle={AppleButton.Style.BLACK}
-        buttonType={AppleButton.Type.SIGN_IN}
-        onPress={() => doAppleLogin()}
-      />
+          <Text style={{ marginBottom: 8 }}>Sign-in Styles</Text>
+          <AppleButton
+            style={{ marginBottom: 10 }}
+            cornerRadius={5}
+            buttonStyle={AppleButton.Style.WHITE}
+            buttonType={AppleButton.Type.SIGN_IN}
+            onPress={() => doAppleLogin()}
+          />
+          <AppleButton
+            style={{ marginBottom: 10 }}
+            cornerRadius={5}
+            buttonStyle={AppleButton.Style.WHITE_OUTLINE}
+            buttonType={AppleButton.Type.SIGN_IN}
+            onPress={() => doAppleLogin()}
+          />
+          <AppleButton
+            style={{ marginBottom: 10 }}
+            cornerRadius={5}
+            buttonStyle={AppleButton.Style.BLACK}
+            buttonType={AppleButton.Type.SIGN_IN}
+            onPress={() => doAppleLogin()}
+          />
+        </View>
+      )}
+
+      {!appleAuthAndroid.isSupported && (
+        <Text>Sign In with Apple requires Android 4.4 (API 19) or higher.</Text>
+      )}
     </View>
   );
 }

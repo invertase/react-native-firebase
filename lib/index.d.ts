@@ -565,6 +565,13 @@ interface AndroidSigninResponse {
 
 interface AppleAuthAndroid {
   /**
+   * A boolean value of whether Apple Authentication is supported on this API version.
+   *
+   * The Apple authentication process requires API 19+ to work correctly.
+   */
+  isSupported: boolean;
+
+  /**
    * Prepare the module for sign in. This *must* be called before `appleAuthAndroid.signIn()`;
    *
    * @see https://developer.apple.com/documentation/sign_in_with_apple/sign_in_with_apple_js/incorporating_sign_in_with_apple_into_other_platforms#3332113

@@ -1,6 +1,7 @@
 package com.RNAppleAuthentication;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,6 +75,7 @@ public class AppleAuthenticationAndroidModule extends ReactContextBaseJavaModule
 
         constants.put("ResponseType", ResponseType);
         constants.put("Scope", Scope);
+        constants.put("isSupported", Build.VERSION.SDK_INT >= 19);
 
         return constants;
     }

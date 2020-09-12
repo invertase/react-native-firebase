@@ -161,17 +161,19 @@ import { View } from 'react-native';
 import { AppleButton } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
-
 }
 
+// Apple authentication requires API 19+, so we check before showing the login button
 function App() {
   return (
     <View>
-      <AppleButton
-        buttonStyle={AppleButton.Style.WHITE}
-        buttonType={AppleButton.Type.SIGN_IN}
-        onPress={() => onAppleButtonPress()}
-      />
+      {appleAuthAndroid.isSupported && (
+        <AppleButton
+          buttonStyle={AppleButton.Style.WHITE}
+          buttonType={AppleButton.Type.SIGN_IN}
+          onPress={() => onAppleButtonPress()}
+        />
+      )}
     </View>
   );
 }

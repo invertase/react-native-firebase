@@ -96,19 +96,21 @@ function App() {
         buttonType={AppleButton.Type.SIGN_IN}
         onPress={() => onAppleButtonPress()}
       />
-      <AppleButton
-        cornerRadius={5}
-        buttonStyle={AppleButton.Style.WHITE}
-        buttonType={AppleButton.Type.CONTINUE}
-        onPress={() => onAppleButtonPressAndroid()}
-        style={{
-          width: 200,
-        }}
-        textStyle={{
-          fontSize: 14,
-        }}
-        leftView={<View />}
-      />
+      {appleAuthAndroid.isSupported && (
+        <AppleButton
+          cornerRadius={5}
+          buttonStyle={AppleButton.Style.WHITE}
+          buttonType={AppleButton.Type.CONTINUE}
+          onPress={() => onAppleButtonPressAndroid()}
+          style={{
+            width: 200,
+          }}
+          textStyle={{
+            fontSize: 14,
+          }}
+          leftView={<View />}
+        />
+      )}
     </View>
   );
 }
