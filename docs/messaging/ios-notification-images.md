@@ -22,7 +22,7 @@ The following steps will guide you through how to add a new target to your appli
 - Add a product name (use `ImageNotification` to follow along) and click **Finish**
 - Enable the scheme by clicking **Activate**
 
-![step-1](https://s8.gifyu.com/images/step-1d286ce6b8260eb24.gif)
+![step-1](/assets/docs/messaging/ios-notification-images-step-1.gif)
 
 ### Step 2 - Add target to the Podfile
 
@@ -39,7 +39,7 @@ end
 - Make sure to change the version number `VERSION_NUMBER` with the currently installed version (check your Podfile.lock)
 - Install or update your pods using `pod install` from the `ios` folder
 
-![step-2](https://s8.gifyu.com/images/step-2.gif)
+![step-2](/assets/docs/messaging/ios-notification-images-step-2.gif)
 
 ### Step 3 - Use the extension helper
 
@@ -63,7 +63,7 @@ At this point everything should still be running normally. This is the final ste
 + [[FIRMessaging extensionHelper] populateNotificationContent:self.bestAttemptContent withContentHandler:contentHandler];
 ```
 
-![step-3](https://s8.gifyu.com/images/step-3.gif)
+![step-3](/assets/docs/messaging/ios-notification-images-step-3.gif)
 
 ## All done
 Run the app and check it builds successfully – **make sure you have the correct target selected**. Now you can use the [Notifications composer](https://console.firebase.google.com/u/0/project/_/notification) to test sending notifications with an image (`300KB` max size). You can also create custom notifications via [`FCM HTTP`](https://firebase.google.com/docs/cloud-messaging/http-server-ref) or [`firebase-admin`](https://www.npmjs.com/package/firebase-admin). Read this page to send [messages from a server](/messaging/server-integration).
