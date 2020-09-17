@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.4...@react-native-firebase/ml-vision@7.4.5) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
 ## [7.4.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.3...@react-native-firebase/ml-vision@7.4.4) (2020-09-17)
 
 ### Bug Fixes
