@@ -27,7 +27,7 @@
     "performance monitoring"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.4.2"
+    "@react-native-firebase/app": "8.4.3"
   },
   "publishConfig": {
     "access": "public"
