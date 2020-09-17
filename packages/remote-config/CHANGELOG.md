@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.5...@react-native-firebase/remote-config@9.0.6) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
 ## [9.0.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.4...@react-native-firebase/remote-config@9.0.5) (2020-09-11)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config
