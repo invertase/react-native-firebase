@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.source_files        = "ios/**/*.{h,m}"
 
   # React Native dependencies
-  s.dependency          'React'
+  s.dependency          'React-Core'
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
