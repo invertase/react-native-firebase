@@ -121,9 +121,11 @@ The API also provides a `getAll` method to read all parameters at once rather th
 ```js
 const parameters = remoteConfig().getAll();
 
-Object.entries(parameters).forEach(([key, parameter]) => {
-  console.log('Key: ', key);
-  console.log('Value: ', parameter.value);
+Object.entries(parameters).forEach(($) => {
+  const [key, entry] = $;
+  console.log('Key: ', key); 
+  console.log('Source: ', entry.getSource()); 
+  console.log('Value: ', entry.asString()); 
 });
 ```
 
