@@ -96,4 +96,39 @@ dependencies {
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()
-ReactNative.module.applyReactNativeDependency("api")
+applyReactNativeDependency("api")
+
+void applyReactNativeDependency(String type) {
+  Boolean found = false
+  File defaultDir = null
+  String androidSourcesName = "${project.name} -> React Native sources"
+
+  defaultDir = new File(
+    (File) project.projectDir,
+    (String) "/../../../../node_modules/react-native/android"
+  )
+
+  if (defaultDir.exists()) {
+    project.repositories.add(project.repositories.maven {
+      url defaultDir.toString()
+      name androidSourcesName
+    })
+
+    found = true
+  }
+
+  if (!found) {
+    throw new GradleException(
+      ":${project.name}: unable to locate React Native android sources. " +
+        "Ensure you have you installed React Native as a dependency in your project and try again."
+    )
+  }
+
+  switch (type) {
+    case "implementation":
+      project.dependencies.add("implementation", "com.facebook.react:react-native:+")
+      break
+    default:
+      project.dependencies.add("api", "com.facebook.react:react-native:+")
+  }
+}
