@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RNFBMessagingNSNotificationCenter : NSObject
 
 + (_Nonnull instancetype)sharedInstance;
+@property (nonatomic, strong) bool isHeadless;
 
 @end
 

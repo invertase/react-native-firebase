@@ -26,7 +26,7 @@
 #import "RNFBMessaging+FIRMessagingDelegate.h"
 
 @implementation RNFBMessagingNSNotificationCenter
-
+@synthesize isHeadless;
 + (instancetype)sharedInstance {
   static dispatch_once_t once;
   __strong static RNFBMessagingNSNotificationCenter *sharedInstance;
@@ -135,9 +135,10 @@
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       if (rctRootView != nil) {
+        isHeadless = YES;
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
         if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
-          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
           rctRootView.appProperties = appPropertiesDict;
         }
       }
@@ -153,9 +154,10 @@
       #endif
     } else {
       if (rctRootView != nil) {
+        isHeadless = NO;
         NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
         if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+          appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
           rctRootView.appProperties = appPropertiesDict;
         }
         
@@ -163,9 +165,10 @@
     }
   } else {
     if (rctRootView != nil) {
+      isHeadless = NO;
       NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
       if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
         rctRootView.appProperties = appPropertiesDict;
       }
       
@@ -182,10 +185,12 @@
     [[UIApplication sharedApplication].delegate.window.rootViewController.view isKindOfClass:[RCTRootView class]]
   ) {
     RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
+
     if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
+      isHeadless = NO;
       if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
-        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
         rctRootView.appProperties = appPropertiesDict;
       }
     }
