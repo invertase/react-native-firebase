@@ -614,6 +614,7 @@ export namespace FirebaseMessagingTypes {
      * Returns wether the root view is headless or not
      * 
      * More info: https://rnfirebase.io/messaging/usage#background-application-state
+     * @platform ios iOS
      */
     getIsHeadless(): Promise<Boolean>;
 
