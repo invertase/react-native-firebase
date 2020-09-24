@@ -616,7 +616,7 @@ export namespace FirebaseMessagingTypes {
      * More info: https://rnfirebase.io/messaging/usage#background-application-state
      * @platform ios iOS
      */
-    getIsHeadless(): Promise<Boolean>;
+    getIsHeadless(): Promise<boolean>;
 
     /**
      * Removes access to an FCM token previously authorized by it's scope. Messages sent by the server
