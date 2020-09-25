@@ -278,13 +278,11 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       crashlytics(): FirebaseCrashlyticsTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    crashlytics_ndk_enabled: boolean;
-    crashlytics_debug_enabled: boolean;
-    crashlytics_auto_collection_enabled: boolean;
+    interface FirebaseJsonConfig {
+      crashlytics_ndk_enabled: boolean;
+      crashlytics_debug_enabled: boolean;
+      crashlytics_auto_collection_enabled: boolean;
+    }
   }
 }

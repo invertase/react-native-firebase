@@ -255,19 +255,17 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       naturalLanguage(): FirebaseLanguageTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * If `true`, the Language ID Model will be installed onto the device.
-     */
-    ml_natural_language_language_id_model: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * If `true`, the Language ID Model will be installed onto the device.
+       */
+      ml_natural_language_language_id_model: boolean;
 
-    /**
-     * If `true`, the Smart Reply Model will be installed onto the device.
-     */
-    ml_natural_language_smart_reply_model: boolean;
+      /**
+       * If `true`, the Smart Reply Model will be installed onto the device.
+       */
+      ml_natural_language_smart_reply_model: boolean;
+    }
   }
 }

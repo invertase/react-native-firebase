@@ -1219,15 +1219,13 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       vision(): FirebaseVisionTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    ml_vision_face_model: boolean;
-    ml_vision_ocr_model: boolean;
-    ml_vision_barcode_model: boolean;
-    ml_vision_label_model: boolean;
-    ml_vision_image_label_model: boolean;
+    interface FirebaseJsonConfig {
+      ml_vision_face_model: boolean;
+      ml_vision_ocr_model: boolean;
+      ml_vision_barcode_model: boolean;
+      ml_vision_label_model: boolean;
+      ml_vision_image_label_model: boolean;
+    }
   }
 }
