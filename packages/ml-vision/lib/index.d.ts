@@ -1175,37 +1175,33 @@ export namespace FirebaseVisionTypes {
   }
 }
 
-declare module '@react-native-firebase/ml-vision' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseVisionTypes.Module,
+  FirebaseVisionTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  analytics: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { vision(): FirebaseVisionTypes.Module };
+};
 
-  export const VisionBarcodeFormat: {} & typeof FirebaseVisionTypes.VisionBarcodeFormat;
-  export const VisionFaceContourType: {} & typeof FirebaseVisionTypes.VisionFaceContourType;
-  export const VisionFaceLandmarkType: {} & typeof FirebaseVisionTypes.VisionFaceLandmarkType;
-  export const VisionBarcodeValueType: {} & typeof FirebaseVisionTypes.VisionBarcodeValueType;
-  export const VisionBarcodeEmailType: {} & typeof FirebaseVisionTypes.VisionBarcodeEmailType;
-  export const VisionBarcodePhoneType: {} & typeof FirebaseVisionTypes.VisionBarcodePhoneType;
-  export const VisionBarcodeAddressType: {} & typeof FirebaseVisionTypes.VisionBarcodeAddressType;
-  export const VisionFaceDetectorContourMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorContourMode;
-  export const VisionFaceDetectorLandmarkMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorLandmarkMode;
-  export const VisionBarcodeWifiEncryptionType: {} & FirebaseVisionTypes.VisionBarcodeWifiEncryptionType;
-  export const VisionFaceDetectorPerformanceMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorPerformanceMode;
-  export const VisionCloudTextRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudTextRecognizerModelType;
-  export const VisionFaceDetectorClassificationMode: {} & typeof FirebaseVisionTypes.VisionFaceDetectorClassificationMode;
-  export const VisionDocumentTextRecognizedBreakType: {} & typeof FirebaseVisionTypes.VisionDocumentTextRecognizedBreakType;
-  export const VisionCloudLandmarkRecognizerModelType: {} & typeof FirebaseVisionTypes.VisionCloudLandmarkRecognizerModelType;
+export const VisionBarcodeFormat: typeof FirebaseVisionTypes.VisionBarcodeFormat;
+export const VisionFaceContourType: typeof FirebaseVisionTypes.VisionFaceContourType;
+export const VisionFaceLandmarkType: typeof FirebaseVisionTypes.VisionFaceLandmarkType;
+export const VisionBarcodeValueType: typeof FirebaseVisionTypes.VisionBarcodeValueType;
+export const VisionBarcodeEmailType: typeof FirebaseVisionTypes.VisionBarcodeEmailType;
+export const VisionBarcodePhoneType: typeof FirebaseVisionTypes.VisionBarcodePhoneType;
+export const VisionBarcodeAddressType: typeof FirebaseVisionTypes.VisionBarcodeAddressType;
+export const VisionFaceDetectorContourMode: typeof FirebaseVisionTypes.VisionFaceDetectorContourMode;
+export const VisionFaceDetectorLandmarkMode: typeof FirebaseVisionTypes.VisionFaceDetectorLandmarkMode;
+export const VisionBarcodeWifiEncryptionType: typeof FirebaseVisionTypes.VisionBarcodeWifiEncryptionType;
+export const VisionFaceDetectorPerformanceMode: typeof FirebaseVisionTypes.VisionFaceDetectorPerformanceMode;
+export const VisionCloudTextRecognizerModelType: typeof FirebaseVisionTypes.VisionCloudTextRecognizerModelType;
+export const VisionFaceDetectorClassificationMode: typeof FirebaseVisionTypes.VisionFaceDetectorClassificationMode;
+export const VisionDocumentTextRecognizedBreakType: typeof FirebaseVisionTypes.VisionDocumentTextRecognizedBreakType;
+export const VisionCloudLandmarkRecognizerModelType: typeof FirebaseVisionTypes.VisionCloudLandmarkRecognizerModelType;
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseVisionTypes.Module,
-    FirebaseVisionTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
