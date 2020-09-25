@@ -1262,7 +1262,7 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param params See {@link analytics.SetCheckoutOptionEventParameters}.
      */
-    logSetCheckoutOption(params: SetCheckoutOptionEventParameters): Promise<void>;
+    logSetCheckoutOption(params: any): Promise<void>;
 
     /**
      * Share event. Apps with social features can log the Share event to identify the most viral content.
