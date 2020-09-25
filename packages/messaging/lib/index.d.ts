@@ -608,7 +608,7 @@ export namespace FirebaseMessagingTypes {
      * @param authorizedEntity The messaging sender ID. In most cases this will be the current default app.
      * @param scope The scope to assign a token, which the sever can use to target messages at.
      */
-    getToken(authorizedEntity?: string, scope?: string = 'FCM'): Promise<string>;
+    getToken(authorizedEntity?: string, scope?: string): Promise<string>;
 
     /**
      * Removes access to an FCM token previously authorized by it's scope. Messages sent by the server
@@ -623,7 +623,7 @@ export namespace FirebaseMessagingTypes {
      * @param authorizedEntity The messaging sender ID. In most cases this will be the current default app.
      * @param scope The scope to assign when token will be deleted.
      */
-    deleteToken(authorizedEntity?: string, scope?: string = 'FCM'): Promise<void>;
+    deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
