@@ -264,7 +264,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -915,7 +915,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
   }
 
   export type EventType =
