@@ -1962,7 +1962,7 @@ export namespace FirebaseFirestoreTypes {
      *   });
      * ```
      */
-    runTransaction(updateFunction: (transaction: Transaction) => Promise): Promise<any>;
+    runTransaction(updateFunction: (transaction: Transaction) => Promise<any>): Promise<any>;
 
     /**
      * Specifies custom settings to be used to configure the Firestore instance. Must be set before invoking any other methods.
