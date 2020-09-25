@@ -540,7 +540,7 @@ export namespace FirebaseDynamicLinksTypes {
      * @returns Unsubscribe function, call the returned function to unsubscribe from all future events.
      * @param listener The listener callback, called with Dynamic Link instances.
      */
-    onLink(listener: Function<DynamicLink>): Function;
+    onLink(listener: (link: DynamicLink) => void): Function;
 
     /**
      * Resolve a given dynamic link (short or long) directly.
