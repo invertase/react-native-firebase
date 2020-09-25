@@ -398,9 +398,9 @@ export namespace FirebaseAdMobTypes {
      */
     setDebugGeography(
       geography:
-        | AdsConsentDebugGeography.DISABLED
-        | AdsConsentDebugGeography.EEA
-        | AdsConsentDebugGeography.NOT_EEA,
+        | AdsConsentDebugGeography['DISABLED']
+        | AdsConsentDebugGeography['EEA']
+        | AdsConsentDebugGeography['NOT_EEA'],
     ): Promise<void>;
 
     /**
@@ -424,9 +424,9 @@ export namespace FirebaseAdMobTypes {
      */
     setStatus(
       status:
-        | AdsConsentStatus.UNKNOWN
-        | AdsConsentStatus.NON_PERSONALIZED
-        | AdsConsentStatus.PERSONALIZED,
+        | AdsConsentStatus['UNKNOWN']
+        | AdsConsentStatus['NON_PERSONALIZED']
+        | AdsConsentStatus['PERSONALIZED'],
     ): Promise<void>;
 
     /**
@@ -443,7 +443,9 @@ export namespace FirebaseAdMobTypes {
      * ```
      */
     getStatus(): Promise<
-      AdsConsentStatus.UNKNOWN | AdsConsentStatus.NON_PERSONALIZED | AdsConsentStatus.PERSONALIZED
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED']
     >;
 
     /**
@@ -537,9 +539,9 @@ export namespace FirebaseAdMobTypes {
      * - PERSONALIZED: The user has accepted personalized ads.
      */
     status:
-      | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.NON_PERSONALIZED
-      | AdsConsentStatus.PERSONALIZED;
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED'];
 
     /**
      * If `true`, the user requested an ad-free version of your application.
@@ -559,9 +561,9 @@ export namespace FirebaseAdMobTypes {
      * - PERSONALIZED: The user has accepted personalized ads.
      */
     status:
-      | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.NON_PERSONALIZED
-      | AdsConsentStatus.PERSONALIZED;
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED'];
 
     /**
      * If `true` the user is within the EEA or their location could not be determined.
@@ -768,10 +770,10 @@ export namespace FirebaseAdMobTypes {
      * Ratings are based on the [digital content label classifications](https://support.google.com/admob/answer/7562142).
      */
     maxAdContentRating?:
-      | MaxAdContentRating.G
-      | MaxAdContentRating.PG
-      | MaxAdContentRating.T
-      | MaxAdContentRating.MA;
+      | MaxAdContentRating['G']
+      | MaxAdContentRating['PG']
+      | MaxAdContentRating['T']
+      | MaxAdContentRating['MA'];
 
     /**
      * If `true`, indicates that you want your content treated as child-directed for purposes of COPPA.
@@ -843,14 +845,14 @@ export namespace FirebaseAdMobTypes {
    */
   export type AdEventListener = (
     type:
-      | AdEventType.LOADED
-      | AdEventType.ERROR
-      | AdEventType.OPENED
-      | AdEventType.CLICKED
-      | AdEventType.LEFT_APPLICATION
-      | AdEventType.CLOSED
-      | RewardedAdEventType.LOADED
-      | RewardedAdEventType.EARNED_REWARD,
+      | AdEventType['LOADED']
+      | AdEventType['ERROR']
+      | AdEventType['OPENED']
+      | AdEventType['CLICKED']
+      | AdEventType['LEFT_APPLICATION']
+      | AdEventType['CLOSED']
+      | RewardedAdEventType['LOADED']
+      | RewardedAdEventType['EARNED_REWARD'],
     error?: Error,
     data?: any | RewardedAdReward,
   ) => void;
