@@ -671,7 +671,12 @@ export namespace FirebaseVisionTypes {
   /**
    * A hierarchical representation of document text recognized in an image.
    */
-  export interface VisionDocumentText extends VisionText {
+  export interface VisionDocumentText {
+    /**
+     * Retrieve the recognized text as a string.
+     */
+    text: string;
+
     /**
      * Gets an array `VisionTextBlock`, which is a block of text that can be further decomposed to an array of `VisionDocumentTextParagraph`.
      */
