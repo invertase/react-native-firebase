@@ -914,6 +914,11 @@ export namespace FirebaseAuthTypes {
     providerId: string;
 
     /**
+     *  The refresh token for the current user.
+     */
+    refreshToken: string;
+
+    /**
      *  - The user's unique ID.
      */
     uid: string;
