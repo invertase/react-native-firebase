@@ -363,7 +363,7 @@ export namespace FirebaseDynamicLinksTypes {
 
   /**
    * ShortLinkType determines the type of dynamic short link which Firebase creates. Used when building
-   * a new short link via `buildShortLink()`.
+   * a new short link via `buildShortLink()`. These are exported through statics connected to the module.
    *
    * #### Example
    *
@@ -371,7 +371,7 @@ export namespace FirebaseDynamicLinksTypes {
    *  const link = await firebase.dynamicLinks().buildShortLink({
    *    link: 'https://invertase.io',
    *    domainUriPrefix: 'https://xyz.page.link',
-   *  }, FirebaseDynamicLinksTypes.ShortLinkType.UNGUESSABLE);
+   *  }, firebase.dynamicLinks.ShortLinkType.UNGUESSABLE);
    * ```
    */
   export enum ShortLinkType {
