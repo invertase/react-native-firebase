@@ -612,7 +612,6 @@ export namespace FirebaseMessagingTypes {
 
     /**
      * Returns true if the app was launched in the background (for example, by data-only cloud message)
-     * 
      * More info: https://rnfirebase.io/messaging/usage#background-application-state
      * @platform ios iOS
      */
