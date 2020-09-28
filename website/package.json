@@ -37,7 +37,7 @@
     "tailwindcss": "^1.4.0",
     "tailwindcss-dark-mode": "^1.1.0",
     "traverse": "^0.6.6",
-    "typedoc": "0.15.0",
+    "typedoc": "~0.19.2",
     "typescript": "^3.7.5",
     "use-dark-mode": "^2.3.1"
   },

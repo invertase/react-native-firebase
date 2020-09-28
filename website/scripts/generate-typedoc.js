@@ -17,10 +17,11 @@
 
 const { readFileSync, unlinkSync } = require('fs');
 const path = require('path');
-const { Application } = require('typedoc');
+const { Application, TSConfigReader } = require('typedoc');
 
 const tempOutput = path.resolve(process.cwd(), 'typedoc.json');
 const app = new Application();
+app.options.addReader(new TSConfigReader());
 
 module.exports.generateTypedoc = function generateTypedoc() {
   console.log(path.resolve(__dirname, '../../tsconfig.json'));
