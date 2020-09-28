@@ -299,7 +299,7 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
 
 ```jsx
 if(messaging().launchedHeadless) {
-    // do sth with isHeadless
+    // perhaps have your Root View render empty if launchedHeadless is true and AppState.active is false
 }
 ```
 

@@ -611,7 +611,7 @@ export namespace FirebaseMessagingTypes {
     getToken(authorizedEntity?: string, scope?: string = 'FCM'): Promise<string>;
 
     /**
-     * Returns wether the root view launched was headless or not
+     * Returns true if the app was launched in the background (for example, by data-only cloud message)
      * 
      * More info: https://rnfirebase.io/messaging/usage#background-application-state
      * @platform ios iOS

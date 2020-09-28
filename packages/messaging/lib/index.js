@@ -71,9 +71,7 @@ class FirebaseMessagingModule extends FirebaseModule {
         : true;
 
     this._launchedHeadless =
-      (!isAndroid && this.native.launchedHeadless != null)
-        ? this.native.launchedHeadless
-        : false;
+      !isAndroid && this.native.launchedHeadless != null ? this.native.launchedHeadless : false;
 
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
@@ -140,7 +138,6 @@ class FirebaseMessagingModule extends FirebaseModule {
   getInitialNotification() {
     return this.native.getInitialNotification();
   }
-
 
   getToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
