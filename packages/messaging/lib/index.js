@@ -70,6 +70,11 @@ class FirebaseMessagingModule extends FirebaseModule {
         ? this.native.isRegisteredForRemoteNotifications
         : true;
 
+    this._launchedHeadless =
+      (!isAndroid && this.native.launchedHeadless != null)
+        ? this.native.launchedHeadless
+        : false;
+
     AppRegistry.registerHeadlessTask('ReactNativeFirebaseMessagingHeadlessTask', () => {
       if (!backgroundMessageHandler) {
         // eslint-disable-next-line no-console
@@ -111,6 +116,16 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this._isRegisteredForRemoteNotifications;
   }
 
+  /**
+   * @ios
+   */
+  get launchedHeadless() {
+    if (isAndroid) {
+      return false;
+    }
+    return this._launchedHeadless;
+  }
+
   setAutoInitEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
@@ -126,9 +141,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.getInitialNotification();
   }
 
-  getIsHeadless() {
-    return this.native.getIsHeadless();
-  }
 
   getToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {

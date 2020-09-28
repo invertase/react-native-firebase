@@ -62,6 +62,8 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isAutoInitEnabled"] = @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
   constants[@"isRegisteredForRemoteNotifications"] = @([RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
+  RNFBMessagingNSNotificationCenter* notifCenter = [RNFBMessagingNSNotificationCenter sharedInstance];
+  constants[@"launchedHeadless"] = @([RCTConvert BOOL:@(notifCenter.isHeadless)]);
   return constants;
 }
 
@@ -163,15 +165,6 @@ RCT_EXPORT_METHOD(getAPNSToken:
     #endif
     resolve([NSNull null]);
   }
-}
-
-RCT_EXPORT_METHOD(getIsHeadless
-    :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject
-) {
-    RNFBMessagingNSNotificationCenter* notifCenter = [RNFBMessagingNSNotificationCenter sharedInstance];
-
-    return resolve(@([RCTConvert BOOL:@(notifCenter.isHeadless)]));
 }
 
 RCT_EXPORT_METHOD(requestPermission:

@@ -611,12 +611,12 @@ export namespace FirebaseMessagingTypes {
     getToken(authorizedEntity?: string, scope?: string = 'FCM'): Promise<string>;
 
     /**
-     * Returns wether the root view is headless or not
+     * Returns wether the root view launched was headless or not
      * 
      * More info: https://rnfirebase.io/messaging/usage#background-application-state
      * @platform ios iOS
      */
-    getIsHeadless(): Promise<boolean>;
+    launchedHeadless: boolean;
 
     /**
      * Removes access to an FCM token previously authorized by it's scope. Messages sent by the server
