@@ -12,7 +12,7 @@ therefore there is no "one fits all" solution to screen tracking.
 # React Navigation
 
 The [React Navigation](https://reactnavigation.org/) library allows for various navigation techniques such as
-Stack, Tab, Native or even custom navigation. The `NavigationController` component which the library exposes provides
+Stack, Tab, Native or even custom navigation. The `NavigationContainer` component which the library exposes provides
 access to the current navigation state when a screen changes, allowing you to use the [`logScreenView`](/reference/analytics#logScreenView)
 method the Analytics library provides:
 
