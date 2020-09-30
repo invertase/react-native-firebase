@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE();
 }
 
 + (PHAsset *)fetchAssetForPath:(NSString *)localFilePath {
-  PHAsset *asset;
+  PHAsset *asset = nil;
 
   if ([localFilePath hasPrefix:@"assets-library://"] || [localFilePath hasPrefix:@"ph://"]) {
     if ([localFilePath hasPrefix:@"assets-library://"]) {
@@ -63,9 +63,10 @@ RCT_EXPORT_MODULE();
           NSLog(@"'assets-library://' & 'ph://' URLs are not supported in Catalyst-based targets or iOS 12 and higher; returning nil (future warnings will be suppressed)");
           hasWarned = YES;
         }
-        asset = nil;
       } else {
+        #if (!TARGET_OS_MACCATALYST)
         asset = [[PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil] firstObject];
+        #endif
       }
     } else {
       NSString *assetId = [localFilePath substringFromIndex:@"ph://".length];
