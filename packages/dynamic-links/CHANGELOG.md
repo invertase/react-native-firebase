@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.5.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/dynamic-links@7.5.5...@react-native-firebase/dynamic-links@7.5.6) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/dynamic-links
+
 ## [7.5.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/dynamic-links@7.5.4...@react-native-firebase/dynamic-links@7.5.5) (2020-09-17)
 
 **Note:** Version bump only for package @react-native-firebase/dynamic-links
