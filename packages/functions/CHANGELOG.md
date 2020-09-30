@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/functions@7.4.7...@react-native-firebase/functions@7.4.8) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/functions
+
 ## [7.4.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/functions@7.4.6...@react-native-firebase/functions@7.4.7) (2020-09-30)
 
 ### Bug Fixes
