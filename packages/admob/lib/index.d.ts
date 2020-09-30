@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-
 import { ReactNativeFirebase } from '@react-native-firebase/app';
+import * as React from 'react';
 
 /**
  * Firebase Admob package for React Native.
@@ -398,9 +398,9 @@ export namespace FirebaseAdMobTypes {
      */
     setDebugGeography(
       geography:
-        | AdsConsentDebugGeography.DISABLED
-        | AdsConsentDebugGeography.EEA
-        | AdsConsentDebugGeography.NOT_EEA,
+        | AdsConsentDebugGeography['DISABLED']
+        | AdsConsentDebugGeography['EEA']
+        | AdsConsentDebugGeography['NOT_EEA'],
     ): Promise<void>;
 
     /**
@@ -424,9 +424,9 @@ export namespace FirebaseAdMobTypes {
      */
     setStatus(
       status:
-        | AdsConsentStatus.UNKNOWN
-        | AdsConsentStatus.NON_PERSONALIZED
-        | AdsConsentStatus.PERSONALIZED,
+        | AdsConsentStatus['UNKNOWN']
+        | AdsConsentStatus['NON_PERSONALIZED']
+        | AdsConsentStatus['PERSONALIZED'],
     ): Promise<void>;
 
     /**
@@ -443,7 +443,9 @@ export namespace FirebaseAdMobTypes {
      * ```
      */
     getStatus(): Promise<
-      AdsConsentStatus.UNKNOWN | AdsConsentStatus.NON_PERSONALIZED | AdsConsentStatus.PERSONALIZED
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED']
     >;
 
     /**
@@ -537,9 +539,9 @@ export namespace FirebaseAdMobTypes {
      * - PERSONALIZED: The user has accepted personalized ads.
      */
     status:
-      | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.NON_PERSONALIZED
-      | AdsConsentStatus.PERSONALIZED;
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED'];
 
     /**
      * If `true`, the user requested an ad-free version of your application.
@@ -559,9 +561,9 @@ export namespace FirebaseAdMobTypes {
      * - PERSONALIZED: The user has accepted personalized ads.
      */
     status:
-      | AdsConsentStatus.UNKNOWN
-      | AdsConsentStatus.NON_PERSONALIZED
-      | AdsConsentStatus.PERSONALIZED;
+      | AdsConsentStatus['UNKNOWN']
+      | AdsConsentStatus['NON_PERSONALIZED']
+      | AdsConsentStatus['PERSONALIZED'];
 
     /**
      * If `true` the user is within the EEA or their location could not be determined.
@@ -768,10 +770,10 @@ export namespace FirebaseAdMobTypes {
      * Ratings are based on the [digital content label classifications](https://support.google.com/admob/answer/7562142).
      */
     maxAdContentRating?:
-      | MaxAdContentRating.G
-      | MaxAdContentRating.PG
-      | MaxAdContentRating.T
-      | MaxAdContentRating.MA;
+      | MaxAdContentRating['G']
+      | MaxAdContentRating['PG']
+      | MaxAdContentRating['T']
+      | MaxAdContentRating['MA'];
 
     /**
      * If `true`, indicates that you want your content treated as child-directed for purposes of COPPA.
@@ -843,14 +845,14 @@ export namespace FirebaseAdMobTypes {
    */
   export type AdEventListener = (
     type:
-      | AdEventType.LOADED
-      | AdEventType.ERROR
-      | AdEventType.OPENED
-      | AdEventType.CLICKED
-      | AdEventType.LEFT_APPLICATION
-      | AdEventType.CLOSED
-      | RewardedAdEventType.LOADED
-      | RewardedAdEventType.EARNED_REWARD,
+      | AdEventType['LOADED']
+      | AdEventType['ERROR']
+      | AdEventType['OPENED']
+      | AdEventType['CLICKED']
+      | AdEventType['LEFT_APPLICATION']
+      | AdEventType['CLOSED']
+      | RewardedAdEventType['LOADED']
+      | RewardedAdEventType['EARNED_REWARD'],
     error?: Error,
     data?: any | RewardedAdReward,
   ) => void;
@@ -1180,35 +1182,29 @@ export namespace FirebaseAdMobTypes {
   }
 }
 
-declare module '@react-native-firebase/admob' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import React from 'react';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
-  import BannerAd = FirebaseAdMobTypes.BannerAd;
+export const AdsConsentDebugGeography: FirebaseAdMobTypes.AdsConsentDebugGeography;
+export const AdsConsentStatus: FirebaseAdMobTypes.AdsConsentStatus;
+export const MaxAdContentRating: FirebaseAdMobTypes.MaxAdContentRating;
+export const TestIds: FirebaseAdMobTypes.TestIds;
+export const AdEventType: FirebaseAdMobTypes.AdEventType;
+export const BannerAdSize: FirebaseAdMobTypes.BannerAdSize;
+export const RewardedAdEventType: FirebaseAdMobTypes.RewardedAdEventType;
+export const AdsConsent: FirebaseAdMobTypes.AdsConsent;
+export const InterstitialAd: typeof FirebaseAdMobTypes.InterstitialAd;
+export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
+export const BannerAd: React.SFC<FirebaseAdMobTypes.BannerAd>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseAdMobTypes.Module,
+  FirebaseAdMobTypes.Statics
+>;
 
-  export const AdsConsentDebugGeography: {} & FirebaseAdMobTypes.AdsConsentDebugGeography;
-  export const AdsConsentStatus: {} & FirebaseAdMobTypes.AdsConsentStatus;
-  export const MaxAdContentRating: {} & FirebaseAdMobTypes.MaxAdContentRating;
-  export const TestIds: {} & FirebaseAdMobTypes.TestIds;
-  export const AdEventType: {} & FirebaseAdMobTypes.AdEventType;
-  export const BannerAdSize: {} & FirebaseAdMobTypes.BannerAdSize;
-  export const RewardedAdEventType: {} & FirebaseAdMobTypes.RewardedAdEventType;
-  export const AdsConsent: {} & FirebaseAdMobTypes.AdsConsent;
-  export const InterstitialAd: typeof FirebaseAdMobTypes.InterstitialAd;
-  export const RewardedAd: typeof FirebaseAdMobTypes.RewardedAd;
-  export const BannerAd: React.SFC<BannerAd>;
+export const firebase: ReactNativeFirebase.Module & {
+  storage: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { admob(): FirebaseAdMobTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseAdMobTypes.Module,
-    FirebaseAdMobTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -1224,41 +1220,39 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       admob(): FirebaseAdMobTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * The Google AdMob application App ID for Android.
-     *
-     * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-     *
-     * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
-     *
-     * @android
-     */
-    admob_android_app_id: string;
+    interface FirebaseJsonConfig {
+      /**
+       * The Google AdMob application App ID for Android.
+       *
+       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
+       *
+       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
+       *
+       * @android
+       */
+      admob_android_app_id: string;
 
-    /**
-     * The Google AdMob application App ID for iOS.
-     *
-     * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-     *
-     * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
-     *
-     * @ios
-     */
-    admob_ios_app_id: string;
+      /**
+       * The Google AdMob application App ID for iOS.
+       *
+       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
+       *
+       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
+       *
+       * @ios
+       */
+      admob_ios_app_id: string;
 
-    /**
-     * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
-     * Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metrics
-     * without making additional code changes.
-     *
-     * If you require your app users to provide consent before collecting data, setting the value to `true` will prevent
-     * data being sent until the `firebase.admob().initialize()` method has been called.
-     */
-    admob_delay_app_measurement_init: boolean;
+      /**
+       * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
+       * Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metrics
+       * without making additional code changes.
+       *
+       * If you require your app users to provide consent before collecting data, setting the value to `true` will prevent
+       * data being sent until the `firebase.admob().initialize()` method has been called.
+       */
+      admob_delay_app_measurement_init: boolean;
+    }
   }
 }

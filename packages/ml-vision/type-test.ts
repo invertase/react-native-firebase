@@ -27,7 +27,7 @@ console.log(firebase.vision(firebase.app()).app.name);
 // checks default export supports app arg
 console.log(firebase.vision(firebase.app('foo')).app.name);
 
-console.log(firebase.vision.VisionBarcodeFormat.ALL_POINTS);
+console.log(firebase.vision.VisionBarcodeFormat.ALL_FORMATS);
 console.log(vision.VisionBarcodeFormat);
 
 console.log(firebase.vision.VisionFaceContourType.ALL_POINTS);

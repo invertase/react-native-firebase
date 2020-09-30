@@ -264,7 +264,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -915,7 +915,7 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key: string]: value }, onComplete?: Function): Promise<void>;
+    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
   }
 
   export type EventType =
@@ -1248,21 +1248,19 @@ export namespace FirebaseDatabaseTypes {
   }
 }
 
-declare module '@react-native-firebase/database' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseDatabaseTypes.Module,
+  FirebaseDatabaseTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  database: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { database(): FirebaseDatabaseTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseDatabaseTypes.Module,
-    FirebaseDatabaseTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -1280,32 +1278,30 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       database(databaseUrl?: string): FirebaseDatabaseTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * Set whether database persistence is enabled or disabled.
-     *
-     * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "database_persistence_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable database persistence
-     * await firebase.database().setPersistenceEnabled(true);
-     * ```
-     */
-    database_persistence_enabled: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * Set whether database persistence is enabled or disabled.
+       *
+       * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "database_persistence_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable database persistence
+       * await firebase.database().setPersistenceEnabled(true);
+       * ```
+       */
+      database_persistence_enabled: boolean;
+    }
   }
 }

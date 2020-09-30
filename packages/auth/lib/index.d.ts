@@ -1634,21 +1634,17 @@ export namespace FirebaseAuthTypes {
 
 type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
-declare module '@react-native-firebase/auth' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseAuthTypes.Module,
+  FirebaseAuthTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  auth: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { auth(): FirebaseAuthTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseAuthTypes.Module,
-    FirebaseAuthTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
