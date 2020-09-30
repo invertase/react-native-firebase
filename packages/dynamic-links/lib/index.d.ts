@@ -540,7 +540,7 @@ export namespace FirebaseDynamicLinksTypes {
      * @returns Unsubscribe function, call the returned function to unsubscribe from all future events.
      * @param listener The listener callback, called with Dynamic Link instances.
      */
-    onLink(listener: Function<DynamicLink>): Function;
+    onLink(listener: (link: DynamicLink) => void): Function;
 
     /**
      * Resolve a given dynamic link (short or long) directly.
@@ -566,21 +566,19 @@ export namespace FirebaseDynamicLinksTypes {
   }
 }
 
-declare module '@react-native-firebase/dynamic-links' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseDynamicLinksTypes.Module,
+  FirebaseDynamicLinksTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  dynamicLinks: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { dynamicLinks(): FirebaseDynamicLinksTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseDynamicLinksTypes.Module,
-    FirebaseDynamicLinksTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
