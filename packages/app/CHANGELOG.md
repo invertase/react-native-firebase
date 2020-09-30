@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.3...@react-native-firebase/app@8.4.4) (2020-09-30)
+
+### Bug Fixes
+
+- **app, ios:** avoid photo API not present on Catalyst ([#4328](https://github.com/invertase/react-native-firebase/issues/4328)) ([86f1f63](https://github.com/invertase/react-native-firebase/commit/86f1f633c06c7f054ff55b802482f36be61580f8))
+
 ## [8.4.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.2...@react-native-firebase/app@8.4.3) (2020-09-17)
 
 ### Bug Fixes
