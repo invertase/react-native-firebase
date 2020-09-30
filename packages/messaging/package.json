@@ -22,7 +22,7 @@
     "messaging"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.4.4"
+    "@react-native-firebase/app": "8.4.5"
   },
   "publishConfig": {
     "access": "public"
