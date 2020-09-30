@@ -27,7 +27,7 @@
     "ad consent"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.4.3"
+    "@react-native-firebase/app": "8.4.4"
   },
   "publishConfig": {
     "access": "public"
