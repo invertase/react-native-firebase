@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.4...@react-native-firebase/firestore@7.8.5) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
 ## [7.8.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.3...@react-native-firebase/firestore@7.8.4) (2020-09-30)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

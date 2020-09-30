@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.9...@react-native-firebase/messaging@7.8.10) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
 ## [7.8.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.8...@react-native-firebase/messaging@7.8.9) (2020-09-30)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
