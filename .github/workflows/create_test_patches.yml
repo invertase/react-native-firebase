@@ -73,8 +73,9 @@ jobs:
             echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
             yarn add @react-native-firebase/$PACKAGE
             pushd node_modules/@react-native-firebase
-            \rm -fr $PACKAGE
             tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
+            mv $PACKAGE/package.json package/
+            \rm -fr $PACKAGE
             mv package $PACKAGE
             popd
             npx patch-package @react-native-firebase/$PACKAGE || true
