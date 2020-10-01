@@ -8,7 +8,7 @@ previous: /ml-vision/usage
 Text recognition can automate tedious data entry for credit cards, receipts, and business cards. With the Cloud-based API,
 you can also extract text from pictures of documents, which you can use to increase accessibility or translate documents.
 
-Once a file has been processed, the API returns a [`VisionDocumentText`](/reference/ml-vision/visiondocumenttext), referencing
+Once an image file has been processed, the API returns a [`VisionDocumentText`](/reference/ml-vision/visiondocumenttext), referencing
 all found text along with each [`VisionDocumentTextBlock`](/reference/ml-vision/visiondocumenttextblock). Each block contains
 meta-data such as:
 
@@ -19,7 +19,7 @@ meta-data such as:
 
 # Cloud Text Recognition
 
-The cloud based text recognition service uploads a given document to the remote Firebase service which processes the results and returns them.
+The cloud based text recognition service uploads a given image of a document to the remote Firebase service which processes the results and returns them. Only image file types are allowed.
 To get started, call the `cloudDocumentTextRecognizerProcessImage` method with a path to a local file on your device:
 
 ```js
