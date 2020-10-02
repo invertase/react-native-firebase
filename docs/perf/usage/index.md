@@ -138,5 +138,7 @@ set the `perf_auto_collection_enabled` flag to `false`:
 To re-enable collection (e.g. once you have the users consent), call the `setPerformanceCollectionEnabled` method:
 
 ```js
+import {firebase} from '@react-native-firebase/perf';
+// ...
 await firebase.perf().setPerformanceCollectionEnabled(true);
 ```
