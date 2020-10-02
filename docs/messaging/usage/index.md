@@ -295,12 +295,13 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                              initialProperties:appProperties];
 ```
 
-- For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `launchedHeadless` constant (iOS only) from messaging like so:
+- For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
 
 ```jsx
-if(messaging().launchedHeadless) {
-    // perhaps have your Root View render empty if launchedHeadless is true and AppState.active is false
-}
+messaging().getIsHeadless().then(isHeadless => {
+  // do sth with isHeadless
+});
+
 ```
 
 
