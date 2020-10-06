@@ -13,15 +13,17 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
-        with:
-          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
         with:
           ref: 'master'
           fetch-depth: 0
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
       - name: GIT Setup
         run: |
           git config --global user.name '@Salakar'

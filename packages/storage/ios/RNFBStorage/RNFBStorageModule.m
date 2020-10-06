@@ -517,7 +517,11 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
 - (FIRStorageReference *)getReferenceFromUrl:(NSString *)url app:(FIRApp *)firebaseApp {
   NSString *pathWithBucketName = [url substringWithRange:NSMakeRange(5, [url length] - 5)];
-  NSString *bucket = [url substringWithRange:NSMakeRange(0, [pathWithBucketName rangeOfString:@"/"].location + 5)];
+  NSString *bucket = url;
+  NSRange rangeOfSlash = [pathWithBucketName rangeOfString:@"/"];
+  if (rangeOfSlash.location != NSNotFound) {
+    bucket = [url substringWithRange:NSMakeRange(0, rangeOfSlash.location + 5)];
+  }
   return [[FIRStorage storageForApp:firebaseApp URL:bucket] referenceForURL:url];
 }
 

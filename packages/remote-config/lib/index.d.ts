@@ -364,7 +364,7 @@ export namespace FirebaseRemoteConfigTypes {
 
     /**
      * Moves fetched data to the apps active config.
-     * Resolves with a boolean value of whether the fetched config was moved successfully.
+     * Resolves with a boolean value true if new local values were activated
      *
      * #### Example
      *
@@ -376,7 +376,7 @@ export namespace FirebaseRemoteConfigTypes {
      * if (activated) {
      *  console.log('Fetched values successfully activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('Fetched values were already activated.');
      * }
      * ```
      */
@@ -409,19 +409,18 @@ export namespace FirebaseRemoteConfigTypes {
 
     /**
      * Fetches the remote config data from Firebase, as defined in the dashboard.
-     *
-     * Once fetching is complete this method immediately calls activate and returns a boolean value of the activation status.
+     * Once fetching is complete this method immediately calls activate and returns a boolean value true if new values were activated
      *
      * #### Example
      *
      * ```js
      * // Fetch, cache for 5 minutes and activate
-     * const activated = await firebase.remoteConfig().fetchAndActivate();
+     * const fetchedRemotely = await firebase.remoteConfig().fetchAndActivate();
      *
-     * if (activated) {
-     *  console.log('Fetched values successfully activated.');
+     * if (fetchedRemotely) {
+     *   console.log('New configs were retrieved from the backend and activated.');
      * } else {
-     *   console.log('Fetched values failed to activate.');
+     *   console.log('No new configs were fetched from the backend, and the local configs were already activated');
      * }
      * ```
      *
@@ -518,21 +517,19 @@ export namespace FirebaseRemoteConfigTypes {
   }
 }
 
-declare module '@react-native-firebase/remote-config' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseRemoteConfigTypes.Module,
+  FirebaseRemoteConfigTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  remoteConfig: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { remoteConfig(): FirebaseRemoteConfigTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseRemoteConfigTypes.Module,
-    FirebaseRemoteConfigTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.

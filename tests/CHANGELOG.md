@@ -3,6 +3,145 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.16](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.15...react-native-firebase-tests@8.4.16) (2020-09-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.15](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.14...react-native-firebase-tests@8.4.15) (2020-09-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.14](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.13...react-native-firebase-tests@8.4.14) (2020-09-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.13](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.12...react-native-firebase-tests@8.4.13) (2020-09-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.12](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.11...react-native-firebase-tests@8.4.12) (2020-09-17)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.11](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.10...react-native-firebase-tests@8.4.11) (2020-09-17)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.10](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.9...react-native-firebase-tests@8.4.10) (2020-09-11)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.9](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.8...react-native-firebase-tests@8.4.9) (2020-09-11)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.8](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.7...react-native-firebase-tests@8.4.8) (2020-09-04)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.7](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.6...react-native-firebase-tests@8.4.7) (2020-09-02)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.6](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.5...react-native-firebase-tests@8.4.6) (2020-08-31)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.5](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.4...react-native-firebase-tests@8.4.5) (2020-08-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.4](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.3...react-native-firebase-tests@8.4.4) (2020-08-30)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.3](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.2...react-native-firebase-tests@8.4.3) (2020-08-28)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.2](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.1...react-native-firebase-tests@8.4.2) (2020-08-28)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+## [8.4.1](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.0...react-native-firebase-tests@8.4.1) (2020-08-26)
+
+**Note:** Version bump only for package react-native-firebase-tests
+
+
+
+
+
+# [8.4.0](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.3.8...react-native-firebase-tests@8.4.0) (2020-08-26)
+
+
+### Features
+
+* bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+
+
+
+
 ## [8.3.8](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.3.7...react-native-firebase-tests@8.3.8) (2020-08-26)
 
 **Note:** Version bump only for package react-native-firebase-tests

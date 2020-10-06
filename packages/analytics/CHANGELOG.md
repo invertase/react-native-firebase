@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.6...@react-native-firebase/analytics@7.6.7) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [7.6.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.5...@react-native-firebase/analytics@7.6.6) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [7.6.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.4...@react-native-firebase/analytics@7.6.5) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [7.6.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.3...@react-native-firebase/analytics@7.6.4) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [7.6.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.2...@react-native-firebase/analytics@7.6.3) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [7.6.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.1...@react-native-firebase/analytics@7.6.2) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [7.6.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.0...@react-native-firebase/analytics@7.6.1) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [7.6.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.5.1...@react-native-firebase/analytics@7.6.0) (2020-08-28)
+
+### Features
+
+- **analytics:** add 'logScreenView' API and deprecate `setCurrentScreen` API. ([#4145](https://github.com/invertase/react-native-firebase/issues/4145)) ([81c4e3b](https://github.com/invertase/react-native-firebase/commit/81c4e3b7d2ce956ed6a2cc2f40a323ec5379d6a1))
+
+## [7.5.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.5.0...@react-native-firebase/analytics@7.5.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [7.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.4.2...@react-native-firebase/analytics@7.5.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.4.1...@react-native-firebase/analytics@7.4.2) (2020-08-15)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

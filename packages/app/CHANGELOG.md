@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.4...@react-native-firebase/app@8.4.5) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [8.4.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.3...@react-native-firebase/app@8.4.4) (2020-09-30)
+
+### Bug Fixes
+
+- **app, ios:** avoid photo API not present on Catalyst ([#4328](https://github.com/invertase/react-native-firebase/issues/4328)) ([86f1f63](https://github.com/invertase/react-native-firebase/commit/86f1f633c06c7f054ff55b802482f36be61580f8))
+
+## [8.4.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.2...@react-native-firebase/app@8.4.3) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [8.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.1...@react-native-firebase/app@8.4.2) (2020-09-11)
+
+### Bug Fixes
+
+- **crashlytics, ios:** explicitly set collection opt in/out ([#4236](https://github.com/invertase/react-native-firebase/issues/4236)) ([cda4c10](https://github.com/invertase/react-native-firebase/commit/cda4c1012737eab8b64e8f8593b623771f5b2734))
+
+## [8.4.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.0...@react-native-firebase/app@8.4.1) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+# [8.4.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.3.1...@react-native-firebase/app@8.4.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+**NOTE: UPDATE ALL REACT-NATIVE-FIREBASE PACKAGES TO CURRENT STABLE FOR COMPATIBILITY - [#4154](https://github.com/invertase/react-native-firebase/issues/4154)**
+
 ## [8.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.3.0...@react-native-firebase/app@8.3.1) (2020-08-15)
 
 ### Bug Fixes

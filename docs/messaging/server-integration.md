@@ -2,7 +2,7 @@
 title: Server Integration
 description: Integrate Firebase Cloud Messaging with your backend server.
 next: /storage/usage
-previous: /messaging/notifications
+previous: /messaging/ios-notification-images
 ---
 
 The Cloud Messaging module provides the tools required to enable you to send custom messages directly from your own servers.

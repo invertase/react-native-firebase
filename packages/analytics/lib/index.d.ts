@@ -324,6 +324,17 @@ export namespace FirebaseAnalyticsTypes {
     transaction_id?: string;
   }
 
+  export interface ScreenViewParameters {
+    /**
+     * Screen name the user is currently viewing.
+     */
+    screen_name?: string;
+    /**
+     * Current class associated with the view the user is currently viewing.
+     */
+    screen_class?: string;
+  }
+
   export interface RefundEventParameters {
     /**
      * A product affiliation to designate a supplying company or brick and mortar store location
@@ -667,10 +678,10 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param screenName A screen name, e.g. Product.
      * @param screenClassOverride On Android, React Native runs in a single activity called
-     * 'MainActivity'. Setting this parameter overrides the default name shown on logs.
+     *        'MainActivity'. Setting this parameter overrides the default name shown on logs.
+     * @deprecated
      */
     setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
-
     /**
      * Sets the minimum engagement time required before starting a session.
      *
@@ -783,6 +794,20 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     logPurchase(params: PurchaseEventParameters): Promise<void>;
+    /**
+     * Sets or clears the screen name and class the user is currently viewing
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().logScreenView({
+     *   screen_class: 'ProductScreen',
+     *   screen_name: 'ProductScreen',
+     * });
+     * ```
+     *
+     */
+    logScreenView(params: ScreenViewParameters): Promise<void>;
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
@@ -1237,7 +1262,7 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param params See {@link analytics.SetCheckoutOptionEventParameters}.
      */
-    logSetCheckoutOption(params: SetCheckoutOptionEventParameters): Promise<void>;
+    logSetCheckoutOption(params: any): Promise<void>;
 
     /**
      * Share event. Apps with social features can log the Share event to identify the most viral content.
@@ -1455,21 +1480,19 @@ export namespace FirebaseAnalyticsTypes {
   }
 }
 
-declare module '@react-native-firebase/analytics' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseAnalyticsTypes.Module,
+  FirebaseAnalyticsTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  analytics: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseAnalyticsTypes.Module,
-    FirebaseAnalyticsTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -1487,33 +1510,31 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       analytics(): FirebaseAnalyticsTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * Disable or enable auto collection of analytics data.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "analytics_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable analytics data collection, e.g. once user has granted permission:
-     * await firebase.analytics().setAnalyticsCollectionEnabled(true);
-     * ```
-     */
-    analytics_auto_collection_enabled: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * Disable or enable auto collection of analytics data.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "analytics_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable analytics data collection, e.g. once user has granted permission:
+       * await firebase.analytics().setAnalyticsCollectionEnabled(true);
+       * ```
+       */
+      analytics_auto_collection_enabled: boolean;
+    }
   }
 }

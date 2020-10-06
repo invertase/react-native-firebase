@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.8.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.5...@react-native-firebase/firestore@7.8.6) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.8.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.4...@react-native-firebase/firestore@7.8.5) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [7.8.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.3...@react-native-firebase/firestore@7.8.4) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.8.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.2...@react-native-firebase/firestore@7.8.3) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.8.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.1...@react-native-firebase/firestore@7.8.2) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [7.8.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.0...@react-native-firebase/firestore@7.8.1) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+# [7.8.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.7.0...@react-native-firebase/firestore@7.8.0) (2020-09-04)
+
+### Features
+
+- **firestore, types:** support Generic Types ([#3810](https://github.com/invertase/react-native-firebase/issues/3810)) ([f81e08e](https://github.com/invertase/react-native-firebase/commit/f81e08ee2c1dcfebf8f82eebd4e1883313d582e2))
+
+# [7.7.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.2...@react-native-firebase/firestore@7.7.0) (2020-08-30)
+
+### Features
+
+- **firestore:** support waitForPendingWrites() API ([#4176](https://github.com/invertase/react-native-firebase/issues/4176)) ([6a4b45e](https://github.com/invertase/react-native-firebase/commit/6a4b45e441344a8c645552cfdef8c8bd88e56ca2))
+
+## [7.6.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.1...@react-native-firebase/firestore@7.6.2) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+## [7.6.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.6.0...@react-native-firebase/firestore@7.6.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+# [7.6.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.5.3...@react-native-firebase/firestore@7.6.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
 ## [7.5.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.5.2...@react-native-firebase/firestore@7.5.3) (2020-08-15)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
