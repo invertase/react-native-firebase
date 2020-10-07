@@ -24,6 +24,7 @@
 #import "RNFBMessagingSerializer.h"
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
+#import "RNFBMessaging+NSNotificationCenter.h"
 
 @implementation RNFBMessagingModule
 #pragma mark -
@@ -162,6 +163,15 @@ RCT_EXPORT_METHOD(getAPNSToken:
     #endif
     resolve([NSNull null]);
   }
+}
+
+RCT_EXPORT_METHOD(getIsHeadless
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    RNFBMessagingNSNotificationCenter* notifCenter = [RNFBMessagingNSNotificationCenter sharedInstance];
+
+    return resolve(@([RCTConvert BOOL:@(notifCenter.isHeadless)]));
 }
 
 RCT_EXPORT_METHOD(requestPermission:
