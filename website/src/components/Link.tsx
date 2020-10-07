@@ -69,7 +69,7 @@ const Link = ({
       to,
     };
 
-    if (gatsbyLinkProps.to.endsWith('/')) {
+    if (gatsbyLinkProps.to.endsWith('/') && gatsbyLinkProps.to.length > 1) {
       gatsbyLinkProps.to = gatsbyLinkProps.to.slice(0, -1);
     }
 
