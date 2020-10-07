@@ -62,6 +62,7 @@ iOS
 iOS13
 JS
 JSON
+launchProperties
 learnt
 Lerna
 MDX
