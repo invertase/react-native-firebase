@@ -17,7 +17,7 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 
-describe('firestore().collection().limitToLast()', () => {
+describe.only('firestore().collection().limitToLast()', () => {
   before(() => wipe());
   it('throws if limitToLast is invalid', () => {
     try {
@@ -61,7 +61,7 @@ describe('firestore().collection().limitToLast()', () => {
     should(colRef._modifiers.options.limitToLast).equal(undefined);
   });
 
-  it.only('limitToLast the number of documents', async () => {
+  it('limitToLast the number of documents', async () => {
     const subCol = `${COLLECTION}/limitToLast/count`;
     const colRef = firebase.firestore().collection(subCol);
 
