@@ -17,7 +17,7 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 
-describe.only('firestore().collection().limitToLast()', () => {
+describe('firestore().collection().limitToLast()', () => {
   before(() => wipe());
   it('throws if limitToLast is invalid', () => {
     try {
