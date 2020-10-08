@@ -82,7 +82,7 @@ describe('firestore().collection().limitToLast()', () => {
       results.push(doc.data());
     });
 
-    // should(results.length).equal(2);
+    should(results.length).equal(2);
 
     should(results[0].count).equal(2);
     should(results[1].count).equal(1);
