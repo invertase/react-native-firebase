@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.9.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.11...@react-native-firebase/messaging@7.9.0) (2020-10-07)
+
+### Features
+
+- **ios, messaging:** add getIsHeadless method to access iOS launch state ([#4304](https://github.com/invertase/react-native-firebase/issues/4304)) ([8a4e9a5](https://github.com/invertase/react-native-firebase/commit/8a4e9a5259fd89885f3f5e825328899476e9e3ee))
+
 ## [7.8.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.10...@react-native-firebase/messaging@7.8.11) (2020-09-30)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
@@ -12,7 +18,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Bug Fixes
 
 - **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
-- **android, messaging:**  fix(android, messaging): store notifications for initial/open attribution [#4317](https://github.com/invertase/react-native-firebase/issues/4317) ([a7cafc9](https://github.com/invertase/react-native-firebase/commit/a7cafc92f4250d2ccb16cb181a4029f14b76b8ca))
+- **android, messaging:** fix(android, messaging): store notifications for initial/open attribution [#4317](https://github.com/invertase/react-native-firebase/issues/4317) ([a7cafc9](https://github.com/invertase/react-native-firebase/commit/a7cafc92f4250d2ccb16cb181a4029f14b76b8ca))
 
 ## [7.8.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.8...@react-native-firebase/messaging@7.8.9) (2020-09-30)
 

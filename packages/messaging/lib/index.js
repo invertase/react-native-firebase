@@ -126,6 +126,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.getInitialNotification();
   }
 
+  getIsHeadless() {
+    return this.native.getIsHeadless();
+  }
+
   getToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
       throw new Error(

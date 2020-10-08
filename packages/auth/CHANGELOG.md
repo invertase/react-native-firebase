@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.7...@react-native-firebase/auth@9.3.0) (2020-10-07)
+
+### Features
+
+- **auth:** Access to FIRAuthErrorUserInfoUpdatedCredentialKey with Apple Sign In ([#4359](https://github.com/invertase/react-native-firebase/issues/4359)) ([5851bd0](https://github.com/invertase/react-native-firebase/commit/5851bd0a92e4b6b9cda4eed8dd1dd06a45e5826b))
+
 ## [9.2.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.6...@react-native-firebase/auth@9.2.7) (2020-09-30)
 
 **Note:** Version bump only for package @react-native-firebase/auth
