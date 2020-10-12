@@ -28,6 +28,8 @@ We have also ensured the release is compatible with some of the popular tooling 
 
 Version 6 also brings support for previously unsupported modules such as [Firebase ML Kit](https://firebase.google.com/docs/ml-kit).
 
+That being said, if you cannot upgrade Firebase to v6 yet, but must upgrade React Native to 0.60, then your Firebase version must be 5.6.x in order to be compatible with the new AndroidX mechanism introduced in React Native 0.60. Please note that you may encounter problems with underlying SDKs and APIs since the v5 isn't maintained and does not garanty further compatibility.
+
 ## NPM dependency changes
 
 Prior to version 6, all modules are installable from the `react-native-firebase` NPM package. With version 6 we are
