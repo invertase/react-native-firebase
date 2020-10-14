@@ -41,15 +41,6 @@ This happens to be a known problem with the upstream Analytics SDKs. The Firebas
 
 To use some Firebase services (like auth) in an emulator, you need an Android virtual device with Google Play services installed. Check this [Stack Overflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android virtual device with the necessary APIs installed.
 
-Alternatively, you can install the Google Play Services SDK. In Android Studio:
-
-1. Select `Tools -> SDK Manager`
-1. Search for `SDK Tools` and select the `SDK Tools` tab under `Android SDK`
-1. Install `Google Play services`
-
-You may need to delete your Android devices to pickup Play services.
-
-
 # Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
