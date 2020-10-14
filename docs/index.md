@@ -194,7 +194,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "25.7.0"
+        bom           : "25.12.0"
       ],
     ],
   ])
