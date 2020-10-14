@@ -15,6 +15,8 @@
  *
  */
 
+const COLLECTION = 'firestore';
+
 describe('firestore.doc().collection()', () => {
   it('throws if path is not a string', () => {
     try {
@@ -47,7 +49,7 @@ describe('firestore.doc().collection()', () => {
       firebase
         .firestore()
         .doc('bar/baz')
-        .collection('foo/bar');
+        .collection(`${COLLECTION}/bar`);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'collectionPath' must point to a collection");
@@ -58,16 +60,16 @@ describe('firestore.doc().collection()', () => {
   it('returns a collection instance', () => {
     const instance1 = firebase
       .firestore()
-      .doc('foo/bar')
-      .collection('baz');
+      .doc(`${COLLECTION}/bar`)
+      .collection(COLLECTION);
     const instance2 = firebase
       .firestore()
-      .collection('foo')
+      .collection(COLLECTION)
       .doc('bar')
-      .collection('baz');
+      .collection(COLLECTION);
     should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
     should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
-    instance1.id.should.equal('baz');
-    instance2.id.should.equal('baz');
+    instance1.id.should.equal(COLLECTION);
+    instance2.id.should.equal(COLLECTION);
   });
 });

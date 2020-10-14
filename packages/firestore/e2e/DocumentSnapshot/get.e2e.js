@@ -14,14 +14,13 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore().doc() -> snapshot.get()', () => {
   before(() => wipe());
-
   it('throws if invalid fieldPath argument', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     try {
@@ -34,7 +33,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('throws if fieldPath is an empty string', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     try {
@@ -47,7 +46,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('throws if fieldPath starts with a period (.)', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     try {
@@ -60,7 +59,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('throws if fieldPath ends with a period (.)', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     try {
@@ -73,7 +72,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('throws if fieldPath contains ..', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     try {
@@ -86,7 +85,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('returns undefined if the data does not exist', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
     const val1 = snapshot.get('foo');
@@ -103,7 +102,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('returns the correct data with string fieldPath', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const types = {
       string: '12345',
       number: 1234,
@@ -133,7 +132,7 @@ describe('firestore().doc() -> snapshot.get()', () => {
   });
 
   it('returns the correct data with FieldPath', async () => {
-    const ref = firebase.firestore().doc('v6/foo');
+    const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const types = {
       string: '12345',
       number: 1234,

@@ -14,12 +14,10 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('./helpers');
-
 describe('firestore.GeoPoint', () => {
   before(() => wipe());
-
   it('throws if invalid number of arguments', () => {
     try {
       new firebase.firestore.GeoPoint(123);
@@ -106,9 +104,8 @@ describe('firestore.GeoPoint', () => {
       equal.should.equal(true);
     });
   });
-
   it('sets & returns correctly', async () => {
-    const ref = firebase.firestore().doc('v6/geopoint');
+    const ref = firebase.firestore().doc(`${COLLECTION}/geopoint`);
     await ref.set({
       geopoint: new firebase.firestore.GeoPoint(20, 30),
     });
