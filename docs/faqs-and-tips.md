@@ -37,6 +37,19 @@ This may be fixed by creating a `firebase.json` file at the root of your project
 This happens to be a known problem with the upstream Analytics SDKs. The Firebase team doesn't have any plans to fix it soon. More information about this can be found [here](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
 
 
+### I'm receiving `InternalFirebaseAuth.FIREBASE_AUTH_API is not available on this device`. How do I fix this?
+
+To use some Firebase services (like auth) in an emulator, you need an Android devices with Google Play and associated services installed. Check this [StackOverflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android device with the necessary APIs installed.
+
+Alternatively, you can install the Google Play Services SDK. In Android Studio:
+
+1. Select `Tools -> SDK Manager`
+1. Search for `SDK Tools` and select the `SDK Tools` tab under `Android SDK`
+1. Install `Google Play services`
+
+You may need to delete your Android devices to pickup Play services.
+
+
 # Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
