@@ -392,6 +392,14 @@ This is a new module. See documentation for usage.
 
 No breaking changes.
 
+### Notifications
+
+Device-local notification APIs are not firebase-specific at the same time they are very difficult to maintain. 
+
+For these reasons the notifications package has been removed from react-native-firebase for versions 6 and higher. 
+
+If you use device-local notification APIs and user-visible notifications in your app you will want to integrate a separate library that gives you access to device-local notification APIs. Many people have reported success with each of https://notifee.app, https://github.com/zo0r/react-native-push-notification, and https://github.com/zo0r/react-native-push-notification
+
 ### Cloud Messaging
 
 `@react-native-firebase/messaging`
