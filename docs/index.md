@@ -74,7 +74,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services' // <- Add this line
 ```
 
-
 ### 3. iOS Setup
 
 To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project.
