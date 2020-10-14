@@ -74,6 +74,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services' // <- Add this line
 ```
 
+#### Using Firebase services in an emulator
+
+To use Firebase services in an emulator, you need to install the Google Play services SDK. From Android Studio:
+
+1. Select `Tools -> SDK Manager`
+1. Search for `SDK Tools` and select the `SDK Tools` tab under `Android SDK`
+1. Install `Google Play services`
+
+If you're missing Google Play services SDK, you may see an error similar to:
+
+`InternalFirebaseAuth.FIREBASE_AUTH_API is not available on this device`
+
 ### 3. iOS Setup
 
 To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project.
