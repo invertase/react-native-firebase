@@ -16,7 +16,7 @@
  */
 
 const COLLECTION = 'firestore';
-//todo find otu why this fails when running all tests
+
 describe('firestore()', () => {
   describe(COLLECTION, () => {
     before(async () => {
