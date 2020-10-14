@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.delete()', () => {
   it('throws if a DocumentReference instance is not provided', () => {
@@ -32,7 +33,8 @@ describe('firestore.WriteBatch.delete()', () => {
   it('throws if a DocumentReference firestore instance is different', () => {
     try {
       const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc('v6/foo');
+      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -47,14 +49,14 @@ describe('firestore.WriteBatch.delete()', () => {
   });
 
   it('adds the DocumentReference to the internal writes', () => {
-    const docRef = firebase.firestore().doc('v6/foo');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
     const wb = firebase
       .firestore()
       .batch()
       .delete(docRef);
     wb._writes.length.should.eql(1);
     const expected = {
-      path: 'v6/foo',
+      path: `${COLLECTION}/foo`,
       type: 'DELETE',
     };
     wb._writes[0].should.eql(jet.contextify(expected));

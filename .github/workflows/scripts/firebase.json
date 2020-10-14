@@ -9,7 +9,7 @@
     },
     "ui": {
       "enabled": true,
-      "port": "4000"
+      "port": 4000
     }
   }
 }

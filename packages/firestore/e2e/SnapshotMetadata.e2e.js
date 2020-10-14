@@ -14,15 +14,14 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.SnapshotMetadata', () => {
   before(() => wipe());
-
   it('.fromCache -> returns a boolean', async () => {
-    const ref1 = firebase.firestore().collection('v6');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+    const ref1 = firebase.firestore().collection(COLLECTION);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const colRef = await ref1.get();
     const docRef = await ref2.get();
     colRef.metadata.fromCache.should.be.Boolean();
@@ -30,8 +29,8 @@ describe('firestore.SnapshotMetadata', () => {
   });
 
   it('.hasPendingWrites -> returns a boolean', async () => {
-    const ref1 = firebase.firestore().collection('v6');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+    const ref1 = firebase.firestore().collection(COLLECTION);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const colRef = await ref1.get();
     const docRef = await ref2.get();
     colRef.metadata.hasPendingWrites.should.be.Boolean();
@@ -43,7 +42,7 @@ describe('firestore.SnapshotMetadata', () => {
       try {
         const snapshot = await firebase
           .firestore()
-          .collection('v6')
+          .collection(COLLECTION)
           .get();
         snapshot.metadata.isEqual();
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -56,11 +55,11 @@ describe('firestore.SnapshotMetadata', () => {
     it('returns true if is equal', async () => {
       const snapshot1 = await firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get({ source: 'cache' });
       const snapshot2 = await firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get({ source: 'cache' });
       snapshot1.metadata.isEqual(snapshot2.metadata).should.eql(true);
     });
@@ -68,11 +67,11 @@ describe('firestore.SnapshotMetadata', () => {
     it('returns false if not equal', async () => {
       const snapshot1 = await firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get({ source: 'cache' });
       const snapshot2 = await firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .get({ source: 'server' });
       snapshot1.metadata.isEqual(snapshot2.metadata).should.eql(false);
     });

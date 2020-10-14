@@ -14,12 +14,11 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.doc().get()', () => {
   before(() => wipe());
-
   it('throws if get options are not an object', () => {
     try {
       firebase
@@ -49,7 +48,7 @@ describe('firestore.doc().get()', () => {
   });
 
   it('gets data from default source', async () => {
-    const ref = firebase.firestore().doc('v6/get');
+    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);
     const snapshot = await ref.get();
@@ -58,7 +57,7 @@ describe('firestore.doc().get()', () => {
   });
 
   it('gets data from the server', async () => {
-    const ref = firebase.firestore().doc('v6/get');
+    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);
     const snapshot = await ref.get({ source: 'server' });
@@ -68,7 +67,7 @@ describe('firestore.doc().get()', () => {
   });
 
   it('gets data from cache', async () => {
-    const ref = firebase.firestore().doc('v6/get');
+    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);
     const snapshot = await ref.get({ source: 'cache' });

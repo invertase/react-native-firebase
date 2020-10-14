@@ -14,12 +14,11 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.FieldValue', () => {
   before(() => wipe());
-
   it('should throw if constructed manually', () => {
     try {
       new firebase.firestore.FieldValue();
@@ -77,7 +76,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('increments a number if it exists', async () => {
-      const ref = firebase.firestore().doc('v6/increment');
+      const ref = firebase.firestore().doc(`${COLLECTION}/increment`);
       await ref.set({ foo: 2 });
       await ref.update({ foo: firebase.firestore.FieldValue.increment(1) });
       const snapshot = await ref.get();
@@ -86,7 +85,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('sets the value if it doesnt exist or being set', async () => {
-      const ref = firebase.firestore().doc('v6/increment');
+      const ref = firebase.firestore().doc(`${COLLECTION}/increment`);
       await ref.set({ foo: firebase.firestore.FieldValue.increment(1) });
       const snapshot = await ref.get();
       snapshot.data().foo.should.equal(1);
@@ -96,7 +95,7 @@ describe('firestore.FieldValue', () => {
 
   describe('serverTime()', () => {
     it('sets a new server time value', async () => {
-      const ref = firebase.firestore().doc('v6/servertime');
+      const ref = firebase.firestore().doc(`${COLLECTION}/servertime`);
       await ref.set({ foo: firebase.firestore.FieldValue.serverTimestamp() });
       const snapshot = await ref.get();
       snapshot.data().foo.seconds.should.be.a.Number();
@@ -104,7 +103,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('updates a server time value', async () => {
-      const ref = firebase.firestore().doc('v6/servertime');
+      const ref = firebase.firestore().doc(`${COLLECTION}/servertime`);
       await ref.set({ foo: firebase.firestore.FieldValue.serverTimestamp() });
       const snapshot1 = await ref.get();
       snapshot1.data().foo.nanoseconds.should.be.a.Number();
@@ -120,7 +119,7 @@ describe('firestore.FieldValue', () => {
 
   describe('delete()', () => {
     it('removes a value', async () => {
-      const ref = firebase.firestore().doc('v6/valuedelete');
+      const ref = firebase.firestore().doc(`${COLLECTION}/valuedelete`);
       await ref.set({ foo: 'bar', bar: 'baz' });
       await ref.update({ bar: firebase.firestore.FieldValue.delete() });
       const snapshot = await ref.get();
@@ -153,7 +152,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('updates an existing array', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: [1, 2],
       });
@@ -167,7 +166,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('sets an array if existing value isnt an array with update', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });
@@ -181,7 +180,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('sets an existing array to the new array with set', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: [1, 2],
       });
@@ -219,7 +218,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('removes items in an array', async () => {
-      const ref = firebase.firestore().doc('v6/arrayremove');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayremove`);
       await ref.set({
         foo: [1, 2, 3, 4],
       });
@@ -233,7 +232,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('removes all items in the array if existing value isnt array with update', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });
@@ -247,7 +246,7 @@ describe('firestore.FieldValue', () => {
     });
 
     it('removes all items in the array if existing value isnt array with set', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });

@@ -14,17 +14,15 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-
 describe('firestore().collection().orderBy()', () => {
   before(() => wipe());
-
   it('throws if fieldPath is not valid', () => {
     try {
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .orderBy(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -37,7 +35,7 @@ describe('firestore().collection().orderBy()', () => {
     try {
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .orderBy('.foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -50,7 +48,7 @@ describe('firestore().collection().orderBy()', () => {
     try {
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .orderBy('foo', 'up');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -61,13 +59,13 @@ describe('firestore().collection().orderBy()', () => {
 
   it('throws if a startAt()/startAfter() has already been set', async () => {
     try {
-      const doc = firebase.firestore().doc('v6/startATstartAfter');
+      const doc = firebase.firestore().doc(`${COLLECTION}/startATstartAfter`);
       await doc.set({ foo: 'bar' });
       const snapshot = await doc.get();
 
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .startAt(snapshot)
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -79,13 +77,13 @@ describe('firestore().collection().orderBy()', () => {
 
   it('throws if a endAt()/endBefore() has already been set', async () => {
     try {
-      const doc = firebase.firestore().doc('v6/endAtendBefore');
+      const doc = firebase.firestore().doc(`${COLLECTION}/endAtendBefore`);
       await doc.set({ foo: 'bar' });
       const snapshot = await doc.get();
 
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .endAt(snapshot)
         .orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -99,7 +97,7 @@ describe('firestore().collection().orderBy()', () => {
     try {
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .orderBy('foo.bar')
         .orderBy('foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -110,7 +108,8 @@ describe('firestore().collection().orderBy()', () => {
   });
 
   it('orders by a value ASC', async () => {
-    const colRef = firebase.firestore().collection('v6/order/asc');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/order/asc`);
+
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });
     await colRef.add({ value: 2 });
@@ -124,7 +123,8 @@ describe('firestore().collection().orderBy()', () => {
   });
 
   it('orders by a value DESC', async () => {
-    const colRef = firebase.firestore().collection('v6/order/desc');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/order/desc`);
+
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });
     await colRef.add({ value: 2 });

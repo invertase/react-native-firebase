@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.doc().update()', () => {
   before(() => wipe());
-
   it('throws if no arguments are provided', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .update();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -39,7 +38,7 @@ describe('firestore.doc().update()', () => {
     try {
       await firebase
         .firestore()
-        .doc('v6/idonotexistonthedatabase')
+        .doc(`${COLLECTION}/idonotexistonthedatabase`)
         .update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -52,7 +51,7 @@ describe('firestore.doc().update()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .update('foo', 'bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -62,7 +61,7 @@ describe('firestore.doc().update()', () => {
   });
 
   it('updates data with an object value', async () => {
-    const ref = firebase.firestore().doc('v6/update-obj');
+    const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value };
     const data2 = { foo: 'bar' };
@@ -76,7 +75,7 @@ describe('firestore.doc().update()', () => {
   });
 
   it('updates data with an key/value pairs', async () => {
-    const ref = firebase.firestore().doc('v6/update-obj');
+    const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value, bar: value };
     await ref.set(data1);

@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.doc().set()', () => {
   before(() => wipe());
-
   it('throws if data is not an object', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -37,7 +36,7 @@ describe('firestore.doc().set()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set({}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -50,7 +49,7 @@ describe('firestore.doc().set()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set(
           {},
           {
@@ -69,7 +68,7 @@ describe('firestore.doc().set()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set(
           {},
           {
@@ -87,7 +86,7 @@ describe('firestore.doc().set()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set(
           {},
           {
@@ -105,11 +104,16 @@ describe('firestore.doc().set()', () => {
     try {
       firebase
         .firestore()
-        .doc('bar/baz')
+        .doc(`${COLLECTION}/baz`)
         .set(
           {},
           {
-            mergeFields: ['foo', 'foo.bar', new firebase.firestore.FieldPath('bar', 'baz'), 123],
+            mergeFields: [
+              'foo',
+              'foo.bar',
+              new firebase.firestore.FieldPath(COLLECTION, 'baz'),
+              123,
+            ],
           },
         );
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -122,7 +126,7 @@ describe('firestore.doc().set()', () => {
   });
 
   it('sets new data', async () => {
-    const ref = firebase.firestore().doc('v6/set');
+    const ref = firebase.firestore().doc(`${COLLECTION}/set`);
     const data1 = { foo: 'bar' };
     const data2 = { foo: 'baz', bar: 123 };
     await ref.set(data1);
@@ -135,7 +139,7 @@ describe('firestore.doc().set()', () => {
   });
 
   it('merges all fields', async () => {
-    const ref = firebase.firestore().doc('v6/merge');
+    const ref = firebase.firestore().doc(`${COLLECTION}/merge`);
     const data1 = { foo: 'bar' };
     const data2 = { bar: 'baz' };
     const merged = { ...data1, ...data2 };
@@ -151,7 +155,7 @@ describe('firestore.doc().set()', () => {
   });
 
   it('merges specific fields', async () => {
-    const ref = firebase.firestore().doc('v6/merge');
+    const ref = firebase.firestore().doc(`${COLLECTION}/merge`);
     const data1 = { foo: '123', bar: 123, baz: '456' };
     const data2 = { foo: '234', bar: 234, baz: '678' };
     const merged = { foo: data1.foo, bar: data2.bar, baz: data2.baz };
