@@ -39,7 +39,7 @@ This happens to be a known problem with the upstream Analytics SDKs. The Firebas
 
 ### I'm receiving `InternalFirebaseAuth.FIREBASE_AUTH_API is not available on this device`. How do I fix this?
 
-To use some Firebase services (like auth) in an emulator, you need an Android devices with Google Play and associated services installed. Check this [StackOverflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android device with the necessary APIs installed.
+To use some Firebase services (like auth) in an emulator, you need an Android virtual device with Google Play services installed. Check this [StackOverflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android virtual device with the necessary APIs installed.
 
 Alternatively, you can install the Google Play Services SDK. In Android Studio:
 
