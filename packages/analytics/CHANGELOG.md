@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.7...@react-native-firebase/analytics@7.6.8) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
 ## [7.6.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.6...@react-native-firebase/analytics@7.6.7) (2020-09-30)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
