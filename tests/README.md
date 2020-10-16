@@ -87,7 +87,6 @@ With iOS Detox will start a simulator for you by default or run tests in an open
 For the Firestore emulator you need to install the tools and start the emulator:
 
 ```bash
-npm i -g firebase-tools
 yarn tests:emulator:start
 ```
 
