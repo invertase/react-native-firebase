@@ -4,7 +4,7 @@ platform :ios, '9.0'
 $RNFirebaseAsStaticFramework = false
 
 # Version override testing
-$FirebaseSDKVersion = '6.31.0'
+$FirebaseSDKVersion = '6.34.0'
 # $FabricSDKVersion = '1.6.0'
 # $CrashlyticsSDKVersion = '3.1.0'
 
@@ -45,7 +45,7 @@ target 'testing' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
   use_native_modules!
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :branch => 'master'
+  #pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :branch => 'master'
 end
 
 post_install do |installer|
@@ -54,6 +54,10 @@ post_install do |installer|
       config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = "YES"
       config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = "NO"
       config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = "NO"
+      config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
     end
+  end
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "i386 arm64"
   end
 end
