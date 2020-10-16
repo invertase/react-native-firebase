@@ -33,6 +33,7 @@
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "16.7.2",
+    "firebase-tools": "^8.12.1",
     "jet": "^0.6.6-0",
     "mocha": "^6.1.4",
     "nyc": "^15.0.1",
