@@ -177,7 +177,7 @@ manually overriding these native SDK versions.
 
 #### Android
 
-Within your projects /android/app/build.gradle file, provide your own versions by specifying any of the following options shown below:
+Within your projects /android/build.gradle file, provide your own versions by specifying any of the following options shown below:
 
 ```groovy
 project.ext {
