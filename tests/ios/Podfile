@@ -54,6 +54,10 @@ post_install do |installer|
       config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = "YES"
       config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = "NO"
       config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = "NO"
+      config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
     end
+  end
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "i386 arm64"
   end
 end
