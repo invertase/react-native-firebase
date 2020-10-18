@@ -224,8 +224,8 @@ yarn add @react-native-firebase/app
 
 If you are using React Native 0.60+, the module will be automatically linked via [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md).
 
-Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/v6/app/android) and
-[iOS](/v6/app/ios) for more information on manual linking.
+Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/install-android) and
+[iOS](/install-ios) for more information on manual linking.
 
 ## Specific module installation
 
