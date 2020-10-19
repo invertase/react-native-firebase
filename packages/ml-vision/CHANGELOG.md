@@ -7,6 +7,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @react-native-firebase/ml-vision
 
+**Note2:** Ths version of MLKit depends on an updated android "BoM" (Bill of Materials). That BoM has a problem specific to ml-vision which can cause compile failures on Android. There is an example of the required workaround in the react-native-firebase/tests project, reproduced here in case you need to add any of these dependencies to compile successfully. We apologize, but it is an upstream issues in firebase-android-sdk and out of our control here:
+
+```groovy
+
+  // Any or all of these may be necessary to include in your android/app/build.gradle fix known dependency issues in the SDK
+  // https://firebase.google.com/support/release-notes/android#bom_v25-8-0
+  implementation 'com.google.android.gms:play-services-vision:20.1.1'
+  implementation 'com.google.android.gms:play-services-vision-common:19.1.1'
+  implementation 'com.google.firebase:firebase-ml-vision-image-label-model:20.0.2'
+  implementation 'com.google.android.gms:play-services-vision-face-contour-internal:16.0.3'
+  implementation 'com.google.android.gms:play-services-vision-image-labeling-internal:16.0.5'
+  implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
+  implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.2'
+  implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+  
+```
+
 ## [7.4.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.8...@react-native-firebase/ml-vision@7.4.9) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/ml-vision
