@@ -84,3 +84,60 @@ Enter a new phone number (e.g. `+44 7444 555666`) and a test code (e.g. `123456`
 
 Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will
 cause a successful sign-in.
+
+
+# MFA Authentication
+
+After successfully creating a user with an email and password (see Authentication/Usage/Email/Password sign-in), use the `verifyPhoneNumber` method to send a verification code to a user's phone number and if the user enters the correct code, link the phone number to the authenticated user's account.
+
+```jsx
+import React, { useState } from 'react';
+import { Button, TextInput } from 'react-native';
+import auth from '@react-native-firebase/auth';
+
+function PhoneVerification() {
+  // If null, no SMS has been sent
+  const [confirm, setConfirm] = useState(null);
+
+  const [code, setCode] = useState('');
+  
+  // Handle the button press
+  async function verifyPhoneNumber(phoneNumber) {
+    const confirmation = await auth().verifyPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
+  }
+
+  async function confirmCode() {
+    try {
+      const credential = auth.PhoneAuthProvider.credential(
+          confirm.verificationId,
+          code,
+     );
+     await auth().currentUser.linkWithCredential(credential);
+    } catch (error) {
+       if (error.code == 'auth/invalid-verification-code'){
+        console.log('Invalid code.');
+       } else {
+        console.log('Account linking error');
+       }
+      
+    }
+  }
+
+  if (!confirm) {
+    return (
+      <Button
+        title="Verify Phone Number"
+        onPress={() => verifyPhoneNumber('+1 650-555-3434')}
+      />
+    );
+  }
+
+  return (
+    <>
+      <TextInput value={code} onChangeText={text => setCode(text)} />
+      <Button title="Confirm Code" onPress={() => confirmCode()} />
+    </>
+  );
+}
+```
