@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.4.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.10...@react-native-firebase/crashlytics@8.4.11) (2020-10-21)
+
+### Bug Fixes
+
+- **crashlytics, ios:** generate uncatchable crash for iOS crash testing ([#4426](https://github.com/invertase/react-native-firebase/issues/4426)) ([2dcaad5](https://github.com/invertase/react-native-firebase/commit/2dcaad59c27b90b1f2b3ef6b31e46d3eac8a5e2e))
+
 ## [8.4.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.9...@react-native-firebase/crashlytics@8.4.10) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
