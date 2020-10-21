@@ -398,7 +398,7 @@ Device-local notification APIs are not actually Firebase APIs at the same time t
 
 For these reasons the notifications package has been removed from react-native-firebase for versions 6 and higher. 
 
-How to migrate: If you use device-local notification APIs and user-visible notifications in your app you will want to integrate a separate library that gives you access to device-local notification APIs. Many people have reported success with each of https://notifee.app, https://github.com/zo0r/react-native-push-notification, and https://github.com/zo0r/react-native-push-notification
+How to migrate: If you use device-local notification APIs and user-visible notifications in your app you will want to integrate a separate library that gives you access to device-local notification APIs. Many people have reported success with each of https://notifee.app, https://wix.github.io/react-native-notifications and https://github.com/zo0r/react-native-push-notification
 
 ### Cloud Messaging
 
