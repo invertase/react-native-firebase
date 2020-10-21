@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.10...@react-native-firebase/ml-vision@7.4.11) (2020-10-21)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
 ## [7.4.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.9...@react-native-firebase/ml-vision@7.4.10) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/ml-vision
@@ -21,7 +25,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
   implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
   implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.2'
   implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
-  
+
 ```
 
 ## [7.4.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.8...@react-native-firebase/ml-vision@7.4.9) (2020-10-16)
