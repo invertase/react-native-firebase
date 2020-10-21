@@ -54,9 +54,9 @@ RCT_EXPORT_METHOD(checkForUnsentReports:
 RCT_EXPORT_METHOD(crash) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     // https://firebase.google.com/docs/crashlytics/test-implementation?platform=ios recommends using "@[][1]" to crash,
-    // but that gets caught by react-native and shown as a red box for debug builds. Throw a different kind exception
-    // here to generate a hard crash.
-    @throw NSInternalInconsistencyException;
+    // but that gets caught by react-native and shown as a red box for debug builds. Raise SIGSEGV here to generate a hard crash.
+    int *p = 0;
+    *p = 0;
   }
 }
 
