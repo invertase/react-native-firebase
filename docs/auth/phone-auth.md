@@ -88,7 +88,7 @@ cause a successful sign-in.
 
 # MFA-like Account Creation
 
-After successfully creating a user with an email and password (see Authentication/Usage/Email/Password sign-in), use the `verifyPhoneNumber` method to send a verification code to a user's phone number and if the user enters the correct code, link the phone number to the authenticated user's account. This creates a MFA-like authentication flow for account creation. However, to implement MFA with firebase, your app must call additional methods and use Google Cloud Identity Platform, which is a paid service, details availble in this guide https://cloud.google.com/identity-platform/docs/web/mfa
+After successfully creating a user with an email and password (see Authentication/Usage/Email/Password sign-in), use the `verifyPhoneNumber` method to send a verification code to a user's phone number and if the user enters the correct code, link the phone number to the authenticated user's account. This creates a MFA-like authentication flow for account creation. However, to implement MFA with firebase, your app must call additional methods and use Google Cloud Identity Platform, which is a paid service, details available in this guide https://cloud.google.com/identity-platform/docs/web/mfa
 
 ```jsx
 import React, {useState, useEffect} from 'react';
