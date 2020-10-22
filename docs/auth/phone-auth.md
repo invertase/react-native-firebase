@@ -128,7 +128,7 @@ function PhoneVerification() {
     return (
       <Button
         title="Verify Phone Number"
-        onPress={() => verifyPhoneNumber('+1 650-555-3434')}
+        onPress={() => verifyPhoneNumber('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')}
       />
     );
   }
