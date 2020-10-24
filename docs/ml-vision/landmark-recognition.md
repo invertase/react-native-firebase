@@ -62,4 +62,4 @@ const landmarks = await vision().cloudLandmarkRecognizerProcessImage(localPath, 
 By default, the service will use a stable model to detect landmarks. However, if you feel results are not up-to-date, you
 can optionally use the latest model available. Results however may change unexpectedly.
 
-View the [`VisionCloudLandmarkRecognizerOptions`](http://localhost:8000/reference/ml-vision/visioncloudlandmarkrecognizeroptions) documentation for more information.
+View the [`VisionCloudLandmarkRecognizerOptions`](/reference/ml-vision/visioncloudlandmarkrecognizeroptions) documentation for more information.
