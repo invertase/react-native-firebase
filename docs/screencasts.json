@@ -60,7 +60,7 @@
     "slug": "enabling-multidex-for-android",
     "vid": "4oVGEgHR3KE",
     "title": "Enabling Multidex fix for Android",
-    "description": "As more native dependencies are added to your project, in particular firebase, it may bump you over the 64k method. Learn how to update the limit on the Android build system.",
+    "description": "As more native dependencies are added to your project, in particular Cloud Firestore, it may bump you over the 64k method. Learn how to update the limit on the Android build system.",
     "tags": ["multidex", "android", "firestore"]
   }
 ]
