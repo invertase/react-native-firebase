@@ -52,6 +52,16 @@ export namespace FirebaseAuthTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
   import NativeFirebaseError = ReactNativeFirebase.NativeFirebaseError;
 
+  export interface NativeFirebaseAuthError extends NativeFirebaseError {
+    userInfo: {
+      /**
+       *  When trying to sign in or link with an AuthCredential which was already associated with an account,
+       *  you might receive an updated credential (depending of provider) which you can use to recover from the error.
+       */
+      authCredential: AuthCredential | null;
+    };
+  }
+
   /**
    * Interface that represents the credentials returned by an auth provider. Implementations specify the details
    * about each auth provider's credential requirements.
@@ -980,6 +990,7 @@ export namespace FirebaseAuthTypes {
      * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
      * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
      * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
      * @param credential A created {@link auth.AuthCredential}.
      */
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
@@ -1634,21 +1645,17 @@ export namespace FirebaseAuthTypes {
 
 type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
 
-declare module '@react-native-firebase/auth' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseAuthTypes.Module,
+  FirebaseAuthTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  auth: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { auth(): FirebaseAuthTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseAuthTypes.Module,
-    FirebaseAuthTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.

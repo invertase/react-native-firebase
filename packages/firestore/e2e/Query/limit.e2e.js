@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore().collection().limit()', () => {
   before(() => wipe());
-
   it('throws if limit is invalid', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .limit(-1);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -36,14 +35,14 @@ describe('firestore().collection().limit()', () => {
   it('sets limit on internals', async () => {
     const colRef = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .limit(123);
 
     colRef._modifiers.options.limit.should.eql(123);
   });
 
   it('limits the number of documents', async () => {
-    const colRef = firebase.firestore().collection('v6');
+    const colRef = firebase.firestore().collection(COLLECTION);
 
     // Add 3
     await colRef.add({});

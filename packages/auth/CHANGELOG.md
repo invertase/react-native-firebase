@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.3.0...@react-native-firebase/auth@9.3.1) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+# [9.3.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.7...@react-native-firebase/auth@9.3.0) (2020-10-07)
+
+### Features
+
+- **auth:** Access to FIRAuthErrorUserInfoUpdatedCredentialKey with Apple Sign In ([#4359](https://github.com/invertase/react-native-firebase/issues/4359)) ([5851bd0](https://github.com/invertase/react-native-firebase/commit/5851bd0a92e4b6b9cda4eed8dd1dd06a45e5826b))
+
+## [9.2.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.6...@react-native-firebase/auth@9.2.7) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [9.2.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.5...@react-native-firebase/auth@9.2.6) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [9.2.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.4...@react-native-firebase/auth@9.2.5) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [9.2.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.3...@react-native-firebase/auth@9.2.4) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
+## [9.2.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.2...@react-native-firebase/auth@9.2.3) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [9.2.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.1...@react-native-firebase/auth@9.2.2) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/auth
+
 ## [9.2.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.2.0...@react-native-firebase/auth@9.2.1) (2020-09-04)
 
 ### Bug Fixes

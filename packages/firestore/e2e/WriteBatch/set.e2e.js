@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.set()', () => {
   it('throws if a DocumentReference instance is not provided', () => {
@@ -32,7 +33,8 @@ describe('firestore.WriteBatch.set()', () => {
   it('throws if a DocumentReference firestore instance is different', () => {
     try {
       const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc('v6/foo');
+      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -48,7 +50,8 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if a data is not an object', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -62,7 +65,8 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if a options is not an object', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -76,7 +80,7 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if merge and mergeFields is provided', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
         .firestore()
         .batch()
@@ -97,7 +101,7 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if merge is not a boolean', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
         .firestore()
         .batch()
@@ -117,7 +121,7 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if mergeFields is not an array', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
         .firestore()
         .batch()
@@ -137,7 +141,8 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if mergeFields item is not valid', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -159,7 +164,8 @@ describe('firestore.WriteBatch.set()', () => {
 
   it('throws if string fieldpath is invalid', () => {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
       firebase
         .firestore()
         .batch()
@@ -178,7 +184,8 @@ describe('firestore.WriteBatch.set()', () => {
   });
 
   it('accepts string fieldpath & FieldPath', () => {
-    const docRef = firebase.firestore().doc('v6/foo');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
     firebase
       .firestore()
       .batch()
@@ -192,7 +199,8 @@ describe('firestore.WriteBatch.set()', () => {
   });
 
   it('adds the DocumentReference to the internal writes', () => {
-    const docRef = firebase.firestore().doc('v6/foo');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+
     const wb = firebase
       .firestore()
       .batch()
@@ -203,7 +211,7 @@ describe('firestore.WriteBatch.set()', () => {
       );
     wb._writes.length.should.eql(1);
     const expected = {
-      path: 'v6/foo',
+      path: `${COLLECTION}/foo`,
       type: 'SET',
       options: jet.contextify({
         mergeFields: jet.contextify(['foo.bar']),

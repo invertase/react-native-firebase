@@ -224,8 +224,8 @@ yarn add @react-native-firebase/app
 
 If you are using React Native 0.60+, the module will be automatically linked via [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md).
 
-Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/v6/app/android) and
-[iOS](/v6/app/ios) for more information on manual linking.
+Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/install-android) and
+[iOS](/install-ios) for more information on manual linking.
 
 ## Specific module installation
 
@@ -391,6 +391,14 @@ This is a new module. See documentation for usage.
 `@react-native-firebase/iid`
 
 No breaking changes.
+
+### Notifications
+
+Device-local notification APIs are not actually Firebase APIs at the same time they are very difficult to maintain. 
+
+For these reasons the notifications package has been removed from react-native-firebase for versions 6 and higher. 
+
+How to migrate: If you use device-local notification APIs and user-visible notifications in your app you will want to integrate a separate library that gives you access to device-local notification APIs. Many people have reported success with each of https://notifee.app, https://wix.github.io/react-native-notifications and https://github.com/zo0r/react-native-push-notification
 
 ### Cloud Messaging
 

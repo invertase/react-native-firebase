@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.10...@react-native-firebase/remote-config@9.0.11) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.9...@react-native-firebase/remote-config@9.0.10) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.8...@react-native-firebase/remote-config@9.0.9) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [9.0.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.7...@react-native-firebase/remote-config@9.0.8) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.6...@react-native-firebase/remote-config@9.0.7) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.5...@react-native-firebase/remote-config@9.0.6) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [9.0.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.4...@react-native-firebase/remote-config@9.0.5) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [9.0.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.3...@react-native-firebase/remote-config@9.0.4) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [9.0.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.2...@react-native-firebase/remote-config@9.0.3) (2020-09-02)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

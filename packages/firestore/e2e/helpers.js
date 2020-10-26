@@ -16,13 +16,30 @@
  * limitations under the License.
  *
  */
+const http = require('http');
 
-exports.wipe = async function wipe(collection = 'v6', debug = false) {
+const deleteOptions = {
+  method: 'DELETE',
+  port: 8080,
+  host: '127.0.0.1',
+  path: '/emulator/v1/projects/react-native-firebase-testing/databases/(default)/documents',
+};
+
+exports.wipe = async function wipe(debug = false) {
   if (debug) {
     console.time('wipe');
   }
-  await new TestAdminApi().firestore().clearCollection(collection);
-  if (debug) {
-    console.timeEnd('wipe');
-  }
+
+  await new Promise((resolve, reject) => {
+    const req = http.request(deleteOptions);
+
+    req.on('error', error => reject(error));
+
+    req.end(() => {
+      if (debug) {
+        console.timeEnd('wipe');
+      }
+      resolve();
+    });
+  });
 };

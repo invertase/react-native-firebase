@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.10...@react-native-firebase/ml-vision@7.4.11) (2020-10-21)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+## [7.4.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.9...@react-native-firebase/ml-vision@7.4.10) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+**Note2:** Ths version of MLKit depends on an updated android "BoM" (Bill of Materials). That BoM has a problem specific to ml-vision which can cause compile failures on Android. There is an example of the required workaround in the react-native-firebase/tests project, reproduced here in case you need to add any of these dependencies to compile successfully. We apologize, but it is an upstream issues in firebase-android-sdk and out of our control here:
+
+```groovy
+
+  // Any or all of these may be necessary to include in your android/app/build.gradle fix known dependency issues in the SDK
+  // https://firebase.google.com/support/release-notes/android#bom_v25-8-0
+  implementation 'com.google.android.gms:play-services-vision:20.1.1'
+  implementation 'com.google.android.gms:play-services-vision-common:19.1.1'
+  implementation 'com.google.firebase:firebase-ml-vision-image-label-model:20.0.2'
+  implementation 'com.google.android.gms:play-services-vision-face-contour-internal:16.0.3'
+  implementation 'com.google.android.gms:play-services-vision-image-labeling-internal:16.0.5'
+  implementation 'com.google.android.gms:play-services-vision-image-label:18.0.5'
+  implementation 'com.google.firebase:firebase-ml-vision-face-model:20.0.2'
+  implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+
+```
+
+## [7.4.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.8...@react-native-firebase/ml-vision@7.4.9) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+## [7.4.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.7...@react-native-firebase/ml-vision@7.4.8) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+## [7.4.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.6...@react-native-firebase/ml-vision@7.4.7) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+## [7.4.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.5...@react-native-firebase/ml-vision@7.4.6) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+## [7.4.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.4...@react-native-firebase/ml-vision@7.4.5) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
+## [7.4.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.3...@react-native-firebase/ml-vision@7.4.4) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [7.4.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.2...@react-native-firebase/ml-vision@7.4.3) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/ml-vision
+
 ## [7.4.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.1...@react-native-firebase/ml-vision@7.4.2) (2020-08-28)
 
 **Note:** Version bump only for package @react-native-firebase/ml-vision

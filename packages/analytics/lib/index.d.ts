@@ -1262,7 +1262,7 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param params See {@link analytics.SetCheckoutOptionEventParameters}.
      */
-    logSetCheckoutOption(params: SetCheckoutOptionEventParameters): Promise<void>;
+    logSetCheckoutOption(params: any): Promise<void>;
 
     /**
      * Share event. Apps with social features can log the Share event to identify the most viral content.
@@ -1480,21 +1480,19 @@ export namespace FirebaseAnalyticsTypes {
   }
 }
 
-declare module '@react-native-firebase/analytics' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseAnalyticsTypes.Module,
+  FirebaseAnalyticsTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  analytics: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseAnalyticsTypes.Module,
-    FirebaseAnalyticsTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -1512,33 +1510,31 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       analytics(): FirebaseAnalyticsTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * Disable or enable auto collection of analytics data.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "analytics_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable analytics data collection, e.g. once user has granted permission:
-     * await firebase.analytics().setAnalyticsCollectionEnabled(true);
-     * ```
-     */
-    analytics_auto_collection_enabled: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * Disable or enable auto collection of analytics data.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "analytics_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable analytics data collection, e.g. once user has granted permission:
+       * await firebase.analytics().setAnalyticsCollectionEnabled(true);
+       * ```
+       */
+      analytics_auto_collection_enabled: boolean;
+    }
   }
 }

@@ -224,21 +224,19 @@ export namespace FirebaseLanguageTypes {
   }
 }
 
-declare module '@react-native-firebase/ml-natural-language' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseLanguageTypes.Module,
+  FirebaseLanguageTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  naturalLanguage: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { naturalLanguage(): FirebaseLanguageTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseLanguageTypes.Module,
-    FirebaseLanguageTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -257,19 +255,17 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       naturalLanguage(): FirebaseLanguageTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * If `true`, the Language ID Model will be installed onto the device.
-     */
-    ml_natural_language_language_id_model: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * If `true`, the Language ID Model will be installed onto the device.
+       */
+      ml_natural_language_language_id_model: boolean;
 
-    /**
-     * If `true`, the Smart Reply Model will be installed onto the device.
-     */
-    ml_natural_language_smart_reply_model: boolean;
+      /**
+       * If `true`, the Smart Reply Model will be installed onto the device.
+       */
+      ml_natural_language_smart_reply_model: boolean;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { firebase } from '../lib';
+import { firebase, FirebaseAdMobTypes } from '../lib';
 
 describe('Admob', () => {
   describe('namespace', () => {
@@ -21,7 +21,7 @@ describe('Admob', () => {
       it('throws if maxAdContentRating is invalid', () => {
         expect(() =>
           firebase.admob().setRequestConfiguration({
-            maxAdContentRating: 'Y',
+            maxAdContentRating: 'Y' as FirebaseAdMobTypes.MaxAdContentRating[keyof FirebaseAdMobTypes.MaxAdContentRating],
           }),
         ).toThrowError(
           "firebase.admob().setRequestConfiguration(*) 'requestConfiguration.maxAdContentRating' expected on of MaxAdContentRating.G, MaxAdContentRating.PG, MaxAdContentRating.T or MaxAdContentRating.MA",

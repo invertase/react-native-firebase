@@ -1,3 +1,5 @@
+import { FirebaseVisionTypes } from '.';
+
 /**
  * Firebase ML Kit package for React Native.
  *
@@ -49,12 +51,12 @@ export namespace MLKitVision {
     /**
      * Returns the bounding rectangle of the detected barcode.
      */
-    boundingBox: VisionRectangle;
+    boundingBox: FirebaseVisionTypes.VisionRectangle;
 
     /**
      * Gets the four corner points in clockwise direction starting with top-left. Due to the possible perspective distortions, this is not necessarily a rectangle. Parts of the region could be outside of the image.
      */
-    cornerPoints: VisionPoint[];
+    cornerPoints: FirebaseVisionTypes.VisionPoint[];
 
     /**
      * Returns the barcode format, for example `VisionBarcodeFormat.QR_CODE`
@@ -178,7 +180,7 @@ export namespace MLKitVision {
      * }
      * ```
      */
-    geoPoint?: VisionGeoPoint;
+    geoPoint?: FirebaseVisionTypes.VisionGeoPoint;
 
     /**
      * Gets parsed phone details (set if `valueType` is `VisionBarcodeValueType.PHONE`).

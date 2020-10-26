@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m}'
 
   # React Native dependencies
-  s.dependency          'React'
+  s.dependency          'React-Core'
   s.dependency          'RNFBApp'
 
   if defined?($FirebaseSDKVersion)
