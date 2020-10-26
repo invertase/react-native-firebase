@@ -454,7 +454,9 @@ Note that only predefined colors can be used in `firebase.json`. If you want to 
 </resources>
 
 <!-- <projectRoot>/android/app/src/main/AndroidManifest.xml -->
-<manifest>
+
+<!--  add "tools" to manifest tag  -->
+<manifest xmlns:tools="http://schemas.android.com/tools">
   <application>
       <!-- ... -->
 
