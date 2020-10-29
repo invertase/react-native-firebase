@@ -53,7 +53,7 @@ passing in the scope required for our application:
 
 ```js
 import auth from '@react-native-firebase/auth';
-import appleAuth from '@invertase/react-native-apple-authentication';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
   // Start the sign-in request
