@@ -53,16 +53,13 @@ passing in the scope required for our application:
 
 ```js
 import auth from '@react-native-firebase/auth';
-import appleAuth, {
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
   // Start the sign-in request
   const appleAuthRequestResponse = await appleAuth.performRequest({
-    requestedOperation: AppleAuthRequestOperation.LOGIN,
-    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
   });
 
   // Ensure Apple returned a user identityToken
