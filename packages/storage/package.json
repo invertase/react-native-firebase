@@ -29,7 +29,7 @@
     "download"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "8.4.6"
+    "@react-native-firebase/app": "8.4.7"
   },
   "publishConfig": {
     "access": "public"
