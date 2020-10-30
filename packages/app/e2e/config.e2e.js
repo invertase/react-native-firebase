@@ -40,11 +40,12 @@ describe('config', () => {
     });
 
     // NOTE: "preferencesClearAll" clears Firestore settings. Set DB as emulator again.
-    after(async () => {
-      await firebase
-        .firestore()
-        .settings({ host: 'localhost:8080', ssl: false, persistence: true });
-    });
+    // FIXME if we use the emulator, then we never throw errors because firestore rules are permissive, that causes test failure
+    // after(async () => {
+    //   await firebase
+    //     .firestore()
+    //     .settings({ host: 'localhost:8080', ssl: false, persistence: true });
+    // });
 
     it('should set bool values', async () => {
       const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
