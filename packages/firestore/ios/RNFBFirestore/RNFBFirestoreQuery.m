@@ -58,7 +58,7 @@
 
     if ([operator isEqualToString:@"EQUAL"]) {
       _query = [_query queryWhereFieldPath:fieldPath isEqualTo:value];
-    } else if([operator isEqualToString:@"NOT_EQUAL"]){
+    } else if([operator isEqualToString:@"NOT_EQUAL"]) {
       _query = [_query queryWhereFieldPath:fieldPath isNotEqualTo:value];
     } else if ([operator isEqualToString:@"GREATER_THAN"]) {
       _query = [_query queryWhereFieldPath:fieldPath isGreaterThan:value];
