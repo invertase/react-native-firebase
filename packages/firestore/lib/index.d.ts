@@ -1240,7 +1240,7 @@ export namespace FirebaseFirestoreTypes {
      * ```
      *
      * @param fieldPath The path to compare.
-     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains", "array-contains-any", "in").
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "!=", "array-contains", "array-contains-any", "in", "not-in").
      * @param value The comparison value.
      */
     where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
@@ -1255,9 +1255,11 @@ export namespace FirebaseFirestoreTypes {
     | '=='
     | '>'
     | '>='
+    | '!='
     | 'array-contains'
     | 'array-contains-any'
-    | 'in';
+    | 'in'
+    | 'not-in';
 
   /**
    * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
