@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.9.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.7...@react-native-firebase/firestore@7.9.0) (2020-10-30)
+
+### Features
+
+- **firestore:** query operators: 'not-in' & '!=' ([#4474](https://github.com/invertase/react-native-firebase/issues/4474)) ([9e68faf](https://github.com/invertase/react-native-firebase/commit/9e68faf0310bd5f9c3347cad3dd5b80c9c0582e1))
+
 ## [7.8.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.8.6...@react-native-firebase/firestore@7.8.7) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

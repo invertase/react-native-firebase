@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app",
-  "version": "8.4.6",
+  "version": "8.4.7",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "A well tested, feature rich Firebase implementation for React Native, supporting iOS & Android. Individual module support for Admob, Analytics, Auth, Crash Reporting, Cloud Firestore, Database, Dynamic Links, Functions, Messaging (FCM), Remote Config, Storage and more.",
   "main": "lib/index.js",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.5.0](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.21...react-native-firebase-tests@8.5.0) (2020-10-30)
+
+
+### Features
+
+* **firestore:** query operators: 'not-in' & '!=' ([#4474](https://github.com/invertase/react-native-firebase/issues/4474)) ([9e68faf](https://github.com/invertase/react-native-firebase/commit/9e68faf0310bd5f9c3347cad3dd5b80c9c0582e1))
+
+
+
+
+
 ## [8.4.21](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.4.20...react-native-firebase-tests@8.4.21) (2020-10-21)
 
 **Note:** Version bump only for package react-native-firebase-tests
