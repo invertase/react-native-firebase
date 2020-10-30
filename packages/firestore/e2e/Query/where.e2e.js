@@ -436,4 +436,137 @@ describe('firestore().collection().where()', () => {
 
     items.length.should.equal(1);
   });
+
+  it("should correctly retrieve data when using 'not-in' operator", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    await Promise.all([ref.add({ notIn: 'here' }), ref.add({ notIn: 'now' })]);
+
+    const result = await ref.where('notIn', 'not-in', ['here', 'there', 'everywhere']).get();
+    should(result.docs.length).equal(1);
+    should(result.docs[0].data().notIn).equal('now');
+  });
+
+  it("should throw error when using 'not-in' operator twice", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'not-in', [1]).where('test', 'not-in', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one 'not-in' filter.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with '!=' operator", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'not-in' filters with '!=' inequality filters",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with 'in' operator", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'in', [2]).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use 'not-in' filters with 'in' filters.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with 'array-contains-any' operator", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'array-contains-any', [2]).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'not-in' filters with 'array-contains-any' filters.",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when 'not-in' filter has a list of more than 10 items", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'not-in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        'filters support a maximum of 10 elements in the value array.',
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should correctly retrieve data when using '!=' operator", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    await Promise.all([ref.add({ notEqual: 'here' }), ref.add({ notEqual: 'now' })]);
+
+    const result = await ref.where('notEqual', '!=', 'here').get();
+
+    should(result.docs.length).equal(1);
+    should(result.docs[0].data().notEqual).equal('now');
+  });
+
+  it("should throw error when using '!=' operator twice ", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('test', '!=', 2);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one '!=' inequality filter.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining '!=' operator with any other inequality operator on a different field", async () => {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '>', 1);
+      return Promise.reject(new Error('Did not throw an Error on >.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '<', 1);
+      return Promise.reject(new Error('Did not throw an Error on <.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '<=', 1);
+      return Promise.reject(new Error('Did not throw an Error <=.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '>=', 1);
+      return Promise.reject(new Error('Did not throw an Error >=.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    return Promise.resolve();
+  });
 });
