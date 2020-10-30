@@ -290,7 +290,7 @@ export default class FirestoreQueryModifiers {
 
         if (hasArrayContainsAny) {
           throw new Error(
-            "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
+          "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
           );
         }
 
@@ -303,7 +303,7 @@ export default class FirestoreQueryModifiers {
 
       if (filter.operator === OPERATORS['not-in']) {
         if (hasNotIn) {
-          throw new Error("Invalid query. You cannot use more than one 'not-in' filters.");
+          throw new Error("Invalid query. You cannot use more than one 'not-in' filter.");
         }
 
         if (hasNotEqual) {

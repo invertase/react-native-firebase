@@ -447,14 +447,14 @@ describe('firestore().collection().where()', () => {
     should(result.docs[0].data().notIn).equal('now');
   });
 
-  it("should throw error when using 'not-in' operator twice ", async () => {
+  it("should throw error when using 'not-in' operator twice", async () => {
     const ref = firebase.firestore().collection(COLLECTION);
 
     try {
       ref.where('test', 'not-in', [1]).where('test', 'not-in', [2]);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql("You cannot use more than one 'not-in' filters.");
+      error.message.should.containEql("You cannot use more than one 'not-in' filter.");
       return Promise.resolve();
     }
   });
@@ -499,7 +499,7 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it("should throw error when 'not-in' operator value has a list of more than 10 items", async () => {
+  it("should throw error when 'not-in' filter has a list of more than 10 items", async () => {
     const ref = firebase.firestore().collection(COLLECTION);
 
     try {
