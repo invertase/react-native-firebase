@@ -290,7 +290,7 @@ export default class FirestoreQueryModifiers {
 
         if (hasArrayContainsAny) {
           throw new Error(
-          "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
+            "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
           );
         }
 
