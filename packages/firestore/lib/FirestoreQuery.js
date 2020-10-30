@@ -383,7 +383,7 @@ export default class FirestoreQuery {
 
     if (!this._modifiers.isValidOperator(opStr)) {
       throw new Error(
-        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', 'array-contains', 'array-contains-any' or 'in'.",
+        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', '!=', 'array-contains', 'not-in', 'array-contains-any' or 'in'.",
       );
     }
 
