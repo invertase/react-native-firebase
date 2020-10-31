@@ -107,10 +107,10 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64"
+          command: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
 
       - name: Create Emulator
-        run: echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-28;google_apis;x86_64' -g google_apis
+        run: echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
 
       # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
       - name: Start Android Emulator

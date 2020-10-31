@@ -161,8 +161,7 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
 
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-      constants.put(KEY_DOCUMENT_DIRECTORY, folder.getAbsolutePath());
+      constants.put(KEY_DOCUMENT_DIRECTORY, context.getExternalFilesDir(null).getAbsolutePath());
     } else {
       constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     }

@@ -163,18 +163,16 @@ function moduleNameToFullName(name) {
       return 'Instance ID';
     case 'in-app-messaging':
       return 'In-App Messaging';
-    case 'ml-natural-language':
-      return 'ML Kit Natural Language';
     case 'messaging':
       return 'Cloud Messaging';
-    case 'perf':
+      case 'ml':
+        return 'ML';
+      case 'perf':
       return 'Performance Monitoring';
     case 'remote-config':
       return 'Remote Config';
     case 'storage':
       return 'Storage';
-    case 'ml-vision':
-      return 'ML Kit Vision';
     case 'app':
       return 'Core/App';
     default:

@@ -35,7 +35,7 @@ export const KNOWN_NAMESPACES = [
   'dynamicLinks',
   'messaging',
   'naturalLanguage',
-  'vision',
+  'ml',
   'notifications',
   'perf',
   'utils',
