@@ -109,7 +109,7 @@ public class UniversalFirebaseConfigModule extends UniversalFirebaseModule {
       }
 
       if (xmlResourceParser != null) {
-        FirebaseRemoteConfig.getInstance(firebaseApp).setDefaults(resourceId);
+        Tasks.await(FirebaseRemoteConfig.getInstance(firebaseApp).setDefaultsAsync(resourceId));
         return null;
       }
 
