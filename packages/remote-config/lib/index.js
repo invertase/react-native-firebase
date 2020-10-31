@@ -95,29 +95,8 @@ class FirebaseConfigModule extends FirebaseModule {
     return values;
   }
 
-  get defaultConfig() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().defaultConfig is not supported. Default values are merged with config values',
-    );
-  }
-
-  set defaultConfig(defaults) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().defaultConfig is not supported. Please use firebase.remoteConfig().setDefaults({ [key] : value }) to set default values',
-    );
-  }
-
   get settings() {
     return this._settings;
-  }
-
-  set settings(settings) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "firebase.remoteConfig().settings = { [key]: string }; is not supported. Please use 'firebase.remoteConfig().setConfigSettings({ ...[key]: string, })' instead'",
-    );
   }
 
   get fetchTimeMillis() {
@@ -127,20 +106,6 @@ class FirebaseConfigModule extends FirebaseModule {
 
   get lastFetchStatus() {
     return this._lastFetchStatus;
-  }
-
-  get isDeveloperModeEnabled() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().isDeveloperModeEnabled has now been removed. Please consider setting `settings.minimumFetchIntervalMillis` in remoteConfig.Settings',
-    );
-  }
-
-  get minimumFetchInterval() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.remoteConfig().minimumFetchInterval has been removed. Use `firebase.remoteConfig().settings.minimumFetchIntervalMillis` instead.',
-    );
   }
 
   /**
@@ -164,20 +129,6 @@ class FirebaseConfigModule extends FirebaseModule {
 
     if (!isObject(settings)) {
       throw new Error('firebase.remoteConfig().setConfigSettings(*): settings must set an object.');
-    }
-
-    if (hasOwnProperty(settings, 'isDeveloperModeEnabled')) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.isDeveloperModeEnabled' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
-      );
-    }
-
-    if (hasOwnProperty(settings, 'minimumFetchInterval')) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchInterval' has now been removed. Please consider setting 'settings.minimumFetchIntervalMillis'",
-      );
     }
 
     if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
@@ -263,11 +214,6 @@ class FirebaseConfigModule extends FirebaseModule {
     }
 
     return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
-  }
-
-  setLogLevel() {
-    // eslint-disable-next-line no-console
-    console.warn('firebase.remoteConfig().setLogLevel() is not supported natively.');
   }
 
   _updateFromConstants(constants) {

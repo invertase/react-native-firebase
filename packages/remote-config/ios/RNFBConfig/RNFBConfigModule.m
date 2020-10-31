@@ -157,20 +157,17 @@ RCT_EXPORT_METHOD(activate:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
-  FIRRemoteConfigActivateCompletion completionHandler = ^(NSError *__nullable error) {
-    if(error){
-      if(error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
+  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletion:^(BOOL changed, NSError *_Nullable error) {
+    if (error){
+      if (error.userInfo && error.userInfo[@"ActivationFailureReason"] != nil && [error.userInfo[@"ActivationFailureReason"] containsString:@"already activated"]){
           resolve([self resultWithConstants:@([RCTConvert BOOL:@(NO)]) firebaseApp:firebaseApp]);
       } else {
         [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
       }
-      
     } else {
-      resolve([self resultWithConstants:@([RCTConvert BOOL:@(YES)]) firebaseApp:firebaseApp]);
+      resolve([self resultWithConstants:@([RCTConvert BOOL:@(changed)]) firebaseApp:firebaseApp]);
     }
-  };
-    
-  [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] activateWithCompletionHandler:completionHandler];
+  }];
 }
 
 RCT_EXPORT_METHOD(setConfigSettings:
@@ -242,7 +239,7 @@ RCT_EXPORT_METHOD(setDefaultsFromResource:
     values[key] = convertFIRRemoteConfigValueToNSDictionary(value);
   }
 
-  NSArray *defaultKeys = [remoteConfig allKeysFromSource:FIRRemoteConfigSourceDefault namespace:FIRNamespaceGoogleMobilePlatform];
+  NSArray *defaultKeys = [remoteConfig allKeysFromSource:FIRRemoteConfigSourceDefault];
   for (NSString *key in defaultKeys) {
     if ([values valueForKey:key] == nil) {
       FIRRemoteConfigValue *value = [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] configValueForKey:key];
