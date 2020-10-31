@@ -52,13 +52,6 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Void> setMinimumSessionDuration(long milliseconds) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration(milliseconds);
-      return null;
-    });
-  }
-
   Task<Void> setSessionTimeoutDuration(long milliseconds) {
     return Tasks.call(() -> {
       FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration(milliseconds);

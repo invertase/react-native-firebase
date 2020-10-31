@@ -664,39 +664,6 @@ export namespace FirebaseAnalyticsTypes {
     setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
 
     /**
-     * Sets the current screen name.
-     *
-     * #### Example
-     *
-     * ```js
-     * await firebase.analytics().setCurrentScreen('ProductScreen', 'ProductScreen');
-     * ```
-     *
-     * > Whilst screenClassOverride is optional, it is recommended it is
-     * always sent as your current class name. For example on Android it will always
-     * show as 'MainActivity' if you do not specify it.
-     *
-     * @param screenName A screen name, e.g. Product.
-     * @param screenClassOverride On Android, React Native runs in a single activity called
-     *        'MainActivity'. Setting this parameter overrides the default name shown on logs.
-     * @deprecated
-     */
-    setCurrentScreen(screenName: string, screenClassOverride?: string): Promise<void>;
-    /**
-     * Sets the minimum engagement time required before starting a session.
-     *
-     * #### Example
-     *
-     * ```js
-     * // 20 seconds
-     * await firebase.analytics().setMinimumSessionDuration(20000);
-     * ```
-     *
-     * @param milliseconds The default value is 10000 (10 seconds).
-     */
-    setMinimumSessionDuration(milliseconds?: number): Promise<void>;
-
-    /**
      * Sets the duration of inactivity that terminates the current session.
      *
      * #### Example

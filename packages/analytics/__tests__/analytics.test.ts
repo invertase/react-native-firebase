@@ -48,20 +48,6 @@ describe('Analytics', () => {
 
   it('errors if milliseconds not a number', () => {
     // @ts-ignore test
-    expect(() => firebase.analytics().setMinimumSessionDuration('123')).toThrowError(
-      "'milliseconds' expected a number value",
-    );
-  });
-
-  it('errors if milliseconds is less than 0', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setMinimumSessionDuration(-100)).toThrowError(
-      "'milliseconds' expected a positive number value",
-    );
-  });
-
-  it('errors if milliseconds not a number', () => {
-    // @ts-ignore test
     expect(() => firebase.analytics().setSessionTimeoutDuration('123')).toThrowError(
       "'milliseconds' expected a number value",
     );

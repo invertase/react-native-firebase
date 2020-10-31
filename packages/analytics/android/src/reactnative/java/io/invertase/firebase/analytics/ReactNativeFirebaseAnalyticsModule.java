@@ -60,17 +60,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void setMinimumSessionDuration(double milliseconds, Promise promise) {
-    module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
-  }
-
-  @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
     module.setSessionTimeoutDuration((long) milliseconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
