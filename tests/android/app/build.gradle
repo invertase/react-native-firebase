@@ -37,14 +37,15 @@ def enableSeparateBuildPerCPUArchitecture = false
 def useIntlJsc = false
 
 android {
-  compileSdkVersion 29
+  compileSdkVersion 30
   aaptOptions {
+    // https://firebase.google.com/docs/ml/android/use-custom-models#local_model
     noCompress "tflite"
   }
   defaultConfig {
     applicationId "com.invertase.testing"
     minSdkVersion 21
-    targetSdkVersion 29
+    targetSdkVersion 30
     versionCode 1
     versionName "1.0"
 

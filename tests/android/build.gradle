@@ -7,11 +7,11 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.google.gms:google-services:4.3.3'
-    classpath 'com.android.tools.build:gradle:4.0.1'
+    classpath 'com.google.gms:google-services:4.3.4'
+    classpath 'com.android.tools.build:gradle:4.1.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath 'com.google.firebase:perf-plugin:1.3.0'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
+    classpath 'com.google.firebase:perf-plugin:1.3.3'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
   }
 }
 
@@ -41,10 +41,10 @@ allprojects {
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
   ext {
-    compileSdk = 29
-    buildTools = "29.0.3"
+    compileSdk = 30
+    buildTools = "30.0.2"
     minSdk = 21
-    targetSdk = 29
+    targetSdk = 30
   }
 
   afterEvaluate { project ->
