@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "9.0"
   s.source_files        = 'RNFB_Template_/**/*.{h,m}'
   s.dependency          'React-Core'
-  s.dependency          'Firebase/Core', '~> 5.20.2'
+  s.dependency          'Firebase/Core', '~> 7.0.0'
   s.dependency          'RNFBApp'
   s.static_framework    = true
 end
