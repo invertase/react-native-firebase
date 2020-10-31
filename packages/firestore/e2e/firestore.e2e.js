@@ -364,7 +364,7 @@ describe('firestore()', () => {
   });
 
   describe('wait for pending writes', () => {
-    it('waits for pending writes', async () => {
+    xit('waits for pending writes', async () => {
       const waitForPromiseMs = 500;
       const testTimeoutMs = 10000;
 
