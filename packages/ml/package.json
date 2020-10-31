@@ -1,0 +1,34 @@
+{
+  "name": "@react-native-firebase/ml",
+  "version": "7.4.13",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - Firebase ML brings the power of machine learning vision to your React Native application, supporting both Android & iOS.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/ml"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "ml",
+    "machine learning",
+    "text recognition",
+    "landmark recognition",
+    "image labeler"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "8.4.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

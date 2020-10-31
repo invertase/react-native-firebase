@@ -62,15 +62,14 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "~> 6.34.0"
+      "firebase": "~> 7.0.0"
     },
     "android": {
       "minSdk": 16,
-      "targetSdk": 29,
-      "compileSdk": 29,
-      "buildTools": "29.0.3",
-      "firebase": "25.12.0",
-      "iid": "20.3.0",
+      "targetSdk": 30,
+      "compileSdk": 30,
+      "buildTools": "30.0.2",
+      "firebase": "26.0.0",
       "playServicesAuth": "18.1.0"
     }
   }

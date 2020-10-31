@@ -66,6 +66,8 @@ launchProperties
 learnt
 Lerna
 MDX
+MLKit
+mlkit
 mono-repo
 Multidex
 multidex
@@ -96,6 +98,7 @@ PRs
 PubSub
 qa
 react-native-firebase
+react-native-mlkit
 realtime
 Realtime
 remarketing

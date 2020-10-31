@@ -27,8 +27,7 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 - [Cloud Functions](/functions)
 - [Cloud Storage](/storage).
 - [Instance ID](/iid).
-- [ML Kit Natural Language](/ml-language).
-- [ML Kit Vision](/ml-vision).
+- [ML](/ml).
 - [Remote Config](/remote-config).
 
 ## Initializing secondary apps
