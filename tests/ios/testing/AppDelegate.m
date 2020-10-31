@@ -73,10 +73,4 @@
   NSLog(@"TESTING3");
 }
 
-- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  NSLog(@"TESTING1");
-  [self aTest];
-  NSLog(@"TESTING2");
-}
-
 @end
