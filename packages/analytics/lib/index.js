@@ -37,9 +37,20 @@ import version from './version';
 import * as structs from './structs';
 
 const ReservedEventNames = [
+  'ad_reward',
+  'app_background',
   'app_clear_data',
-  'app_uninstall',
+  'app_exception',
+  'app_remove',
+  'app_store_refund',
+  'app_store_subscription_cancel',
+  'app_store_subscription_convert',
+  'app_store_subscription_renew',
   'app_update',
+  'app_upgrade',
+  'dynamic_link_app_open',
+  'dynamic_link_app_update',
+  'dynamic_link_first_open',
   'error',
   'first_open',
   'in_app_purchase',
@@ -49,6 +60,7 @@ const ReservedEventNames = [
   'notification_receive',
   'os_update',
   'session_start',
+  'session_start_with_rollout',
   'user_engagement',
 ];
 
@@ -111,22 +123,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       screen_name: screenName,
       screen_class: screenClassOverride,
     });
-  }
-
-  setMinimumSessionDuration(milliseconds = 10000) {
-    if (!isNumber(milliseconds)) {
-      throw new Error(
-        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a number value.",
-      );
-    }
-
-    if (milliseconds < 0) {
-      throw new Error(
-        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a positive number value.",
-      );
-    }
-
-    return this.native.setMinimumSessionDuration(milliseconds);
   }
 
   setSessionTimeoutDuration(milliseconds = 1800000) {

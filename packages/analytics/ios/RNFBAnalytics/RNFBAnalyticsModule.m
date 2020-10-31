@@ -125,16 +125,6 @@
     return resolve([NSNull null]);
   }
 
-  RCT_EXPORT_METHOD(setMinimumSessionDuration:
-    (double) milliseconds
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    // Do nothing - this only exists in android
-    return resolve([NSNull null]);
-  }
-
   RCT_EXPORT_METHOD(setSessionTimeoutDuration:
     (double) milliseconds
         resolver:
