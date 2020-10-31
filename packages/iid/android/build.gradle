@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.0.1")
+      classpath("com.android.tools.build:gradle:4.1.0")
     }
   }
 }
@@ -31,12 +31,6 @@ if (findProject(':@react-native-firebase_app')) {
 def packageJson = PackageJson.getForProject(project)
 def appPackageJson = PackageJson.getForProject(appProject)
 def firebaseBomVersion = appPackageJson['sdkVersions']['android']['firebase']
-
-// TODO Must put the concrete version here as the BoM no longer publishes the IID version, align it with the BoM change above
-// Upstream issue: https://github.com/firebase/firebase-android-sdk/issues/1077
-// Issue: https://github.com/invertase/react-native-firebase/issues/3918
-// Example of where to find concrete version to match BoM: https://firebase.google.com/support/release-notes/android#iid_v20-2-1
-def firebaseIidVersion = appPackageJson['sdkVersions']['android']['iid']
 
 def jsonMinSdk = appPackageJson['sdkVersions']['android']['minSdk']
 def jsonTargetSdk = appPackageJson['sdkVersions']['android']['targetSdk']
@@ -65,7 +59,6 @@ project.ext {
 
       firebase: [
         bom: firebaseBomVersion,
-        iid: firebaseIidVersion
       ],
 
     ],
@@ -99,7 +92,7 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-iid:${ReactNative.ext.getVersion("firebase", "iid")}" 
+  implementation "com.google.firebase:firebase-iid" 
 }
 
 ReactNative.shared.applyPackageVersion()
