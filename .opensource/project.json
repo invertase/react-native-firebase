@@ -1,8 +1,0 @@
-{
-  "name": "React Native Firebase",
-  "type": "library",
-  "platforms": ["Android", "iOS"],
-  "content": "README.md",
-  "pages": ["CONTRIBUTING.md", "CODE_OF_CONDUCT.md"],
-  "related": ["invertase/react-native-firebase-starter"]
-}
