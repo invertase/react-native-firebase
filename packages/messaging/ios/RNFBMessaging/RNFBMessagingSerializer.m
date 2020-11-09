@@ -31,10 +31,6 @@
   return [token copy];
 }
 
-+ (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage {
-  return [self remoteMessageUserInfoToDict:remoteMessage.appData];
-}
-
 + (NSDictionary *)notificationToDict:(UNNotification *)notification {
   return [self remoteMessageUserInfoToDict:notification.request.content.userInfo];
 }

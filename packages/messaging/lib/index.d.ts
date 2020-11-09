@@ -839,6 +839,8 @@ export namespace FirebaseMessagingTypes {
      * unsubscribe();
      * ```
      *
+     * NOTE: Android only
+     *
      * @param listener Called when the FCM deletes pending messages.
      */
     onDeletedMessages(listener: () => void): () => void;
@@ -858,6 +860,8 @@ export namespace FirebaseMessagingTypes {
      * // Unsubscribe from message sent events
      * unsubscribe();
      * ```
+     *
+     * NOTE: Android only
      *
      * @param listener Called when the FCM sends the remote message to FCM.
      */
@@ -879,6 +883,8 @@ export namespace FirebaseMessagingTypes {
      * // Unsubscribe from message sent error events
      * unsubscribe();
      * ```
+     *
+     * NOTE: Android only
      *
      * @param listener
      */
@@ -924,6 +930,8 @@ export namespace FirebaseMessagingTypes {
      *   }
      * });
      * ```
+     *
+     * NOTE: Android only
      *
      * @param message A `RemoteMessage` interface.
      */
