@@ -51,58 +51,12 @@
     // ObjC - > Mutates the root React components initialProps to toggle `isHeadless` state
     [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
     
-    // Firebase Messaging
-    // JS -> `onSendError` events
-    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onSendErrorNotification:) name:FIRMessagingSendErrorNotification object:nil];
-
-    // Firebase Messaging
-    // JS -> `onMessageSent` events
-    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onSendSuccessNotification:) name:FIRMessagingSendSuccessNotification object:nil];
-
-    // Firebase Messaging
-    // JS -> `onDeletedMessages` events
-    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(messaging_onDeletedMessagesNotification) name:FIRMessagingMessagesDeletedNotification object:nil];
-
   });
 }
 
 // start observing immediately on class load - specifically for UIApplicationDidFinishLaunchingNotification
 + (void)load {
   [[self sharedInstance] observe];
-}
-
-#pragma mark -
-#pragma mark Firebase Messaging Notifications
-
-// Firebase Messaging
-// JS -> `onSendError`
-- (void)messaging_onSendErrorNotification:(NSNotification *)notification {
-  NSDictionary *userInfo = notification.userInfo;
-  NSError *error = (NSError *) userInfo[@"error"];
-  NSString *messageID = (NSString *) userInfo[@"messageID"];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_send_error" body:@{
-      @"messageId": messageID,
-      @"error": @{
-          @"code": @"unknown",
-          @"message": error.localizedDescription
-      }
-  }];
-}
-
-// Firebase Messaging
-// JS -> `onMessageSent`
-- (void)messaging_onSendSuccessNotification:(NSNotification *)notification {
-  NSDictionary *userInfo = notification.userInfo;
-  NSString *messageID = (NSString *) userInfo[@"messageID"];
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_sent" body:@{
-      @"messageId": messageID
-  }];
-}
-
-// Firebase Messaging
-// JS -> `onDeletedMessages`
-- (void)messaging_onDeletedMessagesNotification {
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_deleted" body:@{}];
 }
 
 #pragma mark -
