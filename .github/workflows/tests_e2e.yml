@@ -51,7 +51,7 @@ jobs:
           command: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
-        run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+        run: yarn tests:emulator:start-ci
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -225,7 +225,7 @@ jobs:
           command: npm i -g firebase-tools
 
       - name: Start Firestore Emulator
-        run: cd ./.github/workflows/scripts && sh ./start-firestore-emulator.sh
+        run: yarn tests:emulator:start-ci
 
       - name: Get Xcode version
         id: xcode-version
