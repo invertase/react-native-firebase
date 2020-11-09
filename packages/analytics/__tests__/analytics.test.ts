@@ -160,7 +160,7 @@ describe('Analytics', () => {
 
     it('errors if name not alphanumeric', () => {
       expect(() => firebase.analytics().logEvent('!@£$%^&*')).toThrowError(
-        "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 32 alphanumeric characters or underscores.",
+        "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 40 alphanumeric characters or underscores.",
       );
     });
 

@@ -76,9 +76,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     // name format validation
-    if (!isAlphaNumericUnderscore(name)) {
+    if (!isAlphaNumericUnderscore(name) || name.length > 40) {
       throw new Error(
-        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 32 alphanumeric characters or underscores.`,
+        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 40 alphanumeric characters or underscores.`,
       );
     }
 
