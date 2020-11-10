@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.5.2](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.5.1...react-native-firebase-tests@8.5.2) (2020-11-10)
+
+
+### Bug Fixes
+
+* **storage:** Changed refFromUrl regex to exclude appspot.com ([#3775](https://github.com/invertase/react-native-firebase/issues/3775)) ([c6f4699](https://github.com/invertase/react-native-firebase/commit/c6f46996191126513e02f3d20efa78d166c4db0a))
+
+
+
+
+
 ## [8.5.1](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@8.5.0...react-native-firebase-tests@8.5.1) (2020-10-30)
 
 **Note:** Version bump only for package react-native-firebase-tests

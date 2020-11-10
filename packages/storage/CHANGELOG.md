@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.11...@react-native-firebase/storage@7.4.12) (2020-11-10)
+
+### Bug Fixes
+
+- **storage:** Changed refFromUrl regex to exclude appspot.com ([#3775](https://github.com/invertase/react-native-firebase/issues/3775)) ([c6f4699](https://github.com/invertase/react-native-firebase/commit/c6f46996191126513e02f3d20efa78d166c4db0a))
+
 ## [7.4.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.10...@react-native-firebase/storage@7.4.11) (2020-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/storage
