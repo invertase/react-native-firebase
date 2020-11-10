@@ -45,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -1303,9 +1304,20 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             } else {
               Exception exception = task.getException();
               Log.e(TAG, "link:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          });
+              if (exception instanceof FirebaseAuthUserCollisionException) {
+                FirebaseAuthUserCollisionException authUserCollisionException = (FirebaseAuthUserCollisionException) exception;
+                AuthCredential updatedCredential = authUserCollisionException.getUpdatedCredential();
+                firebaseAuth.signInWithCredential(updatedCredential).addOnCompleteListener(getExecutor(), result -> {
+                  if (result.isSuccessful()) {
+                    promiseWithAuthResult(result.getResult(), promise);
+                  } else {
+                    promiseRejectAuthException(promise, exception);
+                  }
+                });
+              } else {
+                promiseRejectAuthException(promise, exception);
+              }
+            }});
       } else {
         promiseNoUser(promise, true);
       }
