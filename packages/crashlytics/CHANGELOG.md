@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.5.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.12...@react-native-firebase/crashlytics@8.5.0) (2020-11-10)
+
+### Features
+
+- **crashlytics, ios:** put input files when pod install. ([#4520](https://github.com/invertase/react-native-firebase/issues/4520)) ([f2161fd](https://github.com/invertase/react-native-firebase/commit/f2161fddbab68e01c0b0653201be492def43df3b))
+
 ## [8.4.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.4.11...@react-native-firebase/crashlytics@8.4.12) (2020-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics

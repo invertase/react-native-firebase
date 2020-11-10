@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.6.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.9...@react-native-firebase/analytics@7.6.10) (2020-11-10)
+
+### Bug Fixes
+
+- **analytics:** added a validation for length in analytics().logEvent(name, params) ([#4522](https://github.com/invertase/react-native-firebase/issues/4522)) ([107b07d](https://github.com/invertase/react-native-firebase/commit/107b07dc15f1199e08384f0ad5bbbff44f738056))
+
 ## [7.6.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.8...@react-native-firebase/analytics@7.6.9) (2020-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
