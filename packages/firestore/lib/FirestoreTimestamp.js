@@ -99,7 +99,7 @@ export default class FirestoreTimestamp {
     return `FirestoreTimestamp(seconds=${this.seconds}, nanoseconds=${this.nanoseconds})`;
   }
 
-  toJSON(): { seconds: number; nanoseconds: number } {
+  toJSON(): { seconds: number, nanoseconds: number } {
     return { seconds: this.seconds, nanoseconds: this.nanoseconds };
   }
 
