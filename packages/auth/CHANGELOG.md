@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.3.3...@react-native-firebase/auth@9.3.4) (2020-11-10)
+
+### Bug Fixes
+
+- **ios, auth:** move to non-deprecated upstream APIs ([1f2a109](https://github.com/invertase/react-native-firebase/commit/1f2a109d4e04bc10a5a0b93b3bebe78ec9be313b))
+
 ## [9.3.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/auth@9.3.2...@react-native-firebase/auth@9.3.3) (2020-11-10)
 
 ### Bug Fixes
