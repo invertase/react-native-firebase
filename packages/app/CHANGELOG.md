@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.7...@react-native-firebase/app@9.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **tests, emulator:** centralize startup, correct CWD ([79c1f80](https://github.com/invertase/react-native-firebase/commit/79c1f801965f74f9fc0233c96f05db103e9f8e84))
+
+### Features
+
+- BREAKING forward-port to firebase-android-sdk v26 / firebase-ios-sdk v7 ([70974d4](https://github.com/invertase/react-native-firebase/commit/70974d41f857a0f7fc09cb5235856d3748b30117)), closes [/firebase.google.com/support/release-notes/android#2020-10-27](https://github.com/invertase/react-native-firebase/issues/2020-10-27) [/firebase.google.com/support/release-notes/ios#version*700*-\_october_26_2020](https://github.com/invertase/react-native-firebase/issues/version_700_-_october_26_2020)
+
+### BREAKING CHANGES
+
+- alter ML imports, check iOS linking, remove old API as noted
+
 ## [8.4.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/app@8.4.6...@react-native-firebase/app@8.4.7) (2020-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/app

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.4.13](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.12...@react-native-firebase/storage@7.4.13) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
 ## [7.4.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.11...@react-native-firebase/storage@7.4.12) (2020-11-10)
 
 ### Bug Fixes

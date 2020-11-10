@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.12...@react-native-firebase/remote-config@10.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **remote-config:** BREAKING drop deprecated APIs ([86b6086](https://github.com/invertase/react-native-firebase/commit/86b6086da9fe535e0cd0f4ddbb3152b0275e3904))
+
+### BREAKING CHANGES
+
+- **remote-config:** drop defaultConfig, settings, isDeveloperModeEnabled, minimumFetchInterval, setLogLevel
+
 ## [9.0.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.11...@react-native-firebase/remote-config@9.0.12) (2020-10-30)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

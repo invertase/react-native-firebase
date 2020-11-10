@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.10...@react-native-firebase/analytics@8.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **analytics:** BREAKING drop deprecated setMinimumSessionDuration API ([a675cd7](https://github.com/invertase/react-native-firebase/commit/a675cd7f7cf808e6a6d10cc174eeff3007ceac58))
+
+### BREAKING CHANGES
+
+- **analytics:** there is no replacement for the setMinimumSessionDuration API
+
 ## [7.6.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.9...@react-native-firebase/analytics@7.6.10) (2020-11-10)
 
 ### Bug Fixes

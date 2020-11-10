@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 8.0.0 (2020-11-10)
+
+### Features
+
+- BREAKING forward-port to firebase-android-sdk v26 / firebase-ios-sdk v7 ([70974d4](https://github.com/invertase/react-native-firebase/commit/70974d41f857a0f7fc09cb5235856d3748b30117)), closes [/firebase.google.com/support/release-notes/android#2020-10-27](https://github.com/invertase/react-native-firebase/issues/2020-10-27) [/firebase.google.com/support/release-notes/ios#version*700*-\_october_26_2020](https://github.com/invertase/react-native-firebase/issues/version_700_-_october_26_2020)
+
+### BREAKING CHANGES
+
+- alter ML imports, check iOS linking, remove old API as noted
+
 ## [7.4.13](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.12...@react-native-firebase/ml-vision@7.4.13) (2020-11-10)
 
 **Note:** Version bump only for package @react-native-firebase/ml-vision
