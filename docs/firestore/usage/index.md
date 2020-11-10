@@ -23,7 +23,7 @@ cd ios/ && pod install
 ```
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
-you can follow the manual installation steps for [iOS](/firestore/usage/installation/ios) and [Android](firestore/usage/installation/android).
+you can follow the manual installation steps for [iOS](/firestore/usage/installation/ios) and [Android](/firestore/usage/installation/android).
 
 If you have started to receive a `app:mergeDexDebug` error after adding Cloud Firestore, please read the
 [Enabling Multidex](/enabling-multidex) documentation for more information on how to resolve this error.
