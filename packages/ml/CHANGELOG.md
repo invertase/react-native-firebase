@@ -15,7 +15,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
-- alter ML imports, check iOS linking, remove old API as noted
+- alter ML imports for "in cloud" inference, migrate to react-native-mlkit for on-device inference - see the [README section of this new module to understand the changes](https://github.com/invertase/react-native-firebase/blob/master/packages/ml/README.md#cloud-vs-on-device)
 
 ## [7.4.13](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/ml-vision@7.4.12...@react-native-firebase/ml-vision@7.4.13) (2020-11-10)
 
