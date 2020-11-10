@@ -5,51 +5,19 @@
   <h2 align="center">React Native Firebase - ML Kit Natural Language</h2>
 </p>
 
-<p align="center">
-  <a href="https://api.rnfirebase.io/coverage/ml-natural-language/detail"><img src="https://api.rnfirebase.io/coverage/ml-natural-language/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-natural-language"><img src="https://img.shields.io/npm/dm/@react-native-firebase/ml-natural-language.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-natural-language"><img src="https://img.shields.io/npm/v/@react-native-firebase/ml-natural-language.svg?style=flat-square" alt="NPM version"></a>
-  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
-  <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
-</p>
-
-<p align="center">
-  <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
-  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
-  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
-</p>
-
 ---
 
-Bring powerful machine learning features to your mobile app whether you're new or experienced in ML. Get started easily by using ready-to-use APIs from Firebase for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
+# DEPRECATED
 
-**This module supports the following APIs:**
+This package is deprecated and should no longer be used.
 
-| API                                 | Supported |
-|-------------------------------------|-----------|
-| [Language Identification](https://firebase.google.com/docs/ml-kit/identify-languages)             | ✅        |
-| [Smart Reply](https://firebase.google.com/docs/ml-kit/generate-smart-replies)                         | ✅        |
-| [Translate](https://firebase.google.com/docs/ml-kit/translation)                           | ❌        |
+Google has split mobile machine learning functionality into two pieces:
 
+1. "On-Device" inferences - this will be handled via the standalone ["Google ML Kit"](https://developers.google.com/ml-kit) libraries, and the related [`react-native-mlkit`](https://github.com/invertase/react-native-mlkit) package. This includes any APIs where the device uses a local model to make inferences
 
-[> Learn More](https://firebase.google.com/products/ml-kit/)
+1. "Cloud" inferences - these will continue in Firebase, but are now in the ["Firebase ML"](https://firebase.google.com/docs/ml) library, and will be available from the new consolidated `@react-native-firebase/ml` package
 
-## Installation
-
-Requires `@react-native-firebase/app` to be installed.
-
-```bash
-yarn add @react-native-firebase/ml-natural-language
-```
-
-## Documentation
-
-- [Quick Start](https://rnfirebase.io/ml-natural-language/usage)
-- [Reference](https://rnfirebase.io/reference/ml-natural-language)
-
-## License
-
-- See [LICENSE](/LICENSE)
+More information on the transition is available here: https://firebase.google.com/docs/ml#cloud_vs_on-device
 
 ---
 

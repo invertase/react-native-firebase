@@ -5,66 +5,19 @@
   <h2 align="center">React Native Firebase - ML Kit Vision</h2>
 </p>
 
-<p align="center">
-  <a href="https://api.rnfirebase.io/coverage/ml-vision/detail"><img src="https://api.rnfirebase.io/coverage/ml-vision/badge?style=flat-square" alt="Coverage"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-vision"><img src="https://img.shields.io/npm/dm/@react-native-firebase/ml-vision.svg?style=flat-square" alt="NPM downloads"></a>
-  <a href="https://www.npmjs.com/package/@react-native-firebase/ml-vision"><img src="https://img.shields.io/npm/v/@react-native-firebase/ml-vision.svg?style=flat-square" alt="NPM version"></a>
-  <a href="/LICENSE"><img src="https://img.shields.io/npm/l/react-native-firebase.svg?style=flat-square" alt="License"></a>
-  <a href="https://lerna.js.org/"><img src="https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg?style=flat-square" alt="Maintained with Lerna"></a>
-</p>
-
-<p align="center">
-  <a href="https://invertase.link/discord"><img src="https://img.shields.io/discord/295953187817521152.svg?style=flat-square&colorA=7289da&label=Chat%20on%20Discord" alt="Chat on Discord"></a>
-  <a href="https://twitter.com/rnfirebase"><img src="https://img.shields.io/twitter/follow/rnfirebase.svg?style=flat-square&colorA=1da1f2&colorB=&label=Follow%20on%20Twitter" alt="Follow on Twitter"></a>
-  <a href="https://www.facebook.com/groups/rnfirebase"><img src="https://img.shields.io/badge/Follow%20on%20Facebook-4172B8?logo=facebook&style=flat-square&logoColor=fff" alt="Follow on Facebook"></a>
-</p>
-
 ---
 
-Bring powerful machine learning vision APIs to your mobile app whether you're new or experienced in ML. Get started easily by using ready-to-use APIs from Firebase for common mobile use cases, or import your own custom models which can be hosted and served to your apps by Firebase. ML Kit APIs can run on-device or in the cloud, depending on the functionality, and some give you both choices.
+# DEPRECATED
 
-This module currently supports the following Firebase ML Kit Vision APIs:
+This package is deprecated and should no longer be used.
 
-| API                                 | Cloud Model | On Device |
-|-------------------------------------|-------------|-----------|
-| [Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text)                    | ✅          | ✅        |
-| [Document Text Recognition](https://firebase.google.com/docs/ml-kit/recognize-text))           | ✅          |           |
-| [Face Detection](https://firebase.google.com/docs/ml-kit/detect-faces)                      |             | ✅        |
-| [Barcode Scanning](https://firebase.google.com/docs/ml-kit/read-barcodes)                   |             | ✅        |
-| [Image Labeling](https://firebase.google.com/docs/ml-kit/label-images)                     | ✅          | ✅        |
-| [Landmark Recognition](https://firebase.google.com/docs/ml-kit/recognize-landmarks)                |             | ✅        |
-| [AutoML Vision Edge](https://firebase.google.com/docs/ml-kit/automl-image-labeling)                  | ❌          | ❌        |
-| [Object Detection/Tracking](https://firebase.google.com/docs/ml-kit/object-detection)           | ❌          | ❌        |
-| Image Labeling (with [Custom Model]((https://firebase.google.com/docs/ml-kit/label-images))) | ❌          | ❌        |
+Google has split mobile machine learning functionality into two pieces:
 
-[> Learn More](https://firebase.google.com/products/ml-kit/)
+1. "On-Device" inferences - this will be handled via the standalone ["Google ML Kit"](https://developers.google.com/ml-kit) libraries, and the related [`react-native-mlkit`](https://github.com/invertase/react-native-mlkit) package. This includes any APIs where the device uses a local model to make inferences
 
-## Installation
+1. "Cloud" inferences - these will continue in Firebase, but are now in the ["Firebase ML"](https://firebase.google.com/docs/ml) library, and will be available from the new consolidated `@react-native-firebase/ml` package
 
-Requires `@react-native-firebase/app` to be installed.
-
-```bash
-yarn add @react-native-firebase/ml-vision
-```
-
-## Documentation
-
-- [Quick Start](https://rnfirebase.io/ml-vision/usage)
-- [Reference](https://rnfirebase.io/reference/ml-vision)
-
-### Additional Topics
-
-- [Text Recognition](https://rnfirebase.io/ml-vision/text-recognition)
-- [Landmark Recognition](https://rnfirebase.io/ml-vision/landmark-recognition)
-- [Barcode Scanning](https://rnfirebase.io/ml-vision/barcode-scanning)
-- [Image Labeling](https://rnfirebase.io/ml-vision/image-labeling)
-- [Face Detection](https://rnfirebase.io/ml-vision/face-detection)
-
-
-
-## License
-
-- See [LICENSE](/LICENSE)
+More information on the transition is available here: https://firebase.google.com/docs/ml#cloud_vs_on-device
 
 ---
 
