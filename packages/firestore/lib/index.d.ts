@@ -1516,11 +1516,28 @@ export namespace FirebaseFirestoreTypes {
     toDate(): Date;
 
     /**
-     * Convert a timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
+     * Convert a Timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
      *
      * The point in time corresponding to this timestamp, represented as the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
      */
     toMillis(): number;
+
+    /**
+     * Convert a timestamp to a string in format "FirestoreTimestamp(seconds=`seconds`, nanoseconds=`nanoseconds`)",
+     * with the `seconds` and `nanoseconds` replaced by the values in the Timestamp object
+     */
+    toString(): string;
+
+    /**
+     * Convert a Timestamp to a JSON object with seconds and nanoseconds members
+     */
+    toJSON(): { seconds: number; nanoseconds: number };
+
+    /**
+     * Converts this object to a primitive string, which allows Timestamp objects to be compared
+     * using the `>`, `<=`, `>=` and `>` operators.
+     */
+    valueOf(): string;
   }
 
   /**
