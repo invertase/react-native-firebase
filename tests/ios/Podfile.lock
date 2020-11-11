@@ -9,69 +9,69 @@ PODS:
     - React-Core (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/turbomodule/core (= 0.62.2)
-  - Firebase/AdMob (7.0.0):
+  - Firebase/AdMob (7.1.0):
     - Firebase/CoreOnly
     - Google-Mobile-Ads-SDK (~> 7.66)
-  - Firebase/Analytics (7.0.0):
+  - Firebase/Analytics (7.1.0):
     - Firebase/Core
-  - Firebase/Auth (7.0.0):
+  - Firebase/Auth (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 7.0.0)
-  - Firebase/Core (7.0.0):
+    - FirebaseAuth (~> 7.1.0)
+  - Firebase/Core (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 7.0.0)
-  - Firebase/CoreOnly (7.0.0):
-    - FirebaseCore (= 7.0.0)
-  - Firebase/Crashlytics (7.0.0):
+    - FirebaseAnalytics (= 7.1.0)
+  - Firebase/CoreOnly (7.1.0):
+    - FirebaseCore (= 7.1.0)
+  - Firebase/Crashlytics (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseCrashlytics (~> 7.0.0)
-  - Firebase/Database (7.0.0):
+    - FirebaseCrashlytics (~> 7.1.0)
+  - Firebase/Database (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseDatabase (~> 7.0.0)
-  - Firebase/DynamicLinks (7.0.0):
+    - FirebaseDatabase (~> 7.1.0)
+  - Firebase/DynamicLinks (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 7.0.0)
-  - Firebase/Firestore (7.0.0):
+    - FirebaseDynamicLinks (~> 7.1.0)
+  - Firebase/Firestore (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 7.0.0)
-  - Firebase/Functions (7.0.0):
+    - FirebaseFirestore (~> 7.1.0)
+  - Firebase/Functions (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseFunctions (~> 7.0.0)
-  - Firebase/InAppMessaging (7.0.0):
+    - FirebaseFunctions (~> 7.1.0)
+  - Firebase/InAppMessaging (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseInAppMessaging (~> 7.0.0-beta)
-  - Firebase/Messaging (7.0.0):
+    - FirebaseInAppMessaging (~> 7.1.0-beta)
+  - Firebase/Messaging (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 7.0.0)
-  - Firebase/MLVision (7.0.0):
+    - FirebaseMessaging (~> 7.1.0)
+  - Firebase/MLVision (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseMLVision (~> 7.0.0-beta)
-  - Firebase/Performance (7.0.0):
+    - FirebaseMLVision (~> 7.1.0-beta)
+  - Firebase/Performance (7.1.0):
     - Firebase/CoreOnly
-    - FirebasePerformance (~> 7.0.0)
-  - Firebase/RemoteConfig (7.0.0):
+    - FirebasePerformance (~> 7.1.0)
+  - Firebase/RemoteConfig (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseRemoteConfig (~> 7.0.0)
-  - Firebase/Storage (7.0.0):
+    - FirebaseRemoteConfig (~> 7.1.0)
+  - Firebase/Storage (7.1.0):
     - Firebase/CoreOnly
-    - FirebaseStorage (~> 7.0.0)
+    - FirebaseStorage (~> 7.1.0)
   - FirebaseABTesting (7.1.0):
     - FirebaseCore (~> 7.0)
-  - FirebaseAnalytics (7.0.0):
+  - FirebaseAnalytics (7.1.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
-    - GoogleAppMeasurement (= 7.0.0)
+    - GoogleAppMeasurement (= 7.1.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
     - GoogleUtilities/MethodSwizzler (~> 7.0)
     - GoogleUtilities/Network (~> 7.0)
     - "GoogleUtilities/NSData+zlib (~> 7.0)"
     - nanopb (~> 2.30906.0)
-  - FirebaseAuth (7.0.0):
+  - FirebaseAuth (7.1.0):
     - FirebaseCore (~> 7.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GTMSessionFetcher/Core (~> 1.4)
-  - FirebaseCore (7.0.0):
+  - FirebaseCore (7.1.0):
     - FirebaseCoreDiagnostics (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
@@ -80,22 +80,22 @@ PODS:
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
     - nanopb (~> 2.30906.0)
-  - FirebaseCrashlytics (7.0.0):
+  - FirebaseCrashlytics (7.1.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
     - GoogleDataTransport (~> 8.0)
     - nanopb (~> 2.30906.0)
     - PromisesObjC (~> 1.2)
-  - FirebaseDatabase (7.0.0):
+  - FirebaseDatabase (7.1.0):
     - FirebaseCore (~> 7.0)
     - leveldb-library (~> 1.22)
-  - FirebaseDynamicLinks (7.0.0):
+  - FirebaseDynamicLinks (7.1.0):
     - FirebaseCore (~> 7.0)
-  - FirebaseFirestore (7.0.0)
-  - FirebaseFunctions (7.0.0):
+  - FirebaseFirestore (7.1.0)
+  - FirebaseFunctions (7.1.0):
     - FirebaseCore (~> 7.0)
     - GTMSessionFetcher/Core (~> 1.4)
-  - FirebaseInAppMessaging (7.0.0-beta):
+  - FirebaseInAppMessaging (7.1.0-beta):
     - FirebaseABTesting (~> 7.0)
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
@@ -111,7 +111,7 @@ PODS:
     - FirebaseInstallations (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
-  - FirebaseMessaging (7.0.0):
+  - FirebaseMessaging (7.1.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstanceID (~> 7.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
@@ -127,7 +127,7 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.12)
-  - FirebaseMLVision (7.0.0-beta):
+  - FirebaseMLVision (7.1.0-beta):
     - FirebaseCore (~> 7.0)
     - FirebaseMLCommon (~> 7.0-beta)
     - GoogleAPIClientForREST/Core (~> 1.3)
@@ -136,7 +136,7 @@ PODS:
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.12)
-  - FirebasePerformance (7.0.1):
+  - FirebasePerformance (7.1.0):
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
     - FirebaseRemoteConfig (~> 7.0)
@@ -148,13 +148,13 @@ PODS:
     - GoogleUtilities/MethodSwizzler (~> 7.0)
     - GTMSessionFetcher/Core (~> 1.1)
     - Protobuf (~> 3.12)
-  - FirebaseRemoteConfig (7.0.0):
+  - FirebaseRemoteConfig (7.1.0):
     - FirebaseABTesting (~> 7.0)
     - FirebaseCore (~> 7.0)
     - FirebaseInstallations (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - "GoogleUtilities/NSData+zlib (~> 7.0)"
-  - FirebaseStorage (7.0.0):
+  - FirebaseStorage (7.1.0):
     - FirebaseCore (~> 7.0)
     - GTMSessionFetcher/Core (~> 1.4)
   - Folly (2018.10.22.00):
@@ -175,7 +175,7 @@ PODS:
   - GoogleAPIClientForREST/Vision (1.5.1):
     - GoogleAPIClientForREST/Core
     - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAppMeasurement (7.0.0):
+  - GoogleAppMeasurement (7.1.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
     - GoogleUtilities/MethodSwizzler (~> 7.0)
     - GoogleUtilities/Network (~> 7.0)
@@ -454,70 +454,70 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
-  - RNFBAdMob (7.6.10):
-    - Firebase/AdMob (= 7.0.0)
+  - RNFBAdMob (7.6.12):
+    - Firebase/AdMob (= 7.1.0)
     - PersonalizedAdConsent (~> 1.0.4)
     - React-Core
     - RNFBApp
-  - RNFBAnalytics (7.6.10):
-    - Firebase/Analytics (= 7.0.0)
+  - RNFBAnalytics (8.0.1):
+    - Firebase/Analytics (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBApp (8.4.7):
-    - Firebase/CoreOnly (= 7.0.0)
+  - RNFBApp (9.0.0):
+    - Firebase/CoreOnly (= 7.1.0)
     - React-Core
-  - RNFBAuth (9.3.3):
-    - Firebase/Auth (= 7.0.0)
-    - React-Core
-    - RNFBApp
-  - RNFBCrashlytics (8.5.0):
-    - Firebase/Crashlytics (= 7.0.0)
+  - RNFBAuth (9.3.5):
+    - Firebase/Auth (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBDatabase (7.5.13):
-    - Firebase/Database (= 7.0.0)
+  - RNFBCrashlytics (8.5.2):
+    - Firebase/Crashlytics (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBDynamicLinks (7.5.11):
-    - Firebase/DynamicLinks (= 7.0.0)
+  - RNFBDatabase (7.5.15):
+    - Firebase/Database (= 7.1.0)
+    - React-Core
+    - RNFBApp
+  - RNFBDynamicLinks (7.5.13):
+    - Firebase/DynamicLinks (= 7.1.0)
     - GoogleUtilities/AppDelegateSwizzler
     - React-Core
     - RNFBApp
-  - RNFBFirestore (7.10.0):
-    - Firebase/Firestore (= 7.0.0)
+  - RNFBFirestore (7.10.3):
+    - Firebase/Firestore (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBFunctions (7.4.10):
-    - Firebase/Functions (= 7.0.0)
+  - RNFBFunctions (7.4.12):
+    - Firebase/Functions (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBIid (7.4.10):
-    - Firebase/CoreOnly (= 7.0.0)
+  - RNFBIid (7.4.12):
+    - Firebase/CoreOnly (= 7.1.0)
     - FirebaseInstanceID
     - React-Core
     - RNFBApp
-  - RNFBInAppMessaging (7.5.8):
-    - Firebase/InAppMessaging (= 7.0.0)
+  - RNFBInAppMessaging (7.5.10):
+    - Firebase/InAppMessaging (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (7.9.2):
-    - Firebase/Messaging (= 7.0.0)
+  - RNFBMessaging (8.0.1):
+    - Firebase/Messaging (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBML (7.4.13):
-    - Firebase/MLVision (= 7.0.0)
+  - RNFBML (8.0.2):
+    - Firebase/MLVision (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBPerf (7.4.10):
-    - Firebase/Performance (= 7.0.0)
+  - RNFBPerf (7.4.12):
+    - Firebase/Performance (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBRemoteConfig (9.0.12):
-    - Firebase/RemoteConfig (= 7.0.0)
+  - RNFBRemoteConfig (10.0.1):
+    - Firebase/RemoteConfig (= 7.1.0)
     - React-Core
     - RNFBApp
-  - RNFBStorage (7.4.12):
-    - Firebase/Storage (= 7.0.0)
+  - RNFBStorage (7.4.14):
+    - Firebase/Storage (= 7.1.0)
     - React-Core
     - RNFBApp
   - Yoga (1.14.0)
@@ -697,7 +697,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   FirebaseFirestore:
-    :commit: 3d712e901b44cb4ca509844356040a2cb61ddf5a
+    :commit: 541d85468a028d06bc4d52b009ce8ffa47baa38d
     :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
 
 SPEC CHECKSUMS:
@@ -705,31 +705,31 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   FBLazyVector: 4aab18c93cd9546e4bfed752b4084585eca8b245
   FBReactNativeSpec: 5465d51ccfeecb7faa12f9ae0024f2044ce4044e
-  Firebase: 50be68416f50eb4eb2ecb0e78acab9a051ef95df
+  Firebase: 78e8dd2e39d653de6270432ad84fe8b59f7bf4e8
   FirebaseABTesting: aaea04ea67858a4a9dce0d22ef645477dff50146
-  FirebaseAnalytics: c1166b7990bae464c6436132510bb718c6680f80
-  FirebaseAuth: 228dd0faa5b5263eaa8c63518b16faef438289a3
-  FirebaseCore: cf3122185fce1cf71cedbbc498ea84d2b3e7cb69
+  FirebaseAnalytics: 7f165a56dea86ddd5b8ce02af3bee982c683405c
+  FirebaseAuth: f82c2cfcc1c107bb0a97735cdbce4eb2a601f710
+  FirebaseCore: 20046127eef0fcb8fa25df7fc12f7b97d4e48611
   FirebaseCoreDiagnostics: 872cdb9b749b23346dddd5c1014d1babd2257de3
-  FirebaseCrashlytics: bd430b7323e8b49492a93e563e81899d0615f917
-  FirebaseDatabase: 2481b48ebfd233ef591095d79d76720ea85cde74
-  FirebaseDynamicLinks: 71ed03780db3986e1bd386d6a1be44d09d4cd0ec
-  FirebaseFirestore: ce5009ceae3e07c96f9cc580d9b521b9ec0af857
-  FirebaseFunctions: 571aee227a021debe3e1092aa079f751623e233a
-  FirebaseInAppMessaging: b4c1ec3ea31d83f762d8087e78ce846159437f39
+  FirebaseCrashlytics: c722e4ca283272eb90eb5bc245fdc6588e2f22c2
+  FirebaseDatabase: bf02ea57590aaab4e72b9b12b412a4c881ee81e2
+  FirebaseDynamicLinks: dadf4564851de0ecdad2dab7fc2d1c401dcaa406
+  FirebaseFirestore: 74236020e7df1075e81ce6f6f7575d07aa498947
+  FirebaseFunctions: c163794cd4a2b5f4901d0df6d9f7709f2e993686
+  FirebaseInAppMessaging: c8f71e3b7e224111b64245824d01c884bf6fde2d
   FirebaseInstallations: 3de38553e86171b5f81d83cdeef63473d37bfdb0
   FirebaseInstanceID: 61e8d10a4192a582c6239378169d10e504ca8d91
-  FirebaseMessaging: ecf9e04716b7ff1f1d92debab4d6f0e6bdb490aa
+  FirebaseMessaging: 076054895c9260f82c7304cc7709dbf19b8f3e4a
   FirebaseMLCommon: d10d915b2fd1b285f7b80694afa1a65d7fb90f5c
-  FirebaseMLVision: 39cfe86b963ce9db9216da6630529d3089254b9a
-  FirebasePerformance: feb172454ef6568c8246d5713b6e65fde9f2e384
-  FirebaseRemoteConfig: ff8d3542cbd919c9d3851fd544690b8848fc0402
-  FirebaseStorage: ea52bc7a1cb540406ed1e1acfc2bf3946621ed34
+  FirebaseMLVision: 65be38ad3e78ff1e14b4d213878a682f61707359
+  FirebasePerformance: 70f4ea16062512a57a084ed4ae0925b6af1e3884
+  FirebaseRemoteConfig: 04cd72851dad51780aa66f05b01a7dd0b85cdbf5
+  FirebaseStorage: 80e2cd5200791540ca544f4dcac5e6b56994fc97
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   Google-Mobile-Ads-SDK: 29bbdb182d69ff606cc0301da1590b40be8d2205
   GoogleAPIClientForREST: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
-  GoogleAppMeasurement: 7790ef975d1d463c8614cd949a847e612edf087a
+  GoogleAppMeasurement: 89e1a64593f968713b0506ba1b53b38a154bf9a5
   GoogleDataTransport: e4085e6762f36a6141738f46b0153473ce57fb18
   GoogleToolboxForMac: 1350d40e86a76f7863928d63bcb0b89c84c521c5
   GoogleUserMessagingPlatform: 1d4b6946710d18cec34742054092e2c2bddae61f
@@ -760,24 +760,24 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  RNFBAdMob: 9fde71cdebb34b76c3563058b262838f3865f037
-  RNFBAnalytics: 20e6ac03857cab32df4511c41dbcac003cb1068a
-  RNFBApp: 28ebef9ae3051c4715c1e2397a5e9614f2ca8ffb
-  RNFBAuth: ce4d1e530ad01f460fa0a33e2dc7f95b41d0fc85
-  RNFBCrashlytics: 9fb5e40ec1f07d04b4be21452d1caf5ed94ca3cc
-  RNFBDatabase: f0d3d475f1c13c4d166ec946db4e3416dcd40422
-  RNFBDynamicLinks: 139d1cdf94467cb032050e32b95e9a2839f96f47
-  RNFBFirestore: c011591967b4dc15dd881a51500f5547f98939e7
-  RNFBFunctions: 442d72e42892dc6f6aa440080e10c46fdc488354
-  RNFBIid: de74265f2b4becca364dadbdfae969db26ba0889
-  RNFBInAppMessaging: 45729ef53490ebf9f82aea6829212ebcd9b61888
-  RNFBMessaging: 15c6fc8a5d000fe6f6d171c8b7513acf88261f08
-  RNFBML: 40bf23115d6a7b2648ffde19788cca83691d51a4
-  RNFBPerf: c10267695cbc2012167b063a3c86a436d296b5b6
-  RNFBRemoteConfig: 6615b43b44dff4e5b70378ad2d28fb35387ecd48
-  RNFBStorage: 85c103535ef5aef331c7e99d8e9953189c8e3bba
+  RNFBAdMob: b41ed06d9e2fc4b8017b0795daee03ab1e2da6be
+  RNFBAnalytics: c0c9ec343b7346cf6f95b86a60a6708686602213
+  RNFBApp: dd467adc93352e578e0913ff9f847e7611f6f7ee
+  RNFBAuth: 668dcf679e1b4b34038fbe00cb44f521b667ce1b
+  RNFBCrashlytics: 44e5a490cec62cfd2feaeb4b5d7592dba049136b
+  RNFBDatabase: d0c01c8865b278414d221850aa06bb4458667e4f
+  RNFBDynamicLinks: af9869f2c2941c0bb7d8da601ff74e5f5be72c39
+  RNFBFirestore: 8709f18c43b1ea7b30b81df4c33f586ae5a71f90
+  RNFBFunctions: 0391e08770572fd73c984a1ede80c6db085650cd
+  RNFBIid: efb02aabf7d7ca344b8ebacf612e22c18d2674fd
+  RNFBInAppMessaging: 97dc9252ad46dd46389d549893545d2a96b77cce
+  RNFBMessaging: 73b155406c5361b9d0df8f2f6e83658a65b61f8a
+  RNFBML: 77661316ab87afacb61a5d468d158534770ed8a4
+  RNFBPerf: 118c6c2f39b9f94dc25ceb16e0e8aa0ff16f2c81
+  RNFBRemoteConfig: 8c52d3495efce81c654ffe5e9f3bd45ad3b9fc3c
+  RNFBStorage: 019a81181400566e0487932975d8b2073f19973e
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
 
-PODFILE CHECKSUM: 422b670abe2e89213edbefb2e24475c616f0b76e
+PODFILE CHECKSUM: dc318c6cd0d65fd6fcd8bec69f0f8f7f130ff427
 
 COCOAPODS: 1.10.0
