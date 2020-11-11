@@ -99,7 +99,12 @@ export namespace FirebaseAnalyticsTypes {
      * The Item variant.
      */
     item_variant?: string;
+    /**
+     * The Item quantity.
+     */
+    quantity?: number;
   }
+
   export interface AddPaymentInfoEventParameters {
     items?: Item[];
     /**
