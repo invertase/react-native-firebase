@@ -17,6 +17,9 @@
 
 import { isDate, isNumber } from '@react-native-firebase/app/lib/common';
 
+// The earlist date supported by Firestore timestamps (0001-01-01T00:00:00Z).
+const MIN_SECONDS = -62135596800;
+
 export default class FirestoreTimestamp {
   static now() {
     return FirestoreTimestamp.fromMillis(Date.now());
@@ -56,7 +59,7 @@ export default class FirestoreTimestamp {
     }
 
     // Midnight at the beginning of 1/1/1 is the earliest Firestore supports.
-    if (seconds < -62135596800) {
+    if (seconds < MIN_SECONDS) {
       throw new Error(`firebase.firestore.Timestamp 'seconds' out of range: ${seconds}`);
     }
 
@@ -99,7 +102,7 @@ export default class FirestoreTimestamp {
     return `FirestoreTimestamp(seconds=${this.seconds}, nanoseconds=${this.nanoseconds})`;
   }
 
-  toJSON(): { seconds: number, nanoseconds: number } {
+  toJSON() {
     return { seconds: this.seconds, nanoseconds: this.nanoseconds };
   }
 
@@ -107,7 +110,7 @@ export default class FirestoreTimestamp {
    * Converts this object to a primitive string, which allows Timestamp objects to be compared
    * using the `>`, `<=`, `>=` and `>` operators.
    */
-  valueOf(): string {
+  valueOf() {
     // This method returns a string of the form <seconds>.<nanoseconds> where <seconds> is
     // translated to have a non-negative value and both <seconds> and <nanoseconds> are left-padded
     // with zeroes to be a consistent length. Strings with this format then have a lexiographical
