@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.10.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.10.2...@react-native-firebase/firestore@7.10.3) (2020-11-11)
+
+### Bug Fixes
+
+- **firestore:** add missing MIN_SECONDS constant to FirestoreTimestamp ([#4531](https://github.com/invertase/react-native-firebase/issues/4531)) ([11127c1](https://github.com/invertase/react-native-firebase/commit/11127c177b217f3ddfca250664667a20918df65c))
+
 ## [7.10.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.10.1...@react-native-firebase/firestore@7.10.2) (2020-11-10)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
