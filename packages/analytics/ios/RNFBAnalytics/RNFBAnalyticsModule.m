@@ -44,7 +44,21 @@
         rejecter:
         (RCTPromiseRejectBlock) reject) {
     @try {
-      [FIRAnalytics logEventWithName:name parameters:params];
+      if (params[kFIRParameterItems]) {
+        NSMutableDictionary *newParams = [params mutableCopy];
+        NSMutableArray *newItems = [NSMutableArray array];
+        [(NSArray *)params[kFIRParameterItems] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+          NSMutableDictionary *item = [obj mutableCopy];
+          if (item[kFIRParameterQuantity]) {
+            item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
+          }
+          [newItems addObject:[item copy]];
+        }];
+        newParams[kFIRParameterItems] = [newItems copy];
+        [FIRAnalytics logEventWithName:name parameters:[newParams copy]];
+      } else {
+        [FIRAnalytics logEventWithName:name parameters:params];
+      }
     } @catch (NSException *exception) {
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
