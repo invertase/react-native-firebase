@@ -647,7 +647,7 @@ export namespace FirebaseDatabaseTypes {
     on(
       eventType?: EventType,
       callback?: (a: DataSnapshot, b?: string | null) => any,
-      cancelCallbackOrContext?: ((a: Error) => any) | Object | null,
+      cancelCallbackOrContext?: ((a: Error) => any) | Record<string, any> | null,
       context?: Record<string, any> | null,
     ): (a: DataSnapshot, b?: string | null) => any;
 
@@ -676,8 +676,8 @@ export namespace FirebaseDatabaseTypes {
     once(
       eventType: EventType,
       successCallback?: (a: DataSnapshot, b?: string | null) => any,
-      failureCallbackContext?: ((a: Error) => void) | Object | null,
-      context?: Object | null,
+      failureCallbackContext?: ((a: Error) => void) | Record<string, any> | null,
+      context?: Record<string, any> | null,
     ): Promise<DataSnapshot>;
 
     /**
