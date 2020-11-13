@@ -646,10 +646,10 @@ export namespace FirebaseDatabaseTypes {
      */
     on(
       eventType?: EventType,
-      callback?: Function,
-      cancelCallbackOrContext?: Record<string, any>,
+      callback?: (a: DataSnapshot, b?: string | null) => any,
+      cancelCallbackOrContext?: ((a: Error) => any) | Object | null,
       context?: Record<string, any> | null,
-    ): Function;
+    ): (a: DataSnapshot, b?: string | null) => any;
 
     /**
      * Listens for exactly one event of the specified event type, and then stops listening.
@@ -670,12 +670,14 @@ export namespace FirebaseDatabaseTypes {
      * @param eventType One of the following strings: "value", "child_added", "child_changed", "child_removed", or "child_moved."
      * @param successCallback A callback that fires when the specified event occurs. The callback will be passed a DataSnapshot. For ordering purposes, "child_added", "child_changed", and "child_moved" will also be passed a string containing the key of the previous child by sort order, or `null` if it is the first child.
        @param failureCallbackContext An optional callback that will be notified if your client does not have permission to read the data. This callback will be passed an Error object indicating why the failure occurred.
+       @param context If provided, this object will be used as this when calling your callback(s).
      */
 
     once(
       eventType: EventType,
       successCallback?: (a: DataSnapshot, b?: string | null) => any,
-      failureCallbackContext?: ((a: Error) => void) | Record<string, any> | null,
+      failureCallbackContext?: ((a: Error) => void) | Object | null,
+      context?: Object | null,
     ): Promise<DataSnapshot>;
 
     /**
