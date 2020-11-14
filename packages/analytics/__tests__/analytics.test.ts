@@ -103,26 +103,6 @@ describe('Analytics', () => {
     );
   });
 
-  it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
-    const analytics = firebase.analytics();
-    // @ts-ignore test
-    const logEcommercePurchaseSpy = jest.spyOn(analytics, 'logEcommercePurchase');
-    // @ts-ignore test
-    const logPresentOfferSpy = jest.spyOn(analytics, 'logPresentOffer');
-    // @ts-ignore test
-    const logPurchaseRefundSpy = jest.spyOn(analytics, 'logPurchaseRefund');
-    // @ts-ignore test
-    analytics.logEcommercePurchase();
-    // @ts-ignore test
-    analytics.logPresentOffer();
-    // @ts-ignore test
-    analytics.logPurchaseRefund();
-
-    expect(logEcommercePurchaseSpy).toBeCalled();
-    expect(logPresentOfferSpy).toBeCalled();
-    expect(logPurchaseRefundSpy).toBeCalled();
-  });
-
   describe('logEvent()', () => {
     it('errors if name is not a string', () => {
       // @ts-ignore test
