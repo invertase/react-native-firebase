@@ -114,17 +114,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setAnalyticsCollectionEnabled(enabled);
   }
 
-  setCurrentScreen(screenName, screenClassOverride) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().setCurrentScreen(), is now deprecated. Please use firebase.analytics().logScreenView() instead',
-    );
-    return this.logScreenView({
-      screen_name: screenName,
-      screen_class: screenClassOverride,
-    });
-  }
-
   setSessionTimeoutDuration(milliseconds = 1800000) {
     if (!isNumber(milliseconds)) {
       throw new Error(
@@ -319,16 +308,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       ),
     );
   }
-  /**
-   * logEcommercePurchase purchase is now deprecated, use logPurchase instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
-   */
-  logEcommercePurchase() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logEcommercePurchase(), "ECOMMERCE_PURCHASE" event is now deprecated. Please use firebase.analytics().logPurchase() instead',
-    );
-  }
 
   logGenerateLead(object = {}) {
     if (!isObject(object)) {
@@ -420,28 +399,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent(
       'post_score',
       validateStruct(object, structs.PostScore, 'firebase.analytics().logPostScore(*):'),
-    );
-  }
-
-  /**
-   * Deprecated, use logRefundEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
-   */
-  logPresentOffer() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logPresentOffer(), "PRESENT_OFFER" event is now deprecated. Please use firebase.analytics().logViewPromotion() instead',
-    );
-  }
-
-  /**
-   * Deprecated, use logRefundEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
-   */
-  logPurchaseRefund() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logPurchaseRefund(), "PURCHASE_REFUND" event is now deprecated. Please use firebase.analytics().logRefund() instead',
     );
   }
 
