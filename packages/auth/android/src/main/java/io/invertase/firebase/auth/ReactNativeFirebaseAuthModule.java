@@ -991,10 +991,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(
-      mVerificationId,
-      verificationCode
-    );
+    PhoneAuthCredential credential = null;
+    try {
+      credential = PhoneAuthProvider.getCredential(
+        mVerificationId,
+        verificationCode
+      );
+    } catch (Exception e) {
+      Log.d(TAG, "confirmationResultConfirm::getCredential::failure", e);
+      promiseRejectAuthException(promise, e);
+      return;
+    }
 
     firebaseAuth.signInWithCredential(credential).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
