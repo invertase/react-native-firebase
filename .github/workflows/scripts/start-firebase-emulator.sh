@@ -1,10 +1,10 @@
 #!/bin/bash
 if ! [ -x "$(command -v firebase)" ]; then
-  echo "❌ Firebase tools CLI is missing."
+  echo "❌ Firebase-tools CLI is missing. Run 'npm i -g firebase-tools' or the equivalent"
   exit 1
 fi
 
-EMU_START_COMMAND="firebase emulators:start --only firestore"
+EMU_START_COMMAND="firebase emulators:start --only firestore,auth --project react-native-firebase-testing"
 
 if [ "$1" == "--no-daemon" ]; then
   $EMU_START_COMMAND
