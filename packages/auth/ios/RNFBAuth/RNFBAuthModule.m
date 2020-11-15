@@ -924,6 +924,14 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }];
 }
 
+RCT_EXPORT_METHOD(useEmulator:
+  (FIRApp *) firebaseApp
+    :(nonnull NSString *)host
+    :(NSInteger)port
+) {
+      [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
+}
+
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
 
