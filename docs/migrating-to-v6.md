@@ -84,6 +84,18 @@ rootProject.name = 'AwesomeApp'
 include ':app'
 ```
 
+#### Removing from Android Manifest
+
+Open your *AndroidManifest.xml* file.  You will need to remove any references to the `io.invertase.firebase.messaging` class
+
+```diff
+- <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
+-   <intent-filter>
+-     <action android:name="com.google.firebase.MESSAGING_EVENT" />
+-   </intent-filter>
+- </service>
+```
+
 #### Removing native dependencies
 
 We now need to remove the RNFirebase and Firebase dependencies from your project.
