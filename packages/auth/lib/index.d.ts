@@ -1640,6 +1640,14 @@ export namespace FirebaseAuthTypes {
      * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
      */
     useUserAccessGroup(userAccessGroup: string): Promise<null>;
+    /**
+     * Modify this Auth instance to communicate with the Firebase Auth emulator.
+     * This must be called synchronously immediately following the first call to firebase.auth().
+     * Do not use with production credentials as emulator traffic is not encrypted.
+     *
+     * @param url: emulator URL, must have host and port (eg, 'http://localhost:9099')
+     */
+    useEmulator(url: string): void;
   }
 }
 

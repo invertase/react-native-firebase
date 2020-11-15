@@ -334,6 +334,33 @@ class FirebaseAuthModule extends FirebaseModule {
       'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
     );
   }
+
+  useEmulator(url) {
+    if (!url || !isString(url) || url === '') {
+      throw new Error('firebase.auth().useEmulator() takes a non-empty string');
+    }
+
+    let _url = url;
+    if (isAndroid && _url) {
+      if (_url.startsWith('http://localhost')) {
+        _url = _url.replace('http://localhost', 'http://10.0.2.2');
+      }
+      if (_url.startsWith('http://127.0.0.1')) {
+        _url = _url.replace('http://127.0.0.1', 'http://10.0.2.2');
+      }
+    }
+
+    // Native calls take the host and port split out
+    const hostPortRegex = /^http:\/\/([\w\d.]+):(\d+)$/;
+    const urlMatches = _url.match(hostPortRegex);
+    if (!urlMatches) {
+      throw new Error('firebase.auth().useEmulator() unable to parse host and port from url');
+    }
+    const host = urlMatches[1];
+    const port = parseInt(urlMatches[2], 10);
+    this.native.useEmulator(host, port);
+    return [host, port]; // undocumented return, useful for unit testing
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/auth';
