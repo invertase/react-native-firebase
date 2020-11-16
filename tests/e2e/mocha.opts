@@ -2,7 +2,7 @@
 --timeout 720000
 --reporter spec
 --slow 2000
---retries 5
+--retries 2
 --bail
 --exit
 --require node_modules/jet/platform/node
@@ -12,8 +12,7 @@
 
 ../packages/analytics/e2e/*.e2e.js
 
-# FIXME temporary, API limits make these failure-prone, toggled off during development
-#../packages/auth/e2e/*.e2e.js
+../packages/auth/e2e/*.e2e.js
 
 # TODO a lot of these failing on CI - might be an API rate limit change
 # ../packages/admob/e2e/*.e2e.js
@@ -30,14 +29,11 @@
 
 ../packages/remote-config/e2e/*.e2e.js
 
-# TODO - ci crashing Android
 ../packages/ml/e2e/*.e2e.js
 
 ../packages/in-app-messaging/e2e/*.e2e.js
 
 ../packages/database/e2e/*.e2e.js
-
-# TODO crashing - error codes are wrong
 
 ../packages/storage/e2e/*.e2e.js
 

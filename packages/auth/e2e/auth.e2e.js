@@ -15,7 +15,31 @@
  *
  */
 
+const TEST_EMAIL = 'test@example.com';
+const TEST_PASS = 'test1234';
+
+const DISABLED_EMAIL = 'disabled@example.com';
+const DISABLED_PASS = 'test1234';
+
+const { clearAllUsers, disableUser, getLastOob, resetPassword } = require('./helpers');
+
 describe('auth()', () => {
+  before(async () => {
+    await clearAllUsers();
+    await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
+    const disabledUserCredential = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(DISABLED_EMAIL, DISABLED_PASS);
+    await disableUser(disabledUserCredential.user.uid);
+  });
+
+  beforeEach(async () => {
+    if (firebase.auth().currentUser) {
+      await firebase.auth().signOut();
+      await Utils.sleep(50);
+    }
+  });
+
   describe('namespace', () => {
     it('accessible from firebase.app()', () => {
       const app = firebase.app();
@@ -39,6 +63,7 @@ describe('auth()', () => {
   });
 
   describe('applyActionCode()', () => {
+    // Needs a different setup to work against the auth emulator
     xit('works as expected', async () => {
       await firebase
         .auth()
@@ -106,18 +131,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('verifyPasswordResetCode()', () => {
-    it('errors on invalid code', async () => {
-      try {
-        await firebase.auth().verifyPasswordResetCode('fooby shooby dooby');
-      } catch (e) {
-        e.message.should.containEql('code is invalid');
-      }
-    });
-  });
-
   describe('confirmPasswordReset()', () => {
-    it('errors on invalid code', async () => {
+    it('errors on invalid code via API', async () => {
       try {
         await firebase.auth().confirmPasswordReset('fooby shooby dooby', 'passwordthing');
       } catch (e) {
@@ -127,16 +142,14 @@ describe('auth()', () => {
   });
 
   describe('signInWithCustomToken()', () => {
-    it('signs in with a admin sdk created custom auth token', async () => {
-      const email = 'test@test.com';
-      const pass = 'test1234';
-
+    // Needs a different setup when running against the emulator
+    xit('signs in with a admin sdk created custom auth token', async () => {
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
-        currentUser.toJSON().email.should.eql(email);
+        currentUser.toJSON().email.should.eql(TEST_EMAIL);
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
         currentUser.should.equal(firebase.auth().currentUser);
@@ -150,7 +163,7 @@ describe('auth()', () => {
 
       const user = await firebase
         .auth()
-        .signInWithEmailAndPassword(email, pass)
+        .signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
         .then(successCb);
 
       const IdToken = await firebase.auth().currentUser.getIdToken();
@@ -162,7 +175,7 @@ describe('auth()', () => {
 
       await firebase.auth().signInWithCustomToken(token);
 
-      firebase.auth().currentUser.email.should.equal('test@test.com');
+      firebase.auth().currentUser.email.should.equal(TEST_EMAIL);
     });
   });
 
@@ -540,15 +553,12 @@ describe('auth()', () => {
 
   describe('signInWithEmailAndPassword()', () => {
     it('it should login with email and password', () => {
-      const email = 'test@test.com';
-      const pass = 'test1234';
-
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
-        currentUser.toJSON().email.should.eql(email);
+        currentUser.toJSON().email.should.eql(TEST_EMAIL);
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
         currentUser.should.equal(firebase.auth().currentUser);
@@ -562,14 +572,11 @@ describe('auth()', () => {
 
       return firebase
         .auth()
-        .signInWithEmailAndPassword(email, pass)
+        .signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
         .then(successCb);
     });
 
     it('it should error on login if user is disabled', () => {
-      const email = 'disabled@account.com';
-      const pass = 'test1234';
-
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -580,15 +587,12 @@ describe('auth()', () => {
 
       return firebase
         .auth()
-        .signInWithEmailAndPassword(email, pass)
+        .signInWithEmailAndPassword(DISABLED_EMAIL, DISABLED_PASS)
         .then(successCb)
         .catch(failureCb);
     });
 
     it('it should error on login if password incorrect', () => {
-      const email = 'test@test.com';
-      const pass = 'test1234666';
-
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -601,7 +605,7 @@ describe('auth()', () => {
 
       return firebase
         .auth()
-        .signInWithEmailAndPassword(email, pass)
+        .signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS + '666')
         .then(successCb)
         .catch(failureCb);
     });
@@ -631,14 +635,14 @@ describe('auth()', () => {
 
   describe('signInWithCredential()', () => {
     it('it should login with email and password', () => {
-      const credential = firebase.auth.EmailAuthProvider.credential('test@test.com', 'test1234');
+      const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
 
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
         currentUser.uid.should.be.a.String();
         currentUser.toJSON().should.be.an.Object();
-        currentUser.toJSON().email.should.eql('test@test.com');
+        currentUser.toJSON().email.should.eql(TEST_EMAIL);
         currentUser.isAnonymous.should.equal(false);
         currentUser.providerId.should.equal('firebase');
         currentUser.should.equal(firebase.auth().currentUser);
@@ -657,10 +661,7 @@ describe('auth()', () => {
     });
 
     it('it should error on login if user is disabled', () => {
-      const credential = firebase.auth.EmailAuthProvider.credential(
-        'disabled@account.com',
-        'test1234',
-      );
+      const credential = firebase.auth.EmailAuthProvider.credential(DISABLED_EMAIL, DISABLED_PASS);
 
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -678,7 +679,7 @@ describe('auth()', () => {
     });
 
     it('it should error on login if password incorrect', () => {
-      const credential = firebase.auth.EmailAuthProvider.credential('test@test.com', 'test1234666');
+      const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS + '666');
 
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
@@ -770,9 +771,6 @@ describe('auth()', () => {
     });
 
     it('it should error on create if email in use', () => {
-      const email = 'test@test.com';
-      const pass = 'test123456789';
-
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -783,7 +781,7 @@ describe('auth()', () => {
 
       return firebase
         .auth()
-        .createUserWithEmailAndPassword(email, pass)
+        .createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS)
         .then(successCb)
         .catch(failureCb);
     });
@@ -824,7 +822,7 @@ describe('auth()', () => {
 
         return firebase
           .auth()
-          .fetchSignInMethodsForEmail('test@test.com')
+          .fetchSignInMethodsForEmail(TEST_EMAIL)
           .then(successCb)
           .catch(failureCb);
       }));
@@ -982,11 +980,97 @@ describe('auth()', () => {
 
       try {
         await firebase.auth().sendPasswordResetEmail(email);
-        await firebase.auth().currentUser.delete();
       } catch (error) {
-        // Reject
-        await firebase.auth().currentUser.delete();
         throw new Error('sendPasswordResetEmail() caused an error', error);
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should verify with valid code', async () => {
+      // FIXME Fails on android against auth emulator with:
+      // com.google.firebase.FirebaseException: An internal error has occurred.
+      if (device.getPlatform() === 'ios') {
+        const random = Utils.randString(12, '#a');
+        const email = `${random}@${random}.com`;
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+        userCredential.user.emailVerified.should.equal(false);
+        firebase.auth().currentUser.email.should.equal(email);
+        firebase.auth().currentUser.emailVerified.should.equal(false);
+
+        try {
+          await firebase.auth().sendPasswordResetEmail(email);
+          const { oobCode } = await getLastOob(email);
+          await firebase.auth().verifyPasswordResetCode(oobCode);
+        } catch (error) {
+          throw new Error('sendPasswordResetEmail() caused an error', error);
+        } finally {
+          await firebase.auth().currentUser.delete();
+        }
+      }
+    });
+
+    it('should fail to verify with invalid code', async () => {
+      const random = Utils.randString(12, '#a');
+      const email = `${random}@${random}.com`;
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+      userCredential.user.emailVerified.should.equal(false);
+      firebase.auth().currentUser.email.should.equal(email);
+      firebase.auth().currentUser.emailVerified.should.equal(false);
+
+      try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        const { oobCode } = await getLastOob(email);
+        await firebase.auth().verifyPasswordResetCode(oobCode + 'badcode');
+        throw new Error('Invalid code should throw an error');
+      } catch (error) {
+        error.message.should.containEql('[auth/invalid-action-code]');
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should change password correctly OOB', async () => {
+      const random = Utils.randString(12, '#a');
+      const email = `${random}@${random}.com`;
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+      userCredential.user.emailVerified.should.equal(false);
+      firebase.auth().currentUser.email.should.equal(email);
+      firebase.auth().currentUser.emailVerified.should.equal(false);
+
+      try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        const { oobCode } = await getLastOob(email);
+        await resetPassword(oobCode, 'testNewPassword');
+        await firebase.auth().signOut();
+        await Utils.sleep(50);
+        await firebase.auth().signInWithEmailAndPassword(email, 'testNewPassword');
+      } catch (error) {
+        throw new Error('sendPasswordResetEmail() caused an error', error);
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
+    });
+
+    it('should change password correctly via API', async () => {
+      const random = Utils.randString(12, '#a');
+      const email = `${random}@${random}.com`;
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+      userCredential.user.emailVerified.should.equal(false);
+      firebase.auth().currentUser.email.should.equal(email);
+      firebase.auth().currentUser.emailVerified.should.equal(false);
+
+      try {
+        await firebase.auth().sendPasswordResetEmail(email);
+        const { oobCode } = await getLastOob(email);
+        await firebase.auth().confirmPasswordReset(oobCode, 'testNewPassword');
+        await firebase.auth().signOut();
+        await Utils.sleep(50);
+        await firebase.auth().signInWithEmailAndPassword(email, 'testNewPassword');
+      } catch (error) {
+        throw new Error('sendPasswordResetEmail() caused an error', error);
+      } finally {
+        await firebase.auth().currentUser.delete();
       }
     });
   });

@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -18,28 +19,31 @@
  */
 const http = require('http');
 
-const deleteOptions = {
-  method: 'DELETE',
-  port: 8080,
-  host: '127.0.0.1',
-  path: '/emulator/v1/projects/react-native-firebase-testing/databases/(default)/documents',
-};
-
 exports.wipe = async function wipe(debug = false) {
-  if (debug) {
-    console.time('wipe');
-  }
+  const deleteOptions = {
+    method: 'DELETE',
+    port: 8080,
+    host: getE2eEmulatorHost(),
+    path: '/emulator/v1/projects/' + getE2eTestProject() + '/databases/(default)/documents',
+  };
 
-  await new Promise((resolve, reject) => {
-    const req = http.request(deleteOptions);
+  try {
+    if (debug) {
+      console.time('wipe');
+    }
+    await new Promise((resolve, reject) => {
+      const req = http.request(deleteOptions);
 
-    req.on('error', error => reject(error));
+      req.on('error', error => reject(error));
 
-    req.end(() => {
-      if (debug) {
-        console.timeEnd('wipe');
-      }
-      resolve();
+      req.end(() => {
+        if (debug) {
+          console.timeEnd('wipe');
+        }
+        resolve();
+      });
     });
-  });
+  } catch (e) {
+    console.error('Unable to wipe firestore:', e);
+  }
 };

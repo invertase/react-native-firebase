@@ -1,3 +1,5 @@
+const { getLastOob, signInUser } = require('./helpers');
+
 describe('auth() -> emailLink Provider', () => {
   beforeEach(async () => {
     if (firebase.auth().currentUser) {
@@ -24,6 +26,30 @@ describe('auth() -> emailLink Provider', () => {
         },
       };
       await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
+    });
+
+    it('sign in via email works', async () => {
+      const random = Utils.randString(12, '#aa');
+      const email = `${random}@${random}.com`;
+      const continueUrl = 'http://localhost:1337/authLinkFoo?bar=' + random;
+      const actionCodeSettings = {
+        url: continueUrl,
+        handleCodeInApp: true,
+        iOS: {
+          bundleId: 'com.testing',
+        },
+        android: {
+          packageName: 'com.testing',
+          installApp: true,
+          minimumVersion: '12',
+        },
+      };
+      await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
+      const oobInfo = await getLastOob(email);
+      oobInfo.oobLink.should.containEql(encodeURIComponent(continueUrl));
+      const signInResponse = await signInUser(oobInfo.oobLink);
+      signInResponse.should.containEql(continueUrl);
+      signInResponse.should.containEql(oobInfo.oobCode);
     });
 
     xit('should send email with defaults', async () => {
