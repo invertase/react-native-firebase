@@ -33,7 +33,7 @@
 
 ../packages/in-app-messaging/e2e/*.e2e.js
 
-../packages/database/e2e/*.e2e.js
+../packages/database/e2e/**/*.e2e.js
 
 ../packages/storage/e2e/*.e2e.js
 
