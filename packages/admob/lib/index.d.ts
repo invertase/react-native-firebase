@@ -239,8 +239,10 @@ export namespace FirebaseAdMobTypes {
 
     /**
      * A (next generation) dynamically sized banner that is full-width and auto-height.
+     *
+     * iOS only
      */
-    APAPTIVE_BANNER: 'APAPTIVE_BANNER';
+    ADAPTIVE_BANNER: 'ADAPTIVE_BANNER';
 
     /**
      * A dynamically sized banner that matches its parent's width and expands/contracts its height to match the ad's content after loading completes.
