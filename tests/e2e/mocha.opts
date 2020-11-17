@@ -15,7 +15,7 @@
 ../packages/auth/e2e/*.e2e.js
 
 # TODO a lot of these failing on CI - might be an API rate limit change
-# ../packages/admob/e2e/*.e2e.js
+../packages/admob/e2e/*.e2e.js
 
 ../packages/crashlytics/e2e/*.e2e.js
 
