@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/v6.4.0...v10.0.0) (2020-11-17)
+
+- feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/issues/3613)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+- **types:** fix RequestOptions.location ts type ([#3418](https://github.com/invertase/react-native-firebase/issues/3418)) ([f0fdbff](https://github.com/invertase/react-native-firebase/commit/f0fdbff71967aec0cf72f1fe5c9066ffe5b6d7b7))
+
+### Features
+
+- **admob:** implement support for Server Side Verification ([#4083](https://github.com/invertase/react-native-firebase/issues/4083)) ([51dbbc3](https://github.com/invertase/react-native-firebase/commit/51dbbc3385bd9a180e691e9974121f5c40fd051c))
+- **android:** don't call ad of AdmobBanner multiple times ([#3488](https://github.com/invertase/react-native-firebase/issues/3488)) ([8c8d448](https://github.com/invertase/react-native-firebase/commit/8c8d448a3e9d4c96fd015d74e859081218af67c8))
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+- **ios:** podspecs now utilize CoreOnly instead of Core ([#3575](https://github.com/invertase/react-native-firebase/issues/3575)) ([35285f1](https://github.com/invertase/react-native-firebase/commit/35285f1655b16d05e6630fc556f95cccfb707ee4))
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+- independently version packages ([#3513](https://github.com/invertase/react-native-firebase/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+
+### BREAKING CHANGES
+
+- breaking change to mark new internal versioning requirements.
+
 ## [7.6.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/admob@7.6.11...@react-native-firebase/admob@7.6.12) (2020-11-10)
 
 **Note:** Version bump only for package @react-native-firebase/admob

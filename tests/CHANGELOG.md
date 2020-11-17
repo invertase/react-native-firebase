@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/v6.4.0...v10.0.0) (2020-11-17)
+
+
+* feat(crashlytics)!: upgrade to new Firebase Crashlytics SDK (#3580) ([cad58e1](https://github.com/invertase/react-native-firebase/commit/cad58e178b43dea461e17fa4a0a3fecd507ba68a)), closes [#3580](https://github.com/invertase/react-native-firebase/issues/3580)
+* feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/issues/3613)
+
+
+### Bug Fixes
+
+* **firestore:**  update isEqual API to check collection path equality ([#3738](https://github.com/invertase/react-native-firebase/issues/3738)) ([405e040](https://github.com/invertase/react-native-firebase/commit/405e04009c1550dc6897b207ae3a63ad274c6de5))
+* **messaging:** initialize app props method to fix isHeadless property ([#4082](https://github.com/invertase/react-native-firebase/issues/4082)) ([2bdebb1](https://github.com/invertase/react-native-firebase/commit/2bdebb1d3d82915d0aa9a49431d26658721a2f86))
+* **messaging,ios:** keep original UNUserNotificationCenter dele… ([#3427](https://github.com/invertase/react-native-firebase/issues/3427)) ([a800cdb](https://github.com/invertase/react-native-firebase/commit/a800cdbc81bfaeeaccf602aa62ca29d2fbf68c05)), closes [#3425](https://github.com/invertase/react-native-firebase/issues/3425) [#3495](https://github.com/invertase/react-native-firebase/issues/3495)
+* **ml-vision:** convert options to correct type ([#3694](https://github.com/invertase/react-native-firebase/issues/3694)) ([b462be5](https://github.com/invertase/react-native-firebase/commit/b462be542a41a4e37a201146642f1b9fd4c6a74f))
+* **storage:** Changed refFromUrl regex to exclude appspot.com ([#3775](https://github.com/invertase/react-native-firebase/issues/3775)) ([c6f4699](https://github.com/invertase/react-native-firebase/commit/c6f46996191126513e02f3d20efa78d166c4db0a))
+
+
+### Features
+
+* BREAKING forward-port to firebase-android-sdk v26 / firebase-ios-sdk v7 ([70974d4](https://github.com/invertase/react-native-firebase/commit/70974d41f857a0f7fc09cb5235856d3748b30117)), closes [/firebase.google.com/support/release-notes/android#2020-10-27](https://github.com//firebase.google.com/support/release-notes/android/issues/2020-10-27) [/firebase.google.com/support/release-notes/ios#version_700_-_october_26_2020](https://github.com//firebase.google.com/support/release-notes/ios/issues/version_700_-_october_26_2020)
+* bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+* independently version packages ([#3513](https://github.com/invertase/react-native-firebase/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
+* update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+* use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+* **app, ios:** bump firebase-ios-sdk to 7.1.0 from 7.0.0 ([#4533](https://github.com/invertase/react-native-firebase/issues/4533)) ([a1e90ae](https://github.com/invertase/react-native-firebase/commit/a1e90aef20f85f9f95a37c63867389e638f3fab7))
+* **auth:** verifyBeforeUpdateEmail API ([#3862](https://github.com/invertase/react-native-firebase/issues/3862)) ([aaff624](https://github.com/invertase/react-native-firebase/commit/aaff62402544d8783007b6b47b8406019cc48c84))
+* **crashlytics:** add new APIs `checkForUnsentReports`, `deleteUnsentReports`,`didCrashOnPreviousExecution`,`sendUnsentReports` ([#4009](https://github.com/invertase/react-native-firebase/issues/4009)) ([52eeed3](https://github.com/invertase/react-native-firebase/commit/52eeed31b3436b0f90767298dcc515b0897ba942))
+* **firestore:** query operators: 'not-in' & '!=' ([#4474](https://github.com/invertase/react-native-firebase/issues/4474)) ([9e68faf](https://github.com/invertase/react-native-firebase/commit/9e68faf0310bd5f9c3347cad3dd5b80c9c0582e1))
+
+
+### BREAKING CHANGES
+
+* alter ML imports, check iOS linking, remove old API as noted
+* This is a breaking change to remove the use of the Fabric SDKs.
+
+Co-authored-by: David Buchan-Swanson <david.buchanswanson@gmail.com>
+Co-authored-by: Mike Diarmid <mike.diarmid@gmail.com>
+[publish]
+* breaking change to mark new internal versioning requirements.
+
+
+
+
+
 ## [9.0.2](https://github.com/invertase/react-native-firebase/compare/react-native-firebase-tests@9.0.1...react-native-firebase-tests@9.0.2) (2020-11-11)
 
 **Note:** Version bump only for package react-native-firebase-tests
