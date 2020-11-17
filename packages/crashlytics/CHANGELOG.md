@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/v6.4.0...v10.0.0) (2020-11-17)
+
+- feat(crashlytics)!: upgrade to new Firebase Crashlytics SDK (#3580) ([cad58e1](https://github.com/invertase/react-native-firebase/commit/cad58e178b43dea461e17fa4a0a3fecd507ba68a)), closes [#3580](https://github.com/invertase/react-native-firebase/issues/3580)
+- feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/issues/3613)
+
+### Bug Fixes
+
+- **android:** remove deprecated usages of `APPLICATION_ID` ([#3711](https://github.com/invertase/react-native-firebase/issues/3711)) ([984d3fc](https://github.com/invertase/react-native-firebase/commit/984d3fc1668221c166ab459d67d1c646d73d165b))
+- **crashlytics, ios:** explicitly set collection opt in/out ([#4236](https://github.com/invertase/react-native-firebase/issues/4236)) ([cda4c10](https://github.com/invertase/react-native-firebase/commit/cda4c1012737eab8b64e8f8593b623771f5b2734))
+- **crashlytics, ios:** generate uncatchable crash for iOS crash testing ([#4426](https://github.com/invertase/react-native-firebase/issues/4426)) ([2dcaad5](https://github.com/invertase/react-native-firebase/commit/2dcaad59c27b90b1f2b3ef6b31e46d3eac8a5e2e))
+- **ios, crashlytics:** allow Crashlytics inclusion w/o Analytics ([#4134](https://github.com/invertase/react-native-firebase/issues/4134)) ([e023b71](https://github.com/invertase/react-native-firebase/commit/e023b71486d6834ba175e91ee5809af36a03588d))
+- **ios, crashlytics:** use new recommended manual crash style ([#4111](https://github.com/invertase/react-native-firebase/issues/4111)) ([6b136c3](https://github.com/invertase/react-native-firebase/commit/6b136c3972eb25ad37b4d6230e1d6e139c094f86))
+- **ios, crashlytics:** use NSInternalInconsistencyException to crash w/o redbox ([#4126](https://github.com/invertase/react-native-firebase/issues/4126)) ([2cbab5c](https://github.com/invertase/react-native-firebase/commit/2cbab5cf91f4e8542c30a237637d071c14bbcde5))
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+### Features
+
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+- **crashlytics:** add new APIs `checkForUnsentReports`, `deleteUnsentReports`,`didCrashOnPreviousExecution`,`sendUnsentReports` ([#4009](https://github.com/invertase/react-native-firebase/issues/4009)) ([52eeed3](https://github.com/invertase/react-native-firebase/commit/52eeed31b3436b0f90767298dcc515b0897ba942))
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+- independently version packages ([#3513](https://github.com/invertase/react-native-firebase/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+- **crashlytics, ios:** put input files when pod install. ([#4520](https://github.com/invertase/react-native-firebase/issues/4520)) ([f2161fd](https://github.com/invertase/react-native-firebase/commit/f2161fddbab68e01c0b0653201be492def43df3b))
+- **ios:** podspecs now utilize CoreOnly instead of Core ([#3575](https://github.com/invertase/react-native-firebase/issues/3575)) ([35285f1](https://github.com/invertase/react-native-firebase/commit/35285f1655b16d05e6630fc556f95cccfb707ee4))
+
+### BREAKING CHANGES
+
+- This is a breaking change to remove the use of the Fabric SDKs.
+
+Co-authored-by: David Buchan-Swanson <david.buchanswanson@gmail.com>
+Co-authored-by: Mike Diarmid <mike.diarmid@gmail.com>
+[publish]
+
+- breaking change to mark new internal versioning requirements.
+
 ## [8.5.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/crashlytics@8.5.1...@react-native-firebase/crashlytics@8.5.2) (2020-11-10)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics

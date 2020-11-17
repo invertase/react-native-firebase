@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/v6.4.0...v10.0.0) (2020-11-17)
+
+- feat!: all packages should depend on core (#3613) ([252a423](https://github.com/invertase/react-native-firebase/commit/252a4239e98a0f2a55c4afcd2d82e4d5f97e65e9)), closes [#3613](https://github.com/invertase/react-native-firebase/issues/3613)
+
+### Bug Fixes
+
+- **android:** fixed IllegalMonitorStateException crashed issue ([#3800](https://github.com/invertase/react-native-firebase/issues/3800)) ([76f6cf9](https://github.com/invertase/react-native-firebase/commit/76f6cf9770df049c2ae38a0b0f894b606f2de4df))
+- **firestore:** update isEqual API to check collection path equality ([#3738](https://github.com/invertase/react-native-firebase/issues/3738)) ([405e040](https://github.com/invertase/react-native-firebase/commit/405e04009c1550dc6897b207ae3a63ad274c6de5))
+- making auth and firestore observable compatible ([#4078](https://github.com/invertase/react-native-firebase/issues/4078)) ([d8410df](https://github.com/invertase/react-native-firebase/commit/d8410dfdae345f60ed7ea21fbe7f6af7632127e3))
+- **firestore:** add missing MIN_SECONDS constant to FirestoreTimestamp ([#4531](https://github.com/invertase/react-native-firebase/issues/4531)) ([11127c1](https://github.com/invertase/react-native-firebase/commit/11127c177b217f3ddfca250664667a20918df65c))
+- **firestore:** add test case for orderby before where query ([#4459](https://github.com/invertase/react-native-firebase/issues/4459)) ([fdf978a](https://github.com/invertase/react-native-firebase/commit/fdf978aed8044f1ba010a9213a4f81cb9b397df7))
+- **firestore, ios:** transaction atomicity failure fix ([#3599](https://github.com/invertase/react-native-firebase/issues/3599)) ([b261f51](https://github.com/invertase/react-native-firebase/commit/b261f518b3736bf6dab45666059662f02e7c6626))
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+- **android,ios:** upgrade native SDK versions ([#3881](https://github.com/invertase/react-native-firebase/issues/3881)) ([6cb68a8](https://github.com/invertase/react-native-firebase/commit/6cb68a8ea808392fac3a28bdb1a76049c7b52e86))
+- independently version packages ([#3513](https://github.com/invertase/react-native-firebase/issues/3513)) ([e2c2d64](https://github.com/invertase/react-native-firebase/commit/e2c2d64d2266cbdd14d4dcfefa64a08263f0af85))
+- **firestore:** add toJSON() and valueOf() to FirestoreTimestamp ([#4439](https://github.com/invertase/react-native-firebase/issues/4439)) ([aca6992](https://github.com/invertase/react-native-firebase/commit/aca6992edfca7537629131b1f223981452cd95fb)), closes [/github.com/firebase/firebase-js-sdk/blob/7c1c7f182b59e0fc7d175f53e5e2360cdee0ccab/packages/firestore/src/api/timestamp.ts#L162-L182](https://github.com/invertase/react-native-firebase/issues/L162-L182)
+- update native Firebase SDK versions ([#3663](https://github.com/invertase/react-native-firebase/issues/3663)) ([4db9dbc](https://github.com/invertase/react-native-firebase/commit/4db9dbc3ec20bf96de0efad15000f00b41e4a799))
+- **firestore:** query operators: 'not-in' & '!=' ([#4474](https://github.com/invertase/react-native-firebase/issues/4474)) ([9e68faf](https://github.com/invertase/react-native-firebase/commit/9e68faf0310bd5f9c3347cad3dd5b80c9c0582e1))
+- **firestore:** support clearPersistence() & terminate() APIs ([#3591](https://github.com/invertase/react-native-firebase/issues/3591)) ([57ff900](https://github.com/invertase/react-native-firebase/commit/57ff9003b664b94aa6b5b1997138bdb2220dba65))
+- **firestore:** support limitToLast query filter ([#3702](https://github.com/invertase/react-native-firebase/issues/3702)) ([dc7f921](https://github.com/invertase/react-native-firebase/commit/dc7f9213c0c1196d1d5de4e1fb92f9d791280313))
+- use latest android & ios Firebase SDKs version ([#3956](https://github.com/invertase/react-native-firebase/issues/3956)) ([e7b4bb3](https://github.com/invertase/react-native-firebase/commit/e7b4bb31b05985c044b1f01625a43e364bb653ef))
+- **firestore:** support waitForPendingWrites() API ([#4176](https://github.com/invertase/react-native-firebase/issues/4176)) ([6a4b45e](https://github.com/invertase/react-native-firebase/commit/6a4b45e441344a8c645552cfdef8c8bd88e56ca2))
+- **firestore, android:** allow FirestoreSerializer native use ([#3888](https://github.com/invertase/react-native-firebase/issues/3888)) ([68daf94](https://github.com/invertase/react-native-firebase/commit/68daf945c4dacca954eb8592b94b992ca82d0ffb))
+- **firestore, types:** support Generic Types ([#3810](https://github.com/invertase/react-native-firebase/issues/3810)) ([f81e08e](https://github.com/invertase/react-native-firebase/commit/f81e08ee2c1dcfebf8f82eebd4e1883313d582e2))
+- **ios:** podspecs now utilize CoreOnly instead of Core ([#3575](https://github.com/invertase/react-native-firebase/issues/3575)) ([35285f1](https://github.com/invertase/react-native-firebase/commit/35285f1655b16d05e6630fc556f95cccfb707ee4))
+
+### BREAKING CHANGES
+
+- breaking change to mark new internal versioning requirements.
+
 ## [7.10.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/firestore@7.10.2...@react-native-firebase/firestore@7.10.3) (2020-11-11)
 
 ### Bug Fixes

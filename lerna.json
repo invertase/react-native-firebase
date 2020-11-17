@@ -1,7 +1,12 @@
 {
   "npmClient": "yarn",
-  "npmClientArgs": ["--no-lockfile"],
-  "packages": ["packages/*", "tests"],
+  "npmClientArgs": [
+    "--no-lockfile"
+  ],
+  "packages": [
+    "packages/*",
+    "tests"
+  ],
   "useWorkspaces": true,
   "command": {
     "version": {
@@ -12,6 +17,11 @@
       "message": "chore(release): release packages"
     }
   },
-  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
-  "version": "9.0.0"
+  "ignoreChanges": [
+    "**/docs/**",
+    "**/.github/**",
+    "**/e2e/**",
+    "**/tests/**"
+  ],
+  "version": "10.0.0"
 }
