@@ -73,14 +73,7 @@
     return;
   }
 
-  GADAdSize adSize;
-  if ([value isEqualToString:@"ADAPTIVE_BANNER"]) {
-    CGFloat viewWidth = [[UIScreen mainScreen]bounds].size.width;
-    GADAdSize adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth);
-  } else {
-    adSize = [RNFBAdMobCommon stringToAdSize:_size];
-  }
-  [self initBanner:adSize];
+  [self initBanner:[RNFBAdMobCommon stringToAdSize:_size]];
   [self addSubview:_banner];
   _banner.adUnitID = _unitId;
   [self setRequested:YES];
