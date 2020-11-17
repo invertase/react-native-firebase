@@ -29,7 +29,7 @@ jobs:
           git config --global user.name '@Salakar'
           git config --global user.email 'Salakar@users.noreply.github.com'
           git remote set-url origin git@github.com:$GITHUB_REPOSITORY
-      - uses: webfactory/ssh-agent@v0.2.0
+      - uses: webfactory/ssh-agent@v0.4.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Publish Packages
