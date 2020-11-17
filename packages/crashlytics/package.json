@@ -27,7 +27,7 @@
     "crashlytics"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "9.0.0"
+    "@react-native-firebase/app": "10.0.0"
   },
   "dependencies": {
     "stacktrace-js": "^2.0.0"
