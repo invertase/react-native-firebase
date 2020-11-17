@@ -13,5 +13,5 @@
     }
   },
   "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
-  "version": "independent"
+  "version": "9.0.0"
 }

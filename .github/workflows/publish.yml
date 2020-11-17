@@ -8,7 +8,7 @@ on:
 
 jobs:
   publish_npm:
-    if: "(github.repository == 'invertase/react-native-firebase') && ((github.event_name == 'workflow_dispatch') || ((github.event_name == 'push') && contains(toJSON(github.event.commits.*.message), '[publish]')))"
+    if: "(github.repository == 'invertase/react-native-firebase') && (github.event_name == 'workflow_dispatch')"
     name: 'NPM'
     timeout-minutes: 5
     runs-on: ubuntu-latest
