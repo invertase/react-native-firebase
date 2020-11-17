@@ -5,7 +5,13 @@ next: /typescript
 previous: /migrating-to-v6
 ---
 
-Starting with version `v6.5.0`; all React Native Firebase packages are now independently versioned with individually generated release notes:
+Starting from version `10.0.0`, React Native Firebase packages share a single common version, with aggregated release notes available:
+
+![hide:badge](https://img.shields.io/npm/v/@react-native-firebase/app.svg?style=for-the-badge&logo=npm) [View Release Notes &raquo;](https://github.com/invertase/react-native-firebase/tree/master/CHANGELOG.md)  
+
+----
+
+From version `v6.5.0` until `10.0.0`; all React Native Firebase packages were independently versioned with individually generated release notes:
 
 | Package                 |                                                                                                                         |                                                                                                                                        |
 | ----------------------- | :---------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
