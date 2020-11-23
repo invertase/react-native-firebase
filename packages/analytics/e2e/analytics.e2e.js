@@ -141,6 +141,7 @@ describe('analytics()', () => {
             item_name: 'foo',
             item_category: 'foo',
             item_location_id: 'foo',
+            quantity: 5,
           },
         ],
         value: 123,
