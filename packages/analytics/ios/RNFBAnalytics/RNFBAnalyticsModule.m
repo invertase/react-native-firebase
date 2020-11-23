@@ -44,7 +44,7 @@
         rejecter:
         (RCTPromiseRejectBlock) reject) {
     @try {
-      [FIRAnalytics logEventWithName:name parameters:params];
+      [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
     } @catch (NSException *exception) {
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
@@ -133,6 +133,25 @@
         (RCTPromiseRejectBlock) reject) {
     // Do nothing - this only exists in android
     return resolve([NSNull null]);
+  }
+
+#pragma mark -
+#pragma mark Private methods
+
+  - (NSDictionary *)cleanJavascriptParams:(NSDictionary *)params {
+    NSMutableDictionary *newParams = [params mutableCopy];
+    if (newParams[kFIRParameterItems]) {
+      NSMutableArray *newItems = [NSMutableArray array];
+      [(NSArray *)newParams[kFIRParameterItems] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSMutableDictionary *item = [obj mutableCopy];
+        if (item[kFIRParameterQuantity]) {
+          item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
+        }
+        [newItems addObject:[item copy]];
+      }];
+      newParams[kFIRParameterItems] = [newItems copy];
+    }
+    return [newParams copy];
   }
 
 @end
