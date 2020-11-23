@@ -113,6 +113,12 @@
       message[@"mutableContent"] = @([RCTConvert BOOL:apsDict[@"mutable-content"]]);
     }
 
+    // iOS only
+    // message.notification.ios.badge
+    if (apsDict[@"badge"] != nil) {
+      notificationIOS[@"badge"] = apsDict[@"badge"];
+    }
+      
     // message.notification.*
     if (apsDict[@"alert"] != nil) {
       // can be a string or dictionary
@@ -169,14 +175,7 @@
         if (apsAlertDict[@"subtitle-loc-args"] != nil) {
           notificationIOS[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
         }
-          
-        // iOS only
-        // message.notification.ios.badge
-        if (apsAlertDict[@"badge"] != nil) {
-          notificationIOS[@"badge"] = apsAlertDict[@"badge"];
-        }
       }
-
 
       notification[@"ios"] = notificationIOS;
       message[@"notification"] = notification;
