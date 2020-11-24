@@ -37,7 +37,7 @@ export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, j
       file: jsErrorName,
     });
   }
-  
+
   for (let i = 0; i < stackFrames.length; i++) {
     const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
     let fileNameParsed = '<unknown>';

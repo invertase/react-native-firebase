@@ -114,7 +114,12 @@ describe('crashlytics()', () => {
     });
 
     it('accepts optional jsErrorName', async () => {
-      firebase.crashlytics().recordError(new Error("I'm a teapot!"), 'This message will display in crashlytics dashboard');
+      firebase
+        .crashlytics()
+        .recordError(
+          new Error("I'm a teapot!"),
+          'This message will display in crashlytics dashboard',
+        );
       // TODO verify stack obj
     });
   });
