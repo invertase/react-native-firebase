@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
@@ -35,7 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
@@ -47,24 +47,23 @@ jobs:
         run: yarn run lint:report
         continue-on-error: true
       - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@1.0.4
+        uses: ataylorme/eslint-annotate-action@1.1.2
         continue-on-error: true
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          report-json: "eslint-report.json"
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          report-json: 'eslint-report.json'
       - name: Upload ESLint report
         uses: actions/upload-artifact@v2
         with:
           name: eslint-report.json
           path: eslint-report.json
 
-
   typescript:
     name: TypeScript Build Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
@@ -85,7 +84,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
@@ -94,13 +93,12 @@ jobs:
       - name: Lint
         run: yarn run tsc:compile
 
-
   typedoc:
     name: TypeDoc Generation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
@@ -121,14 +119,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Yarn Install (Website)
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
