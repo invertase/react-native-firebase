@@ -10,14 +10,14 @@ jobs:
     name: 'Spelling & Grammar'
     runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
       - name: Install Dependencies
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60

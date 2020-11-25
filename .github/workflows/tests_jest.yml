@@ -5,18 +5,18 @@ on:
     branches:
       - '**'
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
   push:
     branches:
       - master
     paths-ignore:
-      - "docs/**"
-      - "website/**"
-      - ".spellcheck.dict.txt"
-      - "**/*.md"
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
 jobs:
   jest:
@@ -26,7 +26,7 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
@@ -47,7 +47,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 5
           retry_wait_seconds: 60
@@ -57,7 +57,7 @@ jobs:
         run: yarn run tests:jest-coverage
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 60

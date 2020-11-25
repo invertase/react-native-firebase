@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60

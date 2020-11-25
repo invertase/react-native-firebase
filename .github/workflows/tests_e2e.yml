@@ -32,7 +32,7 @@ jobs:
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
 
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-node@v2-beta
 
       - name: Install firebase CLI
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -71,7 +71,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
 
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -102,7 +102,7 @@ jobs:
 
       - name: Download Emulator Image
         # This can fail on network request, wrap with retry
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -172,7 +172,7 @@ jobs:
 
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -202,7 +202,7 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
 
@@ -217,7 +217,7 @@ jobs:
           xcode-version: latest-stable
 
       - name: Install firebase CLI
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -255,7 +255,7 @@ jobs:
           key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
 
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -263,7 +263,7 @@ jobs:
           command: yarn --no-audit --prefer-offline
 
       - name: Update Ruby build tools
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -271,7 +271,7 @@ jobs:
           command: gem update cocoapods xcodeproj
 
       - name: Pod Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -287,7 +287,7 @@ jobs:
         shell: bash
 
       - name: Install applesimutils
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
@@ -331,7 +331,7 @@ jobs:
 
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
