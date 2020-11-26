@@ -19,13 +19,25 @@ import { isError, once } from '@react-native-firebase/app/lib/common';
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
 
-export function createNativeErrorObj(error, stackFrames, isUnhandledRejection) {
+export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, jsErrorName) {
   const nativeObj = {};
 
   nativeObj.message = `${error.message}`;
   nativeObj.isUnhandledRejection = isUnhandledRejection;
 
   nativeObj.frames = [];
+
+  if (jsErrorName) {
+    // Option to fix crashlytics display and alerting. You can add an error name to the recordError function
+    nativeObj.frames.push({
+      src: '<unknown>',
+      line: 0,
+      col: 0,
+      fn: '<unknown>',
+      file: jsErrorName,
+    });
+  }
+
   for (let i = 0; i < stackFrames.length; i++) {
     const { columnNumber, lineNumber, fileName, functionName, source } = stackFrames[i];
     let fileNameParsed = '<unknown>';
