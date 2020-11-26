@@ -65,6 +65,9 @@
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   },
+  "resolutions": {
+    "@types/react": "^16.9.49"
+  },
   "workspaces": {
     "packages": [
       "packages/*",
