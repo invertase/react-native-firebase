@@ -166,8 +166,9 @@ export namespace FirebaseCrashlyticsTypes {
      * ```
      *
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
+     * @param jsErrorName Optional string containing Javascript error name
      */
-    recordError(error: Error): void;
+    recordError(error: Error, jsErrorName?: string): void;
     /**
      * Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
      * automatic data collection is disabled.
