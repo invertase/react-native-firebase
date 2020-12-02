@@ -49,6 +49,13 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
     reactContext.addActivityEventListener(this);
   }
 
+  private RemoteMessage popRemoteMessageFromMessagingStore(String messageId) {
+    ReactNativeFirebaseMessagingStore messagingStore = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore();
+    RemoteMessage remoteMessage = messagingStore.getFirebaseMessage(messageId);
+    messagingStore.clearFirebaseMessage(messageId);
+    return remoteMessage;
+  }
+
   @ReactMethod
   public void getInitialNotification(Promise promise) {
     if (initialNotification != null) {
@@ -70,9 +77,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
             RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
             if (remoteMessage == null) {
-              ReactNativeFirebaseMessagingStore messagingStore = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore();
-              remoteMessage = messagingStore.getFirebaseMessage(messageId);
-              messagingStore.clearFirebaseMessage(messageId);
+              remoteMessage = popRemoteMessageFromMessagingStore(messageId);
             }
             if (remoteMessage != null) {
               promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
@@ -212,6 +217,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
 
       if (messageId != null) {
         RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+        if (remoteMessage == null) {
+          remoteMessage = popRemoteMessageFromMessagingStore(messageId);
+        }
 
         if (remoteMessage != null) {
           initialNotification = remoteMessage;
