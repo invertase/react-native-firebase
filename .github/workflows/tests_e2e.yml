@@ -158,6 +158,7 @@ jobs:
           fi
 
       - name: Detox Test
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
         timeout-minutes: 40
         run: |
           $ANDROID_HOME/platform-tools/adb devices
