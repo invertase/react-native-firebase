@@ -112,6 +112,54 @@ describe('crashlytics()', () => {
       firebase.crashlytics().recordError(new Error("I'm a teapot!"));
       // TODO verify stack obj
     });
+
+    it('accepts optional jsErrorName', async () => {
+      firebase
+        .crashlytics()
+        .recordError(
+          new Error("I'm a teapot!"),
+          'This message will display in crashlytics dashboard',
+        );
+      // TODO verify stack obj
+    });
+  });
+
+  describe('sendUnsentReports()', () => {
+    it("sends unsent reports to the crashlytic's server", () => {
+      firebase.crashlytics().sendUnsentReports();
+    });
+  });
+
+  describe('checkForUnsentReports()', () => {
+    it('errors if automatic crash report collection is enabled', async () => {
+      await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
+      try {
+        await firebase.crashlytics().checkForUnsentReports();
+        return Promise.reject('Error did not throw');
+      } catch (e) {
+        e.message.should.containEql("has been set to 'true', all reports are automatically sent");
+      }
+    });
+    it("checks device cache for unsent crashlytic's reports", async () => {
+      await firebase.crashlytics().setCrashlyticsCollectionEnabled(false);
+      const anyUnsentReports = await firebase.crashlytics().checkForUnsentReports();
+
+      should(anyUnsentReports).equal(false);
+    });
+  });
+
+  describe('deleteUnsentReports()', () => {
+    it('deletes unsent crashlytics reports', async () => {
+      await firebase.crashlytics().deleteUnsentReports();
+    });
+  });
+
+  describe('didCrashOnPreviousExecution()', () => {
+    it('checks if app crached on previous execution', async () => {
+      const didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();
+
+      should(didCrash).equal(false);
+    });
   });
 
   describe('setCrashlyticsCollectionEnabled()', () => {

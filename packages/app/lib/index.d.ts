@@ -148,6 +148,8 @@ export namespace ReactNativeFirebase {
      * Make this app unusable and free up resources.
      */
     delete(): Promise<void>;
+
+    utils(): Utils.Module;
   }
 
   export interface Module {
@@ -189,6 +191,13 @@ export namespace ReactNativeFirebase {
      * The current React Native Firebase version.
      */
     readonly SDK_VERSION: string;
+
+    /**
+     * Utils provides a collection of utilities to aid in using Firebase
+     * and related services inside React Native, e.g. Test Lab helpers
+     * and Google Play Services version helpers.
+     */
+    utils: typeof utils;
   }
 
   /**
@@ -536,37 +545,10 @@ export namespace Utils {
   }
 }
 
-declare module '@react-native-firebase/app' {
-  /**
-   * Add Utils module as a named export for `app`.
-   */
-  export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
+/**
+ * Add Utils module as a named export for `app`.
+ */
+export const utils: ReactNativeFirebase.FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
 
-  /**
-   * Default Firebase export.
-   */
-  const module: {} & ReactNativeFirebase.Module;
-  export default module;
-}
-
-declare module '@react-native-firebase/app' {
-  /**
-   * Attach Utils namespace to `firebase.` and `FirebaseApp.`.
-   */
-  namespace ReactNativeFirebase {
-    import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
-
-    interface Module {
-      /**
-       * Utils provides a collection of utilities to aid in using Firebase
-       * and related services inside React Native, e.g. Test Lab helpers
-       * and Google Play Services version helpers.
-       */
-      utils: FirebaseModuleWithStatics<Utils.Module, Utils.Statics>;
-    }
-
-    interface FirebaseApp {
-      utils(): Utils.Module;
-    }
-  }
-}
+declare const module: ReactNativeFirebase.Module;
+export default module;

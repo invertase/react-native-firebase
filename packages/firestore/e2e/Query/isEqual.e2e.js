@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore().collection().isEqual()', () => {
   it('throws if other is not a Query', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .isEqual(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -30,29 +31,30 @@ describe('firestore().collection().isEqual()', () => {
   });
 
   it('returns false when not equal (simple checks)', () => {
-    const query = firebase.firestore().collection('v6');
+    const subCol = `${COLLECTION}/isequal/simplechecks`;
+    const query = firebase.firestore().collection(subCol);
 
-    const q1 = firebase.firestore(firebase.app('secondaryFromNative')).collection('v6');
+    const q1 = firebase.firestore(firebase.app('secondaryFromNative')).collection(subCol);
     const q2 = firebase
       .firestore()
-      .collection('v6')
+      .collection(subCol)
       .where('foo', '==', 'bar');
     const q3 = firebase
       .firestore()
-      .collection('v6')
+      .collection(subCol)
       .orderBy('foo');
     const q4 = firebase
       .firestore()
-      .collection('v6')
+      .collection(subCol)
       .limit(3);
 
     const ref1 = firebase
       .firestore()
-      .collection('foo')
+      .collection(subCol)
       .where('bar', '==', true);
     const ref2 = firebase
       .firestore()
-      .collection('baz')
+      .collection(subCol)
       .where('bar', '==', true);
 
     const eql1 = query.isEqual(q1);
@@ -65,13 +67,13 @@ describe('firestore().collection().isEqual()', () => {
     eql2.should.be.False();
     eql3.should.be.False();
     eql4.should.be.False();
-    eql5.should.be.False();
+    eql5.should.be.True();
   });
 
   it('returns false when not equal (expensive checks)', () => {
     const query = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('bam')
       .limit(1)
@@ -79,7 +81,7 @@ describe('firestore().collection().isEqual()', () => {
 
     const q1 = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '<', 'bar')
       .orderBy('foo')
       .limit(1)
@@ -87,7 +89,7 @@ describe('firestore().collection().isEqual()', () => {
 
     const q2 = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('foob')
       .limit(1)
@@ -95,7 +97,7 @@ describe('firestore().collection().isEqual()', () => {
 
     const q3 = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('baz')
       .limit(2)
@@ -103,7 +105,7 @@ describe('firestore().collection().isEqual()', () => {
 
     const q4 = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('baz')
       .limit(1)
@@ -123,7 +125,7 @@ describe('firestore().collection().isEqual()', () => {
   it('returns true when equal', () => {
     const query = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('baz')
       .limit(1)
@@ -131,7 +133,7 @@ describe('firestore().collection().isEqual()', () => {
 
     const query2 = firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo', '==', 'bar')
       .orderBy('baz')
       .limit(1)

@@ -83,6 +83,10 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
     return getFirestoreForApp(appName).clearPersistence();
   }
 
+  Task<Void> waitForPendingWrites(String appName) {
+    return getFirestoreForApp(appName).waitForPendingWrites();
+  }
+
   Task<Void> terminate(String appName) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
 

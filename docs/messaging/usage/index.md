@@ -25,6 +25,8 @@ cd ios/ && pod install
 > iOS requires further configuration before you can start receiving and sending
 > messages through Firebase. Read the documentation on how to [setup iOS with Firebase Cloud Messaging](/messaging/usage/ios-setup).
 
+> Use of the `sendMessage()` API and it's associated listeners requires a custom `XMPP` server. Read the documentation on how to [Messaging with XMPP](/messaging/usage/messaging-with-xmpp).
+
 If you're using an older version of React Native without auto-linking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/messaging/usage/installation/ios) and [Android](/messaging/usage/installation/android).
 
@@ -49,12 +51,13 @@ iOS prevents messages containing notification (or 'alert') payloads from being d
 This module provides a `requestPermission` method which triggers a native permission dialog requesting the user's permission:
 
 ```js
-import messaging, { AuthorizationStatus } from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
-    authStatus === AuthorizationStatus.AUTHORIZED || authStatus === AuthorizationStatus.PROVISIONAL;
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -69,8 +72,10 @@ On Android, you do not need to request user permission. This method can still be
 
 ## Receiving messages
 
-FCM messages can be sent to devices via a number of methods (see below). A message is simply a payload of data which can
-be used however you see fit within your application. Common use-cases for handling messages could be:
+FCM messages can be sent to *real* Android/iOS devices and Android emulators (iOS simulators however do *not* handle cloud messages) via a number of methods (see below).
+A message is simply a payload of data which can be used however you see fit within your application.
+
+Common use-cases for handling messages could be:
 
 - Displaying a notification (see [Notifications](/messaging/notifications)).
 - Syncing message data silently on the device (e.g. via `AsyncStorage`).
@@ -207,6 +212,34 @@ admin.messaging().sendToDevice(
 );
 ```
 
+For iOS specific "data-only" messages, the message must include the appropriate APNs headers as well as the `content-available` flag in order to trigger the background handler. For example, if using the Node.js [`firebase-admin`](https://www.npmjs.com/package/firebase-admin) package to send a "data-only" message to an iOS device:
+
+```js
+admin.messaging().send({
+    data: {
+      //some data
+    },
+    apns: {
+      payload: {
+        aps: {
+          contentAvailable: true
+        }
+      },
+      headers: {
+        'apns-push-type': 'background',
+        'apns-priority': '5',
+        'apns-topic': '' // your app bundle identifier
+      }
+    },
+    //must include token, topic, or condition
+    //token: //device token
+    //topic: //notification topic
+    //condition: //notification condition
+});
+```
+
+View the [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/) documentation to learn more about APNs headers.
+
 These options can be applied to all FCM messages. View the [Server Integration](/messaging/server-integration) documentation
 to learn more about other available SDKs.
 
@@ -217,7 +250,7 @@ Although the library supports handling messages in background/quit states, the u
 On Android, a [Headless JS](https://reactnative.dev/docs/headless-js-android) task (an Android only feature) is created that runs separately to your main React component; allowing your background handler code to run without mounting your root component.
 
 On iOS however, when a message is received the device silently starts your application in a background state. At this point, your background handler (via `setBackgroundMessageHandler`) is triggered, but your root React component also gets mounted. This can be problematic for some users since any side-effects will be called inside of your app (e.g. `useEffects`, analytics events/triggers etc). To get around this problem,
-the messaging module injects a `isHeadless` prop to your root component which you can conditionally use to render/do "nothing" if your app is launched in the background:
+you can configure your `AppDelegate.m` file (see instructions below) to inject a `isHeadless` prop into your root component.  Use this property to conditionally render `null` ("nothing") if your app is launched in the background:
 
 ```jsx
 // index.js
@@ -237,14 +270,42 @@ function HeadlessCheck({ isHeadless }) {
   return <App />;
 }
 
-function App{) {
+function App() {
   // Your application
 }
 
 AppRegistry.registerComponent('app', () => HeadlessCheck);
 ```
 
-On Android, this prop will not exist.
+To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` file as instructed below:
+
+```objectivec
+// add this import statement at the top of your `AppDelegate.m` file
+#import "RNFBMessagingModule.h"
+
+// in "(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions" method
+// Use `addCustomPropsToUserProps` to pass in props for initialization of your app
+// Or pass in `nil` if you have none as per below example
+// For `withLaunchOptions` please pass in `launchOptions` object
+NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+
+// Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
+RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
+                                             moduleName:@"nameOfYourApp"
+                                             initialProperties:appProperties];
+```
+
+- For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
+
+```jsx
+messaging().getIsHeadless().then(isHeadless => {
+  // do sth with isHeadless
+});
+
+```
+
+
+On Android, the `isHeadless` prop will not exist.
 
 ### Topics
 
@@ -373,7 +434,7 @@ On Android, any messages which display a [Notification](/messaging/notifications
 (such as the small icon, title etc). To provide a custom tint color, update the `messaging_android_notification_color` property
 with a Android color resource name.
 
-The library provides a set of default [HTML colors](https://www.w3schools.com/colors/colors_names.asp) (in lowercase) for ease, for example:
+The library provides a set of [predefined colors](https://github.com/invertase/react-native-firebase/blob/master/packages/messaging/android/src/main/res/values/colors.xml) corresponding to the [HTML colors](https://www.w3schools.com/colors/colors_names.asp) for convenience, for example:
 
 ```json
 // <projectRoot>/firebase.json
@@ -382,4 +443,27 @@ The library provides a set of default [HTML colors](https://www.w3schools.com/co
     "messaging_android_notification_color": "@color/hotpink"
   }
 }
+```
+
+Note that only predefined colors can be used in `firebase.json`. If you want to use a custom color defined in your application resources, then you should set it in the `AndroidManifest.xml` instead.
+
+```xml
+<!-- <projectRoot>/android/app/src/main/res/values/colors.xml -->
+<resources>
+  <color name="my-custom-color">#123456</color>
+</resources>
+
+<!-- <projectRoot>/android/app/src/main/AndroidManifest.xml -->
+
+<!--  add "tools" to manifest tag  -->
+<manifest xmlns:tools="http://schemas.android.com/tools">
+  <application>
+      <!-- ... -->
+
+      <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/my-custom-color"
+            tools:replace="android:resource" />
+  </application>
+</manifest>
 ```

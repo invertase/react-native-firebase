@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore().collection().endAt()', () => {
   before(() => wipe());
-
   it('throws if no argument provided', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .endAt();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -39,7 +38,7 @@ describe('firestore().collection().endAt()', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .orderBy('foo')
         .endAt('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -53,11 +52,12 @@ describe('firestore().collection().endAt()', () => {
     try {
       const doc = await firebase
         .firestore()
-        .doc('v6/foo')
+        .collection(COLLECTION)
+        .doc('foo')
         .get();
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .endAt(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -70,11 +70,11 @@ describe('firestore().collection().endAt()', () => {
     try {
       const doc = await firebase
         .firestore()
-        .doc('v6/idonotexist')
+        .doc(`${COLLECTION}/idonotexist`)
         .get();
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .endAt(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -85,13 +85,13 @@ describe('firestore().collection().endAt()', () => {
 
   it('throws if order used with snapshot but fields do not exist', async () => {
     try {
-      const doc = firebase.firestore().doc('v6/iexist');
+      const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
       await doc.set({ foo: { bar: 'baz' } });
       const snap = await doc.get();
 
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .orderBy('foo.baz')
         .endAt(snap);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -104,7 +104,7 @@ describe('firestore().collection().endAt()', () => {
   });
 
   it('ends at field values', async () => {
-    const colRef = firebase.firestore().collection('v6/endsAt/collection');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -127,7 +127,7 @@ describe('firestore().collection().endAt()', () => {
 
   it('ends at snapshot field values', async () => {
     // await Utils.sleep(3000);
-    const colRef = firebase.firestore().collection('v6/endsAt/snapshotFields');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -151,7 +151,7 @@ describe('firestore().collection().endAt()', () => {
   });
 
   it('ends at snapshot', async () => {
-    const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
+    const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');

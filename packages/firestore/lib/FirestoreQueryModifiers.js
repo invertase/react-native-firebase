@@ -25,8 +25,10 @@ const OPERATORS = {
   '>=': 'GREATER_THAN_OR_EQUAL',
   '<': 'LESS_THAN',
   '<=': 'LESS_THAN_OR_EQUAL',
+  '!=': 'NOT_EQUAL',
   'array-contains': 'ARRAY_CONTAINS',
   'array-contains-any': 'ARRAY_CONTAINS_ANY',
+  'not-in': 'NOT_IN',
   in: 'IN',
 };
 
@@ -35,6 +37,7 @@ const INEQUALITY = {
   LESS_THAN_OR_EQUAL: true,
   GREATER_THAN: true,
   GREATER_THAN_OR_EQUAL: true,
+  NOT_EQUAL: true,
 };
 
 const DIRECTIONS = {
@@ -190,7 +193,11 @@ export default class FirestoreQueryModifiers {
   }
 
   isInOperator(operator) {
-    return OPERATORS[operator] === 'IN' || OPERATORS[operator] === 'ARRAY_CONTAINS_ANY';
+    return (
+      OPERATORS[operator] === 'IN' ||
+      OPERATORS[operator] === 'ARRAY_CONTAINS_ANY' ||
+      OPERATORS[operator] === 'NOT_IN'
+    );
   }
 
   where(fieldPath, opStr, value) {
@@ -206,12 +213,21 @@ export default class FirestoreQueryModifiers {
 
   validateWhere() {
     let hasInequality;
+    let hasNotEqual;
 
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
       // Skip if no inequality
       if (!INEQUALITY[filter.operator]) {
         continue;
+      }
+
+      if (filter.operator === OPERATORS['!=']) {
+        if (hasNotEqual) {
+          throw new Error("Invalid query. You cannot use more than one '!=' inequality filter.");
+        }
+        //needs to set hasNotEqual = true  before setting first hasInequality = filter. It is used in a condition check later
+        hasNotEqual = true;
       }
 
       // Set the first inequality
@@ -224,7 +240,7 @@ export default class FirestoreQueryModifiers {
       if (INEQUALITY[filter.operator] && hasInequality) {
         if (hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
           throw new Error(
-            `Invalid query. All where filters with an inequality (<, <=, >, or >=) must be on the same field. But you have inequality filters on '${hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
+            `Invalid query. All where filters with an inequality (<, <=, >, != or >=) must be on the same field. But you have inequality filters on '${hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
           );
         }
       }
@@ -233,6 +249,7 @@ export default class FirestoreQueryModifiers {
     let hasArrayContains;
     let hasArrayContainsAny;
     let hasIn;
+    let hasNotIn;
 
     for (let i = 0; i < this._filters.length; i++) {
       const filter = this._filters[i];
@@ -257,6 +274,12 @@ export default class FirestoreQueryModifiers {
           );
         }
 
+        if (hasNotIn) {
+          throw new Error(
+            "Invalid query. You cannot use 'array-contains-any' filters with 'not-in' filters.",
+          );
+        }
+
         hasArrayContainsAny = true;
       }
 
@@ -271,7 +294,35 @@ export default class FirestoreQueryModifiers {
           );
         }
 
+        if (hasNotIn) {
+          throw new Error("Invalid query. You cannot use 'in' filters with 'not-in' filters.");
+        }
+
         hasIn = true;
+      }
+
+      if (filter.operator === OPERATORS['not-in']) {
+        if (hasNotIn) {
+          throw new Error("Invalid query. You cannot use more than one 'not-in' filter.");
+        }
+
+        if (hasNotEqual) {
+          throw new Error(
+            "Invalid query. You cannot use 'not-in' filters with '!=' inequality filters",
+          );
+        }
+
+        if (hasIn) {
+          throw new Error("Invalid query. You cannot use 'not-in' filters with 'in' filters.");
+        }
+
+        if (hasArrayContainsAny) {
+          throw new Error(
+            "Invalid query. You cannot use 'not-in' filters with 'array-contains-any' filters.",
+          );
+        }
+
+        hasNotIn = true;
       }
     }
   }

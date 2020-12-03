@@ -2,7 +2,7 @@ const { sep } = require('path');
 const { execSync } = require('child_process');
 const { readFileSync, writeFileSync } = require('fs');
 
-const packages = JSON.parse(execSync('lerna ls --json').toString('utf-8'));
+const packages = JSON.parse(execSync('npx lerna ls --json').toString('utf-8'));
 
 const firebaseAppPackageName = '@react-native-firebase/app';
 const firebaseAppPackageVersion = packages.find(package => package.name == firebaseAppPackageName)

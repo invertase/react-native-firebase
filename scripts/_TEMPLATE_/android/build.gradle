@@ -4,12 +4,12 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.2'
+    classpath 'com.android.tools.build:gradle:4.1.0'
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.3"
+  id "io.invertase.gradle.build" version "1.4"
 }
 
 project.ext {
@@ -17,15 +17,15 @@ project.ext {
     versions: [
       android           : [
         minSdk    : 16,
-        targetSdk : 28,
-        compileSdk: 28,
+        targetSdk : 30,
+        compileSdk: 30,
         // optional as gradle.buildTools comes with one by default
         // overriding here though to match the version RN uses
-        buildTools: "28.0.3"
+        buildTools: "30.0.2"
       ],
 
       firebase          : [
-        bom: "21.1.0"
+        bom: "26.0.0"
       ],
     ],
   ])

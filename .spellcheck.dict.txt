@@ -41,7 +41,9 @@ EEA
 Ehesp
 enum
 ESLint
+Fastlane
 FCM
+firebase
 Firebase
 Firestore
 GDPR
@@ -60,9 +62,12 @@ iOS
 iOS13
 JS
 JSON
+launchProperties
 learnt
 Lerna
 MDX
+MLKit
+mlkit
 mono-repo
 Multidex
 multidex
@@ -82,6 +87,7 @@ OpenID
 perf
 performant
 personalization
+Podfile
 plist
 pre-fetched
 pre-rendered
@@ -92,11 +98,13 @@ PRs
 PubSub
 qa
 react-native-firebase
+react-native-mlkit
 realtime
 Realtime
 remarketing
 RN60
 RN61
+RNFB
 RNFirebase
 Salakar
 scalable
@@ -128,3 +136,9 @@ Wix
 Xcode
 Xcode.
 lifecycle
+SNS
+XMPP
+XCS
+firebase-admin
+SSV
+CP-User

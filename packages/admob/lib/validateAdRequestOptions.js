@@ -159,5 +159,25 @@ export default function validateAdRequestOptions(options) {
     out.requestAgent = options.requestAgent;
   }
 
+  if (options.serverSideVerificationOptions) {
+    if (!isObject(options.serverSideVerificationOptions)) {
+      throw new Error(
+        "'options.serverSideVerificationOptions' expected an object of key/value pairs",
+      );
+    }
+
+    const ssvOptions = options.serverSideVerificationOptions;
+
+    if (ssvOptions.userId && !isString(ssvOptions.userId)) {
+      throw new Error("'options.serverSideVerificationOptions.userId' expected a string value");
+    }
+
+    if (ssvOptions.customData && !isString(ssvOptions.customData)) {
+      throw new Error("'options.serverSideVerificationOptions.customData' expected a string value");
+    }
+
+    out.serverSideVerificationOptions = options.serverSideVerificationOptions;
+  }
+
   return out;
 }

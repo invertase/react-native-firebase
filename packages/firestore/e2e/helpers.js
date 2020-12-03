@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
 
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
@@ -16,13 +17,33 @@
  * limitations under the License.
  *
  */
+const http = require('http');
 
-exports.wipe = async function wipe(collection = 'v6', debug = false) {
-  if (debug) {
-    console.time('wipe');
-  }
-  await TestAdminApi.firestore().clearCollection(collection);
-  if (debug) {
-    console.timeEnd('wipe');
+exports.wipe = async function wipe(debug = false) {
+  const deleteOptions = {
+    method: 'DELETE',
+    port: 8080,
+    host: getE2eEmulatorHost(),
+    path: '/emulator/v1/projects/' + getE2eTestProject() + '/databases/(default)/documents',
+  };
+
+  try {
+    if (debug) {
+      console.time('wipe');
+    }
+    await new Promise((resolve, reject) => {
+      const req = http.request(deleteOptions);
+
+      req.on('error', error => reject(error));
+
+      req.end(() => {
+        if (debug) {
+          console.timeEnd('wipe');
+        }
+        resolve();
+      });
+    });
+  } catch (e) {
+    console.error('Unable to wipe firestore:', e);
   }
 };

@@ -363,7 +363,7 @@ export namespace FirebaseDynamicLinksTypes {
 
   /**
    * ShortLinkType determines the type of dynamic short link which Firebase creates. Used when building
-   * a new short link via `buildShortLink()`.
+   * a new short link via `buildShortLink()`. These are exported through statics connected to the module.
    *
    * #### Example
    *
@@ -371,7 +371,7 @@ export namespace FirebaseDynamicLinksTypes {
    *  const link = await firebase.dynamicLinks().buildShortLink({
    *    link: 'https://invertase.io',
    *    domainUriPrefix: 'https://xyz.page.link',
-   *  }, FirebaseDynamicLinksTypes.ShortLinkType.UNGUESSABLE);
+   *  }, firebase.dynamicLinks.ShortLinkType.UNGUESSABLE);
    * ```
    */
   export enum ShortLinkType {
@@ -468,15 +468,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param dynamicLinkParams An object interface of DynamicLinkParameters.
      */
     buildLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a link from the provided DynamicLinkParameters interface.
-     *
-     * @deprecated Use `buildLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     */
-    createDynamicLink(dynamicLinkParams: DynamicLinkParameters): Promise<string>;
-
     /**
      * Builds a short Dynamic Link from the provided DynamicLinkParameters interface.
      *
@@ -497,18 +488,6 @@ export namespace FirebaseDynamicLinksTypes {
      * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
      */
     buildShortLink(
-      dynamicLinkParams: DynamicLinkParameters,
-      shortLinkType?: ShortLinkType,
-    ): Promise<string>;
-
-    /**
-     * **Deprecated**: Creates a short Dynamic Link from the provided DynamicLinkParameters instances.
-     *
-     * @deprecated Use `buildShortLink` with the same args instead.
-     * @param dynamicLinkParams An object interface of DynamicLinkParameters.
-     * @param shortLinkType The short link type, one of `ShortLinkType` from `firebase.dynamicLinks.ShortLinkType`
-     */
-    createShortDynamicLink(
       dynamicLinkParams: DynamicLinkParameters,
       shortLinkType?: ShortLinkType,
     ): Promise<string>;
@@ -561,7 +540,7 @@ export namespace FirebaseDynamicLinksTypes {
      * @returns Unsubscribe function, call the returned function to unsubscribe from all future events.
      * @param listener The listener callback, called with Dynamic Link instances.
      */
-    onLink(listener: Function<DynamicLink>): Function;
+    onLink(listener: (link: DynamicLink) => void): Function;
 
     /**
      * Resolve a given dynamic link (short or long) directly.
@@ -587,21 +566,19 @@ export namespace FirebaseDynamicLinksTypes {
   }
 }
 
-declare module '@react-native-firebase/dynamic-links' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseDynamicLinksTypes.Module,
+  FirebaseDynamicLinksTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  dynamicLinks: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { dynamicLinks(): FirebaseDynamicLinksTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseDynamicLinksTypes.Module,
-    FirebaseDynamicLinksTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.

@@ -109,7 +109,7 @@ export namespace FirebasePerformanceTypes {
      * @param attribute Name of the attribute. Max length is 40 chars.
      * @param value Value of the attribute. Max length is 100 chars.
      */
-    putAttribute(attribute: string, value: string);
+    putAttribute(attribute: string, value: string): void;
 
     /**
      * Gets the value of the metric with the given name in the current trace. If the metric
@@ -155,7 +155,7 @@ export namespace FirebasePerformanceTypes {
      * @param metricName Name of the metric to set. Must not have a leading or trailing whitespace, no leading underscore '_' character and have a max length of 32 characters.
      * @param value The value the metric should be set to.
      */
-    putMetric(metricName: string, value: number);
+    putMetric(metricName: string, value: number): void;
 
     /**
      * Increments the named metric by the `incrementBy` value.
@@ -169,7 +169,7 @@ export namespace FirebasePerformanceTypes {
      * @param metricName Name of the metric to increment. Must not have a leading or trailing whitespace, no leading underscore '_' character and have a max length of 32 characters.
      * @param incrementBy The value the metric should be incremented by.
      */
-    incrementMetric(metricName: string, incrementBy: number);
+    incrementMetric(metricName: string, incrementBy: number): void;
 
     /**
      * Removes a metric by name if it exists.
@@ -182,7 +182,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param metricName Name of the metric to remove.
      */
-    removeMetric(metricName: string);
+    removeMetric(metricName: string): void;
 
     /**
      * Marks the start time of the trace. Does nothing if already started.
@@ -256,7 +256,7 @@ export namespace FirebasePerformanceTypes {
      * @param attribute Name of the attribute. Max length is 40 chars.
      * @param value Value of the attribute. Max length is 100 chars.
      */
-    putAttribute(attribute: string, value: string);
+    putAttribute(attribute: string, value: string): void;
 
     /**
      * Removes an already added attribute. Does nothing if attribute does not exist.
@@ -269,7 +269,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param attribute Name of the attribute to be removed.
      */
-    removeAttribute(attribute: string);
+    removeAttribute(attribute: string): void;
 
     /**
      * Sets the httpResponse code of the request.
@@ -285,7 +285,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param code Value must be greater than 0. Set to null to remove. Invalid usage will be logged natively.
      */
-    setHttpResponseCode(code: number | null);
+    setHttpResponseCode(code: number | null): void;
 
     /**
      * Sets the size of the request payload.
@@ -299,7 +299,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param bytes Value must be greater than 0. Set to null to remove. Invalid usage will be logged natively.
      */
-    setRequestPayloadSize(bytes: number | null);
+    setRequestPayloadSize(bytes: number | null): void;
 
     /**
      * Sets the size of the response payload.
@@ -313,7 +313,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param bytes Value must be greater than 0. Set to null to remove. Invalid usage will be logged natively.
      */
-    setResponsePayloadSize(bytes: number | null);
+    setResponsePayloadSize(bytes: number | null): void;
 
     /**
      * Content type of the response e.g. `text/html` or `application/json`.
@@ -327,7 +327,7 @@ export namespace FirebasePerformanceTypes {
      *
      * @param contentType Valid string of MIME type. Set to null to remove. Invalid usage will be logged natively.
      */
-    setResponseContentType(contentType: string | null);
+    setResponseContentType(contentType: string | null): void;
 
     /**
      * Marks the start time of the request. Does nothing if already started.
@@ -443,21 +443,17 @@ export namespace FirebasePerformanceTypes {
   }
 }
 
-declare module '@react-native-firebase/perf' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebasePerformanceTypes.Module,
+  FirebasePerformanceTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  perf: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { perf(): FirebasePerformanceTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebasePerformanceTypes.Module,
-    FirebasePerformanceTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
@@ -474,33 +470,31 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       perf(): FirebasePerformanceTypes.Module;
     }
-  }
-}
 
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    /**
-     * Disable or enable auto collection of performance monitoring data collection.
-     *
-     * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-     * This can be overridden in JavaScript.
-     *
-     * #### Example
-     *
-     * ```json
-     * // <project-root>/firebase.json
-     * {
-     *   "react-native": {
-     *     "perf_auto_collection_enabled": false
-     *   }
-     * }
-     * ```
-     *
-     * ```js
-     * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
-     * await firebase.perf().setPerformanceCollectionEnabled(true);
-     * ```
-     */
-    perf_auto_collection_enabled: boolean;
+    interface FirebaseJsonConfig {
+      /**
+       * Disable or enable auto collection of performance monitoring data collection.
+       *
+       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
+       * This can be overridden in JavaScript.
+       *
+       * #### Example
+       *
+       * ```json
+       * // <project-root>/firebase.json
+       * {
+       *   "react-native": {
+       *     "perf_auto_collection_enabled": false
+       *   }
+       * }
+       * ```
+       *
+       * ```js
+       * // Re-enable performance monitoring data collection, e.g. once user has granted permission:
+       * await firebase.perf().setPerformanceCollectionEnabled(true);
+       * ```
+       */
+      perf_auto_collection_enabled: boolean;
+    }
   }
 }

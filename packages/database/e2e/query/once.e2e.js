@@ -137,9 +137,9 @@ describe('database().ref().once()', () => {
 
     await ref.child('foo').set(1);
     ref.once('child_changed').then($ => callback($.val()));
-    await Utils.sleep(300);
+    await Utils.sleep(1000);
     await ref.child('foo').set(2);
-    await Utils.sleep(300);
+    await Utils.sleep(1000);
     callback.should.be.calledOnce();
     callback.should.be.calledWith(2);
   });
@@ -151,9 +151,9 @@ describe('database().ref().once()', () => {
     await child.set('foo');
 
     ref.once('child_removed').then($ => callback($.val()));
-    await Utils.sleep(300);
+    await Utils.sleep(1000);
     await child.remove();
-    await Utils.sleep(300);
+    await Utils.sleep(1000);
 
     callback.should.be.calledOnce();
     callback.should.be.calledWith('foo');

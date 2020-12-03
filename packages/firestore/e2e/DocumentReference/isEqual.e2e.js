@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore.doc().isEqual()', () => {
   it('throws if other is not a DocumentReference', () => {
@@ -30,11 +31,11 @@ describe('firestore.doc().isEqual()', () => {
   });
 
   it('returns false when not equal', () => {
-    const docRef = firebase.firestore().doc('bar/baz');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
-    const eql1 = docRef.isEqual(firebase.firestore().doc('bar/foo'));
+    const eql1 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/foo`));
     const eql2 = docRef.isEqual(
-      firebase.firestore(firebase.app('secondaryFromNative')).doc('bar/baz'),
+      firebase.firestore(firebase.app('secondaryFromNative')).doc(`${COLLECTION}/baz`),
     );
 
     eql1.should.be.False();
@@ -42,10 +43,10 @@ describe('firestore.doc().isEqual()', () => {
   });
 
   it('returns true when equal', () => {
-    const docRef = firebase.firestore().doc('bar/baz');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(docRef);
-    const eql2 = docRef.isEqual(firebase.firestore().doc('bar/baz'));
+    const eql2 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/baz`));
 
     eql1.should.be.True();
     eql2.should.be.True();

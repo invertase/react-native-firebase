@@ -50,7 +50,7 @@ describe('admob() RewardedAd', () => {
       i.loaded.should.eql(false);
     });
 
-    xit('loads with requestOptions', async () => {
+    it('loads with requestOptions', async () => {
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED, {
@@ -68,7 +68,7 @@ describe('admob() RewardedAd', () => {
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('rewarded_loaded');
@@ -121,14 +121,14 @@ describe('admob() RewardedAd', () => {
       spy.callCount.should.be.eql(0);
     });
 
-    xit('loads with a valid ad unit id', async () => {
+    it('loads with a valid ad unit id', async () => {
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED);
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('rewarded_loaded');
@@ -147,7 +147,7 @@ describe('admob() RewardedAd', () => {
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
 
       spy.getCall(0).args[0].should.eql('error');
       const e = spy.getCall(0).args[1];

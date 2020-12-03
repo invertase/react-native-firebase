@@ -1,7 +1,7 @@
 require 'json'
 require './firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
-firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 6.25.0'
+firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 7.1.0'
 
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.source_files        = "ios/**/*.{h,m}"
 
   # React Native dependencies
-  s.dependency          'React'
+  s.dependency          'React-Core'
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
