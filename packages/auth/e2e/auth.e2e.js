@@ -906,7 +906,6 @@ describe('auth()', () => {
     });
   });
 
-  /* WIP */
   describe('sendEmailVerification()', () => {
     it('should reject if dynamic links has not been configured with action codes config', async () => {
       const actionCodeSettings = {
