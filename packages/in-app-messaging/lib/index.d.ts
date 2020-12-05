@@ -177,31 +177,5 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       inAppMessaging(): FirebaseInAppMessagingTypes.Module;
     }
-
-    interface FirebaseJsonConfig {
-      /**
-       * Disable or enable auto collection & receiving of in-app messages and data collection.
-       *
-       * This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.
-       * This can be overridden in JavaScript.
-       *
-       * #### Example
-       *
-       * ```json
-       * // <project-root>/firebase.json
-       * {
-       *   "react-native": {
-       *     "in_app_messaging_auto_collection_enabled": false
-       *   }
-       * }
-       * ```
-       *
-       * ```js
-       * // Re-enable in-app messaging, e.g. once user has granted permission:
-       * await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
-       * ```
-       */
-      in_app_messaging_auto_collection_enabled: boolean;
-    }
   }
 }
