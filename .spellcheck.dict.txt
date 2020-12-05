@@ -142,3 +142,4 @@ XCS
 firebase-admin
 SSV
 CP-User
+Intellisense
