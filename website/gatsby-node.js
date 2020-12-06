@@ -22,6 +22,7 @@ exports.sourceNodes = async (...args) => {
   await require('./scripts/source-adverts')(...args);
   await require('./scripts/source-screencasts')(...args);
   await require('./scripts/source-reference')(...args);
+  await require('./scripts/source-jsonconfig')(...args);
 };
 
 exports.onCreateWebpackConfig = ({ actions }) => {

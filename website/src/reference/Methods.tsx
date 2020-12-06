@@ -63,6 +63,8 @@ function Reference({
 }
 
 function Methods({ methods }: { methods: Method[] }) {
+  console.log(methods);
+
   return (
     <>
       <Divider />
