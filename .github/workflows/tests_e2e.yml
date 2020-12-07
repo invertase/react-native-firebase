@@ -313,7 +313,7 @@ jobs:
         run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
-        timeout-minutes: 40
+        timeout-minutes: 30
         run: |
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
