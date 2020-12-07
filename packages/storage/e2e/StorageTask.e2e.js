@@ -24,8 +24,8 @@ function snapshotProperties(snapshot) {
   snapshot.should.have.property('bytesTransferred');
 }
 
-describe('storage() -> StorageTask', () => {
-  describe('writeToFile()', () => {
+xdescribe('storage() -> StorageTask', () => {
+  xdescribe('writeToFile()', () => {
     it('errors if permission denied', async () => {
       try {
         await firebase
@@ -51,7 +51,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe('putString()', () => {
+  xdescribe('putString()', () => {
     it('uploads a raw string', async () => {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
@@ -79,7 +79,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('uploads a url encoded data_url formatted string', async () => {
+    xit('uploads a url encoded data_url formatted string', async () => {
       const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
       const uploadTaskSnapshot = await firebase
         .storage()
@@ -91,7 +91,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('when using data_url it still sets the content type if metadata is provided', async () => {
+    xit('when using data_url it still sets the content type if metadata is provided', async () => {
       const dataUrl = 'data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E';
 
       const uploadTaskSnapshot = await firebase
@@ -109,7 +109,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('uploads a base64 string', async () => {
+    xit('uploads a base64 string', async () => {
       const base64String = 'eyJmb28iOiJiYXNlNjQifQ==';
 
       const uploadTaskSnapshot = await firebase
@@ -124,7 +124,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('uploads a base64url string', async () => {
+    xit('uploads a base64url string', async () => {
       const base64UrlString = 'eyJmb28iOiJiYXNlNjQifQ';
 
       const uploadTaskSnapshot = await firebase
@@ -139,7 +139,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('throws an error on invalid data_url', async () => {
+    xit('throws an error on invalid data_url', async () => {
       const dataUrl = '';
       try {
         await firebase
@@ -153,7 +153,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('throws if string arg is not a valid string', async () => {
+    xit('throws if string arg is not a valid string', async () => {
       try {
         await firebase
           .storage()
@@ -166,7 +166,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('throws an error on invalid string format', async () => {
+    xit('throws an error on invalid string format', async () => {
       try {
         await firebase
           .storage()
@@ -179,7 +179,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('throws an error if metadata is not an object', async () => {
+    xit('throws an error if metadata is not an object', async () => {
       try {
         await firebase
           .storage()
@@ -193,8 +193,8 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  describe('put()', () => {
-    it('uploads a Blob', async () => {
+  xdescribe('put()', () => {
+    xit('uploads a Blob', async () => {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
       const bob = new jet.context.Blob([jsonDerulo], {
@@ -233,7 +233,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('uploads an Uint8Array', async () => {
+    xit('uploads an Uint8Array', async () => {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
       const arrayBuffer = new jet.context.window.ArrayBuffer(jsonDerulo.length);
@@ -255,7 +255,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    it('should have access to the snapshot values outside of the Task thennable', async () => {
+    xit('should have access to the snapshot values outside of the Task thennable', async () => {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
       const bob = new jet.context.Blob([jsonDerulo], {
@@ -291,7 +291,7 @@ describe('storage() -> StorageTask', () => {
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/hei.heic`);
     });
 
-    it('errors if permission denied', async () => {
+    xit('errors if permission denied', async () => {
       try {
         await firebase
           .storage()
@@ -305,7 +305,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    it('supports thenable .catch()', async () => {
+    xit('supports thenable .catch()', async () => {
       const out = await firebase
         .storage()
         .ref('/uploadNope.jpeg')
@@ -401,7 +401,7 @@ describe('storage() -> StorageTask', () => {
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
     });
 
-    it('throws an Error if event is invalid', async () => {
+    xit('throws an Error if event is invalid', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         const task = storageReference.putFile('abc');
@@ -622,7 +622,7 @@ describe('storage() -> StorageTask', () => {
   });
 
   xdescribe('pause() resume()', () => {
-    it('successfully pauses and resumes an upload', async function testRunner() {
+    xit('successfully pauses and resumes an upload', async function testRunner() {
       this.timeout(25000);
 
       await firebase
