@@ -193,8 +193,8 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  xdescribe('put()', () => {
-    xit('uploads a Blob', async () => {
+  describe('put()', () => {
+    it('uploads a Blob', async () => {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
 
       const bob = new jet.context.Blob([jsonDerulo], {
@@ -275,7 +275,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  xdescribe('putFile()', () => {
+  describe('putFile()', () => {
     before(async () => {
       await firebase
         .storage()
@@ -291,7 +291,7 @@ describe('storage() -> StorageTask', () => {
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/hei.heic`);
     });
 
-    xit('errors if permission denied', async () => {
+    it('errors if permission denied', async () => {
       try {
         await firebase
           .storage()
@@ -305,7 +305,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    xit('supports thenable .catch()', async () => {
+    it('supports thenable .catch()', async () => {
       const out = await firebase
         .storage()
         .ref('/uploadNope.jpeg')
@@ -318,7 +318,7 @@ describe('storage() -> StorageTask', () => {
       should.equal(out, 1);
     });
 
-    xit('uploads a file', async () => {
+    it('uploads a file', async () => {
       let uploadTaskSnapshot = await firebase
         .storage()
         .ref('/uploadOk.jpeg')
@@ -349,7 +349,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    xit('uploads a file without read permission', async () => {
+    it('uploads a file without read permission', async () => {
       const uploadTaskSnapshot = await firebase
         .storage()
         .ref('/writeOnly.jpeg')
@@ -360,7 +360,7 @@ describe('storage() -> StorageTask', () => {
       uploadTaskSnapshot.metadata.should.be.an.Object();
     });
 
-    xit('should have access to the snapshot values outside of the Task thennable', async () => {
+    it('should have access to the snapshot values outside of the Task thennable', async () => {
       const uploadTaskSnapshot = firebase
         .storage()
         .ref('/putStringBlob.json')
@@ -373,7 +373,7 @@ describe('storage() -> StorageTask', () => {
       snapshotProperties(snapshot);
     });
 
-    xit('should have access to the snapshot values outside of the event subscriber', async () => {
+    it('should have access to the snapshot values outside of the event subscriber', async () => {
       const uploadTaskSnapshot = firebase
         .storage()
         .ref('/putStringBlob.json')
