@@ -33,15 +33,17 @@ describe('firestore.collection().add()', () => {
   });
 
   it('adds a new document', async () => {
-    const data = { foo: 'bar' };
-    const docRef = await firebase
-      .firestore()
-      .collection(COLLECTION)
-      .add(data);
-    should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
-    const docSnap = await docRef.get();
-    docSnap.data().should.eql(jet.contextify(data));
-    docSnap.exists.should.eql(true);
-    await docRef.delete();
+    if (!global.isCI) {
+      const data = { foo: 'bar' };
+      const docRef = await firebase
+        .firestore()
+        .collection(COLLECTION)
+        .add(data);
+      should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
+      const docSnap = await docRef.get();
+      docSnap.data().should.eql(jet.contextify(data));
+      docSnap.exists.should.eql(true);
+      await docRef.delete();
+    }
   });
 });
