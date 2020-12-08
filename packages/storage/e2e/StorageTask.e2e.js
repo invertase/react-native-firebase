@@ -393,7 +393,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  xdescribe('on()', () => {
+  describe('on()', () => {
     before(async () => {
       await firebase
         .storage()
@@ -401,7 +401,7 @@ describe('storage() -> StorageTask', () => {
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`);
     });
 
-    xit('throws an Error if event is invalid', async () => {
+    it('throws an Error if event is invalid', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         const task = storageReference.putFile('abc');
@@ -415,7 +415,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    xit('throws an Error if nextOrObserver is invalid', async () => {
+    it('throws an Error if nextOrObserver is invalid', async () => {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         const task = storageReference.putFile('abc');
@@ -427,7 +427,7 @@ describe('storage() -> StorageTask', () => {
       }
     });
 
-    xit('observer calls error callback', async () => {
+    it('observer calls error callback', async () => {
       const ref = firebase.storage().ref('/uploadOk.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
@@ -449,7 +449,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('observer: calls next callback', async () => {
+    it('observer: calls next callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -467,7 +467,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('observer: calls completion callback', async () => {
+    it('observer: calls completion callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -484,7 +484,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('calls error callback', async () => {
+    it('calls error callback', async () => {
       const ref = firebase.storage().ref('/uploadOk.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/notFoundFooFile.bar`;
@@ -509,7 +509,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('calls next callback', async () => {
+    it('calls next callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -525,7 +525,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('calls completion callback', async () => {
+    it('calls completion callback', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -540,7 +540,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('returns a subscribe fn', async () => {
+    it('returns a subscribe fn', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -558,7 +558,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('returns a subscribe fn supporting observer usage syntax', async () => {
+    it('returns a subscribe fn supporting observer usage syntax', async () => {
       const ref = firebase.storage().ref('/ok.jpeg');
       const { resolve, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.jpeg`;
@@ -578,7 +578,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('listens to download state', async () => {
+    it('listens to download state', async () => {
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -599,7 +599,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('listens to upload state', async () => {
+    it('listens to upload state', async () => {
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
@@ -621,8 +621,8 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  xdescribe('pause() resume()', () => {
-    xit('successfully pauses and resumes an upload', async function testRunner() {
+  describe('pause() resume()', () => {
+    it('successfully pauses and resumes an upload', async function testRunner() {
       this.timeout(25000);
 
       await firebase
@@ -687,7 +687,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    xit('successfully pauses and resumes a download', async () => {
+    it('successfully pauses and resumes a download', async () => {
       const ref = firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
@@ -747,7 +747,7 @@ describe('storage() -> StorageTask', () => {
     });
   });
 
-  xdescribe('cancel()', async () => {
+  describe('cancel()', async () => {
     before(async () => {
       await firebase
         .storage()
@@ -802,7 +802,7 @@ describe('storage() -> StorageTask', () => {
     await promise;
   });
 
-  xit('successfully cancels a download', async () => {
+  it('successfully cancels a download', async () => {
     await Utils.sleep(10000);
     const ref = firebase.storage().ref('/1mbTestFile.gif');
     const { resolve, reject, promise } = Promise.defer();
