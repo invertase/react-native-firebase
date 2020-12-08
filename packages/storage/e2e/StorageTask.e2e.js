@@ -690,62 +690,64 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully pauses and resumes a download', async () => {
-      const ref = firebase
-        .storage()
-        .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
+      if (!global.isCI) {
+        const ref = firebase
+          .storage()
+          .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
 
-      const { resolve, reject, promise } = Promise.defer();
+        const { resolve, reject, promise } = Promise.defer();
 
-      // random file name as Android does not allow overriding if file already exists
-      const path = `${
-        firebase.utils.FilePath.DOCUMENT_DIRECTORY
-      }/invertase/pauseDownload${Math.round(Math.random() * 1000)}.gif`;
-      const downloadTask = ref.writeToFile(path);
+        // random file name as Android does not allow overriding if file already exists
+        const path = `${
+          firebase.utils.FilePath.DOCUMENT_DIRECTORY
+        }/invertase/pauseDownload${Math.round(Math.random() * 1000)}.gif`;
+        const downloadTask = ref.writeToFile(path);
 
-      let hadRunningStatus = false;
-      let hadPausedStatus = false;
-      let hadResumedStatus = false;
+        let hadRunningStatus = false;
+        let hadPausedStatus = false;
+        let hadResumedStatus = false;
 
-      downloadTask.on(
-        'state_changed',
-        snapshot => {
-          // TODO(salakar) validate snapshot props
-          // 1) pause when we receive first running event
-          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-            hadRunningStatus = true;
-            downloadTask.pause();
-          }
+        downloadTask.on(
+          'state_changed',
+          snapshot => {
+            // TODO(salakar) validate snapshot props
+            // 1) pause when we receive first running event
+            if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+              hadRunningStatus = true;
+              downloadTask.pause();
+            }
 
-          // 2) resume when we receive first paused event
-          if (snapshot.state === firebase.storage.TaskState.PAUSED) {
-            hadPausedStatus = true;
-            downloadTask.resume();
-          }
+            // 2) resume when we receive first paused event
+            if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+              hadPausedStatus = true;
+              downloadTask.resume();
+            }
 
-          // 3) track that we resumed on 2nd running status whilst paused
-          if (
-            snapshot.state === firebase.storage.TaskState.RUNNING &&
-            hadRunningStatus &&
-            hadPausedStatus &&
-            !hadResumedStatus
-          ) {
-            hadResumedStatus = true;
-          }
+            // 3) track that we resumed on 2nd running status whilst paused
+            if (
+              snapshot.state === firebase.storage.TaskState.RUNNING &&
+              hadRunningStatus &&
+              hadPausedStatus &&
+              !hadResumedStatus
+            ) {
+              hadResumedStatus = true;
+            }
 
-          // 4) finally confirm we received all statuses
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            should.equal(hadRunningStatus, true);
-            should.equal(hadPausedStatus, true);
-            should.equal(hadResumedStatus, true);
-            resolve();
-          }
-        },
-        error => {
-          reject(error);
-        },
-      );
+            // 4) finally confirm we received all statuses
+            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+              should.equal(hadRunningStatus, true);
+              should.equal(hadPausedStatus, true);
+              should.equal(hadResumedStatus, true);
+              resolve();
+            }
+          },
+          error => {
+            reject(error);
+          },
+        );
 
-      await promise;
+        await promise;
+      }
     });
   });
 
