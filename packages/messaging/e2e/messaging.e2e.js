@@ -66,8 +66,10 @@ describe('messaging()', () => {
       should.equal(await firebase.messaging().hasPermission(), true);
     });
     it('returns -1 on ios (default)', async () => {
-      if (device.getPlatform() === 'ios') {
-        should.equal(await firebase.messaging().hasPermission(), -1);
+      if (!global.isCI) {
+        if (device.getPlatform() === 'ios') {
+          should.equal(await firebase.messaging().hasPermission(), -1);
+        }
       }
     });
   });
