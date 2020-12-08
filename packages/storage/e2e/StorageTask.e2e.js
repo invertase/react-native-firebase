@@ -623,68 +623,70 @@ describe('storage() -> StorageTask', () => {
 
   describe('pause() resume()', () => {
     it('successfully pauses and resumes an upload', async function testRunner() {
-      this.timeout(25000);
+      if (!global.isCI) {
+        this.timeout(25000);
 
-      await firebase
-        .storage()
-        .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
-        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`);
+        await firebase
+          .storage()
+          .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
+          .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`);
 
-      const ref = firebase.storage().ref('/uploadCat.gif');
-      const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`;
-      const uploadTask = ref.putFile(path);
+        const ref = firebase.storage().ref('/uploadCat.gif');
+        const { resolve, reject, promise } = Promise.defer();
+        const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`;
+        const uploadTask = ref.putFile(path);
 
-      let hadRunningStatus = false;
-      let hadPausedStatus = false;
-      let hadResumedStatus = false;
+        let hadRunningStatus = false;
+        let hadPausedStatus = false;
+        let hadResumedStatus = false;
 
-      uploadTask.on(
-        'state_changed',
-        snapshot => {
-          // 1) pause when we receive first running event
-          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-            hadRunningStatus = true;
-            if (device.getPlatform() === 'android') {
-              uploadTask.pause();
-            } else {
-              // TODO (salakar) submit bug report to Firebase iOS SDK repo (pausing immediately after the first progress event will fail the upload with an unknown error)
-              setTimeout(() => {
+        uploadTask.on(
+          'state_changed',
+          snapshot => {
+            // 1) pause when we receive first running event
+            if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+              hadRunningStatus = true;
+              if (device.getPlatform() === 'android') {
                 uploadTask.pause();
-              }, 750);
+              } else {
+                // TODO (salakar) submit bug report to Firebase iOS SDK repo (pausing immediately after the first progress event will fail the upload with an unknown error)
+                setTimeout(() => {
+                  uploadTask.pause();
+                }, 750);
+              }
             }
-          }
 
-          // 2) resume when we receive first paused event
-          if (snapshot.state === firebase.storage.TaskState.PAUSED) {
-            hadPausedStatus = true;
-            uploadTask.resume();
-          }
+            // 2) resume when we receive first paused event
+            if (snapshot.state === firebase.storage.TaskState.PAUSED) {
+              hadPausedStatus = true;
+              uploadTask.resume();
+            }
 
-          // 3) track that we resumed on 2nd running status whilst paused
-          if (
-            snapshot.state === firebase.storage.TaskState.RUNNING &&
-            hadRunningStatus &&
-            hadPausedStatus &&
-            !hadResumedStatus
-          ) {
-            hadResumedStatus = true;
-          }
+            // 3) track that we resumed on 2nd running status whilst paused
+            if (
+              snapshot.state === firebase.storage.TaskState.RUNNING &&
+              hadRunningStatus &&
+              hadPausedStatus &&
+              !hadResumedStatus
+            ) {
+              hadResumedStatus = true;
+            }
 
-          // 4) finally confirm we received all statuses
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            should.equal(hadRunningStatus, true);
-            should.equal(hadPausedStatus, true);
-            should.equal(hadResumedStatus, true);
-            resolve();
-          }
-        },
-        error => {
-          reject(error);
-        },
-      );
+            // 4) finally confirm we received all statuses
+            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+              should.equal(hadRunningStatus, true);
+              should.equal(hadPausedStatus, true);
+              should.equal(hadResumedStatus, true);
+              resolve();
+            }
+          },
+          error => {
+            reject(error);
+          },
+        );
 
-      await promise;
+        await promise;
+      }
     });
 
     it('successfully pauses and resumes a download', async () => {
