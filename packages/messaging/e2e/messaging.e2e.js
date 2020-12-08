@@ -36,9 +36,11 @@ describe('messaging()', () => {
     });
 
     it('sets the value', async () => {
-      should.equal(firebase.messaging().isAutoInitEnabled, true);
-      await firebase.messaging().setAutoInitEnabled(false);
-      should.equal(firebase.messaging().isAutoInitEnabled, false);
+      if (!global.isCI) {
+        should.equal(firebase.messaging().isAutoInitEnabled, true);
+        await firebase.messaging().setAutoInitEnabled(false);
+        should.equal(firebase.messaging().isAutoInitEnabled, false);
+      }
     });
   });
 
