@@ -91,8 +91,10 @@ describe('messaging()', () => {
       should.equal(await firebase.messaging().getAPNSToken(), null);
     });
     it('resolves null on ios if using simulator', async () => {
-      if (device.getPlatform() === 'ios') {
-        should.equal(await firebase.messaging().getAPNSToken(), null);
+      if (!global.isCI) {
+        if (device.getPlatform() === 'ios') {
+          should.equal(await firebase.messaging().getAPNSToken(), null);
+        }
       }
     });
   });
