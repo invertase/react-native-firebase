@@ -1123,7 +1123,7 @@ describe('auth()', () => {
 
       try {
         await user.sendEmailVerification(actionCodeSettings);
-        Promise.reject(new Error('Expected an error with incorrect action codes config'));
+        return Promise.reject(new Error('Expected an error with incorrect action codes config'));
       } catch (e) {
         /* Update error message */
         e.message.should.containEql("'options' expected an object value");
