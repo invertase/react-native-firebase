@@ -1005,7 +1005,7 @@ RCT_EXPORT_METHOD(useEmulator:
   NSString *nativeErrorMessage = [error localizedDescription];
 
   // Added specific catch as error code is Firebase generic error, no specific code exists.
-  if(error.domain == @"FIRAuthErrorDomain" && code == 17999){
+  if (error.domain == @"FIRAuthErrorDomain" && code == 17999) {
       
     message = @"DYNAMIC_LINK_NOT_ACTIVATED : FDL domain is not configured";
     
