@@ -77,12 +77,18 @@ yarn tests:ios:build
 
 ---
 
-### Step 4: Setting up android emulator and iOS simulator
+### Step 4: Setting up android emulator and iOS simulator and Firestore emulator
 
 To run android tests you will need to create a new emulator and name it `TestingAVD` (You can't rename existing one).
 This emulator will need to be up and running before you start your android tests from Step 5.
 
 With iOS Detox will start a simulator for you by default or run tests in an open one.
+
+For the Firestore emulator you need to install the tools and start the emulator:
+
+```bash
+yarn tests:emulator:start
+```
 
 ---
 
@@ -143,6 +149,16 @@ yarn validate:all:js
 yarn validate:all:ts
 yarn validate:all:flow
 ```
+
+---
+
+### Debugging E2E JS Tests (VSCode)
+
+1. Add a breakpoint in the JS file where you will need to debug.
+2. Select the debug icon under 'NPM Scripts' when selecting one of the following scripts...
+
+- tests:ios:test:debug (iOS)
+- tests:android:test:debug (Android)
 
 ---
 

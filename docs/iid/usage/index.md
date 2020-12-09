@@ -56,5 +56,5 @@ For example, the token could be used to send messages via Firebase Cloud Messagi
 ```js
 import iid from '@react-native-firebase/iid';
 
-const token = await firebase.iid().getToken();
+const token = await iid().getToken();
 ```

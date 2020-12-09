@@ -16,7 +16,23 @@
  */
 
 describe('messaging().sendMessage(*)', () => {
-  it('throws if no object provided', () => {
+  it('throws if used on ios', () => {
+    if (device.getPlatform() === 'ios') {
+      try {
+        firebase.messaging().sendMessage(123);
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          'firebase.messaging().sendMessage() is only supported on Android devices.',
+        );
+        return Promise.resolve();
+      }
+    } else {
+      Promise.resolve();
+    }
+  });
+
+  android.it('throws if no object provided', () => {
     try {
       firebase.messaging().sendMessage(123);
       return Promise.reject(new Error('Did not throw Error.'));
@@ -26,11 +42,11 @@ describe('messaging().sendMessage(*)', () => {
     }
   });
 
-  it('uses default values', async () => {
+  android.it('uses default values', async () => {
     firebase.messaging().sendMessage({});
   });
 
-  describe('to', () => {
+  android.describe('to', () => {
     it('throws if not a string', () => {
       try {
         firebase.messaging().sendMessage({
@@ -50,7 +66,7 @@ describe('messaging().sendMessage(*)', () => {
     });
   });
 
-  describe('messageId', () => {
+  android.describe('messageId', () => {
     it('throws if not a string', () => {
       try {
         firebase.messaging().sendMessage({
@@ -70,7 +86,7 @@ describe('messaging().sendMessage(*)', () => {
     });
   });
 
-  describe('ttl', () => {
+  android.describe('ttl', () => {
     it('throws if not a number', () => {
       try {
         firebase.messaging().sendMessage({
@@ -114,7 +130,7 @@ describe('messaging().sendMessage(*)', () => {
     });
   });
 
-  describe('data', () => {
+  android.describe('data', () => {
     it('throws if not an object', () => {
       try {
         firebase.messaging().sendMessage({
@@ -136,7 +152,7 @@ describe('messaging().sendMessage(*)', () => {
     });
   });
 
-  describe('collapseKey', () => {
+  android.describe('collapseKey', () => {
     it('throws if not a string', () => {
       try {
         firebase.messaging().sendMessage({
@@ -156,7 +172,7 @@ describe('messaging().sendMessage(*)', () => {
     });
   });
 
-  describe('messageType', () => {
+  android.describe('messageType', () => {
     it('throws if not a string', () => {
       try {
         firebase.messaging().sendMessage({

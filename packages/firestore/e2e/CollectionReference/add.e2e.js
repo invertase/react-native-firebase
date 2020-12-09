@@ -14,17 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 describe('firestore.collection().add()', () => {
   before(() => wipe());
-
   it('throws if data is not an object', () => {
     try {
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .add(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -37,7 +36,7 @@ describe('firestore.collection().add()', () => {
     const data = { foo: 'bar' };
     const docRef = await firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .add(data);
     should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
     const docSnap = await docRef.get();

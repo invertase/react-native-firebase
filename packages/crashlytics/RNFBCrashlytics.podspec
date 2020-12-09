@@ -5,11 +5,7 @@ appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 # Firebase SDK Override
 coreVersionDetected = appPackage['version']
 coreVersionRequired = package['peerDependencies'][appPackage['name']]
-if appPackage['sdkVersions']
-  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
-else
-  firebase_sdk_version = '~> 6.27.0'
-end
+firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
 if coreVersionDetected != coreVersionRequired
   Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
 end
@@ -30,7 +26,7 @@ Pod::Spec.new do |s|
   s.source_files        = 'ios/**/*.{h,m}'
 
   # React Native dependencies
-  s.dependency          'React'
+  s.dependency          'React-Core'
   s.dependency          'RNFBApp'
 
   if defined?($FirebaseSDKVersion)
@@ -39,7 +35,6 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/Core', firebase_sdk_version
   s.dependency          'Firebase/Crashlytics', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)

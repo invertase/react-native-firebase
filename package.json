@@ -9,26 +9,31 @@
     "build:all:build": "lerna run build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:report": "eslint --output-file=eslint-report.json --format=json . --ext .js,.jsx,.ts,.tsx",
+    "lint:spellcheck": "spellchecker --quiet --files=\"docs/**/*.md\" --dictionaries=\"./.spellcheck.dict.txt\" --reports=\"spelling.json\" --plugins spell indefinite-article repeated-words syntax-mentions syntax-urls frontmatter",
     "tsc:compile": "tsc --project .",
+    "lint:all": "yarn lint && yarn lint:spellcheck && yarn tsc:compile",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:link": "lerna link",
     "lerna:clean": "lerna clean",
     "tests:jest": "jest",
     "tests:jest-watch": "jest --watch",
     "tests:jest-coverage": "jest --coverage",
-    "gen:reference": "node scripts/generate-typedoc.js",
     "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
     "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache --no-interactive",
+    "tests:emulator:start": "cd ./.github/workflows/scripts && sh ./start-firebase-emulator.sh --no-daemon",
+    "tests:emulator:start-ci": "cd ./.github/workflows/scripts && sh ./start-firebase-emulator.sh",
     "tests:android:build": "cd tests && ./node_modules/.bin/detox build --configuration android.emu.debug",
     "tests:android:build-release": "cd tests && ./node_modules/.bin/detox build --configuration android.emu.release",
     "tests:android:test": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug",
+    "tests:android:test:debug": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug --inspect",
     "tests:android:test-reuse": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug --reuse",
-    "tests:android:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug",
+    "tests:android:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --configuration android.emu.debug",
     "tests:android:test-cover-reuse": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --reuse",
     "tests:ios:build": "cd tests && ./node_modules/.bin/detox build --configuration ios.sim.debug",
     "tests:ios:build-release": "cd tests && ./node_modules/.bin/detox build --configuration ios.sim.release",
     "tests:ios:test": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --loglevel warn",
+    "tests:ios:test:debug": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --loglevel warn --inspect",
     "tests:ios:test-reuse": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
     "tests:ios:test-cover-reuse": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
@@ -45,6 +50,7 @@
     "@invertase/babel-preset-react-native-syntax": "^0.1.3",
     "@react-native-community/eslint-config": "^0.0.5",
     "@types/jest": "^25.2.1",
+    "@types/react": "^16.9.49",
     "@types/react-native": "^0.62.0",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
@@ -71,21 +77,10 @@
     "jest": "^25.5.1",
     "prettier": "^1.19.1",
     "shelljs": "^0.8.3",
-    "ts-jest": "^25.4.0"
+    "ts-jest": "^25.4.0",
   },
-  "lint-staged": {
-    "packages/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "tests/**/*.js": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*.{json,md}": [
-      "prettier --write",
-      "git add"
-    ]
+  "resolutions": {
+    "@types/react": "^16.9.49"
   },
   "workspaces": {
     "packages": [

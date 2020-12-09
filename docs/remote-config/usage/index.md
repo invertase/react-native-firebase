@@ -3,7 +3,7 @@ title: Remote Config
 description: Installation and getting started with Remote Config.
 icon: //static.invertase.io/assets/firebase/remote-config.svg
 next: /perf/usage
-previous: /ml-vision/face-detection
+previous: /ml/image-labeling
 ---
 
 # Installation
@@ -82,11 +82,13 @@ remoteConfig()
     awesome_new_feature: 'disabled',
   })
   .then(() => remoteConfig().fetchAndActivate())
-  .then(activated => {
-    if (activated) {
-      console.log('Defaults set, fetched & activated!');
+  .then(fetchedRemotely => {
+    if (fetchedRemotely) {
+      console.log('Configs were retrieved from the backend and activated.');
     } else {
-      console.log('Defaults set, however activation failed.');
+      console.log(
+        'No configs were fetched from the backend, and the local configs were already activated',
+      );
     }
   });
 ```
@@ -111,7 +113,7 @@ if (awesomeNewFeature.asNumber() === 5) {
 // resolves value to boolean
 // if value is any of the following: '1', 'true', 't', 'yes', 'y', 'on', it will resolve to true
 // if source is 'static', value will be false
-if (awesomeNewFeature.asNumber() === true) {
+if (awesomeNewFeature.asBoolean() === true) {
   enableAwesomeNewFeature();
 }
 ```
@@ -121,9 +123,11 @@ The API also provides a `getAll` method to read all parameters at once rather th
 ```js
 const parameters = remoteConfig().getAll();
 
-Object.entries(parameters).forEach(([key, parameter]) => {
+Object.entries(parameters).forEach($ => {
+  const [key, entry] = $;
   console.log('Key: ', key);
-  console.log('Value: ', parameter.value);
+  console.log('Source: ', entry.getSource());
+  console.log('Value: ', entry.asString());
 });
 ```
 

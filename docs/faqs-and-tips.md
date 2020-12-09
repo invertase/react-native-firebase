@@ -20,9 +20,10 @@ The longer you stay on v5, the more your project will be out of sync with the of
 
 We highly recommend taking the necessary pains to update to v6.
 
-### My CI build hangs at the `Running script '[CP-User] [RNFB] Core Configuration'` step. 
+### My CI build hangs at the "Running script '[CP-User] [RNFB] Core Configuration'" step. 
 
 This may be fixed by creating a `firebase.json` file at the root of your project if it's not there already. If you don't want to change any of the default React Native Firebase configurations, you can leave it empty in the following way: 
+
 ```
 {
   "react-native": {
@@ -30,7 +31,20 @@ This may be fixed by creating a `firebase.json` file at the root of your project
 }
 ```
 
+
+### I have a custom Analytics parameter called 'items' and it's not showing up on the Firebase console. How come?
+
+This happens to be a known problem with the upstream Analytics SDKs. The Firebase team doesn't have any plans to fix it soon. More information about this can be found [here](https://github.com/invertase/react-native-firebase/issues/4018#issuecomment-682174087).
+
+
+### I'm receiving `InternalFirebaseAuth.FIREBASE_AUTH_API is not available on this device`. How do I fix this?
+
+To use some Firebase services (like auth) in an emulator, you need an Android virtual device with Google Play services installed. Check this [Stack Overflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android virtual device with the necessary APIs installed.
+
 # Tips
 
+- Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
+  - Build processes are costly and complex, so caching is used a lot. As a result, certain changes that you make in your app can cause cache conflicts in subsequent builds. Deal with this via `npx react-native-clean-project`. This does solve a lot of problems.
+  - Try an isolate the problem with a template React Native Firebase app. This [bash script](https://github.com/mikehardy/rnfbdemo/blob/master/make-demo.sh) is particularly helpful in making an empty template app.
 - Advice on supporting multiple environments (for example, dev, prod, maybe also staging, qa) for your React Native Firebase App: [#3504](https://github.com/invertase/react-native-firebase/issues/3504)
 - Using [Fastlane for iOS deployment](https://docs.fastlane.tools/getting-started/ios) together with [RN Firebase Crashlytics](https://rnfirebase.io/crashlytics/usage) within CI has been observed to cause builds that hang indefinitely. Using `setup_ci(force: true)` before building the application may solve the issue.: [#3706](https://github.com/invertase/react-native-firebase/issues/3706)

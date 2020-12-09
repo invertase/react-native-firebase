@@ -26,7 +26,7 @@ been approved before being released.
 We have also ensured the release is compatible with some of the popular tooling in the React Native community, such as
 [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md) & [TypeScript](https://facebook.github.io/react-native/blog/2018/05/07/using-typescript-with-react-native).
 
-Version 6 also brings support for previously unsupported modules such as [Firebase ML Kit](https://firebase.google.com/docs/ml-kit).
+Version 6 also brings support for previously unsupported modules such as [Firebase ML](https://firebase.google.com/docs/ml).
 
 ## NPM dependency changes
 
@@ -82,6 +82,18 @@ rootProject.name = 'AwesomeApp'
 - project(':react-native-firebase').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firebase/android')
 
 include ':app'
+```
+
+#### Removing from Android Manifest
+
+Open your *AndroidManifest.xml* file.  You will need to remove any references to the `io.invertase.firebase.messaging` class
+
+```diff
+- <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
+-   <intent-filter>
+-     <action android:name="com.google.firebase.MESSAGING_EVENT" />
+-   </intent-filter>
+- </service>
 ```
 
 #### Removing native dependencies
@@ -224,8 +236,8 @@ yarn add @react-native-firebase/app
 
 If you are using React Native 0.60+, the module will be automatically linked via [autolinking](https://github.com/react-native-community/cli/blob/master/docs/autolinking.md).
 
-Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/v6/app/android) and
-[iOS](/v6/app/ios) for more information on manual linking.
+Users on an older version of React Native must manually link the `app` module. See the following steps for [Android](/install-android) and
+[iOS](/install-ios) for more information on manual linking.
 
 ## Specific module installation
 
@@ -238,26 +250,25 @@ yarn add @react-native-firebase/auth
 
 Install the modules required for your application:
 
-| Module                                                       | NPM Package                                |
-| ------------------------------------------------------------ | ------------------------------------------ |
-| <Anchor href="v6/admob">AdMob</Anchor>                       | @react-native-firebase/admob               |
-| <Anchor href="v6/analytics">Analytics</Anchor>               | @react-native-firebase/analytics           |
-| <Anchor href="v6/app">App</Anchor>                           | @react-native-firebase/app                 |
-| <Anchor href="v6/invites">App Invites</Anchor>               | @react-native-firebase/invites             |
-| <Anchor href="v6/auth">Authentication</Anchor>               | @react-native-firebase/auth                |
-| <Anchor href="v6/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore           |
-| <Anchor href="v6/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions           |
-| <Anchor href="v6/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging           |
-| <Anchor href="v6/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage             |
-| <Anchor href="v6/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics         |
-| <Anchor href="v6/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links       |
-| <Anchor href="v6/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging    |
-| <Anchor href="v6/iid">Instance ID</Anchor>                   | @react-native-firebase/iid                 |
-| <Anchor href="v6/mlkit">ML Kit Natural Language</Anchor>     | @react-native-firebase/ml-natural-language |
-| <Anchor href="v6/mlkit">ML Kit Vision</Anchor>               | @react-native-firebase/ml-vision           |
-| <Anchor href="v6/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf                |
-| <Anchor href="v6/database">Realtime Database</Anchor>        | @react-native-firebase/database            |
-| <Anchor href="v6/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config       |
+| Module                                                       | NPM Package                             |
+| ------------------------------------------------------------ | --------------------------------------- |
+| <Anchor href="v6/admob">AdMob</Anchor>                       | @react-native-firebase/admob            |
+| <Anchor href="v6/analytics">Analytics</Anchor>               | @react-native-firebase/analytics        |
+| <Anchor href="v6/app">App</Anchor>                           | @react-native-firebase/app              |
+| <Anchor href="v6/invites">App Invites</Anchor>               | @react-native-firebase/invites          |
+| <Anchor href="v6/auth">Authentication</Anchor>               | @react-native-firebase/auth             |
+| <Anchor href="v6/firestore">Cloud Firestore</Anchor>         | @react-native-firebase/firestore        |
+| <Anchor href="v6/functions">Cloud Functions</Anchor>         | @react-native-firebase/functions        |
+| <Anchor href="v6/messaging">Cloud Messaging</Anchor>         | @react-native-firebase/messaging        |
+| <Anchor href="v6/storage">Cloud Storage</Anchor>             | @react-native-firebase/storage          |
+| <Anchor href="v6/crashlytics">Crashlytics</Anchor>           | @react-native-firebase/crashlytics      |
+| <Anchor href="v6/links">Dynamic Links</Anchor>               | @react-native-firebase/dynamic-links    |
+| <Anchor href="v6/in-app-messaging">In-app Messaging</Anchor> | @react-native-firebase/in-app-messaging |
+| <Anchor href="v6/iid">Instance ID</Anchor>                   | @react-native-firebase/iid              |
+| <Anchor href="v6/ml">ML</Anchor>                             | @react-native-firebase/ml               |
+| <Anchor href="v6/perf">Performance Monitoring</Anchor>       | @react-native-firebase/perf             |
+| <Anchor href="v6/database">Realtime Database</Anchor>        | @react-native-firebase/database         |
+| <Anchor href="v6/remote-config">Remote Config</Anchor>       | @react-native-firebase/remote-config    |
 
 Users on React Native version 0.60+, the modules will be automatically linked. For users on a lower version,
 see the module specific pages for manual installation guides.
@@ -392,6 +403,14 @@ This is a new module. See documentation for usage.
 
 No breaking changes.
 
+### Notifications
+
+Device-local notification APIs are not actually Firebase APIs at the same time they are very difficult to maintain.
+
+For these reasons the notifications package has been removed from react-native-firebase for versions 6 and higher.
+
+How to migrate: If you use device-local notification APIs and user-visible notifications in your app you will want to integrate a separate library that gives you access to device-local notification APIs. Many people have reported success with each of https://notifee.app, https://wix.github.io/react-native-notifications and https://github.com/zo0r/react-native-push-notification
+
 ### Cloud Messaging
 
 `@react-native-firebase/messaging`
@@ -446,14 +465,8 @@ No breaking changes.
 - `firebase.utils.Native` is now deprecated and will be removed in a later release, please rename usages of this to `firebase.utils.FilePath`.
 - `firebase.utils.Native.*` some properties have been renamed and deprecated and will be removed in a later release, follow the in-app console warnings on how to migrate.
 
-### ML Kit Natural Language
+### ML
 
-`@react-native-firebase/ml-natural-language`
-
-This is a new module. See documentation for usage.
-
-### ML Kit Vision
-
-`@react-native-firebase/ml-vision`
+`@react-native-firebase/ml`
 
 This is a new module. See documentation for usage.

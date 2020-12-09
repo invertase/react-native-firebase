@@ -102,16 +102,17 @@ export namespace _Template_ {
   }
 }
 
-declare module '@react-native-firebase/_template_' {
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  _Template_.Module,
+  _Template_.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  auth: typeof defaultExport;
+  app(name?: string): ReactNativeFirebase.FirebaseApp & { _template_(): _Template_.Module };
+};
 
-  const module: FirebaseModuleWithStaticsAndApp<_Template_.Module, _Template_.Statics>;
-  export default module;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.

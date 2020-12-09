@@ -46,34 +46,6 @@ describe('Analytics', () => {
     });
   });
 
-  it('errors if screenName not a string', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setCurrentScreen(666.1337)).toThrowError(
-      "'screenName' expected a string value",
-    );
-  });
-
-  it('errors if screenClassOverride not a string', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setCurrentScreen('invertase screen', 666.1337)).toThrowError(
-      "'screenClassOverride' expected a string value",
-    );
-  });
-
-  it('errors if milliseconds not a number', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setMinimumSessionDuration('123')).toThrowError(
-      "'milliseconds' expected a number value",
-    );
-  });
-
-  it('errors if milliseconds is less than 0', () => {
-    // @ts-ignore test
-    expect(() => firebase.analytics().setMinimumSessionDuration(-100)).toThrowError(
-      "'milliseconds' expected a positive number value",
-    );
-  });
-
   it('errors if milliseconds not a number', () => {
     // @ts-ignore test
     expect(() => firebase.analytics().setSessionTimeoutDuration('123')).toThrowError(
@@ -131,26 +103,6 @@ describe('Analytics', () => {
     );
   });
 
-  it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
-    const analytics = firebase.analytics();
-    // @ts-ignore test
-    const logEcommercePurchaseSpy = jest.spyOn(analytics, 'logEcommercePurchase');
-    // @ts-ignore test
-    const logPresentOfferSpy = jest.spyOn(analytics, 'logPresentOffer');
-    // @ts-ignore test
-    const logPurchaseRefundSpy = jest.spyOn(analytics, 'logPurchaseRefund');
-    // @ts-ignore test
-    analytics.logEcommercePurchase();
-    // @ts-ignore test
-    analytics.logPresentOffer();
-    // @ts-ignore test
-    analytics.logPurchaseRefund();
-
-    expect(logEcommercePurchaseSpy).toBeCalled();
-    expect(logPresentOfferSpy).toBeCalled();
-    expect(logPurchaseRefundSpy).toBeCalled();
-  });
-
   describe('logEvent()', () => {
     it('errors if name is not a string', () => {
       // @ts-ignore test
@@ -174,7 +126,7 @@ describe('Analytics', () => {
 
     it('errors if name not alphanumeric', () => {
       expect(() => firebase.analytics().logEvent('!@£$%^&*')).toThrowError(
-        "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 32 alphanumeric characters or underscores.",
+        "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 40 alphanumeric characters or underscores.",
       );
     });
 
@@ -184,6 +136,15 @@ describe('Analytics', () => {
       ).toThrowError(
         "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
       );
+    });
+
+    describe('logScreenView()', () => {
+      it('errors if param is not an object', () => {
+        // @ts-ignore test
+        expect(() => firebase.analytics().logScreenView(123)).toThrowError(
+          'firebase.analytics().logScreenView(*):',
+        );
+      });
     });
 
     describe('logAddPaymentInfo()', () => {

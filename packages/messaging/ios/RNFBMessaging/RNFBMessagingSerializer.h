@@ -23,8 +23,6 @@
 
 + (NSString *)APNSTokenFromNSData:(NSData *)tokenData;
 
-+ (NSDictionary *)remoteMessageToDict:(FIRMessagingRemoteMessage *)remoteMessage;
-
 + (NSDictionary *)notificationToDict:(UNNotification *)notification;
 
 + (NSDictionary *)remoteMessageUserInfoToDict:(NSDictionary *)userInfo;

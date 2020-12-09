@@ -427,7 +427,7 @@ describe('remoteConfig()', () => {
 
       const config = firebase.remoteConfig().getAll();
 
-      const remoteProps = ['bool', 'string', 'number'];
+      const remoteProps = ['some_key'];
 
       config.should.have.keys(...remoteProps);
 
@@ -436,10 +436,6 @@ describe('remoteConfig()', () => {
       const configRetrieveAgain = firebase.remoteConfig().getAll();
 
       should(configRetrieveAgain).not.have.properties(remoteProps);
-
-      const configRetrieve = firebase.remoteConfig().getValue('some_key').value;
-
-      should(configRetrieve).be.equal(undefined);
     });
 
     it('returns a "null" value as reset() API is not supported on iOS', async () => {
@@ -448,45 +444,6 @@ describe('remoteConfig()', () => {
 
         should(reset).equal(null);
       }
-    });
-  });
-
-  describe('call methods, getters & setters that are deprecated, removed or not supported', () => {
-    it('call methods, getters & setters that fire a console.warn() & have no return value', () => {
-      const config = firebase.remoteConfig();
-      const testValue = config.getValue('testValue');
-      const testValueSpy = sinon.spy(testValue, 'value', ['get']);
-      const testSourceSpy = sinon.spy(testValue, 'source', ['get']);
-      const defaultSpy = sinon.spy(config, 'defaultConfig', ['get', 'set']);
-      const settingSpy = sinon.spy(config, 'settings', ['set']);
-      const isDeveloperModeEnabledSpy = sinon.spy(config, 'isDeveloperModeEnabled', ['get']);
-      const minimumFetchIntervalSpy = sinon.spy(config, 'minimumFetchInterval', ['get']);
-      const setLogLevelSpy = sinon.spy(config, 'setLogLevel');
-      const setConfigSettingsSpy = sinon.spy(config, 'setConfigSettings');
-
-      config.defaultConfig;
-      config.defaultConfig = {};
-      config.settings = {};
-      config.fetchTimeMillis;
-      config.isDeveloperModeEnabled;
-      config.minimumFetchInterval;
-      config.setLogLevel();
-      config.setConfigSettings({ isDeveloperModeEnabled: true, minimumFetchInterval: 300 });
-
-      testValue.value;
-      testValue.source;
-
-      setConfigSettingsSpy.should.be.calledOnce();
-      testValueSpy.get.should.be.calledOnce();
-      testSourceSpy.get.should.be.calledOnce();
-
-      defaultSpy.get.should.be.calledOnce();
-      defaultSpy.set.should.be.calledOnce();
-
-      settingSpy.set.should.be.calledOnce();
-      isDeveloperModeEnabledSpy.get.should.be.calledOnce();
-      minimumFetchIntervalSpy.get.should.be.calledOnce();
-      setLogLevelSpy.should.be.calledOnce();
     });
   });
 });

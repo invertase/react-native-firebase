@@ -1,21 +1,23 @@
 buildscript {
-  ext.kotlinVersion = '1.3.31'
+  ext.kotlinVersion = '1.4.0'
 
   repositories {
     google()
     jcenter()
     mavenCentral()
-    maven {
-      url 'https://maven.fabric.io/public'
-    }
   }
   dependencies {
+<<<<<<< HEAD
     classpath 'com.google.gms:google-services:4.2.0'
     classpath 'com.android.tools.build:gradle:3.5.2'
 //     classpath 'com.google.gms:google-services:4.3.0'
+=======
+    classpath 'com.google.gms:google-services:4.3.4'
+    classpath 'com.android.tools.build:gradle:4.1.0'
+>>>>>>> master
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    classpath 'com.google.firebase:perf-plugin:1.3.0'
-    classpath 'io.fabric.tools:gradle:1.28.1'
+    classpath 'com.google.firebase:perf-plugin:1.3.3'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.3.0'
   }
 }
 
@@ -33,10 +35,10 @@ allprojects {
       // Android JSC is installed from npm
       url("$rootDir/../node_modules/jsc-android/dist")
     }
-    maven {
-      // Detox
-      url "$rootDir/../node_modules/detox/Detox-android"
-    }
+    // maven {
+    //   // Detox as an .aar file (we're going to use it as a compile dependency though, to patch it)
+    //   url "$rootDir/../node_modules/detox/Detox-android"
+    // }
     jcenter()
   }
 
@@ -45,10 +47,10 @@ allprojects {
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
   ext {
-    compileSdk = 28
-    buildTools = "28.0.3"
+    compileSdk = 30
+    buildTools = "30.0.2"
     minSdk = 21
-    targetSdk = 28
+    targetSdk = 30
   }
 
   afterEvaluate { project ->

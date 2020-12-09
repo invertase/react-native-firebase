@@ -116,18 +116,18 @@ describe('storage()', () => {
       const url =
         'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
       const ref = firebase.storage().refFromURL(url);
-      ref.bucket.should.equal('react-native-firebase-testing');
+      ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
       ref.name.should.equal('1mbTestFile.gif');
-      ref.toString().should.equal('gs://react-native-firebase-testing/1mbTestFile.gif');
+      ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('accepts a https encoded url', async () => {
       const url =
         'https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Freact-native-firebase-testing.appspot.com%2Fo%2F1mbTestFile.gif%3Falt%3Dmedia';
       const ref = firebase.storage().refFromURL(url);
-      ref.bucket.should.equal('react-native-firebase-testing');
+      ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
       ref.name.should.equal('1mbTestFile.gif');
-      ref.toString().should.equal('gs://react-native-firebase-testing/1mbTestFile.gif');
+      ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('throws an error if https url could not be parsed', async () => {

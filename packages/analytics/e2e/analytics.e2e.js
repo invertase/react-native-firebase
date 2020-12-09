@@ -56,26 +56,6 @@ describe('analytics()', () => {
     });
   });
 
-  describe('setCurrentScreen()', () => {
-    it('screenName only', async () => {
-      await firebase.analytics().setCurrentScreen('invertase screen');
-    });
-
-    it('screenName with screenClassOverride', async () => {
-      await firebase.analytics().setCurrentScreen('invertase screen', 'invertase class override');
-    });
-  });
-
-  describe('setMinimumSessionDuration()', () => {
-    it('default duration', async () => {
-      await firebase.analytics().setMinimumSessionDuration();
-    });
-
-    it('custom duration', async () => {
-      await firebase.analytics().setMinimumSessionDuration(1337);
-    });
-  });
-
   describe('setSessionTimeoutDuration()', () => {
     it('default duration', async () => {
       await firebase.analytics().setSessionTimeoutDuration();
@@ -116,6 +96,14 @@ describe('analytics()', () => {
     });
   });
 
+  describe('logScreenView()', () => {
+    it('calls logScreenView', async () => {
+      await firebase
+        .analytics()
+        .logScreenView({ screen_name: 'invertase screen', screen_class: 'invertase class' });
+    });
+  });
+
   describe('logAddPaymentInfo()', () => {
     it('calls logAddPaymentInfo', async () => {
       await firebase.analytics().logAddPaymentInfo({
@@ -153,6 +141,7 @@ describe('analytics()', () => {
             item_name: 'foo',
             item_category: 'foo',
             item_location_id: 'foo',
+            quantity: 5,
           },
         ],
         value: 123,

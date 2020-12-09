@@ -12,6 +12,7 @@
 		27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24642242AA2EE0098906C /* RNFBMessaging+AppDelegate.m */; };
 		27F24646242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */; };
 		27F2464D242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 27F2464C242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m */; };
+		37D60F7424E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 37D60F7324E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m */; };
 		DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,8 @@
 		27F24645242AA30E0098906C /* RNFBMessaging+FIRMessagingDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+FIRMessagingDelegate.m"; sourceTree = "<group>"; };
 		27F2464B242AA7330098906C /* RNFBMessaging+NSNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+NSNotificationCenter.h"; sourceTree = "<group>"; };
 		27F2464C242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+NSNotificationCenter.m"; sourceTree = "<group>"; };
+		37D60F7124E6465300E44930 /* RNFBMessaging+UNNotificationServiceExtension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RNFBMessaging+UNNotificationServiceExtension.h"; sourceTree = "<group>"; };
+		37D60F7324E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "RNFBMessaging+UNNotificationServiceExtension.m"; sourceTree = "<group>"; };
 		DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBMessagingSerializer.h; sourceTree = "<group>"; };
 		DA446E5122CA48690066A0A3 /* RNFBMessagingSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBMessagingSerializer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -65,6 +68,8 @@
 		2744B98321F45429004F8E3F /* RNFBMessaging */ = {
 			isa = PBXGroup;
 			children = (
+				37D60F7324E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m */,
+				37D60F7124E6465300E44930 /* RNFBMessaging+UNNotificationServiceExtension.h */,
 				2744B98421F45429004F8E3F /* RNFBMessagingModule.h */,
 				2744B98521F45429004F8E3F /* RNFBMessagingModule.m */,
 				DA446E5022CA485C0066A0A3 /* RNFBMessagingSerializer.h */,
@@ -150,6 +155,7 @@
 			files = (
 				2744B98621F45429004F8E3F /* RNFBMessagingModule.m in Sources */,
 				27F24643242AA2EE0098906C /* RNFBMessaging+AppDelegate.m in Sources */,
+				37D60F7424E647BF00E44930 /* RNFBMessaging+UNNotificationServiceExtension.m in Sources */,
 				27F24640242AA29F0098906C /* RNFBMessaging+UNUserNotificationCenter.m in Sources */,
 				DA446E5222CA48690066A0A3 /* RNFBMessagingSerializer.m in Sources */,
 				27F2464D242AA7330098906C /* RNFBMessaging+NSNotificationCenter.m in Sources */,

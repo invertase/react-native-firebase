@@ -77,7 +77,7 @@ import storage from '@react-native-firebase/storage';
 
 function App() {
   // create bucket storage reference to not yet existing image
-  const reference = firebase.storage().ref('black-t-shirt-sm.png');
+  const reference = storage().ref('black-t-shirt-sm.png');
 
   return (
     <View>

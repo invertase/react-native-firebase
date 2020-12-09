@@ -24,6 +24,7 @@
 #import "RNFBMessagingSerializer.h"
 #import "RNFBMessaging+AppDelegate.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
+#import "RNFBMessaging+NSNotificationCenter.h"
 
 @implementation RNFBMessagingModule
 #pragma mark -
@@ -42,6 +43,19 @@ RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup {
   return YES;
+}
+
++ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps withLaunchOptions:(NSDictionary *_Nullable)launchOptions  {
+    NSMutableDictionary *appProperties = userProps != nil ? [userProps mutableCopy] : [NSMutableDictionary dictionary];
+    appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(NO)]);
+        
+    if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
+      if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        appProperties[@"isHeadless"] = @([RCTConvert BOOL:@(YES)]);
+      }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:appProperties];
 }
 
 - (NSDictionary *)constantsToExport {
@@ -149,6 +163,15 @@ RCT_EXPORT_METHOD(getAPNSToken:
     #endif
     resolve([NSNull null]);
   }
+}
+
+RCT_EXPORT_METHOD(getIsHeadless
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    RNFBMessagingNSNotificationCenter* notifCenter = [RNFBMessagingNSNotificationCenter sharedInstance];
+
+    return resolve(@([RCTConvert BOOL:@(notifCenter.isHeadless)]));
 }
 
 RCT_EXPORT_METHOD(requestPermission:
@@ -281,19 +304,6 @@ RCT_EXPORT_METHOD(hasPermission:
         @"code": @"unsupported-platform-version",
         @"message": @"hasPermission call failed; minimum supported version requirement not met (iOS 10)."} mutableCopy]];
   }
-}
-
-RCT_EXPORT_METHOD(sendMessage:
-  (NSDictionary *) message
-    :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject
-) {
-  NSString *to = message[@"to"];
-  NSNumber *ttl = message[@"ttl"];
-  NSDictionary *data = message[@"data"];
-  NSString *messageId = message[@"messageId"];
-  [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(subscribeToTopic:
