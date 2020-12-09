@@ -36,6 +36,7 @@ describe('messaging()', () => {
     });
 
     it('sets the value', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         should.equal(firebase.messaging().isAutoInitEnabled, true);
         await firebase.messaging().setAutoInitEnabled(false);
@@ -66,6 +67,7 @@ describe('messaging()', () => {
       should.equal(await firebase.messaging().hasPermission(), true);
     });
     it('returns -1 on ios (default)', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         if (device.getPlatform() === 'ios') {
           should.equal(await firebase.messaging().hasPermission(), -1);
@@ -91,6 +93,7 @@ describe('messaging()', () => {
       should.equal(await firebase.messaging().getAPNSToken(), null);
     });
     it('resolves null on ios if using simulator', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         if (device.getPlatform() === 'ios') {
           should.equal(await firebase.messaging().getAPNSToken(), null);
@@ -110,6 +113,7 @@ describe('messaging()', () => {
 
   describe('getInitialNotification', () => {
     it('returns null when no initial notification', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         should.equal(await firebase.messaging().getInitialNotification(), null);
       }

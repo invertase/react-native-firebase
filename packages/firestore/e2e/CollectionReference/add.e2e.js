@@ -33,6 +33,7 @@ describe('firestore.collection().add()', () => {
   });
 
   it('adds a new document', async () => {
+    // FIXME failing in CI
     if (!global.isCI) {
       const data = { foo: 'bar' };
       const docRef = await firebase

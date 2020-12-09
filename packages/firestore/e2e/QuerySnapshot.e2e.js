@@ -188,6 +188,7 @@ describe('firestore.QuerySnapshot', () => {
     });
 
     it('calls back a function', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         const colRef = firebase.firestore().collection(COLLECTION);
         colRef.add({});

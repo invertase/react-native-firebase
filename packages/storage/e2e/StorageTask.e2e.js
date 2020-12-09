@@ -623,6 +623,7 @@ describe('storage() -> StorageTask', () => {
 
   describe('pause() resume()', () => {
     it('successfully pauses and resumes an upload', async function testRunner() {
+      // FIXME failing in CI
       if (!global.isCI) {
         this.timeout(25000);
 
@@ -690,6 +691,7 @@ describe('storage() -> StorageTask', () => {
     });
 
     it('successfully pauses and resumes a download', async () => {
+      // FIXME failing in CI
       if (!global.isCI) {
         const ref = firebase
           .storage()
