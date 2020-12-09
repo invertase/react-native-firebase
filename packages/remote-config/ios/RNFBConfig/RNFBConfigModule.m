@@ -119,7 +119,7 @@ RCT_EXPORT_METHOD(fetch:
     }
   };
 
-  if (expirationDuration == @(-1)) {
+  if (expirationDuration.integerValue == -1) {
     [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithCompletionHandler:completionHandler];
   } else {
     [[FIRRemoteConfig remoteConfigWithApp:firebaseApp] fetchWithExpirationDuration:expirationDuration.doubleValue completionHandler:completionHandler];
