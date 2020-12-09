@@ -4,9 +4,20 @@ on:
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
 jobs:
   # ------------------
@@ -15,79 +26,69 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
+      EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      - uses: actions/checkout@v1
+      - uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
-      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      #  -> https://github.com/actions/cache/issues/187
-      - name: Clean Yarn cache directory
-        run: yarn cache clean
+      - name: Install firebase CLI
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
 
-      # Gradle cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      - name: Clean Gradle cache directory
-        run: rm -rf ~/.gradle/caches
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
 
       - name: Yarn Install
-        run: |
-          export DETOX_DISABLE_POSTINSTALL=1
-          yarn --no-audit --prefer-offline
-
-      - name: Setup JDK8
-        uses: actions/setup-java@v1
+        uses: nick-invision/retry@v2
         with:
-          java-version: '8'
-          architecture: 'x64'
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+
+      - name: Verify JDK 1.8
+        # OpenJDK1.8 is the default in GitHub macOS 10.15 runner, setup is not required
+        # Run a check that exits with error unless it is 1.8 version to future-proof against unexpected upgrades
+        run: java -fullversion 2>&1 | grep '1.8'
+        shell: bash
 
       - name: Build Android App
         run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
 
-      - name: Download Emulator Image
-        run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-28;google_apis;x86_64"
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-28;google_apis;x86_64' -g google_apis
-          $ANDROID_HOME/emulator/emulator -list-avds
-
-      - name: Start Android Emulator
-        timeout-minutes: 15
-        continue-on-error: true
-        run: |
-          echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
-          $ANDROID_HOME/platform-tools/adb devices
-          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
-          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
-          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
-          echo "Emulator started"
-
-      - name: Detox Test
-        timeout-minutes: 20
+      - name: Pre-fetch Javascript bundle
+        # Prebuild the bundle so that's fast when the app starts.
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -95,25 +96,100 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing javascript bundle..."
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
-          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.1; done" &
-          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:E' > adb-log.txt" &
-          cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --cleanup
+          echo "...javascript bundle ready."
+
+      - name: Download Emulator Image
+        # This can fail on network request, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
+
+      - name: Create Emulator
+        run: echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
+
+      # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
+      - name: Start Android Emulator
+        id: emu1
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Start Android Emulator Retry 1
+        id: emu2
+        if: steps.emu1.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, second attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Start Android Emulator Retry 2
+        id: emu3
+        if: steps.emu2.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, third attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Emulator Status
+        if: always()
+        run: |
+          if ${{ steps.emu1.outcome=='success' || steps.emu2.outcome=='success' || steps.emu3.outcome=='success' }}; then
+             echo "Emulator Started"
+          else
+             exit 1
+          fi
+
+      - name: Detox Test
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+        timeout-minutes: 40
+        run: |
+          $ANDROID_HOME/platform-tools/adb devices
+          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
+          yarn tests:android:test-cover --cleanup
         shell: bash
 
       - name: Submit Coverage
-        run: |
-          ./node_modules/.bin/codecov
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
+
+      - name: Compress Emulator Log
+        if: always()
+        run: gzip -9 adb-log.txt
         shell: bash
 
-      - name: Upload Logs
-        uses: actions/upload-artifact@v1
+      - name: Upload Emulator Log
+        uses: actions/upload-artifact@v2
         if: always()
         with:
           name: adb_logs
-          path: adb-log.txt
+          path: adb-log.txt.gz
 
   # ------------------
   #        iOS
@@ -121,58 +197,86 @@ jobs:
   ios:
     name: iOS
     runs-on: macos-latest
-    timeout-minutes: 35
+    # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
+    timeout-minutes: 40
     env:
-      # Use the latest version of xcode for rnfirebase
-      # See link below for available versions;
-      #  -> https://github.com/actions/virtual-environments/blob/master/images/macos/macos-10.15-Readme.md#xcode
-      DEVELOPER_DIR: /Applications/Xcode_11.4.app
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2-beta
 
-      # Yarn cache directory on macOS GH Action virtual environment isn't empty;
-      #  -> https://github.com/actions/virtual-environments/issues/427
-      #  -> https://github.com/actions/cache/issues/187
-      - name: Clean Yarn cache directory
-        run: yarn cache clean
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install firebase CLI
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
+
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
+
+      - name: Get Xcode version
+        id: xcode-version
+        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Cache Pods
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         name: Detox Framework Cache
         with:
           path: ~/Library/Detox/ios
-          key: ${{ runner.os }}-detox-framework-cache-${{ env.DEVELOPER_DIR }}
+          key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
 
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
+
+      - name: Update Ruby build tools
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods xcodeproj
 
       - name: Pod Install
-        run: |
-          gem update cocoapods xcodeproj
-          cd tests/ios
-          pod install
-        shell: bash
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: cd tests/ios && pod install
 
       - name: Build iOS App
         run: |
@@ -183,15 +287,14 @@ jobs:
         shell: bash
 
       - name: Install applesimutils
-        run: |
-          export HOMEBREW_NO_AUTO_UPDATE=1
-          brew tap wix/brew
-          brew install applesimutils
-          applesimutils --list
-        shell: bash
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils && applesimutils --list
 
-      - name: Detox Test
-        timeout-minutes: 20
+      - name: Pre-fetch Javascript bundle
         run: |
           nohup yarn run tests:packager:jet &
           printf 'Waiting for packager to come online'
@@ -199,18 +302,38 @@ jobs:
             printf '.'
             sleep 2
           done
-          echo "Packager is online!"
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
 
+      - name: Create Simulator Log
+        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
+        continue-on-error: true
+        run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Detox Test
+        timeout-minutes: 30
+        run: |
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.ci --cleanup
-        shell: bash
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
+
+      - name: Compress Simulator Log
+        if: always()
+        run: gzip -9 simulator.log
+
+      - name: Upload Simulator Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: simulator_logs
+          path: simulator.log.gz
 
       - name: Submit Coverage
-        run: |
-          ./node_modules/.bin/codecov
-        shell: bash
-#      - name: Upload App
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: ios_app
-#          path: tests/ios/build/Build/Products/Debug-iphonesimulator/testing.app
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov

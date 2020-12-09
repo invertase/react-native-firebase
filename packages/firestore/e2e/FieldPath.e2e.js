@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore.FieldPath', () => {
   it('should throw if no segments', () => {
@@ -51,7 +52,7 @@ describe('firestore.FieldPath', () => {
       // Dummy create
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .where('.foo', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -65,7 +66,7 @@ describe('firestore.FieldPath', () => {
       // Dummy create
       firebase
         .firestore()
-        .collection('foo')
+        .collection(COLLECTION)
         .where('foo/bar', '<', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {

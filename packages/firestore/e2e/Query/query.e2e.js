@@ -13,12 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+const COLLECTION = 'firestore';
 
 describe('FirestoreQuery/FirestoreQueryModifiers', () => {
   it('should not mutate previous queries (#2691)', async () => {
     const queryBefore = firebase
       .firestore()
-      .collection('users')
+      .collection(COLLECTION)
       .where('age', '>', 30);
     const queryAfter = queryBefore.orderBy('age');
     queryBefore._modifiers._orders.length.should.equal(0);
@@ -32,7 +33,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo', '==', 'bar')
         .orderBy('foo')
         .limit(1)
@@ -45,7 +46,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo', '==', 'bar')
         .orderBy('bar')
         .orderBy('foo')
@@ -61,7 +62,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo', '>', 'bar')
         .orderBy('bar')
         .orderBy('foo')

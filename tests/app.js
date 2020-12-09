@@ -29,8 +29,7 @@ import '@react-native-firebase/functions';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/messaging';
-import '@react-native-firebase/ml-natural-language';
-import '@react-native-firebase/ml-vision';
+import '@react-native-firebase/ml';
 import '@react-native-firebase/perf';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
@@ -41,6 +40,11 @@ import { AppRegistry, NativeModules, Text, View } from 'react-native';
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
+
+const firestore = firebase.firestore();
+firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
+
+firebase.auth().useEmulator('http://localhost:9099');
 
 function Root() {
   return (

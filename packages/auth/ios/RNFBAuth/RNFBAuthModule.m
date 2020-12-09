@@ -50,6 +50,8 @@ static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"phone_auth_state_chang
 
 static __strong NSMutableDictionary *authStateHandlers;
 static __strong NSMutableDictionary *idTokenHandlers;
+// Used for caching credentials between method calls.
+static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
 
 @implementation RNFBAuthModule
 #pragma mark -
@@ -67,6 +69,7 @@ RCT_EXPORT_MODULE();
   dispatch_once(&onceToken, ^{
     authStateHandlers = [[NSMutableDictionary alloc] init];
     idTokenHandlers = [[NSMutableDictionary alloc] init];
+    credentials = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -88,6 +91,8 @@ RCT_EXPORT_MODULE();
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
   }
   [idTokenHandlers removeAllObjects];
+  
+  [credentials removeAllObjects];
 }
 
 #pragma mark -
@@ -329,6 +334,34 @@ RCT_EXPORT_METHOD(sendEmailVerification:
   }
 }
 
+RCT_EXPORT_METHOD(verifyBeforeUpdateEmail:
+  (FIRApp *) firebaseApp
+    :(NSString *) email
+    :(NSDictionary *) actionCodeSettings
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user) {
+    id handler = ^(NSError *_Nullable error) {
+      if (error) {
+        [self promiseRejectAuthException:reject error:error];
+      } else {
+        FIRUser *userAfterUpdate = [FIRAuth authWithApp:firebaseApp].currentUser;
+        [self promiseWithUser:resolve rejecter:reject user:userAfterUpdate];
+      }
+    };
+    if (actionCodeSettings) {
+       FIRActionCodeSettings *settings = [self buildActionCodeSettings:actionCodeSettings];
+        [user sendEmailVerificationBeforeUpdatingEmail:email actionCodeSettings:settings completion:handler];
+    } else {
+        [user sendEmailVerificationBeforeUpdatingEmail:email completion:handler];
+    }
+  } else {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+  }
+}
+
 RCT_EXPORT_METHOD(updateEmail:
   (FIRApp *) firebaseApp
     :(NSString *) email
@@ -519,7 +552,7 @@ RCT_EXPORT_METHOD(signInWithCredential:
     }];
   }
 
-  [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
+  [[FIRAuth authWithApp:firebaseApp] signInWithCredential:credential completion:^(
       FIRAuthDataResult *authResult,
       NSError *error
   ) {
@@ -591,14 +624,14 @@ RCT_EXPORT_METHOD(checkActionCode:
 
       NSMutableDictionary *data = [NSMutableDictionary dictionary];
 
-      if ([info dataForKey:FIRActionCodeEmailKey] != nil) {
-        [data setValue:[info dataForKey:FIRActionCodeEmailKey] forKey:keyEmail];
+      if (info.email != nil) {
+        [data setValue:info.email forKey:keyEmail];
       } else {
         [data setValue:[NSNull null] forKey:keyEmail];
       }
 
-      if ([info dataForKey:FIRActionCodeFromEmailKey] != nil) {
-        [data setValue:[info dataForKey:FIRActionCodeFromEmailKey] forKey:@"fromEmail"];
+      if (info.previousEmail != nil) {
+        [data setValue:info.previousEmail forKey:@"fromEmail"];
       } else {
         [data setValue:[NSNull null] forKey:@"fromEmail"];
       }
@@ -734,7 +767,7 @@ RCT_EXPORT_METHOD(confirmationResultConfirm:
   FIRAuthCredential *credential =
       [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId verificationCode:verificationCode];
 
-  [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
+  [[FIRAuth authWithApp:firebaseApp] signInWithCredential:credential completion:^(
       FIRAuthDataResult *authResult,
       NSError *error
   ) {
@@ -765,7 +798,7 @@ RCT_EXPORT_METHOD(linkWithCredential:
 
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
-    [user linkAndRetrieveDataWithCredential:credential
+    [user linkWithCredential:credential
                                  completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
                                    if (error) {
                                      [self promiseRejectAuthException:reject error:error];
@@ -819,7 +852,7 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-    [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(
+    [user reauthenticateWithCredential:credential completion:^(
         FIRAuthDataResult *_Nullable authResult,
         NSError *_Nullable error
     ) {
@@ -859,7 +892,12 @@ RCT_EXPORT_METHOD(setLanguageCode:
   (FIRApp *) firebaseApp
     :(NSString *) code
 ) {
-  [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    if(code){
+        [FIRAuth authWithApp:firebaseApp].languageCode = code;
+    } else {
+        [[FIRAuth authWithApp:firebaseApp] useAppLanguage];
+    }
+  
 }
 
 RCT_EXPORT_METHOD(useDeviceLanguage:
@@ -886,10 +924,21 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   }];
 }
 
+RCT_EXPORT_METHOD(useEmulator:
+  (FIRApp *) firebaseApp
+    :(nonnull NSString *)host
+    :(NSInteger)port
+) {
+      [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
+}
+
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
 
-  if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+  // First check if we cached an authToken
+  if (credentials[authToken] != nil && ![credentials[authToken] isEqual:[NSNull null]]) {
+      credential = credentials[authToken];
+  } else if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
   } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
@@ -946,6 +995,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
       @"code": [jsError valueForKey:@"code"],
       @"message": [jsError valueForKey:@"message"],
       @"nativeErrorMessage": [jsError valueForKey:@"nativeErrorMessage"],
+      @"authCredential": [jsError valueForKey:@"authCredential"],
   }];
 }
 
@@ -1021,10 +1071,17 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
   default:break;
   }
 
+  NSDictionary *authCredentialDict = nil;
+  if ([error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey] != nil) {
+    FIRAuthCredential *authCredential = [error userInfo][FIRAuthErrorUserInfoUpdatedCredentialKey];
+    authCredentialDict = [self authCredentialToDict:authCredential];
+  }
+
   return @{
       @"code": code,
       @"message": message,
       @"nativeErrorMessage": nativeErrorMessage,
+      @"authCredential" : authCredentialDict != nil ? (id) authCredentialDict : [NSNull null],
   };
 }
 
@@ -1159,6 +1216,19 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
       keyUid: user.uid
+  };
+}
+
+- (NSDictionary*) authCredentialToDict:(FIRAuthCredential *)authCredential {
+  NSString *authCredentialHash = [NSString stringWithFormat:@"%@",  @([authCredential hash])];
+  
+  // Temporarily store the non-serializable credential for later
+  credentials[authCredentialHash] = authCredential;
+  
+  return @{
+    keyProviderId: authCredential.provider,
+    @"token": authCredentialHash,
+    @"secret": [NSNull null],
   };
 }
 

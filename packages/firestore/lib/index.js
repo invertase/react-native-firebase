@@ -84,6 +84,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.clearPersistence();
   }
 
+  async waitForPendingWrites() {
+    await this.native.waitForPendingWrites();
+  }
+
   async terminate() {
     await this.native.terminate();
   }

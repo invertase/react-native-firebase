@@ -27,8 +27,7 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 - [Cloud Functions](/functions)
 - [Cloud Storage](/storage).
 - [Instance ID](/iid).
-- [ML Kit Natural Language](/ml-language).
-- [ML Kit Vision](/ml-vision).
+- [ML](/ml).
 - [Remote Config](/remote-config).
 
 ## Initializing secondary apps
@@ -52,6 +51,47 @@ const credentials = {
 
 const config = {
   name: 'SECONDARY_APP',
+};
+
+await firebase.initializeApp(credentials, config);
+```
+
+Note that if you use multiple platforms, you will need to use the credentials relevant to that platform:
+
+```js
+import firebase from "@react-native-firebase/app";
+import { Platform } from "react-native";
+
+// Your secondary Firebase project credentials for Android...
+const androidCredentials = {
+  clientId: "",
+  appId: "",
+  apiKey: "",
+  databaseURL: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  projectId: "",
+};
+
+// Your secondary Firebase project credentials for iOS...
+const iosCredentials = {
+  clientId: "",
+  appId: "",
+  apiKey: "",
+  databaseURL: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  projectId: "",
+};
+
+// Select the relevant credentials
+const credentials = Platform.select({
+  android: androidCredentials,
+  ios: iosCredentials,
+});
+
+const config = {
+  name: "SECONDARY_APP",
 };
 
 await firebase.initializeApp(credentials, config);

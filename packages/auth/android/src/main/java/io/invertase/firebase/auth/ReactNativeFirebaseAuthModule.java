@@ -45,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -600,6 +601,52 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * verifyBeforeUpdateEmail
+   *
+   * @param promise
+   */
+  @ReactMethod
+  public void verifyBeforeUpdateEmail(
+    String appName,
+    String email,
+    ReadableMap actionCodeSettings,
+    final Promise promise
+  ) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "verifyBeforeUpdateEmail");
+
+    if (user == null) {
+      promiseNoUser(promise, false);
+      Log.e(TAG, "verifyBeforeUpdateEmail:failure:noCurrentUser");
+    } else {
+      OnCompleteListener<Void> listener = task -> {
+        if (task.isSuccessful()) {
+          Log.d(TAG, "verifyBeforeUpdateEmail:onComplete:success");
+          promiseWithUser(firebaseAuth.getCurrentUser(), promise);
+        } else {
+          Exception exception = task.getException();
+          Log.e(TAG, "verifyBeforeUpdateEmail:onComplete:failure", exception);
+          promiseRejectAuthException(promise, exception);
+        }
+      };
+
+      if (actionCodeSettings == null) {
+        user
+          .verifyBeforeUpdateEmail(email)
+          .addOnCompleteListener(getExecutor(), listener);
+      } else {
+        ActionCodeSettings settings = buildActionCodeSettings(actionCodeSettings);
+        user
+          .verifyBeforeUpdateEmail(email, settings)
+          .addOnCompleteListener(getExecutor(), listener);
+      }
+    }
+  }
+
+  /**
    * updateEmail
    *
    * @param email
@@ -944,10 +991,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(
-      mVerificationId,
-      verificationCode
-    );
+    PhoneAuthCredential credential = null;
+    try {
+      credential = PhoneAuthProvider.getCredential(
+        mVerificationId,
+        verificationCode
+      );
+    } catch (Exception e) {
+      Log.d(TAG, "confirmationResultConfirm::getCredential::failure", e);
+      promiseRejectAuthException(promise, e);
+      return;
+    }
 
     firebaseAuth.signInWithCredential(credential).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
@@ -1257,9 +1311,25 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             } else {
               Exception exception = task.getException();
               Log.e(TAG, "link:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          });
+              if (exception instanceof FirebaseAuthUserCollisionException) {
+                FirebaseAuthUserCollisionException authUserCollisionException = (FirebaseAuthUserCollisionException) exception;
+                AuthCredential updatedCredential = authUserCollisionException.getUpdatedCredential();
+                try {
+                  firebaseAuth.signInWithCredential(updatedCredential).addOnCompleteListener(getExecutor(), result -> {
+                    if (result.isSuccessful()) {
+                      promiseWithAuthResult(result.getResult(), promise);
+                    } else {
+                      promiseRejectAuthException(promise, exception);
+                    }
+                  });
+                } catch (Exception e) {
+                  // we the attempt to log in after the collision failed, reject back to JS
+                  promiseRejectAuthException(promise, exception);
+                }
+              } else {
+                promiseRejectAuthException(promise, exception);
+              }
+            }});
       } else {
         promiseNoUser(promise, true);
       }
@@ -1350,6 +1420,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         return TwitterAuthProvider.getCredential(authToken, authSecret);
       case "github.com":
         return GithubAuthProvider.getCredential(authToken);
+      case "apple.com":
+        return OAuthProvider.newCredentialBuilder(provider).setIdTokenWithRawNonce(authToken, authSecret).build();
       case "oauth":
         return OAuthProvider.getCredential(provider, authToken, authSecret);
       case "phone":
@@ -1548,7 +1620,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    firebaseAuth.setLanguageCode(code);
+    if(code == null){
+      firebaseAuth.useAppLanguage();
+    } else {
+      firebaseAuth.setLanguageCode(code);
+    }
   }
 
   /**
@@ -1583,6 +1659,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           promiseRejectAuthException(promise, exception);
         }
       });
+  }
+
+  @ReactMethod
+  public void useEmulator(String appName, String host, int port) {
+    Log.d(TAG, "useEmulator");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth.useEmulator(host, port);
   }
 
   /* ------------------

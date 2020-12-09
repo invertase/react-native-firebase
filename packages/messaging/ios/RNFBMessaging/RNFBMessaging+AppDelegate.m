@@ -107,17 +107,32 @@
   }
   #endif
   
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RNFBMessagingDidReceiveRemoteNotification" object:userInfo];
+    
   if (userInfo[@"gcm.message_id"]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+      // If app is in background state, register background task to guarantee async queues aren't frozen.
+      UIBackgroundTaskIdentifier __block backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
+            if (backgroundTaskId != UIBackgroundTaskInvalid) {
+                [application endBackgroundTask:backgroundTaskId];
+                backgroundTaskId = UIBackgroundTaskInvalid;
+            }
+      }];
       // TODO add support in a later version for calling completion handler directly from JS when user JS code complete
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (25 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         completionHandler(UIBackgroundFetchResultNewData);
+
+        // Stop background task after the longest timeout, async queue is okay to freeze again after handling period
+        if (backgroundTaskId != UIBackgroundTaskInvalid) {
+            [application endBackgroundTask:backgroundTaskId];
+            backgroundTaskId = UIBackgroundTaskInvalid;
+        }
       });
 
       // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
       // TODO   so we just delay sending the event for a few seconds as a workaround
       // TODO   most likely Remote Debugging causing bridge to be invalidated
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       });
     } else {

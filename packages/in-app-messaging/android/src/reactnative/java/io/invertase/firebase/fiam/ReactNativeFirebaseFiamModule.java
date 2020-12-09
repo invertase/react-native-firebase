@@ -55,6 +55,17 @@ public class ReactNativeFirebaseFiamModule extends ReactNativeFirebaseModule {
     });
   }
 
+  @ReactMethod
+  public void triggerEvent(String eventId, Promise promise) {
+    module.triggerEvent(eventId).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     return module.getConstants();

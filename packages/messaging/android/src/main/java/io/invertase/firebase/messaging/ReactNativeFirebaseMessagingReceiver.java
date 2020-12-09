@@ -11,6 +11,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.HashMap;
 
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.SharedUtils;
 
@@ -22,9 +23,17 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
   @Override
   public void onReceive(Context context, Intent intent) {
     Log.d(TAG, "broadcast received for message");
-
+    if (ReactNativeFirebaseApp.getApplicationContext() == null) {
+      ReactNativeFirebaseApp.setApplicationContext(context.getApplicationContext());
+    }
     RemoteMessage remoteMessage = new RemoteMessage(intent.getExtras());
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+
+    // Add a RemoteMessage if the message contains a notification payload
+    if (remoteMessage.getNotification() != null) {
+      notifications.put(remoteMessage.getMessageId(), remoteMessage);
+      ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore().storeFirebaseMessage(remoteMessage);
+    }
 
     //  |-> ---------------------
     //      App in Foreground
@@ -38,11 +47,6 @@ public class ReactNativeFirebaseMessagingReceiver extends BroadcastReceiver {
     //  |-> ---------------------
     //    App in Background/Quit
     //   ------------------------
-
-    // Add a RemoteMessage if the message contains a notification payload
-    if (remoteMessage.getNotification() != null) {
-      notifications.put(remoteMessage.getMessageId(), remoteMessage);
-    }
 
     try {
       Intent backgroundIntent = new Intent(context, ReactNativeFirebaseMessagingHeadlessService.class);

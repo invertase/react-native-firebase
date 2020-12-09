@@ -15,29 +15,31 @@
  *
  */
 
+const COLLECTION = 'firestore';
+
 describe('firestore.doc()', () => {
   it('returns a Firestore instance', () => {
-    const instance = firebase.firestore().doc('foo/bar');
+    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
     should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
   });
 
   it('returns the document id', () => {
-    const instance = firebase.firestore().doc('foo/bar');
+    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
     instance.id.should.equal('bar');
   });
 
   it('returns the parent collection reference', () => {
-    const instance = firebase.firestore().doc('foo/bar');
-    instance.parent.id.should.equal('foo');
+    const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
+    instance.parent.id.should.equal(COLLECTION);
   });
 
   it('returns the path', () => {
-    const instance1 = firebase.firestore().doc('foo/bar');
+    const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`);
     const instance2 = firebase
       .firestore()
-      .collection('foo')
+      .collection(COLLECTION)
       .doc('bar');
-    instance1.path.should.equal('foo/bar');
-    instance2.path.should.equal('foo/bar');
+    instance1.path.should.equal(`${COLLECTION}/bar`);
+    instance2.path.should.equal(`${COLLECTION}/bar`);
   });
 });

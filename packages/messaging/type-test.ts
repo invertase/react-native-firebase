@@ -30,7 +30,6 @@ console.log(messaging.firebase.SDK_VERSION);
 // checks default export supports app arg
 // console.log(defaultExport(firebase.app()).app.name);
 
-console.log(firebase.messaging().isRegisteredForRemoteNotifications);
 firebase
   .messaging()
   .subscribeToTopic('foo')

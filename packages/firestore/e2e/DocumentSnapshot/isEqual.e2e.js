@@ -14,11 +14,12 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
 describe('firestore.doc() -> snapshot.isEqual()', () => {
   it('throws if other is not a DocumentSnapshot', async () => {
     try {
-      const docRef = firebase.firestore().doc('v6/baz');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
       const docSnapshot = await docRef.get();
       docSnapshot.isEqual(123);
@@ -30,13 +31,13 @@ describe('firestore.doc() -> snapshot.isEqual()', () => {
   });
 
   it('returns false when not equal', async () => {
-    const docRef = firebase.firestore().doc('v6/isEqual-false-exists');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-false-exists`);
     await docRef.set({ foo: 'bar' });
 
     const docSnapshot1 = await docRef.get();
     const docSnapshot2 = await firebase
       .firestore()
-      .doc('v6/idonotexist')
+      .doc(`${COLLECTION}/idonotexist`)
       .get();
     await docRef.set({ foo: 'baz' });
     const docSnapshot3 = await docRef.get();
@@ -49,7 +50,7 @@ describe('firestore.doc() -> snapshot.isEqual()', () => {
   });
 
   it('returns true when equal', async () => {
-    const docRef = firebase.firestore().doc('v6/isEqual-true-exists');
+    const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-true-exists`);
     await docRef.set({ foo: 'bar' });
 
     const docSnapshot = await docRef.get();

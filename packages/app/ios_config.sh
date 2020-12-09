@@ -94,7 +94,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_MESSAGING_AUTO_INIT")")
   fi
 
-  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes usful
+  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful
   _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "crashlytics_disable_auto_disabler")
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
     echo "Disabled Crashlytics auto disabler." # do nothing
@@ -137,7 +137,7 @@ for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
   if [[ -f "${plist}" ]]; then
 
     # paths with spaces break the call to setPlistValue. temporarily modify
-    # the shell internal field separator variable (IFS), which normally 
+    # the shell internal field separator variable (IFS), which normally
     # includes spaces, to consist only of line breaks
     oldifs=$IFS
     IFS="
@@ -155,4 +155,3 @@ for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
 done
 
 echo "info: <- RNFB build script finished"
-

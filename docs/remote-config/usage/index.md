@@ -3,7 +3,7 @@ title: Remote Config
 description: Installation and getting started with Remote Config.
 icon: //static.invertase.io/assets/firebase/remote-config.svg
 next: /perf/usage
-previous: /ml-vision/face-detection
+previous: /ml/image-labeling
 ---
 
 # Installation
@@ -82,11 +82,13 @@ remoteConfig()
     awesome_new_feature: 'disabled',
   })
   .then(() => remoteConfig().fetchAndActivate())
-  .then(activated => {
-    if (activated) {
-      console.log('Defaults set, fetched & activated!');
+  .then(fetchedRemotely => {
+    if (fetchedRemotely) {
+      console.log('Configs were retrieved from the backend and activated.');
     } else {
-      console.log('Defaults set, however activation failed.');
+      console.log(
+        'No configs were fetched from the backend, and the local configs were already activated',
+      );
     }
   });
 ```
@@ -94,12 +96,24 @@ remoteConfig()
 ## Reading values
 
 With the defaults set and the remote values fetched from Firebase, we can now use the `getValue` method to get the
-value by it's key. For example...
+value and use a number of methods to retrieve the value (same API as Firebase Remote Config web SDK)
 
 ```js
 const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
 
-if (awesomeNewFeature.value === 'enabled') {
+// resolves value to string
+if (awesomeNewFeature.asString() === 'enabled') {
+  enableAwesomeNewFeature();
+}
+// resolves value to number
+// if it is not a number or source is 'static', the value will be 0
+if (awesomeNewFeature.asNumber() === 5) {
+  enableAwesomeNewFeature();
+}
+// resolves value to boolean
+// if value is any of the following: '1', 'true', 't', 'yes', 'y', 'on', it will resolve to true
+// if source is 'static', value will be false
+if (awesomeNewFeature.asBoolean() === true) {
   enableAwesomeNewFeature();
 }
 ```
@@ -109,9 +123,11 @@ The API also provides a `getAll` method to read all parameters at once rather th
 ```js
 const parameters = remoteConfig().getAll();
 
-Object.entries(parameters).forEach(([key, parameter]) => {
+Object.entries(parameters).forEach($ => {
+  const [key, entry] = $;
   console.log('Key: ', key);
-  console.log('Value: ', parameter.value);
+  console.log('Source: ', entry.getSource());
+  console.log('Value: ', entry.asString());
 });
 ```
 
@@ -119,14 +135,14 @@ Object.entries(parameters).forEach(([key, parameter]) => {
 
 When a value is read, it contains source data about the parameter. As explained above, if a value is read before it has
 been fetched & activated then the value will fallback to the default value set. If you need to validate whether the value
-returned from the module was local or remote, the `source` property can be conditionally checked:
+returned from the module was local or remote, the `getSource()` method can be conditionally checked:
 
 ```js
 const awesomeNewFeature = remoteConfig().getValue('awesome_new_feature');
 
-if (awesomeNewFeature.source === 'remote') {
+if (awesomeNewFeature.getSource() === 'remote') {
   console.log('Parameter value was from the Firebase servers.');
-} else if (awesomeNewFeature.source === 'default') {
+} else if (awesomeNewFeature.getSource() === 'default') {
   console.log('Parameter value was from a default value.');
 } else {
   console.log('Parameter value was from a locally cached value.');
@@ -150,23 +166,10 @@ await remoteConfig().fetch(300);
 To bypass caching fully, you can pass a value of `0`. Be warned Firebase may start to reject your requests
 if values are requested too frequently.
 
-You can also apply a global cache frequency by calling the `setConfigSettings` method with the `minimumFetchInterval` property:
+You can also apply a global cache frequency by calling the `setConfigSettings` method with the `minimumFetchIntervalMillis` property:
 
 ```js
 await remoteConfig().setConfigSettings({
-  minimumFetchInterval: 300,
-});
-```
-
-## Developer Mode
-
-Whilst developing your application, you may wish to frequently test how changing parameters impacts your application.
-The API provides a way to enable developer mode which bypasses caching all together.
-
-Set the `isDeveloperModeEnabled` flag to `true`:
-
-```js
-await remoteConfig().setConfigSettings({
-  isDeveloperModeEnabled: true,
+  minimumFetchIntervalMillis: 30000,
 });
 ```
