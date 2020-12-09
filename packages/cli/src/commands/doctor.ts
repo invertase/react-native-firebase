@@ -92,8 +92,8 @@ export default async function doctorCommand(
     android:
       options.platform == 'android' || options.platform == 'all' || options.platform == 'prompt',
     ios:
-      false && // not supported
-      (options.platform == 'ios' || options.platform == 'all' || options.platform == 'prompt'),
+      // false && // not supported
+      options.platform == 'ios' || options.platform == 'all' || options.platform == 'prompt',
     web:
       false && // not supported
       (options.platform == 'web' || options.platform == 'all' || options.platform == 'prompt'),

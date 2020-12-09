@@ -77,7 +77,7 @@
     "jest": "^25.5.1",
     "prettier": "^1.19.1",
     "shelljs": "^0.8.3",
-    "ts-jest": "^25.4.0",
+    "ts-jest": "^25.4.0"
   },
   "resolutions": {
     "@types/react": "^16.9.49"
