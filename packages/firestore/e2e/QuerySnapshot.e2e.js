@@ -210,6 +210,7 @@ describe('firestore.QuerySnapshot', () => {
       snapshot.forEach.should.be.Function();
       class Foo {}
       snapshot.forEach(callback, Foo);
+      await Utils.spyToBeCalledOnceAsync(callback, 20000);
       callback.should.be.calledOnce();
       callback.firstCall.thisValue.should.eql(Foo);
     });

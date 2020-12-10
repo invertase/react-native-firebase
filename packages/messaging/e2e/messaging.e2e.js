@@ -39,6 +39,10 @@ describe('messaging()', () => {
       should.equal(firebase.messaging().isAutoInitEnabled, true);
       await firebase.messaging().setAutoInitEnabled(false);
       should.equal(firebase.messaging().isAutoInitEnabled, false);
+
+      // Set it back to the default value for future runs in re-use mode
+      await firebase.messaging().setAutoInitEnabled(true);
+      should.equal(firebase.messaging().isAutoInitEnabled, true);
     });
   });
 

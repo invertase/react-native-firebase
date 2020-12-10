@@ -17,7 +17,7 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 describe('firestore().collection().where()', () => {
-  before(() => wipe());
+  beforeEach(async () => await wipe());
   it('throws if fieldPath is invalid', () => {
     try {
       firebase
@@ -339,9 +339,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit('returns with in filter', async () => {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in`);
+  it('returns with in filter', async () => {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in${Date.now() + ''}`);
 
     await Promise.all([
       colRef.add({ status: 'Ordered' }),
@@ -359,9 +358,10 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit('returns with array-contains-any filter', async () => {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains-any`);
+  it('returns with array-contains-any filter', async () => {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/array-contains-any${Date.now() + ''}`);
 
     await Promise.all([
       colRef.add({ category: ['Appliances', 'Housewares', 'Cooking'] }),
@@ -375,9 +375,10 @@ describe('firestore().collection().where()', () => {
     snapshot.size.should.eql(3); // 2nd record should only be returned once
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit('returns with a FieldPath', async () => {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/where-fieldpath`);
+  it('returns with a FieldPath', async () => {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/where-fieldpath${Date.now() + ''}`);
     const fieldPath = new firebase.firestore.FieldPath('map', 'foo.bar@gmail.com');
 
     await colRef.add({
@@ -412,9 +413,8 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit('should correctly query integer values with in operator', async () => {
-    const ref = firebase.firestore().collection(COLLECTION);
+  it('should correctly query integer values with in operator', async () => {
+    const ref = firebase.firestore().collection(`${COLLECTION}/filter/int-in${Date.now() + ''}`);
 
     await ref.add({ status: 1 });
 
@@ -427,9 +427,10 @@ describe('firestore().collection().where()', () => {
     items.length.should.equal(1);
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit('should correctly query integer values with array-contains operator', async () => {
-    const ref = firebase.firestore().collection(COLLECTION);
+  it('should correctly query integer values with array-contains operator', async () => {
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/int-array-contains${Date.now() + ''}`);
 
     await ref.add({ status: [1, 2, 3] });
 
@@ -442,9 +443,8 @@ describe('firestore().collection().where()', () => {
     items.length.should.equal(1);
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit("should correctly retrieve data when using 'not-in' operator", async () => {
-    const ref = firebase.firestore().collection(COLLECTION);
+  it("should correctly retrieve data when using 'not-in' operator", async () => {
+    const ref = firebase.firestore().collection(`${COLLECTION}/filter/not-in${Date.now() + ''}`);
 
     await Promise.all([ref.add({ notIn: 'here' }), ref.add({ notIn: 'now' })]);
 
@@ -519,9 +519,10 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  // FIXME flaky with semi-persistent data until emulator is working
-  xit("should correctly retrieve data when using '!=' operator", async () => {
-    const ref = firebase.firestore().collection(COLLECTION);
+  it("should correctly retrieve data when using '!=' operator", async () => {
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/bang-equals${Date.now() + ''}`);
 
     await Promise.all([ref.add({ notEqual: 'here' }), ref.add({ notEqual: 'now' })]);
 
@@ -578,7 +579,9 @@ describe('firestore().collection().where()', () => {
   });
 
   it('should handle where clause after sort by', async () => {
-    const ref = firebase.firestore().collection(`${COLLECTION}/filter/sort-by-where`);
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/sort-by-where${Date.now() + ''}`);
 
     await ref.add({ status: 1 });
     await ref.add({ status: 2 });
