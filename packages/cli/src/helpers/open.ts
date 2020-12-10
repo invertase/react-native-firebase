@@ -7,24 +7,24 @@ import { execSync } from 'child_process';
  * @returns {*|void}
  */
 function openUrl(url: string) {
-  const open = require('open');
+    const open = require('open');
 
-  if (process.platform !== 'darwin') {
-    return open(url);
-  }
+    if (process.platform !== 'darwin') {
+        return open(url);
+    }
 
-  // try reuse existing tab on OS X Google Chrome with AppleScript
-  try {
-    execSync('ps cax | grep "Google Chrome"');
-    execSync(`osascript openChrome.applescript "${url}"`, {
-      cwd: `${__dirname}/scripts`,
-      stdio: 'ignore',
-    });
-  } catch (err) {
-    // ignore errors.
-  }
+    // try reuse existing tab on OS X Google Chrome with AppleScript
+    try {
+        execSync('ps cax | grep "Google Chrome"');
+        execSync(`osascript openChrome.applescript "${url}"`, {
+            cwd: `${__dirname}/scripts`,
+            stdio: 'ignore',
+        });
+    } catch (err) {
+        // ignore errors.
+    }
 }
 
 export default {
-  openUrl,
+    openUrl,
 };

@@ -48,66 +48,66 @@ import CliError from '../helpers/error';
 import handleFirebaseConfig from '../actions/handleFirebase';
 
 export default async function initCommand(
-  args: string[],
-  reactNativeConfig: Config,
-  options: CliOptions,
+    args: string[],
+    reactNativeConfig: Config,
+    options: CliOptions,
 ) {
-  log.debug('Running "firebase init" command...');
-  trackModified(options.force);
+    log.debug('Running "firebase init" command...');
+    trackModified(options.force);
 
-  if (
-    !(await prompt.confirm(
-      'This command is a work in progress, are you sure you want to continue?',
-    ))
-  )
-    return;
+    if (
+        !(await prompt.confirm(
+            'This command is a work in progress, are you sure you want to continue?',
+        ))
+    )
+        return;
 
-  const account = await getAccount();
+    const account = await getAccount();
 
-  let apps: Apps;
-  if (options.platform == 'prompt') {
-    apps = {
-      android: await prompt.confirm('Do you want to setup Android for your app?'),
-      ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not supported
-      web: false && (await prompt.confirm('Do you want to setup web for your app?')), // not supported
-    };
-  } else {
-    apps = {
-      android: options.platform == 'android' || options.platform == 'all',
-      ios:
-        false && // not supported
-        (options.platform == 'ios' || options.platform == 'all'),
-      web:
-        false && // not supported
-        (options.platform == 'web' || options.platform == 'all'),
-    };
-  }
+    let apps: Apps;
+    if (options.platform == 'prompt') {
+        apps = {
+            android: await prompt.confirm('Do you want to setup Android for your app?'),
+            ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not supported
+            web: false && (await prompt.confirm('Do you want to setup web for your app?')), // not supported
+        };
+    } else {
+        apps = {
+            android: options.platform == 'android' || options.platform == 'all',
+            ios:
+                false && // not supported
+                (options.platform == 'ios' || options.platform == 'all'),
+            web:
+                false && // not supported
+                (options.platform == 'web' || options.platform == 'all'),
+        };
+    }
 
-  // Quit if no apps need to be setup
-  if (!Object.values(apps).includes(true)) {
-    log.info('No apps are required to be setup, exiting...');
-    return;
-  }
+    // Quit if no apps need to be setup
+    if (!Object.values(apps).includes(true)) {
+        log.info('No apps are required to be setup, exiting...');
+        return;
+    }
 
-  // ask user to choose a project
-  const firebaseProject = await prompt.selectFirebaseProject(account);
+    // ask user to choose a project
+    const firebaseProject = await prompt.selectFirebaseProject(account);
 
-  // if no project exists - ask them to create one
-  if (!firebaseProject) {
-    throw new CliError(
-      `No Firebase projects exist for user ${Chalk.cyanBright(
-        `[${account.user.email}]. To continue, create a new project on the Firebase Console at https://console.firebase.google.com/.`,
-      )}`,
-    );
-  }
+    // if no project exists - ask them to create one
+    if (!firebaseProject) {
+        throw new CliError(
+            `No Firebase projects exist for user ${Chalk.cyanBright(
+                `[${account.user.email}]. To continue, create a new project on the Firebase Console at https://console.firebase.google.com/.`,
+            )}`,
+        );
+    }
 
-  // Fetch project detail including apps config
-  const projectDetail = await firebase
-    .api(account)
-    .management.getProject(firebaseProject.projectId, apps);
+    // Fetch project detail including apps config
+    const projectDetail = await firebase
+        .api(account)
+        .management.getProject(firebaseProject.projectId, apps);
 
-  await handleFirebaseConfig(reactNativeConfig, apps);
+    await handleFirebaseConfig(reactNativeConfig, apps);
 
-  if (apps.android) await initAndroid(account, projectDetail, reactNativeConfig);
-  if (apps.ios) await initIos(account, projectDetail, reactNativeConfig);
+    if (apps.android) await initAndroid(account, projectDetail, reactNativeConfig);
+    if (apps.ios) await initIos(account, projectDetail, reactNativeConfig);
 }

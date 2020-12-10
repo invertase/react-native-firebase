@@ -5,12 +5,14 @@ import { Account, Project } from '../types/firebase';
 const { prompt, AutoComplete } = require('enquirer');
 
 async function input(message: string, prefix?: string): Promise<string> {
-  return (await prompt({
-    message,
-    type: 'input',
-    name: 'value',
-    prefix: `[${prefix || '🤔'}]`,
-  })).value;
+    return (
+        await prompt({
+            message,
+            type: 'input',
+            name: 'value',
+            prefix: `[${prefix || '🤔'}]`,
+        })
+    ).value;
 }
 
 /**
@@ -21,13 +23,15 @@ async function input(message: string, prefix?: string): Promise<string> {
  * @returns {Promise<boolean>}
  */
 async function confirm(message: string, prefix?: string): Promise<boolean> {
-  return (await prompt({
-    message,
-    type: 'confirm',
-    prefix: `[${prefix || '🤔'}]`,
-    initial: true,
-    name: 'confirmed',
-  })).confirmed;
+    return (
+        await prompt({
+            message,
+            type: 'confirm',
+            prefix: `[${prefix || '🤔'}]`,
+            initial: true,
+            name: 'confirmed',
+        })
+    ).confirmed;
 }
 
 /**
@@ -39,24 +43,26 @@ async function confirm(message: string, prefix?: string): Promise<boolean> {
  * @returns {Promise<*>}
  */
 async function selectOneFromArray(
-  message: string,
-  choices: {
-    name: string;
-    value: number;
-  }[],
-  prefix: string = '🔥',
+    message: string,
+    choices: {
+        name: string;
+        value: number;
+    }[],
+    prefix = '🔥',
 ): Promise<number> {
-  const prompt = new AutoComplete({
-    choices,
-    message,
-    name: 'choice',
-    limit: 6,
-    prefix: `[${prefix}]`,
-    footer: Chalk.bgGreen(
-      Chalk.grey('Start typing to filter choices, use arrow keys to navigate & ENTER to select'),
-    ),
-  });
-  return prompt.run();
+    const prompt = new AutoComplete({
+        choices,
+        message,
+        name: 'choice',
+        limit: 6,
+        prefix: `[${prefix}]`,
+        footer: Chalk.bgGreen(
+            Chalk.grey(
+                'Start typing to filter choices, use arrow keys to navigate & ENTER to select',
+            ),
+        ),
+    });
+    return prompt.run();
 }
 
 /**
@@ -69,22 +75,24 @@ async function selectOneFromArray(
  * @returns {Promise<*>}
  */
 async function selectOneFromAutoComplete(
-  message: string,
-  source?: (answersSoFar: string[], input: string) => Promise<unknown>, // todo proper type
-  prefix = '',
-  suggestOnly?: boolean,
+    message: string,
+    source?: (answersSoFar: string[], input: string) => Promise<unknown>, // todo proper type
+    prefix = '',
+    suggestOnly?: boolean,
 ) {
-  return (await prompt({
-    message,
-    type: 'autocomplete',
-    name: 'choice',
-    pageSize: 12,
-    prefix: `[${prefix}]`,
-    source: async (answersSoFar: string[], input: string) => {
-      return source ? await source(answersSoFar, input) : () => {};
-    },
-    suggestOnly: !!suggestOnly,
-  })).choice;
+    return (
+        await prompt({
+            message,
+            type: 'autocomplete',
+            name: 'choice',
+            pageSize: 12,
+            prefix: `[${prefix}]`,
+            source: async (answersSoFar: string[], input: string) => {
+                return source ? await source(answersSoFar, input) : () => {};
+            },
+            suggestOnly: !!suggestOnly,
+        })
+    ).choice;
 }
 
 /**
@@ -93,32 +101,32 @@ async function selectOneFromAutoComplete(
  * @returns {Promise<*>}
  */
 async function selectFirebaseProject(account: Account): Promise<Project | null> {
-  const accountProjects = await Firebase.api(
-    account || Firebase.auth.getAccount(),
-  ).management.getProjects();
+    const accountProjects = await Firebase.api(
+        account || Firebase.auth.getAccount(),
+    ).management.getProjects();
 
-  if (!accountProjects.length) {
-    return null;
-  }
+    if (!accountProjects.length) {
+        return null;
+    }
 
-  const choices = accountProjects.map((project: Project, i: number) => ({
-    name:
-      project.displayName !== project.projectId
-        ? `${project.displayName} (${project.projectId})`
-        : project.displayName,
-    value: i,
-  }));
+    const choices = accountProjects.map((project: Project, i: number) => ({
+        name:
+            project.displayName !== project.projectId
+                ? `${project.displayName} (${project.projectId})`
+                : project.displayName,
+        value: i,
+    }));
 
-  if (!choices.length) {
-    return null;
-  }
+    if (!choices.length) {
+        return null;
+    }
 
-  const projectIndex = await selectOneFromArray(
-    `Select a Firebase ${Chalk.cyanBright('[projectId]')}:`,
-    choices,
-  );
+    const projectIndex = await selectOneFromArray(
+        `Select a Firebase ${Chalk.cyanBright('[projectId]')}:`,
+        choices,
+    );
 
-  return accountProjects[projectIndex];
+    return accountProjects[projectIndex];
 }
 
 /**
@@ -126,75 +134,75 @@ async function selectFirebaseProject(account: Account): Promise<Project | null> 
  *
  * @returns {Promise<*>}
  */
-async function selectFirebaseAccount(allowAll: boolean = false, promptToAdd: boolean = true) {
-  let accounts = Firebase.auth.getAccounts();
+async function selectFirebaseAccount(allowAll = false, promptToAdd = true) {
+    let accounts = Firebase.auth.getAccounts();
 
-  if (promptToAdd) {
-    // only one account so default to that one
-    if (accounts.length === 1) {
-      if (
-        !(await module.exports.confirm(
-          'You only have one account to select from. Add another Firebase account?',
-        ))
-      ) {
-        return accounts[0];
-      }
+    if (promptToAdd) {
+        // only one account so default to that one
+        if (accounts.length === 1) {
+            if (
+                !(await module.exports.confirm(
+                    'You only have one account to select from. Add another Firebase account?',
+                ))
+            ) {
+                return accounts[0];
+            }
 
-      await Firebase.auth.authWithBrowser();
+            await Firebase.auth.authWithBrowser();
 
-      accounts = Firebase.auth.getAccounts();
+            accounts = Firebase.auth.getAccounts();
+        }
+
+        // no accounts so ask to add one
+        if (!accounts.length) {
+            if (
+                await module.exports.confirm(
+                    'No accounts found - would you like to add a new Firebase Console account?',
+                )
+            ) {
+                await Firebase.auth.authWithBrowser();
+            } else {
+                return null;
+            }
+
+            accounts = Firebase.auth.getAccounts();
+
+            // only one account so default to that one
+            if (accounts.length === 1) {
+                return accounts[0];
+            }
+        }
     }
 
-    // no accounts so ask to add one
-    if (!accounts.length) {
-      if (
-        await module.exports.confirm(
-          'No accounts found - would you like to add a new Firebase Console account?',
-        )
-      ) {
-        await Firebase.auth.authWithBrowser();
-      } else {
-        return null;
-      }
+    let choices = accounts.map((account: any, i: number) => {
+        if (account === 'all') {
+            return { name: account, value: i };
+        }
+        const { user } = account;
+        return {
+            name: user.email,
+            value: allowAll ? i + 1 : i,
+        };
+    });
 
-      accounts = Firebase.auth.getAccounts();
-
-      // only one account so default to that one
-      if (accounts.length === 1) {
-        return accounts[0];
-      }
+    if (allowAll) {
+        choices = [
+            {
+                name: 'all',
+                value: 0,
+            },
+            ...choices,
+        ];
     }
-  }
 
-  let choices = accounts.map((account: any, i: number) => {
-    if (account === 'all') {
-      return { name: account, value: i };
-    }
-    const { user } = account;
-    return {
-      name: user.email,
-      value: allowAll ? i + 1 : i,
-    };
-  });
-
-  if (allowAll) {
-    choices = [
-      {
-        name: 'all',
-        value: 0,
-      },
-      ...choices,
-    ];
-  }
-
-  return accounts[await selectOneFromArray('Select a Firebase Console account:', choices, '🔐')];
+    return accounts[await selectOneFromArray('Select a Firebase Console account:', choices, '🔐')];
 }
 
 export default {
-  input,
-  confirm,
-  selectOneFromArray,
-  selectOneFromAutoComplete,
-  selectFirebaseProject,
-  selectFirebaseAccount,
+    input,
+    confirm,
+    selectOneFromArray,
+    selectOneFromAutoComplete,
+    selectFirebaseProject,
+    selectFirebaseAccount,
 };

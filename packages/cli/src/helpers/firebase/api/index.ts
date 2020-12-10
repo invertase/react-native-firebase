@@ -9,17 +9,17 @@ const API_INSTANCE_CACHE: { [key: string]: any } = {}; // todo any type
  * @return {*}
  */
 function apiForAccount(account: Account) {
-  if (API_INSTANCE_CACHE[account.user.sub]) {
-    return API_INSTANCE_CACHE[account.user.sub];
-  }
+    if (API_INSTANCE_CACHE[account.user.sub]) {
+        return API_INSTANCE_CACHE[account.user.sub];
+    }
 
-  const newInstance = {
-    management: require('./management').default(account),
-  };
+    const newInstance = {
+        management: require('./management').default(account),
+    };
 
-  API_INSTANCE_CACHE[account.user.sub] = newInstance;
+    API_INSTANCE_CACHE[account.user.sub] = newInstance;
 
-  return newInstance;
+    return newInstance;
 }
 
 export default apiForAccount;
