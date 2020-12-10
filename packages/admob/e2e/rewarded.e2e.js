@@ -51,6 +51,10 @@ describe('admob() RewardedAd', () => {
     });
 
     it('loads with requestOptions', async () => {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED, {
@@ -68,7 +72,7 @@ describe('admob() RewardedAd', () => {
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy, 20000);
+      await Utils.spyToBeCalledOnceAsync(spy, 30000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('rewarded_loaded');
@@ -112,6 +116,10 @@ describe('admob() RewardedAd', () => {
     });
 
     it('unsubscribe should prevent events', async () => {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
       const i = RewardedAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(spy);
@@ -122,6 +130,10 @@ describe('admob() RewardedAd', () => {
     });
 
     it('loads with a valid ad unit id', async () => {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED);

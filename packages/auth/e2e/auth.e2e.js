@@ -217,8 +217,7 @@ describe('auth()', () => {
 
     it('accept observer instead callback as well', async () => {
       await firebase.auth().signInAnonymously();
-
-      await Utils.sleep(50);
+      await Utils.sleep(200);
 
       // Test
       const observer = {
@@ -253,6 +252,7 @@ describe('auth()', () => {
 
     it('stops listening when unsubscribed', async () => {
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Test
       const callback = sinon.spy();
@@ -269,30 +269,23 @@ describe('auth()', () => {
       callback.should.be.calledOnce();
 
       // Sign out
-
       await firebase.auth().signOut();
-
       await Utils.sleep(50);
 
       // Assertions
-
       callback.should.be.calledWith(null);
       callback.should.be.calledTwice();
 
       // Unsubscribe
-
       unsubscribe();
 
       // Sign back in
-
       await firebase.auth().signInAnonymously();
 
       // Assertions
-
       callback.should.be.calledTwice();
 
       // Tear down
-
       await firebase.auth().signOut();
       await Utils.sleep(50);
     });
@@ -350,6 +343,7 @@ describe('auth()', () => {
   describe('onIdTokenChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Test
       const callback = sinon.spy();
@@ -366,22 +360,20 @@ describe('auth()', () => {
       callback.should.be.calledOnce();
 
       // Sign out
-
       await firebase.auth().signOut();
       await Utils.sleep(50);
 
       // Assertions
-
       callback.should.be.calledWith(null);
       callback.should.be.calledTwice();
 
       // Tear down
-
       unsubscribe();
     });
 
     it('stops listening when unsubscribed', async () => {
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Test
       const callback = sinon.spy();
@@ -398,29 +390,23 @@ describe('auth()', () => {
       callback.should.be.calledOnce();
 
       // Sign out
-
       await firebase.auth().signOut();
       await Utils.sleep(50);
 
       // Assertions
-
       callback.should.be.calledWith(null);
       callback.should.be.calledTwice();
 
       // Unsubscribe
-
       unsubscribe();
 
       // Sign back in
-
       await firebase.auth().signInAnonymously();
 
       // Assertions
-
       callback.should.be.calledTwice();
 
       // Tear down
-
       await firebase.auth().signOut();
       await Utils.sleep(50);
     });
@@ -444,6 +430,7 @@ describe('auth()', () => {
   describe('onUserChanged()', () => {
     it('calls callback with the current user and when auth state changes', async () => {
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Test
       const callback = sinon.spy();
@@ -460,13 +447,10 @@ describe('auth()', () => {
       callback.should.be.calledOnce();
 
       // Sign out
-
       await firebase.auth().signOut();
-
       await Utils.sleep(500);
 
       // Assertions
-
       callback.should.be.calledWith(null);
       // Because of the way onUserChanged works, it will be called double
       // - once for onAuthStateChanged
@@ -474,12 +458,12 @@ describe('auth()', () => {
       callback.should.have.callCount(4);
 
       // Tear down
-
       unsubscribe();
     });
 
     it('stops listening when unsubscribed', async () => {
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Test
       const callback = sinon.spy();
@@ -496,12 +480,10 @@ describe('auth()', () => {
       callback.should.be.calledOnce();
 
       // Sign out
-
       await firebase.auth().signOut();
-      await Utils.sleep(50);
+      await Utils.sleep(200);
 
       // Assertions
-
       callback.should.be.calledWith(null);
       // Because of the way onUserChanged works, it will be called double
       // - once for onAuthStateChanged
@@ -509,19 +491,16 @@ describe('auth()', () => {
       callback.should.have.callCount(4);
 
       // Unsubscribe
-
       unsubscribe();
 
       // Sign back in
-
       await firebase.auth().signInAnonymously();
+      await Utils.sleep(200);
 
       // Assertions
-
       callback.should.have.callCount(4);
 
       // Tear down
-
       await firebase.auth().signOut();
     });
   });
