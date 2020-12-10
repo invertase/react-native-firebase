@@ -482,9 +482,11 @@ export namespace FirebaseAdMobTypes {
      * If using a real device to test, ensure the device ID is provided to the Google AdMob SDK so any mock debug locations
      * can take effect.
      *
-     * Emulators are automatically whitelisted and require no action.
+     * Emulators are automatically whitelisted and should require no action.
      *
-     * If you are unsure of how to obtain a device ID, see [react-native-device-info](https://github.com/react-native-community/react-native-device-info).
+     * If you are seeing real ad activity from a test device, examine logcat / console
+     * during execution in association with admob test device documentation to
+     * configure your device correctly.
      *
      * @param deviceIds An array of testing device ID.
      */
