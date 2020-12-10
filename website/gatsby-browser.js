@@ -33,7 +33,7 @@ exports.onPreRouteUpdate = () => {
   // window.RNFB_SIDEBAR_SCROLL_POSITION = sidebar ? sidebar.scrollTop : 0;
 };
 
-exports.onRouteUpdate = ({ location }) => {
+exports.onRouteUpdate = () => {
   // Handle in-page hash change
   // if (location.hash) {
   //   const el = window.document.getElementById(location.hash.replace('#', ''));
