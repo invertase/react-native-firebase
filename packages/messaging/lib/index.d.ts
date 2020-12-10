@@ -996,21 +996,5 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       messaging(): FirebaseMessagingTypes.Module;
     }
-
-    interface FirebaseJsonConfig {
-      messaging_auto_init_enabled?: boolean;
-      messaging_android_headless_task_timeout?: number;
-      messaging_android_notification_channel_id?: string;
-      messaging_android_notification_color?: string;
-      /**
-       * Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`
-       * automatically on app launch (recommended) - defaults to true.
-       *
-       * If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`
-       * early on in your app startup - otherwise you will NOT receive remote messages/notifications
-       * in your app.
-       */
-      messaging_ios_auto_register_for_remote_messages?: boolean;
-    }
   }
 }

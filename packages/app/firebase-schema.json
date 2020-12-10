@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "react-native": {
+      "type": "object",
+      "properties": {
+        "admob_android_app_id": {
+          "type": "string",
+          "description": "The Google AdMob application App ID for Android.\n This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.\n For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`."
+        },
+        "admob_ios_app_id": {
+          "type": "string",
+          "description": "The Google AdMob application App ID for iOS.\n This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.\n For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`."
+        },
+        "admob_delay_app_measurement_init": {
+          "description": "By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metricswithout making additional code changes.\n If you require your app users to provide consent before collecting data, setting the value to `true` will preventdata being sent until the `firebase.admob().initialize()` method has been called.",
+          "type": "string"
+        },
+        "analytics_auto_collection_enabled": {
+          "description": "Disable or enable auto collection of analytics data.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. This can be overridden in JavaScript. \n Re-enable analytics data collection, e.g. once user has granted permission.",
+          "type": "boolean"
+        },
+        "crashlytics_auto_collection_enabled": {
+          "description": "Additionally, you can configure whether Crashlytics sends out any reports through the auto_collection_enabled option in your firebase.json config. If you want users to opt-in, it is recommended that you disable this here and enable it later through the method once they opt-in.",
+          "type": "boolean"
+        },
+        "crashlytics_debug_enabled": {
+          "description": "Because you have stack traces readily available while you`re debugging your app, Crashlytics is disabled by default in debug mode. You can set Crashlytics to be enabled regardless of debug mode through the debug_enabled option in your firebase.json.",
+          "type": "boolean"
+        },
+        "crashlytics_ndk_enabled": {
+          "description": "React Native Firebase supports Crashlytics NDK reporting which is enabled by default. This allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native. You can disable Crashlytics NDK in your firebase.json config.",
+          "type": "boolean"
+        },
+        "database_persistence_enabled": {
+          "description": "Set whether database persistence is enabled or disabled.\n This can be overridden in JavaScript, e.g. when requesting permission or on a condition.",
+          "type": "boolean"
+        },
+        "in_app_messaging_auto_collection_enabled": {
+          "description": "In App Messaging can be further configured to enable or disable automatic data collection for Firebase In-App Messaging. This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. This can be overridden in JavaScript.",
+          "type": "boolean"
+        },
+        "messaging_auto_init_enabled": {
+          "description": "Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection. When an Instance ID is generated, the library will upload the identifier and configuration data to Firebase. In most cases, you do not need to change this behavior. \nIf you prefer to prevent Instance ID auto-generation, disable auto initialization for FCM and Analytics",
+          "type": "boolean"
+        },
+        "messaging_android_headless_task_timeout": {
+          "description": "On Android, a background event sent to setBackgroundMessageHandler has 60 seconds to resolve before it is automatically canceled to free up device resources. If you wish to override this value, set the number of milliseconds in your config.",
+          "type": "number",
+          "minimum": 0
+        },
+        "messaging_android_notification_channel_id": {
+          "description": "On Android, any message which displays a Notification use a default Notification Channel (created by FCM called `Miscellaneous`). This channel contains basic notification settings which may not be appropriate for your application. You can change what Channel is used by updating the `messaging_android_notification_channel_id` property.",
+          "type": "string"
+        },
+        "messaging_android_notification_color": {
+          "description": "On Android, any messages which display a Notification do not use a color to tint the content (such as the small icon, title etc). To provide a custom tint color, update the messaging_android_notification_color property with a Android color resource name. \n The library provides a set of predefined colors corresponding to the HTML colors for convenience",
+          "type": "string"
+        },
+        "messaging_ios_auto_register_for_remote_messages": {
+          "description": "Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`\nautomatically on app launch (recommended) - defaults to true.\n If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`\nearly on in your app startup - otherwise you will NOT receive remote messages/notifications\nin your app.\n",
+          "type": "boolean"
+        },
+        "perf_auto_collection_enabled": {
+          "description": "Disable or enable auto collection of performance monitoring data collection.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.\nThis can be overridden in JavaScript.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
