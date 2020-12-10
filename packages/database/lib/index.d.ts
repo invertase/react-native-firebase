@@ -1278,30 +1278,5 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       database(databaseUrl?: string): FirebaseDatabaseTypes.Module;
     }
-
-    interface FirebaseJsonConfig {
-      /**
-       * Set whether database persistence is enabled or disabled.
-       *
-       * This can be overridden in JavaScript, e.g. when requesting permission or on a condition.
-       *
-       * #### Example
-       *
-       * ```json
-       * // <project-root>/firebase.json
-       * {
-       *   "react-native": {
-       *     "database_persistence_enabled": false
-       *   }
-       * }
-       * ```
-       *
-       * ```js
-       * // Re-enable database persistence
-       * await firebase.database().setPersistenceEnabled(true);
-       * ```
-       */
-      database_persistence_enabled: boolean;
-    }
   }
 }

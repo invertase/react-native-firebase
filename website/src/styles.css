@@ -55,6 +55,10 @@ table {
   tbody tr:nth-child(even) {
     @apply bg-gray-100;
   }
+
+  p {
+    word-break: break-word;
+  }
 }
 
 h1 code,
@@ -66,6 +70,7 @@ h6 code {
   font-size: 0.9em;
   padding: 0 6px;
 }
+
 
 .parameter {
   @apply text-blue-500;

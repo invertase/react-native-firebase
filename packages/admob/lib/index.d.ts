@@ -1227,39 +1227,5 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       admob(): FirebaseAdMobTypes.Module;
     }
-
-    interface FirebaseJsonConfig {
-      /**
-       * The Google AdMob application App ID for Android.
-       *
-       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-       *
-       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
-       *
-       * @android
-       */
-      admob_android_app_id: string;
-
-      /**
-       * The Google AdMob application App ID for iOS.
-       *
-       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-       *
-       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
-       *
-       * @ios
-       */
-      admob_ios_app_id: string;
-
-      /**
-       * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
-       * Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metrics
-       * without making additional code changes.
-       *
-       * If you require your app users to provide consent before collecting data, setting the value to `true` will prevent
-       * data being sent until the `firebase.admob().initialize()` method has been called.
-       */
-      admob_delay_app_measurement_init: boolean;
-    }
   }
 }
