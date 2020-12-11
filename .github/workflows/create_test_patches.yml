@@ -53,7 +53,7 @@ jobs:
 
       - name: Create Patches
         run: |
-          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites'`
+          PACKAGE_LIST=`find packages -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | egrep -v 'template|invites|cli'`
           mkdir $HOME/packages
           for PACKAGE in $PACKAGE_LIST; do
             echo "Packing PR version of package $PACKAGE"
@@ -88,9 +88,8 @@ jobs:
         with:
           name: patches
           path: ~/template/patches/
-  
       # create a comment on the PR and any related issues with a direct link to the archive,
-      # a call for testers, and perhaps a paste-able set of commands to install them 
+      # a call for testers, and perhaps a paste-able set of commands to install them
       # (mkdir patches, curl -o etc, npx patch-package)
       # You need an artifact id to get a download link for it.
       # You need a workflow run id to get an artifact id.
