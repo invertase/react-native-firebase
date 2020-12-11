@@ -7,4 +7,4 @@ docs
 packages/template/project/**
 app.playground.js
 type-test.ts
-cli/dist
+packages/cli/dist
