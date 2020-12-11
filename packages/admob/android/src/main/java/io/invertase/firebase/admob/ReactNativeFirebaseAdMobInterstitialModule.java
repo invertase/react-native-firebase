@@ -125,6 +125,10 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
     }
     getCurrentActivity().runOnUiThread(() -> {
       InterstitialAd interstitialAd = interstitialAdArray.get(requestId);
+      if (interstitialAd == null) {
+        rejectPromiseWithCodeAndMessage(promise, "null-interstitialAd", "Interstitial ad attempted to show but its object was null.");
+        return;
+      }
 
       if (showOptions.hasKey("immersiveModeEnabled")) {
         interstitialAd.setImmersiveMode(showOptions.getBoolean("immersiveModeEnabled"));
