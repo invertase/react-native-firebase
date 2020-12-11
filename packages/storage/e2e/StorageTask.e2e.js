@@ -24,7 +24,7 @@ function snapshotProperties(snapshot) {
   snapshot.should.have.property('bytesTransferred');
 }
 
-describe('storage() -> StorageTask', () => {
+describe.only('storage() -> StorageTask', () => {
   describe('writeToFile()', () => {
     it('errors if permission denied', async () => {
       try {
@@ -578,9 +578,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    it('listens to download state', function testRunner() {
-      this.timeout(25000);
-
+    it('listens to download state', async () => {
       const ref = firebase.storage().ref('/cat.gif');
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/onDownload.gif`;
@@ -598,12 +596,10 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
 
-    it('listens to upload state', function testRunner() {
-      this.timeout(25000);
-
+    it('listens to upload state', async () => {
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/ok.jpeg`;
       const ref = firebase.storage().ref('/uploadOk.jpeg');
@@ -621,22 +617,22 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
   });
 
-  xdescribe('pause() resume()', () => {
+  describe('pause() resume()', () => {
     it('successfully pauses and resumes an upload', async function testRunner() {
-      this.timeout(25000);
+      this.timeout(100 * 1000);
 
       await firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/smallFileTest.png' : '/cat.gif')
-        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
+        .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`);
 
       const ref = firebase.storage().ref('/uploadCat.gif');
       const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
+      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload_test1.gif`;
       const uploadTask = ref.putFile(path);
 
       let hadRunningStatus = false;
@@ -691,9 +687,7 @@ describe('storage() -> StorageTask', () => {
       await promise;
     });
 
-    it('successfully pauses and resumes a download', function testRunner() {
-      this.timeout(25000);
-
+    it('successfully pauses and resumes a download', async () => {
       const ref = firebase
         .storage()
         .ref(device.getPlatform() === 'ios' ? '/1mbTestFile.gif' : '/cat.gif');
@@ -749,20 +743,20 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
   });
 
-  xdescribe('cancel()', () => {
-    before(async () => {
+  describe('cancel()', async () => {
+    it('successfully cancels an upload', async () => {
       await firebase
         .storage()
         .ref('/1mbTestFile.gif')
         .writeToFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`);
-    });
 
-    it('successfully cancels an upload', () => {
-      const ref = firebase.storage().ref('/uploadCat.gif');
+      const ref = firebase.storage().ref('/successful-cancel.jpg');
+
+      //Upload and cancel
       const { resolve, reject, promise } = Promise.defer();
       const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/pauseUpload.gif`;
       const uploadTask = ref.putFile(path);
@@ -803,52 +797,53 @@ describe('storage() -> StorageTask', () => {
         },
       );
 
-      return promise;
+      await promise;
     });
+  });
 
-    it('successfully cancels a download', () => {
-      const ref = firebase.storage().ref('/cat.gif');
-      const { resolve, reject, promise } = Promise.defer();
-      const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/cancelDownload.gif`;
-      const downloadTask = ref.writeToFile(path);
+  it('successfully cancels a download', async () => {
+    await Utils.sleep(10000);
+    const ref = firebase.storage().ref('/1mbTestFile.gif');
+    const { resolve, reject, promise } = Promise.defer();
+    const path = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/testUploadFile.jpg`;
+    const downloadTask = ref.writeToFile(path);
 
-      let hadRunningStatus = false;
-      let hadCancelledStatus = false;
+    let hadRunningStatus = false;
+    let hadCancelledStatus = false;
 
-      downloadTask.on(
-        'state_changed',
-        snapshot => {
-          // TODO(salakar) validate snapshot props
-          // 1) cancel it when we receive first running event
-          if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
-            hadRunningStatus = true;
-            downloadTask.cancel();
-          }
+    downloadTask.on(
+      'state_changed',
+      snapshot => {
+        // TODO(salakar) validate snapshot props
+        // 1) cancel it when we receive first running event
+        if (snapshot.state === firebase.storage.TaskState.RUNNING && !hadRunningStatus) {
+          hadRunningStatus = true;
+          downloadTask.cancel();
+        }
 
-          // 2) confirm cancellation
-          if (snapshot.state === firebase.storage.TaskState.CANCELLED) {
-            should.equal(hadRunningStatus, true);
-            hadCancelledStatus = true;
-          }
-
-          if (snapshot.state === firebase.storage.TaskState.ERROR) {
-            throw new Error('Should not error if cancelled?');
-          }
-
-          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-            reject(new Error('DownloadTask did not cancel!'));
-          }
-        },
-        error => {
+        // 2) confirm cancellation
+        if (snapshot.state === firebase.storage.TaskState.CANCELLED) {
           should.equal(hadRunningStatus, true);
-          should.equal(hadCancelledStatus, true);
-          error.code.should.equal('storage/cancelled');
-          error.message.should.containEql('User cancelled the operation.');
-          resolve();
-        },
-      );
+          hadCancelledStatus = true;
+        }
 
-      return promise;
-    });
+        if (snapshot.state === firebase.storage.TaskState.ERROR) {
+          throw new Error('Should not error if cancelled?');
+        }
+
+        if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+          reject(new Error('DownloadTask did not cancel!'));
+        }
+      },
+      error => {
+        should.equal(hadRunningStatus, true);
+        should.equal(hadCancelledStatus, true);
+        error.code.should.equal('storage/cancelled');
+        error.message.should.containEql('User cancelled the operation.');
+        resolve();
+      },
+    );
+
+    await promise;
   });
 });
