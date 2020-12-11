@@ -27,12 +27,12 @@ const SETTABLE_FIELDS = [
   'customMetadata',
 ];
 
-export function handleStorageEvent(storageInstance, event) {
+export async function handleStorageEvent(storageInstance, event) {
   const { taskId, eventName } = event;
   const body = event.body || {};
 
   if (body.error) {
-    body.error = NativeFirebaseError.fromEvent(body.error, storageInstance._config.namespace);
+    body.error = await NativeFirebaseError.fromEvent(body.error, storageInstance._config.namespace);
   }
 
   storageInstance.emitter.emit(storageInstance.eventNameForApp(taskId, eventName), body);
