@@ -34,7 +34,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-- BREAKING forward-port to firebase-android-sdk v26 / firebase-ios-sdk v7 ([70974d4](https://github.com/invertase/react-native-firebase/commit/70974d41f857a0f7fc09cb5235856d3748b30117)), closes [/firebase.google.com/support/release-notes/android#2020-10-27](https://github.com/invertase/react-native-firebase/issues/2020-10-27) [/firebase.google.com/support/release-notes/ios#version*700*-\_october_26_2020](https://github.com/invertase/react-native-firebase/issues/version_700_-_october_26_2020)
+- BREAKING forward-port to firebase-android-sdk v26 / firebase-ios-sdk v7 ([70974d4](https://github.com/invertase/react-native-firebase/commit/70974d41f857a0f7fc09cb5235856d3748b30117)), **CHECK UNDERLYING SDK NOTES FOR FURTHER BREAKING CHANGE INFORMATION:** https://firebase.google.com/support/release-notes/android#bom_v26-0-0 / https://firebase.google.com/support/release-notes/ios#version_700_-_october_26_2020
 
 ### BREAKING CHANGES
 
