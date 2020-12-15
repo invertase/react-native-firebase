@@ -74,9 +74,7 @@ export default async function initCommand(
     } else {
         apps = {
             android: options.platform == 'android' || options.platform == 'all',
-            ios:
-                false && // not supported
-                (options.platform == 'ios' || options.platform == 'all'),
+            ios: options.platform == 'ios' || options.platform == 'all',
             web:
                 false && // not supported
                 (options.platform == 'web' || options.platform == 'all'),
