@@ -68,7 +68,7 @@ export default async function initCommand(
     if (options.platform == 'prompt') {
         apps = {
             android: await prompt.confirm('Do you want to setup Android for your app?'),
-            ios: false && (await prompt.confirm('Do you want to setup iOS for your app?')), // not supported
+            ios: await prompt.confirm('Do you want to setup iOS for your app?'),
             web: false && (await prompt.confirm('Do you want to setup web for your app?')), // not supported
         };
     } else {
