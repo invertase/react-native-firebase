@@ -2,7 +2,7 @@ platform :ios, '10.0'
 $RNFirebaseAsStaticFramework = false
 
 # Version override testing
-$FirebaseSDKVersion = '7.2.0'
+$FirebaseSDKVersion = '7.3.0'
 
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
