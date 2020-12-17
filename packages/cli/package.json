@@ -47,7 +47,8 @@
     "open": "^7.0.4",
     "ora": "^4.0.3",
     "portfinder": "^1.0.25",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "xcode": "^3.0.1"
   },
   "devDependencies": {
     "@react-native-community/cli-types": "^4.3.0",

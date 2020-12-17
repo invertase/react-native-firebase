@@ -52,6 +52,7 @@ async function firebaseCli(
     if (
         !(
             options.platform == 'android' ||
+            options.platform == 'ios' ||
             options.platform == 'all' ||
             options.platform == 'prompt'
         )

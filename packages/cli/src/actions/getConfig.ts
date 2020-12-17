@@ -9,5 +9,6 @@ export function getAndroidConfig(reactNativeConfig: Config) {
 export function getIosConfig(reactNativeConfig: Config) {
     return reactNativeConfig.platforms.ios.projectConfig(
         reactNativeConfig.root,
+        {} as any,
     ) as IOSProjectConfig;
 }

@@ -85,6 +85,7 @@ async function getProjects(account: Account): Promise<Project[]> {
  * @param appName
  */
 async function getAppConfig(account: Account, appName: string) {
+    // console.log('Getting app config >>>>', `${BASE_URL}/${appName}/config`);
     const configFile = await request(account, {
         url: `${BASE_URL}/${appName}/config`,
     });

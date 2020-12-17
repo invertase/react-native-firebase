@@ -5,6 +5,7 @@ import { AndroidProjectConfig, Config, IOSProjectConfig } from '@react-native-co
 import { join } from 'path';
 import { addModified } from './tracker';
 import { FirebaseConfig } from '../types/cli';
+import xcode from 'xcode';
 
 /**
  * Check a file exists at the specified path.
@@ -136,14 +137,50 @@ function writeAndroidAppBuildGradle(androidProjectConfig: AndroidProjectConfig, 
 }
 
 /**
+ * Returns
+ *
+ * @param projectPath
+ */
+async function readIOSProjectPathConfig(projectPath: string) {
+    const fileExists = await exists(projectPath);
+    if (!fileExists) return {};
+
+    const proj = await xcode.project(projectPath);
+
+    const config = await new Promise(resolve => {
+        proj.parse((error: any, file: any) => {
+            const { XCBuildConfiguration } = file.project.objects;
+
+            // Multiple configs exist - Debug, Release. Select first (Debug).
+            const envSettings = Object.values(XCBuildConfiguration)[0] as any;
+
+            resolve({
+                bundleId: envSettings.buildSettings.PRODUCT_BUNDLE_IDENTIFIER,
+            });
+        });
+    });
+
+    return config;
+}
+
+/**
  * Returns the "GoogleService-Info.plist" file for the project. Returns "null" if it doesnt exist
  *
  * @param iosProjectConfig
  */
-
-// TODO: Unfinished function
 async function readIosGoogleServices(iosProjectConfig: IOSProjectConfig): Promise<string | null> {
-    return null;
+    if (!iosProjectConfig.plist) return null;
+    return iosProjectConfig.plist[0];
+}
+
+/**
+ * Overwrites the "GoogleService-Info.plist" file for the project.
+ * @param iosProjectConfig
+ * @param data
+ */
+function writeGoogleServiceInfoPlist(iosProjectConfig: IOSProjectConfig, data: string) {
+    const iOSGoogleServicesPath = join(iosProjectConfig.sourceDir, 'GoogleService-Info.plist');
+    return write(iOSGoogleServicesPath, data);
 }
 
 /**
@@ -179,6 +216,8 @@ export default {
     writeAndroidBuildGradle,
     readAndroidAppBuildGradle,
     writeAndroidAppBuildGradle,
+    readIOSProjectPathConfig,
+    writeGoogleServiceInfoPlist,
     readIosGoogleServices,
     readFirebaseConfig,
     writeFirebaseConfig,
