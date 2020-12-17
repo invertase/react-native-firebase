@@ -218,6 +218,7 @@ GoogleSignin.configure({
   webClientId: '',
 });
 ```
+NOTE: If you are using react-native-firebase, just use ```GoogleSignIn.configure()```, otherwise you will get DEVELOPER_ERROR.
 
 Once initialized, setup your application to trigger a sign-in request with Google using the `signIn` method.
 
