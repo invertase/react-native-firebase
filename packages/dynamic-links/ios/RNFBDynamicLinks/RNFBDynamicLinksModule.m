@@ -193,7 +193,7 @@ RCT_EXPORT_METHOD(resolveLink:
             @"url": dynamicLink.url.absoluteString,
             @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
         });
-    } else if (!error) {
+    } else if (!error || (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
           @"code": @"not-found",
           @"message": @"Dynamic link not found"
