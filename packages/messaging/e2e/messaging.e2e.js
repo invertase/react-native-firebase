@@ -74,12 +74,6 @@ describe('messaging()', function() {
     });
   });
 
-  describe('unregisterDeviceForRemoteMessages', function() {
-    android.it('resolves on android', async () => {
-      await firebase.messaging().unregisterDeviceForRemoteMessages();
-    });
-  });
-
   describe('requestPermission', function() {
     android.it('resolves 1 on android', async () => {
       should.equal(await firebase.messaging().requestPermission(), 1);

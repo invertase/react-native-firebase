@@ -40,7 +40,7 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('throws if latitude is not a number', function() {
+  it('throws if longitude is not a number', function() {
     try {
       new firebase.firestore.GeoPoint(0, '123');
       return Promise.reject(new Error('Did not throw an Error.'));
