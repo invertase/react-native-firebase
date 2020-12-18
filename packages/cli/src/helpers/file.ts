@@ -168,9 +168,15 @@ async function readIOSProjectPathConfig(projectPath: string) {
  *
  * @param iosProjectConfig
  */
-async function readIosGoogleServices(iosProjectConfig: IOSProjectConfig): Promise<string | null> {
-    if (!iosProjectConfig.plist) return null;
-    return iosProjectConfig.plist[0];
+async function readIosGoogleServiceInfo(
+    iosProjectConfig: IOSProjectConfig,
+): Promise<string | null> {
+    const iOSGoogleServicesPath = join(iosProjectConfig.sourceDir, 'GoogleService-Info.plist');
+
+    const fileExists = await exists(iOSGoogleServicesPath);
+
+    if (!fileExists) return null;
+    return read(iOSGoogleServicesPath);
 }
 
 /**
@@ -218,7 +224,7 @@ export default {
     writeAndroidAppBuildGradle,
     readIOSProjectPathConfig,
     writeGoogleServiceInfoPlist,
-    readIosGoogleServices,
+    readIosGoogleServiceInfo,
     readFirebaseConfig,
     writeFirebaseConfig,
 };

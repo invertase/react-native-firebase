@@ -26,7 +26,7 @@ export default async function initIos(
         // Need to create a new app
     }
 
-    const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
+    const iosGoogleServicesFile = await file.readIosGoogleServiceInfo(iosProjectConfig);
 
     const writeFile =
         !iosGoogleServicesFile ||

@@ -252,7 +252,7 @@ export default async function doctorCommand(
     if (apps.ios) {
         report['iOS'] = {};
 
-        const iosGoogleServicesFile = await file.readIosGoogleServices(iosProjectConfig);
+        const iosGoogleServicesFile = await file.readIosGoogleServiceInfo(iosProjectConfig);
         report['iOS']['GoogleService-Info.plist'] = [null, boolStatus(iosGoogleServicesFile)];
     }
 
