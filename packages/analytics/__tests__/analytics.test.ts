@@ -1,14 +1,14 @@
 import { firebase } from '../lib';
 
-describe('Analytics', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('Analytics', function() {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       expect(app.analytics).toBeDefined();
       expect(app.analytics().app).toEqual(app);
     });
 
-    it('throws if non default app arg provided to firebase.analytics(APP)', () => {
+    it('throws if non default app arg provided to firebase.analytics(APP)', function() {
       const app = firebase.app('secondaryFromNative');
 
       const expectedError = [
@@ -21,7 +21,7 @@ describe('Analytics', () => {
       expect(() => firebase.analytics(app)).toThrowError(expectedError);
     });
 
-    it('throws if analytics access from a non default app', () => {
+    it('throws if analytics access from a non default app', function() {
       const app = firebase.app('secondaryFromNative');
 
       const expectedError = [
@@ -34,7 +34,7 @@ describe('Analytics', () => {
     });
 
     // TODO in app/registry/namespace.js - if (!hasCustomUrlOrRegionSupport)
-    xit('throws if args provided to firebase.app().analytics(ARGS)', () => {
+    xit('throws if args provided to firebase.app().analytics(ARGS)', function() {
       try {
         // @ts-ignore test
         firebase.app().analytics('foo', 'arg2');
@@ -46,38 +46,38 @@ describe('Analytics', () => {
     });
   });
 
-  it('errors if milliseconds not a number', () => {
+  it('errors if milliseconds not a number', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setSessionTimeoutDuration('123')).toThrowError(
       "'milliseconds' expected a number value",
     );
   });
 
-  it('throws if none string none null values', () => {
+  it('throws if none string none null values', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserId(123)).toThrowError("'id' expected a string value");
   });
 
-  it('throws if name is not a string', () => {
+  it('throws if name is not a string', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperty(1337, 'invertase')).toThrowError(
       "'name' expected a string value",
     );
   });
-  it('throws if value is invalid', () => {
+  it('throws if value is invalid', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperty('invertase3', 33.3333)).toThrowError(
       "'value' expected a string value",
     );
   });
 
-  it('throws if properties is not an object', () => {
+  it('throws if properties is not an object', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperties(1337)).toThrowError(
       "'properties' expected an object of key/value pairs",
     );
   });
-  it('throws if property value is invalid', () => {
+  it('throws if property value is invalid', function() {
     const props = {
       test: '123',
       foo: {
@@ -89,48 +89,48 @@ describe('Analytics', () => {
       "'properties' value for parameter 'foo' is invalid",
     );
   });
-  it('throws if value is a number', () => {
+  it('throws if value is a number', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().setUserProperties({ invertase1: 123 })).toThrowError(
       "'properties' value for parameter 'invertase1' is invalid, expected a string.",
     );
   });
 
-  it('errors when no parameters are set', () => {
+  it('errors when no parameters are set', function() {
     // @ts-ignore test
     expect(() => firebase.analytics().logSearch()).toThrowError(
       'The supplied arg must be an object of key/values',
     );
   });
 
-  describe('logEvent()', () => {
-    it('errors if name is not a string', () => {
+  describe('logEvent()', function() {
+    it('errors if name is not a string', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logEvent(123)).toThrowError(
         "firebase.analytics().logEvent(*) 'name' expected a string value.",
       );
     });
 
-    it('errors if params is not an object', () => {
+    it('errors if params is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logEvent('invertase_event', 'foobar')).toThrowError(
         "firebase.analytics().logEvent(_, *) 'params' expected an object value.",
       );
     });
 
-    it('errors on using a reserved name', () => {
+    it('errors on using a reserved name', function() {
       expect(() => firebase.analytics().logEvent('session_start')).toThrowError(
         "firebase.analytics().logEvent(*) 'name' the event name 'session_start' is reserved and can not be used.",
       );
     });
 
-    it('errors if name not alphanumeric', () => {
+    it('errors if name not alphanumeric', function() {
       expect(() => firebase.analytics().logEvent('!@£$%^&*')).toThrowError(
         "firebase.analytics().logEvent(*) 'name' invalid event name '!@£$%^&*'. Names should contain 1 to 40 alphanumeric characters or underscores.",
       );
     });
 
-    it('errors if more than 25 params provided', () => {
+    it('errors if more than 25 params provided', function() {
       expect(() =>
         firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1))),
       ).toThrowError(
@@ -138,8 +138,8 @@ describe('Analytics', () => {
       );
     });
 
-    describe('logScreenView()', () => {
-      it('errors if param is not an object', () => {
+    describe('logScreenView()', function() {
+      it('errors if param is not an object', function() {
         // @ts-ignore test
         expect(() => firebase.analytics().logScreenView(123)).toThrowError(
           'firebase.analytics().logScreenView(*):',
@@ -147,14 +147,14 @@ describe('Analytics', () => {
       });
     });
 
-    describe('logAddPaymentInfo()', () => {
-      it('errors if param is not an object', () => {
+    describe('logAddPaymentInfo()', function() {
+      it('errors if param is not an object', function() {
         // @ts-ignore test
         expect(() => firebase.analytics().logAddPaymentInfo(123)).toThrowError(
           'firebase.analytics().logAddPaymentInfo(*):',
         );
       });
-      it('errors when compound values are not set', () => {
+      it('errors when compound values are not set', function() {
         expect(() =>
           firebase.analytics().logAddPaymentInfo({
             value: 123,
@@ -164,14 +164,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logAddToCart()', () => {
-    it('errors if param is not an object', () => {
+  describe('logAddToCart()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logAddToCart(123)).toThrowError(
         'firebase.analytics().logAddToCart(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logAddToCart({
           value: 123,
@@ -180,14 +180,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logAddShippingInfo()', () => {
-    it('errors if param is not an object', () => {
+  describe('logAddShippingInfo()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logAddShippingInfo(123)).toThrowError(
         'firebase.analytics().logAddShippingInfo(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logAddShippingInfo({
           value: 123,
@@ -196,14 +196,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logAddToWishlist()', () => {
-    it('errors if param is not an object', () => {
+  describe('logAddToWishlist()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logAddToWishlist(123)).toThrowError(
         'firebase.analytics().logAddToWishlist(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logAddToWishlist({
           value: 123,
@@ -212,14 +212,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logBeginCheckout()', () => {
-    it('errors if param is not an object', () => {
+  describe('logBeginCheckout()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logBeginCheckout(123)).toThrowError(
         'firebase.analytics().logBeginCheckout(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logBeginCheckout({
           value: 123,
@@ -228,14 +228,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logGenerateLead()', () => {
-    it('errors if param is not an object', () => {
+  describe('logGenerateLead()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logGenerateLead(123)).toThrowError(
         'firebase.analytics().logGenerateLead(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logGenerateLead({
           value: 123,
@@ -244,8 +244,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logCampaignDetails()', () => {
-    it('errors if param is not an object', () => {
+  describe('logCampaignDetails()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logCampaignDetails(123)).toThrowError(
         'firebase.analytics().logCampaignDetails(*):',
@@ -253,8 +253,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logEarnVirtualCurrency()', () => {
-    it('errors if param is not an object', () => {
+  describe('logEarnVirtualCurrency()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logEarnVirtualCurrency(123)).toThrowError(
         'firebase.analytics().logEarnVirtualCurrency(*):',
@@ -262,8 +262,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logJoinGroup()', () => {
-    it('errors if param is not an object', () => {
+  describe('logJoinGroup()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logJoinGroup(123)).toThrowError(
         'firebase.analytics().logJoinGroup(*):',
@@ -271,8 +271,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logLevelEnd()', () => {
-    it('errors if param is not an object', () => {
+  describe('logLevelEnd()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logLevelEnd(123)).toThrowError(
         'firebase.analytics().logLevelEnd(*):',
@@ -280,8 +280,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logLevelStart()', () => {
-    it('errors if param is not an object', () => {
+  describe('logLevelStart()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logLevelStart(123)).toThrowError(
         'firebase.analytics().logLevelStart(*):',
@@ -289,8 +289,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logLevelUp()', () => {
-    it('errors if param is not an object', () => {
+  describe('logLevelUp()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logLevelUp(123)).toThrowError(
         'firebase.analytics().logLevelUp(*):',
@@ -298,8 +298,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logLogin()', () => {
-    it('errors if param is not an object', () => {
+  describe('logLogin()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logLogin(123)).toThrowError(
         'firebase.analytics().logLogin(*):',
@@ -307,8 +307,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logPostScore()', () => {
-    it('errors if param is not an object', () => {
+  describe('logPostScore()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logPostScore(123)).toThrowError(
         'firebase.analytics().logPostScore(*):',
@@ -316,8 +316,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSelectContent()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSelectContent()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSelectContent(123)).toThrowError(
         'firebase.analytics().logSelectContent(*):',
@@ -325,8 +325,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSearch()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSearch()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSearch(123)).toThrowError(
         'firebase.analytics().logSearch(*):',
@@ -334,8 +334,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSelectItem()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSelectItem()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSelectItem(123)).toThrowError(
         'firebase.analytics().logSelectItem(*):',
@@ -343,8 +343,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSetCheckoutOption()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSetCheckoutOption()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSetCheckoutOption(123)).toThrowError(
         'firebase.analytics().logSetCheckoutOption(*):',
@@ -352,8 +352,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logShare()', () => {
-    it('errors if param is not an object', () => {
+  describe('logShare()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logShare(123)).toThrowError(
         'firebase.analytics().logShare(*):',
@@ -361,8 +361,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSignUp()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSignUp()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSignUp(123)).toThrowError(
         'firebase.analytics().logSignUp(*):',
@@ -370,8 +370,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSelectPromotion()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSelectPromotion()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSelectPromotion(123)).toThrowError(
         'firebase.analytics().logSelectPromotion(*):',
@@ -379,8 +379,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logSpendVirtualCurrency()', () => {
-    it('errors if param is not an object', () => {
+  describe('logSpendVirtualCurrency()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logSpendVirtualCurrency(123)).toThrowError(
         'firebase.analytics().logSpendVirtualCurrency(*):',
@@ -388,8 +388,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logUnlockAchievement()', () => {
-    it('errors if param is not an object', () => {
+  describe('logUnlockAchievement()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logUnlockAchievement(123)).toThrowError(
         'firebase.analytics().logUnlockAchievement(*):',
@@ -397,14 +397,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logPurchase()', () => {
-    it('errors if param is not an object', () => {
+  describe('logPurchase()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logPurchase(123)).toThrowError(
         'firebase.analytics().logPurchase(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logPurchase({
           value: 123,
@@ -413,15 +413,15 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logRefund()', () => {
-    it('errors if param is not an object', () => {
+  describe('logRefund()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logRefund(123)).toThrowError(
         'firebase.analytics().logRefund(*):',
       );
     });
 
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logRefund({
           value: 123,
@@ -430,14 +430,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logViewCart()', () => {
-    it('errors if param is not an object', () => {
+  describe('logViewCart()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logViewCart(123)).toThrowError(
         'firebase.analytics().logViewCart(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logViewCart({
           value: 123,
@@ -446,14 +446,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logViewItem()', () => {
-    it('errors if param is not an object', () => {
+  describe('logViewItem()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logViewItem(123)).toThrowError(
         'firebase.analytics().logViewItem(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logViewItem({
           value: 123,
@@ -462,8 +462,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logViewItemList()', () => {
-    it('errors if param is not an object', () => {
+  describe('logViewItemList()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logViewItemList(123)).toThrowError(
         'firebase.analytics().logViewItemList(*):',
@@ -471,14 +471,14 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logRemoveFromCart()', () => {
-    it('errors if param is not an object', () => {
+  describe('logRemoveFromCart()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logRemoveFromCart(123)).toThrowError(
         'firebase.analytics().logRemoveFromCart(*):',
       );
     });
-    it('errors when compound values are not set', () => {
+    it('errors when compound values are not set', function() {
       expect(() =>
         firebase.analytics().logRemoveFromCart({
           value: 123,
@@ -487,8 +487,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logViewPromotion()', () => {
-    it('errors if param is not an object', () => {
+  describe('logViewPromotion()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logViewPromotion(123)).toThrowError(
         'firebase.analytics().logViewPromotion(*):',
@@ -496,8 +496,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('logViewSearchResults()', () => {
-    it('errors if param is not an object', () => {
+  describe('logViewSearchResults()', function() {
+    it('errors if param is not an object', function() {
       // @ts-ignore test
       expect(() => firebase.analytics().logViewSearchResults(123)).toThrowError(
         'firebase.analytics().logViewSearchResults(*):',
@@ -505,8 +505,8 @@ describe('Analytics', () => {
     });
   });
 
-  describe('setAnalyticsCollectionEnabled()', () => {
-    it('throws if not a boolean', () => {
+  describe('setAnalyticsCollectionEnabled()', function() {
+    it('throws if not a boolean', function() {
       // @ts-ignore
       expect(() => firebase.analytics().setAnalyticsCollectionEnabled('foo')).toThrowError(
         "firebase.analytics().setAnalyticsCollectionEnabled(*) 'enabled' expected a boolean value.",

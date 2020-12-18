@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().endAt()', () => {
-  before(() => wipe());
-  it('throws if no argument provided', () => {
+describe('firestore().collection().endAt()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if no argument provided', function() {
     try {
       firebase
         .firestore()
@@ -34,7 +36,7 @@ describe('firestore().collection().endAt()', () => {
     }
   });
 
-  it('throws if a inconsistent order number', () => {
+  it('throws if a inconsistent order number', function() {
     try {
       firebase
         .firestore()
@@ -48,7 +50,7 @@ describe('firestore().collection().endAt()', () => {
     }
   });
 
-  it('throws if providing snapshot and field values', async () => {
+  it('throws if providing snapshot and field values', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -66,7 +68,7 @@ describe('firestore().collection().endAt()', () => {
     }
   });
 
-  it('throws if provided snapshot does not exist', async () => {
+  it('throws if provided snapshot does not exist', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -83,7 +85,7 @@ describe('firestore().collection().endAt()', () => {
     }
   });
 
-  it('throws if order used with snapshot but fields do not exist', async () => {
+  it('throws if order used with snapshot but fields do not exist', async function() {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
       await doc.set({ foo: { bar: 'baz' } });
@@ -103,7 +105,7 @@ describe('firestore().collection().endAt()', () => {
     }
   });
 
-  it('ends at field values', async () => {
+  it('ends at field values', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -125,7 +127,7 @@ describe('firestore().collection().endAt()', () => {
     qs.docs[1].id.should.eql('doc2');
   });
 
-  it('ends at snapshot field values', async () => {
+  it('ends at snapshot field values', async function() {
     // await Utils.sleep(3000);
     const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshotFields`);
     const doc1 = colRef.doc('doc1');
@@ -150,7 +152,7 @@ describe('firestore().collection().endAt()', () => {
     qs.docs[1].id.should.eql('doc2');
   });
 
-  it('ends at snapshot', async () => {
+  it('ends at snapshot', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

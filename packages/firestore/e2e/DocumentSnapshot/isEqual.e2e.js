@@ -16,8 +16,8 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore.doc() -> snapshot.isEqual()', () => {
-  it('throws if other is not a DocumentSnapshot', async () => {
+describe('firestore.doc() -> snapshot.isEqual()', function() {
+  it('throws if other is not a DocumentSnapshot', async function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
@@ -30,7 +30,7 @@ describe('firestore.doc() -> snapshot.isEqual()', () => {
     }
   });
 
-  it('returns false when not equal', async () => {
+  it('returns false when not equal', async function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-false-exists`);
     await docRef.set({ foo: 'bar' });
 
@@ -49,7 +49,7 @@ describe('firestore.doc() -> snapshot.isEqual()', () => {
     eql2.should.be.False();
   });
 
-  it('returns true when equal', async () => {
+  it('returns true when equal', async function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-true-exists`);
     await docRef.set({ foo: 'bar' });
 

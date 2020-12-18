@@ -18,9 +18,9 @@
 const aCoolUrl = 'https://invertase.io';
 
 android.describe('perf()', () => {
-  describe('HttpMetric', () => {
-    describe('start()', () => {
-      it('correctly starts with internal flag ', async () => {
+  describe('HttpMetric', function() {
+    describe('start()', function() {
+      it('correctly starts with internal flag ', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         await httpMetric.start();
         httpMetric.setHttpResponseCode(200);
@@ -29,7 +29,7 @@ android.describe('perf()', () => {
         await httpMetric.stop();
       });
 
-      it('resolves null if already started', async () => {
+      it('resolves null if already started', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
         await httpMetric.start();
         should.equal(httpMetric._started, true);
@@ -40,8 +40,8 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('stop()', () => {
-      it('correctly stops with internal flag ', async () => {
+    describe('stop()', function() {
+      it('correctly stops with internal flag ', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         await httpMetric.start();
         httpMetric.setHttpResponseCode(500);
@@ -55,7 +55,7 @@ android.describe('perf()', () => {
         should.equal(httpMetric._stopped, true);
       });
 
-      it('resolves null if already stopped', async () => {
+      it('resolves null if already stopped', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
         await httpMetric.start();
         await Utils.sleep(100);
@@ -63,7 +63,7 @@ android.describe('perf()', () => {
         should.equal(await httpMetric.stop(), null);
       });
 
-      it('handles floating point numbers', async () => {
+      it('handles floating point numbers', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'POST');
         await httpMetric.start();
         const floatingPoint = 500.447553;
@@ -101,21 +101,21 @@ android.describe('perf()', () => {
     //   });
     // });
 
-    describe('getAttribute()', async () => {
-      it('should return null if attribute does not exist', async () => {
+    describe('getAttribute()', function() {
+      it('should return null if attribute does not exist', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         const value = httpMetric.getAttribute('inver');
         should.equal(value, null);
       });
 
-      it('should return an attribute string value', async () => {
+      it('should return an attribute string value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.putAttribute('inver', 'tase');
         const value = httpMetric.getAttribute('inver');
         should.equal(value, 'tase');
       });
 
-      it('errors if attribute name is not a string', async () => {
+      it('errors if attribute name is not a string', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.getAttribute(1337);
@@ -127,15 +127,15 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('putAttribute()', async () => {
-      it('sets an attribute string value', async () => {
+    describe('putAttribute()', function() {
+      it('sets an attribute string value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.putAttribute('inver', 'tase');
         const value = httpMetric.getAttribute('inver');
         value.should.equal('tase');
       });
 
-      it('errors if attribute name is not a string', async () => {
+      it('errors if attribute name is not a string', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.putAttribute(1337, 'invertase');
@@ -146,7 +146,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute value is not a string', async () => {
+      it('errors if attribute value is not a string', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.putAttribute('invertase', 1337);
@@ -157,7 +157,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute name is greater than 40 characters', async () => {
+      it('errors if attribute name is greater than 40 characters', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.putAttribute(new Array(41).fill('1').join(''), 1337);
@@ -168,7 +168,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute value is greater than 100 characters', async () => {
+      it('errors if attribute value is greater than 100 characters', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.putAttribute('invertase', new Array(101).fill('1').join(''));
@@ -179,7 +179,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if more than 5 attributes are put', async () => {
+      it('errors if more than 5 attributes are put', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
 
         httpMetric.putAttribute('invertase1', '1337');
@@ -209,20 +209,20 @@ android.describe('perf()', () => {
     //   });
     // });
 
-    describe('setHttpResponseCode()', async () => {
-      it('sets number value', async () => {
+    describe('setHttpResponseCode()', function() {
+      it('sets number value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setHttpResponseCode(500);
         should.equal(httpMetric._httpResponseCode, 500);
       });
 
-      it('sets a null value to clear value', async () => {
+      it('sets a null value to clear value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setHttpResponseCode(null);
         should.equal(httpMetric._httpResponseCode, null);
       });
 
-      it('errors if not a number or null value', async () => {
+      it('errors if not a number or null value', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.setHttpResponseCode('500');
@@ -234,20 +234,20 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('setRequestPayloadSize()', async () => {
-      it('sets number value', async () => {
+    describe('setRequestPayloadSize()', function() {
+      it('sets number value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setRequestPayloadSize(13377331);
         should.equal(httpMetric._requestPayloadSize, 13377331);
       });
 
-      it('sets a null value to clear value', async () => {
+      it('sets a null value to clear value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setRequestPayloadSize(null);
         should.equal(httpMetric._requestPayloadSize, null);
       });
 
-      it('errors if not a number or null value', async () => {
+      it('errors if not a number or null value', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.setRequestPayloadSize('1337');
@@ -259,20 +259,20 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('setResponsePayloadSize()', async () => {
-      it('sets number value', async () => {
+    describe('setResponsePayloadSize()', function() {
+      it('sets number value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setResponsePayloadSize(13377331);
         should.equal(httpMetric._responsePayloadSize, 13377331);
       });
 
-      it('sets a null value to clear value', async () => {
+      it('sets a null value to clear value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setResponsePayloadSize(null);
         should.equal(httpMetric._responsePayloadSize, null);
       });
 
-      it('errors if not a number or null value', async () => {
+      it('errors if not a number or null value', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.setResponsePayloadSize('1337');
@@ -284,20 +284,20 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('setResponseContentType()', async () => {
-      it('sets string value', async () => {
+    describe('setResponseContentType()', function() {
+      it('sets string value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setResponseContentType('application/invertase');
         should.equal(httpMetric._responseContentType, 'application/invertase');
       });
 
-      it('sets a null value to clear value', async () => {
+      it('sets a null value to clear value', async function() {
         const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
         httpMetric.setResponseContentType(null);
         should.equal(httpMetric._responseContentType, null);
       });
 
-      it('errors if not a string or null value', async () => {
+      it('errors if not a string or null value', async function() {
         try {
           const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
           httpMetric.setResponseContentType(1337);

@@ -19,11 +19,15 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/priority`;
 
-describe('database().ref().setPriority()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().setPriority()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if priority is not a valid type', async () => {
+  it('throws if priority is not a valid type', async function() {
     try {
       await firebase
         .database()
@@ -36,7 +40,7 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -49,7 +53,7 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('should correctly set a priority for all non-null values', async () => {
+  it('should correctly set a priority for all non-null values', async function() {
     await Promise.all(
       Object.keys(CONTENT.TYPES).map(async dataRef => {
         const ref = firebase.database().ref(`${TEST_PATH}/types/${dataRef}`);
@@ -62,7 +66,7 @@ describe('database().ref().setPriority()', () => {
     );
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function() {
     const value = Date.now();
     return new Promise(async resolve => {
       await firebase
@@ -72,7 +76,7 @@ describe('database().ref().setPriority()', () => {
     });
   });
 
-  it('throws if setting priority on non-existent node', async () => {
+  it('throws if setting priority on non-existent node', async function() {
     try {
       await firebase
         .database()
@@ -86,7 +90,7 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('throws if permission defined', async () => {
+  it('throws if permission defined', async function() {
     try {
       await firebase
         .database()

@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.social', () => {
-  it('throws if social is not an object', () => {
+describe('dynamicLinks() dynamicLinkParams.social', function() {
+  it('throws if social is not an object', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.social', () => {
     }
   });
 
-  it('throws if social.descriptionText is not a string', () => {
+  it('throws if social.descriptionText is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -46,7 +46,7 @@ describe('dynamicLinks() dynamicLinkParams.social', () => {
     }
   });
 
-  it('throws if social.imageUrl is not a string', () => {
+  it('throws if social.imageUrl is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -61,7 +61,7 @@ describe('dynamicLinks() dynamicLinkParams.social', () => {
     }
   });
 
-  it('throws if social.title is not a string', () => {
+  it('throws if social.title is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

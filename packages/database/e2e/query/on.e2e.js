@@ -20,8 +20,8 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/on`;
 
 // TODO flakey on CI - improve database paths so no current test conflicts & remove sleep util usage
-xdescribe('database().ref().on()', () => {
-  it('throws if event type is invalid', async () => {
+xdescribe('database().ref().on()', function() {
+  it('throws if event type is invalid', async function() {
     try {
       await firebase
         .database()
@@ -34,7 +34,7 @@ xdescribe('database().ref().on()', () => {
     }
   });
 
-  it('throws if callback is not a function', async () => {
+  it('throws if callback is not a function', async function() {
     try {
       await firebase
         .database()
@@ -47,7 +47,7 @@ xdescribe('database().ref().on()', () => {
     }
   });
 
-  it('throws if cancel callback is not a function', async () => {
+  it('throws if cancel callback is not a function', async function() {
     try {
       await firebase
         .database()
@@ -60,7 +60,7 @@ xdescribe('database().ref().on()', () => {
     }
   });
 
-  it('throws if context is not an object', async () => {
+  it('throws if context is not an object', async function() {
     try {
       await firebase
         .database()
@@ -78,7 +78,7 @@ xdescribe('database().ref().on()', () => {
     }
   });
   // TODO test flakey on CI - swap out Util.sleep
-  xit('should callback with an initial value', async () => {
+  xit('should callback with an initial value', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/init`);
     const value = Date.now();
@@ -95,7 +95,7 @@ xdescribe('database().ref().on()', () => {
     ref.off('value');
   });
 
-  it('should callback multiple times when the value changes', async () => {
+  it('should callback multiple times when the value changes', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/changes`);
     await ref.set('foo');
@@ -114,7 +114,7 @@ xdescribe('database().ref().on()', () => {
     callback.getCall(1).args[0].should.equal('bar');
   });
 
-  it('should cancel when something goes wrong', async () => {
+  it('should cancel when something goes wrong', async function() {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref('nope');
@@ -138,7 +138,7 @@ xdescribe('database().ref().on()', () => {
     cancelCallback.should.be.calledOnce();
   });
 
-  it('subscribe to child added events', async () => {
+  it('subscribe to child added events', async function() {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
@@ -164,7 +164,7 @@ xdescribe('database().ref().on()', () => {
     cancelCallback.should.be.callCount(0);
   });
 
-  it('subscribe to child changed events', async () => {
+  it('subscribe to child changed events', async function() {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
@@ -195,7 +195,7 @@ xdescribe('database().ref().on()', () => {
     cancelCallback.should.be.callCount(0);
   });
 
-  it('subscribe to child removed events', async () => {
+  it('subscribe to child removed events', async function() {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
@@ -221,7 +221,7 @@ xdescribe('database().ref().on()', () => {
     cancelCallback.should.be.callCount(0);
   });
 
-  it('subscribe to child moved events', async () => {
+  it('subscribe to child moved events', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
     const orderedRef = ref.orderByChild('nuggets');

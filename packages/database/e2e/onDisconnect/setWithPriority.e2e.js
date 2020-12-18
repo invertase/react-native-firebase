@@ -19,15 +19,17 @@ const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectSetWithPriority`;
 
-describe('database().ref().onDisconnect().setWithPriority()', () => {
-  after(() => wipe(TEST_PATH));
+describe('database().ref().onDisconnect().setWithPriority()', function() {
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  afterEach(() => {
+  afterEach(function() {
     // Ensures the db is online before running each test
     firebase.database().goOnline();
   });
 
-  it('throws if value is not a defined', () => {
+  it('throws if value is not a defined', function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
@@ -41,7 +43,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
     }
   });
 
-  it('throws if priority is not a valid type', () => {
+  it('throws if priority is not a valid type', function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
@@ -55,7 +57,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', () => {
+  it('throws if onComplete is not a function', function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
@@ -69,7 +71,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
     }
   });
 
-  it('sets value with priority when disconnected', async () => {
+  it('sets value with priority when disconnected', async function() {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
@@ -83,7 +85,7 @@ describe('database().ref().onDisconnect().setWithPriority()', () => {
     snapshot.exportVal()['.priority'].should.eql(3);
   });
 
-  it('calls back to the onComplete function', async () => {
+  it('calls back to the onComplete function', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(TEST_PATH);
 

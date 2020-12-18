@@ -19,10 +19,12 @@ const { PATH, wipe } = require('./helpers');
 
 const TEST_PATH = `${PATH}/issues`;
 
-describe('database issues', () => {
-  after(() => wipe(TEST_PATH));
+describe('database issues', function() {
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('#2813 should return a null snapshot key if path is root', async () => {
+  it('#2813 should return a null snapshot key if path is root', async function() {
     const ref = firebase
       .app()
       .database('https://react-native-firebase-testing-db2.firebaseio.com')
@@ -31,7 +33,7 @@ describe('database issues', () => {
     should.equal(snapshot.key, null);
   });
 
-  it('#2833 should not mutate modifiers ordering', async () => {
+  it('#2833 should not mutate modifiers ordering', async function() {
     const callback = sinon.spy();
     const testRef = firebase
       .database()
@@ -52,7 +54,7 @@ describe('database issues', () => {
     testRef.off('value');
   });
 
-  it('#100 array should return null where key is missing', async () => {
+  it('#100 array should return null where key is missing', async function() {
     const ref = firebase.database().ref(`${TEST_PATH}/issue_100`);
 
     const data = {
@@ -85,8 +87,8 @@ describe('database issues', () => {
       );
   });
 
-  describe('#108 filters correctly by float values', () => {
-    it('returns filtered results', async () => {
+  describe('#108 filters correctly by float values', function() {
+    it('returns filtered results', async function() {
       const ref = firebase.database().ref(`${TEST_PATH}/issue_108/filter`);
 
       const data = {
@@ -117,7 +119,7 @@ describe('database issues', () => {
       should.equal(Object.keys(val).length, 1);
     });
 
-    it('returns correct results when not using float values', async () => {
+    it('returns correct results when not using float values', async function() {
       const ref = firebase.database().ref(`${TEST_PATH}/issue_108/integer`);
 
       const data = {
@@ -149,7 +151,7 @@ describe('database issues', () => {
     });
   });
 
-  it('#489 reutrns long numbers correctly', async () => {
+  it('#489 reutrns long numbers correctly', async function() {
     const LONG = 1508777379000;
     const ref = firebase.database().ref(`${TEST_PATH}/issue_489`);
     await ref.set(LONG);

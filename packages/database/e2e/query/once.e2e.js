@@ -20,11 +20,15 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/once`;
 
 // TODO flakey on CI - improve database paths so no current test conflicts & remove sleep util usage
-describe('database().ref().once()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().once()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if event type is invalid', async () => {
+  it('throws if event type is invalid', async function() {
     try {
       await firebase
         .database()
@@ -37,7 +41,7 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('throws if success callback is not a function', async () => {
+  it('throws if success callback is not a function', async function() {
     try {
       await firebase
         .database()
@@ -50,7 +54,7 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('throws if failure callback is not a function', async () => {
+  it('throws if failure callback is not a function', async function() {
     try {
       await firebase
         .database()
@@ -63,7 +67,7 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('throws if context is not an object', async () => {
+  it('throws if context is not an object', async function() {
     try {
       await firebase
         .database()
@@ -81,13 +85,13 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('returns a promise', async () => {
+  it('returns a promise', async function() {
     const ref = firebase.database().ref('tests/types/number');
     const returnValue = ref.once('value');
     returnValue.should.be.Promise();
   });
 
-  it('resolves with the correct values', async () => {
+  it('resolves with the correct values', async function() {
     const ref = firebase.database().ref(`${TEST_PATH}/types`);
 
     await Promise.all(
@@ -99,7 +103,7 @@ describe('database().ref().once()', () => {
     );
   });
 
-  it('is is called when the value is changed', async () => {
+  it('is is called when the value is changed', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/types/number`);
     ref.once('value').then(callback);
@@ -107,7 +111,7 @@ describe('database().ref().once()', () => {
     callback.should.be.calledOnce();
   });
 
-  it('errors if permission denied', async () => {
+  it('errors if permission denied', async function() {
     const ref = firebase.database().ref('nope');
     try {
       await ref.once('value');
@@ -118,7 +122,7 @@ describe('database().ref().once()', () => {
     }
   });
 
-  it('it calls when a child is added', async () => {
+  it('it calls when a child is added', async function() {
     const value = Date.now();
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
@@ -131,7 +135,7 @@ describe('database().ref().once()', () => {
     callback.should.be.calledWith(value);
   });
 
-  it('resolves when a child is changed', async () => {
+  it('resolves when a child is changed', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
 
@@ -144,7 +148,7 @@ describe('database().ref().once()', () => {
     callback.should.be.calledWith(2);
   });
 
-  it('resolves when a child is removed', async () => {
+  it('resolves when a child is removed', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
     const child = ref.child('removeme');
@@ -160,7 +164,7 @@ describe('database().ref().once()', () => {
   });
 
   // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104
-  it('resolves when a child is moved', async () => {
+  it('resolves when a child is moved', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childMoved`);
     const orderedRef = ref.orderByChild('nuggets');

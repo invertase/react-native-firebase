@@ -15,19 +15,19 @@
  *
  */
 
-describe('firebase', () => {
-  it('it should allow read the default app from native', () => {
+describe('firebase', function() {
+  it('it should allow read the default app from native', function() {
     // app is created in tests app before all hook
     should.equal(firebase.app()._nativeInitialized, true);
     should.equal(firebase.app().name, '[DEFAULT]');
   });
 
-  it('it should create js apps for natively initialized apps', () => {
+  it('it should create js apps for natively initialized apps', function() {
     should.equal(firebase.app('secondaryFromNative')._nativeInitialized, true);
     should.equal(firebase.app('secondaryFromNative').name, 'secondaryFromNative');
   });
 
-  it('natively initialized apps should have options available in js', () => {
+  it('natively initialized apps should have options available in js', function() {
     const platformAppConfig = FirebaseHelpers.app.config();
     should.equal(firebase.app().options.apiKey, platformAppConfig.apiKey);
     should.equal(firebase.app().options.appId, platformAppConfig.appId);
@@ -37,7 +37,7 @@ describe('firebase', () => {
     should.equal(firebase.app().options.storageBucket, platformAppConfig.storageBucket);
   });
 
-  xit('it should initialize dynamic apps', () => {
+  xit('it should initialize dynamic apps', function() {
     const name = `testscoreapp${FirebaseHelpers.id}`;
     const platformAppConfig = FirebaseHelpers.app.config();
     return firebase.initializeApp(platformAppConfig, name).then(newApp => {
@@ -48,24 +48,24 @@ describe('firebase', () => {
     });
   });
 
-  it('SDK_VERSION should return a string version', () => {
+  it('SDK_VERSION should return a string version', function() {
     firebase.SDK_VERSION.should.be.a.String();
   });
 });
 
-describe('firebase -> X', () => {
-  it('apps should provide an array of apps', () => {
+describe('firebase -> X', function() {
+  it('apps should provide an array of apps', function() {
     should.equal(!!firebase.apps.length, true);
     should.equal(firebase.apps.includes(firebase.app('[DEFAULT]')), true);
     return Promise.resolve();
   });
 
-  it('apps can get and set data collection', async () => {
+  it('apps can get and set data collection', async function() {
     firebase.app().automaticDataCollectionEnabled = false;
     should.equal(firebase.app().automaticDataCollectionEnabled, false);
   });
 
-  xit('apps can be deleted', async () => {
+  xit('apps can be deleted', async function() {
     const name = `testscoreapp${FirebaseHelpers.id}`;
     const platformAppConfig = FirebaseHelpers.app.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
@@ -85,14 +85,14 @@ describe('firebase -> X', () => {
     }).should.throw(`No Firebase App '${name}' has been created - call firebase.initializeApp()`);
   });
 
-  xit('prevents the default app from being deleted', async () => {
+  xit('prevents the default app from being deleted', async function() {
     firebase
       .app()
       .delete()
       .should.be.rejectedWith('Unable to delete the default native firebase app instance.');
   });
 
-  it('extendApp should provide additional functionality', () => {
+  it('extendApp should provide additional functionality', function() {
     const extension = {};
     firebase.app().extendApp({
       extension,

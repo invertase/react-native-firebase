@@ -15,8 +15,8 @@
  *
  */
 
-describe('database().ref().isEqual()', () => {
-  it('throws if limit other param is not a query instance', async () => {
+describe('database().ref().isEqual()', function() {
+  it('throws if limit other param is not a query instance', async function() {
     try {
       await firebase
         .database()
@@ -29,13 +29,13 @@ describe('database().ref().isEqual()', () => {
     }
   });
 
-  it('returns true if the query is the same instance', async () => {
+  it('returns true if the query is the same instance', async function() {
     const query = await firebase.database().ref();
     const same = query.isEqual(query);
     same.should.eql(true);
   });
 
-  it('returns false if the query is different', async () => {
+  it('returns false if the query is different', async function() {
     const query = await firebase.database().ref();
     const other = await firebase
       .database()
@@ -45,7 +45,7 @@ describe('database().ref().isEqual()', () => {
     same.should.eql(false);
   });
 
-  it('returns true if the query is created differently', async () => {
+  it('returns true if the query is created differently', async function() {
     const query = await firebase
       .database()
       .ref()

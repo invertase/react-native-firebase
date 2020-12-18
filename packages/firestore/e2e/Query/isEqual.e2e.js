@@ -16,8 +16,8 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().isEqual()', () => {
-  it('throws if other is not a Query', () => {
+describe('firestore().collection().isEqual()', function() {
+  it('throws if other is not a Query', function() {
     try {
       firebase
         .firestore()
@@ -30,7 +30,7 @@ describe('firestore().collection().isEqual()', () => {
     }
   });
 
-  it('returns false when not equal (simple checks)', () => {
+  it('returns false when not equal (simple checks)', function() {
     const subCol = `${COLLECTION}/isequal/simplechecks`;
     const query = firebase.firestore().collection(subCol);
 
@@ -70,7 +70,7 @@ describe('firestore().collection().isEqual()', () => {
     eql5.should.be.True();
   });
 
-  it('returns false when not equal (expensive checks)', () => {
+  it('returns false when not equal (expensive checks)', function() {
     const query = firebase
       .firestore()
       .collection(COLLECTION)
@@ -122,7 +122,7 @@ describe('firestore().collection().isEqual()', () => {
     eql4.should.be.False();
   });
 
-  it('returns true when equal', () => {
+  it('returns true when equal', function() {
     const query = firebase
       .firestore()
       .collection(COLLECTION)

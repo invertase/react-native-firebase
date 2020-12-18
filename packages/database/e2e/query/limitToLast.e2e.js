@@ -19,11 +19,15 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/limitToLast`;
 
-describe('database().ref().limitToLast()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().limitToLast()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if limit is invalid', async () => {
+  it('throws if limit is invalid', async function() {
     try {
       await firebase
         .database()
@@ -36,7 +40,7 @@ describe('database().ref().limitToLast()', () => {
     }
   });
 
-  it('throws if limit has already been set', async () => {
+  it('throws if limit has already been set', async function() {
     try {
       await firebase
         .database()
@@ -52,7 +56,7 @@ describe('database().ref().limitToLast()', () => {
     }
   });
 
-  it('returns a limited array data set', async () => {
+  it('returns a limited array data set', async function() {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = {
@@ -72,7 +76,7 @@ describe('database().ref().limitToLast()', () => {
       });
   });
 
-  it('returns a limited object data set', async () => {
+  it('returns a limited object data set', async function() {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = {
@@ -97,7 +101,7 @@ describe('database().ref().limitToLast()', () => {
       });
   });
 
-  it('returns a null value when not possible to limit', async () => {
+  it('returns a null value when not possible to limit', async function() {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = 'foo';

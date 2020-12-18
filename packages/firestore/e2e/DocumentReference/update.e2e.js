@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().update()', () => {
-  before(() => wipe());
-  it('throws if no arguments are provided', () => {
+describe('firestore.doc().update()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if no arguments are provided', function() {
     try {
       firebase
         .firestore()
@@ -34,7 +36,7 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('throws if document does not exist', async () => {
+  it('throws if document does not exist', async function() {
     try {
       await firebase
         .firestore()
@@ -47,7 +49,7 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('throws if field/value sequence is invalid', () => {
+  it('throws if field/value sequence is invalid', function() {
     try {
       firebase
         .firestore()
@@ -60,7 +62,7 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('updates data with an object value', async () => {
+  it('updates data with an object value', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value };
@@ -74,7 +76,7 @@ describe('firestore.doc().update()', () => {
     await ref.delete();
   });
 
-  it('updates data with an key/value pairs', async () => {
+  it('updates data with an key/value pairs', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value, bar: value };

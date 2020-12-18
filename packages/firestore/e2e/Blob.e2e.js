@@ -25,8 +25,8 @@ const testStringLarge = JSON.stringify(testObjectLarge);
 const testBufferLarge = Buffer.from(testStringLarge);
 const testBase64Large = testBufferLarge.toString('base64');
 
-describe('firestore.Blob', () => {
-  it('should throw if constructed manually', () => {
+describe('firestore.Blob', function() {
+  it('should throw if constructed manually', function() {
     try {
       new firebase.firestore.Blob();
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -36,12 +36,12 @@ describe('firestore.Blob', () => {
     }
   });
 
-  it('should be exported as a static', () => {
+  it('should be exported as a static', function() {
     const { Blob } = firebase.firestore;
     should.exist(Blob);
   });
 
-  it('.fromBase64String() -> returns new instance of Blob', async () => {
+  it('.fromBase64String() -> returns new instance of Blob', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     myBlob.should.be.instanceOf(Blob);
@@ -53,7 +53,7 @@ describe('firestore.Blob', () => {
     );
   });
 
-  it('.fromBase64String() -> throws if arg not typeof string and length > 0', async () => {
+  it('.fromBase64String() -> throws if arg not typeof string and length > 0', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     myBlob.should.be.instanceOf(Blob);
@@ -61,7 +61,7 @@ describe('firestore.Blob', () => {
     (() => Blob.fromBase64String('')).should.throwError();
   });
 
-  it('.fromUint8Array() -> returns new instance of Blob', async () => {
+  it('.fromUint8Array() -> returns new instance of Blob', async function() {
     const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromUint8Array(testUInt8Array);
@@ -70,7 +70,7 @@ describe('firestore.Blob', () => {
     json.hello.should.equal('world');
   });
 
-  it('.fromUint8Array() -> throws if arg not instanceof Uint8Array', async () => {
+  it('.fromUint8Array() -> throws if arg not instanceof Uint8Array', async function() {
     const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromUint8Array(testUInt8Array);
@@ -78,7 +78,7 @@ describe('firestore.Blob', () => {
     (() => Blob.fromUint8Array('derp')).should.throwError();
   });
 
-  it('.toString() -> returns string representation of blob instance', async () => {
+  it('.toString() -> returns string representation of blob instance', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     myBlob.should.be.instanceOf(Blob);
@@ -89,7 +89,7 @@ describe('firestore.Blob', () => {
     );
   });
 
-  it('.isEqual() -> returns true or false', async () => {
+  it('.isEqual() -> returns true or false', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     const myBlob2 = Blob.fromBase64String(testBase64Large);
@@ -97,7 +97,7 @@ describe('firestore.Blob', () => {
     myBlob2.isEqual(myBlob).should.equal(false);
   });
 
-  it('.isEqual() -> throws if arg not instanceof Blob', async () => {
+  it('.isEqual() -> throws if arg not instanceof Blob', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     const myBlob2 = Blob.fromBase64String(testBase64Large);
@@ -105,14 +105,14 @@ describe('firestore.Blob', () => {
     (() => myBlob2.isEqual('derp')).should.throwError();
   });
 
-  it('.toBase64() -> returns base64 string', async () => {
+  it('.toBase64() -> returns base64 string', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     myBlob.should.be.instanceOf(Blob);
     myBlob.toBase64().should.equal(testBase64);
   });
 
-  it('.toUint8Array() -> returns Uint8Array', async () => {
+  it('.toUint8Array() -> returns Uint8Array', async function() {
     const { Blob } = firebase.firestore;
     const myBlob = Blob.fromBase64String(testBase64);
     const testUInt8Array = new jet.context.window.Uint8Array(testBuffer);

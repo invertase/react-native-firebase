@@ -1,24 +1,24 @@
 import { firebase, FirebaseAdMobTypes } from '../lib';
 
-describe('Admob', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('Admob', function() {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       expect(app.admob).toBeDefined();
       expect(app.admob().app).toEqual(app);
     });
   });
 
-  describe('setRequestConfiguration()', () => {
-    it('throws if config is not an object', () => {
+  describe('setRequestConfiguration()', function() {
+    it('throws if config is not an object', function() {
       // @ts-ignore
       expect(() => firebase.admob().setRequestConfiguration('123')).toThrowError(
         "firebase.admob().setRequestConfiguration(*) 'requestConfiguration' expected an object value",
       );
     });
 
-    describe('maxAdContentRating', () => {
-      it('throws if maxAdContentRating is invalid', () => {
+    describe('maxAdContentRating', function() {
+      it('throws if maxAdContentRating is invalid', function() {
         expect(() =>
           firebase.admob().setRequestConfiguration({
             maxAdContentRating: 'Y' as FirebaseAdMobTypes.MaxAdContentRating[keyof FirebaseAdMobTypes.MaxAdContentRating],
@@ -29,8 +29,8 @@ describe('Admob', () => {
       });
     });
 
-    describe('tagForChildDirectedTreatment', () => {
-      it('throws if tagForChildDirectedTreatment not a boolean', () => {
+    describe('tagForChildDirectedTreatment', function() {
+      it('throws if tagForChildDirectedTreatment not a boolean', function() {
         expect(() =>
           firebase.admob().setRequestConfiguration({
             // @ts-ignore
@@ -42,8 +42,8 @@ describe('Admob', () => {
       });
     });
 
-    describe('tagForUnderAgeOfConsent', () => {
-      it('throws if tagForUnderAgeOfConsent not a boolean', () => {
+    describe('tagForUnderAgeOfConsent', function() {
+      it('throws if tagForUnderAgeOfConsent not a boolean', function() {
         expect(() =>
           firebase.admob().setRequestConfiguration({
             // @ts-ignore

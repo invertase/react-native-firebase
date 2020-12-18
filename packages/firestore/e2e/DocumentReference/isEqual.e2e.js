@@ -16,8 +16,8 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().isEqual()', () => {
-  it('throws if other is not a DocumentReference', () => {
+describe('firestore.doc().isEqual()', function() {
+  it('throws if other is not a DocumentReference', function() {
     try {
       firebase
         .firestore()
@@ -30,7 +30,7 @@ describe('firestore.doc().isEqual()', () => {
     }
   });
 
-  it('returns false when not equal', () => {
+  it('returns false when not equal', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/foo`));
@@ -42,7 +42,7 @@ describe('firestore.doc().isEqual()', () => {
     eql2.should.be.False();
   });
 
-  it('returns true when equal', () => {
+  it('returns true when equal', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(docRef);

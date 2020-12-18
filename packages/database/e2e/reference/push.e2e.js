@@ -19,8 +19,8 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/push`;
 
-describe('database().ref().push()', () => {
-  it('throws if on complete callback is not a function', () => {
+describe('database().ref().push()', function() {
+  it('throws if on complete callback is not a function', function() {
     try {
       firebase
         .database()
@@ -33,7 +33,7 @@ describe('database().ref().push()', () => {
     }
   });
 
-  it('returns a promise when no value is passed', () => {
+  it('returns a promise when no value is passed', function() {
     const ref = firebase.database().ref(`${TEST_PATH}/boop`);
     const pushed = ref.push();
     return pushed
@@ -48,7 +48,7 @@ describe('database().ref().push()', () => {
       });
   });
 
-  it('returns a promise and sets the provided value', () => {
+  it('returns a promise and sets the provided value', function() {
     const ref = firebase.database().ref(`${TEST_PATH}/value`);
     const pushed = ref.push(6);
     return pushed
@@ -63,7 +63,7 @@ describe('database().ref().push()', () => {
       });
   });
 
-  it('returns a to the callback if provided once set', async () => {
+  it('returns a to the callback if provided once set', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/callback`);
     const value = Date.now();
@@ -74,7 +74,7 @@ describe('database().ref().push()', () => {
     callback.should.be.calledOnce();
   });
 
-  it('throws if push errors', async () => {
+  it('throws if push errors', async function() {
     const ref = firebase.database().ref('nope');
     return ref.push('foo').catch(error => {
       error.message.should.containEql("doesn't have permission to access");
@@ -82,7 +82,7 @@ describe('database().ref().push()', () => {
     });
   });
 
-  it('returns an error to the callback', async () => {
+  it('returns an error to the callback', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref('nope');
     ref.push('foo', error => {

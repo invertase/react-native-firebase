@@ -19,8 +19,8 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/remove`;
 
-describe('database().ref().remove()', () => {
-  it('throws if onComplete is not a function', async () => {
+describe('database().ref().remove()', function() {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -33,7 +33,7 @@ describe('database().ref().remove()', () => {
     }
   });
 
-  it('removes a value at the path', async () => {
+  it('removes a value at the path', async function() {
     const ref = firebase.database().ref(TEST_PATH);
     await ref.set('foo');
     await ref.remove();

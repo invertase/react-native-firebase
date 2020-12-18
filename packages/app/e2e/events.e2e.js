@@ -21,9 +21,9 @@ const eventBody = {
   foo: 'bar',
 };
 
-describe('Core -> EventEmitter', () => {
-  describe('ReactNativeFirebaseEventEmitter', () => {
-    it('queues events before app is ready', async () => {
+describe('Core -> EventEmitter', function() {
+  describe('ReactNativeFirebaseEventEmitter', function() {
+    it('queues events before app is ready', async function() {
       const { eventsPing, eventsNotifyReady, eventsGetListeners } = NativeModules.RNFBAppModule;
       await eventsNotifyReady(false);
 
@@ -57,7 +57,7 @@ describe('Core -> EventEmitter', () => {
       should.equal(nativeListenersAfter.events.pong, undefined);
     });
 
-    it('queues events before a js listener is registered', async () => {
+    it('queues events before a js listener is registered', async function() {
       const {
         eventsPing,
         eventsNotifyReady,

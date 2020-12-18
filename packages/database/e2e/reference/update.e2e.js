@@ -19,15 +19,15 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/update`;
 
-describe('database().ref().update()', () => {
-  after(async () => {
+describe('database().ref().update()', function() {
+  after(async function() {
     await firebase
       .database()
       .ref(TEST_PATH)
       .remove();
   });
 
-  it('throws if values is not an object', async () => {
+  it('throws if values is not an object', async function() {
     try {
       await firebase
         .database()
@@ -40,7 +40,7 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('throws if values does not contain any values', async () => {
+  it('throws if values does not contain any values', async function() {
     try {
       await firebase
         .database()
@@ -53,7 +53,7 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('throws if update paths are not valid', async () => {
+  it('throws if update paths are not valid', async function() {
     try {
       await firebase
         .database()
@@ -68,7 +68,7 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -86,7 +86,7 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('updates values', async () => {
+  it('updates values', async function() {
     const value = Date.now();
     const ref = firebase.database().ref(TEST_PATH);
     await ref.update({
@@ -100,7 +100,7 @@ describe('database().ref().update()', () => {
     );
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function() {
     const value = Date.now();
     return new Promise(async resolve => {
       await firebase

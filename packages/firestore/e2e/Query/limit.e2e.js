@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().limit()', () => {
-  before(() => wipe());
-  it('throws if limit is invalid', () => {
+describe('firestore().collection().limit()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if limit is invalid', function() {
     try {
       firebase
         .firestore()
@@ -32,7 +34,7 @@ describe('firestore().collection().limit()', () => {
     }
   });
 
-  it('sets limit on internals', async () => {
+  it('sets limit on internals', async function() {
     const colRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -41,7 +43,7 @@ describe('firestore().collection().limit()', () => {
     colRef._modifiers.options.limit.should.eql(123);
   });
 
-  it('limits the number of documents', async () => {
+  it('limits the number of documents', async function() {
     const colRef = firebase.firestore().collection(COLLECTION);
 
     // Add 3

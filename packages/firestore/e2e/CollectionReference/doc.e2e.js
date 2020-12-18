@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.collection().doc()', () => {
-  before(() => wipe());
-  it('throws if path is not a document', () => {
+describe('firestore.collection().doc()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if path is not a document', function() {
     try {
       firebase
         .firestore()
@@ -32,7 +34,7 @@ describe('firestore.collection().doc()', () => {
     }
   });
 
-  it('generates an ID if no path is provided', () => {
+  it('generates an ID if no path is provided', function() {
     const instance = firebase
       .firestore()
       .collection(COLLECTION)
@@ -40,7 +42,7 @@ describe('firestore.collection().doc()', () => {
     should.equal(20, instance.id.length);
   });
 
-  it('uses path if provided', () => {
+  it('uses path if provided', function() {
     const instance = firebase
       .firestore()
       .collection(COLLECTION)

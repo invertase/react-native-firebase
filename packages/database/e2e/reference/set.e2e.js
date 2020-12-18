@@ -19,11 +19,15 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/set`;
 
-describe('database().ref().set()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().set()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if no value is provided', async () => {
+  it('throws if no value is provided', async function() {
     try {
       await firebase
         .database()
@@ -36,7 +40,7 @@ describe('database().ref().set()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -49,7 +53,7 @@ describe('database().ref().set()', () => {
     }
   });
 
-  it('sets a new value', async () => {
+  it('sets a new value', async function() {
     const value = Date.now();
     const ref = firebase.database().ref(TEST_PATH);
     await ref.set(value);
@@ -57,7 +61,7 @@ describe('database().ref().set()', () => {
     snapshot.val().should.eql(value);
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function() {
     const value = Date.now();
     return new Promise(async resolve => {
       await firebase
@@ -67,7 +71,7 @@ describe('database().ref().set()', () => {
     });
   });
 
-  it('throws if permission defined', async () => {
+  it('throws if permission defined', async function() {
     const value = Date.now();
     try {
       await firebase

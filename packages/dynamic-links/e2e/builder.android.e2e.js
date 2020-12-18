@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.android', () => {
-  it('throws if android is not an object', () => {
+describe('dynamicLinks() dynamicLinkParams.android', function() {
+  it('throws if android is not an object', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
     }
   });
 
-  it('throws if android.fallbackUrl is not a string', () => {
+  it('throws if android.fallbackUrl is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -46,7 +46,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
     }
   });
 
-  it('throws if android.minimumVersion is not a string', () => {
+  it('throws if android.minimumVersion is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -61,7 +61,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
     }
   });
 
-  it('throws if android.packageName is not a string', () => {
+  it('throws if android.packageName is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -76,7 +76,7 @@ describe('dynamicLinks() dynamicLinkParams.android', () => {
     }
   });
 
-  it('throws if android.packageName is not set', () => {
+  it('throws if android.packageName is not set', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

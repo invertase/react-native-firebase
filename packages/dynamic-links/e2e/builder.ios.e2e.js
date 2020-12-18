@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.ios', () => {
-  it('throws if ios is not an object', () => {
+describe('dynamicLinks() dynamicLinkParams.ios', function() {
+  it('throws if ios is not an object', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.appStoreId is not a string', () => {
+  it('throws if ios.appStoreId is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -46,7 +46,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.bundleId is not a string', () => {
+  it('throws if ios.bundleId is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -61,7 +61,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.customScheme is not a string', () => {
+  it('throws if ios.customScheme is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -76,7 +76,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.fallbackUrl is not a string', () => {
+  it('throws if ios.fallbackUrl is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -91,7 +91,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.iPadBundleId is not a string', () => {
+  it('throws if ios.iPadBundleId is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -106,7 +106,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.iPadFallbackUrl is not a string', () => {
+  it('throws if ios.iPadFallbackUrl is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -121,7 +121,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.minimumVersion is not a string', () => {
+  it('throws if ios.minimumVersion is not a string', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -136,7 +136,7 @@ describe('dynamicLinks() dynamicLinkParams.ios', () => {
     }
   });
 
-  it('throws if ios.bundleId is not set', () => {
+  it('throws if ios.bundleId is not set', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

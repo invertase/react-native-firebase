@@ -17,9 +17,11 @@
 const { wipe } = require('./helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.DocumentChange', () => {
-  before(() => wipe());
-  it('.doc -> returns a DocumentSnapshot', async () => {
+describe('firestore.DocumentChange', function() {
+  before(function() {
+    return wipe();
+  });
+  it('.doc -> returns a DocumentSnapshot', async function() {
     const colRef = firebase.firestore().collection(COLLECTION);
     await colRef.add({});
     const snapshot = await colRef.limit(1).get();
@@ -30,7 +32,7 @@ describe('firestore.DocumentChange', () => {
     docChange.doc.constructor.name.should.eql('FirestoreDocumentSnapshot');
   });
 
-  it('returns the correct metadata when adding and removing', async () => {
+  it('returns the correct metadata when adding and removing', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/docChanges/docChangesCollection`);
     const doc1 = firebase.firestore().doc(`${COLLECTION}/docChanges/docChangesCollection/doc1`);
 
@@ -70,7 +72,7 @@ describe('firestore.DocumentChange', () => {
     unsub();
   });
 
-  it('returns the correct metadata when modifying documents', async () => {
+  it('returns the correct metadata when modifying documents', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/docChanges/docMovedCollection`);
 
     const doc1 = firebase.firestore().doc(`${COLLECTION}/docChanges/docMovedCollection/doc1`);

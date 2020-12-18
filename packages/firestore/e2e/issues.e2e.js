@@ -17,9 +17,9 @@
 
 const COLLECTION = 'firestore';
 
-describe('firestore()', () => {
-  describe(COLLECTION, () => {
-    before(async () => {
+describe('firestore()', function() {
+  describe(COLLECTION, function() {
+    before(async function() {
       await Promise.all([
         firebase
           .firestore()
@@ -48,7 +48,7 @@ describe('firestore()', () => {
       ]);
     });
 
-    it('returns all results', async () => {
+    it('returns all results', async function() {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const allResultsSnapshot = await ref.get();
@@ -74,7 +74,7 @@ describe('firestore()', () => {
       });
     });
 
-    it('returns first page', async () => {
+    it('returns first page', async function() {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const firstPageSnapshot = await ref.limit(2).get();
@@ -89,7 +89,7 @@ describe('firestore()', () => {
       });
     });
 
-    it('returns second page', async () => {
+    it('returns second page', async function() {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const firstPageSnapshot = await ref.limit(2).get();

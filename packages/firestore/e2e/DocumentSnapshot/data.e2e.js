@@ -23,15 +23,17 @@ const blobString = JSON.stringify(blobObject);
 const blobBuffer = Buffer.from(blobString);
 const blobBase64 = blobBuffer.toString('base64');
 
-describe('firestore().doc() -> snapshot.data()', () => {
-  before(() => wipe());
-  it('returns undefined if documet does not exist', async () => {
+describe('firestore().doc() -> snapshot.data()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('returns undefined if documet does not exist', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const snapshot = await ref.get();
     should.equal(snapshot.data(), undefined);
   });
 
-  it('returns an object if exists', async () => {
+  it('returns an object if exists', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
     const data = { foo: 'bar' };
     await ref.set(data);
@@ -40,7 +42,7 @@ describe('firestore().doc() -> snapshot.data()', () => {
     await ref.delete();
   });
 
-  it('returns an object when document is empty', async () => {
+  it('returns an object when document is empty', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
     const data = {};
     await ref.set(data);
@@ -49,11 +51,11 @@ describe('firestore().doc() -> snapshot.data()', () => {
     await ref.delete();
   });
 
-  xit('handles SnapshotOptions', () => {
+  xit('handles SnapshotOptions', function() {
     // TODO
   });
 
-  it('handles all data types', async () => {
+  it('handles all data types', async function() {
     const types = {
       string: '123456',
       stringEmpty: '',

@@ -14,8 +14,8 @@
  *  limitations under the License.
  */
 
-describe('DatabaseQuery/DatabaseQueryModifiers', () => {
-  it('should not mutate previous queries (#2691)', async () => {
+describe('DatabaseQuery/DatabaseQueryModifiers', function() {
+  it('should not mutate previous queries (#2691)', async function() {
     const queryBefore = firebase.database().ref();
     queryBefore._modifiers._modifiers.length.should.equal(0);
 

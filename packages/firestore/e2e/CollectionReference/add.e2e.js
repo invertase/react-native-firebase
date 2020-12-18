@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.collection().add()', () => {
-  before(() => wipe());
-  it('throws if data is not an object', () => {
+describe('firestore.collection().add()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if data is not an object', function() {
     try {
       firebase
         .firestore()
@@ -32,7 +34,7 @@ describe('firestore.collection().add()', () => {
     }
   });
 
-  it('adds a new document', async () => {
+  it('adds a new document', async function() {
     const data = { foo: 'bar' };
     const docRef = await firebase
       .firestore()

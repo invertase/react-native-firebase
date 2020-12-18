@@ -16,9 +16,11 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-describe('firestore().collection().orderBy()', () => {
-  before(() => wipe());
-  it('throws if fieldPath is not valid', () => {
+describe('firestore().collection().orderBy()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if fieldPath is not valid', function() {
     try {
       firebase
         .firestore()
@@ -31,7 +33,7 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if fieldPath string is invalid', () => {
+  it('throws if fieldPath string is invalid', function() {
     try {
       firebase
         .firestore()
@@ -44,7 +46,7 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if direction string is not valid', () => {
+  it('throws if direction string is not valid', function() {
     try {
       firebase
         .firestore()
@@ -57,7 +59,7 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if a startAt()/startAfter() has already been set', async () => {
+  it('throws if a startAt()/startAfter() has already been set', async function() {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/startATstartAfter`);
       await doc.set({ foo: 'bar' });
@@ -75,7 +77,7 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if a endAt()/endBefore() has already been set', async () => {
+  it('throws if a endAt()/endBefore() has already been set', async function() {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/endAtendBefore`);
       await doc.set({ foo: 'bar' });
@@ -93,7 +95,7 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if duplicating the order field path', () => {
+  it('throws if duplicating the order field path', function() {
     try {
       firebase
         .firestore()
@@ -108,7 +110,7 @@ describe('firestore().collection().orderBy()', () => {
   });
 
   // FIXME flaky in local tests
-  xit('orders by a value ASC', async () => {
+  xit('orders by a value ASC', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/order/asc`);
 
     await colRef.add({ value: 1 });
@@ -124,7 +126,7 @@ describe('firestore().collection().orderBy()', () => {
   });
 
   // FIXME flaky in local tests
-  xit('orders by a value DESC', async () => {
+  xit('orders by a value DESC', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/order/desc`);
 
     await colRef.add({ value: 1 });

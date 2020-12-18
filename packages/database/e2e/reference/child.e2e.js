@@ -15,8 +15,8 @@
  *
  */
 
-describe('database().ref().child()', () => {
-  it('throws if path is not a string', async () => {
+describe('database().ref().child()', function() {
+  it('throws if path is not a string', async function() {
     try {
       firebase
         .database()
@@ -29,7 +29,7 @@ describe('database().ref().child()', () => {
     }
   });
 
-  it('throws if path is not a valid string', async () => {
+  it('throws if path is not a valid string', async function() {
     try {
       firebase
         .database()

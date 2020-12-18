@@ -17,9 +17,11 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 
-describe('firestore().collection().limitToLast()', () => {
-  before(() => wipe());
-  it('throws if limitToLast is invalid', () => {
+describe('firestore().collection().limitToLast()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if limitToLast is invalid', function() {
     try {
       firebase
         .firestore()
@@ -32,7 +34,7 @@ describe('firestore().collection().limitToLast()', () => {
     }
   });
 
-  it('sets limitToLast on internals', async () => {
+  it('sets limitToLast on internals', async function() {
     const colRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -41,7 +43,7 @@ describe('firestore().collection().limitToLast()', () => {
     should(colRef._modifiers.options.limitToLast).equal(123);
   });
 
-  it('removes limit query if limitToLast is set afterwards', () => {
+  it('removes limit query if limitToLast is set afterwards', function() {
     const colRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -52,7 +54,7 @@ describe('firestore().collection().limitToLast()', () => {
   });
 
   // FIXME flaky on local tests
-  xit('removes limitToLast query if limit is set afterwards', () => {
+  xit('removes limitToLast query if limit is set afterwards', function() {
     const colRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -63,7 +65,7 @@ describe('firestore().collection().limitToLast()', () => {
   });
 
   // FIXME flaky on local tests
-  xit('limitToLast the number of documents', async () => {
+  xit('limitToLast the number of documents', async function() {
     const subCol = `${COLLECTION}/limitToLast/count`;
     const colRef = firebase.firestore().collection(subCol);
 
@@ -90,7 +92,7 @@ describe('firestore().collection().limitToLast()', () => {
     should(results[1].count).equal(1);
   });
 
-  it("throws error if no 'orderBy' is set on the query", () => {
+  it("throws error if no 'orderBy' is set on the query", function() {
     try {
       firebase
         .firestore()

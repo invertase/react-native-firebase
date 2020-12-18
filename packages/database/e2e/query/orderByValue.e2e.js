@@ -19,11 +19,15 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/orderByValue`;
 
-describe('database().ref().orderByValue()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().orderByValue()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if an orderBy call has already been set', async () => {
+  it('throws if an orderBy call has already been set', async function() {
     try {
       await firebase
         .database()
@@ -37,7 +41,7 @@ describe('database().ref().orderByValue()', () => {
     }
   });
   // TODO potentially flakey on CI iOS - possible crash
-  xit('order by value', async () => {
+  xit('order by value', async function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
