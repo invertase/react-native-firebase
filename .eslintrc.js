@@ -41,6 +41,11 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     // off for validation tests
     '@typescript-eslint/ban-ts-ignore': 'off',
+    'mocha/no-skipped-tests': 'off', // we skip tests for a reason, frequently
+    'mocha/no-top-level-hooks': 'off', // potentially has value if anyone wants to refactor
+    'mocha/no-hooks-for-single-case': 'off', // potentially has value
+    'mocha/no-setup-in-describe': 'off', // potentially has value, large refactor here though
+    
   },
   globals: {
     __DEV__: true,

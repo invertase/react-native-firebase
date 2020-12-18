@@ -53,6 +53,7 @@ describe('firebase', function() {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('firebase -> X', function() {
   it('apps should provide an array of apps', function() {
     should.equal(!!firebase.apps.length, true);
