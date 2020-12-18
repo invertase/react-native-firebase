@@ -27,7 +27,7 @@
     "inAppMessaging"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "10.2.0"
+    "@react-native-firebase/app": "10.3.0"
   },
   "publishConfig": {
     "access": "public"
