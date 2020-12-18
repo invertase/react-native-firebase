@@ -47,7 +47,7 @@ describe('messaging().sendMessage(*)', function() {
   });
 
   android.describe('to', () => {
-    it('throws if not a string', function() {
+    it('throws if to is not a string', function() {
       try {
         firebase.messaging().sendMessage({
           to: 123,
@@ -59,7 +59,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom to value', async function() {
       await firebase.messaging().sendMessage({
         to: 'foobar',
       });
@@ -67,7 +67,7 @@ describe('messaging().sendMessage(*)', function() {
   });
 
   android.describe('messageId', () => {
-    it('throws if not a string', function() {
+    it('throws if messageId is not a string', function() {
       try {
         firebase.messaging().sendMessage({
           messageId: 123,
@@ -79,7 +79,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom messageId value', async function() {
       await firebase.messaging().sendMessage({
         messageId: 'foobar',
       });
@@ -123,7 +123,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom ttl value', async function() {
       await firebase.messaging().sendMessage({
         ttl: 123,
       });
@@ -131,7 +131,7 @@ describe('messaging().sendMessage(*)', function() {
   });
 
   android.describe('data', () => {
-    it('throws if not an object', function() {
+    it('throws if data not an object', function() {
       try {
         firebase.messaging().sendMessage({
           data: 123,
@@ -143,7 +143,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom data value', async function() {
       await firebase.messaging().sendMessage({
         data: {
           foo: 'bar',
@@ -153,7 +153,7 @@ describe('messaging().sendMessage(*)', function() {
   });
 
   android.describe('collapseKey', () => {
-    it('throws if not a string', function() {
+    it('throws if collapseKey is not a string', function() {
       try {
         firebase.messaging().sendMessage({
           collapseKey: 123,
@@ -165,7 +165,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom collapseKey value', async function() {
       await firebase.messaging().sendMessage({
         collapseKey: 'foobar',
       });
@@ -173,7 +173,7 @@ describe('messaging().sendMessage(*)', function() {
   });
 
   android.describe('messageType', () => {
-    it('throws if not a string', function() {
+    it('throws if messageType is not a string', function() {
       try {
         firebase.messaging().sendMessage({
           messageType: 123,
@@ -185,7 +185,7 @@ describe('messaging().sendMessage(*)', function() {
       }
     });
 
-    it('accepts custom value', async function() {
+    it('accepts custom messageType value', async function() {
       await firebase.messaging().sendMessage({
         messageType: 'foobar',
       });

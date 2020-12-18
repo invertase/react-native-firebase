@@ -30,14 +30,6 @@ describe('analytics()', function() {
         string: 'string',
       });
     });
-
-    it('log an event with parameters', async function() {
-      await firebase.analytics().logEvent('invertase_event', {
-        boolean: true,
-        number: 1,
-        string: 'string',
-      });
-    });
   });
 
   describe('setAnalyticsCollectionEnabled()', function() {

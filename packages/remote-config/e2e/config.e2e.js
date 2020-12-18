@@ -174,7 +174,7 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('getAll()', function() {
+  describe('getAll() with remote', function() {
     it('should return an object of all available values', function() {
       const config = firebase.remoteConfig().getAll();
       config.number.asNumber().should.equal(1337);
