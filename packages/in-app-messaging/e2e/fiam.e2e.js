@@ -15,17 +15,17 @@
  *
  */
 
-describe('inAppMessaging()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('inAppMessaging()', function() {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       should.exist(app.inAppMessaging);
       app.inAppMessaging().app.should.equal(app);
     });
   });
 
-  describe('setAutomaticDataCollectionEnabled()', () => {
-    it('true', async () => {
+  describe('setAutomaticDataCollectionEnabled()', function() {
+    it('true', async function() {
       if (Platform.ios) {
         // android has this as false when Perf tests run prior - internally all share the same flag on the native SDK
         should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
@@ -35,7 +35,7 @@ describe('inAppMessaging()', () => {
       await Utils.sleep(2000);
     });
     // TODO flakey on CI
-    xit('false', async () => {
+    xit('false', async function() {
       await device.launchApp();
       await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
       should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
@@ -45,7 +45,7 @@ describe('inAppMessaging()', () => {
       await Utils.sleep(1500);
     });
 
-    it('errors if not boolean', async () => {
+    it('errors if not boolean', async function() {
       try {
         firebase.inAppMessaging().setAutomaticDataCollectionEnabled();
         return Promise.reject(new Error('Did not throw'));
@@ -56,15 +56,15 @@ describe('inAppMessaging()', () => {
     });
   });
 
-  xdescribe('setMessagesDisplaySuppressed()', () => {
-    it('false', async () => {
+  xdescribe('setMessagesDisplaySuppressed()', function() {
+    it('false', async function() {
       should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
       await firebase.inAppMessaging().setMessagesDisplaySuppressed(false);
       should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, false);
       await Utils.sleep(2000);
     });
 
-    it('true', async () => {
+    it('true', async function() {
       await device.launchApp();
       await firebase.inAppMessaging().setMessagesDisplaySuppressed(true);
       should.equal(firebase.inAppMessaging().isMessagesDisplaySuppressed, true);
@@ -74,7 +74,7 @@ describe('inAppMessaging()', () => {
       await Utils.sleep(1500);
     });
 
-    it('errors if not boolean', async () => {
+    it('errors if not boolean', async function() {
       try {
         firebase.inAppMessaging().setMessagesDisplaySuppressed();
         return Promise.reject(new Error('Did not throw'));
@@ -85,8 +85,8 @@ describe('inAppMessaging()', () => {
     });
   });
 
-  xdescribe('triggerEvent()', () => {
-    it('no exceptions thrown', async () => {
+  xdescribe('triggerEvent()', function() {
+    it('no exceptions thrown', async function() {
       await device.launchApp();
       await firebase.inAppMessaging().triggerEvent('eventName');
     });

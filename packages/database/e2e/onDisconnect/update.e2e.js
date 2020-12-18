@@ -19,15 +19,17 @@ const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectUpdate`;
 
-describe('database().ref().onDisconnect().update()', () => {
-  after(() => wipe(TEST_PATH));
+describe('database().ref().onDisconnect().update()', function() {
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  afterEach(() => {
+  afterEach(function() {
     // Ensures the db is online before running each test
     firebase.database().goOnline();
   });
 
-  it('throws if values is not an object', async () => {
+  it('throws if values is not an object', async function() {
     try {
       await firebase
         .database()
@@ -41,7 +43,7 @@ describe('database().ref().onDisconnect().update()', () => {
     }
   });
 
-  it('throws if values does not contain any values', async () => {
+  it('throws if values does not contain any values', async function() {
     try {
       await firebase
         .database()
@@ -55,7 +57,7 @@ describe('database().ref().onDisconnect().update()', () => {
     }
   });
 
-  it('throws if update paths are not valid', async () => {
+  it('throws if update paths are not valid', async function() {
     try {
       await firebase
         .database()
@@ -71,7 +73,7 @@ describe('database().ref().onDisconnect().update()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', () => {
+  it('throws if onComplete is not a function', function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
@@ -85,7 +87,7 @@ describe('database().ref().onDisconnect().update()', () => {
     }
   });
 
-  it('updates value when disconnected', async () => {
+  it('updates value when disconnected', async function() {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
@@ -112,7 +114,7 @@ describe('database().ref().onDisconnect().update()', () => {
     );
   });
 
-  it('calls back to the onComplete function', async () => {
+  it('calls back to the onComplete function', async function() {
     const callback = sinon.spy();
     const ref = firebase.database().ref(TEST_PATH);
 

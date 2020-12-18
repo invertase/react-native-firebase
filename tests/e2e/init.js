@@ -25,7 +25,7 @@ const { detox: config } = require('../package.json');
 config.configurations['android.emu.debug'].device.avdName =
   process.env.ANDROID_AVD_NAME || config.configurations['android.emu.debug'].device.avdName;
 
-before(async () => {
+before(async function() {
   await detox.init(config);
   await jet.init();
 });
@@ -49,7 +49,7 @@ beforeEach(async function beforeEach() {
   }
 });
 
-after(async () => {
+after(async function() {
   console.log(' ✨ Tests Complete ✨ ');
   await device.terminateApp();
 });

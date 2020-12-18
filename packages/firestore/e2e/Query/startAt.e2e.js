@@ -16,9 +16,11 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-describe('firestore().collection().starAt()', () => {
-  before(() => wipe());
-  it('throws if no argument provided', () => {
+describe('firestore().collection().starAt()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if no argument provided', function() {
     try {
       firebase
         .firestore()
@@ -33,7 +35,7 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if a inconsistent order number', () => {
+  it('throws if a inconsistent order number', function() {
     try {
       firebase
         .firestore()
@@ -47,7 +49,7 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if providing snapshot and field values', async () => {
+  it('throws if providing snapshot and field values', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -64,7 +66,7 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if provided snapshot does not exist', async () => {
+  it('throws if provided snapshot does not exist', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -81,7 +83,7 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if order used with snapshot but fields do not exist', async () => {
+  it('throws if order used with snapshot but fields do not exist', async function() {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
 
@@ -102,7 +104,7 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('starts at field values', async () => {
+  it('starts at field values', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/startAt/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -124,7 +126,7 @@ describe('firestore().collection().starAt()', () => {
     qs.docs[1].id.should.eql('doc1');
   });
 
-  it('starts at snapshot field values', async () => {
+  it('starts at snapshot field values', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/startAt/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -148,7 +150,7 @@ describe('firestore().collection().starAt()', () => {
     qs.docs[1].id.should.eql('doc3');
   });
 
-  it('startAt at snapshot', async () => {
+  it('startAt at snapshot', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

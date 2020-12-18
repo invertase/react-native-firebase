@@ -17,8 +17,8 @@
 
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().collection()', () => {
-  it('throws if path is not a string', () => {
+describe('firestore.doc().collection()', function() {
+  it('throws if path is not a string', function() {
     try {
       firebase
         .firestore()
@@ -31,7 +31,7 @@ describe('firestore.doc().collection()', () => {
     }
   });
 
-  it('throws if path empty', () => {
+  it('throws if path empty', function() {
     try {
       firebase
         .firestore()
@@ -44,7 +44,7 @@ describe('firestore.doc().collection()', () => {
     }
   });
 
-  it('throws if path does not point to a collection', () => {
+  it('throws if path does not point to a collection', function() {
     try {
       firebase
         .firestore()
@@ -57,7 +57,7 @@ describe('firestore.doc().collection()', () => {
     }
   });
 
-  it('returns a collection instance', () => {
+  it('returns a collection instance', function() {
     const instance1 = firebase
       .firestore()
       .doc(`${COLLECTION}/bar`)

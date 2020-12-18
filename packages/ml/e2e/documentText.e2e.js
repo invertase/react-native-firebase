@@ -42,8 +42,8 @@ function documentTextBaseElementValidate(documentTextBase) {
 
 let testImageFile;
 
-describe('ml.document.text', () => {
-  before(async () => {
+describe('ml.document.text', function() {
+  before(async function() {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
     await firebase
       .storage()
@@ -51,8 +51,8 @@ describe('ml.document.text', () => {
       .writeToFile(testImageFile);
   });
 
-  describe('MLCloudDocumentTextRecognizerOptions', () => {
-    it('throws if not an object', async () => {
+  describe('MLCloudDocumentTextRecognizerOptions', function() {
+    it('throws if not an object', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, 'foo');
         return Promise.reject(new Error('Did not throw Error.'));
@@ -64,7 +64,7 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('throws if enforceCertFingerprintMatch is not a boolean', async () => {
+    it('throws if enforceCertFingerprintMatch is not a boolean', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: 'true',
@@ -78,13 +78,13 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('sets enforceCertFingerprintMatch', async () => {
+    it('sets enforceCertFingerprintMatch', async function() {
       await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
         enforceCertFingerprintMatch: false,
       });
     });
 
-    it('throws if apiKeyOverride is not a string', async () => {
+    it('throws if apiKeyOverride is not a string', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
           apiKeyOverride: true,
@@ -98,7 +98,7 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('throws if languageHints is not an array', async () => {
+    it('throws if languageHints is not an array', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
           languageHints: 'en',
@@ -112,7 +112,7 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('throws if languageHints is empty array', async () => {
+    it('throws if languageHints is empty array', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
           languageHints: [],
@@ -126,7 +126,7 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('throws if languageHints contains non-string', async () => {
+    it('throws if languageHints contains non-string', async function() {
       try {
         await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
           languageHints: [123],
@@ -140,15 +140,15 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('sets hinted languages', async () => {
+    it('sets hinted languages', async function() {
       await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile, {
         languageHints: ['fr'],
       });
     });
   });
 
-  describe('cloudDocumentTextRecognizerProcessImage()', () => {
-    it('should throw if image path is not a string', () => {
+  describe('cloudDocumentTextRecognizerProcessImage()', function() {
+    it('should throw if image path is not a string', function() {
       try {
         firebase.ml().cloudDocumentTextRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -158,7 +158,7 @@ describe('ml.document.text', () => {
       }
     });
 
-    it('should return a MLDocumentText representation for an image', async () => {
+    it('should return a MLDocumentText representation for an image', async function() {
       const res = await firebase.ml().cloudDocumentTextRecognizerProcessImage(testImageFile);
 
       res.text.should.be.a.String();

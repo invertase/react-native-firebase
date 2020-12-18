@@ -15,8 +15,8 @@
  *
  */
 
-describe('database().ref().keepSynced()', () => {
-  it('throws if bool is not a valid type', async () => {
+describe('database().ref().keepSynced()', function() {
+  it('throws if bool is not a valid type', async function() {
     try {
       await firebase
         .database()
@@ -29,7 +29,7 @@ describe('database().ref().keepSynced()', () => {
     }
   });
 
-  it('toggles keepSynced on and off without throwing', async () => {
+  it('toggles keepSynced on and off without throwing', async function() {
     const ref = firebase
       .database()
       .ref('noop')

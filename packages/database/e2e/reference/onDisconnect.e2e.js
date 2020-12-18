@@ -17,8 +17,8 @@
 
 // See onDisconnect directory for specific tests
 
-describe('database().ref().onDisconnect()', () => {
-  it('returns a new DatabaseOnDisconnect instance', () => {
+describe('database().ref().onDisconnect()', function() {
+  it('returns a new DatabaseOnDisconnect instance', function() {
     const instance = firebase
       .database()
       .ref()

@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().delete()', () => {
-  before(() => wipe());
-  it('deletes a document', async () => {
+describe('firestore.doc().delete()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('deletes a document', async function() {
     const ref = firebase.firestore().doc(`${COLLECTION}/deleteme`);
     await ref.set({ foo: 'bar' });
     const snapshot1 = await ref.get();

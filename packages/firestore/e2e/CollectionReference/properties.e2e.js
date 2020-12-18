@@ -17,21 +17,23 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.collection()', () => {
-  before(() => wipe());
-  it('returns the firestore instance', () => {
+describe('firestore.collection()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('returns the firestore instance', function() {
     const instance = firebase.firestore().collection(COLLECTION);
     instance.firestore.app.name.should.eql('[DEFAULT]');
   });
 
-  it('returns the collection id', () => {
+  it('returns the collection id', function() {
     const instance1 = firebase.firestore().collection(COLLECTION);
     const instance2 = firebase.firestore().collection(`${COLLECTION}/bar/baz`);
     instance1.id.should.eql(COLLECTION);
     instance2.id.should.eql('baz');
   });
 
-  it('returns the collection parent', () => {
+  it('returns the collection parent', function() {
     const instance1 = firebase.firestore().collection(COLLECTION);
     should.equal(instance1.parent, null);
     const instance2 = firebase
@@ -42,7 +44,7 @@ describe('firestore.collection()', () => {
     should.equal(instance2.parent.id, 'bar');
   });
 
-  it('returns the firestore path', () => {
+  it('returns the firestore path', function() {
     const instance1 = firebase.firestore().collection(COLLECTION);
     instance1.path.should.eql(COLLECTION);
     const instance2 = firebase

@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.navigation', () => {
-  it('throws if navigation is not an object', () => {
+describe('dynamicLinks() dynamicLinkParams.navigation', function() {
+  it('throws if navigation is not an object', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.navigation', () => {
     }
   });
 
-  it('throws if navigation.forcedRedirectEnabled is not a boolean', () => {
+  it('throws if navigation.forcedRedirectEnabled is not a boolean', function() {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

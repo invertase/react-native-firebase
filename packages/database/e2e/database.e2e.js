@@ -15,15 +15,15 @@
  *
  */
 
-describe('database()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('database()', function() {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       should.exist(app.database);
       app.database().app.should.eql(app);
     });
 
-    it('supports multiple apps', async () => {
+    it('supports multiple apps', async function() {
       firebase.database().app.name.should.eql('[DEFAULT]');
 
       firebase
@@ -37,7 +37,7 @@ describe('database()', () => {
     });
   });
 
-  it('supports custom database URL', async () => {
+  it('supports custom database URL', async function() {
     firebase.database().app.name.should.eql('[DEFAULT]');
 
     firebase
@@ -50,8 +50,8 @@ describe('database()', () => {
       .app.name.should.eql('secondaryFromNative');
   });
 
-  describe('ref()', () => {
-    it('throws if path is not a string', async () => {
+  describe('ref()', function() {
+    it('throws if path is not a string', async function() {
       try {
         firebase.database().ref({ foo: 'bar' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -61,7 +61,7 @@ describe('database()', () => {
       }
     });
 
-    it('throws if path is not a valid string', async () => {
+    it('throws if path is not a valid string', async function() {
       try {
         firebase.database().ref('$$$$$');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -74,8 +74,8 @@ describe('database()', () => {
     });
   });
 
-  describe('refFromURL()', () => {
-    it('throws if url is not a url', async () => {
+  describe('refFromURL()', function() {
+    it('throws if url is not a url', async function() {
       try {
         firebase.database().refFromURL('foobar');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -85,7 +85,7 @@ describe('database()', () => {
       }
     });
 
-    it('throws if url from a different domain', async () => {
+    it('throws if url from a different domain', async function() {
       try {
         firebase.database().refFromURL('https://foobar.firebaseio.com');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -95,7 +95,7 @@ describe('database()', () => {
       }
     });
 
-    it('returns a reference', async () => {
+    it('returns a reference', async function() {
       const ref1 = firebase.database().refFromURL(firebase.database()._customUrlOrRegion);
       const ref2 = firebase
         .database()
@@ -109,14 +109,14 @@ describe('database()', () => {
     });
   });
 
-  describe('goOnline()', () => {
-    it('calls goOnline successfully', async () => {
+  describe('goOnline()', function() {
+    it('calls goOnline successfully', async function() {
       await firebase.database().goOnline();
     });
   });
 
-  describe('goOffline()', () => {
-    it('calls goOffline successfully', async () => {
+  describe('goOffline()', function() {
+    it('calls goOffline successfully', async function() {
       // await Utils.sleep(5000);
       await firebase.database().goOffline();
 
@@ -124,8 +124,8 @@ describe('database()', () => {
     });
   });
 
-  describe('setPersistenceEnabled()', () => {
-    it('throws if enabled is not a boolean', async () => {
+  describe('setPersistenceEnabled()', function() {
+    it('throws if enabled is not a boolean', async function() {
       try {
         firebase.database().setPersistenceEnabled('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -135,14 +135,14 @@ describe('database()', () => {
       }
     });
 
-    it('calls setPersistenceEnabled successfully', async () => {
+    it('calls setPersistenceEnabled successfully', async function() {
       firebase.database().setPersistenceEnabled(true);
       firebase.database().setPersistenceEnabled(false);
     });
   });
 
-  describe('setLoggingEnabled()', () => {
-    it('throws if enabled is not a boolean', async () => {
+  describe('setLoggingEnabled()', function() {
+    it('throws if enabled is not a boolean', async function() {
       try {
         firebase.database().setLoggingEnabled('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -152,14 +152,14 @@ describe('database()', () => {
       }
     });
 
-    it('calls setLoggingEnabled successfully', async () => {
+    it('calls setLoggingEnabled successfully', async function() {
       firebase.database().setLoggingEnabled(true);
       firebase.database().setLoggingEnabled(false);
     });
   });
 
-  describe('setPersistenceCacheSizeBytes()', () => {
-    it('throws if bytes is not a number', async () => {
+  describe('setPersistenceCacheSizeBytes()', function() {
+    it('throws if bytes is not a number', async function() {
       try {
         firebase.database().setPersistenceCacheSizeBytes('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -169,7 +169,7 @@ describe('database()', () => {
       }
     });
 
-    it('throws if bytes is less than 1MB', async () => {
+    it('throws if bytes is less than 1MB', async function() {
       try {
         firebase.database().setPersistenceCacheSizeBytes(1234);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -179,7 +179,7 @@ describe('database()', () => {
       }
     });
 
-    it('throws if bytes is greater than 10MB', async () => {
+    it('throws if bytes is greater than 10MB', async function() {
       try {
         firebase.database().setPersistenceCacheSizeBytes(100000000000000);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -189,20 +189,20 @@ describe('database()', () => {
       }
     });
 
-    it('calls setPersistenceCacheSizeBytes successfully', async () => {
+    it('calls setPersistenceCacheSizeBytes successfully', async function() {
       firebase.database().setPersistenceCacheSizeBytes(1048576); // 1mb
     });
   });
 
-  describe('getServerTime()', () => {
-    it('returns a valid date', async () => {
+  describe('getServerTime()', function() {
+    it('returns a valid date', async function() {
       const date = firebase.database().getServerTime();
       date.getDate.should.be.Function();
     });
   });
 
-  describe('handles invalid references()', () => {
-    it('returns a valid date', async () => {
+  describe('handles invalid references()', function() {
+    it('returns a valid date', async function() {
       try {
         firebase.database().ref('$');
         return Promise.reject(new Error('Did not throw an Error.'));

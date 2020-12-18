@@ -15,9 +15,9 @@
  *
  */
 
-describe('utils()', () => {
-  describe('statics', () => {
-    it('provides native path strings', () => {
+describe('utils()', function() {
+  describe('statics', function() {
+    it('provides native path strings', function() {
       firebase.utils.FilePath.should.be.an.Object();
       if (device.getPlatform() === 'ios') {
         firebase.utils.FilePath.MAIN_BUNDLE.should.be.a.String();

@@ -17,9 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().get()', () => {
-  before(() => wipe());
-  it('throws if get options is not an object', () => {
+describe('firestore().collection().get()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if get options is not an object', function() {
     try {
       firebase
         .firestore()
@@ -32,7 +34,7 @@ describe('firestore().collection().get()', () => {
     }
   });
 
-  it('throws if get options.source is not valid', () => {
+  it('throws if get options.source is not valid', function() {
     try {
       firebase
         .firestore()
@@ -49,7 +51,7 @@ describe('firestore().collection().get()', () => {
     }
   });
 
-  it('returns a QuerySnapshot', async () => {
+  it('returns a QuerySnapshot', async function() {
     const docRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -60,7 +62,7 @@ describe('firestore().collection().get()', () => {
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
   });
 
-  it('returns a correct cache setting (true)', async () => {
+  it('returns a correct cache setting (true)', async function() {
     const docRef = firebase
       .firestore()
       .collection(COLLECTION)
@@ -74,7 +76,7 @@ describe('firestore().collection().get()', () => {
     snapshot.metadata.fromCache.should.be.True();
   });
 
-  it('returns a correct cache setting (false)', async () => {
+  it('returns a correct cache setting (false)', async function() {
     const docRef = firebase
       .firestore()
       .collection(COLLECTION)

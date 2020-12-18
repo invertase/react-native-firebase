@@ -18,9 +18,11 @@ const COLLECTION = 'firestore';
 const NO_RULE_COLLECTION = 'no_rules';
 const { wipe } = require('../helpers');
 
-describe('firestore().doc().onSnapshot()', () => {
-  before(() => wipe());
-  it('throws if no arguments are provided', () => {
+describe('firestore().doc().onSnapshot()', function() {
+  before(function() {
+    return wipe();
+  });
+  it('throws if no arguments are provided', function() {
     try {
       firebase
         .firestore()
@@ -33,7 +35,7 @@ describe('firestore().doc().onSnapshot()', () => {
     }
   });
 
-  it('returns an unsubscribe function', () => {
+  it('returns an unsubscribe function', function() {
     const unsub = firebase
       .firestore()
       .doc(`${COLLECTION}/foo`)
@@ -43,7 +45,7 @@ describe('firestore().doc().onSnapshot()', () => {
     unsub();
   });
 
-  it('accepts a single callback function with snapshot', async () => {
+  it('accepts a single callback function with snapshot', async function() {
     const callback = sinon.spy();
     const unsub = firebase
       .firestore()
@@ -58,7 +60,7 @@ describe('firestore().doc().onSnapshot()', () => {
     unsub();
   });
 
-  it('accepts a single callback function with Error', async () => {
+  it('accepts a single callback function with Error', async function() {
     const callback = sinon.spy();
     const unsub = firebase
       .firestore()
@@ -73,8 +75,8 @@ describe('firestore().doc().onSnapshot()', () => {
     unsub();
   });
 
-  describe('multiple callbacks', () => {
-    it('calls onNext when successful', async () => {
+  describe('multiple callbacks', function() {
+    it('calls onNext when successful', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -91,7 +93,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls onError with Error', async () => {
+    it('calls onError with Error', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -109,8 +111,8 @@ describe('firestore().doc().onSnapshot()', () => {
     });
   });
 
-  describe('objects of callbacks', () => {
-    it('calls next when successful', async () => {
+  describe('objects of callbacks', function() {
+    it('calls next when successful', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -130,7 +132,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -151,8 +153,8 @@ describe('firestore().doc().onSnapshot()', () => {
     });
   });
 
-  describe('SnapshotListenerOptions + callbacks', () => {
-    it('calls callback with snapshot when successful', async () => {
+  describe('SnapshotListenerOptions + callbacks', function() {
+    it('calls callback with snapshot when successful', async function() {
       const callback = sinon.spy();
       const unsub = firebase
         .firestore()
@@ -172,7 +174,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls callback with Error', async () => {
+    it('calls callback with Error', async function() {
       const callback = sinon.spy();
       const unsub = firebase
         .firestore()
@@ -192,7 +194,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls next with snapshot when successful', async () => {
+    it('calls next with snapshot when successful', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -215,7 +217,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -239,8 +241,8 @@ describe('firestore().doc().onSnapshot()', () => {
     });
   });
 
-  describe('SnapshotListenerOptions + object of callbacks', () => {
-    it('calls next with snapshot when successful', async () => {
+  describe('SnapshotListenerOptions + object of callbacks', function() {
+    it('calls next with snapshot when successful', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -265,7 +267,7 @@ describe('firestore().doc().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function() {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
@@ -291,7 +293,7 @@ describe('firestore().doc().onSnapshot()', () => {
     });
   });
 
-  it('throws if SnapshotListenerOptions is invalid', () => {
+  it('throws if SnapshotListenerOptions is invalid', function() {
     try {
       firebase
         .firestore()
@@ -308,7 +310,7 @@ describe('firestore().doc().onSnapshot()', () => {
     }
   });
 
-  it('throws if next callback is invalid', () => {
+  it('throws if next callback is invalid', function() {
     try {
       firebase
         .firestore()
@@ -323,7 +325,7 @@ describe('firestore().doc().onSnapshot()', () => {
     }
   });
 
-  it('throws if error callback is invalid', () => {
+  it('throws if error callback is invalid', function() {
     try {
       firebase
         .firestore()
@@ -338,7 +340,7 @@ describe('firestore().doc().onSnapshot()', () => {
     }
   });
 
-  it('unsubscribes from further updates', async () => {
+  it('unsubscribes from further updates', async function() {
     const callback = sinon.spy();
     const doc = firebase.firestore().doc(`${COLLECTION}/unsub`);
 

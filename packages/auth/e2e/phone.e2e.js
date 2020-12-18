@@ -3,8 +3,8 @@
 
 const { clearAllUsers, getLastSmsCode, getRandomPhoneNumber } = require('./helpers');
 
-describe('auth() => Phone', () => {
-  before(async () => {
+describe('auth() => Phone', function() {
+  before(async function() {
     try {
       await clearAllUsers();
     } catch (e) {
@@ -14,15 +14,15 @@ describe('auth() => Phone', () => {
     await Utils.sleep(50);
   });
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     }
   });
 
-  describe('signInWithPhoneNumber', () => {
-    it('signs in with a valid code', async () => {
+  describe('signInWithPhoneNumber', function() {
+    it('signs in with a valid code', async function() {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
@@ -36,7 +36,7 @@ describe('auth() => Phone', () => {
       // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
     });
 
-    it('errors on invalid code', async () => {
+    it('errors on invalid code', async function() {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
@@ -54,8 +54,8 @@ describe('auth() => Phone', () => {
     });
   });
 
-  describe('verifyPhoneNumber', async () => {
-    it('successfully verifies', async () => {
+  describe('verifyPhoneNumber', function() {
+    it('successfully verifies', async function() {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
@@ -63,7 +63,7 @@ describe('auth() => Phone', () => {
       await firebase.auth().verifyPhoneNumber(testPhone, false, false);
     });
 
-    it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async () => {
+    it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async function() {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
@@ -71,7 +71,7 @@ describe('auth() => Phone', () => {
       await firebase.auth().verifyPhoneNumber(testPhone, 0, false);
     });
 
-    it('throws an error with an invalid on event', async () => {
+    it('throws an error with an invalid on event', async function() {
       const testPhone = await getRandomPhoneNumber();
       try {
         await firebase
@@ -88,7 +88,7 @@ describe('auth() => Phone', () => {
       }
     });
 
-    it('throws an error with an invalid observer event', async () => {
+    it('throws an error with an invalid observer event', async function() {
       const testPhone = await getRandomPhoneNumber();
       try {
         await firebase
@@ -105,7 +105,7 @@ describe('auth() => Phone', () => {
       }
     });
 
-    it('successfully runs verification complete handler', async () => {
+    it('successfully runs verification complete handler', async function() {
       const testPhone = await getRandomPhoneNumber();
       await firebase
         .auth()
@@ -115,7 +115,7 @@ describe('auth() => Phone', () => {
       return Promise.resolve();
     });
 
-    it('successfully runs and adds emitters', async () => {
+    it('successfully runs and adds emitters', async function() {
       const testPhone = await getRandomPhoneNumber();
       const obervserCb = () => {};
       const errorCb = () => {};
@@ -129,7 +129,7 @@ describe('auth() => Phone', () => {
         .on('state_changed', obervserCb, errorCb, successCb, () => {});
     });
 
-    it('catches an error and emits an error event', async () => {
+    it('catches an error and emits an error event', async function() {
       return firebase
         .auth()
         .verifyPhoneNumber('test')

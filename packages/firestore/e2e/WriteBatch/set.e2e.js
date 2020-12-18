@@ -16,8 +16,8 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore.WriteBatch.set()', () => {
-  it('throws if a DocumentReference instance is not provided', () => {
+describe('firestore.WriteBatch.set()', function() {
+  it('throws if a DocumentReference instance is not provided', function() {
     try {
       firebase
         .firestore()
@@ -30,7 +30,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if a DocumentReference firestore instance is different', () => {
+  it('throws if a DocumentReference firestore instance is different', function() {
     try {
       const app2 = firebase.app('secondaryFromNative');
       const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
@@ -48,7 +48,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if a data is not an object', () => {
+  it('throws if a data is not an object', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
@@ -63,7 +63,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if a options is not an object', () => {
+  it('throws if a options is not an object', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
@@ -78,7 +78,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if merge and mergeFields is provided', () => {
+  it('throws if merge and mergeFields is provided', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -99,7 +99,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if merge is not a boolean', () => {
+  it('throws if merge is not a boolean', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -119,7 +119,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if mergeFields is not an array', () => {
+  it('throws if mergeFields is not an array', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -139,7 +139,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if mergeFields item is not valid', () => {
+  it('throws if mergeFields item is not valid', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
@@ -162,7 +162,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('throws if string fieldpath is invalid', () => {
+  it('throws if string fieldpath is invalid', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
@@ -183,7 +183,7 @@ describe('firestore.WriteBatch.set()', () => {
     }
   });
 
-  it('accepts string fieldpath & FieldPath', () => {
+  it('accepts string fieldpath & FieldPath', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
     firebase
@@ -198,7 +198,7 @@ describe('firestore.WriteBatch.set()', () => {
       );
   });
 
-  it('adds the DocumentReference to the internal writes', () => {
+  it('adds the DocumentReference to the internal writes', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
 
     const wb = firebase

@@ -16,8 +16,8 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore.WriteBatch.delete()', () => {
-  it('throws if a DocumentReference instance is not provided', () => {
+describe('firestore.WriteBatch.delete()', function() {
+  it('throws if a DocumentReference instance is not provided', function() {
     try {
       firebase
         .firestore()
@@ -30,7 +30,7 @@ describe('firestore.WriteBatch.delete()', () => {
     }
   });
 
-  it('throws if a DocumentReference firestore instance is different', () => {
+  it('throws if a DocumentReference firestore instance is different', function() {
     try {
       const app2 = firebase.app('secondaryFromNative');
       const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
@@ -48,7 +48,7 @@ describe('firestore.WriteBatch.delete()', () => {
     }
   });
 
-  it('adds the DocumentReference to the internal writes', () => {
+  it('adds the DocumentReference to the internal writes', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
     const wb = firebase
       .firestore()

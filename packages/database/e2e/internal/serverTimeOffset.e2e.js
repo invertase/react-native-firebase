@@ -15,8 +15,8 @@
  *
  */
 
-describe("database().ref('.info/serverTimeOffset')", () => {
-  it('returns a valid number value', async () => {
+describe("database().ref('.info/serverTimeOffset')", function() {
+  it('returns a valid number value', async function() {
     const snapshot = await firebase
       .database()
       .ref('.info/serverTimeOffset')

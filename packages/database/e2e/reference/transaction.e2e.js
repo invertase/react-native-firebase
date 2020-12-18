@@ -20,11 +20,15 @@ const { PATH, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/transaction`;
 const NOOP = () => {};
 
-describe('database().ref().transaction()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().transaction()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if no transactionUpdate is provided', async () => {
+  it('throws if no transactionUpdate is provided', async function() {
     try {
       await firebase
         .database()
@@ -37,7 +41,7 @@ describe('database().ref().transaction()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -50,7 +54,7 @@ describe('database().ref().transaction()', () => {
     }
   });
 
-  it('throws if applyLocally is not a boolean', async () => {
+  it('throws if applyLocally is not a boolean', async function() {
     try {
       await firebase
         .database()
@@ -79,7 +83,7 @@ describe('database().ref().transaction()', () => {
     snapshot.val().should.equal(2);
   });
 
-  it('aborts transaction if undefined returned', async () => {
+  it('aborts transaction if undefined returned', async function() {
     const ref = firebase
       .database()
       .ref(TEST_PATH)
@@ -107,7 +111,7 @@ describe('database().ref().transaction()', () => {
   });
 
   // FIXME failing for me locally on android and ios as well
-  xit('passes valid data through the callback', async () => {
+  xit('passes valid data through the callback', async function() {
     // FIXME failing in CI
     if (!global.isCI) {
       const ref = firebase
@@ -139,7 +143,7 @@ describe('database().ref().transaction()', () => {
   });
 
   // FIXME failing for me locally on android and ios as well
-  xit('throws when an error occurs', async () => {
+  xit('throws when an error occurs', async function() {
     // FIXME failing in CI
     if (!global.isCI) {
       const ref = firebase.database().ref('nope');
@@ -159,7 +163,7 @@ describe('database().ref().transaction()', () => {
   });
 
   // FIXME failing for me locally on android and ios as well
-  xit('passes error back to the callback', async () => {
+  xit('passes error back to the callback', async function() {
     // FIXME failing in CI
     if (!global.isCI) {
       const ref = firebase.database().ref('nope');
@@ -193,7 +197,7 @@ describe('database().ref().transaction()', () => {
   });
 
   // FIXME failing for me locally on android and ios as well
-  xit('sets a value if one does not exist', async () => {
+  xit('sets a value if one does not exist', async function() {
     // FIXME failing in CI
     if (!global.isCI) {
       const ref = firebase

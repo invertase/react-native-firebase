@@ -17,10 +17,12 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().endBefore()', () => {
-  before(() => wipe());
+describe('firestore().collection().endBefore()', function() {
+  before(function() {
+    return wipe();
+  });
 
-  it('throws if no argument provided', () => {
+  it('throws if no argument provided', function() {
     try {
       firebase
         .firestore()
@@ -35,7 +37,7 @@ describe('firestore().collection().endBefore()', () => {
     }
   });
 
-  it('throws if a inconsistent order number', () => {
+  it('throws if a inconsistent order number', function() {
     try {
       firebase
         .firestore()
@@ -49,7 +51,7 @@ describe('firestore().collection().endBefore()', () => {
     }
   });
 
-  it('throws if providing snapshot and field values', async () => {
+  it('throws if providing snapshot and field values', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -67,7 +69,7 @@ describe('firestore().collection().endBefore()', () => {
     }
   });
 
-  it('throws if provided snapshot does not exist', async () => {
+  it('throws if provided snapshot does not exist', async function() {
     try {
       const doc = await firebase
         .firestore()
@@ -84,7 +86,7 @@ describe('firestore().collection().endBefore()', () => {
     }
   });
 
-  it('throws if order used with snapshot but fields do not exist', async () => {
+  it('throws if order used with snapshot but fields do not exist', async function() {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
       await doc.set({ foo: { bar: 'baz' } });
@@ -104,7 +106,7 @@ describe('firestore().collection().endBefore()', () => {
     }
   });
 
-  it('ends before field values', async () => {
+  it('ends before field values', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endBefore/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -125,7 +127,7 @@ describe('firestore().collection().endBefore()', () => {
     qs.docs[0].id.should.eql('doc3');
   });
 
-  xit('ends before snapshot field values', async () => {
+  xit('ends before snapshot field values', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endBefore/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -148,7 +150,7 @@ describe('firestore().collection().endBefore()', () => {
     qs.docs[0].id.should.eql('doc3');
   });
 
-  it('ends before snapshot', async () => {
+  it('ends before snapshot', async function() {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endBefore/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

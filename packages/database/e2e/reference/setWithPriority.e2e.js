@@ -19,11 +19,15 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/setWithPriority`;
 
-describe('database().ref().setWithPriority()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().setWithPriority()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if newVal is not defined', async () => {
+  it('throws if newVal is not defined', async function() {
     try {
       await firebase
         .database()
@@ -36,7 +40,7 @@ describe('database().ref().setWithPriority()', () => {
     }
   });
 
-  it('throws if newPriority is incorrect type', async () => {
+  it('throws if newPriority is incorrect type', async function() {
     try {
       await firebase
         .database()
@@ -49,7 +53,7 @@ describe('database().ref().setWithPriority()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function() {
     try {
       await firebase
         .database()
@@ -62,7 +66,7 @@ describe('database().ref().setWithPriority()', () => {
     }
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function() {
     const value = Date.now();
     return new Promise(async resolve => {
       await firebase
@@ -72,7 +76,7 @@ describe('database().ref().setWithPriority()', () => {
     });
   });
 
-  it('sets with a new value and priority', async () => {
+  it('sets with a new value and priority', async function() {
     const value = Date.now();
     const ref = firebase.database().ref(`${TEST_PATH}/setValue`);
     await ref.setWithPriority(value, 2);

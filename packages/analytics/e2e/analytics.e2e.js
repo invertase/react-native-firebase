@@ -15,15 +15,15 @@
  *
  */
 
-describe('analytics()', () => {
-  describe('namespace', () => {});
+describe('analytics()', function() {
+  describe('namespace', function() {});
 
-  describe('logEvent()', () => {
-    it('log an event without parameters', async () => {
+  describe('logEvent()', function() {
+    it('log an event without parameters', async function() {
       await firebase.analytics().logEvent('invertase_event');
     });
 
-    it('log an event with parameters', async () => {
+    it('log an event with parameters', async function() {
       await firebase.analytics().logEvent('invertase_event', {
         boolean: true,
         number: 1,
@@ -31,7 +31,7 @@ describe('analytics()', () => {
       });
     });
 
-    it('log an event with parameters', async () => {
+    it('log an event with parameters', async function() {
       await firebase.analytics().logEvent('invertase_event', {
         boolean: true,
         number: 1,
@@ -40,72 +40,72 @@ describe('analytics()', () => {
     });
   });
 
-  describe('setAnalyticsCollectionEnabled()', () => {
-    it('true', async () => {
+  describe('setAnalyticsCollectionEnabled()', function() {
+    it('true', async function() {
       await firebase.analytics().setAnalyticsCollectionEnabled(true);
     });
 
-    it('false', async () => {
+    it('false', async function() {
       await firebase.analytics().setAnalyticsCollectionEnabled(false);
     });
   });
 
-  describe('resetAnalyticsData()', () => {
-    it('calls native fn without error', async () => {
+  describe('resetAnalyticsData()', function() {
+    it('calls native fn without error', async function() {
       await firebase.analytics().resetAnalyticsData();
     });
   });
 
-  describe('setSessionTimeoutDuration()', () => {
-    it('default duration', async () => {
+  describe('setSessionTimeoutDuration()', function() {
+    it('default duration', async function() {
       await firebase.analytics().setSessionTimeoutDuration();
     });
 
-    it('custom duration', async () => {
+    it('custom duration', async function() {
       await firebase.analytics().setSessionTimeoutDuration(13371337);
     });
   });
 
-  describe('setUserId()', () => {
-    it('allows a null values to be set', async () => {
+  describe('setUserId()', function() {
+    it('allows a null values to be set', async function() {
       await firebase.analytics().setUserId(null);
     });
 
-    it('accepts string values', async () => {
+    it('accepts string values', async function() {
       await firebase.analytics().setUserId('rn-firebase');
     });
   });
 
-  describe('setUserProperty()', () => {
-    it('allows a null values to be set', async () => {
+  describe('setUserProperty()', function() {
+    it('allows a null values to be set', async function() {
       await firebase.analytics().setUserProperty('invertase', null);
     });
 
-    it('accepts string values', async () => {
+    it('accepts string values', async function() {
       await firebase.analytics().setUserProperty('invertase2', 'rn-firebase');
     });
   });
 
-  describe('setUserProperties()', () => {
-    it('allows null values to be set', async () => {
+  describe('setUserProperties()', function() {
+    it('allows null values to be set', async function() {
       await firebase.analytics().setUserProperties({ invertase2: null });
     });
 
-    it('accepts string values', async () => {
+    it('accepts string values', async function() {
       await firebase.analytics().setUserProperties({ invertase3: 'rn-firebase' });
     });
   });
 
-  describe('logScreenView()', () => {
-    it('calls logScreenView', async () => {
+  describe('logScreenView()', function() {
+    it('calls logScreenView', async function() {
       await firebase
         .analytics()
         .logScreenView({ screen_name: 'invertase screen', screen_class: 'invertase class' });
     });
   });
 
-  describe('logAddPaymentInfo()', () => {
-    it('calls logAddPaymentInfo', async () => {
+  describe('logAddPaymentInfo()', function() {
+    it('calls logAddPaymentInfo', async function() {
       await firebase.analytics().logAddPaymentInfo({
         value: 123,
         currency: 'USD',
@@ -114,8 +114,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logAddToCart()', () => {
-    it('calls logAddToCart', async () => {
+  describe('logAddToCart()', function() {
+    it('calls logAddToCart', async function() {
       await firebase.analytics().logAddToCart({
         value: 123,
         currency: 'GBP',
@@ -123,8 +123,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logAddShippingInfo()', () => {
-    it('calls logAddShippingInfo', async () => {
+  describe('logAddShippingInfo()', function() {
+    it('calls logAddShippingInfo', async function() {
       await firebase.analytics().logAddShippingInfo({
         value: 123,
         currency: 'GBP',
@@ -132,8 +132,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logAddToWishlist()', () => {
-    it('calls logAddToWishlist', async () => {
+  describe('logAddToWishlist()', function() {
+    it('calls logAddToWishlist', async function() {
       await firebase.analytics().logAddToWishlist({
         items: [
           {
@@ -150,20 +150,20 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logAppOpen()', () => {
-    it('calls logAppOpen', async () => {
+  describe('logAppOpen()', function() {
+    it('calls logAppOpen', async function() {
       await firebase.analytics().logAppOpen();
     });
   });
 
-  describe('logBeginCheckout()', () => {
-    it('calls logBeginCheckout', async () => {
+  describe('logBeginCheckout()', function() {
+    it('calls logBeginCheckout', async function() {
       await firebase.analytics().logBeginCheckout();
     });
   });
 
-  describe('logCampaignDetails()', () => {
-    it('calls logCampaignDetails', async () => {
+  describe('logCampaignDetails()', function() {
+    it('calls logCampaignDetails', async function() {
       await firebase.analytics().logCampaignDetails({
         source: 'foo',
         medium: 'bar',
@@ -172,8 +172,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logEarnVirtualCurrency()', () => {
-    it('calls logEarnVirtualCurrency', async () => {
+  describe('logEarnVirtualCurrency()', function() {
+    it('calls logEarnVirtualCurrency', async function() {
       await firebase.analytics().logEarnVirtualCurrency({
         virtual_currency_name: 'foo',
         value: 123,
@@ -181,8 +181,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logPurchase()', () => {
-    it('calls logPurchase', async () => {
+  describe('logPurchase()', function() {
+    it('calls logPurchase', async function() {
       await firebase.analytics().logPurchase({
         currency: 'USD',
         value: 123,
@@ -191,8 +191,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logViewPromotion()', () => {
-    it('calls logViewPromotion', async () => {
+  describe('logViewPromotion()', function() {
+    it('calls logViewPromotion', async function() {
       await firebase.analytics().logViewPromotion({
         creative_name: 'creative_name',
         creative_slot: 'creative_slot',
@@ -200,8 +200,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logGenerateLead()', () => {
-    it('calls logGenerateLead', async () => {
+  describe('logGenerateLead()', function() {
+    it('calls logGenerateLead', async function() {
       await firebase.analytics().logGenerateLead({
         currency: 'USD',
         value: 123,
@@ -209,16 +209,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logJoinGroup()', () => {
-    it('calls logJoinGroup', async () => {
+  describe('logJoinGroup()', function() {
+    it('calls logJoinGroup', async function() {
       await firebase.analytics().logJoinGroup({
         group_id: '123',
       });
     });
   });
 
-  describe('logLevelEnd()', () => {
-    it('calls logLevelEnd', async () => {
+  describe('logLevelEnd()', function() {
+    it('calls logLevelEnd', async function() {
       await firebase.analytics().logLevelEnd({
         level: 123,
         success: 'yes',
@@ -226,16 +226,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logLevelStart()', () => {
-    it('calls logLevelEnd', async () => {
+  describe('logLevelStart()', function() {
+    it('calls logLevelEnd', async function() {
       await firebase.analytics().logLevelStart({
         level: 123,
       });
     });
   });
 
-  describe('logLevelUp()', () => {
-    it('calls logLevelUp', async () => {
+  describe('logLevelUp()', function() {
+    it('calls logLevelUp', async function() {
       await firebase.analytics().logLevelUp({
         level: 123,
         character: 'foo',
@@ -243,24 +243,24 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logLogin()', () => {
-    it('calls logLogin', async () => {
+  describe('logLogin()', function() {
+    it('calls logLogin', async function() {
       await firebase.analytics().logLogin({
         method: 'facebook.com',
       });
     });
   });
 
-  describe('logPostScore()', () => {
-    it('calls logPostScore', async () => {
+  describe('logPostScore()', function() {
+    it('calls logPostScore', async function() {
       await firebase.analytics().logPostScore({
         score: 123,
       });
     });
   });
 
-  describe('logRemoveFromCart()', () => {
-    it('calls logRemoveFromCart', async () => {
+  describe('logRemoveFromCart()', function() {
+    it('calls logRemoveFromCart', async function() {
       await firebase.analytics().logRemoveFromCart({
         value: 123,
         currency: 'USD',
@@ -268,16 +268,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSearch()', () => {
-    it('calls logSearch', async () => {
+  describe('logSearch()', function() {
+    it('calls logSearch', async function() {
       await firebase.analytics().logSearch({
         search_term: 'foo',
       });
     });
   });
 
-  describe('logSetCheckoutOption()', () => {
-    it('calls logSelectContent', async () => {
+  describe('logSetCheckoutOption()', function() {
+    it('calls logSelectContent', async function() {
       await firebase.analytics().logSetCheckoutOption({
         checkout_step: 123,
         checkout_option: 'foo',
@@ -285,8 +285,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSelectItem()', () => {
-    it('calls logSelectItem', async () => {
+  describe('logSelectItem()', function() {
+    it('calls logSelectItem', async function() {
       await firebase.analytics().logSelectItem({
         item_list_id: 'foo',
         item_list_name: 'foo',
@@ -295,8 +295,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logShare()', () => {
-    it('calls logShare', async () => {
+  describe('logShare()', function() {
+    it('calls logShare', async function() {
       await firebase.analytics().logShare({
         content_type: 'foo',
         item_id: 'foo',
@@ -305,16 +305,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSignUp()', () => {
-    it('calls logSignUp', async () => {
+  describe('logSignUp()', function() {
+    it('calls logSignUp', async function() {
       await firebase.analytics().logSignUp({
         method: 'facebook.com',
       });
     });
   });
 
-  describe('logSpendVirtualCurrency()', () => {
-    it('calls logSpendVirtualCurrency', async () => {
+  describe('logSpendVirtualCurrency()', function() {
+    it('calls logSpendVirtualCurrency', async function() {
       await firebase.analytics().logSpendVirtualCurrency({
         item_name: 'foo',
         virtual_currency_name: 'foo',
@@ -323,34 +323,34 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logTutorialBegin()', () => {
-    it('calls logTutorialBegin', async () => {
+  describe('logTutorialBegin()', function() {
+    it('calls logTutorialBegin', async function() {
       await firebase.analytics().logTutorialBegin();
     });
   });
 
-  describe('logTutorialComplete()', () => {
-    it('calls logTutorialComplete', async () => {
+  describe('logTutorialComplete()', function() {
+    it('calls logTutorialComplete', async function() {
       await firebase.analytics().logTutorialComplete();
     });
   });
 
-  describe('logUnlockAchievement()', () => {
-    it('calls logUnlockAchievement', async () => {
+  describe('logUnlockAchievement()', function() {
+    it('calls logUnlockAchievement', async function() {
       await firebase.analytics().logUnlockAchievement({
         achievement_id: 'foo',
       });
     });
   });
 
-  describe('logViewCart()', () => {
-    it('calls logViewCart', async () => {
+  describe('logViewCart()', function() {
+    it('calls logViewCart', async function() {
       await firebase.analytics().logViewCart();
     });
   });
 
-  describe('logViewItem()', () => {
-    it('calls logViewItem', async () => {
+  describe('logViewItem()', function() {
+    it('calls logViewItem', async function() {
       await firebase.analytics().logViewItem({
         items: [
           {
@@ -366,16 +366,16 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logViewItemList()', () => {
-    it('calls logViewItemList', async () => {
+  describe('logViewItemList()', function() {
+    it('calls logViewItemList', async function() {
       await firebase.analytics().logViewItemList({
         item_list_name: 'foo',
       });
     });
   });
 
-  describe('logRefund()', () => {
-    it('calls logRefund', async () => {
+  describe('logRefund()', function() {
+    it('calls logRefund', async function() {
       await firebase.analytics().logRefund({
         affiliation: 'affiliation',
         coupon: 'coupon',
@@ -383,8 +383,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSelectContent()', () => {
-    it('calls logSelectContent', async () => {
+  describe('logSelectContent()', function() {
+    it('calls logSelectContent', async function() {
       await firebase.analytics().logSelectContent({
         content_type: 'clothing',
         item_id: 'abcd',
@@ -392,8 +392,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logSelectPromotion()', () => {
-    it('calls logSelectPromotion', async () => {
+  describe('logSelectPromotion()', function() {
+    it('calls logSelectPromotion', async function() {
       await firebase.analytics().logSelectPromotion({
         creative_name: 'string',
         creative_slot: 'string',
@@ -404,8 +404,8 @@ describe('analytics()', () => {
     });
   });
 
-  describe('logViewSearchResults()', () => {
-    it('calls logViewSearchResults', async () => {
+  describe('logViewSearchResults()', function() {
+    it('calls logViewSearchResults', async function() {
       await firebase.analytics().logViewSearchResults({
         search_term: 'promotion',
       });

@@ -17,16 +17,16 @@
 const COLLECTION = 'firestore';
 const COLLECTION_GROUP = 'collectionGroup';
 
-describe('firestore()', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('firestore()', function() {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       should.exist(app.firestore);
       app.firestore().app.should.equal(app);
     });
 
     // removing as pending if module.options.hasMultiAppSupport = true
-    it('supports multiple apps', async () => {
+    it('supports multiple apps', async function() {
       firebase.firestore().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -40,17 +40,17 @@ describe('firestore()', () => {
     });
   });
 
-  describe('batch()', () => {
-    it('returns a new WriteBatch instance', () => {
+  describe('batch()', function() {
+    it('returns a new WriteBatch instance', function() {
       const instance = firebase.firestore().batch();
       instance.constructor.name.should.eql('FirestoreWriteBatch');
     });
   });
 
-  describe('clearPersistence()', () => {});
+  describe('clearPersistence()', function() {});
 
-  describe('collection()', () => {
-    it('throws if path is not a string', () => {
+  describe('collection()', function() {
+    it('throws if path is not a string', function() {
       try {
         firebase.firestore().collection(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -60,7 +60,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if path is empty string', () => {
+    it('throws if path is empty string', function() {
       try {
         firebase.firestore().collection('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -70,7 +70,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if path does not point to a collection', () => {
+    it('throws if path does not point to a collection', function() {
       try {
         firebase.firestore().collection(`${COLLECTION}/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -80,15 +80,15 @@ describe('firestore()', () => {
       }
     });
 
-    it('returns a new CollectionReference', () => {
+    it('returns a new CollectionReference', function() {
       const collectionReference = firebase.firestore().collection(COLLECTION);
       should.equal(collectionReference.constructor.name, 'FirestoreCollectionReference');
       collectionReference.path.should.eql(COLLECTION);
     });
   });
 
-  describe('doc()', () => {
-    it('throws if path is not a string', () => {
+  describe('doc()', function() {
+    it('throws if path is not a string', function() {
       try {
         firebase.firestore().doc(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -98,7 +98,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if path is empty string', () => {
+    it('throws if path is empty string', function() {
       try {
         firebase.firestore().doc('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -108,7 +108,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if path does not point to a document', () => {
+    it('throws if path does not point to a document', function() {
       try {
         firebase.firestore().doc(`${COLLECTION}/bar/baz`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -118,15 +118,15 @@ describe('firestore()', () => {
       }
     });
 
-    it('returns a new DocumentReference', () => {
+    it('returns a new DocumentReference', function() {
       const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       docRef.path.should.eql(`${COLLECTION}/bar`);
     });
   });
 
-  describe('collectionGroup()', () => {
-    it('throws if id is not a string', () => {
+  describe('collectionGroup()', function() {
+    it('throws if id is not a string', function() {
       try {
         firebase.firestore().collectionGroup(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -136,7 +136,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if id is empty', () => {
+    it('throws if id is empty', function() {
       try {
         firebase.firestore().collectionGroup('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -146,7 +146,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if id contains forward-slash', () => {
+    it('throws if id contains forward-slash', function() {
       try {
         firebase.firestore().collectionGroup(`${COLLECTION}/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -156,12 +156,12 @@ describe('firestore()', () => {
       }
     });
 
-    it('returns a new query instance', () => {
+    it('returns a new query instance', function() {
       const query = firebase.firestore().collectionGroup(COLLECTION);
       should.equal(query.constructor.name, 'FirestoreQuery');
     });
 
-    it('performs a collection group query', async () => {
+    it('performs a collection group query', async function() {
       const docRef1 = firebase.firestore().doc(`${COLLECTION}/collectionGroup1`);
       const docRef2 = firebase.firestore().doc(`${COLLECTION}/collectionGroup2`);
       const docRef3 = firebase.firestore().doc(`${COLLECTION}/collectionGroup3`);
@@ -207,7 +207,7 @@ describe('firestore()', () => {
       ]);
     });
 
-    it('performs a collection group query with cursor queries', async () => {
+    it('performs a collection group query with cursor queries', async function() {
       const docRef = firebase.firestore().doc(`${COLLECTION}/collectionGroupCursor`);
 
       const ref1 = await docRef.collection(COLLECTION_GROUP).add({ number: 1 });
@@ -231,15 +231,15 @@ describe('firestore()', () => {
     });
   });
 
-  describe('disableNetwork() & enableNetwork()', () => {
-    it('disables and enables with no errors', async () => {
+  describe('disableNetwork() & enableNetwork()', function() {
+    it('disables and enables with no errors', async function() {
       await firebase.firestore().disableNetwork();
       await firebase.firestore().enableNetwork();
     });
   });
 
-  describe('runTransaction()', () => {
-    it('throws if updateFunction is not a function', () => {
+  describe('runTransaction()', function() {
+    it('throws if updateFunction is not a function', function() {
       try {
         firebase.firestore().runTransaction('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -250,8 +250,8 @@ describe('firestore()', () => {
     });
   });
 
-  describe('settings()', () => {
-    it('throws if settings is not an object', () => {
+  describe('settings()', function() {
+    it('throws if settings is not an object', function() {
       try {
         firebase.firestore().settings('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -261,7 +261,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if passing an incorrect setting key', () => {
+    it('throws if passing an incorrect setting key', function() {
       try {
         firebase.firestore().settings({ foo: 'bar' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -271,7 +271,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if cacheSizeBytes is not a number', () => {
+    it('throws if cacheSizeBytes is not a number', function() {
       try {
         firebase.firestore().settings({ cacheSizeBytes: 'foo' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -281,7 +281,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if cacheSizeBytes is less than 1MB', () => {
+    it('throws if cacheSizeBytes is less than 1MB', function() {
       try {
         firebase.firestore().settings({ cacheSizeBytes: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -291,11 +291,11 @@ describe('firestore()', () => {
       }
     });
     // NOTE: removed as it breaks emulator tests along with 'should clear any cached data' test below
-    xit('accepts an unlimited cache size', () => {
+    xit('accepts an unlimited cache size', function() {
       firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
     });
 
-    it('throws if host is not a string', () => {
+    it('throws if host is not a string', function() {
       try {
         firebase.firestore().settings({ host: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -305,7 +305,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if host is an empty string', () => {
+    it('throws if host is an empty string', function() {
       try {
         firebase.firestore().settings({ host: '' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -315,7 +315,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if persistence is not a boolean', () => {
+    it('throws if persistence is not a boolean', function() {
       try {
         firebase.firestore().settings({ persistence: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -325,7 +325,7 @@ describe('firestore()', () => {
       }
     });
 
-    it('throws if ssl is not a boolean', () => {
+    it('throws if ssl is not a boolean', function() {
       try {
         firebase.firestore().settings({ ssl: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -336,9 +336,9 @@ describe('firestore()', () => {
     });
   });
 
-  describe('Clear cached data persistence', () => {
+  describe('Clear cached data persistence', function() {
     // NOTE: removed as it breaks emulator tests along with 'accepts an unlimited cache size' test above
-    xit('should clear any cached data', async () => {
+    xit('should clear any cached data', async function() {
       const db = firebase.firestore();
       const id = 'foobar';
       const ref = db.doc(`${COLLECTION}/${id}`);
@@ -363,8 +363,8 @@ describe('firestore()', () => {
     });
   });
 
-  describe('wait for pending writes', () => {
-    xit('waits for pending writes', async () => {
+  describe('wait for pending writes', function() {
+    xit('waits for pending writes', async function() {
       const waitForPromiseMs = 500;
       const testTimeoutMs = 10000;
 

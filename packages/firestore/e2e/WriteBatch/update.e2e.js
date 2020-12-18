@@ -17,8 +17,8 @@
 
 const COLLECTION = 'firestore';
 
-describe('firestore.WriteBatch.update()', () => {
-  it('throws if a DocumentReference instance is not provided', () => {
+describe('firestore.WriteBatch.update()', function() {
+  it('throws if a DocumentReference instance is not provided', function() {
     try {
       firebase
         .firestore()
@@ -31,7 +31,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if a DocumentReference firestore instance is different', () => {
+  it('throws if a DocumentReference firestore instance is different', function() {
     try {
       const app2 = firebase.app('secondaryFromNative');
       const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
@@ -49,7 +49,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update args are not provided', () => {
+  it('throws if update args are not provided', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -63,7 +63,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update arg is not an object', () => {
+  it('throws if update arg is not an object', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -77,7 +77,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update key/values are invalid', () => {
+  it('throws if update key/values are invalid', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -91,7 +91,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update keys are invalid', () => {
+  it('throws if update keys are invalid', function() {
     try {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
       firebase
@@ -105,7 +105,7 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('adds the DocumentReference to the internal writes', () => {
+  it('adds the DocumentReference to the internal writes', function() {
     const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
     const wb = firebase
       .firestore()

@@ -23,8 +23,8 @@ const DISABLED_PASS = 'test1234';
 
 const { clearAllUsers, disableUser, getLastOob, resetPassword } = require('./helpers');
 
-describe('auth()', () => {
-  before(async () => {
+describe('auth()', function() {
+  before(async function() {
     await clearAllUsers();
     await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
     const disabledUserCredential = await firebase
@@ -33,22 +33,22 @@ describe('auth()', () => {
     await disableUser(disabledUserCredential.user.uid);
   });
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     }
   });
 
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+  describe('namespace', function() {
+    it('accessible from firebase.app()', function() {
       const app = firebase.app();
       should.exist(app.auth);
       app.auth().app.should.equal(app);
     });
 
     // removing as pending if module.options.hasMultiAppSupport = true
-    it('supports multiple apps', async () => {
+    it('supports multiple apps', async function() {
       firebase.auth().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -62,15 +62,15 @@ describe('auth()', () => {
     });
   });
 
-  describe('applyActionCode()', () => {
+  describe('applyActionCode()', function() {
     // Needs a different setup to work against the auth emulator
-    xit('works as expected', async () => {
+    xit('works as expected', async function() {
       await firebase
         .auth()
         .applyActionCode('fooby shooby dooby')
         .then($ => $);
     });
-    it('errors on invalid code', async () => {
+    it('errors on invalid code', async function() {
       try {
         await firebase
           .auth()
@@ -82,8 +82,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('checkActionCode()', () => {
-    it('errors on invalid code', async () => {
+  describe('checkActionCode()', function() {
+    it('errors on invalid code', async function() {
       try {
         await firebase.auth().checkActionCode('fooby shooby dooby');
       } catch (e) {
@@ -92,8 +92,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('reload()', () => {
-    it('Meta data returns as expected with annonymous sign in', async () => {
+  describe('reload()', function() {
+    it('Meta data returns as expected with annonymous sign in', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(50);
       const firstUser = firebase.auth().currentUser;
@@ -109,7 +109,7 @@ describe('auth()', () => {
       firstUser.metadata.creationTime.should.not.equal(secondUser.metadata.creationTime);
     });
 
-    it('Meta data returns as expected with email and password sign in', async () => {
+    it('Meta data returns as expected with email and password sign in', async function() {
       const random = Utils.randString(12, '#aA');
       const email1 = `${random}@${random}.com`;
       const pass = random;
@@ -131,8 +131,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('confirmPasswordReset()', () => {
-    it('errors on invalid code via API', async () => {
+  describe('confirmPasswordReset()', function() {
+    it('errors on invalid code via API', async function() {
       try {
         await firebase.auth().confirmPasswordReset('fooby shooby dooby', 'passwordthing');
       } catch (e) {
@@ -141,9 +141,9 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithCustomToken()', () => {
+  describe('signInWithCustomToken()', function() {
     // Needs a different setup when running against the emulator
-    xit('signs in with a admin sdk created custom auth token', async () => {
+    xit('signs in with a admin sdk created custom auth token', async function() {
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
@@ -179,8 +179,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('onAuthStateChanged()', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
+  describe('onAuthStateChanged()', function() {
+    it('calls callback with the current user and when auth state changes', async function() {
       await firebase.auth().signInAnonymously();
 
       await Utils.sleep(50);
@@ -215,7 +215,7 @@ describe('auth()', () => {
       unsubscribe();
     });
 
-    it('accept observer instead callback as well', async () => {
+    it('accept observer instead callback as well', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -250,7 +250,7 @@ describe('auth()', () => {
       unsubscribe();
     });
 
-    it('stops listening when unsubscribed', async () => {
+    it('stops listening when unsubscribed', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -290,7 +290,7 @@ describe('auth()', () => {
       await Utils.sleep(50);
     });
 
-    it('returns the same user with multiple subscribers #1815', async () => {
+    it('returns the same user with multiple subscribers #1815', async function() {
       const callback = sinon.spy();
 
       let unsubscribe1;
@@ -340,8 +340,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('onIdTokenChanged()', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
+  describe('onIdTokenChanged()', function() {
+    it('calls callback with the current user and when auth state changes', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -371,7 +371,7 @@ describe('auth()', () => {
       unsubscribe();
     });
 
-    it('stops listening when unsubscribed', async () => {
+    it('stops listening when unsubscribed', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -411,7 +411,7 @@ describe('auth()', () => {
       await Utils.sleep(50);
     });
 
-    it('listens to a null user when auth result is not defined', async () => {
+    it('listens to a null user when auth result is not defined', async function() {
       let unsubscribe;
 
       const callback = sinon.spy();
@@ -427,8 +427,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('onUserChanged()', () => {
-    it('calls callback with the current user and when auth state changes', async () => {
+  describe('onUserChanged()', function() {
+    it('calls callback with the current user and when auth state changes', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -461,7 +461,7 @@ describe('auth()', () => {
       unsubscribe();
     });
 
-    it('stops listening when unsubscribed', async () => {
+    it('stops listening when unsubscribed', async function() {
       await firebase.auth().signInAnonymously();
       await Utils.sleep(200);
 
@@ -505,8 +505,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInAnonymously()', () => {
-    it('it should sign in anonymously', () => {
+  describe('signInAnonymously()', function() {
+    it('it should sign in anonymously', function() {
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
@@ -530,8 +530,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithEmailAndPassword()', () => {
-    it('it should login with email and password', () => {
+  describe('signInWithEmailAndPassword()', function() {
+    it('it should login with email and password', function() {
       const successCb = currentUserCredential => {
         const currentUser = currentUserCredential.user;
         currentUser.should.be.an.Object();
@@ -555,7 +555,7 @@ describe('auth()', () => {
         .then(successCb);
     });
 
-    it('it should error on login if user is disabled', () => {
+    it('it should error on login if user is disabled', function() {
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -571,7 +571,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on login if password incorrect', () => {
+    it('it should error on login if password incorrect', function() {
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -589,7 +589,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on login if user not found', () => {
+    it('it should error on login if user not found', function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -612,8 +612,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithCredential()', () => {
-    it('it should login with email and password', () => {
+  describe('signInWithCredential()', function() {
+    it('it should login with email and password', function() {
       const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
 
       const successCb = currentUserCredential => {
@@ -639,7 +639,7 @@ describe('auth()', () => {
         .then(successCb);
     });
 
-    it('it should error on login if user is disabled', () => {
+    it('it should error on login if user is disabled', function() {
       const credential = firebase.auth.EmailAuthProvider.credential(DISABLED_EMAIL, DISABLED_PASS);
 
       const successCb = () => Promise.reject(new Error('Did not error.'));
@@ -657,7 +657,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on login if password incorrect', () => {
+    it('it should error on login if password incorrect', function() {
       const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS + '666');
 
       const successCb = () => Promise.reject(new Error('Did not error.'));
@@ -677,7 +677,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on login if user not found', () => {
+    it('it should error on login if user not found', function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -702,8 +702,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('createUserWithEmailAndPassword()', () => {
-    it('it should create a user with an email and password', () => {
+  describe('createUserWithEmailAndPassword()', function() {
+    it('it should create a user with an email and password', function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -729,7 +729,7 @@ describe('auth()', () => {
         .then(successCb);
     });
 
-    it('it should error on create with invalid email', () => {
+    it('it should error on create with invalid email', function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}${random}.com.boop.shoop`;
       const pass = random;
@@ -749,7 +749,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on create if email in use', () => {
+    it('it should error on create if email in use', function() {
       const successCb = () => Promise.reject(new Error('Did not error.'));
 
       const failureCb = error => {
@@ -765,7 +765,7 @@ describe('auth()', () => {
         .catch(failureCb);
     });
 
-    it('it should error on create if password weak', () => {
+    it('it should error on create if password weak', function() {
       const email = 'testy@testy.com';
       const pass = '123';
 
@@ -786,9 +786,9 @@ describe('auth()', () => {
     });
   });
 
-  describe('fetchSignInMethodsForEmail()', () => {
-    it('it should return password provider for an email address', () =>
-      new Promise((resolve, reject) => {
+  describe('fetchSignInMethodsForEmail()', function() {
+    it('it should return password provider for an email address', function() {
+      return new Promise((resolve, reject) => {
         const successCb = providers => {
           providers.should.be.a.Array();
           providers.should.containEql('password');
@@ -804,10 +804,11 @@ describe('auth()', () => {
           .fetchSignInMethodsForEmail(TEST_EMAIL)
           .then(successCb)
           .catch(failureCb);
-      }));
+      });
+    });
 
-    it('it should return an empty array for a not found email', () =>
-      new Promise((resolve, reject) => {
+    it('it should return an empty array for a not found email', function() {
+      return new Promise((resolve, reject) => {
         const successCb = providers => {
           providers.should.be.a.Array();
           providers.should.be.empty();
@@ -823,10 +824,11 @@ describe('auth()', () => {
           .fetchSignInMethodsForEmail('test@i-do-not-exist.com')
           .then(successCb)
           .catch(failureCb);
-      }));
+      });
+    });
 
-    it('it should return an error for a bad email address', () =>
-      new Promise((resolve, reject) => {
+    it('it should return an error for a bad email address', function() {
+      return new Promise((resolve, reject) => {
         const successCb = () => {
           reject(new Error('Should not have successfully resolved.'));
         };
@@ -842,12 +844,13 @@ describe('auth()', () => {
           .fetchSignInMethodsForEmail('foobar')
           .then(successCb)
           .catch(failureCb);
-      }));
+      });
+    });
   });
 
-  describe('signOut()', () => {
-    it('it should reject signOut if no currentUser', () =>
-      new Promise((resolve, reject) => {
+  describe('signOut()', function() {
+    it('it should reject signOut if no currentUser', function() {
+      return new Promise((resolve, reject) => {
         if (firebase.auth().currentUser) {
           return reject(
             new Error(`A user is currently signed in. ${firebase.auth().currentUser.uid}`),
@@ -869,11 +872,12 @@ describe('auth()', () => {
           .signOut()
           .then(successCb)
           .catch(failureCb);
-      }));
+      });
+    });
   });
 
-  describe('delete()', () => {
-    it('should delete a user', () => {
+  describe('delete()', function() {
+    it('should delete a user', function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -895,8 +899,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('languageCode', () => {
-    it('it should change the language code', async () => {
+  describe('languageCode', function() {
+    it('it should change the language code', async function() {
       await firebase.auth().setLanguageCode('en');
 
       if (firebase.auth().languageCode !== 'en') {
@@ -921,8 +925,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('getRedirectResult()', () => {
-    it('should throw an unsupported error', () => {
+  describe('getRedirectResult()', function() {
+    it('should throw an unsupported error', function() {
       (() => {
         firebase.auth().getRedirectResult();
       }).should.throw(
@@ -931,8 +935,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('setPersistence()', () => {
-    it('should throw an unsupported error', () => {
+  describe('setPersistence()', function() {
+    it('should throw an unsupported error', function() {
       (() => {
         firebase.auth().setPersistence();
       }).should.throw(
@@ -941,8 +945,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithPopup', () => {
-    it('should throw an unsupported error', () => {
+  describe('signInWithPopup', function() {
+    it('should throw an unsupported error', function() {
       (() => {
         firebase.auth().signInWithPopup();
       }).should.throw(
@@ -951,8 +955,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('sendPasswordResetEmail()', () => {
-    it('should not error', async () => {
+  describe('sendPasswordResetEmail()', function() {
+    it('should not error', async function() {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -966,7 +970,7 @@ describe('auth()', () => {
       }
     });
 
-    it('should verify with valid code', async () => {
+    it('should verify with valid code', async function() {
       // FIXME Fails on android against auth emulator with:
       // com.google.firebase.FirebaseException: An internal error has occurred.
       if (device.getPlatform() === 'ios') {
@@ -989,7 +993,7 @@ describe('auth()', () => {
       }
     });
 
-    it('should fail to verify with invalid code', async () => {
+    it('should fail to verify with invalid code', async function() {
       const random = Utils.randString(12, '#a');
       const email = `${random}@${random}.com`;
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -1009,7 +1013,7 @@ describe('auth()', () => {
       }
     });
 
-    it('should change password correctly OOB', async () => {
+    it('should change password correctly OOB', async function() {
       const random = Utils.randString(12, '#a');
       const email = `${random}@${random}.com`;
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -1031,7 +1035,7 @@ describe('auth()', () => {
       }
     });
 
-    it('should change password correctly via API', async () => {
+    it('should change password correctly via API', async function() {
       const random = Utils.randString(12, '#a');
       const email = `${random}@${random}.com`;
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -1054,8 +1058,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('signInWithRedirect()', () => {
-    it('should throw an unsupported error', () => {
+  describe('signInWithRedirect()', function() {
+    it('should throw an unsupported error', function() {
       (() => {
         firebase.auth().signInWithRedirect();
       }).should.throw(
@@ -1064,8 +1068,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('useDeviceLanguage()', () => {
-    it('should throw an unsupported error', () => {
+  describe('useDeviceLanguage()', function() {
+    it('should throw an unsupported error', function() {
       (() => {
         firebase.auth().useDeviceLanguage();
       }).should.throw(
@@ -1074,8 +1078,8 @@ describe('auth()', () => {
     });
   });
 
-  describe('useUserAccessGroup()', () => {
-    it('should return "null" on successful keychain implementation', async () => {
+  describe('useUserAccessGroup()', function() {
+    it('should return "null" on successful keychain implementation', async function() {
       const successfulKeychain = await firebase.auth().useUserAccessGroup('mysecretkeychain');
 
       should.not.exist(successfulKeychain);

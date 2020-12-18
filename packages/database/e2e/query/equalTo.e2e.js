@@ -19,11 +19,15 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/equalTo`;
 
-describe('database().ref().equalTo()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().equalTo()', function() {
+  before(function() {
+    return seed(TEST_PATH);
+  });
+  after(function() {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if value is not a valid type', async () => {
+  it('throws if value is not a valid type', async function() {
     try {
       await firebase
         .database()
@@ -36,7 +40,7 @@ describe('database().ref().equalTo()', () => {
     }
   });
 
-  it('throws if key is not a string', async () => {
+  it('throws if key is not a string', async function() {
     try {
       await firebase
         .database()
@@ -49,7 +53,7 @@ describe('database().ref().equalTo()', () => {
     }
   });
 
-  it('throws if a starting point has already been set', async () => {
+  it('throws if a starting point has already been set', async function() {
     try {
       await firebase
         .database()
@@ -65,7 +69,7 @@ describe('database().ref().equalTo()', () => {
     }
   });
 
-  it('throws if a ending point has already been set', async () => {
+  it('throws if a ending point has already been set', async function() {
     try {
       await firebase
         .database()
@@ -81,7 +85,7 @@ describe('database().ref().equalTo()', () => {
     }
   });
 
-  it('snapshot value is null when no ordering modifier is applied', async () => {
+  it('snapshot value is null when no ordering modifier is applied', async function() {
     const ref = firebase.database().ref(TEST_PATH);
 
     await ref.set({
@@ -95,7 +99,7 @@ describe('database().ref().equalTo()', () => {
     should.equal(snapshot.val(), null);
   });
 
-  it('returns the correct equal to values', async () => {
+  it('returns the correct equal to values', async function() {
     const ref = firebase.database().ref(TEST_PATH);
 
     await ref.set({
