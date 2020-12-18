@@ -125,7 +125,7 @@ describe('database().ref().once()', () => {
 
     ref.once('child_added').then($ => callback($.val()));
     await ref.child('foo').set(value);
-    await Utils.sleep(100);
+    await Utils.sleep(1000);
 
     callback.should.be.calledOnce();
     callback.should.be.calledWith(value);
