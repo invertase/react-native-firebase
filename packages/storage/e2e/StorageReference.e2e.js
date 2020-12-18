@@ -346,6 +346,20 @@ describe('storage() -> StorageReference', function() {
       result.prefixes.length.should.be.greaterThan(0);
       result.prefixes[0].constructor.name.should.eql('StorageReference');
     });
+
+    it('should not crash if the user is not allowed to list the directory', async function() {
+      const storageReference = firebase.storage().ref('/forbidden');
+      try {
+        await storageReference.listAll();
+        return Promise.reject(new Error('listAll on a forbidden directory succeeded'));
+      } catch (error) {
+        error.code.should.equal('storage/unauthorized');
+        error.message.should.equal(
+          '[storage/unauthorized] User is not authorized to perform the desired action.',
+        );
+        return Promise.resolve();
+      }
+    });
   });
 
   describe('updateMetadata', function() {
