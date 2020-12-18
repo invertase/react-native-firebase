@@ -199,8 +199,8 @@ RCT_EXPORT_METHOD(listAll:
   id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
     // This may be called multiple times if an error occurs
     // Make sure we won't try to resolve the promise twice in this case
-    // See https://github.com/firebase/firebase-ios-sdk/blob/14764b8d60a6ad023d8fa5b7f81d42378d92e6fe/FirebaseStorage/Sources/FIRStorageReference.m#L417
-    if(alreadyCompleted) {
+    // TODO - remove pending resolution of https://github.com/firebase/firebase-ios-sdk/issues/7197
+    if (alreadyCompleted) {
       return;
     }
     alreadyCompleted = true;
