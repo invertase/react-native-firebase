@@ -1468,6 +1468,8 @@ export namespace FirebaseAuthTypes {
      * Sends a password reset email to the given email address.
      * Unlike the web SDK, the email will contain a password reset link rather than a code.
      *
+     * (Warning: if you're using custom SMTP settings for your password reset emails on the Firebase console, the promise will resolve even if the SMTP settings are invalid and the email fails to send.)
+     *
      * #### Example
      *
      * ```js
