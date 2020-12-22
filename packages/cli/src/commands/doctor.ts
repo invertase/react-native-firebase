@@ -254,6 +254,15 @@ export default async function doctorCommand(
 
         const iosGoogleServicesFile = await file.readIosGoogleServiceInfo(iosProjectConfig);
         report['iOS']['GoogleService-Info.plist'] = [null, boolStatus(iosGoogleServicesFile)];
+
+        const iosAppDelegateFile = await file.readIOSAppDelegate(iosProjectConfig);
+
+        const isValid =
+            iosAppDelegateFile &&
+            iosAppDelegateFile.indexOf('@import Firebase;') >= 0 &&
+            iosAppDelegateFile.indexOf('if ([FIRApp defaultApp] == nil) {') >= 0;
+
+        report['iOS']['Configured iOS credentials'] = [null, boolStatus(isValid)];
     }
 
     loader.stop();
