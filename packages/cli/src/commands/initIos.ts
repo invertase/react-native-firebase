@@ -1,12 +1,13 @@
-import firebase from '../helpers/firebase';
 import { Config } from '@react-native-community/cli-types';
 import { Account, ProjectDetail } from '../types/firebase';
 import log from '../helpers/log';
 import { getIosConfig } from '../actions/getConfig';
-import prompt from '../helpers/prompt';
-import file from '../helpers/file';
 
+import file from '../helpers/file';
 import { getIOSApp } from '../actions/getApp';
+
+import generatePlist from '../actions/generatePlist';
+import generateCredentials from '../actions/generateCredentials';
 
 export default async function initIos(
     account: Account,
@@ -23,26 +24,14 @@ export default async function initIos(
     let selectedIOSApp = getIOSApp(projectDetail, iOSFileProjectConfig.bundleId);
 
     if (!selectedIOSApp) {
-        // Need to create a new app
+        // TODO: Need to create a new app
     }
 
-    const iosGoogleServicesFile = await file.readIosGoogleServiceInfo(iosProjectConfig);
+    console.log('iosProjectConfig >>>>', iosProjectConfig);
 
-    const writeFile =
-        !iosGoogleServicesFile ||
-        (iosGoogleServicesFile &&
-            (await prompt.confirm(
-                'An iOS "GoogleService-Info.plist" file already exists, do you want to replace this file?',
-            )));
+    await generatePlist(iosProjectConfig, account, selectedIOSApp?.name as string);
 
-    if (writeFile) {
-        const iOSConfigFile = await firebase
-            .api(account)
-            .management.getAppConfig(selectedIOSApp?.name);
-
-        log.info('Writing new "GoogleService-Info.plist" file to "/ios/GoogleService-Info.plist".');
-        await file.writeGoogleServiceInfoPlist(iosProjectConfig, iOSConfigFile);
-    }
+    await generateCredentials(iosProjectConfig, account, selectedIOSApp?.name as string);
 
     log.info('The Firebase setup for iOS has finished');
 }

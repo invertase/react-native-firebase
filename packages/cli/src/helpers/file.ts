@@ -81,6 +81,42 @@ async function readAndroidGoogleServices(
 }
 
 /**
+ * Returns the "google-services.json" file for the project. Returns "null" if it doesnt exist
+ *
+ * @param androidProjectConfig
+ */
+async function readIOSAppDelegate(iOSProjectConfig: IOSProjectConfig): Promise<string | null> {
+    const projectFolder = iOSProjectConfig.projectName.split('.')[0];
+
+    const iOSFirebaseConfigFilePath = join(
+        iOSProjectConfig.sourceDir,
+        projectFolder,
+        'AppDelegate.m',
+    );
+
+    const fileExists = await exists(iOSFirebaseConfigFilePath);
+    if (!fileExists) return null;
+    return read(iOSFirebaseConfigFilePath);
+}
+
+/**
+ * Writes a new "google-services.json" file to the project
+ *
+ * @param androidProjectConfig
+ * @param data
+ */
+async function writeIOSAppDelegate(iOSProjectConfig: IOSProjectConfig) {
+    const template = await read(join(__dirname, '../../templates/AppDelegate.m'));
+    const projectFolder = iOSProjectConfig.projectName.split('.')[0];
+    const iOSFirebaseConfigFilePath = join(
+        iOSProjectConfig.sourceDir,
+        projectFolder,
+        'AppDelegate.m',
+    );
+    return write(iOSFirebaseConfigFilePath, template);
+}
+
+/**
  * Writes a new "google-services.json" file to the project
  *
  * @param androidProjectConfig
@@ -227,4 +263,6 @@ export default {
     readIosGoogleServiceInfo,
     readFirebaseConfig,
     writeFirebaseConfig,
+    readIOSAppDelegate,
+    writeIOSAppDelegate,
 };

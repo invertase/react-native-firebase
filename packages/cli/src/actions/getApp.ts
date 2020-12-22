@@ -36,8 +36,6 @@ export function getIOSApp(projectDetail: ProjectDetail, bundleId: string): IOSAp
 
     const selectedIOSApp = projectDetail.apps.ios?.find(app => app.bundleId === bundleId);
 
-    console.log('Found app >>>>', selectedIOSApp);
-
     if (!selectedIOSApp) {
         log.warn(
             `Your project ${Chalk.cyanBright(
