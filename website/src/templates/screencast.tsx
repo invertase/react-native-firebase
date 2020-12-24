@@ -27,7 +27,7 @@ type Props = {
   data: PageScreencastQuery;
 };
 
-function ScreencastTemplate({ location, data }: Props) {
+function ScreencastTemplate({ location, data }: Props): JSX.Element {
   const cast = data.screenCast;
   const { next, previous } = data;
 

@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.analytics', function() {
-  it('throws if analytics is not an object', function() {
+describe('dynamicLinks() dynamicLinkParams.analytics', function () {
+  it('throws if analytics is not an object', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', function() {
     }
   });
 
-  it('throws if analytics.campaign is not a string', function() {
+  it('throws if analytics.campaign is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -46,7 +46,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', function() {
     }
   });
 
-  it('throws if analytics.content is not a string', function() {
+  it('throws if analytics.content is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -61,7 +61,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', function() {
     }
   });
 
-  it('throws if analytics.medium is not a string', function() {
+  it('throws if analytics.medium is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -76,7 +76,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', function() {
     }
   });
 
-  it('throws if analytics.source is not a string', function() {
+  it('throws if analytics.source is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -91,7 +91,7 @@ describe('dynamicLinks() dynamicLinkParams.analytics', function() {
     }
   });
 
-  it('throws if analytics.term is not a string', function() {
+  it('throws if analytics.term is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

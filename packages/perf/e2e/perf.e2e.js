@@ -16,16 +16,16 @@
  */
 
 android.describe('perf()', () => {
-  describe('setPerformanceCollectionEnabled()', function() {
+  describe('setPerformanceCollectionEnabled()', function () {
     // TODO sometimes android launches with isPerformanceCollectionEnabled = false
-    xit('true', async function() {
+    xit('true', async function () {
       should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
       await firebase.perf().setPerformanceCollectionEnabled(true);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
       await Utils.sleep(2000);
     });
 
-    it('false', async function() {
+    it('false', async function () {
       await device.launchApp();
       await firebase.perf().setPerformanceCollectionEnabled(false);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
@@ -36,8 +36,8 @@ android.describe('perf()', () => {
     });
   });
 
-  describe('startTrace()', function() {
-    it('resolves a started instance of Trace', async function() {
+  describe('startTrace()', function () {
+    it('resolves a started instance of Trace', async function () {
       const trace = await firebase.perf().startTrace('invertase');
       trace.constructor.name.should.be.equal('Trace');
       trace._identifier.should.equal('invertase');

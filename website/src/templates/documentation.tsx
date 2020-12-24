@@ -32,7 +32,7 @@ type Props = {
   data: PageQuery;
 };
 
-function DocumentationTemplate({ location, data }: Props) {
+function DocumentationTemplate({ location, data }: Props): JSX.Element {
   const { mdx, next, previous, sidebar } = data;
 
   const toc = (

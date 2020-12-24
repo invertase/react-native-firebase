@@ -19,7 +19,7 @@ import React from 'react';
 import { JumpToTop } from '@invertase/ui';
 import cx from 'classnames';
 
-function ToTop() {
+function ToTop(): JSX.Element {
   return (
     <JumpToTop>
       {(distance, jump) => (

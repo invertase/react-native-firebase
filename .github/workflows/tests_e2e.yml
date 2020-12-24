@@ -90,7 +90,7 @@ jobs:
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
         run: |
-          nohup yarn run tests:packager:jet &
+          nohup yarn tests:packager:jet &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -296,7 +296,7 @@ jobs:
 
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup yarn run tests:packager:jet &
+          nohup yarn tests:packager:jet &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'

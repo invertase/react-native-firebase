@@ -15,8 +15,8 @@
  *
  */
 
-describe('database().ref().root', function() {
-  it('returns a root reference', function() {
+describe('database().ref().root', function () {
+  it('returns a root reference', function () {
     const ref = firebase.database().ref('foo/bar/baz');
     should.equal(ref.root.key, null);
   });

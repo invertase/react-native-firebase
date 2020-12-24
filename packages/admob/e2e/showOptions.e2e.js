@@ -17,17 +17,17 @@
 
 let validator = null;
 
-describe('admob() showOptions', function() {
-  before(function() {
+describe('admob() showOptions', function () {
+  before(function () {
     validator = jet.require('packages/admob/lib/validateAdShowOptions');
   });
 
-  it('returns an empty object is not defined', function() {
+  it('returns an empty object is not defined', function () {
     const v = validator();
     v.should.eql(jet.contextify({}));
   });
 
-  it('throws if options is not an object', function() {
+  it('throws if options is not an object', function () {
     try {
       validator('foo');
       return Promise.reject(new Error('Did not throw Error.'));
@@ -37,7 +37,7 @@ describe('admob() showOptions', function() {
     }
   });
 
-  it('throws if immersiveModeEnabled is not a boolean', function() {
+  it('throws if immersiveModeEnabled is not a boolean', function () {
     try {
       validator({
         immersiveModeEnabled: 'true',
@@ -49,7 +49,7 @@ describe('admob() showOptions', function() {
     }
   });
 
-  it('sets immersiveMode', function() {
+  it('sets immersiveMode', function () {
     const v = validator({
       immersiveModeEnabled: true,
     });

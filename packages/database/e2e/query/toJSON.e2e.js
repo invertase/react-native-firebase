@@ -15,12 +15,9 @@
  *
  */
 
-describe('database().ref().toJSON()', function() {
-  it('returns a string version of the current query path', async function() {
-    const res = firebase
-      .database()
-      .ref('foo/bar/baz')
-      .toJSON();
+describe('database().ref().toJSON()', function () {
+  it('returns a string version of the current query path', async function () {
+    const res = firebase.database().ref('foo/bar/baz').toJSON();
     const expected = `${firebase.database()._customUrlOrRegion}/foo/bar/baz`;
     should.equal(res, expected);
   });

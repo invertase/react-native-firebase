@@ -17,21 +17,21 @@
 
 let AdsConsent;
 
-describe('admob() AdsConsent', function() {
-  before(function() {
+describe('admob() AdsConsent', function () {
+  before(function () {
     AdsConsent = jet.require('packages/admob/lib/AdsConsent');
   });
 
-  describe('requestInfoUpdate', function() {
-    it('requests info update', async function() {
+  describe('requestInfoUpdate', function () {
+    it('requests info update', async function () {
       const info = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
       info.status.should.Number();
       info.isRequestLocationInEeaOrUnknown.should.be.Boolean();
     });
   });
 
-  describe('showForm', function() {
-    it('throws if options is not valid', function() {
+  describe('showForm', function () {
+    it('throws if options is not valid', function () {
       try {
         AdsConsent.showForm('foo');
         return Promise.reject(new Error('Did not throw Error.'));
@@ -41,7 +41,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if privacy policy is not valid', function() {
+    it('throws if privacy policy is not valid', function () {
       try {
         AdsConsent.showForm({
           privacyPolicy: 'www.invertase.io',
@@ -53,7 +53,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if withPersonalizedAds is not a boolean', function() {
+    it('throws if withPersonalizedAds is not a boolean', function () {
       try {
         AdsConsent.showForm({
           privacyPolicy: 'https://invertase.io',
@@ -66,7 +66,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if withNonPersonalizedAds is not a boolean', function() {
+    it('throws if withNonPersonalizedAds is not a boolean', function () {
       try {
         AdsConsent.showForm({
           privacyPolicy: 'https://invertase.io',
@@ -79,7 +79,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if withAdFree is not a boolean', function() {
+    it('throws if withAdFree is not a boolean', function () {
       try {
         AdsConsent.showForm({
           privacyPolicy: 'https://invertase.io',
@@ -92,7 +92,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if all options are false', function() {
+    it('throws if all options are false', function () {
       try {
         AdsConsent.showForm({
           privacyPolicy: 'https://invertase.io',
@@ -107,8 +107,8 @@ describe('admob() AdsConsent', function() {
     // TODO test show form works?
   });
 
-  describe('getAdProviders', function() {
-    it('returns a list of ad providers', async function() {
+  describe('getAdProviders', function () {
+    it('returns a list of ad providers', async function () {
       await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
       const providers = await AdsConsent.getAdProviders();
       providers.should.be.Array();
@@ -122,8 +122,8 @@ describe('admob() AdsConsent', function() {
     });
   });
 
-  describe('setDebugGeography', function() {
-    it('throws if geography is invalid', function() {
+  describe('setDebugGeography', function () {
+    it('throws if geography is invalid', function () {
       try {
         AdsConsent.setDebugGeography(3);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -133,7 +133,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('sets the geography', async function() {
+    it('sets the geography', async function () {
       await AdsConsent.setDebugGeography(0);
       const r1 = await AdsConsent.requestInfoUpdate(['pub-4406399463942824']);
       r1.isRequestLocationInEeaOrUnknown.should.eql(false);
@@ -170,8 +170,8 @@ describe('admob() AdsConsent', function() {
     });
   });
 
-  describe('getStatus / setStatus', function() {
-    it('throws if status is invalid', function() {
+  describe('getStatus / setStatus', function () {
+    it('throws if status is invalid', function () {
       try {
         AdsConsent.setStatus(4);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -181,27 +181,27 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('sets and gets unknown', async function() {
+    it('sets and gets unknown', async function () {
       await AdsConsent.setStatus(0);
       const s = await AdsConsent.getStatus();
       s.should.eql(0);
     });
 
-    it('sets and gets non-personalized', async function() {
+    it('sets and gets non-personalized', async function () {
       await AdsConsent.setStatus(1);
       const s = await AdsConsent.getStatus();
       s.should.eql(1);
     });
 
-    it('sets and gets personalized', async function() {
+    it('sets and gets personalized', async function () {
       await AdsConsent.setStatus(2);
       const s = await AdsConsent.getStatus();
       s.should.eql(2);
     });
   });
 
-  describe('setTagForUnderAgeOfConsent', function() {
-    it('throws if value is not a boolean', function() {
+  describe('setTagForUnderAgeOfConsent', function () {
+    it('throws if value is not a boolean', function () {
       try {
         AdsConsent.setTagForUnderAgeOfConsent('true');
         return Promise.reject(new Error('Did not throw Error.'));
@@ -211,13 +211,13 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('sets a value', async function() {
+    it('sets a value', async function () {
       await AdsConsent.setTagForUnderAgeOfConsent(false);
     });
   });
 
-  describe('addTestDevices', function() {
-    it('throws if value is not an array', function() {
+  describe('addTestDevices', function () {
+    it('throws if value is not an array', function () {
       try {
         AdsConsent.addTestDevices(12345);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -227,7 +227,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('throws if deviceIds contains invalid value', function() {
+    it('throws if deviceIds contains invalid value', function () {
       try {
         AdsConsent.addTestDevices(['foo', 123]);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -237,7 +237,7 @@ describe('admob() AdsConsent', function() {
       }
     });
 
-    it('sets device IDs', async function() {
+    it('sets device IDs', async function () {
       await AdsConsent.addTestDevices(['foo', 'bar']);
     });
   });

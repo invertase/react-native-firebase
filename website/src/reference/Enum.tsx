@@ -21,7 +21,7 @@ import { Divider, HeadingLink } from '@invertase/ui';
 import { MdxRaw } from '../components/Mdx';
 import { SourceLink } from '../components/SourceLink';
 
-function Enum({ members }: { members: EnumMember[] }) {
+function Enum({ members }: { members: EnumMember[] }): JSX.Element {
   return (
     <>
       <HeadingLink id="members" size="h3">

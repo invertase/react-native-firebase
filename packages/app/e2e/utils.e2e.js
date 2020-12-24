@@ -15,23 +15,23 @@
  *
  */
 
-describe('utils()', function() {
-  describe('namespace', function() {
-    it('accessible from firebase.app()', function() {
+describe('utils()', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
       const app = firebase.app();
       should.exist(app.utils);
       app.utils().app.should.equal(app);
     });
   });
 
-  describe('isRunningInTestLab', function() {
-    it('returns true or false', function() {
+  describe('isRunningInTestLab', function () {
+    it('returns true or false', function () {
       should.equal(firebase.utils().isRunningInTestLab, false);
     });
   });
 
-  describe('playServicesAvailability', function() {
-    it('returns isAvailable and Play Service status', async function() {
+  describe('playServicesAvailability', function () {
+    it('returns isAvailable and Play Service status', async function () {
       const playService = await firebase.utils().playServicesAvailability;
       //iOS always returns { isAvailable: true, status: 0}
       should(playService.isAvailable).equal(true);
@@ -39,8 +39,8 @@ describe('utils()', function() {
     });
   });
 
-  describe('getPlayServicesStatus', function() {
-    it('returns isAvailable and Play Service status', async function() {
+  describe('getPlayServicesStatus', function () {
+    it('returns isAvailable and Play Service status', async function () {
       const status = await firebase.utils().getPlayServicesStatus();
       //iOS always returns { isAvailable: true, status: 0}
       should(status.isAvailable).equal(true);

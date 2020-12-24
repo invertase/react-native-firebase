@@ -15,12 +15,9 @@
  *
  */
 
-describe("database().ref('.info/serverTimeOffset')", function() {
-  it('returns a valid number value', async function() {
-    const snapshot = await firebase
-      .database()
-      .ref('.info/serverTimeOffset')
-      .once('value');
+describe("database().ref('.info/serverTimeOffset')", function () {
+  it('returns a valid number value', async function () {
+    const snapshot = await firebase.database().ref('.info/serverTimeOffset').once('value');
 
     should.equal(typeof snapshot.val(), 'number');
   });

@@ -72,6 +72,7 @@ export namespace FirebaseDatabaseTypes {
      * });
      * ```
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     TIMESTAMP: object;
 
     /**
@@ -87,6 +88,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param delta The amount to modify the current value atomically.
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     increment(delta: number): object;
   }
 
@@ -224,7 +226,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value The value to be written (string, number, boolean, object, array, or null).
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    set(value: any, onComplete?: Function): Promise<void>;
+    set(value: any, onComplete?: (error: Error | null) => void): Promise<void>;
 
     /**
      * Writes multiple values to the Database at once.
@@ -264,7 +266,10 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
+    update(
+      values: { [key: string]: any },
+      onComplete?: (error: Error | null) => void,
+    ): Promise<void>;
 
     /**
      * Sets a priority for the data at this Database location. Setting null removes any priority at this location.
@@ -282,7 +287,10 @@ export namespace FirebaseDatabaseTypes {
      * @param priority The priority value.
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    setPriority(priority: string | number | null, onComplete?: Function): Promise<void>;
+    setPriority(
+      priority: string | number | null,
+      onComplete?: (error: Error | null) => void,
+    ): Promise<void>;
 
     /**
      * Writes data the Database location. Like `set()` but also specifies the priority for that data.
@@ -306,7 +314,7 @@ export namespace FirebaseDatabaseTypes {
     setWithPriority(
       newVal: any,
       newPriority: string | number | null,
-      onComplete?: Function,
+      onComplete?: (error: Error | null) => void,
     ): Promise<void>;
 
     /**
@@ -330,7 +338,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param onComplete Callback called when write to server is complete. Contains the parameters (Error | null).
      */
-    remove(onComplete?: Function): Promise<void>;
+    remove(onComplete?: (error: Error | null) => void): Promise<void>;
 
     /**
      * Atomically modifies the data at this location.
@@ -366,13 +374,14 @@ export namespace FirebaseDatabaseTypes {
      * });
      * ```
      *
-     * @param transactionUpdate A developer-supplied function which will be passed the current data stored at this location (as a JavaScript object). The function should return the new value it would like written (as a JavaScript object). If undefined is returned (i.e. you return with no arguments) the transaction will be aborted and the data at this location will not be modified.
+     * @param transactionUpdate A developer-supplied function which will be passed the current data stored at this location (as a JavaScript object). The function should return the new value it would like written (as a JavaScript object). If undefined is returned (i.e. you return with no result) the transaction will be aborted and the data at this location will not be modified.
      * @param onComplete A callback function that will be called when the transaction completes. The callback is passed three arguments: a possibly-null Error, a boolean indicating whether the transaction was committed, and a DataSnapshot indicating the final result. If the transaction failed abnormally, the first argument will be an Error object indicating the failure cause. If the transaction finished normally, but no data was committed because no data was returned from transactionUpdate, then second argument will be false. If the transaction completed and committed data to Firebase, the second argument will be true. Regardless, the third argument will be a DataSnapshot containing the resulting data in this location.
      * @param applyLocally By default, events are raised each time the transaction update function runs. So if it is run multiple times, you may see intermediate states. You can set this to false to suppress these intermediate states and instead wait until the transaction has completed before events are raised.
      */
     transaction(
-      transactionUpdate: Function,
-      onComplete?: Function,
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      transactionUpdate: (currentData: object) => object | undefined,
+      onComplete?: (error: Error | null, committed: boolean, finalResult: DataSnapshot) => void,
       applyLocally?: boolean,
     ): Promise<TransactionResult>;
 
@@ -403,7 +412,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value Optional value to be written at the generated location.
      * @param onComplete Callback called when write to server is complete.
      */
-    push(value?: any, onComplete?: Function): ThenableReference;
+    push(value?: any, onComplete?: () => void): ThenableReference;
 
     /**
      * Returns an {@link database.OnDisconnect} instance.
@@ -590,7 +599,7 @@ export namespace FirebaseDatabaseTypes {
      * @param callback The callback function that was passed to `on()` or `undefined` to remove all callbacks.
      * @param context The context that was passed to `on()`.
      */
-    off(eventType?: EventType, callback?: Function, context?: Record<string, any>): void;
+    off(eventType?: EventType, callback?: () => void, context?: Record<string, any>): void;
 
     /**
      * Listens for data changes at a particular location.
@@ -646,10 +655,10 @@ export namespace FirebaseDatabaseTypes {
      */
     on(
       eventType?: EventType,
-      callback?: Function,
+      callback?: (data: DataSnapshot, previousChildKey?: string) => void,
       cancelCallbackOrContext?: Record<string, any>,
       context?: Record<string, any> | null,
-    ): Function;
+    ): () => void;
 
     /**
      * Listens for exactly one event of the specified event type, and then stops listening.
@@ -772,6 +781,7 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Returns a JSON-serializable representation of this object.
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object;
 
     /**
@@ -844,14 +854,14 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    cancel(onComplete?: Function): Promise<void>;
+    cancel(onComplete?: (error: Error | null) => void): Promise<void>;
 
     /**
      * Ensures the data at this location is deleted when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
      *
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    remove(onComplete?: Function): Promise<void>;
+    remove(onComplete?: (error: Error | null) => void): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value when the client is disconnected
@@ -873,7 +883,7 @@ export namespace FirebaseDatabaseTypes {
      * @param value The value to be written to this location on disconnect (can be an object, array, string, number, boolean, or null).
      * @param onComplete An optional callback function that will be called when synchronization to the Database server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    set(value: any, onComplete?: Function): Promise<void>;
+    set(value: any, onComplete?: (error: Error | null) => void): Promise<void>;
 
     /**
      * Ensures the data at this location is set to the specified value and priority when the client is disconnected (due to closing the browser, navigating to a new page, or network issues).
@@ -885,7 +895,7 @@ export namespace FirebaseDatabaseTypes {
     setWithPriority(
       value: any,
       priority: string | number | null,
-      onComplete?: Function,
+      onComplete?: (error: Error | null) => void,
     ): Promise<void>;
 
     /**
@@ -915,7 +925,10 @@ export namespace FirebaseDatabaseTypes {
      * @param values Object containing multiple values.
      * @param onComplete An optional callback function that will be called when synchronization to the server has completed. The callback will be passed a single parameter: null for success, or an Error object indicating a failure.
      */
-    update(values: { [key: string]: any }, onComplete?: Function): Promise<void>;
+    update(
+      values: { [key: string]: any },
+      onComplete?: (error: Error | null) => void,
+    ): Promise<void>;
   }
 
   export type EventType =
@@ -1012,7 +1025,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param action A function that will be called for each child DataSnapshot. The callback can return true to cancel further enumeration.
      */
-    forEach(action: Function): boolean;
+    forEach(action: (child: DataSnapshot) => true | undefined): boolean;
 
     /**
      * Gets the priority value of the data in this DataSnapshot.
@@ -1058,6 +1071,7 @@ export namespace FirebaseDatabaseTypes {
     /**
      * Returns a JSON-serializable representation of this object.
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object | null;
 
     /**
@@ -1266,6 +1280,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

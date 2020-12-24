@@ -32,7 +32,7 @@ const Ul = styled.ul`
   row-gap: 2rem;
 `;
 
-function EntityTable({ entities }: Props) {
+function EntityTable({ entities }: Props): JSX.Element {
   return (
     <div className="my-4 bg-gray-100 rounded p-4 shadow-lg">
       <Ul className="leading-loose">

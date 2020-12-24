@@ -15,8 +15,8 @@
  *
  */
 
-describe('storage()', function() {
-  describe('statics', function() {
+describe('storage()', function () {
+  describe('statics', function () {
     // TODO test statics correctly exported
   });
 });

@@ -15,9 +15,9 @@
  *
  */
 
-describe('App -> NativeModules -> Constants', function() {
-  describe('.apps', function() {
-    it('should be an array', function() {
+describe('App -> NativeModules -> Constants', function () {
+  describe('.apps', function () {
+    it('should be an array', function () {
       const { NATIVE_FIREBASE_APPS } = NativeModules.RNFBAppModule;
 
       NATIVE_FIREBASE_APPS.should.be.an.Array();
@@ -25,7 +25,7 @@ describe('App -> NativeModules -> Constants', function() {
       NATIVE_FIREBASE_APPS.length.should.equal(2);
     });
 
-    it('array items contain name, options & state properties', function() {
+    it('array items contain name, options & state properties', function () {
       const { NATIVE_FIREBASE_APPS } = NativeModules.RNFBAppModule;
 
       NATIVE_FIREBASE_APPS.should.be.an.Array();

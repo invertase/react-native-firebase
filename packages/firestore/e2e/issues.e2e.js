@@ -17,38 +17,20 @@
 
 const COLLECTION = 'firestore';
 
-describe('firestore()', function() {
-  describe(COLLECTION, function() {
-    before(async function() {
+describe('firestore()', function () {
+  describe(COLLECTION, function () {
+    before(async function () {
       await Promise.all([
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/wbXwyLJheRfYXXWlY46j`)
-          .set({ index: 2, number: 2 }),
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/kGC5cYPN1nKnZCcAb9oQ`)
-          .set({ index: 6, number: 2 }),
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/8Ek8iWCDQPPJ5s2n8PiQ`)
-          .set({ index: 4, number: 2 }),
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/mr7MdAygvuheF6AUtWma`)
-          .set({ index: 1, number: 1 }),
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/RCO5SvNn4fdoE49OKrIV`)
-          .set({ index: 3, number: 1 }),
-        firebase
-          .firestore()
-          .doc(`${COLLECTION}/CvVG7VP1hXTtcfdUaeNl`)
-          .set({ index: 5, number: 1 }),
+        firebase.firestore().doc(`${COLLECTION}/wbXwyLJheRfYXXWlY46j`).set({ index: 2, number: 2 }),
+        firebase.firestore().doc(`${COLLECTION}/kGC5cYPN1nKnZCcAb9oQ`).set({ index: 6, number: 2 }),
+        firebase.firestore().doc(`${COLLECTION}/8Ek8iWCDQPPJ5s2n8PiQ`).set({ index: 4, number: 2 }),
+        firebase.firestore().doc(`${COLLECTION}/mr7MdAygvuheF6AUtWma`).set({ index: 1, number: 1 }),
+        firebase.firestore().doc(`${COLLECTION}/RCO5SvNn4fdoE49OKrIV`).set({ index: 3, number: 1 }),
+        firebase.firestore().doc(`${COLLECTION}/CvVG7VP1hXTtcfdUaeNl`).set({ index: 5, number: 1 }),
       ]);
     });
 
-    it('returns all results', async function() {
+    it('returns all results', async function () {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const allResultsSnapshot = await ref.get();
@@ -74,7 +56,7 @@ describe('firestore()', function() {
       });
     });
 
-    it('returns first page', async function() {
+    it('returns first page', async function () {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const firstPageSnapshot = await ref.limit(2).get();
@@ -89,7 +71,7 @@ describe('firestore()', function() {
       });
     });
 
-    it('returns second page', async function() {
+    it('returns second page', async function () {
       const db = firebase.firestore();
       const ref = db.collection(COLLECTION).orderBy('number', 'desc');
       const firstPageSnapshot = await ref.limit(2).get();
@@ -98,10 +80,7 @@ describe('firestore()', function() {
         lastDocument = doc;
       });
 
-      const secondPageSnapshot = await ref
-        .startAfter(lastDocument)
-        .limit(2)
-        .get();
+      const secondPageSnapshot = await ref.startAfter(lastDocument).limit(2).get();
       should.equal(secondPageSnapshot.docs.length, 2);
       secondPageSnapshot.forEach((doc, i) => {
         if (i === 0) {

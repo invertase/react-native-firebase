@@ -31,7 +31,7 @@ const EXTERNAL_TYPES: { [key: string]: string } = {
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
 };
 
-function TypeGenerator({ type }: Props) {
+function TypeGenerator({ type }: Props): JSX.Element {
   const { allEntity } = useStaticQuery(graphql`
     query EntityQuery {
       allEntity {

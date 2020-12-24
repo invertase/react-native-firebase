@@ -30,6 +30,6 @@ export function useBodyClassToggle(className: string): () => void {
   };
 }
 
-export function useLocation() {
+export function useLocation(): Location {
   return useContext(LocationContext);
 }

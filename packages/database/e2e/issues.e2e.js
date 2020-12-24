@@ -19,12 +19,12 @@ const { PATH, wipe } = require('./helpers');
 
 const TEST_PATH = `${PATH}/issues`;
 
-describe('database issues', function() {
-  after(function() {
+describe('database issues', function () {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  it('#2813 should return a null snapshot key if path is root', async function() {
+  it('#2813 should return a null snapshot key if path is root', async function () {
     const ref = firebase
       .app()
       .database('https://react-native-firebase-testing-db2.firebaseio.com')
@@ -33,7 +33,7 @@ describe('database issues', function() {
     should.equal(snapshot.key, null);
   });
 
-  it('#2833 should not mutate modifiers ordering', async function() {
+  it('#2833 should not mutate modifiers ordering', async function () {
     const callback = sinon.spy();
     const testRef = firebase
       .database()
@@ -54,7 +54,7 @@ describe('database issues', function() {
     testRef.off('value');
   });
 
-  it('#100 array should return null where key is missing', async function() {
+  it('#100 array should return null where key is missing', async function () {
     const ref = firebase.database().ref(`${TEST_PATH}/issue_100`);
 
     const data = {
@@ -87,8 +87,8 @@ describe('database issues', function() {
       );
   });
 
-  describe('#108 filters correctly by float values', function() {
-    it('returns filtered results', async function() {
+  describe('#108 filters correctly by float values', function () {
+    it('returns filtered results', async function () {
       const ref = firebase.database().ref(`${TEST_PATH}/issue_108/filter`);
 
       const data = {
@@ -119,7 +119,7 @@ describe('database issues', function() {
       should.equal(Object.keys(val).length, 1);
     });
 
-    it('returns correct results when not using float values', async function() {
+    it('returns correct results when not using float values', async function () {
       const ref = firebase.database().ref(`${TEST_PATH}/issue_108/integer`);
 
       const data = {
@@ -138,10 +138,7 @@ describe('database issues', function() {
       };
 
       await ref.set(data);
-      const snapshot = await ref
-        .orderByChild('latitude')
-        .equalTo(37)
-        .once('value');
+      const snapshot = await ref.orderByChild('latitude').equalTo(37).once('value');
 
       const val = snapshot.val();
 
@@ -151,7 +148,7 @@ describe('database issues', function() {
     });
   });
 
-  it('#489 reutrns long numbers correctly', async function() {
+  it('#489 reutrns long numbers correctly', async function () {
     const LONG = 1508777379000;
     const ref = firebase.database().ref(`${TEST_PATH}/issue_489`);
     await ref.set(LONG);

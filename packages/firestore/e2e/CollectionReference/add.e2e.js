@@ -17,16 +17,13 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.collection().add()', function() {
-  before(function() {
+describe('firestore.collection().add()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if data is not an object', function() {
+  it('throws if data is not an object', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .add(123);
+      firebase.firestore().collection(COLLECTION).add(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'data' must be an object");
@@ -34,12 +31,9 @@ describe('firestore.collection().add()', function() {
     }
   });
 
-  it('adds a new document', async function() {
+  it('adds a new document', async function () {
     const data = { foo: 'bar' };
-    const docRef = await firebase
-      .firestore()
-      .collection(COLLECTION)
-      .add(data);
+    const docRef = await firebase.firestore().collection(COLLECTION).add(data);
     should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
     const docSnap = await docRef.get();
     docSnap.data().should.eql(jet.contextify(data));

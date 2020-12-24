@@ -24,7 +24,7 @@ import { MdxRaw } from '../components/Mdx';
 import { TypeGenerator } from '../components/TypeGenerator';
 import { SourceLink } from '../components/SourceLink';
 
-function Reference({ name, type }: { name: string; type: string }) {
+function Reference({ name, type }: { name: string; type: string }): JSX.Element {
   return (
     <CodeBlock>
       <span className="parameter">{name}</span>
@@ -34,7 +34,7 @@ function Reference({ name, type }: { name: string; type: string }) {
   );
 }
 
-function Properties({ properties }: { properties: Property[] }) {
+function Properties({ properties }: { properties: Property[] }): JSX.Element {
   return (
     <>
       <Divider />

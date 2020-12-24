@@ -19,13 +19,10 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/push`;
 
-describe('database().ref().push()', function() {
-  it('throws if on complete callback is not a function', function() {
+describe('database().ref().push()', function () {
+  it('throws if on complete callback is not a function', function () {
     try {
-      firebase
-        .database()
-        .ref(TEST_PATH)
-        .push('foo', 'bar');
+      firebase.database().ref(TEST_PATH).push('foo', 'bar');
       return Promise.reject(new Error('Did not throw Error'));
     } catch (error) {
       error.message.should.containEql("'onComplete' must be a function if provided");
@@ -33,7 +30,7 @@ describe('database().ref().push()', function() {
     }
   });
 
-  it('returns a promise when no value is passed', function() {
+  it('returns a promise when no value is passed', function () {
     const ref = firebase.database().ref(`${TEST_PATH}/boop`);
     const pushed = ref.push();
     return pushed
@@ -48,7 +45,7 @@ describe('database().ref().push()', function() {
       });
   });
 
-  it('returns a promise and sets the provided value', function() {
+  it('returns a promise and sets the provided value', function () {
     const ref = firebase.database().ref(`${TEST_PATH}/value`);
     const pushed = ref.push(6);
     return pushed
@@ -63,7 +60,7 @@ describe('database().ref().push()', function() {
       });
   });
 
-  it('returns a to the callback if provided once set', async function() {
+  it('returns a to the callback if provided once set', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/callback`);
     const value = Date.now();
@@ -74,7 +71,7 @@ describe('database().ref().push()', function() {
     callback.should.be.calledOnce();
   });
 
-  it('throws if push errors', async function() {
+  it('throws if push errors', async function () {
     const ref = firebase.database().ref('nope');
     return ref.push('foo').catch(error => {
       error.message.should.containEql("doesn't have permission to access");
@@ -82,7 +79,7 @@ describe('database().ref().push()', function() {
     });
   });
 
-  it('returns an error to the callback', async function() {
+  it('returns an error to the callback', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref('nope');
     ref.push('foo', error => {

@@ -15,9 +15,9 @@
  *
  */
 
-describe('firestore.X', function() {
-  describe('setLogLevel', function() {
-    it('throws if invalid level', function() {
+describe('firestore.X', function () {
+  describe('setLogLevel', function () {
+    it('throws if invalid level', function () {
       try {
         firebase.firestore.setLogLevel('verbose');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -27,7 +27,7 @@ describe('firestore.X', function() {
       }
     });
 
-    it('enabled and disables logging', function() {
+    it('enabled and disables logging', function () {
       firebase.firestore.setLogLevel('silent');
       firebase.firestore.setLogLevel('debug');
     });

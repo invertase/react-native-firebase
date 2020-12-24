@@ -19,23 +19,19 @@ const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectUpdate`;
 
-describe('database().ref().onDisconnect().update()', function() {
-  after(function() {
+describe('database().ref().onDisconnect().update()', function () {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     // Ensures the db is online before running each test
     firebase.database().goOnline();
   });
 
-  it('throws if values is not an object', async function() {
+  it('throws if values is not an object', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .onDisconnect()
-        .update('foo');
+      await firebase.database().ref(TEST_PATH).onDisconnect().update('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'values' must be an object");
@@ -43,13 +39,9 @@ describe('database().ref().onDisconnect().update()', function() {
     }
   });
 
-  it('throws if values does not contain any values', async function() {
+  it('throws if values does not contain any values', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .onDisconnect()
-        .update({});
+      await firebase.database().ref(TEST_PATH).onDisconnect().update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'values' must be an object containing multiple values");
@@ -57,15 +49,11 @@ describe('database().ref().onDisconnect().update()', function() {
     }
   });
 
-  it('throws if update paths are not valid', async function() {
+  it('throws if update paths are not valid', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .onDisconnect()
-        .update({
-          $$$$: 'foo',
-        });
+      await firebase.database().ref(TEST_PATH).onDisconnect().update({
+        $$$$: 'foo',
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'values' contains an invalid path.");
@@ -73,11 +61,8 @@ describe('database().ref().onDisconnect().update()', function() {
     }
   });
 
-  it('throws if onComplete is not a function', function() {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .onDisconnect();
+  it('throws if onComplete is not a function', function () {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
     try {
       ref.update({ foo: 'bar' }, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -87,7 +72,7 @@ describe('database().ref().onDisconnect().update()', function() {
     }
   });
 
-  it('updates value when disconnected', async function() {
+  it('updates value when disconnected', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
@@ -97,12 +82,9 @@ describe('database().ref().onDisconnect().update()', function() {
       },
     });
 
-    await ref
-      .child('foo')
-      .onDisconnect()
-      .update({
-        bar: value,
-      });
+    await ref.child('foo').onDisconnect().update({
+      bar: value,
+    });
     await firebase.database().goOffline();
     await firebase.database().goOnline();
 
@@ -114,7 +96,7 @@ describe('database().ref().onDisconnect().update()', function() {
     );
   });
 
-  it('calls back to the onComplete function', async function() {
+  it('calls back to the onComplete function', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref(TEST_PATH);
 

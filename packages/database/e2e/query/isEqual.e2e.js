@@ -15,13 +15,10 @@
  *
  */
 
-describe('database().ref().isEqual()', function() {
-  it('throws if limit other param is not a query instance', async function() {
+describe('database().ref().isEqual()', function () {
+  it('throws if limit other param is not a query instance', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .isEqual('foo');
+      await firebase.database().ref().isEqual('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'other' must be an instance of Query.");
@@ -29,33 +26,22 @@ describe('database().ref().isEqual()', function() {
     }
   });
 
-  it('returns true if the query is the same instance', async function() {
+  it('returns true if the query is the same instance', async function () {
     const query = await firebase.database().ref();
     const same = query.isEqual(query);
     same.should.eql(true);
   });
 
-  it('returns false if the query is different', async function() {
+  it('returns false if the query is different', async function () {
     const query = await firebase.database().ref();
-    const other = await firebase
-      .database()
-      .ref()
-      .limitToLast(2);
+    const other = await firebase.database().ref().limitToLast(2);
     const same = query.isEqual(other);
     same.should.eql(false);
   });
 
-  it('returns true if the query is created differently', async function() {
-    const query = await firebase
-      .database()
-      .ref()
-      .limitToFirst(1)
-      .orderByChild('foo');
-    const other = await firebase
-      .database()
-      .ref()
-      .orderByChild('foo')
-      .limitToFirst(1);
+  it('returns true if the query is created differently', async function () {
+    const query = await firebase.database().ref().limitToFirst(1).orderByChild('foo');
+    const other = await firebase.database().ref().orderByChild('foo').limitToFirst(1);
     const same = query.isEqual(other);
     same.should.eql(true);
   });

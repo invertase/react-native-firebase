@@ -15,8 +15,8 @@
  *
  */
 
-describe('dynamicLinks() dynamicLinkParams', function() {
-  it('throws if params are not an object', function() {
+describe('dynamicLinks() dynamicLinkParams', function () {
+  it('throws if params are not an object', function () {
     try {
       firebase.dynamicLinks().buildLink(123);
       return Promise.reject(new Error('Did not throw Error.'));
@@ -26,7 +26,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if link is not provided', function() {
+  it('throws if link is not provided', function () {
     try {
       firebase.dynamicLinks().buildLink({});
       return Promise.reject(new Error('Did not throw Error.'));
@@ -36,7 +36,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if link is not a string', function() {
+  it('throws if link is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         link: 123,
@@ -48,7 +48,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if link is invalid', function() {
+  it('throws if link is invalid', function () {
     try {
       firebase.dynamicLinks().buildLink({
         link: 'invertase.io',
@@ -62,7 +62,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if domainUriPrefix is not provided', function() {
+  it('throws if domainUriPrefix is not provided', function () {
     try {
       firebase.dynamicLinks().buildLink({
         link: 'https://invertase.io',
@@ -74,7 +74,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if domainUriPrefix is not a string', function() {
+  it('throws if domainUriPrefix is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         link: 'https://invertase.io',
@@ -87,7 +87,7 @@ describe('dynamicLinks() dynamicLinkParams', function() {
     }
   });
 
-  it('throws if domainUriPrefix is invalid', function() {
+  it('throws if domainUriPrefix is invalid', function () {
     try {
       firebase.dynamicLinks().buildLink({
         link: 'https://invertase.io',

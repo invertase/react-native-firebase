@@ -19,13 +19,10 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/remove`;
 
-describe('database().ref().remove()', function() {
-  it('throws if onComplete is not a function', async function() {
+describe('database().ref().remove()', function () {
+  it('throws if onComplete is not a function', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .remove('foo');
+      await firebase.database().ref(TEST_PATH).remove('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'onComplete' must be a function if provided");
@@ -33,7 +30,7 @@ describe('database().ref().remove()', function() {
     }
   });
 
-  it('removes a value at the path', async function() {
+  it('removes a value at the path', async function () {
     const ref = firebase.database().ref(TEST_PATH);
     await ref.set('foo');
     await ref.remove();

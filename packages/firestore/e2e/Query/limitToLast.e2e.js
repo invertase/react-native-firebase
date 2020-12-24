@@ -17,16 +17,13 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 
-describe('firestore().collection().limitToLast()', function() {
-  before(function() {
+describe('firestore().collection().limitToLast()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if limitToLast is invalid', function() {
+  it('throws if limitToLast is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .limitToLast(-1);
+      firebase.firestore().collection(COLLECTION).limitToLast(-1);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'limitToLast' must be a positive integer value");
@@ -34,38 +31,27 @@ describe('firestore().collection().limitToLast()', function() {
     }
   });
 
-  it('sets limitToLast on internals', async function() {
-    const colRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .limitToLast(123);
+  it('sets limitToLast on internals', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION).limitToLast(123);
 
     should(colRef._modifiers.options.limitToLast).equal(123);
   });
 
-  it('removes limit query if limitToLast is set afterwards', function() {
-    const colRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .limit(2)
-      .limitToLast(123);
+  it('removes limit query if limitToLast is set afterwards', function () {
+    const colRef = firebase.firestore().collection(COLLECTION).limit(2).limitToLast(123);
 
     should(colRef._modifiers.options.limit).equal(undefined);
   });
 
   // FIXME flaky on local tests
-  xit('removes limitToLast query if limit is set afterwards', function() {
-    const colRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .limitToLast(123)
-      .limit(2);
+  xit('removes limitToLast query if limit is set afterwards', function () {
+    const colRef = firebase.firestore().collection(COLLECTION).limitToLast(123).limit(2);
 
     should(colRef._modifiers.options.limitToLast).equal(undefined);
   });
 
   // FIXME flaky on local tests
-  xit('limitToLast the number of documents', async function() {
+  xit('limitToLast the number of documents', async function () {
     const subCol = `${COLLECTION}/limitToLast/count`;
     const colRef = firebase.firestore().collection(subCol);
 
@@ -92,13 +78,9 @@ describe('firestore().collection().limitToLast()', function() {
     should(results[1].count).equal(1);
   });
 
-  it("throws error if no 'orderBy' is set on the query", function() {
+  it("throws error if no 'orderBy' is set on the query", function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .limitToLast(3)
-        .get();
+      firebase.firestore().collection(COLLECTION).limitToLast(3).get();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(

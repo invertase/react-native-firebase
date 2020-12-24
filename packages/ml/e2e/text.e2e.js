@@ -69,17 +69,14 @@ function textBaseElementValidate(textBase, cloud = false) {
 
 let testImageFile;
 
-describe('ml.text', function() {
-  before(async function() {
+describe('ml.text', function () {
+  before(async function () {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/text.png`;
-    await firebase
-      .storage()
-      .ref('vision/text.png')
-      .writeToFile(testImageFile);
+    await firebase.storage().ref('vision/text.png').writeToFile(testImageFile);
   });
 
-  describe('MLCloudTextRecognizerOptions', function() {
-    it('throws if not an object', async function() {
+  describe('MLCloudTextRecognizerOptions', function () {
+    it('throws if not an object', async function () {
       try {
         await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -89,8 +86,8 @@ describe('ml.text', function() {
       }
     });
 
-    describe('enforceCertFingerprintMatch', function() {
-      it('throws if not a boolean', async function() {
+    describe('enforceCertFingerprintMatch', function () {
+      it('throws if not a boolean', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             enforceCertFingerprintMatch: 'false',
@@ -104,15 +101,15 @@ describe('ml.text', function() {
         }
       });
 
-      it('sets a value', async function() {
+      it('sets a value', async function () {
         await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
       });
     });
 
-    describe('apiKeyOverride', function() {
-      it('throws if apiKeyOverride is not a string', async function() {
+    describe('apiKeyOverride', function () {
+      it('throws if apiKeyOverride is not a string', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             apiKeyOverride: true,
@@ -127,8 +124,8 @@ describe('ml.text', function() {
       });
     });
 
-    describe('languageHints', function() {
-      it('throws if not array', async function() {
+    describe('languageHints', function () {
+      it('throws if not array', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: 'en',
@@ -142,7 +139,7 @@ describe('ml.text', function() {
         }
       });
 
-      it('throws if empty array', async function() {
+      it('throws if empty array', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: [],
@@ -156,7 +153,7 @@ describe('ml.text', function() {
         }
       });
 
-      it('throws if array contains non-string values', async function() {
+      it('throws if array contains non-string values', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             languageHints: [123],
@@ -170,15 +167,15 @@ describe('ml.text', function() {
         }
       });
 
-      it('sets hintedLanguages', async function() {
+      it('sets hintedLanguages', async function () {
         await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
           languageHints: ['fr'],
         });
       });
     });
 
-    describe('modelType', function() {
-      it('throws if invalid type', async function() {
+    describe('modelType', function () {
+      it('throws if invalid type', async function () {
         try {
           await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
             modelType: 7,
@@ -190,7 +187,7 @@ describe('ml.text', function() {
         }
       });
 
-      it('sets modelType', async function() {
+      it('sets modelType', async function () {
         await firebase.ml().cloudTextRecognizerProcessImage(testImageFile, {
           modelType: firebase.ml.MLCloudTextRecognizerModelType.SPARSE_MODEL,
         });
@@ -198,8 +195,8 @@ describe('ml.text', function() {
     });
   });
 
-  describe('cloudTextRecognizerProcessImage()', function() {
-    it('should throw if image path is not a string', function() {
+  describe('cloudTextRecognizerProcessImage()', function () {
+    it('should throw if image path is not a string', function () {
       try {
         firebase.ml().cloudTextRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -209,7 +206,7 @@ describe('ml.text', function() {
       }
     });
 
-    it('should return a VisionText representation for an image', async function() {
+    it('should return a VisionText representation for an image', async function () {
       const res = await firebase.ml().cloudTextRecognizerProcessImage(testImageFile);
       res.text.should.be.a.String();
       res.blocks.should.be.an.Array();

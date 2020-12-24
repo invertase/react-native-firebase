@@ -17,8 +17,8 @@
 
 const { baseParams } = require('./dynamicLinks.e2e');
 
-describe('dynamicLinks() dynamicLinkParams.itunes', function() {
-  it('throws if itunes is not an object', function() {
+describe('dynamicLinks() dynamicLinkParams.itunes', function () {
+  it('throws if itunes is not an object', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -31,7 +31,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', function() {
     }
   });
 
-  it('throws if itunes.affiliateToken is not a string', function() {
+  it('throws if itunes.affiliateToken is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -46,7 +46,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', function() {
     }
   });
 
-  it('throws if itunes.campaignToken is not a string', function() {
+  it('throws if itunes.campaignToken is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,
@@ -61,7 +61,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', function() {
     }
   });
 
-  it('throws if itunes.providerToken is not a string', function() {
+  it('throws if itunes.providerToken is not a string', function () {
     try {
       firebase.dynamicLinks().buildLink({
         ...baseParams,

@@ -15,13 +15,13 @@
  *
  */
 
-describe('database().ref().parent', function() {
-  it('returns null when no reference path is provides', function() {
+describe('database().ref().parent', function () {
+  it('returns null when no reference path is provides', function () {
     const ref = firebase.database().ref();
     should.equal(ref.parent, null);
   });
 
-  it('return last token in reference path', function() {
+  it('return last token in reference path', function () {
     const ref1 = firebase.database().ref('/foo').parent;
     const ref2 = firebase.database().ref('/foo/bar/baz').parent;
     should.equal(ref1, null);

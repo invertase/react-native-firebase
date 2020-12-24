@@ -17,11 +17,11 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().doc() -> snapshot.get()', function() {
-  before(function() {
+describe('firestore().doc() -> snapshot.get()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if invalid fieldPath argument', async function() {
+  it('throws if invalid fieldPath argument', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -34,7 +34,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     }
   });
 
-  it('throws if fieldPath is an empty string', async function() {
+  it('throws if fieldPath is an empty string', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -47,7 +47,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     }
   });
 
-  it('throws if fieldPath starts with a period (.)', async function() {
+  it('throws if fieldPath starts with a period (.)', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -60,7 +60,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     }
   });
 
-  it('throws if fieldPath ends with a period (.)', async function() {
+  it('throws if fieldPath ends with a period (.)', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -73,7 +73,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     }
   });
 
-  it('throws if fieldPath contains ..', async function() {
+  it('throws if fieldPath contains ..', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -86,7 +86,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     }
   });
 
-  it('returns undefined if the data does not exist', async function() {
+  it('returns undefined if the data does not exist', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const snapshot = await ref.get();
 
@@ -103,7 +103,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     should.equal(val5, undefined);
   });
 
-  it('returns the correct data with string fieldPath', async function() {
+  it('returns the correct data with string fieldPath', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const types = {
       string: '12345',
@@ -133,7 +133,7 @@ describe('firestore().doc() -> snapshot.get()', function() {
     await ref.delete();
   });
 
-  it('returns the correct data with FieldPath', async function() {
+  it('returns the correct data with FieldPath', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/foo`);
     const types = {
       string: '12345',

@@ -19,21 +19,18 @@ const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectCancel`;
 
-describe('database().ref().onDisconnect().cancel()', function() {
-  after(function() {
+describe('database().ref().onDisconnect().cancel()', function () {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  afterEach(function() {
+  afterEach(function () {
     // Ensures the db is online before running each test
     firebase.database().goOnline();
   });
 
-  it('throws if onComplete is not a function', function() {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .onDisconnect();
+  it('throws if onComplete is not a function', function () {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
     try {
       ref.cancel('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -43,7 +40,7 @@ describe('database().ref().onDisconnect().cancel()', function() {
     }
   });
 
-  it('cancels all previously queued events', async function() {
+  it('cancels all previously queued events', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     await ref.set('foobar');
@@ -58,7 +55,7 @@ describe('database().ref().onDisconnect().cancel()', function() {
     snapshot.val().should.eql('foobar');
   });
 
-  it('calls back to the onComplete function', async function() {
+  it('calls back to the onComplete function', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref(TEST_PATH);
 

@@ -41,7 +41,15 @@ interface Props {
   aside?: ReactElement;
 }
 
-function Page({ title, description, noindex, children, sidebar, aside, location }: Props) {
+function Page({
+  title,
+  description,
+  noindex,
+  children,
+  sidebar,
+  aside,
+  location,
+}: Props): JSX.Element {
   const [showSidebar, setShowSidebar] = useState<boolean>(false);
   const meta: { [key: string]: string } = {
     title: title ? `${title} | React Native Firebase` : 'React Native Firebase',
