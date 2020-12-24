@@ -24,8 +24,8 @@
     "@react-native-firebase/perf": "10.3.1",
     "@react-native-firebase/remote-config": "10.3.1",
     "@react-native-firebase/storage": "10.3.1",
-    "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react": "16.13.1",
+    "react-native": "0.63.4"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
