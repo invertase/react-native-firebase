@@ -15,9 +15,9 @@
  *
  */
 
-describe('storage() -> StorageReference', function() {
-  describe('toString()', function() {
-    it('returns the correct bucket path to the file', function() {
+describe('storage() -> StorageReference', function () {
+  describe('toString()', function () {
+    it('returns the correct bucket path to the file', function () {
       const app = firebase.app();
       firebase
         .storage()
@@ -27,31 +27,22 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('properties', function() {
-    describe('fullPath', function() {
-      it('returns the full path as a string', function() {
-        firebase
-          .storage()
-          .ref('/foo/uploadNope.jpeg')
-          .fullPath.should.equal('foo/uploadNope.jpeg');
-        firebase
-          .storage()
-          .ref('foo/uploadNope.jpeg')
-          .fullPath.should.equal('foo/uploadNope.jpeg');
+  describe('properties', function () {
+    describe('fullPath', function () {
+      it('returns the full path as a string', function () {
+        firebase.storage().ref('/foo/uploadNope.jpeg').fullPath.should.equal('foo/uploadNope.jpeg');
+        firebase.storage().ref('foo/uploadNope.jpeg').fullPath.should.equal('foo/uploadNope.jpeg');
       });
     });
 
-    describe('storage', function() {
-      it('returns the instance of storage', function() {
-        firebase
-          .storage()
-          .ref('/foo/uploadNope.jpeg')
-          .storage.ref.should.be.a.Function();
+    describe('storage', function () {
+      it('returns the instance of storage', function () {
+        firebase.storage().ref('/foo/uploadNope.jpeg').storage.ref.should.be.a.Function();
       });
     });
 
-    describe('bucket', function() {
-      it('returns the storage bucket as a string', function() {
+    describe('bucket', function () {
+      it('returns the storage bucket as a string', function () {
         const app = firebase.app();
         firebase
           .storage()
@@ -60,47 +51,41 @@ describe('storage() -> StorageReference', function() {
       });
     });
 
-    describe('name', function() {
-      it('returns the file name as a string', function() {
+    describe('name', function () {
+      it('returns the file name as a string', function () {
         const ref = firebase.storage().ref('/foo/uploadNope.jpeg');
         ref.name.should.equal('uploadNope.jpeg');
       });
     });
 
-    describe('parent', function() {
-      it('returns the parent directory as a reference', function() {
-        firebase
-          .storage()
-          .ref('/foo/uploadNope.jpeg')
-          .parent.fullPath.should.equal('foo');
+    describe('parent', function () {
+      it('returns the parent directory as a reference', function () {
+        firebase.storage().ref('/foo/uploadNope.jpeg').parent.fullPath.should.equal('foo');
       });
 
-      it('returns null if already at root', function() {
+      it('returns null if already at root', function () {
         const ref = firebase.storage().ref('/');
         should.equal(ref.parent, null);
       });
     });
 
-    describe('root', function() {
-      it('returns a reference to the root of the bucket', function() {
-        firebase
-          .storage()
-          .ref('/foo/uploadNope.jpeg')
-          .root.fullPath.should.equal('/');
+    describe('root', function () {
+      it('returns a reference to the root of the bucket', function () {
+        firebase.storage().ref('/foo/uploadNope.jpeg').root.fullPath.should.equal('/');
       });
     });
   });
 
-  describe('child()', function() {
-    it('returns a reference to a child path', function() {
+  describe('child()', function () {
+    it('returns a reference to a child path', function () {
       const parentRef = firebase.storage().ref('/foo');
       const childRef = parentRef.child('someFile.json');
       childRef.fullPath.should.equal('foo/someFile.json');
     });
   });
 
-  describe('delete()', function() {
-    before(async function() {
+  describe('delete()', function () {
+    before(async function () {
       await firebase
         .storage()
         .ref('/ok.jpeg')
@@ -111,7 +96,7 @@ describe('storage() -> StorageReference', function() {
         .putFile(`${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/deleteMe.jpeg`);
     });
 
-    it('should delete a file', async function() {
+    it('should delete a file', async function () {
       const storageReference = firebase.storage().ref('/deleteMe.jpeg');
       await storageReference.delete();
 
@@ -127,7 +112,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('throws error if file does not exist', async function() {
+    it('throws error if file does not exist', async function () {
       const storageReference = firebase.storage().ref('/iDoNotExist.jpeg');
 
       try {
@@ -142,7 +127,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('throws error if no write permission', async function() {
+    it('throws error if no write permission', async function () {
       const storageReference = firebase.storage().ref('/uploadNope.jpeg');
 
       try {
@@ -158,8 +143,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('getDownloadURL', function() {
-    it('should return a download url for a file', async function() {
+  describe('getDownloadURL', function () {
+    it('should return a download url for a file', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       const downloadUrl = await storageReference.getDownloadURL();
       downloadUrl.should.be.a.String();
@@ -167,7 +152,7 @@ describe('storage() -> StorageReference', function() {
       downloadUrl.should.containEql(firebase.app().options.projectId);
     });
 
-    it('throws error if file does not exist', async function() {
+    it('throws error if file does not exist', async function () {
       const storageReference = firebase.storage().ref('/iDoNotExist.jpeg');
 
       try {
@@ -182,7 +167,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('throws error if no write permission', async function() {
+    it('throws error if no write permission', async function () {
       const storageReference = firebase.storage().ref('/writeOnly.jpeg');
 
       try {
@@ -198,8 +183,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('getMetadata', function() {
-    it('should return a metadata for a file', async function() {
+  describe('getMetadata', function () {
+    it('should return a metadata for a file', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       const metadata = await storageReference.getMetadata();
       metadata.generation.should.be.a.String();
@@ -221,8 +206,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('list', function() {
-    it('should return list results', async function() {
+  describe('list', function () {
+    it('should return list results', async function () {
       const storageReference = firebase.storage().ref('/list');
       const result = await storageReference.list();
 
@@ -238,7 +223,7 @@ describe('storage() -> StorageReference', function() {
       result.prefixes[0].constructor.name.should.eql('StorageReference');
     });
 
-    it('throws if options is not an object', function() {
+    it('throws if options is not an object', function () {
       try {
         const storageReference = firebase.storage().ref('/');
         storageReference.list(123);
@@ -249,8 +234,8 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    describe('maxResults', function() {
-      it('should limit with maxResults are passed', async function() {
+    describe('maxResults', function () {
+      it('should limit with maxResults are passed', async function () {
         const storageReference = firebase.storage().ref('/list');
         const result = await storageReference.list({
           maxResults: 1,
@@ -266,7 +251,7 @@ describe('storage() -> StorageReference', function() {
         // todo length?
       });
 
-      it('throws if maxResults is not a number', function() {
+      it('throws if maxResults is not a number', function () {
         try {
           const storageReference = firebase.storage().ref('/list');
           storageReference.list({
@@ -279,7 +264,7 @@ describe('storage() -> StorageReference', function() {
         }
       });
 
-      it('throws if maxResults is not a valid number', function() {
+      it('throws if maxResults is not a valid number', function () {
         try {
           const storageReference = firebase.storage().ref('/list');
           storageReference.list({
@@ -295,8 +280,8 @@ describe('storage() -> StorageReference', function() {
       });
     });
 
-    describe('pageToken', function() {
-      it('throws if pageToken is not a string', function() {
+    describe('pageToken', function () {
+      it('throws if pageToken is not a string', function () {
         try {
           const storageReference = firebase.storage().ref('/list');
           storageReference.list({
@@ -309,7 +294,7 @@ describe('storage() -> StorageReference', function() {
         }
       });
 
-      it('should return and use a page token', async function() {
+      it('should return and use a page token', async function () {
         const storageReference = firebase.storage().ref('/list');
         const result1 = await storageReference.list({
           maxResults: 1,
@@ -331,8 +316,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('listAll', function() {
-    it('should return all results', async function() {
+  describe('listAll', function () {
+    it('should return all results', async function () {
       const storageReference = firebase.storage().ref('/list');
       const result = await storageReference.listAll();
 
@@ -347,7 +332,7 @@ describe('storage() -> StorageReference', function() {
       result.prefixes[0].constructor.name.should.eql('StorageReference');
     });
 
-    it('should not crash if the user is not allowed to list the directory', async function() {
+    it('should not crash if the user is not allowed to list the directory', async function () {
       const storageReference = firebase.storage().ref('/forbidden');
       try {
         await storageReference.listAll();
@@ -362,8 +347,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('updateMetadata', function() {
-    it('should return the updated metadata for a file', async function() {
+  describe('updateMetadata', function () {
+    it('should return the updated metadata for a file', async function () {
       const storageReference = firebase.storage().ref('/writeOnly.jpeg');
       const metadata = await storageReference.updateMetadata({
         contentType: 'image/jpeg',
@@ -391,7 +376,7 @@ describe('storage() -> StorageReference', function() {
       metadata.customMetadata.should.be.an.Object();
     });
 
-    it('should remove customMetadata properties by setting the value to null', async function() {
+    it('should remove customMetadata properties by setting the value to null', async function () {
       const storageReference = firebase.storage().ref('/writeOnly.jpeg');
       const metadata = await storageReference.updateMetadata({
         contentType: 'image/jpeg',
@@ -413,8 +398,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('putFile', function() {
-    it('errors if file path is not a string', async function() {
+  describe('putFile', function () {
+    it('errors if file path is not a string', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putFile(1337);
@@ -425,7 +410,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata is not an object', async function() {
+    it('errors if metadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putFile('foo', 123);
@@ -436,7 +421,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata contains an unsupported property', async function() {
+    it('errors if metadata contains an unsupported property', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putFile('foo', { foo: true });
@@ -447,7 +432,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata property value is not a string or null value', async function() {
+    it('errors if metadata property value is not a string or null value', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putFile('foo', { contentType: true });
@@ -458,7 +443,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata.customMetadata is not an object', async function() {
+    it('errors if metadata.customMetadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putFile('foo', { customMetadata: true });
@@ -472,8 +457,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('putString', function() {
-    it('errors if metadata is not an object', async function() {
+  describe('putString', function () {
+    it('errors if metadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putString('foo', 'raw', 123);
@@ -484,7 +469,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata contains an unsupported property', async function() {
+    it('errors if metadata contains an unsupported property', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putString('foo', 'raw', { foo: true });
@@ -495,7 +480,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata property value is not a string or null value', async function() {
+    it('errors if metadata property value is not a string or null value', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putString('foo', 'raw', { contentType: true });
@@ -506,7 +491,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata.customMetadata is not an object', async function() {
+    it('errors if metadata.customMetadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.putString('foo', 'raw', { customMetadata: true });
@@ -520,8 +505,8 @@ describe('storage() -> StorageReference', function() {
     });
   });
 
-  describe('put', function() {
-    it('errors if metadata is not an object', async function() {
+  describe('put', function () {
+    it('errors if metadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.put(new jet.context.window.ArrayBuffer(), 123);
@@ -532,7 +517,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata contains an unsupported property', async function() {
+    it('errors if metadata contains an unsupported property', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
@@ -543,7 +528,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata property value is not a string or null value', async function() {
+    it('errors if metadata property value is not a string or null value', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
@@ -554,7 +539,7 @@ describe('storage() -> StorageReference', function() {
       }
     });
 
-    it('errors if metadata.customMetadata is not an object', async function() {
+    it('errors if metadata.customMetadata is not an object', async function () {
       const storageReference = firebase.storage().ref('/ok.jpeg');
       try {
         storageReference.put(new jet.context.window.ArrayBuffer(), { customMetadata: true });

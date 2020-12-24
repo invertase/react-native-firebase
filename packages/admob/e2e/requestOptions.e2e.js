@@ -17,17 +17,17 @@
 
 let validator = null;
 
-describe('admob() requestOptions', function() {
-  before(function() {
+describe('admob() requestOptions', function () {
+  before(function () {
     validator = jet.require('packages/admob/lib/validateAdRequestOptions');
   });
 
-  it('returns an empty object is not defined', function() {
+  it('returns an empty object is not defined', function () {
     const v = validator();
     v.should.eql(jet.contextify({}));
   });
 
-  it('throws if options is not an object', function() {
+  it('throws if options is not an object', function () {
     try {
       validator('foo');
       return Promise.reject(new Error('Did not throw Error.'));
@@ -37,8 +37,8 @@ describe('admob() requestOptions', function() {
     }
   });
 
-  describe('requestNonPersonalizedAdsOnly', function() {
-    it('throws if requestNonPersonalizedAdsOnly is not a boolean', function() {
+  describe('requestNonPersonalizedAdsOnly', function () {
+    it('throws if requestNonPersonalizedAdsOnly is not a boolean', function () {
       try {
         validator({
           requestNonPersonalizedAdsOnly: 'true',
@@ -52,7 +52,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts requestNonPersonalizedAdsOnly boolean', function() {
+    it('accepts requestNonPersonalizedAdsOnly boolean', function () {
       const v = validator({
         requestNonPersonalizedAdsOnly: false,
       });
@@ -60,8 +60,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('networkExtras', function() {
-    it('throws if networkExtras is not an object', function() {
+  describe('networkExtras', function () {
+    it('throws if networkExtras is not an object', function () {
       try {
         validator({
           networkExtras: ['foo', 'bar'],
@@ -75,7 +75,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if networkExtras value is not a string', function() {
+    it('throws if networkExtras value is not a string', function () {
       try {
         validator({
           networkExtras: {
@@ -92,7 +92,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts networkExtras object', function() {
+    it('accepts networkExtras object', function () {
       const v = validator({
         networkExtras: {
           foo: 'bar',
@@ -105,8 +105,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('keywords', function() {
-    it('throws if keywords is not an array', function() {
+  describe('keywords', function () {
+    it('throws if keywords is not an array', function () {
       try {
         validator({
           keywords: { foo: 'bar' },
@@ -120,7 +120,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if a keyword is not a string', function() {
+    it('throws if a keyword is not a string', function () {
       try {
         validator({
           keywords: ['foo', 123],
@@ -134,7 +134,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts keywords array', function() {
+    it('accepts keywords array', function () {
       const v = validator({
         keywords: ['foo', 'bar'],
       });
@@ -145,8 +145,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('testDevices', function() {
-    it('throws if testDevices is not an array', function() {
+  describe('testDevices', function () {
+    it('throws if testDevices is not an array', function () {
       try {
         validator({
           testDevices: { foo: 'bar' },
@@ -160,7 +160,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if a testDevices is not a string', function() {
+    it('throws if a testDevices is not a string', function () {
       try {
         validator({
           testDevices: ['foo', 123],
@@ -174,7 +174,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts testDevices array', function() {
+    it('accepts testDevices array', function () {
       const v = validator({
         testDevices: ['foo', 'bar'],
       });
@@ -185,8 +185,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('contentUrl', function() {
-    it('throws if contentUrl is not a string', function() {
+  describe('contentUrl', function () {
+    it('throws if contentUrl is not a string', function () {
       try {
         validator({
           contentUrl: 123,
@@ -198,7 +198,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if contentUrl is not a valid url', function() {
+    it('throws if contentUrl is not a valid url', function () {
       try {
         validator({
           contentUrl: 'www.invertase.io',
@@ -210,7 +210,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if contentUrl is too long', function() {
+    it('throws if contentUrl is too long', function () {
       let str = '';
       for (let i = 0; i < 530; i++) {
         str += i.toString();
@@ -229,7 +229,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts a contentUrl', function() {
+    it('accepts a contentUrl', function () {
       const v = validator({
         contentUrl: 'http://invertase.io/privacy-policy',
       });
@@ -238,8 +238,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('location', function() {
-    it('throws if not an array', function() {
+  describe('location', function () {
+    it('throws if not an array', function () {
       try {
         validator({
           location: 'United Kingdom',
@@ -253,7 +253,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if latitude not a number', function() {
+    it('throws if latitude not a number', function () {
       try {
         validator({
           location: ['123', 123],
@@ -267,7 +267,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if latitude is invalid', function() {
+    it('throws if latitude is invalid', function () {
       try {
         validator({
           location: [-100, 100],
@@ -281,7 +281,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if longitude not a number', function() {
+    it('throws if longitude not a number', function () {
       try {
         validator({
           location: [10, '123'],
@@ -295,7 +295,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if longitude is invalid', function() {
+    it('throws if longitude is invalid', function () {
       try {
         validator({
           location: [50, 200],
@@ -309,7 +309,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts a latitude and longitude', function() {
+    it('accepts a latitude and longitude', function () {
       const v = validator({
         location: [10, 20],
       });
@@ -320,8 +320,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('locationAccuracy', function() {
-    it('throws if not a number', function() {
+  describe('locationAccuracy', function () {
+    it('throws if not a number', function () {
       try {
         validator({
           locationAccuracy: '10',
@@ -333,7 +333,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if less than 0', function() {
+    it('throws if less than 0', function () {
       try {
         validator({
           locationAccuracy: -1,
@@ -345,21 +345,21 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts locationAccuracy', function() {
+    it('accepts locationAccuracy', function () {
       const v = validator({
         locationAccuracy: 10.5,
       });
       v.locationAccuracy.should.eql(10.5);
     });
 
-    it('uses a defaultValue', function() {
+    it('uses a defaultValue', function () {
       const v = validator({});
       v.locationAccuracy.should.eql(5);
     });
   });
 
-  describe('requestAgent', function() {
-    it('throws if not a string', function() {
+  describe('requestAgent', function () {
+    it('throws if not a string', function () {
       try {
         validator({
           requestAgent: 1,
@@ -371,7 +371,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts a requestAgent', function() {
+    it('accepts a requestAgent', function () {
       const v = validator({
         requestAgent: 'CoolAds',
       });
@@ -379,8 +379,8 @@ describe('admob() requestOptions', function() {
     });
   });
 
-  describe('serverSideVerificationOptions', function() {
-    it('throws if userId is not a string', function() {
+  describe('serverSideVerificationOptions', function () {
+    it('throws if userId is not a string', function () {
       try {
         validator({
           serverSideVerificationOptions: {
@@ -396,7 +396,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('throws if customData is not a string', function() {
+    it('throws if customData is not a string', function () {
       try {
         validator({
           serverSideVerificationOptions: {
@@ -412,7 +412,7 @@ describe('admob() requestOptions', function() {
       }
     });
 
-    it('accepts a serverSideVerificationOptions', function() {
+    it('accepts a serverSideVerificationOptions', function () {
       const v = validator({
         serverSideVerificationOptions: {
           userId: '1',

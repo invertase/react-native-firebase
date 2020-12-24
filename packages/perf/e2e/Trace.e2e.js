@@ -16,9 +16,9 @@
  */
 
 android.describe('perf()', () => {
-  describe('Trace', function() {
-    describe('start()', function() {
-      it('correctly starts with internal flag ', async function() {
+  describe('Trace', function () {
+    describe('start()', function () {
+      it('correctly starts with internal flag ', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
         should.equal(trace._started, true);
@@ -28,7 +28,7 @@ android.describe('perf()', () => {
         await trace.stop();
       });
 
-      it('resolves null if already started', async function() {
+      it('resolves null if already started', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
         should.equal(trace._started, true);
@@ -38,8 +38,8 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('stop()', function() {
-      it('correctly stops with internal flag ', async function() {
+    describe('stop()', function () {
+      it('correctly stops with internal flag ', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
         trace.putAttribute('foo', 'bar');
@@ -51,7 +51,7 @@ android.describe('perf()', () => {
         should.equal(trace._stopped, true);
       });
 
-      it('resolves null if already stopped', async function() {
+      it('resolves null if already stopped', async function () {
         const trace = firebase.perf().newTrace('invertase');
         await trace.start();
         await Utils.sleep(100);
@@ -84,21 +84,21 @@ android.describe('perf()', () => {
     //   });
     // });
 
-    describe('getAttribute()', function() {
-      it('should return null if attribute does not exist', async function() {
+    describe('getAttribute()', function () {
+      it('should return null if attribute does not exist', async function () {
         const trace = firebase.perf().newTrace('invertase');
         const value = trace.getAttribute('inver');
         should.equal(value, null);
       });
 
-      it('should return an attribute string value', async function() {
+      it('should return an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('inver', 'tase');
         const value = trace.getAttribute('inver');
         should.equal(value, 'tase');
       });
 
-      it('errors if attribute name is not a string', async function() {
+      it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
           trace.getAttribute(1337);
@@ -110,15 +110,15 @@ android.describe('perf()', () => {
       });
     });
 
-    describe('putAttribute()', function() {
-      it('sets an attribute string value', async function() {
+    describe('putAttribute()', function () {
+      it('sets an attribute string value', async function () {
         const trace = firebase.perf().newTrace('invertase');
         trace.putAttribute('inver', 'tase');
         const value = trace.getAttribute('inver');
         value.should.equal('tase');
       });
 
-      it('errors if attribute name is not a string', async function() {
+      it('errors if attribute name is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
           trace.putAttribute(1337, 'invertase');
@@ -129,7 +129,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute value is not a string', async function() {
+      it('errors if attribute value is not a string', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
           trace.putAttribute('invertase', 1337);
@@ -140,7 +140,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute name is greater than 40 characters', async function() {
+      it('errors if attribute name is greater than 40 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
           trace.putAttribute(new Array(41).fill('1').join(''), 1337);
@@ -151,7 +151,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if attribute value is greater than 100 characters', async function() {
+      it('errors if attribute value is greater than 100 characters', async function () {
         try {
           const trace = firebase.perf().newTrace('invertase');
           trace.putAttribute('invertase', new Array(101).fill('1').join(''));
@@ -162,7 +162,7 @@ android.describe('perf()', () => {
         }
       });
 
-      it('errors if more than 5 attributes are put', async function() {
+      it('errors if more than 5 attributes are put', async function () {
         const trace = firebase.perf().newTrace('invertase');
 
         trace.putAttribute('invertase1', '1337');
@@ -197,8 +197,8 @@ android.describe('perf()', () => {
   //   Metrics
   // -----------
 
-  describe('removeMetric()', function() {
-    it('errors if name not a string', async function() {
+  describe('removeMetric()', function () {
+    it('errors if name not a string', async function () {
       const trace = firebase.perf().newTrace('invertase');
       try {
         trace.putMetric('likes', 1337);
@@ -210,7 +210,7 @@ android.describe('perf()', () => {
       }
     });
 
-    it('removes a metric', async function() {
+    it('removes a metric', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 1337);
       const value = trace.getMetric('likes');
@@ -221,21 +221,21 @@ android.describe('perf()', () => {
     });
   });
 
-  describe('getMetric()', function() {
-    it('should return 0 if metric does not exist', async function() {
+  describe('getMetric()', function () {
+    it('should return 0 if metric does not exist', async function () {
       const trace = firebase.perf().newTrace('invertase');
       const value = trace.getMetric('likes');
       should.equal(value, 0);
     });
 
-    it('should return an metric number value', async function() {
+    it('should return an metric number value', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 7331);
       const value = trace.getMetric('likes');
       should.equal(value, 7331);
     });
 
-    it('errors if metric name is not a string', async function() {
+    it('errors if metric name is not a string', async function () {
       try {
         const trace = firebase.perf().newTrace('invertase');
         trace.getMetric(1337);
@@ -247,15 +247,15 @@ android.describe('perf()', () => {
     });
   });
 
-  describe('putMetric()', function() {
-    it('sets a metric number value', async function() {
+  describe('putMetric()', function () {
+    it('sets a metric number value', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 9001);
       const value = trace.getMetric('likes');
       value.should.equal(9001);
     });
 
-    it('overwrites existing metric if it exists', async function() {
+    it('overwrites existing metric if it exists', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 1);
       trace.incrementMetric('likes', 9000);
@@ -266,7 +266,7 @@ android.describe('perf()', () => {
       value2.should.equal(1);
     });
 
-    it('errors if metric name is not a string', async function() {
+    it('errors if metric name is not a string', async function () {
       try {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric(1337, 7331);
@@ -277,7 +277,7 @@ android.describe('perf()', () => {
       }
     });
 
-    it('errors if metric value is not a number', async function() {
+    it('errors if metric value is not a number', async function () {
       try {
         const trace = firebase.perf().newTrace('invertase');
         trace.putMetric('likes', '1337');
@@ -289,8 +289,8 @@ android.describe('perf()', () => {
     });
   });
 
-  describe('incrementMetric()', function() {
-    it('increments a metric number value', async function() {
+  describe('incrementMetric()', function () {
+    it('increments a metric number value', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.putMetric('likes', 9000);
       trace.incrementMetric('likes', 1);
@@ -298,14 +298,14 @@ android.describe('perf()', () => {
       value.should.equal(9001);
     });
 
-    it('increments a metric even if it does not already exist', async function() {
+    it('increments a metric even if it does not already exist', async function () {
       const trace = firebase.perf().newTrace('invertase');
       trace.incrementMetric('likes', 9001);
       const value = trace.getMetric('likes');
       value.should.equal(9001);
     });
 
-    it('errors if metric name is not a string', async function() {
+    it('errors if metric name is not a string', async function () {
       try {
         const trace = firebase.perf().newTrace('invertase');
         trace.incrementMetric(1337, 1);
@@ -316,7 +316,7 @@ android.describe('perf()', () => {
       }
     });
 
-    it('errors if incrementBy value is not a number', async function() {
+    it('errors if incrementBy value is not a number', async function () {
       try {
         const trace = firebase.perf().newTrace('invertase');
         trace.incrementMetric('likes', '1');
@@ -328,7 +328,7 @@ android.describe('perf()', () => {
     });
   });
 
-  it('getMetrics()', async function() {
+  it('getMetrics()', async function () {
     const trace = firebase.perf().newTrace('invertase');
     trace.putMetric('likes', 1337);
     trace.putMetric('stars', 6832);

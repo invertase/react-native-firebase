@@ -54,7 +54,7 @@ jobs:
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Jest
-        run: yarn run tests:jest-coverage
+        run: yarn tests:jest-coverage
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
         uses: nick-invision/retry@v2

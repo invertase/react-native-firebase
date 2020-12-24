@@ -28,31 +28,31 @@ const TEST_LINK3 = 'https://invertase.io';
 
 module.exports.baseParams = baseParams;
 
-describe('dynamicLinks()', function() {
-  describe('namespace', function() {
-    it('accessible from firebase.app()', function() {
+describe('dynamicLinks()', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
       const app = firebase.app();
       should.exist(app.dynamicLinks);
       app.dynamicLinks().app.should.equal(app);
     });
   });
 
-  describe('buildLink()', function() {
-    it('returns a dynamic link', async function() {
+  describe('buildLink()', function () {
+    it('returns a dynamic link', async function () {
       const link = await firebase.dynamicLinks().buildLink(baseParams);
       link.should.be.String();
       link.length.should.be.greaterThan(6);
     });
   });
 
-  describe('buildShortLink()', function() {
-    it('returns a short link', async function() {
+  describe('buildShortLink()', function () {
+    it('returns a short link', async function () {
       const link = await firebase.dynamicLinks().buildShortLink(baseParams);
       link.should.be.String();
       link.length.should.be.greaterThan(6);
     });
 
-    it('throws if type is invalid', function() {
+    it('throws if type is invalid', function () {
       try {
         firebase.dynamicLinks().buildShortLink(baseParams, 'LONG');
         return Promise.reject(new Error('Did not throw Error.'));
@@ -65,15 +65,15 @@ describe('dynamicLinks()', function() {
     });
   });
 
-  describe('resolveLink()', function() {
-    it('resolves a long link', async function() {
+  describe('resolveLink()', function () {
+    it('resolves a long link', async function () {
       const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);
       link.should.be.an.Object();
       link.url.should.equal('https://invertase.io/hire-us');
       should.equal(link.minimumAppVersion, null);
     });
 
-    it('resolves a short link', async function() {
+    it('resolves a short link', async function () {
       const shortLink = await firebase.dynamicLinks().buildShortLink(
         {
           ...baseParams,
@@ -101,7 +101,7 @@ describe('dynamicLinks()', function() {
       parseInt(link.minimumAppVersion, 10).should.equal(123);
     });
 
-    it('throws on links that do not exist', async function() {
+    it('throws on links that do not exist', async function () {
       try {
         await firebase.dynamicLinks().resolveLink(baseParams.domainUriPrefix + '/not-a-valid-link');
         return Promise.reject(new Error('Did not throw Error.'));
@@ -112,7 +112,7 @@ describe('dynamicLinks()', function() {
       }
     });
 
-    it('throws on static links', async function() {
+    it('throws on static links', async function () {
       try {
         await firebase.dynamicLinks().resolveLink(TEST_LINK3);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -122,7 +122,7 @@ describe('dynamicLinks()', function() {
       }
     });
 
-    it('throws on invalid links', async function() {
+    it('throws on invalid links', async function () {
       try {
         await firebase.dynamicLinks().resolveLink(null);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -146,7 +146,7 @@ describe('dynamicLinks()', function() {
   });
 
   ios.describe('getInitialLink()', () => {
-    it('should return the dynamic link instance that launched the app', async function() {
+    it('should return the dynamic link instance that launched the app', async function () {
       await device.openURL({
         url: TEST_LINK,
       });
@@ -159,7 +159,7 @@ describe('dynamicLinks()', function() {
   });
 
   ios.describe('onLink()', () => {
-    it('should emit dynamic links', async function() {
+    it('should emit dynamic links', async function () {
       const spy = sinon.spy();
 
       firebase.dynamicLinks().onLink(spy);

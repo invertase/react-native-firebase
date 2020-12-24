@@ -16,17 +16,14 @@
  */
 let testImageFile;
 
-describe('ml.landmark', function() {
-  before(async function() {
+describe('ml.landmark', function () {
+  before(async function () {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/landmark.jpg`;
-    await firebase
-      .storage()
-      .ref('vision/landmark.jpg')
-      .writeToFile(testImageFile);
+    await firebase.storage().ref('vision/landmark.jpg').writeToFile(testImageFile);
   });
 
-  describe('cloudLandmarkRecognizerProcessImage()', function() {
-    it('should throw if image path is not a string', function() {
+  describe('cloudLandmarkRecognizerProcessImage()', function () {
+    it('should throw if image path is not a string', function () {
       try {
         firebase.ml().cloudLandmarkRecognizerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -36,7 +33,7 @@ describe('ml.landmark', function() {
       }
     });
 
-    xit('should return an array of landmark information', async function() {
+    xit('should return an array of landmark information', async function () {
       const res = await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile);
 
       res.should.be.Array();
@@ -59,8 +56,8 @@ describe('ml.landmark', function() {
     });
   });
 
-  describe('MLCloudLandmarkRecognizerOptions', function() {
-    it('throws if not an object', async function() {
+  describe('MLCloudLandmarkRecognizerOptions', function () {
+    it('throws if not an object', async function () {
       try {
         await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -72,8 +69,8 @@ describe('ml.landmark', function() {
       }
     });
 
-    describe('cloudLandmarkRecognizerOptions', function() {
-      it('throws if not a boolean', async function() {
+    describe('cloudLandmarkRecognizerOptions', function () {
+      it('throws if not a boolean', async function () {
         try {
           await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
             enforceCertFingerprintMatch: 'false',
@@ -87,13 +84,13 @@ describe('ml.landmark', function() {
         }
       });
 
-      xit('sets cloudLandmarkRecognizerOptions', async function() {
+      xit('sets cloudLandmarkRecognizerOptions', async function () {
         await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
       });
 
-      it('throws if apiKeyOverride is not a string', async function() {
+      it('throws if apiKeyOverride is not a string', async function () {
         try {
           await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
             apiKeyOverride: true,
@@ -108,8 +105,8 @@ describe('ml.landmark', function() {
       });
     });
     // TODO temporarily disable test suite - is flakey on CI - needs investigating
-    describe('maxResults', function() {
-      it('throws if maxResults is not a number', async function() {
+    describe('maxResults', function () {
+      it('throws if maxResults is not a number', async function () {
         try {
           await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
             maxResults: '2',
@@ -123,7 +120,7 @@ describe('ml.landmark', function() {
         }
       });
 
-      xit('limits the maximum results', async function() {
+      xit('limits the maximum results', async function () {
         const res = await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
           maxResults: 3,
         });
@@ -135,8 +132,8 @@ describe('ml.landmark', function() {
       });
     });
 
-    describe('modelType', function() {
-      it('throws if model is invalid', async function() {
+    describe('modelType', function () {
+      it('throws if model is invalid', async function () {
         try {
           await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
             modelType: 3,
@@ -150,7 +147,7 @@ describe('ml.landmark', function() {
         }
       });
 
-      xit('sets modelType', async function() {
+      xit('sets modelType', async function () {
         await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
           modelType: firebase.ml.MLCloudLandmarkRecognizerModelType.STABLE_MODEL,
         });
@@ -160,7 +157,7 @@ describe('ml.landmark', function() {
         });
       });
 
-      xit('uses a latest model', async function() {
+      xit('uses a latest model', async function () {
         const res = await firebase.ml().cloudLandmarkRecognizerProcessImage(testImageFile, {
           modelType: firebase.ml.MLCloudLandmarkRecognizerModelType.LATEST_MODEL,
         });

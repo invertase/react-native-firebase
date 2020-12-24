@@ -17,16 +17,13 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().set()', function() {
-  before(function() {
+describe('firestore.doc().set()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if data is not an object', function() {
+  it('throws if data is not an object', function () {
     try {
-      firebase
-        .firestore()
-        .doc(`${COLLECTION}/baz`)
-        .set('foo');
+      firebase.firestore().doc(`${COLLECTION}/baz`).set('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'data' must be an object");
@@ -34,12 +31,9 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('throws if options is not an object', function() {
+  it('throws if options is not an object', function () {
     try {
-      firebase
-        .firestore()
-        .doc(`${COLLECTION}/baz`)
-        .set({}, 'foo');
+      firebase.firestore().doc(`${COLLECTION}/baz`).set({}, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options' must be an object");
@@ -47,18 +41,15 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('throws if options contains both merge types', function() {
+  it('throws if options contains both merge types', function () {
     try {
-      firebase
-        .firestore()
-        .doc(`${COLLECTION}/baz`)
-        .set(
-          {},
-          {
-            merge: true,
-            mergeFields: [],
-          },
-        );
+      firebase.firestore().doc(`${COLLECTION}/baz`).set(
+        {},
+        {
+          merge: true,
+          mergeFields: [],
+        },
+      );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options' must not contain both 'merge' & 'mergeFields'");
@@ -66,17 +57,14 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('throws if merge is not a boolean', function() {
+  it('throws if merge is not a boolean', function () {
     try {
-      firebase
-        .firestore()
-        .doc(`${COLLECTION}/baz`)
-        .set(
-          {},
-          {
-            merge: 'foo',
-          },
-        );
+      firebase.firestore().doc(`${COLLECTION}/baz`).set(
+        {},
+        {
+          merge: 'foo',
+        },
+      );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options.merge' must be a boolean value");
@@ -84,17 +72,14 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('throws if mergeFields is not an array', function() {
+  it('throws if mergeFields is not an array', function () {
     try {
-      firebase
-        .firestore()
-        .doc(`${COLLECTION}/baz`)
-        .set(
-          {},
-          {
-            mergeFields: 'foo',
-          },
-        );
+      firebase.firestore().doc(`${COLLECTION}/baz`).set(
+        {},
+        {
+          mergeFields: 'foo',
+        },
+      );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options.mergeFields' must be an array");
@@ -102,7 +87,7 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('throws if mergeFields contains invalid data', function() {
+  it('throws if mergeFields contains invalid data', function () {
     try {
       firebase
         .firestore()
@@ -127,7 +112,7 @@ describe('firestore.doc().set()', function() {
     }
   });
 
-  it('sets new data', async function() {
+  it('sets new data', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/set`);
     const data1 = { foo: 'bar' };
     const data2 = { foo: 'baz', bar: 123 };
@@ -140,7 +125,7 @@ describe('firestore.doc().set()', function() {
     await ref.delete();
   });
 
-  it('merges all fields', async function() {
+  it('merges all fields', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/merge`);
     const data1 = { foo: 'bar' };
     const data2 = { bar: 'baz' };
@@ -156,7 +141,7 @@ describe('firestore.doc().set()', function() {
     await ref.delete();
   });
 
-  it('merges specific fields', async function() {
+  it('merges specific fields', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/merge`);
     const data1 = { foo: '123', bar: 123, baz: '456' };
     const data2 = { foo: '234', bar: 234, baz: '678' };

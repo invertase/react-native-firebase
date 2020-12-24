@@ -20,11 +20,11 @@ import { graphql, useStaticQuery } from 'gatsby';
 import { Advert as AdvertType } from '../types/docs';
 import { Link } from './Link';
 
-function getRandomAdvert(adverts: AdvertType[]) {
+function getRandomAdvert(adverts: AdvertType[]): AdvertType {
   return adverts[Math.floor(Math.random() * adverts.length)];
 }
 
-function Advert() {
+function Advert(): JSX.Element {
   const { allAdvert } = useStaticQuery(graphql`
     query AdvertQuery {
       allAdvert {

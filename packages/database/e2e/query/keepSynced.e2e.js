@@ -15,13 +15,10 @@
  *
  */
 
-describe('database().ref().keepSynced()', function() {
-  it('throws if bool is not a valid type', async function() {
+describe('database().ref().keepSynced()', function () {
+  it('throws if bool is not a valid type', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .keepSynced('foo');
+      await firebase.database().ref().keepSynced('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'bool' value must be a boolean value.");
@@ -29,11 +26,8 @@ describe('database().ref().keepSynced()', function() {
     }
   });
 
-  it('toggles keepSynced on and off without throwing', async function() {
-    const ref = firebase
-      .database()
-      .ref('noop')
-      .orderByValue();
+  it('toggles keepSynced on and off without throwing', async function () {
+    const ref = firebase.database().ref('noop').orderByValue();
     await ref.keepSynced(true);
     await ref.keepSynced(false);
   });

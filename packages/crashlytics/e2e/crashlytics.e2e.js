@@ -15,10 +15,10 @@
  *
  */
 
-describe('crashlytics()', function() {
+describe('crashlytics()', function () {
   // Run locally only - flakey on CI
-  xdescribe('crash()', function() {
-    it('crashes the app', async function() {
+  xdescribe('crash()', function () {
+    it('crashes the app', async function () {
       jet.context._BEFORE_CRASH_ = 1;
       firebase.crashlytics().crash();
       await Utils.sleep(1500);
@@ -28,8 +28,8 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('log()', function() {
-    it('accepts any value', async function() {
+  describe('log()', function () {
+    it('accepts any value', async function () {
       firebase.crashlytics().log('invertase');
       firebase.crashlytics().log(1337);
       firebase.crashlytics().log(null);
@@ -40,12 +40,12 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('setUserId()', function() {
-    it('accepts string values', async function() {
+  describe('setUserId()', function () {
+    it('accepts string values', async function () {
       await firebase.crashlytics().setUserId('invertase');
     });
 
-    it('rejects none string values', async function() {
+    it('rejects none string values', async function () {
       try {
         await firebase.crashlytics().setUserId(666.1337);
         return Promise.reject(new Error('Did not throw.'));
@@ -55,12 +55,12 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('setAttribute()', function() {
-    it('accepts string values', async function() {
+  describe('setAttribute()', function () {
+    it('accepts string values', async function () {
       await firebase.crashlytics().setAttribute('invertase', '1337');
     });
 
-    it('rejects none string values', async function() {
+    it('rejects none string values', async function () {
       try {
         await firebase.crashlytics().setAttribute('invertase', 33.3333);
         return Promise.reject(new Error('Did not throw.'));
@@ -69,7 +69,7 @@ describe('crashlytics()', function() {
       }
     });
 
-    it('errors if attribute name is not a string', async function() {
+    it('errors if attribute name is not a string', async function () {
       try {
         await firebase.crashlytics().setAttribute(1337, 'invertase');
         return Promise.reject(new Error('Did not throw.'));
@@ -79,8 +79,8 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('setAttributes()', function() {
-    it('errors if arg is not an object', async function() {
+  describe('setAttributes()', function () {
+    it('errors if arg is not an object', async function () {
       try {
         await firebase.crashlytics().setAttributes(1337);
         return Promise.reject(new Error('Did not throw.'));
@@ -89,13 +89,13 @@ describe('crashlytics()', function() {
       }
     });
 
-    it('accepts string values', async function() {
+    it('accepts string values', async function () {
       await firebase.crashlytics().setAttributes({ invertase: '1337' });
     });
   });
 
-  describe('recordError()', function() {
-    it('warns if not an error', async function() {
+  describe('recordError()', function () {
+    it('warns if not an error', async function () {
       const orig = jet.context.console.warn;
       let logged = false;
       jet.context.console.warn = msg => {
@@ -108,12 +108,12 @@ describe('crashlytics()', function() {
       should.equal(logged, true);
     });
 
-    it('accepts Error values', async function() {
+    it('accepts Error values', async function () {
       firebase.crashlytics().recordError(new Error("I'm a teapot!"));
       // TODO verify stack obj
     });
 
-    it('accepts optional jsErrorName', async function() {
+    it('accepts optional jsErrorName', async function () {
       firebase
         .crashlytics()
         .recordError(
@@ -124,14 +124,14 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('sendUnsentReports()', function() {
-    it("sends unsent reports to the crashlytic's server", function() {
+  describe('sendUnsentReports()', function () {
+    it("sends unsent reports to the crashlytic's server", function () {
       firebase.crashlytics().sendUnsentReports();
     });
   });
 
-  describe('checkForUnsentReports()', function() {
-    it('errors if automatic crash report collection is enabled', async function() {
+  describe('checkForUnsentReports()', function () {
+    it('errors if automatic crash report collection is enabled', async function () {
       await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
       try {
         await firebase.crashlytics().checkForUnsentReports();
@@ -140,7 +140,7 @@ describe('crashlytics()', function() {
         e.message.should.containEql("has been set to 'true', all reports are automatically sent");
       }
     });
-    it("checks device cache for unsent crashlytic's reports", async function() {
+    it("checks device cache for unsent crashlytic's reports", async function () {
       await firebase.crashlytics().setCrashlyticsCollectionEnabled(false);
       const anyUnsentReports = await firebase.crashlytics().checkForUnsentReports();
 
@@ -148,32 +148,32 @@ describe('crashlytics()', function() {
     });
   });
 
-  describe('deleteUnsentReports()', function() {
-    it('deletes unsent crashlytics reports', async function() {
+  describe('deleteUnsentReports()', function () {
+    it('deletes unsent crashlytics reports', async function () {
       await firebase.crashlytics().deleteUnsentReports();
     });
   });
 
-  describe('didCrashOnPreviousExecution()', function() {
-    it('checks if app crached on previous execution', async function() {
+  describe('didCrashOnPreviousExecution()', function () {
+    it('checks if app crached on previous execution', async function () {
       const didCrash = await firebase.crashlytics().didCrashOnPreviousExecution();
 
       should(didCrash).equal(false);
     });
   });
 
-  describe('setCrashlyticsCollectionEnabled()', function() {
-    it('true', async function() {
+  describe('setCrashlyticsCollectionEnabled()', function () {
+    it('true', async function () {
       await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
       should.equal(firebase.crashlytics().isCrashlyticsCollectionEnabled, true);
     });
 
-    it('false', async function() {
+    it('false', async function () {
       await firebase.crashlytics().setCrashlyticsCollectionEnabled(false);
       should.equal(firebase.crashlytics().isCrashlyticsCollectionEnabled, false);
     });
 
-    it('errors if not boolean', async function() {
+    it('errors if not boolean', async function () {
       try {
         await firebase.crashlytics().setCrashlyticsCollectionEnabled(1337);
         return Promise.reject(new Error('Did not throw.'));

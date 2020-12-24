@@ -119,11 +119,11 @@ const components = {
   ),
 };
 
-function Provider({ children }: { children: ReactElement }) {
+function Provider({ children }: { children: ReactElement }): JSX.Element {
   return <MDXProvider components={components}>{children}</MDXProvider>;
 }
 
-function Mdx({ body }: Props) {
+function Mdx({ body }: Props): JSX.Element {
   return (
     <Provider>
       <MDXRenderer>{body}</MDXRenderer>
@@ -131,7 +131,7 @@ function Mdx({ body }: Props) {
   );
 }
 
-function MdxRaw({ raw }: { raw: string }) {
+function MdxRaw({ raw }: { raw: string }): JSX.Element {
   let fn;
   try {
     fn = new Function('React', 'mdx', `${raw}; return React.createElement(MDXContent)`);

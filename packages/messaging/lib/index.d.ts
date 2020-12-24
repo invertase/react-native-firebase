@@ -382,7 +382,6 @@ export namespace FirebaseMessagingTypes {
    * An interface representing all the available permissions that can be requested by your app via
    * the `requestPermission` API.
    */
-  // eslint-disable-next-line @typescript-eslint/interface-name-prefix
   export interface IOSPermissions {
     /**
      * Request permission to display alerts.
@@ -984,6 +983,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {

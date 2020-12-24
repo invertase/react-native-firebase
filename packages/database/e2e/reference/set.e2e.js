@@ -19,20 +19,17 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/set`;
 
-describe('database().ref().set()', function() {
-  before(function() {
+describe('database().ref().set()', function () {
+  before(function () {
     return seed(TEST_PATH);
   });
-  after(function() {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  it('throws if no value is provided', async function() {
+  it('throws if no value is provided', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .set();
+      await firebase.database().ref(TEST_PATH).set();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'value' must be defined");
@@ -40,12 +37,9 @@ describe('database().ref().set()', function() {
     }
   });
 
-  it('throws if onComplete is not a function', async function() {
+  it('throws if onComplete is not a function', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .set(null, 'foo');
+      await firebase.database().ref(TEST_PATH).set(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'onComplete' must be a function if provided");
@@ -53,7 +47,7 @@ describe('database().ref().set()', function() {
     }
   });
 
-  it('sets a new value', async function() {
+  it('sets a new value', async function () {
     const value = Date.now();
     const ref = firebase.database().ref(TEST_PATH);
     await ref.set(value);
@@ -61,23 +55,17 @@ describe('database().ref().set()', function() {
     snapshot.val().should.eql(value);
   });
 
-  it('callback if function is passed', async function() {
+  it('callback if function is passed', async function () {
     const value = Date.now();
     return new Promise(async resolve => {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .set(value, resolve);
+      await firebase.database().ref(TEST_PATH).set(value, resolve);
     });
   });
 
-  it('throws if permission defined', async function() {
+  it('throws if permission defined', async function () {
     const value = Date.now();
     try {
-      await firebase
-        .database()
-        .ref('nope/foo')
-        .set(value);
+      await firebase.database().ref('nope/foo').set(value);
       return Promise.reject(new Error('Did not throw error.'));
     } catch (error) {
       error.code.includes('database/permission-denied').should.be.true();

@@ -16,13 +16,10 @@
  */
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().isEqual()', function() {
-  it('throws if other is not a DocumentReference', function() {
+describe('firestore.doc().isEqual()', function () {
+  it('throws if other is not a DocumentReference', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .isEqual(123);
+      firebase.firestore().doc('bar/baz').isEqual(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'other' expected a DocumentReference instance");
@@ -30,7 +27,7 @@ describe('firestore.doc().isEqual()', function() {
     }
   });
 
-  it('returns false when not equal', function() {
+  it('returns false when not equal', function () {
     const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/foo`));
@@ -42,7 +39,7 @@ describe('firestore.doc().isEqual()', function() {
     eql2.should.be.False();
   });
 
-  it('returns true when equal', function() {
+  it('returns true when equal', function () {
     const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(docRef);

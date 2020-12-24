@@ -15,33 +15,24 @@
  *
  */
 
-describe("database().ref('.info/connected')", function() {
-  after(function() {
+describe("database().ref('.info/connected')", function () {
+  after(function () {
     return firebase.database().goOnline();
   });
 
   // FIXME needs a bug logged for triage - fails e2e testing on ios, android sometimes
-  xit('returns false when used with once', async function() {
-    const snapshot = await firebase
-      .database()
-      .ref('.info/connected')
-      .once('value');
+  xit('returns false when used with once', async function () {
+    const snapshot = await firebase.database().ref('.info/connected').once('value');
     snapshot.val().should.equal(false);
   });
 
-  it('returns true when used with once with a previous call', async function() {
-    await firebase
-      .database()
-      .ref('tests')
-      .once('value');
-    const snapshot = await firebase
-      .database()
-      .ref('.info/connected')
-      .once('value');
+  it('returns true when used with once with a previous call', async function () {
+    await firebase.database().ref('tests').once('value');
+    const snapshot = await firebase.database().ref('.info/connected').once('value');
     snapshot.val().should.equal(true);
   });
 
-  it('subscribes to online state', async function() {
+  it('subscribes to online state', async function () {
     const callback = sinon.spy();
     await firebase.database().goOffline();
 

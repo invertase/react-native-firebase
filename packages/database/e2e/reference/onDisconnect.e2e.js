@@ -17,12 +17,9 @@
 
 // See onDisconnect directory for specific tests
 
-describe('database().ref().onDisconnect()', function() {
-  it('returns a new DatabaseOnDisconnect instance', function() {
-    const instance = firebase
-      .database()
-      .ref()
-      .onDisconnect();
+describe('database().ref().onDisconnect()', function () {
+  it('returns a new DatabaseOnDisconnect instance', function () {
+    const instance = firebase.database().ref().onDisconnect();
     instance.constructor.name.should.eql('DatabaseOnDisconnect');
   });
 });

@@ -15,9 +15,9 @@
  *
  */
 
-describe('config', function() {
-  describe('meta', function() {
-    it('should read Info.plist/AndroidManifest.xml meta data', async function() {
+describe('config', function () {
+  describe('meta', function () {
+    it('should read Info.plist/AndroidManifest.xml meta data', async function () {
       const metaData = await NativeModules.RNFBAppModule.metaGetAll();
       metaData.rnfirebase_meta_testing_string.should.equal('abc');
       metaData.rnfirebase_meta_testing_boolean_false.should.equal(false);
@@ -25,8 +25,8 @@ describe('config', function() {
     });
   });
 
-  describe('json', function() {
-    xit('should read firebase.json data', async function() {
+  describe('json', function () {
+    xit('should read firebase.json data', async function () {
       const jsonData = await NativeModules.RNFBAppModule.jsonGetAll();
       jsonData.rnfirebase_json_testing_string.should.equal('abc');
       jsonData.rnfirebase_json_testing_boolean_false.should.equal(false);
@@ -34,19 +34,19 @@ describe('config', function() {
     });
   });
 
-  describe('prefs', function() {
-    beforeEach(async function() {
+  describe('prefs', function () {
+    beforeEach(async function () {
       await NativeModules.RNFBAppModule.preferencesClearAll();
     });
 
     // NOTE: "preferencesClearAll" clears Firestore settings. Set DB as emulator again.
-    after(async function() {
+    after(async function () {
       await firebase
         .firestore()
         .settings({ host: 'localhost:8080', ssl: false, persistence: true });
     });
 
-    it('should set bool values', async function() {
+    it('should set bool values', async function () {
       const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
       should.equal(prefsBefore.invertase_oss, undefined);
       await NativeModules.RNFBAppModule.preferencesSetBool('invertase_oss', true);
@@ -54,7 +54,7 @@ describe('config', function() {
       prefsAfter.invertase_oss.should.equal(true);
     });
 
-    it('should set string values', async function() {
+    it('should set string values', async function () {
       const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
       should.equal(prefsBefore.invertase_oss, undefined);
       await NativeModules.RNFBAppModule.preferencesSetString('invertase_oss', 'invertase.io');
@@ -62,7 +62,7 @@ describe('config', function() {
       prefsAfter.invertase_oss.should.equal('invertase.io');
     });
 
-    it('should clear all values', async function() {
+    it('should clear all values', async function () {
       await NativeModules.RNFBAppModule.preferencesSetString('invertase_oss', 'invertase.io');
       const prefsBefore = await NativeModules.RNFBAppModule.preferencesGetAll();
       prefsBefore.invertase_oss.should.equal('invertase.io');

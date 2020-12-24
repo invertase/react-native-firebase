@@ -17,28 +17,25 @@
 
 const COLLECTION = 'firestore';
 
-describe('firestore.doc()', function() {
-  it('returns a Firestore instance', function() {
+describe('firestore.doc()', function () {
+  it('returns a Firestore instance', function () {
     const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
     should.equal(instance.firestore.constructor.name, 'FirebaseFirestoreModule');
   });
 
-  it('returns the document id', function() {
+  it('returns the document id', function () {
     const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
     instance.id.should.equal('bar');
   });
 
-  it('returns the parent collection reference', function() {
+  it('returns the parent collection reference', function () {
     const instance = firebase.firestore().doc(`${COLLECTION}/bar`);
     instance.parent.id.should.equal(COLLECTION);
   });
 
-  it('returns the path', function() {
+  it('returns the path', function () {
     const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`);
-    const instance2 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .doc('bar');
+    const instance2 = firebase.firestore().collection(COLLECTION).doc('bar');
     instance1.path.should.equal(`${COLLECTION}/bar`);
     instance2.path.should.equal(`${COLLECTION}/bar`);
   });

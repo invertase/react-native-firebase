@@ -19,20 +19,17 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/limitToLast`;
 
-describe('database().ref().limitToLast()', function() {
-  before(function() {
+describe('database().ref().limitToLast()', function () {
+  before(function () {
     return seed(TEST_PATH);
   });
-  after(function() {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  it('throws if limit is invalid', async function() {
+  it('throws if limit is invalid', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .limitToLast('foo');
+      await firebase.database().ref().limitToLast('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'limit' must be a positive integer value");
@@ -40,13 +37,9 @@ describe('database().ref().limitToLast()', function() {
     }
   });
 
-  it('throws if limit has already been set', async function() {
+  it('throws if limit has already been set', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .limitToFirst(3)
-        .limitToLast(2);
+      await firebase.database().ref().limitToFirst(3).limitToLast(2);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -56,7 +49,7 @@ describe('database().ref().limitToLast()', function() {
     }
   });
 
-  it('returns a limited array data set', async function() {
+  it('returns a limited array data set', async function () {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = {
@@ -76,7 +69,7 @@ describe('database().ref().limitToLast()', function() {
       });
   });
 
-  it('returns a limited object data set', async function() {
+  it('returns a limited object data set', async function () {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = {
@@ -101,7 +94,7 @@ describe('database().ref().limitToLast()', function() {
       });
   });
 
-  it('returns a null value when not possible to limit', async function() {
+  it('returns a null value when not possible to limit', async function () {
     const ref = firebase.database().ref(`${TEST_PATH}`);
 
     const initial = 'foo';

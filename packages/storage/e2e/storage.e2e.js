@@ -15,28 +15,25 @@
  *
  */
 
-describe('storage()', function() {
-  describe('namespace', function() {
-    it('accessible from firebase.app()', function() {
+describe('storage()', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
       const app = firebase.app();
       should.exist(app.storage);
       app.storage().app.should.equal(app);
     });
 
-    it('supports multiple apps', async function() {
+    it('supports multiple apps', async function () {
       firebase.storage().app.name.should.equal('[DEFAULT]');
 
       firebase
         .storage(firebase.app('secondaryFromNative'))
         .app.name.should.equal('secondaryFromNative');
 
-      firebase
-        .app('secondaryFromNative')
-        .storage()
-        .app.name.should.equal('secondaryFromNative');
+      firebase.app('secondaryFromNative').storage().app.name.should.equal('secondaryFromNative');
     });
 
-    it('supports specifying a bucket', async function() {
+    it('supports specifying a bucket', async function () {
       const bucket = 'gs://react-native-firebase-testing';
       const defaultInstance = firebase.storage();
       defaultInstance.app.name.should.equal('[DEFAULT]');
@@ -49,7 +46,7 @@ describe('storage()', function() {
       instanceForBucket._customUrlOrRegion.should.equal(bucket);
     });
 
-    it('throws an error if an invalid bucket url is provided', async function() {
+    it('throws an error if an invalid bucket url is provided', async function () {
       const bucket = 'invalid://react-native-firebase-testing';
       try {
         firebase.app().storage(bucket);
@@ -60,7 +57,7 @@ describe('storage()', function() {
       }
     });
 
-    it('uploads to a custom bucket when specified', async function() {
+    it('uploads to a custom bucket when specified', async function () {
       const jsonDerulo = JSON.stringify({ foo: 'bar' });
       const bucket = 'gs://react-native-firebase-testing';
 
@@ -78,23 +75,23 @@ describe('storage()', function() {
     });
   });
 
-  describe('ref', function() {
-    it('uses default path if none provided', async function() {
+  describe('ref', function () {
+    it('uses default path if none provided', async function () {
       const ref = firebase.storage().ref();
       ref.fullPath.should.equal('/');
     });
 
-    it('accepts a custom path', async function() {
+    it('accepts a custom path', async function () {
       const ref = firebase.storage().ref('foo/bar/baz.png');
       ref.fullPath.should.equal('foo/bar/baz.png');
     });
 
-    it('strips leading / from custom path', async function() {
+    it('strips leading / from custom path', async function () {
       const ref = firebase.storage().ref('/foo/bar/baz.png');
       ref.fullPath.should.equal('foo/bar/baz.png');
     });
 
-    it('throws an error if custom path not a string', async function() {
+    it('throws an error if custom path not a string', async function () {
       try {
         firebase.storage().ref({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -105,14 +102,14 @@ describe('storage()', function() {
     });
   });
 
-  describe('refFromURL', function() {
-    it('accepts a gs url', async function() {
+  describe('refFromURL', function () {
+    it('accepts a gs url', async function () {
       const url = 'gs://foo/bar/baz.png';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
     });
 
-    it('accepts a https url', async function() {
+    it('accepts a https url', async function () {
       const url =
         'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
       const ref = firebase.storage().refFromURL(url);
@@ -121,7 +118,7 @@ describe('storage()', function() {
       ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
-    it('accepts a https encoded url', async function() {
+    it('accepts a https encoded url', async function () {
       const url =
         'https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Freact-native-firebase-testing.appspot.com%2Fo%2F1mbTestFile.gif%3Falt%3Dmedia';
       const ref = firebase.storage().refFromURL(url);
@@ -130,7 +127,7 @@ describe('storage()', function() {
       ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
-    it('throws an error if https url could not be parsed', async function() {
+    it('throws an error if https url could not be parsed', async function () {
       try {
         firebase.storage().refFromURL('https://invertase.io');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -140,13 +137,13 @@ describe('storage()', function() {
       }
     });
 
-    it('accepts a gs url without a fullPath', async function() {
+    it('accepts a gs url without a fullPath', async function () {
       const url = 'gs://some-bucket';
       const ref = firebase.storage().refFromURL(url);
       ref.toString().should.equal(url);
     });
 
-    it('throws an error if url is not a string', async function() {
+    it('throws an error if url is not a string', async function () {
       try {
         firebase.storage().refFromURL({ derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -156,7 +153,7 @@ describe('storage()', function() {
       }
     });
 
-    it('throws an error if url does not start with gs:// or https://', async function() {
+    it('throws an error if url does not start with gs:// or https://', async function () {
       try {
         firebase.storage().refFromURL('bs://foo/bar/cat.gif');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -167,14 +164,14 @@ describe('storage()', function() {
     });
   });
 
-  describe('setMaxOperationRetryTime', function() {
-    it('should set', async function() {
+  describe('setMaxOperationRetryTime', function () {
+    it('should set', async function () {
       firebase.storage().maxOperationRetryTime.should.equal(120000);
       await firebase.storage().setMaxOperationRetryTime(100000);
       firebase.storage().maxOperationRetryTime.should.equal(100000);
     });
 
-    it('throws if time is not a number value', async function() {
+    it('throws if time is not a number value', async function () {
       try {
         await firebase.storage().setMaxOperationRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
@@ -185,14 +182,14 @@ describe('storage()', function() {
     });
   });
 
-  describe('setMaxUploadRetryTime', function() {
-    it('should set', async function() {
+  describe('setMaxUploadRetryTime', function () {
+    it('should set', async function () {
       firebase.storage().maxUploadRetryTime.should.equal(600000);
       await firebase.storage().setMaxUploadRetryTime(120000);
       firebase.storage().maxUploadRetryTime.should.equal(120000);
     });
 
-    it('throws if time is not a number value', async function() {
+    it('throws if time is not a number value', async function () {
       try {
         await firebase.storage().setMaxUploadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));
@@ -203,14 +200,14 @@ describe('storage()', function() {
     });
   });
 
-  describe('setMaxDownloadRetryTime', function() {
-    it('should set', async function() {
+  describe('setMaxDownloadRetryTime', function () {
+    it('should set', async function () {
       firebase.storage().maxDownloadRetryTime.should.equal(600000);
       await firebase.storage().setMaxDownloadRetryTime(120000);
       firebase.storage().maxDownloadRetryTime.should.equal(120000);
     });
 
-    it('throws if time is not a number value', async function() {
+    it('throws if time is not a number value', async function () {
       try {
         await firebase.storage().setMaxDownloadRetryTime('im a teapot');
         return Promise.reject(new Error('Did not throw'));

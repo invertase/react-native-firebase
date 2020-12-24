@@ -3,8 +3,8 @@
 
 const { clearAllUsers, getLastSmsCode, getRandomPhoneNumber } = require('./helpers');
 
-describe('auth() => Phone', function() {
-  before(async function() {
+describe('auth() => Phone', function () {
+  before(async function () {
     try {
       await clearAllUsers();
     } catch (e) {
@@ -14,15 +14,15 @@ describe('auth() => Phone', function() {
     await Utils.sleep(50);
   });
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     }
   });
 
-  describe('signInWithPhoneNumber', function() {
-    it('signs in with a valid code', async function() {
+  describe('signInWithPhoneNumber', function () {
+    it('signs in with a valid code', async function () {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
@@ -36,7 +36,7 @@ describe('auth() => Phone', function() {
       // userCredential.user.phoneNumber.should.equal(TEST_PHONE_A);
     });
 
-    it('errors on invalid code', async function() {
+    it('errors on invalid code', async function () {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
@@ -54,8 +54,8 @@ describe('auth() => Phone', function() {
     });
   });
 
-  describe('verifyPhoneNumber', function() {
-    it('successfully verifies', async function() {
+  describe('verifyPhoneNumber', function () {
+    it('successfully verifies', async function () {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
@@ -63,7 +63,7 @@ describe('auth() => Phone', function() {
       await firebase.auth().verifyPhoneNumber(testPhone, false, false);
     });
 
-    it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async function() {
+    it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async function () {
       const testPhone = await getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
@@ -71,7 +71,7 @@ describe('auth() => Phone', function() {
       await firebase.auth().verifyPhoneNumber(testPhone, 0, false);
     });
 
-    it('throws an error with an invalid on event', async function() {
+    it('throws an error with an invalid on event', async function () {
       const testPhone = await getRandomPhoneNumber();
       try {
         await firebase
@@ -88,7 +88,7 @@ describe('auth() => Phone', function() {
       }
     });
 
-    it('throws an error with an invalid observer event', async function() {
+    it('throws an error with an invalid observer event', async function () {
       const testPhone = await getRandomPhoneNumber();
       try {
         await firebase
@@ -105,7 +105,7 @@ describe('auth() => Phone', function() {
       }
     });
 
-    it('successfully runs verification complete handler', async function() {
+    it('successfully runs verification complete handler', async function () {
       const testPhone = await getRandomPhoneNumber();
       await firebase
         .auth()
@@ -115,7 +115,7 @@ describe('auth() => Phone', function() {
       return Promise.resolve();
     });
 
-    it('successfully runs and adds emitters', async function() {
+    it('successfully runs and adds emitters', async function () {
       const testPhone = await getRandomPhoneNumber();
       const obervserCb = () => {};
       const errorCb = () => {};
@@ -129,7 +129,7 @@ describe('auth() => Phone', function() {
         .on('state_changed', obervserCb, errorCb, successCb, () => {});
     });
 
-    it('catches an error and emits an error event', async function() {
+    it('catches an error and emits an error event', async function () {
       return firebase
         .auth()
         .verifyPhoneNumber('test')

@@ -15,13 +15,10 @@
  *
  */
 
-describe('database().ref().child()', function() {
-  it('throws if path is not a string', async function() {
+describe('database().ref().child()', function () {
+  it('throws if path is not a string', async function () {
     try {
-      firebase
-        .database()
-        .ref()
-        .child({ foo: 'bar' });
+      firebase.database().ref().child({ foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'path' must be a string value");
@@ -29,12 +26,9 @@ describe('database().ref().child()', function() {
     }
   });
 
-  it('throws if path is not a valid string', async function() {
+  it('throws if path is not a valid string', async function () {
     try {
-      firebase
-        .database()
-        .ref()
-        .child('$$$$$');
+      firebase.database().ref().child('$$$$$');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(

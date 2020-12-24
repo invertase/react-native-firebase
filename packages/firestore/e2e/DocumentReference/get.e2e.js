@@ -17,16 +17,13 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore.doc().get()', function() {
-  before(function() {
+describe('firestore.doc().get()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if get options are not an object', function() {
+  it('throws if get options are not an object', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .get('foo');
+      firebase.firestore().doc('bar/baz').get('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options' must be an object is provided");
@@ -34,12 +31,9 @@ describe('firestore.doc().get()', function() {
     }
   });
 
-  it('throws if get options are invalid', function() {
+  it('throws if get options are invalid', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .get({ source: 'nope' });
+      firebase.firestore().doc('bar/baz').get({ source: 'nope' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -49,7 +43,7 @@ describe('firestore.doc().get()', function() {
     }
   });
 
-  it('gets data from default source', async function() {
+  it('gets data from default source', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);
@@ -58,7 +52,7 @@ describe('firestore.doc().get()', function() {
     await ref.delete();
   });
 
-  it('gets data from the server', async function() {
+  it('gets data from the server', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);
@@ -68,7 +62,7 @@ describe('firestore.doc().get()', function() {
     await ref.delete();
   });
 
-  it('gets data from cache', async function() {
+  it('gets data from cache', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/get`);
     const data = { foo: 'bar', bar: 123 };
     await ref.set(data);

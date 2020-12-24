@@ -16,11 +16,11 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('./helpers');
-describe('firestore.GeoPoint', function() {
-  before(function() {
+describe('firestore.GeoPoint', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if invalid number of arguments', function() {
+  it('throws if invalid number of arguments', function () {
     try {
       new firebase.firestore.GeoPoint(123);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -30,7 +30,7 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('throws if latitude is not a number', function() {
+  it('throws if latitude is not a number', function () {
     try {
       new firebase.firestore.GeoPoint('123', 0);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -40,7 +40,7 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('throws if longitude is not a number', function() {
+  it('throws if longitude is not a number', function () {
     try {
       new firebase.firestore.GeoPoint(0, '123');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -50,7 +50,7 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('throws if latitude is not valid', function() {
+  it('throws if latitude is not valid', function () {
     try {
       new firebase.firestore.GeoPoint(-100, 0);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -60,7 +60,7 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('throws if longitude is not valid', function() {
+  it('throws if longitude is not valid', function () {
     try {
       new firebase.firestore.GeoPoint(0, 200);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -70,18 +70,18 @@ describe('firestore.GeoPoint', function() {
     }
   });
 
-  it('gets the latitude value', function() {
+  it('gets the latitude value', function () {
     const geo = new firebase.firestore.GeoPoint(20, 0);
     geo.latitude.should.equal(20);
   });
 
-  it('gets the longitude value', function() {
+  it('gets the longitude value', function () {
     const geo = new firebase.firestore.GeoPoint(20, 15);
     geo.longitude.should.equal(15);
   });
 
-  describe('isEqual()', function() {
-    it('throws if other is a GeoPoint instance', function() {
+  describe('isEqual()', function () {
+    it('throws if other is a GeoPoint instance', function () {
       try {
         const geo = new firebase.firestore.GeoPoint(0, 0);
         geo.isEqual();
@@ -92,21 +92,21 @@ describe('firestore.GeoPoint', function() {
       }
     });
 
-    it('returns false if not the same', function() {
+    it('returns false if not the same', function () {
       const geo1 = new firebase.firestore.GeoPoint(0, 0);
       const geo2 = new firebase.firestore.GeoPoint(0, 1);
       const equal = geo1.isEqual(geo2);
       equal.should.equal(false);
     });
 
-    it('returns true if the same', function() {
+    it('returns true if the same', function () {
       const geo1 = new firebase.firestore.GeoPoint(40, 40);
       const geo2 = new firebase.firestore.GeoPoint(40, 40);
       const equal = geo1.isEqual(geo2);
       equal.should.equal(true);
     });
   });
-  it('sets & returns correctly', async function() {
+  it('sets & returns correctly', async function () {
     const ref = firebase.firestore().doc(`${COLLECTION}/geopoint`);
     await ref.set({
       geopoint: new firebase.firestore.GeoPoint(20, 30),

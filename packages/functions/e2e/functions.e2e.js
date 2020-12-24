@@ -17,9 +17,9 @@
 
 const { SAMPLE_DATA } = require('@react-native-firebase/private-tests-firebase-functions');
 
-describe('functions()', function() {
-  describe('namespace', function() {
-    it('accepts passing in an FirebaseApp instance as first arg', async function() {
+describe('functions()', function () {
+  describe('namespace', function () {
+    it('accepts passing in an FirebaseApp instance as first arg', async function () {
       const appName = `functionsApp${FirebaseHelpers.id}1`;
       const platformAppConfig = FirebaseHelpers.app.config();
       const app = await firebase.initializeApp(platformAppConfig, appName);
@@ -34,7 +34,7 @@ describe('functions()', function() {
       app.functions().app.name.should.equal(app.name);
     });
 
-    it('accepts passing in a region string as first arg to an app', async function() {
+    it('accepts passing in a region string as first arg to an app', async function () {
       const region = 'europe-west1';
       const functionsForRegion = firebase.app().functions(region);
 
@@ -42,15 +42,9 @@ describe('functions()', function() {
       functionsForRegion.app.should.equal(firebase.app());
       functionsForRegion.app.name.should.equal(firebase.app().name);
 
-      firebase
-        .app()
-        .functions(region)
-        .app.should.equal(firebase.app());
+      firebase.app().functions(region).app.should.equal(firebase.app());
 
-      firebase
-        .app()
-        .functions(region)
-        ._customUrlOrRegion.should.equal(region);
+      firebase.app().functions(region)._customUrlOrRegion.should.equal(region);
 
       const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
 
@@ -59,7 +53,7 @@ describe('functions()', function() {
     });
   });
 
-  it('useFunctionsEmulator', async function() {
+  it('useFunctionsEmulator', async function () {
     const region = 'europe-west2';
     const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
     const functions = firebase.app().functions(region);
@@ -72,44 +66,44 @@ describe('functions()', function() {
     response.data.fnName.should.equal(fnName);
   });
 
-  describe('httpsCallable(fnName)(args)', function() {
-    it('accepts primitive args: undefined', async function() {
+  describe('httpsCallable(fnName)(args)', function () {
+    it('accepts primitive args: undefined', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner();
       response.data.should.equal('null');
     });
 
-    it('accepts primitive args: string', async function() {
+    it('accepts primitive args: string', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner('hello');
       response.data.should.equal('string');
     });
 
-    it('accepts primitive args: number', async function() {
+    it('accepts primitive args: number', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner(123);
       response.data.should.equal('number');
     });
 
-    it('accepts primitive args: boolean', async function() {
+    it('accepts primitive args: boolean', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner(true);
       response.data.should.equal('boolean');
     });
 
-    it('accepts primitive args: null', async function() {
+    it('accepts primitive args: null', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner(null);
       response.data.should.equal('null');
     });
 
-    it('accepts array args', async function() {
+    it('accepts array args', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
       const response = await functionRunner([1, 2, 3, 4]);
       response.data.should.equal('array');
     });
 
-    it('accepts object args', async function() {
+    it('accepts object args', async function () {
       const type = 'object';
       const inputData = SAMPLE_DATA[type];
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
@@ -120,7 +114,7 @@ describe('functions()', function() {
       should.deepEqual(outputData, inputData);
     });
 
-    it('accepts complex nested objects', async function() {
+    it('accepts complex nested objects', async function () {
       const type = 'deepObject';
       const inputData = SAMPLE_DATA[type];
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
@@ -131,7 +125,7 @@ describe('functions()', function() {
       should.deepEqual(outputData, inputData);
     });
 
-    it('accepts complex nested arrays', async function() {
+    it('accepts complex nested arrays', async function () {
       const type = 'deepArray';
       const inputData = SAMPLE_DATA[type];
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
@@ -143,8 +137,8 @@ describe('functions()', function() {
     });
   });
 
-  describe('HttpsError', function() {
-    it('errors return instance of HttpsError', async function() {
+  describe('HttpsError', function () {
+    it('errors return instance of HttpsError', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
 
       try {
@@ -159,7 +153,7 @@ describe('functions()', function() {
       return Promise.resolve();
     });
 
-    it('HttpsError.details -> allows returning complex data', async function() {
+    it('HttpsError.details -> allows returning complex data', async function () {
       let type = 'deepObject';
       let inputData = SAMPLE_DATA[type];
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
@@ -198,7 +192,7 @@ describe('functions()', function() {
       return Promise.resolve();
     });
 
-    it('HttpsError.details -> allows returning primitives', async function() {
+    it('HttpsError.details -> allows returning primitives', async function () {
       let type = 'number';
       let inputData = SAMPLE_DATA[type];
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
@@ -271,7 +265,7 @@ describe('functions()', function() {
       return Promise.resolve();
     });
 
-    it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function() {
+    it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
       const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
       const region = 'europe-west2';
 

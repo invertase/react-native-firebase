@@ -17,15 +17,15 @@
 
 let InterstitialAd;
 
-describe('admob() InterstitialAd', function() {
-  before(function() {
+describe('admob() InterstitialAd', function () {
+  before(function () {
     InterstitialAd = jet.require('packages/admob/lib/ads/InterstitialAd');
   });
 
-  describe('createForAdRequest', function() {
+  describe('createForAdRequest', function () {
     // has own tests
 
-    it('loads with requestOptions', async function() {
+    it('loads with requestOptions', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL, {
@@ -50,8 +50,8 @@ describe('admob() InterstitialAd', function() {
     });
   });
 
-  describe('onAdEvent', function() {
-    it('unsubscribe should prevent events', async function() {
+  describe('onAdEvent', function () {
+    it('unsubscribe should prevent events', async function () {
       const spy = sinon.spy();
       const i = InterstitialAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(spy);
@@ -61,7 +61,7 @@ describe('admob() InterstitialAd', function() {
       spy.callCount.should.be.eql(0);
     });
 
-    it('loads with a valid ad unit id', async function() {
+    it('loads with a valid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL);
@@ -74,7 +74,7 @@ describe('admob() InterstitialAd', function() {
       spy.getCall(0).args[0].should.eql('loaded');
     });
 
-    it('errors with an invalid ad unit id', async function() {
+    it('errors with an invalid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest('123');

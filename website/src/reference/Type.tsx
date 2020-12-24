@@ -19,7 +19,7 @@ import React from 'react';
 import { CodeBlock, HeadingLink, Divider } from '@invertase/ui';
 import { TypeGenerator } from '../components/TypeGenerator';
 
-function Type({ type }: { type: string }) {
+function Type({ type }: { type: string }): JSX.Element {
   return (
     <>
       <Divider />

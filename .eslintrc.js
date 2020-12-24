@@ -33,10 +33,12 @@ module.exports = {
     'no-underscore-dangle': 'off',
     'no-use-before-define': 0,
     'import/no-unresolved': 0,
+    '@typescript-eslint/ban-ts-comment': 'off', // keep it professional when you use them though please
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/camelcase': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     // off for validation tests
@@ -45,7 +47,6 @@ module.exports = {
     'mocha/no-top-level-hooks': 'off', // potentially has value if anyone wants to refactor
     'mocha/no-hooks-for-single-case': 'off', // potentially has value
     'mocha/no-setup-in-describe': 'off', // potentially has value, large refactor here though
-    
   },
   globals: {
     __DEV__: true,

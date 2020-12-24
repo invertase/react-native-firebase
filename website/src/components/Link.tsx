@@ -38,8 +38,11 @@ const Link = ({
   activeClass = false,
   partiallyActiveClass = false,
   ...other
-}: Props) => {
-  function shouldHaveActiveClass({ isCurrent, isPartiallyCurrent }: LinkGetProps): object {
+}: Props): JSX.Element => {
+  function shouldHaveActiveClass({
+    isCurrent,
+    isPartiallyCurrent,
+  }: LinkGetProps): { className?: string } {
     if (activeClass && isCurrent) return { className: 'active' };
     if (partiallyActiveClass && isPartiallyCurrent) return { className: 'active' };
     return {};

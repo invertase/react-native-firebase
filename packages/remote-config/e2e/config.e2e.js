@@ -15,15 +15,15 @@
  *
  */
 
-describe('remoteConfig()', function() {
-  describe('namespace', function() {
-    it('accessible from firebase.app()', function() {
+describe('remoteConfig()', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
       const app = firebase.app();
       should.exist(app.remoteConfig);
       app.remoteConfig().app.should.equal(app);
     });
 
-    it('supports multiple apps', async function() {
+    it('supports multiple apps', async function () {
       firebase.firestore().app.name.should.equal('[DEFAULT]');
 
       firebase
@@ -37,8 +37,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('statics', function() {
-    it('LastFetchStatus', function() {
+  describe('statics', function () {
+    it('LastFetchStatus', function () {
       firebase.remoteConfig.LastFetchStatus.should.be.an.Object();
       firebase.remoteConfig.LastFetchStatus.FAILURE.should.equal('failure');
       firebase.remoteConfig.LastFetchStatus.SUCCESS.should.equal('success');
@@ -46,7 +46,7 @@ describe('remoteConfig()', function() {
       firebase.remoteConfig.LastFetchStatus.THROTTLED.should.equal('throttled');
     });
 
-    it('ValueSource', function() {
+    it('ValueSource', function () {
       firebase.remoteConfig.ValueSource.should.be.an.Object();
       firebase.remoteConfig.ValueSource.REMOTE.should.equal('remote');
       firebase.remoteConfig.ValueSource.STATIC.should.equal('static');
@@ -54,8 +54,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('fetch()', function() {
-    it('with expiration provided', async function() {
+  describe('fetch()', function () {
+    it('with expiration provided', async function () {
       const date = Date.now() - 30000;
       await firebase.remoteConfig().ensureInitialized();
 
@@ -73,10 +73,10 @@ describe('remoteConfig()', function() {
       console.log(firebase.remoteConfig().fetchTimeMillis, date);
       should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
     });
-    it('without expiration provided', function() {
+    it('without expiration provided', function () {
       return firebase.remoteConfig().fetch();
     });
-    it('it throws if expiration is not a number', function() {
+    it('it throws if expiration is not a number', function () {
       try {
         firebase.remoteConfig().fetch('foo');
         return Promise.reject(new Error('Did not throw'));
@@ -87,37 +87,37 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('fetchAndActivate()', function() {
-    it('returns true/false if activated', async function() {
+  describe('fetchAndActivate()', function () {
+    it('returns true/false if activated', async function () {
       const activated = await firebase.remoteConfig().fetchAndActivate();
       activated.should.be.a.Boolean();
     });
   });
 
-  describe('activate()', function() {
-    it('with expiration provided', async function() {
+  describe('activate()', function () {
+    it('with expiration provided', async function () {
       await firebase.remoteConfig().fetch(0);
       const activated = await firebase.remoteConfig().activate();
       activated.should.be.a.Boolean();
     });
 
-    it('without expiration provided', async function() {
+    it('without expiration provided', async function () {
       await firebase.remoteConfig().fetch();
       const activated = await firebase.remoteConfig().activate();
       activated.should.be.a.Boolean();
     });
   });
 
-  describe('config settings', function() {
-    it('should be immediately available', async function() {
+  describe('config settings', function () {
+    it('should be immediately available', async function () {
       firebase.remoteConfig().lastFetchStatus.should.be.a.String();
       firebase.remoteConfig().lastFetchStatus.should.equal('success');
       firebase.remoteConfig().fetchTimeMillis.should.be.a.Number();
     });
   });
 
-  describe('setConfigSettings()', function() {
-    it('it throws if arg is not an object', async function() {
+  describe('setConfigSettings()', function () {
+    it('it throws if arg is not an object', async function () {
       try {
         firebase.remoteConfig().setConfigSettings('not an object');
 
@@ -128,13 +128,13 @@ describe('remoteConfig()', function() {
       }
     });
 
-    it('minimumFetchIntervalMillis sets correctly', async function() {
+    it('minimumFetchIntervalMillis sets correctly', async function () {
       await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
       firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(3000);
     });
 
-    it('throws if minimumFetchIntervalMillis is not a number', async function() {
+    it('throws if minimumFetchIntervalMillis is not a number', async function () {
       try {
         firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
 
@@ -145,13 +145,13 @@ describe('remoteConfig()', function() {
       }
     });
 
-    it('fetchTimeMillis sets correctly', async function() {
+    it('fetchTimeMillis sets correctly', async function () {
       await firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
 
       firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(3000);
     });
 
-    it('throws if fetchTimeMillis is not a number', function() {
+    it('throws if fetchTimeMillis is not a number', function () {
       try {
         firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
 
@@ -163,8 +163,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('ensureInitialized()', function() {
-    it('should ensure remote config has been initialized and values are accessible', async function() {
+  describe('ensureInitialized()', function () {
+    it('should ensure remote config has been initialized and values are accessible', async function () {
       const ensure = await firebase.remoteConfig().ensureInitialized();
       const number = firebase.remoteConfig().getValue('number');
 
@@ -174,8 +174,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('getAll() with remote', function() {
-    it('should return an object of all available values', function() {
+  describe('getAll() with remote', function () {
+    it('should return an object of all available values', function () {
       const config = firebase.remoteConfig().getAll();
       config.number.asNumber().should.equal(1337);
       config.number.getSource().should.equal('remote');
@@ -187,8 +187,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('setDefaults()', function() {
-    it('sets default values from key values object', async function() {
+  describe('setDefaults()', function () {
+    it('sets default values from key values object', async function () {
       await firebase.remoteConfig().setDefaults({
         some_key: 'I do not exist',
         some_key_1: 1337,
@@ -205,7 +205,7 @@ describe('remoteConfig()', function() {
       values.some_key_2.getSource().should.equal('default');
     });
 
-    it('it throws if defaults object not provided', function() {
+    it('it throws if defaults object not provided', function () {
       try {
         firebase.remoteConfig().setDefaults('not an object');
         return Promise.reject(new Error('Did not throw'));
@@ -216,9 +216,9 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('getValue()', function() {
-    describe('getValue().asBoolean()', function() {
-      it("returns 'true' for the specified keys: '1', 'true', 't', 'yes', 'y', 'on'", async function() {
+  describe('getValue()', function () {
+    describe('getValue().asBoolean()', function () {
+      it("returns 'true' for the specified keys: '1', 'true', 't', 'yes', 'y', 'on'", async function () {
         //Boolean truthy values as defined by web sdk
         await firebase.remoteConfig().setDefaults({
           test1: '1',
@@ -229,31 +229,13 @@ describe('remoteConfig()', function() {
           test6: 'on',
         });
 
-        const test1 = firebase
-          .remoteConfig()
-          .getValue('test1')
-          .asBoolean();
+        const test1 = firebase.remoteConfig().getValue('test1').asBoolean();
 
-        const test2 = firebase
-          .remoteConfig()
-          .getValue('test2')
-          .asBoolean();
-        const test3 = firebase
-          .remoteConfig()
-          .getValue('test3')
-          .asBoolean();
-        const test4 = firebase
-          .remoteConfig()
-          .getValue('test4')
-          .asBoolean();
-        const test5 = firebase
-          .remoteConfig()
-          .getValue('test5')
-          .asBoolean();
-        const test6 = firebase
-          .remoteConfig()
-          .getValue('test6')
-          .asBoolean();
+        const test2 = firebase.remoteConfig().getValue('test2').asBoolean();
+        const test3 = firebase.remoteConfig().getValue('test3').asBoolean();
+        const test4 = firebase.remoteConfig().getValue('test4').asBoolean();
+        const test5 = firebase.remoteConfig().getValue('test5').asBoolean();
+        const test6 = firebase.remoteConfig().getValue('test6').asBoolean();
 
         test1.should.equal(true);
         test2.should.equal(true);
@@ -263,38 +245,29 @@ describe('remoteConfig()', function() {
         test6.should.equal(true);
       });
 
-      it("returns 'false' for values that resolve to a falsy", async function() {
+      it("returns 'false' for values that resolve to a falsy", async function () {
         await firebase.remoteConfig().setDefaults({
           test1: '2',
           test2: 'foo',
         });
 
-        const test1 = firebase
-          .remoteConfig()
-          .getValue('test1')
-          .asBoolean();
+        const test1 = firebase.remoteConfig().getValue('test1').asBoolean();
 
-        const test2 = firebase
-          .remoteConfig()
-          .getValue('test2')
-          .asBoolean();
+        const test2 = firebase.remoteConfig().getValue('test2').asBoolean();
 
         test1.should.equal(false);
         test2.should.equal(false);
       });
 
-      it("returns 'false' if the source is static", function() {
-        const unknownKey = firebase
-          .remoteConfig()
-          .getValue('unknownKey')
-          .asBoolean();
+      it("returns 'false' if the source is static", function () {
+        const unknownKey = firebase.remoteConfig().getValue('unknownKey').asBoolean();
 
         unknownKey.should.equal(false);
       });
     });
 
-    describe('getValue().asString()', function() {
-      it('returns the value as a string', function() {
+    describe('getValue().asString()', function () {
+      it('returns the value as a string', function () {
         const config = firebase.remoteConfig().getAll();
 
         config.number.asString().should.equal('1337');
@@ -304,8 +277,8 @@ describe('remoteConfig()', function() {
       });
     });
 
-    describe('getValue().asNumber()', function() {
-      it('returns the value as a number if it can be evaluated as a number', function() {
+    describe('getValue().asNumber()', function () {
+      it('returns the value as a number if it can be evaluated as a number', function () {
         const config = firebase.remoteConfig().getAll();
 
         config.number.asNumber().should.equal(1337);
@@ -313,25 +286,22 @@ describe('remoteConfig()', function() {
         config.prefix_1.asNumber().should.equal(1);
       });
 
-      it('returns the value "0" if it cannot be evaluated as a number', function() {
+      it('returns the value "0" if it cannot be evaluated as a number', function () {
         const config = firebase.remoteConfig().getAll();
 
         config.bool.asNumber().should.equal(0);
         config.string.asNumber().should.equal(0);
       });
 
-      it("returns '0' if the source is static", function() {
-        const unknownKey = firebase
-          .remoteConfig()
-          .getValue('unknownKey')
-          .asNumber();
+      it("returns '0' if the source is static", function () {
+        const unknownKey = firebase.remoteConfig().getValue('unknownKey').asNumber();
 
         unknownKey.should.equal(0);
       });
     });
 
-    describe('getValue().getSource()', function() {
-      it('returns the correct source as default or remote', async function() {
+    describe('getValue().getSource()', function () {
+      it('returns the correct source as default or remote', async function () {
         await firebase.remoteConfig().setDefaults({
           test1: '2',
           test2: 'foo',
@@ -348,13 +318,13 @@ describe('remoteConfig()', function() {
       });
     });
 
-    it("returns an empty string for a static value for keys that doesn't exist", function() {
+    it("returns an empty string for a static value for keys that doesn't exist", function () {
       const configValue = firebase.remoteConfig().getValue('fourOhFour');
       configValue.getSource().should.equal('static');
       should.equal(configValue.asString(), '');
     });
 
-    it('errors if no key provided', async function() {
+    it('errors if no key provided', async function () {
       try {
         firebase.remoteConfig().getValue();
         return Promise.reject(new Error('Did not throw'));
@@ -364,7 +334,7 @@ describe('remoteConfig()', function() {
       }
     });
 
-    it('errors if key not a string', async function() {
+    it('errors if key not a string', async function () {
       try {
         firebase.remoteConfig().getValue(1234);
         return Promise.reject(new Error('Did not throw'));
@@ -375,8 +345,8 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('getAll()', function() {
-    it('gets all values', async function() {
+  describe('getAll()', function () {
+    it('gets all values', async function () {
       const config = firebase.remoteConfig().getAll();
 
       config.should.be.a.Object();
@@ -392,15 +362,15 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('setDefaultsFromResource()', function() {
-    it('sets defaults from remote_config_resource_test file', async function() {
+  describe('setDefaultsFromResource()', function () {
+    it('sets defaults from remote_config_resource_test file', async function () {
       await firebase.remoteConfig().setDefaultsFromResource('remote_config_resource_test');
       const config = firebase.remoteConfig().getAll();
       config.company.getSource().should.equal('default');
       config.company.asString().should.equal('invertase');
     });
 
-    it('rejects if resource not found', async function() {
+    it('rejects if resource not found', async function () {
       const [error] = await A2A(firebase.remoteConfig().setDefaultsFromResource('i_do_not_exist'));
       if (!error) {
         throw new Error('Did not reject');
@@ -410,7 +380,7 @@ describe('remoteConfig()', function() {
       error.message.should.containEql('was not found');
     });
 
-    it('throws if resourceName is not a string', function() {
+    it('throws if resourceName is not a string', function () {
       try {
         firebase.remoteConfig().setDefaultsFromResource(1337);
         return Promise.reject(new Error('Did not throw'));
@@ -421,7 +391,7 @@ describe('remoteConfig()', function() {
     });
   });
 
-  describe('reset()', function() {
+  describe('reset()', function () {
     android.it('resets all activated, fetched and default config', async () => {
       await firebase.remoteConfig().setDefaults({
         some_key: 'I do not exist',
@@ -440,7 +410,7 @@ describe('remoteConfig()', function() {
       should(configRetrieveAgain).not.have.properties(remoteProps);
     });
 
-    it('returns a "null" value as reset() API is not supported on iOS', async function() {
+    it('returns a "null" value as reset() API is not supported on iOS', async function () {
       if (device.getPlatform() === 'ios') {
         const reset = await firebase.remoteConfig().reset();
 

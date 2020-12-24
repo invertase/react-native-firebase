@@ -17,16 +17,13 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().limit()', function() {
-  before(function() {
+describe('firestore().collection().limit()', function () {
+  before(function () {
     return wipe();
   });
-  it('throws if limit is invalid', function() {
+  it('throws if limit is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .limit(-1);
+      firebase.firestore().collection(COLLECTION).limit(-1);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'limit' must be a positive integer value");
@@ -34,16 +31,13 @@ describe('firestore().collection().limit()', function() {
     }
   });
 
-  it('sets limit on internals', async function() {
-    const colRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .limit(123);
+  it('sets limit on internals', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION).limit(123);
 
     colRef._modifiers.options.limit.should.eql(123);
   });
 
-  it('limits the number of documents', async function() {
+  it('limits the number of documents', async function () {
     const colRef = firebase.firestore().collection(COLLECTION);
 
     // Add 3

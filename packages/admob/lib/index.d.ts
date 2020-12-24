@@ -908,7 +908,7 @@ export namespace FirebaseAdMobTypes {
      *
      * @param listener A listener callback containing a event type, error and data.
      */
-    onAdEvent(listener: AdEventListener): Function;
+    onAdEvent(listener: AdEventListener): () => void;
 
     /**
      * Show the loaded advert to the user.
@@ -1134,27 +1134,27 @@ export namespace FirebaseAdMobTypes {
     /**
      * When an ad has finished loading.
      */
-    onAdLoaded: Function;
+    onAdLoaded: () => void;
 
     /**
      * When an ad has failed to load. Callback contains an Error.
      */
-    onAdFailedToLoad: Function;
+    onAdFailedToLoad: (error: Error) => void;
 
     /**
      * The ad is now visible to the user.
      */
-    onAdOpened: Function;
+    onAdOpened: () => void;
 
     /**
      * Called when the user is about to return to the app after tapping on an ad.
      */
-    onAdClosed: Function;
+    onAdClosed: () => void;
 
     /**
      * Called when the user has left the application (e.g. clicking an advert).
      */
-    onAdLeftApplication: Function;
+    onAdLeftApplication: () => void;
   }
 
   /**
@@ -1219,6 +1219,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 

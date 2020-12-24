@@ -3,8 +3,8 @@ const TEST_PASS = 'test1234';
 
 const { clearAllUsers } = require('./helpers');
 
-describe('auth()', function() {
-  before(async function() {
+describe('auth()', function () {
+  before(async function () {
     try {
       await clearAllUsers();
     } catch (e) {
@@ -17,7 +17,7 @@ describe('auth()', function() {
     }
   });
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
@@ -26,7 +26,7 @@ describe('auth()', function() {
 
   // TODO(salakar): Detox on iOS crashing app on reloads
   android.describe('firebase.auth().currentUser', () => {
-    it('exists after reload', async function() {
+    it('exists after reload', async function () {
       let currentUser;
       // before reload
       await firebase.auth().signInAnonymously();

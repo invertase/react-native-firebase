@@ -17,13 +17,13 @@
 
 let RewardedAd;
 
-describe('admob() RewardedAd', function() {
-  before(function() {
+describe('admob() RewardedAd', function () {
+  before(function () {
     RewardedAd = jet.require('packages/admob/lib/ads/RewardedAd');
   });
 
-  describe('createForAdRequest', function() {
-    it('throws if adUnitId is invalid', function() {
+  describe('createForAdRequest', function () {
+    it('throws if adUnitId is invalid', function () {
       try {
         RewardedAd.createForAdRequest(123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -34,7 +34,7 @@ describe('admob() RewardedAd', function() {
     });
 
     // has own tests
-    it('throws if requestOptions are invalid', function() {
+    it('throws if requestOptions are invalid', function () {
       try {
         RewardedAd.createForAdRequest('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -43,14 +43,14 @@ describe('admob() RewardedAd', function() {
       }
     });
 
-    it('returns a new instance', function() {
+    it('returns a new instance', function () {
       const i = RewardedAd.createForAdRequest('abc');
       i.constructor.name.should.eql('RewardedAd');
       i.adUnitId.should.eql('abc');
       i.loaded.should.eql(false);
     });
 
-    it('loads with requestOptions', async function() {
+    it('loads with requestOptions', async function () {
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -79,8 +79,8 @@ describe('admob() RewardedAd', function() {
     });
   });
 
-  describe('show', function() {
-    it('throws if showing before loaded', function() {
+  describe('show', function () {
+    it('throws if showing before loaded', function () {
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -95,8 +95,8 @@ describe('admob() RewardedAd', function() {
     });
   });
 
-  describe('onAdEvent', function() {
-    it('throws if handler is not a function', function() {
+  describe('onAdEvent', function () {
+    it('throws if handler is not a function', function () {
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -108,14 +108,14 @@ describe('admob() RewardedAd', function() {
       }
     });
 
-    it('returns an unsubscriber function', function() {
+    it('returns an unsubscriber function', function () {
       const i = RewardedAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(() => {});
       unsub.should.be.Function();
       unsub();
     });
 
-    it('unsubscribe should prevent events', async function() {
+    it('unsubscribe should prevent events', async function () {
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -129,7 +129,7 @@ describe('admob() RewardedAd', function() {
       spy.callCount.should.be.eql(0);
     });
 
-    it('loads with a valid ad unit id', async function() {
+    it('loads with a valid ad unit id', async function () {
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -152,7 +152,7 @@ describe('admob() RewardedAd', function() {
       d.amount.should.be.Number();
     });
 
-    it('errors with an invalid ad unit id', async function() {
+    it('errors with an invalid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest('123');

@@ -17,17 +17,14 @@
 
 let testImageFile;
 
-describe('ml.label', function() {
-  before(async function() {
+describe('ml.label', function () {
+  before(async function () {
     testImageFile = `${firebase.utils.FilePath.DOCUMENT_DIRECTORY}/crab.jpg`;
-    await firebase
-      .storage()
-      .ref('vision/crab.jpg')
-      .writeToFile(testImageFile);
+    await firebase.storage().ref('vision/crab.jpg').writeToFile(testImageFile);
   });
 
-  describe('cloudImageLabelerProcessImage()', function() {
-    it('should throw if image path is not a string', function() {
+  describe('cloudImageLabelerProcessImage()', function () {
+    it('should throw if image path is not a string', function () {
       try {
         firebase.ml().cloudImageLabelerProcessImage(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -37,7 +34,7 @@ describe('ml.label', function() {
       }
     });
 
-    xit('should return a cloud label array', async function() {
+    xit('should return a cloud label array', async function () {
       const res = await firebase.ml().cloudImageLabelerProcessImage(testImageFile);
 
       res.should.be.Array();
@@ -51,8 +48,8 @@ describe('ml.label', function() {
     });
   });
 
-  describe('MLCloudImageLabelerOptions', function() {
-    it('throws if not an object', async function() {
+  describe('MLCloudImageLabelerOptions', function () {
+    it('throws if not an object', async function () {
       try {
         await firebase.ml().cloudImageLabelerProcessImage(testImageFile, '123');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -62,8 +59,8 @@ describe('ml.label', function() {
       }
     });
 
-    describe('confidenceThreshold', function() {
-      it('should throw if confidence threshold is not a number', async function() {
+    describe('confidenceThreshold', function () {
+      it('should throw if confidence threshold is not a number', async function () {
         try {
           await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
             confidenceThreshold: '0.2',
@@ -77,7 +74,7 @@ describe('ml.label', function() {
         }
       });
 
-      it('should throw if confidence threshold is not between 0 & 1', async function() {
+      it('should throw if confidence threshold is not between 0 & 1', async function () {
         try {
           await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
             confidenceThreshold: 1.1,
@@ -91,7 +88,7 @@ describe('ml.label', function() {
         }
       });
 
-      xit('should accept options and return cloud labels', async function() {
+      xit('should accept options and return cloud labels', async function () {
         const res = await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
           confidenceThreshold: 0.8,
         });
@@ -107,8 +104,8 @@ describe('ml.label', function() {
       });
     });
 
-    describe('enforceCertFingerprintMatch', function() {
-      it('throws if not a boolean', async function() {
+    describe('enforceCertFingerprintMatch', function () {
+      it('throws if not a boolean', async function () {
         try {
           await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
             enforceCertFingerprintMatch: 'true',
@@ -122,15 +119,15 @@ describe('ml.label', function() {
         }
       });
 
-      xit('sets enforceCertFingerprintMatch', async function() {
+      xit('sets enforceCertFingerprintMatch', async function () {
         await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
           enforceCertFingerprintMatch: false,
         });
       });
     });
 
-    xdescribe('apiKeyOverride', function() {
-      it('throws if apiKeyOverride is not a string', async function() {
+    xdescribe('apiKeyOverride', function () {
+      it('throws if apiKeyOverride is not a string', async function () {
         try {
           await firebase.ml().cloudImageLabelerProcessImage(testImageFile, {
             apiKeyOverride: true,

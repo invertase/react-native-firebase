@@ -19,20 +19,17 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/startAt`;
 
-describe('database().ref().startAt()', function() {
-  before(function() {
+describe('database().ref().startAt()', function () {
+  before(function () {
     return seed(TEST_PATH);
   });
-  after(function() {
+  after(function () {
     return wipe(TEST_PATH);
   });
 
-  it('throws if an value is undefined', async function() {
+  it('throws if an value is undefined', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .startAt();
+      await firebase.database().ref().startAt();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'value' must be a number, string, boolean or null value");
@@ -40,12 +37,9 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('throws if an key is not a string', async function() {
+  it('throws if an key is not a string', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .startAt('foo', 1234);
+      await firebase.database().ref().startAt('foo', 1234);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'key' must be a string value if defined");
@@ -53,13 +47,9 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('throws if a starting point has already been set', async function() {
+  it('throws if a starting point has already been set', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .equalTo('foo')
-        .startAt('foo');
+      await firebase.database().ref().equalTo('foo').startAt('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -69,13 +59,9 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('throws if ordering by key and the key param is set', async function() {
+  it('throws if ordering by key and the key param is set', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByKey('foo')
-        .startAt('foo', 'bar');
+      await firebase.database().ref().orderByKey('foo').startAt('foo', 'bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -85,13 +71,9 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('throws if ordering by key and the value param is not a string', async function() {
+  it('throws if ordering by key and the value param is not a string', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByKey('foo')
-        .startAt(123);
+      await firebase.database().ref().orderByKey('foo').startAt(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -101,13 +83,9 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('throws if ordering by priority and the value param is not priority type', async function() {
+  it('throws if ordering by priority and the value param is not priority type', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByPriority()
-        .startAt(true);
+      await firebase.database().ref().orderByPriority().startAt(true);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -117,7 +95,7 @@ describe('database().ref().startAt()', function() {
     }
   });
 
-  it('snapshot value is null when no ordering modifier is applied', async function() {
+  it('snapshot value is null when no ordering modifier is applied', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     await ref.set({
@@ -131,7 +109,7 @@ describe('database().ref().startAt()', function() {
     should.equal(snapshot.val(), null);
   });
 
-  it('starts at the correct value', async function() {
+  it('starts at the correct value', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     await ref.set({
@@ -141,10 +119,7 @@ describe('database().ref().startAt()', function() {
       d: 4,
     });
 
-    const snapshot = await ref
-      .orderByValue()
-      .startAt(2)
-      .once('value');
+    const snapshot = await ref.orderByValue().startAt(2).once('value');
 
     const expected = ['b', 'c', 'd'];
 
