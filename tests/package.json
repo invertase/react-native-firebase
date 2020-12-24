@@ -31,10 +31,10 @@
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
-    "detox": "16.7.2",
+    "detox": "17.14.6",
     "firebase-tools": "^9.1.0",
     "jet": "^0.6.6-0",
-    "mocha": "^6.1.4",
+    "mocha": "^8.2.1",
     "nyc": "^15.0.1",
     "patch-package": "^6.2.2",
     "react-native-port-patcher": "^1.0.4",
@@ -45,7 +45,7 @@
   "detox": {
     "test-runner": "mocha",
     "specs": "e2e",
-    "runner-config": "e2e/mocha.opts",
+    "runner-config": "e2e/.mocharc.js",
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
