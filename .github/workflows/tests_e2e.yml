@@ -85,7 +85,12 @@ jobs:
         shell: bash
 
       - name: Build Android App
-        run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
