@@ -88,9 +88,12 @@ describe('firestore().collection().orderBy()', function () {
     }
   });
 
-  // FIXME flaky in local tests
-  xit('orders by a value ASC', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/order/asc`);
+  it('orders by a value ASC', async function () {
+    const colRef = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/order-asc`);
 
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });
@@ -104,9 +107,12 @@ describe('firestore().collection().orderBy()', function () {
     });
   });
 
-  // FIXME flaky in local tests
-  xit('orders by a value DESC', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/order/desc`);
+  it('orders by a value DESC', async function () {
+    const colRef = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/order-desc`);
 
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });

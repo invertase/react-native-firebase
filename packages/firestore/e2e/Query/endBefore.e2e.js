@@ -101,7 +101,7 @@ describe('firestore().collection().endBefore()', function () {
     qs.docs[0].id.should.eql('doc3');
   });
 
-  xit('ends before snapshot field values', async function () {
+  it('ends before snapshot field values', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endBefore/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');

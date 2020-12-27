@@ -125,7 +125,7 @@ describe('firestore.QuerySnapshot', function () {
 
     it('returns an array of DocumentChange instances', async function () {
       const colRef = firebase.firestore().collection(COLLECTION);
-      colRef.add({});
+      await colRef.add({});
       const snapshot = await colRef.limit(1).get();
       const changes = snapshot.docChanges();
       changes.should.be.Array();
@@ -133,10 +133,13 @@ describe('firestore.QuerySnapshot', function () {
       changes[0].constructor.name.should.eql('FirestoreDocumentChange');
     });
 
-    // TODO: fixme @ehesp - flaky test: `AssertionError: expected 3 to equal 1` on  line 155
-    xit('returns the correct number of document changes if listening to metadata changes', async function () {
+    it('returns the correct number of document changes if listening to metadata changes', async function () {
       const callback = sinon.spy();
-      const colRef = firebase.firestore().collection('v6/metadatachanges/true-true');
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/metadatachanges-true-true`);
       const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
       await colRef.add({ foo: 'bar' });
       await Utils.spyToBeCalledTimesAsync(callback, 3);
@@ -151,10 +154,13 @@ describe('firestore.QuerySnapshot', function () {
       snap3.docChanges({ includeMetadataChanges: true }).length.should.be.eql(1);
     });
 
-    // TODO: fixme @ehesp - flaky test: `AssertionError: expected 5 to equal 1`
-    xit('returns the correct number of document changes if listening to metadata changes, but not including them in docChanges', async function () {
+    it('returns the correct number of document changes if listening to metadata changes, but not including them in docChanges', async function () {
       const callback = sinon.spy();
-      const colRef = firebase.firestore().collection('v6/metadatachanges/true-false');
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/metadatachanges-true-false`);
       const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
       await colRef.add({ foo: 'bar' });
       await Utils.spyToBeCalledTimesAsync(callback, 3);
@@ -173,7 +179,8 @@ describe('firestore.QuerySnapshot', function () {
   describe('forEach()', function () {
     it('throws if callback is not a function', async function () {
       try {
-        const colRef = firebase.firestore().collection(COLLECTION);
+        const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/nonfunction`);
+        await colRef.add({});
         const snapshot = await colRef.limit(1).get();
         snapshot.forEach(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -184,13 +191,14 @@ describe('firestore.QuerySnapshot', function () {
     });
 
     it('calls back a function', async function () {
-      const colRef = firebase.firestore().collection(COLLECTION);
-      colRef.add({});
-      colRef.add({});
+      const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/function`);
+      await colRef.add({});
+      await colRef.add({});
       const snapshot = await colRef.limit(2).get();
       const callback = sinon.spy();
       snapshot.forEach.should.be.Function();
       snapshot.forEach(callback);
+      await Utils.spyToBeCalledTimesAsync(callback, 2, 20000);
       callback.should.be.calledTwice();
       callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
       callback.args[0][1].should.be.Number();
@@ -199,8 +207,8 @@ describe('firestore.QuerySnapshot', function () {
     });
 
     it('provides context to the callback', async function () {
-      const colRef = firebase.firestore().collection(COLLECTION);
-      colRef.add({});
+      const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/function-context`);
+      await colRef.add({});
       const snapshot = await colRef.limit(1).get();
       const callback = sinon.spy();
       snapshot.forEach.should.be.Function();

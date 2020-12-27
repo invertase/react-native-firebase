@@ -43,16 +43,21 @@ describe('firestore().collection().limitToLast()', function () {
     should(colRef._modifiers.options.limit).equal(undefined);
   });
 
-  // FIXME flaky on local tests
-  xit('removes limitToLast query if limit is set afterwards', function () {
-    const colRef = firebase.firestore().collection(COLLECTION).limitToLast(123).limit(2);
+  it('removes limitToLast query if limit is set afterwards', function () {
+    const colRef = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-limit-after`);
+    const colRef2 = colRef.limitToLast(123).limit(2);
 
-    should(colRef._modifiers.options.limitToLast).equal(undefined);
+    should(colRef2._modifiers.options.limitToLast).equal(undefined);
   });
 
-  // FIXME flaky on local tests
-  xit('limitToLast the number of documents', async function () {
-    const subCol = `${COLLECTION}/limitToLast/count`;
+  it('limitToLast the number of documents', async function () {
+    // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+    // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+    const subCol = `${COLLECTION}/${Utils.randString(12, '#aA')}/limitToLast-count`;
     const colRef = firebase.firestore().collection(subCol);
 
     // Add 3

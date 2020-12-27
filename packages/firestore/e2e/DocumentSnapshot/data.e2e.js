@@ -51,9 +51,9 @@ describe('firestore().doc() -> snapshot.data()', function () {
     await ref.delete();
   });
 
-  xit('handles SnapshotOptions', function () {
-    // TODO
-  });
+  // it('handles SnapshotOptions', function () {
+  //   // TODO
+  // });
 
   it('handles all data types', async function () {
     const types = {
