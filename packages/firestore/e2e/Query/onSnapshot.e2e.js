@@ -173,7 +173,12 @@ describe('firestore().collection().onSnapshot()', function () {
     it('calls next with snapshot when successful', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar6`).onSnapshot(
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/next-with-snapshot`);
+      const unsub = colRef.onSnapshot(
         {
           includeMetadataChanges: false,
         },
@@ -297,18 +302,23 @@ describe('firestore().collection().onSnapshot()', function () {
 
   // FIXME test disabled due to flakiness in CI E2E tests.
   // Registered 4 of 3 expected calls once (!?), 3 of 2 expected calls once.
-  xit('unsubscribes from further updates', async function () {
+  it('unsubscribes from further updates', async function () {
     const callback = sinon.spy();
 
-    const collection = firebase.firestore().collection(`${COLLECTION}/foo/bar7`);
+    const collection = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/unsubscribe-updates`);
 
     const unsub = collection.onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.sleep(2000);
     await collection.add({});
     await collection.add({});
     unsub();
-    await Utils.sleep(800);
+    await Utils.sleep(2000);
     await collection.add({});
+    await Utils.sleep(2000);
     callback.should.be.callCount(3);
   });
 });
