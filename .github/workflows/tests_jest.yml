@@ -31,7 +31,7 @@ jobs:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 50
       - uses: actions/setup-node@v2-beta
         with:
           node-version: 12
