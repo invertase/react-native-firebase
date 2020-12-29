@@ -38,7 +38,7 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ## Firebase Setup
 
-1. Open the Dynamic Links tab and configure a new domain for your app. In this test example, I've created one for `https://rnfbtestapplication.page.link`.
+1. Open the Dynamic Links tab and configure a new domain for your app. In this test example, we've created one for `https://rnfbtestapplication.page.link`.
 
 ![Firebase console dynamic link first step](https://images.prismic.io/invertase/4152f98c-b4e9-4561-a790-a0750a0392bb_Screenshot+2020-05-07+at+09.26.47.png?auto=compress,format)
 
@@ -154,7 +154,7 @@ async function buildLink() {
     link: 'https://invertase.io',
     // domainUriPrefix is created in your Firebase console
     domainUriPrefix: 'https://xyz.page.link',
-    // optional set up which updates Firebase analytics campaign
+    // optional setup which updates Firebase analytics campaign
     // "banner". This also needs setting up before hand
     analytics: {
       campaign: 'banner',
@@ -171,7 +171,7 @@ The module provides two methods for reacting to events related to the applicatio
 
 ### Foreground events
 
-When the app is in the foreground (visible on the device), you can use the `onLink` method to subscribe to events as and
+When the app is in the foreground state (visible on the device), you can use the `onLink` method to subscribe to events as and
 when they happen:
 
 ```jsx
@@ -187,7 +187,7 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the is component unmounted, remove the listener
+    // When the component is unmounted, remove the listener
     return () => unsubscribe();
   }, []);
 
@@ -197,7 +197,7 @@ function App() {
 
 ### Background/Quit events
 
-If the application is in a background state / has fully quit then the `getInitialLink` method can be used to detect whether
+If the application is in a background state or has fully quit then the `getInitialLink` method can be used to detect whether
 the application was opened via a link:
 
 ```jsx
