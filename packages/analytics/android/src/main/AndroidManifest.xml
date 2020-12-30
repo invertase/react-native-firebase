@@ -5,4 +5,10 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+  <application>
+    <meta-data
+      android:name="firebase_analytics_collection_enabled"
+      android:value="${firebaseJsonAutoCollectionEnabled}"/>
+  </application>
 </manifest>
