@@ -15,7 +15,8 @@
     "messaging_android_notification_color": "@color/hotpink",
     "messaging_ios_auto_register_for_remote_messages": true,
 
-    "TODO_analytics_auto_collection_enabled": true,
+    "analytics_auto_collection_enabled": true,
+
     "TODO_perf_auto_collection_enabled": true,
     "TODO_in_app_messaging_auto_collection_enabled": true,
     "TODO_database_persistence_enabled": true,
