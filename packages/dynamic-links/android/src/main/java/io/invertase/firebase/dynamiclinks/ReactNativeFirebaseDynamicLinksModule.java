@@ -42,6 +42,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private String initialLinkUrl = null;
   private boolean gotInitialLink = false;
   private int initialLinkMinimumVersion = 0;
+  private boolean launchedFromHistory = false;
 
   ReactNativeFirebaseDynamicLinksModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -107,7 +108,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   @ReactMethod
   public void getInitialLink(Promise promise) {
     if (gotInitialLink) {
-      if (initialLinkUrl != null) {
+      if (initialLinkUrl != null && !launchedFromHistory) {
         promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
       } else {
         promise.resolve(null);
@@ -122,6 +123,9 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       return;
     }
 
+    Intent currentIntent = currentActivity.getIntent();
+    launchedFromHistory = currentIntent != null && (currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
+
     FirebaseDynamicLinks.getInstance().getDynamicLink(currentActivity.getIntent())
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
@@ -133,7 +137,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
             initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
           }
 
-          if (initialLinkUrl != null) {
+          if (initialLinkUrl != null && !launchedFromHistory) {
             promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
           } else {
             promise.resolve(null);
