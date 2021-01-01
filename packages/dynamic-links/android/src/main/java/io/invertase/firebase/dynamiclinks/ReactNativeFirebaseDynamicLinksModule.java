@@ -118,6 +118,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       promise.resolve(null);
       return;
     }
+    
     Intent currentIntent = currentActivity.getIntent();
     launchedFromHistory = currentIntent != null && (currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
 
