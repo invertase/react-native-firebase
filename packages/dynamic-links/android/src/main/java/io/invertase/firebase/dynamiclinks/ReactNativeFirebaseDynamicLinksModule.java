@@ -40,9 +40,10 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private static final String SHORT_LINK_TYPE_UNGUESSABLE = "UNGUESSABLE";
 
   private String initialLinkUrl = null;
-  private boolean gotInitialLink = false;
   private int initialLinkMinimumVersion = 0;
   private boolean launchedFromHistory = false;
+  private boolean hostResumed = false;
+  private Promise initialPromise = null;
 
   ReactNativeFirebaseDynamicLinksModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -107,13 +108,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @ReactMethod
   public void getInitialLink(Promise promise) {
-    if (gotInitialLink) {
-      if (initialLinkUrl != null && !launchedFromHistory) {
-        promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
-      } else {
-        promise.resolve(null);
-      }
-
+    if(!hostResumed) {
+      initialPromise = promise;
       return;
     }
 
@@ -122,14 +118,12 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       promise.resolve(null);
       return;
     }
-
     Intent currentIntent = currentActivity.getIntent();
     launchedFromHistory = currentIntent != null && (currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
 
-    FirebaseDynamicLinks.getInstance().getDynamicLink(currentActivity.getIntent())
+    FirebaseDynamicLinks.getInstance().getDynamicLink(currentIntent)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
-          gotInitialLink = true;
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
 
           if (pendingDynamicLinkData != null) {
@@ -373,8 +367,9 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   @Override
   public void onHostDestroy() {
     initialLinkUrl = null;
-    gotInitialLink = false;
     initialLinkMinimumVersion = 0;
+    launchedFromHistory = false;
+    initialPromise = null;
   }
 
   @Override
@@ -401,9 +396,15 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @Override
   public void onHostResume() {
+    hostResumed = true;
+    if(initialPromise != null) {
+      getInitialLink(initialPromise);
+      initialPromise = null;
+    }
   }
 
   @Override
   public void onHostPause() {
+    hostResumed = false;
   }
 }
