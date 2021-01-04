@@ -26,6 +26,8 @@
 
     "TODO_ml_natural_language_translate_model": true,
     "TODO_analytics_auto_collection_enabled": true,
+    "analytics_auto_collection_enabled": true,
+
     "TODO_perf_auto_collection_enabled": true,
     "TODO_in_app_messaging_auto_collection_enabled": true,
     "TODO_database_persistence_enabled": true,

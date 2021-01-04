@@ -22,6 +22,10 @@ const http = require('http');
 exports.wipe = async function wipe(debug = false) {
   const deleteOptions = {
     method: 'DELETE',
+    headers: {
+      // Undocumented, but necessary - from Emulator UI network requests
+      Authorization: 'Bearer owner',
+    },
     port: 8080,
     host: getE2eEmulatorHost(),
     path: '/emulator/v1/projects/' + getE2eTestProject() + '/databases/(default)/documents',
@@ -31,7 +35,7 @@ exports.wipe = async function wipe(debug = false) {
     if (debug) {
       console.time('wipe');
     }
-    await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const req = http.request(deleteOptions);
 
       req.on('error', error => reject(error));
@@ -45,5 +49,6 @@ exports.wipe = async function wipe(debug = false) {
     });
   } catch (e) {
     console.error('Unable to wipe firestore:', e);
+    throw e;
   }
 };

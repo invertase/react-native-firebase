@@ -19,7 +19,7 @@ import React from 'react';
 import { Link } from './Link';
 import { Tooltip } from '@invertase/ui';
 
-function SourceLink({ source }: { source: string }) {
+function SourceLink({ source }: { source: string }): JSX.Element {
   return (
     <Tooltip label="Jump to source">
       <Link

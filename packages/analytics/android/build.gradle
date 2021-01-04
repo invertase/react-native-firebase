@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.1.0")
+      classpath("com.android.tools.build:gradle:4.1.1")
     }
   }
 }
@@ -63,9 +63,22 @@ project.ext {
   ])
 }
 
+apply from: file("./../../app/android/firebase-json.gradle")
+
+def autoCollectionEnabled = "true"
+
+if (rootProject.ext && rootProject.ext.firebaseJson) {
+  if (rootProject.ext.firebaseJson.isFlagEnabled("analytics_auto_collection_enabled") == false) {
+    autoCollectionEnabled = "false"
+  }
+}
+
 android {
   defaultConfig {
     multiDexEnabled true
+    manifestPlaceholders = [
+      firebaseJsonAutoCollectionEnabled: autoCollectionEnabled
+    ]
   }
   lintOptions {
     disable 'GradleCompatible'

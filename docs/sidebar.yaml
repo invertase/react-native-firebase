@@ -43,7 +43,7 @@
   - - - Usage
       - '/firestore/usage'
     - - Usage with Emulator
-      - '/firestore/emulator'  
+      - '/firestore/emulator'
     - - Usage with FlatLists
       - '/firestore/usage-with-flatlists'
     - - Building a "TODO" app
@@ -74,6 +74,8 @@
 - - Core / App
   - - - Usage
       - '/app/usage'
+    - - JSON Config
+      - '/app/json-config'
     - - Utils
       - '/app/utils'
   - '//static.invertase.io/assets/social/firebase-logo.png'

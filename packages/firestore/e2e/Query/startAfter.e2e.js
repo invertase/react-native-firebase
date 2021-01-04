@@ -16,14 +16,13 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-describe('firestore().collection().startAfter()', () => {
-  before(() => wipe());
-  it('throws if no argument provided', () => {
+describe('firestore().collection().startAfter()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if no argument provided', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .startAfter();
+      firebase.firestore().collection(COLLECTION).startAfter();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -33,13 +32,9 @@ describe('firestore().collection().startAfter()', () => {
     }
   });
 
-  it('throws if a inconsistent order number', () => {
+  it('throws if a inconsistent order number', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy('foo')
-        .startAfter('bar', 'baz');
+      firebase.firestore().collection(COLLECTION).orderBy('foo').startAfter('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('The number of arguments must be less than or equal');
@@ -47,16 +42,10 @@ describe('firestore().collection().startAfter()', () => {
     }
   });
 
-  it('throws if providing snapshot and field values', async () => {
+  it('throws if providing snapshot and field values', async function () {
     try {
-      const doc = await firebase
-        .firestore()
-        .doc(`${COLLECTION}/foo`)
-        .get();
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .startAfter(doc, 'baz');
+      const doc = await firebase.firestore().doc(`${COLLECTION}/foo`).get();
+      firebase.firestore().collection(COLLECTION).startAfter(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Expected DocumentSnapshot or list of field values');
@@ -64,16 +53,10 @@ describe('firestore().collection().startAfter()', () => {
     }
   });
 
-  it('throws if provided snapshot does not exist', async () => {
+  it('throws if provided snapshot does not exist', async function () {
     try {
-      const doc = await firebase
-        .firestore()
-        .doc(`${COLLECTION}/idonotexist`)
-        .get();
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .startAfter(doc);
+      const doc = await firebase.firestore().doc(`${COLLECTION}/idonotexist`).get();
+      firebase.firestore().collection(COLLECTION).startAfter(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("Can't use a DocumentSnapshot that doesn't exist");
@@ -81,17 +64,13 @@ describe('firestore().collection().startAfter()', () => {
     }
   });
 
-  it('throws if order used with snapshot but fields do not exist', async () => {
+  it('throws if order used with snapshot but fields do not exist', async function () {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
       await doc.set({ foo: { bar: 'baz' } });
       const snap = await doc.get();
 
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy('foo.baz')
-        .startAfter(snap);
+      firebase.firestore().collection(COLLECTION).orderBy('foo.baz').startAfter(snap);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -101,7 +80,7 @@ describe('firestore().collection().startAfter()', () => {
     }
   });
 
-  it('starts after field values', async () => {
+  it('starts after field values', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -113,16 +92,13 @@ describe('firestore().collection().startAfter()', () => {
       doc3.set({ foo: 3, bar: { value: 3 } }),
     ]);
 
-    const qs = await colRef
-      .orderBy('bar.value', 'desc')
-      .startAfter(2)
-      .get();
+    const qs = await colRef.orderBy('bar.value', 'desc').startAfter(2).get();
 
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc1');
   });
 
-  it('starts after snapshot field values', async () => {
+  it('starts after snapshot field values', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -136,16 +112,13 @@ describe('firestore().collection().startAfter()', () => {
 
     const startAfter = await doc2.get();
 
-    const qs = await colRef
-      .orderBy('bar.value')
-      .startAfter(startAfter)
-      .get();
+    const qs = await colRef.orderBy('bar.value').startAfter(startAfter).get();
 
     qs.docs.length.should.eql(1);
     qs.docs[0].id.should.eql('doc3');
   });
 
-  it('startAfter snapshot', async () => {
+  it('startAfter snapshot', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -161,7 +134,7 @@ describe('firestore().collection().startAfter()', () => {
     qs.docs[0].id.should.eql('doc3');
   });
 
-  it('runs startAfter & endBefore in the same query', async () => {
+  it('runs startAfter & endBefore in the same query', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/startAfter/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
@@ -172,11 +145,7 @@ describe('firestore().collection().startAfter()', () => {
     const first = await doc1.get();
     const last = await doc3.get();
 
-    const inBetween = await colRef
-      .orderBy('age', 'asc')
-      .startAfter(first)
-      .endBefore(last)
-      .get();
+    const inBetween = await colRef.orderBy('age', 'asc').startAfter(first).endBefore(last).get();
 
     inBetween.docs.length.should.eql(1);
     inBetween.docs[0].id.should.eql('doc2');

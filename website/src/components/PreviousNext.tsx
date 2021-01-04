@@ -28,7 +28,7 @@ interface Props {
   next: PreviousOrNextType | undefined;
 }
 
-function PreviousNext({ previous, next }: Props) {
+function PreviousNext({ previous, next }: Props): JSX.Element {
   // Both must be present...
   if (!previous && !next) {
     return <div />;

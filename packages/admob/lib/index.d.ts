@@ -482,9 +482,11 @@ export namespace FirebaseAdMobTypes {
      * If using a real device to test, ensure the device ID is provided to the Google AdMob SDK so any mock debug locations
      * can take effect.
      *
-     * Emulators are automatically whitelisted and require no action.
+     * Emulators are automatically whitelisted and should require no action.
      *
-     * If you are unsure of how to obtain a device ID, see [react-native-device-info](https://github.com/react-native-community/react-native-device-info).
+     * If you are seeing real ad activity from a test device, examine logcat / console
+     * during execution in association with admob test device documentation to
+     * configure your device correctly.
      *
      * @param deviceIds An array of testing device ID.
      */
@@ -906,7 +908,7 @@ export namespace FirebaseAdMobTypes {
      *
      * @param listener A listener callback containing a event type, error and data.
      */
-    onAdEvent(listener: AdEventListener): Function;
+    onAdEvent(listener: AdEventListener): () => void;
 
     /**
      * Show the loaded advert to the user.
@@ -1132,27 +1134,27 @@ export namespace FirebaseAdMobTypes {
     /**
      * When an ad has finished loading.
      */
-    onAdLoaded: Function;
+    onAdLoaded: () => void;
 
     /**
      * When an ad has failed to load. Callback contains an Error.
      */
-    onAdFailedToLoad: Function;
+    onAdFailedToLoad: (error: Error) => void;
 
     /**
      * The ad is now visible to the user.
      */
-    onAdOpened: Function;
+    onAdOpened: () => void;
 
     /**
      * Called when the user is about to return to the app after tapping on an ad.
      */
-    onAdClosed: Function;
+    onAdClosed: () => void;
 
     /**
      * Called when the user has left the application (e.g. clicking an advert).
      */
-    onAdLeftApplication: Function;
+    onAdLeftApplication: () => void;
   }
 
   /**
@@ -1217,6 +1219,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
 
@@ -1226,40 +1229,6 @@ declare module '@react-native-firebase/app' {
 
     interface FirebaseApp {
       admob(): FirebaseAdMobTypes.Module;
-    }
-
-    interface FirebaseJsonConfig {
-      /**
-       * The Google AdMob application App ID for Android.
-       *
-       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-       *
-       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~3347511713`.
-       *
-       * @android
-       */
-      admob_android_app_id: string;
-
-      /**
-       * The Google AdMob application App ID for iOS.
-       *
-       * This can be found under: Apps > App settings > App ID on the Google AdMob dashboard.
-       *
-       * For testing purposes, use the App ID: `ca-app-pub-3940256099942544~1458002511`.
-       *
-       * @ios
-       */
-      admob_ios_app_id: string;
-
-      /**
-       * By default, the Google Mobile Ads SDK initializes app measurement and begins sending user-level event data to
-       * Google immediately when the app starts. This initialization behavior ensures you can enable AdMob user metrics
-       * without making additional code changes.
-       *
-       * If you require your app users to provide consent before collecting data, setting the value to `true` will prevent
-       * data being sent until the `firebase.admob().initialize()` method has been called.
-       */
-      admob_delay_app_measurement_init: boolean;
     }
   }
 }

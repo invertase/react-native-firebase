@@ -16,14 +16,13 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-describe('firestore().collection().orderBy()', () => {
-  before(() => wipe());
-  it('throws if fieldPath is not valid', () => {
+describe('firestore().collection().orderBy()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if fieldPath is not valid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy(123);
+      firebase.firestore().collection(COLLECTION).orderBy(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'fieldPath' must be a string or instance of FieldPath");
@@ -31,12 +30,9 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if fieldPath string is invalid', () => {
+  it('throws if fieldPath string is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy('.foo.bar');
+      firebase.firestore().collection(COLLECTION).orderBy('.foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'fieldPath' Invalid field path");
@@ -44,12 +40,9 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if direction string is not valid', () => {
+  it('throws if direction string is not valid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy('foo', 'up');
+      firebase.firestore().collection(COLLECTION).orderBy('foo', 'up');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'directionStr' must be one of 'asc' or 'desc'");
@@ -57,17 +50,13 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if a startAt()/startAfter() has already been set', async () => {
+  it('throws if a startAt()/startAfter() has already been set', async function () {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/startATstartAfter`);
       await doc.set({ foo: 'bar' });
       const snapshot = await doc.get();
 
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .startAt(snapshot)
-        .orderBy('foo');
+      firebase.firestore().collection(COLLECTION).startAt(snapshot).orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('You must not call startAt() or startAfter()');
@@ -75,17 +64,13 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if a endAt()/endBefore() has already been set', async () => {
+  it('throws if a endAt()/endBefore() has already been set', async function () {
     try {
       const doc = firebase.firestore().doc(`${COLLECTION}/endAtendBefore`);
       await doc.set({ foo: 'bar' });
       const snapshot = await doc.get();
 
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .endAt(snapshot)
-        .orderBy('foo');
+      firebase.firestore().collection(COLLECTION).endAt(snapshot).orderBy('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('You must not call endAt() or endBefore()');
@@ -93,13 +78,9 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  it('throws if duplicating the order field path', () => {
+  it('throws if duplicating the order field path', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .orderBy('foo.bar')
-        .orderBy('foo.bar');
+      firebase.firestore().collection(COLLECTION).orderBy('foo.bar').orderBy('foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Order by clause cannot contain duplicate fields');
@@ -107,9 +88,12 @@ describe('firestore().collection().orderBy()', () => {
     }
   });
 
-  // FIXME flaky in local tests
-  xit('orders by a value ASC', async () => {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/order/asc`);
+  it('orders by a value ASC', async function () {
+    const colRef = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/order-asc`);
 
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });
@@ -123,9 +107,12 @@ describe('firestore().collection().orderBy()', () => {
     });
   });
 
-  // FIXME flaky in local tests
-  xit('orders by a value DESC', async () => {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/order/desc`);
+  it('orders by a value DESC', async function () {
+    const colRef = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/order-desc`);
 
     await colRef.add({ value: 1 });
     await colRef.add({ value: 3 });

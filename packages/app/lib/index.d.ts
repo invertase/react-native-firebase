@@ -220,6 +220,7 @@ export namespace ReactNativeFirebase {
     private emitter: any;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   export type FirebaseModuleWithStatics<M, S = {}> = {
     (): M;
 
@@ -229,6 +230,7 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   } & S;
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   export type FirebaseModuleWithStaticsAndApp<M, S = {}> = {
     (app?: FirebaseApp): M;
 
@@ -237,12 +239,6 @@ export namespace ReactNativeFirebase {
      */
     readonly SDK_VERSION: string;
   } & S;
-
-  /**
-   * React Native Firebase `firebase.json` config
-   */
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface FirebaseJsonConfig {}
 }
 
 /*

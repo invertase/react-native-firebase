@@ -38,7 +38,7 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 50
 
       - uses: actions/setup-node@v2-beta
 
@@ -85,12 +85,17 @@ jobs:
         shell: bash
 
       - name: Build Android App
-        run: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
         run: |
-          nohup yarn run tests:packager:jet &
+          nohup yarn tests:packager:jet &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -198,7 +203,7 @@ jobs:
     name: iOS
     runs-on: macos-latest
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
-    timeout-minutes: 40
+    timeout-minutes: 50
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -208,7 +213,7 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          fetch-depth: 50
 
       - uses: actions/setup-node@v2-beta
 
@@ -296,7 +301,7 @@ jobs:
 
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup yarn run tests:packager:jet &
+          nohup yarn tests:packager:jet &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'

@@ -25,7 +25,7 @@ type Props = {
   location: Location;
 };
 
-function ScreenCasts({ location }: Props) {
+function ScreenCasts({ location }: Props): JSX.Element {
   const { screencasts } = useStaticQuery(graphql`
     {
       screencasts: allScreenCast {

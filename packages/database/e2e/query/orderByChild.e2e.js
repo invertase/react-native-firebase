@@ -19,16 +19,17 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/orderByChild`;
 
-describe('database().ref().orderByChild()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().orderByChild()', function () {
+  before(function () {
+    return seed(TEST_PATH);
+  });
+  after(function () {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if path is not a string value', async () => {
+  it('throws if path is not a string value', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByChild({ foo: 'bar' });
+      await firebase.database().ref().orderByChild({ foo: 'bar' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'path' must be a string value");
@@ -36,12 +37,9 @@ describe('database().ref().orderByChild()', () => {
     }
   });
 
-  it('throws if path is an empty path', async () => {
+  it('throws if path is an empty path', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByChild('/');
+      await firebase.database().ref().orderByChild('/');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'path' cannot be empty. Use orderByValue instead");
@@ -49,13 +47,9 @@ describe('database().ref().orderByChild()', () => {
     }
   });
 
-  it('throws if an orderBy call has already been set', async () => {
+  it('throws if an orderBy call has already been set', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByKey()
-        .orderByChild('foo');
+      await firebase.database().ref().orderByKey().orderByChild('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("You can't combine multiple orderBy calls");
@@ -63,14 +57,11 @@ describe('database().ref().orderByChild()', () => {
     }
   });
 
-  it('order by a child value', async () => {
+  it('order by a child value', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     try {
-      const snapshot = await ref
-        .child('query')
-        .orderByChild('number')
-        .once('value');
+      const snapshot = await ref.child('query').orderByChild('number').once('value');
 
       const expected = ['b', 'c', 'a'];
 

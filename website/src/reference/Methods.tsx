@@ -31,7 +31,7 @@ function Reference({
   name: string;
   type: string;
   parameters: Parameter[];
-}) {
+}): JSX.Element {
   const out: ReactElement[] = [];
 
   parameters.forEach((parameter, i) => {
@@ -62,7 +62,7 @@ function Reference({
   );
 }
 
-function Methods({ methods }: { methods: Method[] }) {
+function Methods({ methods }: { methods: Method[] }): JSX.Element {
   return (
     <>
       <Divider />

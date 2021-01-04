@@ -165,9 +165,9 @@ function moduleNameToFullName(name) {
       return 'In-App Messaging';
     case 'messaging':
       return 'Cloud Messaging';
-      case 'ml':
-        return 'ML';
-      case 'perf':
+    case 'ml':
+      return 'ML';
+    case 'perf':
       return 'Performance Monitoring';
     case 'remote-config':
       return 'Remote Config';

@@ -42,9 +42,9 @@ jobs:
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Lint
-        run: yarn run lint
+        run: yarn lint
       - name: Save Code Linting Report JSON
-        run: yarn run lint:report
+        run: yarn lint:report
         continue-on-error: true
       - name: Annotate Code Linting Results
         uses: ataylorme/eslint-annotate-action@1.1.2
@@ -91,7 +91,7 @@ jobs:
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Lint
-        run: yarn run tsc:compile
+        run: yarn tsc:compile
 
   typedoc:
     name: TypeDoc Generation

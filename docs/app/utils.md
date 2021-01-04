@@ -2,7 +2,7 @@
 title: Utils
 description: Using the exposed utilities the library provides.
 next: /crashlytics/usage
-previous: /app/usage
+previous: /app/json-config
 ---
 
 The App module also provides access to some handy utility methods which have been exposed to aid with your

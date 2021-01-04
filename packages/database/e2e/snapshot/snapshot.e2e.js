@@ -19,53 +19,37 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/snapshot`;
 
-describe('database()...snapshot', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database()...snapshot', function () {
+  before(function () {
+    return seed(TEST_PATH);
+  });
+  after(function () {
+    return wipe(TEST_PATH);
+  });
 
-  it('returns the snapshot key', async () => {
-    const snapshot = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/boolean')
-      .once('value');
+  it('returns the snapshot key', async function () {
+    const snapshot = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
 
     snapshot.key.should.equal('boolean');
   });
 
-  it('returns the snapshot reference', async () => {
-    const snapshot = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/boolean')
-      .once('value');
+  it('returns the snapshot reference', async function () {
+    const snapshot = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
 
     snapshot.ref.key.should.equal('boolean');
   });
 
-  it('returns the correct boolean for exists', async () => {
-    const snapshot1 = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/boolean')
-      .once('value');
+  it('returns the correct boolean for exists', async function () {
+    const snapshot1 = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
 
-    const snapshot2 = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/nope')
-      .once('value');
+    const snapshot2 = await firebase.database().ref(TEST_PATH).child('types/nope').once('value');
 
     snapshot1.exists().should.equal(true);
     snapshot2.exists().should.equal(false);
   });
 
-  it('exports a valid object', async () => {
-    const snapshot = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/string')
-      .once('value');
+  it('exports a valid object', async function () {
+    const snapshot = await firebase.database().ref(TEST_PATH).child('types/string').once('value');
 
     const exported = snapshot.exportVal();
 
@@ -75,12 +59,8 @@ describe('database()...snapshot', () => {
     should.equal(exported['.priority'], null);
   });
 
-  it('exports a valid object with a object value', async () => {
-    const snapshot = await firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/object')
-      .once('value');
+  it('exports a valid object with a object value', async function () {
+    const snapshot = await firebase.database().ref(TEST_PATH).child('types/object').once('value');
 
     const exported = snapshot.exportVal();
 
@@ -90,11 +70,8 @@ describe('database()...snapshot', () => {
     should.equal(exported['.priority'], null);
   });
 
-  it('forEach throws if action param is not a function', async () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('unorderedList');
+  it('forEach throws if action param is not a function', async function () {
+    const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
 
     await ref.set({
       a: 3,
@@ -111,11 +88,8 @@ describe('database()...snapshot', () => {
     }
   });
 
-  it('forEach returns an ordered list of snapshots', async () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('unorderedList');
+  it('forEach returns an ordered list of snapshots', async function () {
+    const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
 
     await ref.set({
       a: 3,
@@ -132,12 +106,9 @@ describe('database()...snapshot', () => {
     });
   });
 
-  it('forEach works with arrays', async () => {
+  it('forEach works with arrays', async function () {
     const callback = sinon.spy();
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types');
+    const ref = firebase.database().ref(TEST_PATH).child('types');
 
     const snapshot = await ref.once('value');
 
@@ -150,13 +121,9 @@ describe('database()...snapshot', () => {
     callback.should.be.callCount(snapshot.child('array').numChildren());
   });
 
-  it('forEach works with objects and cancels when returning true', async () => {
+  it('forEach works with objects and cancels when returning true', async function () {
     const callback = sinon.spy();
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/object')
-      .orderByKey();
+    const ref = firebase.database().ref(TEST_PATH).child('types/object').orderByKey();
 
     const snapshot = await ref.once('value');
 
@@ -170,12 +137,9 @@ describe('database()...snapshot', () => {
     callback.should.be.calledOnce();
   });
 
-  it('forEach works with arrays and cancels when returning true', async () => {
+  it('forEach works with arrays and cancels when returning true', async function () {
     const callback = sinon.spy();
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types');
+    const ref = firebase.database().ref(TEST_PATH).child('types');
 
     const snapshot = await ref.once('value');
 
@@ -189,12 +153,9 @@ describe('database()...snapshot', () => {
     callback.should.be.calledOnce();
   });
 
-  it('forEach returns false when no child keys', async () => {
+  it('forEach returns false when no child keys', async function () {
     const callback = sinon.spy();
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/boolean');
+    const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
 
     const snapshot = await ref.once('value');
 
@@ -206,12 +167,9 @@ describe('database()...snapshot', () => {
     callback.should.be.callCount(0);
   });
 
-  it('forEach cancels iteration when returning true', async () => {
+  it('forEach cancels iteration when returning true', async function () {
     const callback = sinon.spy();
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/array');
+    const ref = firebase.database().ref(TEST_PATH).child('types/array');
 
     const snapshot = await ref.orderByValue().once('value');
 
@@ -225,11 +183,8 @@ describe('database()...snapshot', () => {
     callback.getCall(0).args[0].should.equal(0);
   });
 
-  it('getPriority returns the correct value', async () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('getPriority');
+  it('getPriority returns the correct value', async function () {
+    const ref = firebase.database().ref(TEST_PATH).child('getPriority');
 
     await ref.setWithPriority('foo', 'bar');
     const snapshot = await ref.once('value');
@@ -237,11 +192,8 @@ describe('database()...snapshot', () => {
     snapshot.getPriority().should.equal('bar');
   });
 
-  it('hasChild throws if path is not a string value', async () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .child('types/boolean');
+  it('hasChild throws if path is not a string value', async function () {
+    const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
 
     const snapshot = await ref.once('value');
 
@@ -252,7 +204,7 @@ describe('database()...snapshot', () => {
     }
   });
 
-  it('hasChild returns the correct boolean value', async () => {
+  it('hasChild returns the correct boolean value', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const snapshot1 = await ref.child('types/boolean').once('value');
@@ -262,13 +214,13 @@ describe('database()...snapshot', () => {
     snapshot2.hasChild('boolean').should.equal(true);
   });
 
-  it('hasChildren returns the correct boolean value', async () => {
+  it('hasChildren returns the correct boolean value', async function () {
     const ref = firebase.database().ref(TEST_PATH);
     const snapshot = await ref.child('types/object').once('value');
     snapshot.hasChildren().should.equal(true);
   });
 
-  it('numChildren returns the correct number value', async () => {
+  it('numChildren returns the correct number value', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const snapshot1 = await ref.child('types/boolean').once('value');
@@ -280,7 +232,7 @@ describe('database()...snapshot', () => {
     snapshot3.numChildren().should.equal(Object.keys(CONTENT.TYPES.object).length);
   });
 
-  it('toJSON returns the value of the snapshot', async () => {
+  it('toJSON returns the value of the snapshot', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const snapshot1 = await ref.child('types/string').once('value');
@@ -290,7 +242,7 @@ describe('database()...snapshot', () => {
     snapshot2.toJSON().should.eql(jet.contextify(CONTENT.TYPES.object));
   });
 
-  it('val returns the value of the snapshot', async () => {
+  it('val returns the value of the snapshot', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const snapshot1 = await ref.child('types/string').once('value');

@@ -52,7 +52,8 @@ function Root() {
       testID="welcome"
       style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
     >
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>Testing App</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
     </View>
   );
 }

@@ -18,7 +18,7 @@
 import React from 'react';
 import { Link } from './Link';
 
-function Footer() {
+function Footer(): JSX.Element {
   return (
     <footer className="relative z-10 bg-gray-900 text-white font-hairline py-24">
       <div className="mx-auto grid grid-cols-3 gap-4" style={{ maxWidth: 800 }}>

@@ -25,7 +25,7 @@ interface Props {
   size?: 'lg' | 'base' | 'sm';
 }
 
-function Tag({ background, foreground, children, size = 'base' }: Props) {
+function Tag({ background, foreground, children, size = 'base' }: Props): JSX.Element {
   return (
     <div
       className={cx('inline-block rounded opacity-75 font-thin', {

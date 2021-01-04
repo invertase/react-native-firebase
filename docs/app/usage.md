@@ -2,7 +2,7 @@
 title: Core/App
 description: Functionality & examples of using the Core/App dependency with React Native Firebase.
 icon: //static.invertase.io/assets/social/firebase-logo.png
-next: /app/utils
+next: /app/json-config
 previous: /storage/usage
 ---
 

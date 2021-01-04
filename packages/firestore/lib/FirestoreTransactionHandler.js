@@ -158,10 +158,7 @@ export default class FirestoreTransactionHandler {
     const meta = {
       id,
       updateFunction,
-      stack: new Error().stack
-        .split('\n')
-        .slice(2)
-        .join('\n'),
+      stack: new Error().stack.split('\n').slice(2).join('\n'),
     };
 
     this._pending[id] = {

@@ -268,6 +268,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
@@ -278,12 +279,6 @@ declare module '@react-native-firebase/app' {
     }
     interface FirebaseApp {
       crashlytics(): FirebaseCrashlyticsTypes.Module;
-    }
-
-    interface FirebaseJsonConfig {
-      crashlytics_ndk_enabled: boolean;
-      crashlytics_debug_enabled: boolean;
-      crashlytics_auto_collection_enabled: boolean;
     }
   }
 }
