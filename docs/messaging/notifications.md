@@ -19,7 +19,7 @@ property to be attached to a message.
 
 If an incoming message with this property exists, and the app is not currently visible (quit or in the background),
 a notification is displayed on the device. However, if the application is in the foreground, an event will be delivered
-containing the notification data and no visible notification will be displayed. See the [Usage](/messaging) documentation
+containing the notification data and no visible notification will be displayed. See the [Usage](/messaging/usage) documentation
 to learn more about handling events.
 
 ## Via Firebase Console
