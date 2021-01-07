@@ -19,7 +19,7 @@ property to be attached to a message.
 
 If an incoming message with this property exists, and the app is not currently visible (quit or in the background),
 a notification is displayed on the device. However, if the application is in the foreground, an event will be delivered
-containing the notification data and no visible notification will be displayed. See the [Usage](/messaging) documentation
+containing the notification data and no visible notification will be displayed. See the [Usage](/messaging/usage) documentation
 to learn more about handling events.
 
 ## Via Firebase Console
@@ -62,7 +62,7 @@ await admin.messaging().sendMulticast({
 
 The Cloud Messaging module will intercept these messages and if the `notification` property is available, it will display
 a notification on the device (if the app is not in the foreground). Messages sent with both a `notification` and `data` property
-will display a notification and also trigger the `onMessage` handlers (see [Usage](/messaging)).
+will display a notification and also trigger the `onMessage` handlers (see [Usage](/messaging/usage)).
 
 The different Admin SDKs available have similar implementation details on how to add a custom `notification` property to
 the FCM payload, however the Cloud Messaging module will handle all requests. To learn more, view the
