@@ -149,7 +149,7 @@ by default. To enable this functionality, you must set the "priority" to `high` 
 
 The `data` property can send an object of key-value pairs totaling `4KB` as string values (hence the `JSON.stringify`).
 
-Back within our application, as explained in the [Usage](/messaging) documentation, our message handlers will receive a
+Back within our application, as explained in the [Usage](/messaging/usage) documentation, our message handlers will receive a
 [`RemoteMessage`](/reference/messaging/remotemessage) payload containing the message details sent from the server:
 
 ```jsx

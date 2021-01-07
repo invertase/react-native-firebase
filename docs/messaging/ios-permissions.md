@@ -17,7 +17,7 @@ If the user declines the request, you cannot re-request permission, trying to re
 
 ## Requesting permissions
 
-As explained in the [Usage](/messaging#ios---requesting-permissions) documentation, permission
+As explained in the [Usage](/messaging/usage#ios---requesting-permissions) documentation, permission
 must be requested from your users in order to display remote notifications from FCM, via the
 `requestPermission` API:
 
