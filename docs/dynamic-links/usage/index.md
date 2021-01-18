@@ -139,8 +139,10 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 2. Test the domain you created in your Firebase console (first step in `Firebase Setup`). Go to the following location in your browser `[your-domain]/.well-known/assetlinks.json`. The response will have a `target` object containing a `package_name` which ought to have your app's package name. Please
    do not proceed until you see this, it may take a while to register.
+   
+3. Add your domains to the android/app/src/main/AndroidManifest.xml so that your app knows what links to open in the app. Refer to [the official docs](https://firebase.google.com/docs/dynamic-links/android/receive#add-an-intent-filter-for-deep-links) for example code.
 
-3. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emulator).
+4. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emulator).
 
 ## Create a Link
 
