@@ -22,7 +22,7 @@
     "auth"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "10.4.0"
+    "@react-native-firebase/app": "10.5.0"
   },
   "publishConfig": {
     "access": "public"
