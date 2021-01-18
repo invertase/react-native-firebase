@@ -74,7 +74,7 @@ def firebaseJSONAdmobDelayAppMeasurementInitBool = false
 
 if (rootProject.ext.firebaseJson) {
   firebaseJSONAdmobAppIDString = rootProject.ext.firebaseJson.getStringValue("admob_android_app_id", "")
-  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init")
+  firebaseJSONAdmobDelayAppMeasurementInitBool = rootProject.ext.firebaseJson.isFlagEnabled("admob_delay_app_measurement_init", false)
 }
 
 if (!firebaseJSONAdmobAppIDString) {
