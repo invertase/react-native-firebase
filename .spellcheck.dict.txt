@@ -116,6 +116,7 @@ SDKs.
 SHA1
 SHA-256
 SMS
+src
 SVG
 TestLab
 TFUA
