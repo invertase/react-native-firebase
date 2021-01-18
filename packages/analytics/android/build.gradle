@@ -68,7 +68,7 @@ apply from: file("./../../app/android/firebase-json.gradle")
 def autoCollectionEnabled = "true"
 
 if (rootProject.ext && rootProject.ext.firebaseJson) {
-  if (rootProject.ext.firebaseJson.isFlagEnabled("analytics_auto_collection_enabled") == false) {
+  if (rootProject.ext.firebaseJson.isFlagEnabled("analytics_auto_collection_enabled", true) == false) {
     autoCollectionEnabled = "false"
   }
 }
