@@ -51,22 +51,17 @@ public class ReactNativeFirebaseAdMobCommon {
 
       DisplayMetrics outMetrics = new DisplayMetrics();
       display.getMetrics(outMetrics);
-
-      float widthPixels = outMetrics.widthPixels;
-      float density = outMetrics.density;
-
-      int adWidth = (int) (widthPixels / density);
+      int adWidth = (int) (outMetrics.widthPixels / outMetrics.density);
 
       return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(reactViewGroup.getContext(), adWidth);
     } catch (Exception e) {
       return AdSize.BANNER;
     }
-
   }
 
   static AdSize getAdSize(String preDefinedAdSize, ReactViewGroup reactViewGroup) {
-    if (preDefinedAdSize.equals("ADAPTIVE_BANNER")) {
-      return getAdSizeForAdaptiveBanner(reactViewGroup);
+    if ("ADAPTIVE_BANNER".equals(preDefinedAdSize)) {
+      return ReactNativeFirebaseAdMobCommon.getAdSizeForAdaptiveBanner(reactViewGroup);
     } else {
       return ReactNativeFirebaseAdMobCommon.stringToAdSize(preDefinedAdSize);
     }
