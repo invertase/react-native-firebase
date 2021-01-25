@@ -17,6 +17,10 @@ end-user consent prior to using the Firebase Authentication phone number sign-in
 
 Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
+# iOS Setup
+
+Ensure that all steps in https://firebase.google.com/docs/auth/ios/phone-auth have been followed, particularly the custom URL scheme. See https://github.com/invertase/react-native-firebase/issues/557 for more information.
+
 # Sign-in
 
 The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the
