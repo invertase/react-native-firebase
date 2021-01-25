@@ -40,8 +40,27 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private static final String SHORT_LINK_TYPE_UNGUESSABLE = "UNGUESSABLE";
 
   private String initialLinkUrl = null;
-  private boolean gotInitialLink = false;
   private int initialLinkMinimumVersion = 0;
+
+  /**
+   * Ensures calls to getInitialLink only tries to retrieve the link from getDynamicLink once.
+   */
+  private boolean gotInitialLink = false;
+  /**
+   * Used by getInitialLink to check if the activity has been resumed.
+   * "host" refers to the host activity, in terms of {@link LifeCycleEventListener#onHostResume()}
+   */
+  private boolean hostResumed = false;
+  /**
+   * Used by getInitialLink to check the current activity's intent flags to verify that the app
+   * hasn't been resumed from the Overview (history) screen.
+   */
+  private boolean launchedFromHistory = false;
+  /**
+   * Holds the Promise that was passed to getInitialLink
+   * if getInitialLink was called before {@link com.facebook.react.common.LifecycleState#RESUMED} Lifecycle state.
+   */
+  private Promise initialPromise = null;
 
   ReactNativeFirebaseDynamicLinksModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -106,25 +125,38 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @ReactMethod
   public void getInitialLink(Promise promise) {
+    // Check if getDynamicLink() has already completed successfully.
+    // This ensures the initial link is returned once, if found.
     if (gotInitialLink) {
-      if (initialLinkUrl != null) {
-        promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
-      } else {
-        promise.resolve(null);
-      }
+      promise.resolve(null);
+      return;
+    }
 
+    // Check for the case where getInitialLink
+    // runs before the LifeCycleState is RESUMED (e.g. BEFORE_CREATE or BEFORE_RESUME).
+    if (!hostResumed) {
+      // Use initialPromise to store the Promise that was passed and
+      // run it when LifeCycleState changes to RESUMED in onHostResume.
+      initialPromise = promise;
       return;
     }
 
     Activity currentActivity = getCurrentActivity();
+    // Shouldn't happen anymore, left as a guard.
     if (currentActivity == null) {
       promise.resolve(null);
       return;
     }
 
-    FirebaseDynamicLinks.getInstance().getDynamicLink(currentActivity.getIntent())
+    Intent currentIntent = currentActivity.getIntent();
+    // Verify if the app was resumed from the Overview (history) screen.
+    launchedFromHistory = (currentIntent != null) && ((currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0);
+
+    FirebaseDynamicLinks.getInstance().getDynamicLink(currentIntent)
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
+          // Flag that the getDynamicLink() completed successfully,
+          // preventing future calls to from receiving the link, as if the link had been cleared.
           gotInitialLink = true;
           PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
 
@@ -133,7 +165,9 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
             initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
           }
 
-          if (initialLinkUrl != null) {
+          // Guard against the scenario where the app was launched using a dynamic link,
+          // then, the app was backgrounded using the Back button, and resumed from the Overview (screen).
+          if (initialLinkUrl != null && !launchedFromHistory) {
             promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
           } else {
             promise.resolve(null);
@@ -371,6 +405,9 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
     initialLinkUrl = null;
     gotInitialLink = false;
     initialLinkMinimumVersion = 0;
+    launchedFromHistory = false;
+    initialPromise = null;
+    hostResumed = false;
   }
 
   @Override
@@ -397,9 +434,21 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @Override
   public void onHostResume() {
+    // Flag state is resumed.
+    hostResumed = true;
+    // Check if getInitialLink was called before LifeCycleState was RESUMED
+    // and there's a pending Promise.
+    if (initialPromise != null) {
+      // Call getInitialLink getInitialLink with the Promise that was passed in the original call.
+      getInitialLink(initialPromise);
+      // Clear the Promise
+      initialPromise = null;
+    }
   }
 
   @Override
   public void onHostPause() {
+    // Flag state is not resumed.
+    hostResumed = false;
   }
 }
