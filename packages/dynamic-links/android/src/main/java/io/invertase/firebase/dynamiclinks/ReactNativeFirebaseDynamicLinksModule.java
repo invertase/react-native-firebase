@@ -47,8 +47,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
    */
   private boolean gotInitialLink = false;
   /**
-   *  Used by getInitialLink to check if the activity has been resumed.
-   * "host" here refers to the host activity.
+   * Used by getInitialLink to check if the activity has been resumed.
+   * "host" refers to the host activity, in terms of {@link LifeCycleEventListener#onHostResume()}
    */
   private boolean hostResumed = false;
   /**
@@ -134,7 +134,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
     // Check for the case where getInitialLink
     // runs before the LifeCycleState is RESUMED (e.g. BEFORE_CREATE or BEFORE_RESUME).
-    if(!hostResumed) {
+    if (!hostResumed) {
       // Use initialPromise to store the Promise that was passed and
       // run it when LifeCycleState changes to RESUMED in onHostResume.
       initialPromise = promise;
@@ -150,7 +150,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
     Intent currentIntent = currentActivity.getIntent();
     // Verify if the app was resumed from the Overview (history) screen.
-    launchedFromHistory = currentIntent != null && (currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0;
+    launchedFromHistory = (currentIntent != null) && ((currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0);
 
     FirebaseDynamicLinks.getInstance().getDynamicLink(currentIntent)
       .addOnCompleteListener(task -> {
@@ -438,7 +438,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
     hostResumed = true;
     // Check if getInitialLink was called before LifeCycleState was RESUMED
     // and there's a pending Promise.
-    if(initialPromise != null) {
+    if (initialPromise != null) {
       // Call getInitialLink getInitialLink with the Promise that was passed in the original call.
       getInitialLink(initialPromise);
       // Clear the Promise
