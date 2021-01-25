@@ -11,6 +11,7 @@ async
 auth
 Auth
 authenticator
+AuthSettings
 autolinking
 Autolinking
 AVD
@@ -101,6 +102,7 @@ react-native-firebase
 react-native-mlkit
 realtime
 Realtime
+reCAPTCHA
 remarketing
 RN60
 RN61
