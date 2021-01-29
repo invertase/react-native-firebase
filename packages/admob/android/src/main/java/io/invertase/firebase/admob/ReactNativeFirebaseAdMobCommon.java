@@ -20,10 +20,15 @@ package io.invertase.firebase.admob;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.views.view.ReactViewGroup;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -38,6 +43,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReactNativeFirebaseAdMobCommon {
+
+  static AdSize getAdSizeForAdaptiveBanner(ReactViewGroup reactViewGroup) {
+
+    try {
+      Display display = Objects.requireNonNull(((ReactContext) reactViewGroup.getContext()).getCurrentActivity()).getWindowManager().getDefaultDisplay();
+
+      DisplayMetrics outMetrics = new DisplayMetrics();
+      display.getMetrics(outMetrics);
+      int adWidth = (int) (outMetrics.widthPixels / outMetrics.density);
+
+      return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(reactViewGroup.getContext(), adWidth);
+    } catch (Exception e) {
+      return AdSize.BANNER;
+    }
+  }
+
+  static AdSize getAdSize(String preDefinedAdSize, ReactViewGroup reactViewGroup) {
+    if ("ADAPTIVE_BANNER".equals(preDefinedAdSize)) {
+      return ReactNativeFirebaseAdMobCommon.getAdSizeForAdaptiveBanner(reactViewGroup);
+    } else {
+      return ReactNativeFirebaseAdMobCommon.stringToAdSize(preDefinedAdSize);
+    }
+  }
 
   static AdSize stringToAdSize(String value) {
     Pattern pattern = Pattern.compile("([0-9]+)x([0-9]+)");
