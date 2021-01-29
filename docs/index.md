@@ -138,7 +138,7 @@ cd ..
 npx react-native run-ios
 ```
 
-Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services; each of the modules for the individual Firebase services need installing separately.
+Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services, each of the modules for the individual Firebase services need installing separately.
 
 #### Manual Linking
 
