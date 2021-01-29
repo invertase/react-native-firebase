@@ -58,7 +58,7 @@ public class ReactNativeFirebaseAdMobCommon {
       int adWidth = (int) (widthPixels / density);
 
       return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(reactViewGroup.getContext(), adWidth);
-    }catch (Exception e){
+    } catch (Exception e) {
       return AdSize.BANNER;
     }
 
