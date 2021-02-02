@@ -1,8 +1,8 @@
 platform :ios, '10.0'
 $RNFirebaseAsStaticFramework = false
 
-# Version override testing
-$FirebaseSDKVersion = '7.4.0'
+# Version override - uncomment to test, otherwise take value from `@react-native-firebase/app`
+#$FirebaseSDKVersion = '7.5.0'
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -12,7 +12,7 @@ target 'testing' do
 
   config = use_native_modules!
   use_react_native!(:path => config["reactNativePath"])
-  #pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 end
 
 post_install do |installer|
