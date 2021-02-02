@@ -11,6 +11,8 @@ previous: /database/presence-detection
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
 [Getting Started](/) documentation.
 
+This module also requires that the `@react-native-firebase/analytics` module is already setup and installed. To install the "analytics" module, view it's [Getting Started](/analytics/usage) documentation.
+
 ```bash
 # Install & setup the app module
 yarn add @react-native-firebase/app
