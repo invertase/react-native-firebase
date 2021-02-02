@@ -27,7 +27,8 @@
     "inAppMessaging"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "10.5.0"
+    "@react-native-firebase/app": "10.5.0",
+    "@react-native-firebase/analytics": "10.5.1"
   },
   "publishConfig": {
     "access": "public"
