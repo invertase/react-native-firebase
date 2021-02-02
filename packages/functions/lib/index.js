@@ -96,9 +96,17 @@ class FirebaseFunctionsModule extends FirebaseModule {
     if (isAndroid && _origin) {
       if (_origin.startsWith('http://localhost')) {
         _origin = _origin.replace('http://localhost', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping functions host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
       }
       if (_origin.startsWith('http://127.0.0.1')) {
         _origin = _origin.replace('http://127.0.0.1', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping functions host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
       }
     }
     this._useFunctionsEmulatorOrigin = _origin || null;

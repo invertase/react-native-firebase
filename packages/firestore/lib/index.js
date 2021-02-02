@@ -227,9 +227,17 @@ class FirebaseFirestoreModule extends FirebaseModule {
       if (isAndroid) {
         if (settings.host.startsWith('localhost')) {
           settings.host = settings.host.replace('localhost', '10.0.2.2');
+          // eslint-disable-next-line no-console
+          console.log(
+            'Mapping firestore host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          );
         }
         if (settings.host.startsWith('127.0.0.1')) {
           settings.host = settings.host.replace('127.0.0.1', '10.0.2.2');
+          // eslint-disable-next-line no-console
+          console.log(
+            'Mapping firestore host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          );
         }
       }
     }

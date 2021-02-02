@@ -15,7 +15,13 @@
  *
  */
 
-import { isAndroid, isBoolean, isString, isNull } from '@react-native-firebase/app/lib/common';
+import {
+  isAndroid,
+  isBoolean,
+  isString,
+  isNull,
+  isValidUrl,
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -336,17 +342,25 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   useEmulator(url) {
-    if (!url || !isString(url) || url === '') {
-      throw new Error('firebase.auth().useEmulator() takes a non-empty string');
+    if (!url || !isString(url) || !isValidUrl(url)) {
+      throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
     }
 
     let _url = url;
     if (isAndroid && _url) {
       if (_url.startsWith('http://localhost')) {
         _url = _url.replace('http://localhost', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping auth host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
       }
       if (_url.startsWith('http://127.0.0.1')) {
         _url = _url.replace('http://127.0.0.1', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping auth host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
       }
     }
 
@@ -354,7 +368,7 @@ class FirebaseAuthModule extends FirebaseModule {
     const hostPortRegex = /^http:\/\/([\w\d.]+):(\d+)$/;
     const urlMatches = _url.match(hostPortRegex);
     if (!urlMatches) {
-      throw new Error('firebase.auth().useEmulator() unable to parse host and port from url');
+      throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
     }
     const host = urlMatches[1];
     const port = parseInt(urlMatches[2], 10);
