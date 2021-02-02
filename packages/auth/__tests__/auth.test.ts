@@ -27,11 +27,11 @@ describe('Auth', function () {
     it('useEmulator requires a well-formed url', function () {
       // No http://
       expect(() => auth().useEmulator('localhost:9099')).toThrow(
-        'firebase.auth().useEmulator() unable to parse host and port from url',
+        'firebase.auth().useEmulator() takes a non-empty string URL',
       );
       // No port
       expect(() => auth().useEmulator('http://localhost')).toThrow(
-        'firebase.auth().useEmulator() unable to parse host and port from url',
+        'firebase.auth().useEmulator() unable to parse host and port from URL',
       );
     });
 

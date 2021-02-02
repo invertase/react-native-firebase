@@ -339,8 +339,7 @@ export namespace FirebaseFunctionsTypes {
     httpsCallable(name: string, options?: HttpsCallableOptions): HttpsCallable;
 
     /**
-     * Changes this instance to point to a Cloud Functions emulator running
-     * locally.
+     * Changes this instance to point to a Cloud Functions emulator running locally.
      *
      * See https://firebase.google.com/docs/functions/local-emulator
      *
@@ -348,12 +347,16 @@ export namespace FirebaseFunctionsTypes {
      *
      * ```js
      * if (__DEV__) {
-     *   firebase.functions().useFunctionsEmulator('http://10.0.0.8:1337');
+     *   firebase.functions().useFunctionsEmulator('http://localhost:5001');
      * }
      * ```
      *
-     * @param origin The origin string of the local emulator started via firebase tools
-     * "http://10.0.0.8:1337".
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
+     *
+     * @param origin url of the local emulator started via firebase tools "http://localhost:5001"
      */
     useFunctionsEmulator(origin: string): void;
   }

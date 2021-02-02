@@ -1407,6 +1407,11 @@ export namespace FirebaseFirestoreTypes {
 
     /**
      * The hostname to connect to.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
      */
     host: string;
 
