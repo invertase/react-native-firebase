@@ -1,6 +1,9 @@
 {
   "npmClient": "yarn",
-  "packages": ["packages/*", "tests"],
+  "packages": [
+    "packages/*",
+    "tests"
+  ],
   "useWorkspaces": true,
   "command": {
     "version": {
@@ -11,6 +14,11 @@
       "message": "chore(release): release packages"
     }
   },
-  "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
-  "version": "10.5.1"
+  "ignoreChanges": [
+    "**/docs/**",
+    "**/.github/**",
+    "**/e2e/**",
+    "**/tests/**"
+  ],
+  "version": "10.6.0"
 }
