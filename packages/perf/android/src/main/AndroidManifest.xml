@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.invertase.firebase.perf" />
+
+<manifest package="io.invertase.firebase.perf"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <application>
+    <meta-data
+        android:name="firebase_performance_collection_enabled"
+        android:value="${firebaseJsonAutoCollectionEnabled}" />
+  </application>
+</manifest>
