@@ -40,7 +40,8 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm whoami
           git diff --exit-code
-          yarn lerna version --yes
+          yarn lerna changed
+          yarn lerna version --yes --force-publish @react-native-firebase/app
           yarn lerna publish from-package --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
