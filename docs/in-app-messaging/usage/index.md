@@ -24,6 +24,8 @@ yarn add @react-native-firebase/in-app-messaging
 cd ios/ && pod install
 ```
 
+Note: in-app-messaging requires a minimum android gradle plugin version of 3.5.4 to compile or you will see `AAPT` errors regarding unexpected XML with `<queries>` elements. However, `react-native@0.63.4` still ships with a default of 3.5.3. If you have not already, you must update the line `classpath("com.android.tools.build:gradle:3.5.3")`in `android/build.gradle` to a minimum of `3.5.4` for android builds to work.
+
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/in-app-messaging/usage/installation/ios) and [Android](/in-app-messaging/usage/installation/android).
 

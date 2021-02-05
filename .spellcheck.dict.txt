@@ -50,6 +50,7 @@ Firestore
 GDPR
 globals
 Gradle
+gradle
 Hesp
 Homebrew
 HTTP
