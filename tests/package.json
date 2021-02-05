@@ -1,15 +1,15 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "10.6.1",
+  "version": "10.6.2",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/admob": "10.6.1",
+    "@react-native-firebase/admob": "10.6.2",
     "@react-native-firebase/analytics": "10.6.1",
-    "@react-native-firebase/app": "10.6.1",
+    "@react-native-firebase/app": "10.6.2",
     "@react-native-firebase/app-types": "6.7.2",
     "@react-native-firebase/auth": "10.6.1",
     "@react-native-firebase/crashlytics": "10.6.1",
