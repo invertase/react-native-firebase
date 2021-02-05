@@ -41,7 +41,7 @@ jobs:
           npm whoami
           git diff --exit-code
           yarn lerna changed
-          yarn lerna version --yes --force-publish @react-native-firebase/app
+          yarn lerna version --yes --force-publish=*
           yarn lerna publish from-package --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
