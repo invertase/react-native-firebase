@@ -51,8 +51,8 @@ describe('auth().currentUser', function () {
   });
 
   describe('getIdTokenResult()', function () {
-    it("should return a valid IdTokenResult Object", async function() {
-      const random = Utils.randString(12, "#aA");
+    it('should return a valid IdTokenResult Object', async function () {
+      const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -65,9 +65,9 @@ describe('auth().currentUser', function () {
       tokenResult.issuedAtTime.should.be.a.String();
       tokenResult.expirationTime.should.be.a.String();
 
-      new Date(tokenResult.authTime).toString().should.not.equal("Invalid Date");
-      new Date(tokenResult.issuedAtTime).toString().should.not.equal("Invalid Date");
-      new Date(tokenResult.expirationTime).toString().should.not.equal("Invalid Date");
+      new Date(tokenResult.authTime).toString().should.not.equal('Invalid Date');
+      new Date(tokenResult.issuedAtTime).toString().should.not.equal('Invalid Date');
+      new Date(tokenResult.expirationTime).toString().should.not.equal('Invalid Date');
 
       tokenResult.claims.should.be.a.Object();
       tokenResult.claims.iat.should.be.a.Number();
@@ -77,7 +77,7 @@ describe('auth().currentUser', function () {
       new Date(tokenResult.issuedAtTime).getTime().should.equal(tokenResult.claims.iat * 1000);
       new Date(tokenResult.expirationTime).getTime().should.equal(tokenResult.claims.exp * 1000);
 
-      tokenResult.signInProvider.should.equal("password");
+      tokenResult.signInProvider.should.equal('password');
       tokenResult.token.length.should.be.greaterThan(24);
 
       // Clean up
