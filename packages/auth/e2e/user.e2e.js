@@ -71,7 +71,11 @@ describe('auth().currentUser', function () {
 
       tokenResult.claims.should.be.a.Object();
       tokenResult.claims.iat.should.be.a.Number();
+      tokenResult.claims.exp.should.be.a.Number();
       tokenResult.claims.iss.should.be.a.String();
+
+      new Date(tokenResult.issuedAtTime).getTime().should.equal(tokenResult.claims.iat * 1000);
+      new Date(tokenResult.expirationTime).getTime().should.equal(tokenResult.claims.exp * 1000);
 
       tokenResult.signInProvider.should.equal('password');
       tokenResult.token.length.should.be.greaterThan(24);
