@@ -281,7 +281,7 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: cd tests/ios && pod install
+          command: yarn tests:ios:pod:install
 
       - name: Build iOS App
         run: |
