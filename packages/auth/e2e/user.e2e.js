@@ -51,7 +51,7 @@ describe('auth().currentUser', function () {
   });
 
   describe('getIdTokenResult()', function () {
-    it.only("should return a valid IdTokenResult Object", async function() {
+    it("should return a valid IdTokenResult Object", async function() {
       const random = Utils.randString(12, "#aA");
       const email = `${random}@${random}.com`;
 
