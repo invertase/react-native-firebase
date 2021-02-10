@@ -77,7 +77,7 @@ export const setGlobalErrorHandler = once(nativeModule => {
 
     if (nativeModule.isErrorGenerationOnJSCrashEnabled) {
       try {
-        const stackFrames = await StackTrace.fromError(error, {offline: true});
+        const stackFrames = await StackTrace.fromError(error, { offline: true });
         await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
       } catch (_) {
         // do nothing
