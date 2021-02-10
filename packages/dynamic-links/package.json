@@ -23,7 +23,6 @@
     "dynamic link"
   ],
   "peerDependencies": {
-    "@react-native-firebase/analytics": "10.7.0",
     "@react-native-firebase/app": "10.7.0"
   },
   "publishConfig": {
