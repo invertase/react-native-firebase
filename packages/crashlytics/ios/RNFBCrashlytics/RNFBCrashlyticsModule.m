@@ -32,6 +32,7 @@ RCT_EXPORT_MODULE();
 - (NSDictionary *)constantsToExport {
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isCrashlyticsCollectionEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled])]);
+  constants[@"isErrorGenerationOnJSCrashEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isErrorGenerationOnJSCrashEnabled])]);
   return constants;
 }
 
