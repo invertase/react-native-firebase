@@ -25,6 +25,7 @@
 
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";
 NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_collection_enabled";
+NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED = @"crashlytics_is_error_generation_on_js_crash_enabled";
 
 @implementation RNFBCrashlyticsInitProvider
 
@@ -48,6 +49,26 @@ NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_col
   }
 
   DLog(@"isCrashlyticsCollectionEnabled: %d", enabled);
+
+  return enabled;
+}
+
++ (BOOL)isErrorGenerationOnJSCrashEnabled {
+  BOOL enabled;
+
+  if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED]) {
+    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    DLog(@"isErrorGenerationOnJSCrashEnabled via RNFBPreferences: %d", enabled);
+  } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED]) {
+    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    DLog(@"isErrorGenerationOnJSCrashEnabled via RNFBJSON: %d", enabled);
+  } else {
+    // Note that if we're here, and the key is not set on the app's bundle, we default to "YES"
+    enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    DLog(@"isErrorGenerationOnJSCrashEnabled via RNFBMeta: %d", enabled);
+  }
+
+  DLog(@"isErrorGenerationOnJSCrashEnabled: %d", enabled);
 
   return enabled;
 }

@@ -220,3 +220,16 @@ React Native. You can disable Crashlytics NDK in your `firebase.json` config.
   }
 }
 ```
+
+## Crashlytics additional non-fatal issue generation
+
+React Native Crashlytics module is generating additional non-fatal issues on JavaScript exceptions by default. Sometimes it is not desirable behavior since it might duplicate issues and hide original exceptions logs. You can disable this behavior by setting appropriate option to false:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "crashlytics_is_error_generation_on_js_crash_enabled": false
+  }
+}
+```

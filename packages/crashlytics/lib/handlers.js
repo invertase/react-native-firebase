@@ -75,11 +75,13 @@ export const setGlobalErrorHandler = once(nativeModule => {
       return originalHandler(error, fatal);
     }
 
-    try {
-      const stackFrames = await StackTrace.fromError(error, { offline: true });
-      await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
-    } catch (_) {
-      // do nothing
+    if (nativeModule.isErrorGenerationOnJSCrashEnabled) {
+      try {
+        const stackFrames = await StackTrace.fromError(error, { offline: true });
+        await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
+      } catch (_) {
+        // do nothing
+      }
     }
     return originalHandler(error, fatal);
   }
