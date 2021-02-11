@@ -22,6 +22,8 @@
 
 + (BOOL)isCrashlyticsCollectionEnabled;
 
++ (BOOL)isErrorGenerationOnJSCrashEnabled;
+
 /// Returns one or more FIRComponents that will be registered in
 /// FIRApp and participate in dependency resolution and injection.
 + (NSArray<FIRComponent *> *)componentsToRegister;
