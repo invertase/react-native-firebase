@@ -203,7 +203,7 @@ The [`google-signin`](https://github.com/react-native-community/react-native-goo
 allowing you to create a credential and sign-in to Firebase.
 
 Most configuration is already setup when using Google Sign-In with Firebase, however you need to ensure your machines
-SHA1 key has been configured for use with Android. You can see view how to generate the key on the [Getting Started](/)
+SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/)
 documentation.
 
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
