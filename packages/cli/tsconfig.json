@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "types": ["node"],
+    "target": "ES2018",
+    "module": "commonjs",
+    "lib": ["esnext"],
+    "allowJs": true,
+    "jsx": "react-native",
+    "declaration": false,
+    "sourceMap": true,
+    "listEmittedFiles": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "removeComments": false,
+    "isolatedModules": false,
+    "strict": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src"]
+}

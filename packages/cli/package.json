@@ -1,0 +1,69 @@
+{
+  "name": "@react-native-firebase/cli",
+  "version": "6.3.4",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase CLI",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/cli"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-firebase",
+    "firebase",
+    "cli"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "build:clean": "rimraf dist",
+    "build:watch": "tsc --watch",
+    "prepare": "yarn run build",
+    "prepublishOnly": "yarn run build:clean && yarn run build",
+    "update-plugin-versions": "node scripts/update-plugin-versions",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --fix"
+  },
+  "dependencies": {
+    "@react-native-community/cli": "^4.10.0",
+    "@react-native-community/cli-tools": "^4.2.2",
+    "@types/configstore": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
+    "a2a": "^0.2.0",
+    "axios": "^0.19.2",
+    "boxen": "^4.2.0",
+    "chalk": "^3.0.0",
+    "configstore": "^5.0.1",
+    "enquirer": "^2.3.4",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-prettier": "^3.2.0",
+    "google-auth-library": "^5.10.1",
+    "gradle-to-js": "^2.0.0",
+    "is-git-dirty": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "open": "^7.0.4",
+    "ora": "^4.0.3",
+    "portfinder": "^1.0.25",
+    "prettier": "^2.2.1",
+    "xcode": "^3.0.1"
+  },
+  "devDependencies": {
+    "@react-native-community/cli-types": "^4.3.0",
+    "@types/jsonwebtoken": "^8.3.8",
+    "@types/lodash": "^4.14.152",
+    "@types/node-fetch": "^2.5.7",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.9.3"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/react-native-firebase"
+  },
+  "gitHead": "93c6b38f6d5e8f015aab585d7d4c18674f4a63cd",
+  "publishConfig": {
+    "access": "public"
+  }
+}

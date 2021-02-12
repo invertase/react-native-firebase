@@ -10,12 +10,23 @@
     "crashlytics_auto_collection_enabled": true,
     "crashlytics_is_error_generation_on_js_crash_enabled": true,
 
+    "ml_natural_language_language_id_model": true,
+
+    "ml_vision_face_model": true,
+    "ml_vision_ocr_model": true,
+    "ml_vision_barcode_model": true,
+
     "messaging_auto_init_enabled": true,
     "messaging_android_headless_task_timeout": 30000,
     "messaging_android_notification_channel_id": "",
     "messaging_android_notification_color": "@color/hotpink",
     "messaging_ios_auto_register_for_remote_messages": true,
 
+    "ml_vision_label_model": true,
+    "ml_vision_image_label_model": true,
+
+    "TODO_ml_natural_language_translate_model": true,
+    "TODO_analytics_auto_collection_enabled": true,
     "analytics_auto_collection_enabled": true,
 
     "perf_auto_collection_enabled": true,

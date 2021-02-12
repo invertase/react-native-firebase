@@ -28,7 +28,8 @@
     "react-native": "0.63.4"
   },
   "devDependencies": {
-    "@react-native-firebase/private-tests-helpers": "0.0.13",
+    "@react-native-firebase/private-tests-helpers": "^0.0.13",
+    "@types/configstore": "^4.0.0",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "17.14.6",
