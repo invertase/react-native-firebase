@@ -26,7 +26,7 @@ jobs:
   android:
     name: Android
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 70
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
@@ -87,7 +87,7 @@ jobs:
       - name: Build Android App
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
           command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
@@ -203,7 +203,7 @@ jobs:
     name: iOS
     runs-on: macos-latest
     # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
-    timeout-minutes: 50
+    timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -318,7 +318,7 @@ jobs:
         run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
-        timeout-minutes: 30
+        timeout-minutes: 40
         run: |
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --debug-synchronization 200 --configuration ios.ci --cleanup
