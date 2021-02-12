@@ -105,7 +105,16 @@ dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+  implementation("androidx.annotation:annotation:${rootProject.ext.androidxAnnotationVersion}")
+  implementation("androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}")
+  implementation("androidx.core:core:${rootProject.ext.supportLibVersion}")
+  implementation("androidx.fragment:fragment:${rootProject.ext.fragmentVersion}")
+  implementation("androidx.legacy:legacy-support-core-ui:${rootProject.ext.supportV4Version}")
+  implementation("androidx.legacy:legacy-support-core-utils:${rootProject.ext.supportV4Version}")
+  implementation("androidx.swiperefreshlayout:swiperefreshlayout:${rootProject.ext.swiperefreshlayoutVersion}")
+  implementation("androidx.vectordrawable:vectordrawable-animated:${rootProject.ext.vectordrawableVersion}")
+  implementation("androidx.vectordrawable:vectordrawable:${rootProject.ext.vectordrawableVersion}")
 
   // JSC from node_modules
   implementation jscFlavor
