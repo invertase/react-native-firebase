@@ -50,6 +50,12 @@ jobs:
           max_attempts: 3
           command: npm i -g firebase-tools
 
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1
+
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
@@ -228,6 +234,12 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: npm i -g firebase-tools
+
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
