@@ -49,6 +49,7 @@
     "@types/react-native": "^0.63.48",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
+    "babel-jest": "^26.6.3",
     "codecov": "^3.6.5",
     "conventional-changelog-cli": "^2.0.34",
     "cross-env": "^7.0.3",
