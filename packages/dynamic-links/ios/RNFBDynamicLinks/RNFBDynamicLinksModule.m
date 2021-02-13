@@ -206,14 +206,7 @@ RCT_EXPORT_METHOD(resolveLink:
     }
   };
 
-  NSURL *linkURL = [NSURL URLWithString:link];
-  BOOL success = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
-  if (!success) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"not-found",
-        @"message": @"Dynamic link not found"
-    }];
-  }
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:[NSURL URLWithString:link] completion:completion];
 }
 
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {
