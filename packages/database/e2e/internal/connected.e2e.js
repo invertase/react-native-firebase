@@ -26,13 +26,13 @@ describe("database().ref('.info/connected')", function () {
     snapshot.val().should.equal(false);
   });
 
-  it('returns true when used with once with a previous call', async function () {
+  xit('returns true when used with once with a previous call', async function () {
     await firebase.database().ref('tests').once('value');
     const snapshot = await firebase.database().ref('.info/connected').once('value');
     snapshot.val().should.equal(true);
   });
 
-  it('subscribes to online state', async function () {
+  xit('subscribes to online state', async function () {
     const callback = sinon.spy();
     await firebase.database().goOffline();
 
