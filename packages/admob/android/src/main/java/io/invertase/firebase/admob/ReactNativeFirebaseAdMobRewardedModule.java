@@ -59,7 +59,7 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
       return;
     }
     getCurrentActivity().runOnUiThread(() -> {
-      RewardedAd rewardedAd = new RewardedAd(getApplicationContext(), adUnitId);
+      RewardedAd rewardedAd = new RewardedAd(getCurrentActivity(), adUnitId);
 
       RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
         @Override
