@@ -1,5 +1,6 @@
 package io.invertase.firebase.admob;
 
+import android.content.Context;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -59,7 +60,12 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
       return;
     }
     getCurrentActivity().runOnUiThread(() -> {
-      RewardedAd rewardedAd = new RewardedAd(getCurrentActivity(), adUnitId);
+
+      Context adContext = getCurrentActivity();
+      if (adContext == null) {
+        adContext = getApplicationContext();
+      }
+      RewardedAd rewardedAd = new RewardedAd(adContext, adUnitId);
 
       RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
         @Override
