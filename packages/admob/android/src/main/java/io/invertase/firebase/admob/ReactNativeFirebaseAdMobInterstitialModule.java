@@ -17,6 +17,7 @@ package io.invertase.firebase.admob;
  *
  */
 
+import android.content.Context;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
@@ -71,7 +72,11 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
       return;
     }
     getCurrentActivity().runOnUiThread(() -> {
-      InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
+      Context adContext = getCurrentActivity();
+      if (adContext == null) {
+        adContext = getApplicationContext();
+      }
+      InterstitialAd interstitialAd = new InterstitialAd(adContext);
       interstitialAd.setAdUnitId(adUnitId);
 
       // Apply AdRequest builder
