@@ -57,7 +57,6 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
-    "nodegit": "^0.26.5",
     "postcss-nested": "^4.2.1",
     "postcss-nesting": "^7.0.1",
     "prettier": "^2.0.4",

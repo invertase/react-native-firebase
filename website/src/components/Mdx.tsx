@@ -29,7 +29,7 @@ type Props = {
   body: string;
 };
 
-const text = 'font-thin leading-loose';
+const text = 'leading-loose';
 
 const components = {
   // Headings
@@ -66,7 +66,7 @@ const components = {
 
   // Text
   p: ({ children }: any) => {
-    return <p className={cx('my-4 font-light', text)}>{children}</p>;
+    return <p className={cx('my-4', text)}>{children}</p>;
   },
 
   // Code
@@ -76,9 +76,9 @@ const components = {
   },
 
   // Lists
-  ul: (props: any) => <ul {...props} className="list-disc list-inside pl-4 font-light" />,
-  ol: (props: any) => <ul {...props} className="list-decimal list-inside pl-4 font-light" />,
-  li: (props: any) => <li {...props} className={cx('mb-2 font-light', text)} />,
+  ul: (props: any) => <ul {...props} className="list-disc list-inside pl-4" />,
+  ol: (props: any) => <ul {...props} className="list-decimal list-inside pl-4" />,
+  li: (props: any) => <li {...props} className={cx('mb-2', text)} />,
 
   // Table
   table: (props: any) => (
