@@ -41,6 +41,18 @@ This happens to be a known problem with the upstream Analytics SDKs. The Firebas
 
 To use some Firebase services (like auth) in an emulator, you need an Android virtual device with Google Play services installed. Check this [Stack Overflow post](https://stackoverflow.com/a/46246782/2275865) for instructions on creating a new Android virtual device with the necessary APIs installed.
 
+### I'm getting an SIGABRT error in Xcode when faking a crash on iOS. How do I fix this?
+
+When you get an error on this line when faking a crash on iOS: 
+```
+RCT_EXPORT_METHOD(crash) {
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    assert(NO);
+  }
+}
+```
+Just disable your debugger in Xcode. 'Project name' -> 'Edit Scheme...' -> 'Run' -> deselect "Debug executable"
+
 # Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
