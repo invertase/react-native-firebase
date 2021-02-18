@@ -22,7 +22,7 @@ main a:hover {
 
 main p,
 main li {
-  @apply text-gray-600;
+  @apply text-gray-800;
 }
 
 li code,
@@ -70,7 +70,6 @@ h6 code {
   font-size: 0.9em;
   padding: 0 6px;
 }
-
 
 .parameter {
   @apply text-blue-500;
