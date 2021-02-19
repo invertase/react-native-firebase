@@ -61,7 +61,7 @@ export default class MobileAd {
 
   _setAdEventHandler(handler) {
     this._onAdEventHandler = handler;
-    return () => this._nativeListener.remove();
+    return () => (this._onAdEventHandler = null);
   }
 
   get adUnitId() {
