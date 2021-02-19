@@ -69,19 +69,19 @@ async function checkPlayServicesExample() {
         // SERVICE_MISSING - Google Play services is missing on this device.
         // show something to user
         // and then attempt to install if necessary
-        return utils.makePlayServicesAvailable();
+        return utils().makePlayServicesAvailable();
       case 2:
         // SERVICE_VERSION_UPDATE_REQUIRED - The installed version of Google Play services is out of date.
         // show something to user
         // and then attempt to update if necessary
-        return utils.resolutionForPlayServices();
+        return utils().resolutionForPlayServices();
 
       default:
         // some default dialog / component?
         // use the link below to tailor response to status codes to suit your use case
-        // https://developers.google.com/android/reference/com/google/android/gms/// common/ConnectionResult#SERVICE_VERSION_UPDATE_REQUIRED
-        if (isUserResolvableError) return utils.promptForPlayServices();
-        if (hasResolution) return utils.resolutionForPlayServices();
+        // https://developers.google.com/android/reference/com/google/android/gms/common/ConnectionResult#SERVICE_VERSION_UPDATE_REQUIRED
+        if (isUserResolvableError) return utils().promptForPlayServices();
+        if (hasResolution) return utils().resolutionForPlayServices();
     }
   }
   // There's no way to resolve play services on this device
