@@ -17,6 +17,7 @@ package io.invertase.firebase.admob;
  *
  */
 
+import android.app.Activity;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Arguments;
@@ -63,15 +64,16 @@ public class ReactNativeFirebaseAdMobInterstitialModule extends ReactNativeFireb
 
   @ReactMethod
   public void interstitialLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    if (getCurrentActivity() == null) {
+    Activity currentActivity = getCurrentActivity();
+    if (currentActivity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
       error.putString("message", "Interstitial ad attempted to load but the current Activity was null.");
       sendInterstitialEvent(AD_ERROR, requestId, adUnitId, error);
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
-      InterstitialAd interstitialAd = new InterstitialAd(getApplicationContext());
+    currentActivity.runOnUiThread(() -> {
+      InterstitialAd interstitialAd = new InterstitialAd(currentActivity);
       interstitialAd.setAdUnitId(adUnitId);
 
       // Apply AdRequest builder
