@@ -62,7 +62,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "~> 7.6.0"
+      "firebase": "7.6.0"
     },
     "android": {
       "minSdk": 16,
