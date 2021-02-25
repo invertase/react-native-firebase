@@ -51,6 +51,25 @@ describe('functions()', function () {
       const response = await functionRunner();
       response.data.should.equal(region);
     });
+
+    it('accepts passing in a custom url string as first arg to an app', async function () {
+      const customUrl =
+        'https://us-central1-react-native-firebase-testing.cloudfunctions.net/testFunctionDefaultRegion';
+      const functionsForRegion = firebase.app().functions(customUrl);
+
+      functionsForRegion._customUrlOrRegion.should.equal(customUrl);
+      functionsForRegion.app.should.equal(firebase.app());
+      functionsForRegion.app.name.should.equal(firebase.app().name);
+
+      firebase.app().functions(customUrl).app.should.equal(firebase.app());
+
+      firebase.app().functions(customUrl)._customUrlOrRegion.should.equal(customUrl);
+
+      const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
+
+      const response = await functionRunner();
+      response.data.should.equal('null');
+    });
   });
 
   it('useFunctionsEmulator', async function () {
