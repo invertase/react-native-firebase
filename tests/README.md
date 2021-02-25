@@ -154,6 +154,19 @@ yarn validate:all:flow
 
 ### Debugging E2E JS Tests (VSCode)
 
+Navigate to your .vscode/launch.json.
+
+Ensure the following exists as a debugging option.
+
+```js
+{
+      "name": "Attach to Process",
+      "type": "node",
+      "request": "attach",
+      "port": 9229
+    }
+```
+
 1. Add a breakpoint in the JS file where you will need to debug.
 2. Select the debug icon under 'NPM Scripts' when selecting one of the following scripts...
 
