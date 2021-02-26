@@ -52,7 +52,7 @@ describe('functions()', function () {
       response.data.should.equal(region);
     });
 
-    it.only('accepts passing in a custom url string as first arg to an app', async function () {
+    it('accepts passing in a custom url string as first arg to an app', async function () {
       const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
       const functionsForRegion = firebase.app().functions(customUrl);
 
