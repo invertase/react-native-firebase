@@ -52,9 +52,8 @@ describe('functions()', function () {
       response.data.should.equal(region);
     });
 
-    it('accepts passing in a custom url string as first arg to an app', async function () {
-      const customUrl =
-        'https://us-central1-react-native-firebase-testing.cloudfunctions.net/testFunctionDefaultRegion';
+    it.only('accepts passing in a custom url string as first arg to an app', async function () {
+      const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
       const functionsForRegion = firebase.app().functions(customUrl);
 
       functionsForRegion._customUrlOrRegion.should.equal(customUrl);
@@ -65,7 +64,7 @@ describe('functions()', function () {
 
       firebase.app().functions(customUrl)._customUrlOrRegion.should.equal(customUrl);
 
-      const functionRunner = functionsForRegion.httpsCallable('testFunctionCustomRegion');
+      const functionRunner = functionsForRegion.httpsCallable('testFunctionDefaultRegion');
 
       const response = await functionRunner();
       response.data.should.equal('null');
