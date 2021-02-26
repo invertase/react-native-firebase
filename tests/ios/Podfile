@@ -1,8 +1,14 @@
+require 'json'
 platform :ios, '10.0'
 $RNFirebaseAsStaticFramework = false
 
-# Version override - uncomment to test, otherwise take value from `@react-native-firebase/app`
-#$FirebaseSDKVersion = '7.5.0'
+appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
+$FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
+
+# Version override - uncomment to test overriding, otherwise take value from `@react-native-firebase/app`
+# $FirebaseSDKVersion = '7.5.0'
+Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
+
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
