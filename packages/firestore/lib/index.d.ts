@@ -1394,7 +1394,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * Enables or disables local persistent storage.
      */
-    persistence: boolean;
+    persistence?: boolean;
 
     /**
      * An approximate cache size threshold for the on-disk data. If the cache grows beyond this size, Firestore will start
@@ -1403,7 +1403,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * To disable garbage collection and set an unlimited cache size, use `firebase.firestore.CACHE_SIZE_UNLIMITED`.
      */
-    cacheSizeBytes: number;
+    cacheSizeBytes?: number;
 
     /**
      * The hostname to connect to.
@@ -1413,12 +1413,12 @@ export namespace FirebaseFirestoreTypes {
      * If you want to use the emulator on a real android device, you will need to specify the actual host
      * computer IP address.
      */
-    host: string;
+    host?: string;
 
     /**
      * Whether to use SSL when connecting.
      */
-    ssl: boolean;
+    ssl?: boolean;
   }
 
   /**
