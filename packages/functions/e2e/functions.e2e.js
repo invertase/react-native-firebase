@@ -69,19 +69,35 @@ describe('functions()', function () {
       const response = await functionRunner();
       response.data.should.equal('null');
     });
-  });
 
-  it('useFunctionsEmulator', async function () {
-    const region = 'europe-west2';
-    const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
-    const functions = firebase.app().functions(region);
+    it('useFunctionsEmulator', async function () {
+      const region = 'europe-west2';
+      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+      const functions = firebase.app().functions(region);
 
-    functions.useFunctionsEmulator('http://api.rnfirebase.io');
+      functions.useFunctionsEmulator('http://api.rnfirebase.io');
 
-    const response = await functions.httpsCallable(fnName)();
+      const response = await functions.httpsCallable(fnName)();
 
-    response.data.region.should.equal(region);
-    response.data.fnName.should.equal(fnName);
+      response.data.region.should.equal(region);
+      response.data.fnName.should.equal(fnName);
+    });
+
+    it('prefers emulator to custom domain', async function () {
+      const region = 'europe-west2';
+      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+      const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
+      const functions = firebase.app().functions(region);
+
+      functions.useFunctionsEmulator('http://api.rnfirebase.io');
+
+      const response = await functions.httpsCallable(customUrl)();
+
+      console.warn('data >>>', response.data);
+
+      response.data.region.should.equal(region);
+      response.data.fnName.should.equal(fnName);
+    });
   });
 
   describe('httpsCallable(fnName)(args)', function () {
