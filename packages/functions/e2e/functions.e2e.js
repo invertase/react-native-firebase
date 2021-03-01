@@ -54,17 +54,17 @@ describe('functions()', function () {
 
     it('accepts passing in a custom url string as first arg to an app', async function () {
       const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
-      const functionsForCustromUrl = firebase.app().functions(customUrl);
+      const functionsForCustomUrl = firebase.app().functions(customUrl);
 
-      functionsForCustromUrl._customUrlOrRegion.should.equal(customUrl);
-      functionsForCustromUrl.app.should.equal(firebase.app());
-      functionsForCustromUrl.app.name.should.equal(firebase.app().name);
+      functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
+      functionsForCustomUrl.app.should.equal(firebase.app());
+      functionsForCustomUrl.app.name.should.equal(firebase.app().name);
 
-      firebase.app().functions(customUrl).app.should.equal(firebase.app());
+      functionsForCustomUrl.app.should.equal(firebase.app());
 
-      firebase.app().functions(customUrl)._customUrlOrRegion.should.equal(customUrl);
+      functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
 
-      const functionRunner = functionsForCustromUrl.httpsCallable('testFunctionDefaultRegion');
+      const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegion');
 
       const response = await functionRunner();
       response.data.should.equal('null');
