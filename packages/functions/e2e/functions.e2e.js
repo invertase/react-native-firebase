@@ -93,8 +93,6 @@ describe('functions()', function () {
 
       const response = await functions.httpsCallable(customUrl)();
 
-      console.warn('data >>>', response.data);
-
       response.data.region.should.equal(region);
       response.data.fnName.should.equal(fnName);
     });
