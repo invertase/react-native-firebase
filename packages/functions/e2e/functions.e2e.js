@@ -82,20 +82,6 @@ describe('functions()', function () {
       response.data.region.should.equal(region);
       response.data.fnName.should.equal(fnName);
     });
-
-    it('prefers emulator to custom domain', async function () {
-      const region = 'europe-west2';
-      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
-      const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
-      const functions = firebase.app().functions(region);
-
-      functions.useFunctionsEmulator('http://api.rnfirebase.io');
-
-      const response = await functions.httpsCallable(customUrl)();
-
-      response.data.region.should.equal(region);
-      response.data.fnName.should.equal(fnName);
-    });
   });
 
   describe('httpsCallable(fnName)(args)', function () {

@@ -1,3 +1,4 @@
+import { FirebaseModule } from '@react-native-firebase/app/lib/internal';
 import functions, { firebase } from '../lib';
 
 describe('Cloud Functions', function () {
@@ -22,7 +23,6 @@ describe('Cloud Functions', function () {
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
 
-    //TODO: Learn how to mock private method _useFunctionsEmulatorOrigin
     it('prefers emulator to custom domain', function () {
       const app = firebase.app();
       const customUrl = 'https://test.com';
@@ -30,11 +30,8 @@ describe('Cloud Functions', function () {
 
       functions.useFunctionsEmulator('http://10.0.2.2');
 
-      // Value is correct 'http://10.0.2.2'
-      //console.warn('functions >>>', functions);
-
-      // Unable to assert private function, even with mocking
-      //expect(functions['_useFunctionsEmulatorOrigin'].toBe('http://10.0.2.3'));
+      // @ts-ignore
+      expect(functions._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
   });
 
