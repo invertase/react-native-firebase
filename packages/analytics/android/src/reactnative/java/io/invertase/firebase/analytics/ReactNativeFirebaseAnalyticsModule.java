@@ -125,7 +125,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     if (bundle == null) {
       return null;
     }
-    ArrayList itemsArray = (ArrayList) bundle.getSerializable(FirebaseAnalytics.Param.ITEMS);
+    ArrayList itemsArray = (ArrayList) bundle.getSerializable(FirebaseAnalytics.Param.ITEM_LIST);
     for (Object item : itemsArray != null ? itemsArray : new ArrayList()) {
       if (item instanceof Bundle && ((Bundle) item).containsKey(FirebaseAnalytics.Param.QUANTITY)) {
         double number = ((Bundle) item).getDouble(FirebaseAnalytics.Param.QUANTITY);
