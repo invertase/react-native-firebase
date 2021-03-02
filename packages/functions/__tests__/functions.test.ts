@@ -1,4 +1,3 @@
-import { FirebaseModule } from '@react-native-firebase/app/lib/internal';
 import functions, { firebase } from '../lib';
 
 describe('Cloud Functions', function () {
