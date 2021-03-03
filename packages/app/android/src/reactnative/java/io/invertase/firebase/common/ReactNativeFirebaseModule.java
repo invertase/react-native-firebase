@@ -27,6 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
   private static Map<String, ExecutorService> executors = new HashMap<>();
@@ -73,20 +77,54 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     return getReactApplicationContext();
   }
 
+  // TODO: remove this
   public ExecutorService getExecutor() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
-    if (existingSingleThreadExecutor != null) return existingSingleThreadExecutor;
-    ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor();
-    executors.put(getName(), newSingleThreadExecutor);
-    return newSingleThreadExecutor;
+    return getExecutor(false);
+  }
+
+  public ExecutorService getTransactionalExecutor() {
+    return getExecutor(true);
+  }
+
+  private ExecutorService getExecutor(boolean isTransactional) {
+    String executorName = getExecutorName(isTransactional);
+    ExecutorService existingExecutor = executors.get(executorName);
+    if (existingExecutor != null) return existingExecutor;
+    ExecutorService newExecutor = getNewExecutor(isTransactional);
+    executors.put(executorName, newExecutor);
+    return newExecutor;
+  }
+
+  private ExecutorService getNewExecutor(boolean isTransactional) {
+    if (isTransactional == true) {
+      return new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    } else {
+      return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+    }
+  }
+
+  private String getExecutorName(boolean isTransactional) {
+    String moduleName = getName();
+    if (isTransactional == true) {
+      return moduleName + "TransactionalExecutor";
+    }
+    return moduleName + "Executor";
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
+    String singleThreadExecutorName = getExecutorName(false);
+    ExecutorService existingSingleThreadExecutor = executors.get(singleThreadExecutorName);
     if (existingSingleThreadExecutor != null) {
       existingSingleThreadExecutor.shutdownNow();
-      executors.remove(getName());
+      executors.remove(singleThreadExecutorName);
+    }
+
+    String threadPoolExecutorName = getExecutorName(false);
+    ExecutorService existingThreadPoolExecutor = executors.get(threadPoolExecutorName);
+    if (existingThreadPoolExecutor != null) {
+      existingThreadPoolExecutor.shutdownNow();
+      executors.remove(threadPoolExecutorName);
     }
   }
 
