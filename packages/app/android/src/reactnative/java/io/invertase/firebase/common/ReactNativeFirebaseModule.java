@@ -27,12 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
+  private static final int MAXIMUM_POOL_SIZE = 20;
+  private static final int KEEP_ALIVE_SECONDS = 3;
   private static Map<String, ExecutorService> executors = new HashMap<>();
   private String moduleName;
 
@@ -96,11 +98,20 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   private ExecutorService getNewExecutor(boolean isTransactional) {
     if (isTransactional == true) {
-      return new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+      return Executors.newSingleThreadExecutor();
     } else {
-      return new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+      threadPoolExecutor.setRejectedExecutionHandler(executeInFallback);
+      return threadPoolExecutor;
     }
   }
+
+  private RejectedExecutionHandler executeInFallback = new RejectedExecutionHandler() {
+    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+      ExecutorService fallbackExecutor = getTransactionalExecutor();
+      fallbackExecutor.execute(r);
+    };
+  };
 
   private String getExecutorName(boolean isTransactional) {
     String moduleName = getName();
