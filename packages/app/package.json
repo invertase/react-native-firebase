@@ -69,7 +69,7 @@
       "targetSdk": 30,
       "compileSdk": 30,
       "buildTools": "30.0.2",
-      "firebase": "26.5.0",
+      "firebase": "26.6.0",
       "playServicesAuth": "19.0.0"
     }
   }
