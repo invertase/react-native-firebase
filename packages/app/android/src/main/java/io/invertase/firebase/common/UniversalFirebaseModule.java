@@ -49,7 +49,6 @@ public class UniversalFirebaseModule {
     return getContext().getApplicationContext();
   }
 
-  // TODO: remove this
   protected ExecutorService getExecutor() {
     return getExecutor(false);
   }

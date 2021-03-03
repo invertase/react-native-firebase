@@ -77,7 +77,6 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     return getReactApplicationContext();
   }
 
-  // TODO: remove this
   public ExecutorService getExecutor() {
     return getExecutor(false);
   }
