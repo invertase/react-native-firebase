@@ -85,7 +85,7 @@ public class UniversalFirebaseModule {
     };
   };
 
-  private String getExecutorName(Boolean isTransactional) {
+  private String getExecutorName(boolean isTransactional) {
     String moduleName = getName();
     if (isTransactional == true) {
       return moduleName + "TransactionalExecutor";
