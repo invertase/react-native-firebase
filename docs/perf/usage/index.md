@@ -36,7 +36,7 @@ Add the plugin to your `/android/build.gradle` file as a dependency:
 buildscript {
     dependencies {
         // ...
-        classpath 'com.google.firebase:perf-plugin:1.3.1'
+        classpath 'com.google.firebase:perf-plugin:1.3.5'
     }
 ```
 
