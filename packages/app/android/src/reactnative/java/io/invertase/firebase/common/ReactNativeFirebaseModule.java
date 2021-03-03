@@ -123,18 +123,18 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   @Override
   public void onCatalystInstanceDestroy() {
-    String singleThreadExecutorName = getExecutorName(false);
-    ExecutorService existingSingleThreadExecutor = executors.get(singleThreadExecutorName);
-    if (existingSingleThreadExecutor != null) {
-      existingSingleThreadExecutor.shutdownNow();
-      executors.remove(singleThreadExecutorName);
+    String transactionalExecutorName = getExecutorName(true);
+    ExecutorService existingTransactionalExecutor = executors.get(transactionalExecutorName);
+    if (existingTransactionalExecutor != null) {
+      existingTransactionalExecutor.shutdownNow();
+      executors.remove(transactionalExecutorName);
     }
 
-    String threadPoolExecutorName = getExecutorName(false);
-    ExecutorService existingThreadPoolExecutor = executors.get(threadPoolExecutorName);
-    if (existingThreadPoolExecutor != null) {
-      existingThreadPoolExecutor.shutdownNow();
-      executors.remove(threadPoolExecutorName);
+    String nonTransactionalExecutorName = getExecutorName(false);
+    ExecutorService existingNonTransactionalExecutor = executors.get(nonTransactionalExecutorName);
+    if (existingNonTransactionalExecutor != null) {
+      existingNonTransactionalExecutor.shutdownNow();
+      executors.remove(nonTransactionalExecutorName);
     }
   }
 
