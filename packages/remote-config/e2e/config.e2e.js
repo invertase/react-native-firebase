@@ -68,9 +68,6 @@ describe('remoteConfig()', function () {
       firebase
         .remoteConfig()
         .lastFetchStatus.should.equal(firebase.remoteConfig.LastFetchStatus.SUCCESS);
-      // TODO leave logger here - need to investigate flakey test
-      // eslint-disable-next-line no-console
-      console.log(firebase.remoteConfig().fetchTimeMillis, date);
       should.equal(firebase.remoteConfig().fetchTimeMillis >= date, true);
     });
     it('without expiration provided', function () {
