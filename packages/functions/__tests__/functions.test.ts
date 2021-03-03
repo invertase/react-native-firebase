@@ -21,6 +21,17 @@ describe('Cloud Functions', function () {
       // @ts-ignore
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
+
+    it('prefers emulator to custom domain', function () {
+      const app = firebase.app();
+      const customUrl = 'https://test.com';
+      const functions = app.functions(customUrl);
+
+      functions.useFunctionsEmulator('http://10.0.2.2');
+
+      // @ts-ignore
+      expect(functions._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+    });
   });
 
   describe('httpcallable()', function () {
