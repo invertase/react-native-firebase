@@ -159,7 +159,7 @@ export namespace ReactNativeFirebase {
      * @param options Options to configure the services used in the App.
      * @param config The optional config for your firebase app
      */
-    initializeApp(options: FirebaseAppOptions, config?: FirebaseAppConfig): FirebaseApp;
+    initializeApp(options: FirebaseAppOptions, config?: FirebaseAppConfig): Promise<FirebaseApp>;
 
     /**
      * Create (and initialize) a FirebaseApp.
@@ -168,7 +168,7 @@ export namespace ReactNativeFirebase {
      * @param name The optional name of the app to initialize ('[DEFAULT]' if
      * omitted)
      */
-    initializeApp(options: FirebaseAppOptions, name?: string): FirebaseApp;
+    initializeApp(options: FirebaseAppOptions, name?: string): Promise<FirebaseApp>;
 
     /**
      * Retrieve an instance of a FirebaseApp.
