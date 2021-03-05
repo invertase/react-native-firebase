@@ -111,6 +111,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     if (listenerRegistration != null) {
       listenerRegistration.remove();
       collectionSnapshotListeners.remove(listenerId);
+      removeEventListeningExecutor(Integer.toString(listenerId));
     }
   }
 
@@ -159,7 +160,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   private void sendOnSnapshotEvent(String appName, int listenerId, QuerySnapshot querySnapshot, MetadataChanges metadataChanges) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap("onSnapshot", querySnapshot, metadataChanges)).addOnCompleteListener(task -> {
+    Tasks.call(getTransactionalExecutor(Integer.toString(listenerId)), () -> snapshotToWritableMap("onSnapshot", querySnapshot, metadataChanges)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         WritableMap body = Arguments.createMap();
         body.putMap("snapshot", task.getResult());
