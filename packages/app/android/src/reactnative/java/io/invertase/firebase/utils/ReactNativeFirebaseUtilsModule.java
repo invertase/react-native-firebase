@@ -159,9 +159,11 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());
     constants.put(KEY_CACHE_DIRECTORY, context.getCacheDir().getAbsolutePath());
 
-
+    File externalDirectory = context.getExternalFilesDir(null);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      constants.put(KEY_DOCUMENT_DIRECTORY, context.getExternalFilesDir(null).getAbsolutePath());
+      if ( externalDirectory != null ) {
+        constants.put(KEY_DOCUMENT_DIRECTORY, externalDirectory.getAbsolutePath());
+      }
     } else {
       constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     }
@@ -179,7 +181,6 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
       constants.put(KEY_EXT_STORAGE_DIRECTORY, externalStorageDirectory.getAbsolutePath());
     }
 
-    File externalDirectory = context.getExternalFilesDir(null);
     if (externalDirectory != null) {
       constants.put(KEY_EXTERNAL_DIRECTORY, externalDirectory.getAbsolutePath());
     }
