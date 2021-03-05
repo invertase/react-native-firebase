@@ -33,8 +33,8 @@
 
   RCT_EXPORT_METHOD(httpsCallable:
     (FIRApp *) firebaseApp
-        region:
-        (NSString *) region
+        customUrlOrRegion:
+        (NSString *) customUrlOrRegion
         origin:
         (NSString *) origin
         name:
@@ -48,7 +48,13 @@
         rejecter:
         (RCTPromiseRejectBlock) reject
   ) {
-    FIRFunctions *functions = [FIRFunctions functionsForApp:firebaseApp region:region];
+      
+    NSURL *url = [NSURL URLWithString:customUrlOrRegion];
+    FIRFunctions *functions = (url && url.scheme && url.host) ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion] : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+      
+      
+
+      
 
     if (origin != nil) {
       [functions useFunctionsEmulatorOrigin:origin];

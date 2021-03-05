@@ -390,7 +390,7 @@ declare module '@react-native-firebase/app' {
       >;
     }
     interface FirebaseApp {
-      functions(region?: string): FirebaseFunctionsTypes.Module;
+      functions(customUrlOrRegion?: string): FirebaseFunctionsTypes.Module;
     }
   }
 }

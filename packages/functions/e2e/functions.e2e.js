@@ -51,19 +51,37 @@ describe('functions()', function () {
       const response = await functionRunner();
       response.data.should.equal(region);
     });
-  });
 
-  it('useFunctionsEmulator', async function () {
-    const region = 'europe-west2';
-    const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
-    const functions = firebase.app().functions(region);
+    it('accepts passing in a custom url string as first arg to an app', async function () {
+      const customUrl = 'https://us-central1-react-native-firebase-testing.cloudfunctions.net';
+      const functionsForCustomUrl = firebase.app().functions(customUrl);
 
-    functions.useFunctionsEmulator('http://api.rnfirebase.io');
+      functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
+      functionsForCustomUrl.app.should.equal(firebase.app());
+      functionsForCustomUrl.app.name.should.equal(firebase.app().name);
 
-    const response = await functions.httpsCallable(fnName)();
+      functionsForCustomUrl.app.should.equal(firebase.app());
 
-    response.data.region.should.equal(region);
-    response.data.fnName.should.equal(fnName);
+      functionsForCustomUrl._customUrlOrRegion.should.equal(customUrl);
+
+      const functionRunner = functionsForCustomUrl.httpsCallable('testFunctionDefaultRegion');
+
+      const response = await functionRunner();
+      response.data.should.equal('null');
+    });
+
+    it('useFunctionsEmulator', async function () {
+      const region = 'europe-west2';
+      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+      const functions = firebase.app().functions(region);
+
+      functions.useFunctionsEmulator('http://api.rnfirebase.io');
+
+      const response = await functions.httpsCallable(fnName)();
+
+      response.data.region.should.equal(region);
+      response.data.fnName.should.equal(fnName);
+    });
   });
 
   describe('httpsCallable(fnName)(args)', function () {
