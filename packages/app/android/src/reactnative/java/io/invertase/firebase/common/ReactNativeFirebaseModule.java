@@ -130,7 +130,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
     });
   }
 
-  public void onEventListenerRemove(String identifier) {
+  public void removeEventListeningExecutor(String identifier) {
     String executorName = getExecutorName(true, identifier);
     removeExecutor(executorName);
   }
