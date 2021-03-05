@@ -21,6 +21,7 @@ import android.content.Context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -85,12 +86,12 @@ public class UniversalFirebaseModule {
     };
   };
 
-  private String getExecutorName(boolean isTransactional) {
-    String moduleName = getName();
+  public String getExecutorName(boolean isTransactional) {
+    String name = getName();
     if (isTransactional == true) {
-      return moduleName + "TransactionalExecutor";
+      return name + "TransactionalExecutor";
     }
-    return moduleName + "Executor";
+    return name + "Executor";
   }
 
   public String getName() {
@@ -99,18 +100,21 @@ public class UniversalFirebaseModule {
 
   @OverridingMethodsMustInvokeSuper
   public void onTearDown() {
-    String transactionalExecutorName = getExecutorName(true);
-    ExecutorService existingTransactionalExecutor = executors.get(transactionalExecutorName);
-    if (existingTransactionalExecutor != null) {
-      existingTransactionalExecutor.shutdownNow();
-      executors.remove(transactionalExecutorName);
-    }
+    String name = getName();
+    Set<String> existingExecutorNames = executors.keySet();
+    existingExecutorNames.removeIf((executorName) -> {
+      return executorName.startsWith(name) == false;
+    });
+    existingExecutorNames.forEach((executorName) -> {
+      removeExecutor(executorName);
+    });
+  }
 
-    String nonTransactionalExecutorName = getExecutorName(false);
-    ExecutorService existingNonTransactionalExecutor = executors.get(nonTransactionalExecutorName);
-    if (existingNonTransactionalExecutor != null) {
-      existingNonTransactionalExecutor.shutdownNow();
-      executors.remove(nonTransactionalExecutorName);
+  public void removeExecutor(String executorName) {
+    ExecutorService existingExecutor = executors.get(executorName);
+    if (existingExecutor != null) {
+      existingExecutor.shutdownNow();
+      executors.remove(executorName);
     }
   }
 

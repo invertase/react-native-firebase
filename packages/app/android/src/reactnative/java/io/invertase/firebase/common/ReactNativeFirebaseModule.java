@@ -25,6 +25,7 @@ import io.invertase.firebase.interfaces.ContextProvider;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -80,15 +81,19 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public ExecutorService getExecutor() {
-    return getExecutor(false);
+    return getExecutor(false, "");
   }
 
   public ExecutorService getTransactionalExecutor() {
-    return getExecutor(true);
+    return getExecutor(true, "");
   }
 
-  private ExecutorService getExecutor(boolean isTransactional) {
-    String executorName = getExecutorName(isTransactional);
+  public ExecutorService getTransactionalExecutor(String identifier) {
+    return getExecutor(true, identifier);
+  }
+
+  public ExecutorService getExecutor(boolean isTransactional, String identifier) {
+    String executorName = getExecutorName(isTransactional, identifier);
     ExecutorService existingExecutor = executors.get(executorName);
     if (existingExecutor != null) return existingExecutor;
     ExecutorService newExecutor = getNewExecutor(isTransactional);
@@ -108,33 +113,33 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   private RejectedExecutionHandler executeInFallback = new RejectedExecutionHandler() {
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-      ExecutorService fallbackExecutor = getTransactionalExecutor();
+      ExecutorService fallbackExecutor = getTransactionalExecutor("");
       fallbackExecutor.execute(r);
     };
   };
 
-  private String getExecutorName(boolean isTransactional) {
-    String moduleName = getName();
-    if (isTransactional == true) {
-      return moduleName + "TransactionalExecutor";
-    }
-    return moduleName + "Executor";
-  }
-
   @Override
   public void onCatalystInstanceDestroy() {
-    String transactionalExecutorName = getExecutorName(true);
-    ExecutorService existingTransactionalExecutor = executors.get(transactionalExecutorName);
-    if (existingTransactionalExecutor != null) {
-      existingTransactionalExecutor.shutdownNow();
-      executors.remove(transactionalExecutorName);
-    }
+    String name = getName();
+    Set<String> existingExecutorNames = executors.keySet();
+    existingExecutorNames.removeIf((executorName) -> {
+      return executorName.startsWith(name) == false;
+    });
+    existingExecutorNames.forEach((executorName) -> {
+      removeExecutor(executorName);
+    });
+  }
 
-    String nonTransactionalExecutorName = getExecutorName(false);
-    ExecutorService existingNonTransactionalExecutor = executors.get(nonTransactionalExecutorName);
-    if (existingNonTransactionalExecutor != null) {
-      existingNonTransactionalExecutor.shutdownNow();
-      executors.remove(nonTransactionalExecutorName);
+  public void onEventListenerRemove(String identifier) {
+    String executorName = getExecutorName(true, identifier);
+    removeExecutor(executorName);
+  }
+
+  public void removeExecutor(String executorName) {
+    ExecutorService existingExecutor = executors.get(executorName);
+    if (existingExecutor != null) {
+      existingExecutor.shutdownNow();
+      executors.remove(executorName);
     }
   }
 
@@ -144,6 +149,14 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   public Activity getActivity() {
     return getCurrentActivity();
+  }
+
+  public String getExecutorName(boolean isTransactional, String identifier) {
+    String name = getName();
+    if (isTransactional == true) {
+      return name + "TransactionalExecutor" + identifier;
+    }
+    return name + "Executor" + identifier;
   }
 
   @Nonnull
