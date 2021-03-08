@@ -1,12 +1,11 @@
 {
   "include": ["packages/**/lib/*.d.ts", "packages/**/type-test.ts"],
   "compilerOptions": {
-    "noEmit": true,
+    // "noEmit": true,
     "target": "es5",
     "module": "commonjs",
     "declaration": true,
     "importHelpers": true,
-    "jsx": "react",
     "sourceMap": true,
     "strict": true,
     "noUnusedLocals": true,
