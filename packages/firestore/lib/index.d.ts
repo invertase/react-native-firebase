@@ -636,7 +636,7 @@ export namespace FirebaseFirestoreTypes {
    * ```js
    * const increment = firebase.firestore.FieldValue.increment(1);
    *
-   * await firebase.firestore().doc('users/alovelace).update({
+   * await firebase.firestore().doc('users/alovelace').update({
    *   age: increment, // increment age by 1
    * });
    * ```
