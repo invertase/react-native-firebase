@@ -16,10 +16,12 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
+import { FirebaseModule } from '..';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
+import {NativeModuleNames} from "../../types"
 
 const NATIVE_MODULE_REGISTRY = {};
 const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
@@ -85,7 +87,8 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
  * @param module
  * @returns {*}
  */
-function initialiseNativeModule(module) {
+function initialiseNativeModule(module: FirebaseModule) {
+  //@ts-ignore
   const config = module._config;
   const key = nativeModuleKey(module);
   const {
@@ -96,7 +99,7 @@ function initialiseNativeModule(module) {
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
   } = config;
-  const multiModuleRoot = {};
+  const multiModuleRoot:{[nativeModuleName in NativeModuleNames]: boolean} = {};
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
