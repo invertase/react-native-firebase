@@ -16,20 +16,20 @@
  */
 
 import { getAppModule } from './internal/registry/nativeModule';
-import { FirebaseAppTypes, FirebaseOptions, DeleteAppType } from './types';
+import { FirebaseAppImpl, FirebaseOptionsImpl, DeleteAppType } from './types';
 
-export default class FirebaseApp implements FirebaseAppTypes {
+export default class FirebaseApp implements FirebaseAppImpl {
   private _name: string;
   private _deleted:boolean;
   private _deleteApp: DeleteAppType;
-  private _options: FirebaseOptions;
+  private _options: FirebaseOptionsImpl;
   private _automaticDataCollectionEnabled: boolean;
   //TODO are the below needed?
   private _initialized: boolean;
   private _nativeInitialized: boolean;
 
   constructor(
-    options: FirebaseOptions,
+    options: FirebaseOptionsImpl,
     appConfig: { name: string; automaticDataCollectionEnabled?: boolean },
     fromNative: boolean,
     deleteApp: DeleteAppType,

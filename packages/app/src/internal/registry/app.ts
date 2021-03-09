@@ -17,13 +17,13 @@
 
 import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
-import { FirebaseAppTypes, FirebaseOptions, FirebaseConfig } from '../../types';
+import { FirebaseAppImpl, FirebaseOptionsImpl, FirebaseConfigImpl } from '../../types';
 import { DEFAULT_APP_NAME } from '../constants';
 import { getAppModule } from './nativeModule';
 
-const APP_REGISTRY: { [name: string]: FirebaseAppTypes } = {};
+const APP_REGISTRY: { [name: string]: FirebaseAppImpl } = {};
 
-type AppFn = (app: FirebaseAppTypes) => void;
+type AppFn = (app: FirebaseAppImpl) => void;
 
 let onAppCreateFn: AppFn;
 let onAppDestroyFn: AppFn;
@@ -106,8 +106,8 @@ export function getApps() {
  * @param options
  * @param configOrName
  */
-export function initializeApp(options:FirebaseOptions, configOrName: FirebaseConfig | string | undefined) {
-  let appConfig = configOrName as FirebaseConfig;
+export function initializeApp(options:FirebaseOptionsImpl, configOrName: FirebaseConfigImpl | string | undefined) {
+  let appConfig = configOrName as FirebaseConfigImpl;
 
   if (!isObject(configOrName) || isNull(configOrName)) {
     appConfig = {
@@ -169,7 +169,7 @@ export function initializeApp(options:FirebaseOptions, configOrName: FirebaseCon
     );
   }
 
-  const app:FirebaseAppTypes = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
+  const app:FirebaseAppImpl = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
 
   APP_REGISTRY[name] = app;
   onAppCreateFn(APP_REGISTRY[name]);

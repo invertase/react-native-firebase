@@ -21,13 +21,13 @@ import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
-import { NamespaceTypes, FirebaseModuleNamespace } from '../../types';
+import { NamespaceTypes, FirebaseModuleNamespaceImpl } from '../../types';
 
 // firebase.X
 //TS-MIGRATION: needs a type
 let FIREBASE_ROOT: any = null;
 
-const NAMESPACE_REGISTRY: { [moduleNamespace: string]: FirebaseModuleNamespace } = {};
+const NAMESPACE_REGISTRY: { [moduleNamespace: string]: FirebaseModuleNamespaceImpl } = {};
 const APP_MODULE_INSTANCE: {
   [appName: string]: { [moduleNamespace: string]: FirebaseModule };
 } = {};

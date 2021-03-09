@@ -17,16 +17,16 @@
 
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
-import { FirebaseModuleTypes, FirebaseModuleNamespace } from '../types';
+import { FirebaseModuleImpl, FirebaseModuleNamespaceImpl } from '../types';
 import { FirebaseApp } from '.';
 let firebaseJson:any = null;
 
-export default class FirebaseModule implements FirebaseModuleTypes {
+export default class FirebaseModule implements FirebaseModuleImpl {
    private _app: FirebaseApp;
    private _nativeModule: null;
    private _customUrlOrRegion: string;
-   private _config: FirebaseModuleNamespace;
-  constructor(app: FirebaseApp, config: FirebaseModuleNamespace, customUrlOrRegion: string) {
+   private _config: FirebaseModuleNamespaceImpl;
+  constructor(app: FirebaseApp, config: FirebaseModuleNamespaceImpl, customUrlOrRegion: string) {
     this._app = app;
     this._nativeModule = null;
     this._customUrlOrRegion = customUrlOrRegion;
