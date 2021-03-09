@@ -15,20 +15,25 @@
  *
  */
 
-import { isString } from '@react-native-firebase/app/lib/common';
+import { isString } from '@react-native-firebase/app/src/common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
 import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
+import { NamespaceTypes, FirebaseModuleNamespace } from '../../types';
 
 // firebase.X
 //TS-MIGRATION: needs a type
-let FIREBASE_ROOT:any = null;
+let FIREBASE_ROOT: any = null;
 
-const NAMESPACE_REGISTRY = {};
-const APP_MODULE_INSTANCE = {};
-const MODULE_GETTER_FOR_APP = {};
+const NAMESPACE_REGISTRY: { [moduleNamespace: string]: FirebaseModuleNamespace } = {};
+const APP_MODULE_INSTANCE: {
+  [appName: string]: { [moduleNamespace: string]: FirebaseModule };
+} = {};
+const MODULE_GETTER_FOR_APP: {
+  [appName: string]: { [moduleNamespace: string]: FirebaseModule };
+} = {};
 const MODULE_GETTER_FOR_ROOT = {};
 
 /**
@@ -63,7 +68,7 @@ setOnAppDestroy(app => {
  * @param moduleNamespace
  * @returns {*}
  */
-function getOrCreateModuleForApp(app, moduleNamespace) {
+function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTypes) {
   if (MODULE_GETTER_FOR_APP[app.name] && MODULE_GETTER_FOR_APP[app.name][moduleNamespace]) {
     return MODULE_GETTER_FOR_APP[app.name][moduleNamespace];
   }
@@ -88,7 +93,7 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
   }
 
   // e.g. firebase.storage(customUrlOrRegion)
-  function firebaseModuleWithArgs(customUrlOrRegion: any) {
+  function firebaseModuleWithArgs(customUrlOrRegion: string | undefined) {
     if (customUrlOrRegion !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
         // TODO throw Module does not support arguments error
@@ -110,7 +115,7 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
         app,
         NAMESPACE_REGISTRY[moduleNamespace],
         customUrlOrRegion,
-      );
+      ) as FirebaseModule;
     }
 
     return APP_MODULE_INSTANCE[app.name][key];
@@ -262,7 +267,10 @@ export function getFirebaseRoot() {
  * @param options
  * @returns {*}
  */
-export function createModuleNamespace(options = {}) {
+export function createModuleNamespace(options: {
+  namespace: NamespaceTypes;
+  ModuleClass: FirebaseModule;
+}) {
   const { namespace, ModuleClass } = options;
 
   if (!NAMESPACE_REGISTRY[namespace]) {
