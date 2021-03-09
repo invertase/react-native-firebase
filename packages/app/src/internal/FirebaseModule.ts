@@ -17,20 +17,16 @@
 
 import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
-import { FirebaseModuleTypes } from '../types';
-let firebaseJson = null;
+import { FirebaseModuleTypes, FirebaseModuleNamespace } from '../types';
+import { FirebaseApp } from '.';
+let firebaseJson:any = null;
 
 export default class FirebaseModule implements FirebaseModuleTypes {
-   /**
-   * The native module instance for this Firebase service.
-   */
-    readonly native: any;
-
-    /**
-     * Returns the shared event emitter instance used for all JS event routing.
-     */
-    readonly emitter: any;
-  constructor(app: Fire, config, customUrlOrRegion) {
+   private _app: FirebaseApp;
+   private _nativeModule: null;
+   private _customUrlOrRegion: string;
+   private _config: FirebaseModuleNamespace;
+  constructor(app: FirebaseApp, config: FirebaseModuleNamespace, customUrlOrRegion: string) {
     this._app = app;
     this._nativeModule = null;
     this._customUrlOrRegion = customUrlOrRegion;
