@@ -1,4 +1,4 @@
-import { FirebaseModule } from "./internal";
+import { FirebaseModule } from './internal';
 
 export type DeleteAppType = () => Promise<never | void>;
 
@@ -38,37 +38,101 @@ export interface FirebaseAppMyVersion {
   ): Promise<FirebaseAppMyVersion>;
 }
 
-export type NamespaceTypes = 'admob' |'auth' | 'analytics' | 'remoteConfig' | 'crashlytics' | 'database' | 'inAppMessaging' | 'firestore' | 'functions' | 'iid' | 'indexing' | 'storage' | 'dynamicLinks' | 'messaging' | 'naturalLanguage' | 'ml' | 'notifications' | 'perf' | 'utils';
+export type NamespaceTypes =
+  | 'admob'
+  | 'auth'
+  | 'analytics'
+  | 'remoteConfig'
+  | 'crashlytics'
+  | 'database'
+  | 'inAppMessaging'
+  | 'firestore'
+  | 'functions'
+  | 'iid'
+  | 'indexing'
+  | 'storage'
+  | 'dynamicLinks'
+  | 'messaging'
+  | 'naturalLanguage'
+  | 'ml'
+  | 'notifications'
+  | 'perf'
+  | 'utils';
+
+
+export type NativeModuleNames =
+  | 'RNFBAppModule'
+  | 'RNFBAuthModule'
+  | 'RNFBAnalyticsModule'
+  | 'RNFBCrashlyticsModule'
+  | 'RNFBDynamicLinksModule'
+  | 'RNFBFunctionsModule'
+  | 'RNFBIidModule'
+  | 'RNFBFiamModule'
+  | 'RNFBMessagingModule'
+  | FirestoreNativeModuleNames
+  | AdmobNativeModuleNames
+  | DatabaseNativeModuleNames
+  | MLNativeModuleNames
+  | 'RNFBPerfModule'
+  | 'RNFBConfigModule'
+  | 'RNFBStorageModule';
+
+export type FirestoreNativeModuleNames =
+  | 'RNFBFirestoreModule'
+  | 'RNFBFirestoreCollectionModule'
+  | 'RNFBFirestoreDocumentModule'
+  | 'RNFBFirestoreTransactionModule';
+
+export type AdmobNativeModuleNames =
+  | 'RNFBAdMobModule'
+  | 'RNFBAdMobInterstitialModule'
+  | 'RNFBAdMobRewardedModule';
+
+export type DatabaseNativeModuleNames =
+  | 'RNFBDatabaseModule'
+  | 'RNFBDatabaseReferenceModule'
+  | 'RNFBDatabaseQueryModule'
+  | 'RNFBDatabaseOnDisconnectModule'
+  | 'RNFBDatabaseTransactionModule';
+
+export type MLNativeModuleNames =
+  | 'RNFBMLImageLabelerModule'
+  | 'RNFBMLTextRecognizerModule'
+  | 'RNFBMLLandmarkRecognizerModule'
+  | 'RNFBMLDocumentTextRecognizerModule';
+Ì;
 
 export interface FirebaseModuleNamespace {
-  statics:any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
+  statics: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
   version: string;
   namespace: NamespaceTypes;
-  nativeModuleName:any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
-  nativeEvents: any;//this prop will have to be removed & extended for each namespace as each package has its own statics type
+  nativeModuleName: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
+  nativeEvents: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
   hasMultiAppSupport: boolean;
   hasCustomUrlOrRegionSupport: boolean;
   ModuleClass: FirebaseModule;
+  disablePrependCustomUrlOrRegion: boolean;
 }
 
+/**
+ * A class that all React Native Firebase modules extend from to provide default behaviour.
+ */
+export interface FirebaseModuleTypes {
   /**
-   * A class that all React Native Firebase modules extend from to provide default behaviour.
-   */
-   export interface FirebaseModuleTypes {
-     /**
    * The native module instance for this Firebase service.
    */
-    readonly native: any;
+  readonly native: any;
 
-    /**
-     * Returns the shared event emitter instance used for all JS event routing.
-     */
-    readonly emitter: any;
-    /**
-     * The current `FirebaseApp` instance for this Firebase service.
-     */
-    app: FirebaseApp;
-  }
+  /**
+   * Returns the shared event emitter instance used for all JS event routing.
+   */
+  readonly emitter: any;
+  /**
+   * The current `FirebaseApp` instance for this Firebase service.
+   */
+  app: FirebaseApp;
+}
 
 export interface FirebaseApp {
   /**
