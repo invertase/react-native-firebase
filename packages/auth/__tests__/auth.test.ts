@@ -51,5 +51,21 @@ describe('Auth', function () {
         expect(auth.tenantId).toBe('test-id');
       });
     });
+    it('should throw error when set tenantId to null ', function () {
+      const auth = firebase.app().auth();
+      auth.setTenantId(null).catch(error => {
+        expect(error.message).toBe(
+          "firebase.auth().setTenantId(*) expected 'tenantId' to be a string or null value",
+        );
+      });
+    });
+    it('should throw error when set tenantId to non string ', function () {
+      const auth = firebase.app().auth();
+      auth.setTenantId(Object()).catch(error => {
+        expect(error.message).toBe(
+          "firebase.auth().setTenantId(*) expected 'tenantId' to be a string or null value",
+        );
+      });
+    });
   });
 });
