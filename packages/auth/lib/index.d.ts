@@ -1210,7 +1210,7 @@ export namespace FirebaseAuthTypes {
      * const tenantId = firebase.auth().tenantId;
      * ```
      */
-    tenantId: string;
+    tenantId: string | null;
     /**
      * Returns the current language code.
      *
@@ -1250,7 +1250,7 @@ export namespace FirebaseAuthTypes {
      *
      * @param tenantId the tenantID current app bind to.
      */
-    setTenantId(tenantId: string | null): Promise<void>;
+    setTenantId(tenantId: string): Promise<void>;
 
     /**
      * Sets the language code.
