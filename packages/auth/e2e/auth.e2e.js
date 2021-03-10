@@ -47,12 +47,6 @@ describe('auth()', function () {
       app.auth().app.should.equal(app);
     });
 
-    it('supports set tenantId', function () {
-      const app = firebase.app().auth();
-      should.exist(app.auth);
-      app.auth().app.should.equal(app);
-    });
-
     // removing as pending if module.options.hasMultiAppSupport = true
     it('supports multiple apps', async function () {
       firebase.auth().app.name.should.equal('[DEFAULT]');
