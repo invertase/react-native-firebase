@@ -1202,6 +1202,16 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * Returns the current tenant Id.
+     *
+     * #### Example
+     *
+     * ```js
+     * const tenantId = firebase.auth().tenantId;
+     * ```
+     */
+    tenantId: string;
+    /**
      * Returns the current language code.
      *
      * #### Example
@@ -1228,6 +1238,20 @@ export namespace FirebaseAuthTypes {
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
+
+    /**
+     * Sets the tenant id.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().setTenantId('tenant-123');
+     * ```
+     *
+     * @param tenantId the tenantID current app bind to.
+     */
+    setTenantId(tenantId: string | null): Promise<void>;
+
     /**
      * Sets the language code.
      *
