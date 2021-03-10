@@ -43,4 +43,13 @@ describe('Auth', function () {
       expect(bar).toEqual(['10.0.2.2', 9099]);
     });
   });
+
+  describe('tenantId', function () {
+    it('should can set tenantId ', function () {
+      const auth = firebase.app().auth();
+      auth.setTenantId('test-id').then(() => {
+        expect(auth.tenantId).toBe('test-id');
+      });
+    });
+  });
 });
