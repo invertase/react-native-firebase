@@ -156,11 +156,13 @@ class FirebaseAuthModule extends FirebaseModule {
   }
 
   async setTenantId(tenantId) {
-    if (!isString(tenantId)) {
-      throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
+    if (!isString(tenantId) && !isNull(tenantId)) {
+      throw new Error(
+        "firebase.auth().setTenantId(*) expected 'tenantId' to be a string or null value",
+      );
     }
-    this._tenantId = tenantId;
     await this.native.setTenantId(tenantId);
+    this._tenantId = tenantId;
   }
 
   _parseListener(listenerOrObserver) {

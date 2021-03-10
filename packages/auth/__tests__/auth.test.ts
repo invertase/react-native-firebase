@@ -45,21 +45,11 @@ describe('Auth', function () {
   });
 
   describe('tenantId', function () {
-    it('should be able to set tenantId ', function () {
+    it('should can set tenantId ', function () {
       const auth = firebase.app().auth();
       auth.setTenantId('test-id').then(() => {
         expect(auth.tenantId).toBe('test-id');
       });
-    });
-
-    it('should throw error when tenantId is a non string object ', async function () {
-      try {
-        await firebase.app().auth().setTenantId(Object());
-        return Promise.reject('It should throw an error');
-      } catch (e) {
-        expect(e.message).toBe("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
-        return Promise.resolve('Error catched');
-      }
     });
   });
 });
