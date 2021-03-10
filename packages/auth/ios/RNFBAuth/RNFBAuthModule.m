@@ -900,13 +900,11 @@ RCT_EXPORT_METHOD(setLanguageCode:
   
 }
 
-RCT_EXPORT_METHOD(setTenantID:
+RCT_EXPORT_METHOD(setTenantId:
   (FIRApp *) firebaseApp
     :(NSString *) tenantID
 ) {
-    if(tenantID){
-        [FIRAuth authWithApp:firebaseApp].tenantID = tenantID;
-    }
+    FIRAuth authWithApp:firebaseApp].tenantID = tenantID;
 }
 
 RCT_EXPORT_METHOD(useDeviceLanguage:
