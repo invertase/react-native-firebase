@@ -1,19 +1,23 @@
 require 'json'
-platform :ios, '10.0'
-$RNFirebaseAsStaticFramework = false
 
+# Settings to test various overrides if desired
 appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
-
-# Version override - uncomment to test overriding, otherwise take value from `@react-native-firebase/app`
-# $FirebaseSDKVersion = '7.5.0'
+#$FirebaseSDKVersion = '7.7.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
+$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
+
+# Versions used below, for quick reference / outdated+upgrade checks
+$iOSMinimumDeployVersion = '10.0'
+
+platform :ios, $iOSMinimumDeployVersion
 
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'testing' do
+  # set this and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
   # use_frameworks!
 
   config = use_native_modules!
@@ -26,7 +30,7 @@ post_install do |installer|
   # We support a smaller range of deployment than some libraries, eliminate related noise
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSMinimumDeployVersion
     end
   end
 
