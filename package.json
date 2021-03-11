@@ -40,22 +40,22 @@
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
-    "@babel/core": "^7.13.8",
-    "@babel/preset-env": "7.13.9",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "7.13.10",
     "@babel/preset-flow": "7.12.13",
-    "@octokit/core": "^3.2.5",
+    "@octokit/core": "^3.3.0",
     "@types/jest": "^26.0.19",
-    "@types/react": "^16.9.49",
-    "@types/react-native": "^0.63.50",
-    "@typescript-eslint/eslint-plugin": "^4.16.1",
-    "@typescript-eslint/parser": "^4.16.1",
+    "@types/react": "^16.14.5",
+    "@types/react-native": "^0.63.51",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
     "babel-jest": "^26.6.3",
     "codecov": "^3.6.5",
     "conventional-changelog-cli": "^2.0.34",
     "cross-env": "^7.0.3",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-mocha": "^8.0.0",
+    "eslint-plugin-mocha": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.0",
     "eslint-plugin-react": "^7.19.0",
     "genversion": "^2.3.1",
@@ -65,11 +65,11 @@
     "prettier": "^2.2.1",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.3",
-    "ts-jest": "^26.5.2",
-    "typescript": "^4.2.2"
+    "ts-jest": "^26.5.3",
+    "typescript": "^4.2.3"
   },
   "resolutions": {
-    "@types/react": "^16.14.3"
+    "@types/react": "^16.14.5"
   },
   "workspaces": {
     "packages": [
