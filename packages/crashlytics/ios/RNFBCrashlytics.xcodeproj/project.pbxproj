@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */; };
 		2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */; };
+		C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,6 +30,8 @@
 		2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNFBCrashlyticsModule.m; path = RNFBCrashlytics/RNFBCrashlyticsModule.m; sourceTree = SOURCE_ROOT; };
 		2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBCrashlyticsInitProvider.h; sourceTree = "<group>"; };
 		2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsInitProvider.m; sourceTree = "<group>"; };
+		C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNFBCrashlyticsNativeHelper.m; sourceTree = "<group>"; };
+		C66637BD25FA561D00DCAA51 /* RNFBCrashlyticsNativeHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNFBCrashlyticsNativeHelper.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,8 @@
 				2744B98521F45429004F8E3F /* RNFBCrashlyticsModule.m */,
 				2748D82222371C0900FC8DC8 /* RNFBCrashlyticsInitProvider.h */,
 				2748D82322371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m */,
+				C66637BD25FA561D00DCAA51 /* RNFBCrashlyticsNativeHelper.h */,
+				C66637BA25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m */,
 			);
 			path = RNFBCrashlytics;
 			sourceTree = "<group>";
@@ -127,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C66637BB25FA560700DCAA51 /* RNFBCrashlyticsNativeHelper.m in Sources */,
 				2748D82422371C1C00FC8DC8 /* RNFBCrashlyticsInitProvider.m in Sources */,
 				2744B98621F45429004F8E3F /* RNFBCrashlyticsModule.m in Sources */,
 			);
