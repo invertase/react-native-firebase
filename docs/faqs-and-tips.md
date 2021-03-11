@@ -53,6 +53,16 @@ RCT_EXPORT_METHOD(crash) {
 ```
 Just disable your debugger in Xcode. 'Project name' -> 'Edit Scheme...' -> 'Run' -> deselect "Debug executable"
 
+### I have the latest SDK installed, but I can't send a test in app message from the console. How do I fix this?
+
+Sometimes when building an in-app-message in the console, sending a test to a device is not possible, as the "Test on device" button is grayed out. This can be very annoying, but have found a "work around" that enables the button:
+
+1. Make sure to fill out all fields in the first step of the form. If that doesn't enable the button:
+1. Make sure to click inside every field, even if the field does not need to be updated (specially the "Text color" ones). If that doesn't enable the button:
+1. Change between the "Message layout" options (Card, Modal, Image only and Top banner).
+
+Sometimes, after step 3, you have to click inside a "Text color" field, but this should enable the "Test on device" option. After that you add the device Install ID, make sure to quit the app before the actual test, and then I wait for the confirmation toast to open the app up again. As long as the ID is 100% correct, the test should work as intended.
+
 # Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
