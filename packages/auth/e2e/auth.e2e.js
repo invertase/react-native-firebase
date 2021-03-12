@@ -1071,4 +1071,25 @@ describe('auth()', function () {
       }
     });
   });
+
+  describe('setTenantId()', function () {
+    it('should return null if tenantId unset', function () {
+      should.not.exist(firebase.auth().tenantId);
+    });
+
+    // multi-tenant is not supported by the firebase auth emulator, and requires a valid multi-tenant tenantid
+    // After setting this, next user creation will result in internal error on emulator, or auth/invalid-tenant-id live
+    // it('should return tenantId correctly after setting', async function () {
+    //   await firebase.auth().setTenantId('testTenantId');
+    //   firebase.auth().tenantId.should.equal('testTenantId');
+    // });
+    // it('user should have tenant after setting tenantId', async function () {
+    //   await firebase.auth().setTenantId('userTestTenantId');
+    //   firebase.auth().tenantId.should.equal('userTestTenantId');
+    //   const random = Utils.randString(12, '#a');
+    //   const email = `${random}@${random}.com`;
+    //   const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+    //   userCredential.user.tenantId.should.equal('userTestTenantId');
+    // });
+  });
 });
