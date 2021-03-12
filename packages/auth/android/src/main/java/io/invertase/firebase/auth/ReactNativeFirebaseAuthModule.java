@@ -1628,6 +1628,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * setTenantId
+   *
+   * @param appName
+   * @param tenantId
+   */
+  @ReactMethod
+  public void setTenantId(String appName, String tenantId) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth.setTenantId(tenantId);
+  }
+
+  /**
    * useDeviceLanguage
    *
    * @param appName
