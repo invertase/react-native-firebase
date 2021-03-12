@@ -1210,6 +1210,7 @@ RCT_EXPORT_METHOD(useEmulator:
       @"providerData": [self convertProviderData:user.providerData],
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
+      @"tenantId": user.tenantID ? (id) user.tenantID : [NSNull null],
       keyUid: user.uid
   };
 }
