@@ -1638,6 +1638,7 @@ export namespace FirebaseAuthTypes {
      *
      * @platform ios
      *
+     * @error auth/keychain-error Thrown if you attempt to access an inaccessible keychain
      * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
      */
     useUserAccessGroup(userAccessGroup: string): Promise<null>;
