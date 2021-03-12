@@ -300,6 +300,7 @@ jobs:
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
           cd tests
+          set -o pipefail
           ./node_modules/.bin/detox build --configuration ios.ci
         shell: bash
 
