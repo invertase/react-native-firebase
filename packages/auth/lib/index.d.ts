@@ -398,6 +398,10 @@ export namespace FirebaseAuthTypes {
      */
     providerId: string;
     /**
+     * Returns a string representing the multi-tenant tenant id. This is null if the user is not associated with a tenant.
+     */
+    tenantId?: string;
+    /**
      * Returns a user identifier as specified by the authentication provider.
      */
     uid: string;
@@ -1247,6 +1251,7 @@ export namespace FirebaseAuthTypes {
      * await firebase.auth().setTenantId('tenant-123');
      * ```
      *
+     * @error auth/invalid-tenant-id if the tenant id is invalid for some reason
      * @param tenantId the tenantID current app bind to.
      */
     setTenantId(tenantId: string): Promise<void>;
