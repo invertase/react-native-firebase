@@ -1202,7 +1202,7 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Returns the current tenant Id.
+     * Returns the current tenant Id or null if it has never been set
      *
      * #### Example
      *
