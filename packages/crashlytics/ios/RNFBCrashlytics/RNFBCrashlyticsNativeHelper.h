@@ -18,7 +18,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RNFBCrashlyticsNativeHelper : NSObject <FIRLibrary>
+@interface RNFBCrashlyticsNativeHelper
 
 + (void)recordNativeError:(NSError *)error;
 
