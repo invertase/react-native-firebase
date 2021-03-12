@@ -52,7 +52,7 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "build": "set -o pipefail && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 8"
@@ -60,7 +60,7 @@
       },
       "ios.ci": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
+        "build": "set -o pipefail && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11"
@@ -76,7 +76,7 @@
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "build": "set -o pipefail && export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone X"
