@@ -18,23 +18,16 @@ package io.invertase.firebase.common;
  */
 
 import android.content.Context;
+import io.invertase.firebase.common.TaskExecutorService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.SynchronousQueue;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class UniversalFirebaseModule {
-  private static final int MAXIMUM_POOL_SIZE = 20;
-  private static final int KEEP_ALIVE_SECONDS = 3;
-  private static Map<String, ExecutorService> executors = new HashMap<>();
+  private final TaskExecutorService executorService;
 
   private final Context context;
   private final String serviceName;
@@ -42,6 +35,7 @@ public class UniversalFirebaseModule {
   protected UniversalFirebaseModule(Context context, String serviceName) {
     this.context = context;
     this.serviceName = serviceName;
+    this.executorService = new TaskExecutorService(getName(), 20, 3); // TODO: tunable pool sizing
   }
 
   public Context getContext() {
@@ -53,45 +47,7 @@ public class UniversalFirebaseModule {
   }
 
   protected ExecutorService getExecutor() {
-    return getExecutor(false);
-  }
-
-  protected ExecutorService getTransactionalExecutor() {
-    return getExecutor(true);
-  }
-
-  private ExecutorService getExecutor(boolean isTransactional) {
-    String executorName = getExecutorName(isTransactional);
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) return existingExecutor;
-    ExecutorService newExecutor = getNewExecutor(isTransactional);
-    executors.put(executorName, newExecutor);
-    return newExecutor;
-  }
-
-  private ExecutorService getNewExecutor(boolean isTransactional) {
-    if (isTransactional == true) {
-      return Executors.newSingleThreadExecutor();
-    } else {
-      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-      threadPoolExecutor.setRejectedExecutionHandler(executeInFallback);
-      return threadPoolExecutor;
-    }
-  }
-
-  private RejectedExecutionHandler executeInFallback = new RejectedExecutionHandler() {
-    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-      ExecutorService fallbackExecutor = getTransactionalExecutor();
-      fallbackExecutor.execute(r);
-    };
-  };
-
-  public String getExecutorName(boolean isTransactional) {
-    String name = getName();
-    if (isTransactional == true) {
-      return name + "TransactionalExecutor";
-    }
-    return name + "Executor";
+    return executorService.getExecutor();
   }
 
   public String getName() {
@@ -100,22 +56,7 @@ public class UniversalFirebaseModule {
 
   @OverridingMethodsMustInvokeSuper
   public void onTearDown() {
-    String name = getName();
-    Set<String> existingExecutorNames = executors.keySet();
-    existingExecutorNames.removeIf((executorName) -> {
-      return executorName.startsWith(name) == false;
-    });
-    existingExecutorNames.forEach((executorName) -> {
-      removeExecutor(executorName);
-    });
-  }
-
-  public void removeExecutor(String executorName) {
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) {
-      existingExecutor.shutdownNow();
-      executors.remove(executorName);
-    }
+    executorService.shutdown();
   }
 
   public Map<String, Object> getConstants() {

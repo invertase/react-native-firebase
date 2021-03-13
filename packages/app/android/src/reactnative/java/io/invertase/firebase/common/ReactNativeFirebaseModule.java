@@ -21,22 +21,16 @@ import android.app.Activity;
 import android.content.Context;
 import com.facebook.react.bridge.*;
 import io.invertase.firebase.interfaces.ContextProvider;
+import io.invertase.firebase.common.TaskExecutorService;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.SynchronousQueue;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
-  private static final int MAXIMUM_POOL_SIZE = 20;
-  private static final int KEEP_ALIVE_SECONDS = 3;
-  private static Map<String, ExecutorService> executors = new HashMap<>();
+  private final TaskExecutorService executorService;
+
   private String moduleName;
 
   public ReactNativeFirebaseModule(
@@ -45,6 +39,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   ) {
     super(reactContext);
     this.moduleName = moduleName;
+    this.executorService = new TaskExecutorService(getName(), 20, 3); // TODO: tunable pool sizing
   }
 
   public static void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
@@ -81,66 +76,25 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public ExecutorService getExecutor() {
-    return getExecutor(false, "");
+    return executorService.getExecutor();
   }
 
   public ExecutorService getTransactionalExecutor() {
-    return getExecutor(true, "");
+    return executorService.getTransactionalExecutor();
   }
 
   public ExecutorService getTransactionalExecutor(String identifier) {
-    return getExecutor(true, identifier);
+    return executorService.getTransactionalExecutor(identifier);
   }
-
-  public ExecutorService getExecutor(boolean isTransactional, String identifier) {
-    String executorName = getExecutorName(isTransactional, identifier);
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) return existingExecutor;
-    ExecutorService newExecutor = getNewExecutor(isTransactional);
-    executors.put(executorName, newExecutor);
-    return newExecutor;
-  }
-
-  private ExecutorService getNewExecutor(boolean isTransactional) {
-    if (isTransactional == true) {
-      return Executors.newSingleThreadExecutor();
-    } else {
-      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-      threadPoolExecutor.setRejectedExecutionHandler(executeInFallback);
-      return threadPoolExecutor;
-    }
-  }
-
-  private RejectedExecutionHandler executeInFallback = new RejectedExecutionHandler() {
-    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-      ExecutorService fallbackExecutor = getTransactionalExecutor("");
-      fallbackExecutor.execute(r);
-    };
-  };
 
   @Override
   public void onCatalystInstanceDestroy() {
-    String name = getName();
-    Set<String> existingExecutorNames = executors.keySet();
-    existingExecutorNames.removeIf((executorName) -> {
-      return executorName.startsWith(name) == false;
-    });
-    existingExecutorNames.forEach((executorName) -> {
-      removeExecutor(executorName);
-    });
+    executorService.shutdown();
   }
 
   public void removeEventListeningExecutor(String identifier) {
-    String executorName = getExecutorName(true, identifier);
-    removeExecutor(executorName);
-  }
-
-  public void removeExecutor(String executorName) {
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) {
-      existingExecutor.shutdownNow();
-      executors.remove(executorName);
-    }
+    String executorName = executorService.getExecutorName(true, identifier);
+    executorService.removeExecutor(executorName);
   }
 
   public Context getApplicationContext() {
@@ -149,14 +103,6 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
 
   public Activity getActivity() {
     return getCurrentActivity();
-  }
-
-  public String getExecutorName(boolean isTransactional, String identifier) {
-    String name = getName();
-    if (isTransactional == true) {
-      return name + "TransactionalExecutor" + identifier;
-    }
-    return name + "Executor" + identifier;
   }
 
   @Nonnull
