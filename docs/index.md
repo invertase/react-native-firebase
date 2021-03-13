@@ -227,6 +227,25 @@ setting present in `/android/gradle.properties`:
 org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 ```
 
+### Android Performance
+
+On Android, React Native Firebase uses [thread pool executor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) to provide improved performance and managed resources.
+To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    // Maximum pool size of ThreadPoolExecutor. Defaults to `1`.
+    // Larger value typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries.
+    "android_task_executor_maximum_pool_size": 1,
+    // Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`
+    // Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time.
+    "android_task_executor_keep_alive_seconds": 3,
+  }
+}
+```
+
 ### Allow iOS Static Frameworks
 
 If you are using Static Frameworks on iOS, you need to manually enable this for the project. To enable Static Framework
