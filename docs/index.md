@@ -238,9 +238,11 @@ To increase throughput, you can tune the thread pool executor via `firebase.json
   "react-native": {
     // Maximum pool size of ThreadPoolExecutor. Defaults to `1`.
     // Larger value typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries.
+    // Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module.
     "android_task_executor_maximum_pool_size": 1,
     // Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`
     // Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time.
+    // This value doesn't have any effect when the maximum pool size is lower than 2.
     "android_task_executor_keep_alive_seconds": 3,
   }
 }
