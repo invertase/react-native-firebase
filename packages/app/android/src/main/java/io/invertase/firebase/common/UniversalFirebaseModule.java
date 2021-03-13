@@ -35,7 +35,7 @@ public class UniversalFirebaseModule {
   protected UniversalFirebaseModule(Context context, String serviceName) {
     this.context = context;
     this.serviceName = serviceName;
-    this.executorService = new TaskExecutorService(getName(), 20, 3); // TODO: tunable pool sizing
+    this.executorService = new TaskExecutorService(getName());
   }
 
   public Context getContext() {

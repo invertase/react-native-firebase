@@ -39,7 +39,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   ) {
     super(reactContext);
     this.moduleName = moduleName;
-    this.executorService = new TaskExecutorService(getName(), 20, 3); // TODO: tunable pool sizing
+    this.executorService = new TaskExecutorService(getName());
   }
 
   public static void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {

@@ -17,6 +17,8 @@ package io.invertase.firebase.common;
  *
  */
 
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -28,19 +30,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.SynchronousQueue;
 
 public class TaskExecutorService {
+  private static final String MAXIMUM_POOL_SIZE_KEY = "android_task_executor_maximum_pool_size";
+  private static final String KEEP_ALIVE_SECONDS_KEY = "android_task_executor_keep_alive_seconds";
+
   private final String name;
   private final int maximumPoolSize;
   private final int keepAliveSeconds;
   private static Map<String, ExecutorService> executors = new HashMap<>();
 
-  TaskExecutorService(
-    String name,
-    int maximumPoolSize,
-    int keepAliveSeconds
-  ) {
+  TaskExecutorService(String name) {
     this.name = name;
-    this.maximumPoolSize = maximumPoolSize;
-    this.keepAliveSeconds = keepAliveSeconds;
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+    this.maximumPoolSize = json.getIntValue(MAXIMUM_POOL_SIZE_KEY, 1);
+    this.keepAliveSeconds = json.getIntValue(KEEP_ALIVE_SECONDS_KEY, 3);
   }
 
   public ExecutorService getExecutor() {
@@ -66,6 +68,8 @@ public class TaskExecutorService {
 
   private ExecutorService getNewExecutor(boolean isTransactional) {
     if (isTransactional == true) {
+      return Executors.newSingleThreadExecutor();
+    } else if (maximumPoolSize == 1) {
       return Executors.newSingleThreadExecutor();
     } else {
       ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
