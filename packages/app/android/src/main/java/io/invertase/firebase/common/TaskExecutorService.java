@@ -76,6 +76,9 @@ public class TaskExecutorService {
 
   private RejectedExecutionHandler executeInFallback = new RejectedExecutionHandler() {
     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+      if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
+        return;
+      }
       ExecutorService fallbackExecutor = getTransactionalExecutor();
       fallbackExecutor.execute(r);
     };
