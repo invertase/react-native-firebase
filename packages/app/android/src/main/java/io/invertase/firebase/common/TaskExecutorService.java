@@ -46,7 +46,8 @@ public class TaskExecutorService {
   }
 
   public ExecutorService getExecutor() {
-    return getExecutor(false, "");
+    boolean isTransactional = maximumPoolSize <= 1;
+    return getExecutor(isTransactional, "");
   }
 
   public ExecutorService getTransactionalExecutor() {
@@ -54,7 +55,8 @@ public class TaskExecutorService {
   }
 
   public ExecutorService getTransactionalExecutor(String identifier) {
-    return getExecutor(true, identifier);
+    String executorIdentifier = maximumPoolSize != 0 ? identifier : "";
+    return getExecutor(true, executorIdentifier);
   }
 
   public ExecutorService getExecutor(boolean isTransactional, String identifier) {
@@ -68,8 +70,6 @@ public class TaskExecutorService {
 
   private ExecutorService getNewExecutor(boolean isTransactional) {
     if (isTransactional == true) {
-      return Executors.newSingleThreadExecutor();
-    } else if (maximumPoolSize == 1) {
       return Executors.newSingleThreadExecutor();
     } else {
       ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
