@@ -229,7 +229,7 @@ org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryErro
 
 ### Android Performance
 
-On Android, React Native Firebase uses [ThreadPoolExecutor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) to provide improved performance and managed resources.
+On Android, React Native Firebase uses [thread pool executor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) to provide improved performance and managed resources.
 To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project:
 
 ```json
