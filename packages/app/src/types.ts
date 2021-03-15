@@ -79,7 +79,6 @@ export interface FirebaseConfigImpl {
   automaticDataCollectionEnabled: boolean | undefined;
 }
 
-
 export type NamespaceTypes =
   | 'admob'
   | 'auth'
@@ -100,7 +99,6 @@ export type NamespaceTypes =
   | 'notifications'
   | 'perf'
   | 'utils';
-
 
 export type NativeModuleNames =
   | 'RNFBAppModule'
@@ -143,8 +141,3 @@ export type MLNativeModuleNames =
   | 'RNFBMLTextRecognizerModule'
   | 'RNFBMLLandmarkRecognizerModule'
   | 'RNFBMLDocumentTextRecognizerModule';
-Ì;
-
-
-
-

@@ -20,7 +20,7 @@ import { FirebaseAppImpl, FirebaseOptionsImpl, DeleteAppType } from './types';
 
 export default class FirebaseApp implements FirebaseAppImpl {
   private _name: string;
-  private _deleted:boolean;
+  private _deleted: boolean;
   private _deleteApp: DeleteAppType;
   private _options: FirebaseOptionsImpl;
   private _automaticDataCollectionEnabled: boolean;

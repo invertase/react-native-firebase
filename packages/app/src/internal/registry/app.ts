@@ -15,7 +15,7 @@
  *
  */
 
-import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import { isNull, isObject, isString, isUndefined } from '../../common';
 import FirebaseApp from '../../FirebaseApp';
 import { FirebaseAppImpl, FirebaseOptionsImpl, FirebaseConfigImpl } from '../../types';
 import { DEFAULT_APP_NAME } from '../constants';
@@ -106,7 +106,10 @@ export function getApps() {
  * @param options
  * @param configOrName
  */
-export function initializeApp(options:FirebaseOptionsImpl, configOrName: FirebaseConfigImpl | string | undefined) {
+export function initializeApp(
+  options: FirebaseOptionsImpl,
+  configOrName: FirebaseConfigImpl | string | undefined,
+) {
   let appConfig = configOrName as FirebaseConfigImpl;
 
   if (!isObject(configOrName) || isNull(configOrName)) {
@@ -117,7 +120,7 @@ export function initializeApp(options:FirebaseOptionsImpl, configOrName: Firebas
     };
   }
 
-  if (isUndefined(appConfig?.name) ) {
+  if (isUndefined(appConfig?.name)) {
     appConfig.name = DEFAULT_APP_NAME;
   }
 
@@ -169,7 +172,12 @@ export function initializeApp(options:FirebaseOptionsImpl, configOrName: Firebas
     );
   }
 
-  const app:FirebaseAppImpl = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
+  const app: FirebaseAppImpl = new FirebaseApp(
+    options,
+    { name },
+    false,
+    deleteApp.bind(null, name, true),
+  );
 
   APP_REGISTRY[name] = app;
   onAppCreateFn(APP_REGISTRY[name]);
@@ -177,7 +185,7 @@ export function initializeApp(options:FirebaseOptionsImpl, configOrName: Firebas
   return getAppModule()
     .initializeApp(options, { name })
     .then(() => {
-       // @ts-ignore
+      // @ts-ignore
       app._initialized = true;
       return app;
     });
@@ -197,7 +205,7 @@ function deleteApp(name: string, nativeInitialized: boolean): Promise<never | vo
   const nativeModule = getAppModule();
 
   return nativeModule.deleteApp(name).then(() => {
-     // @ts-ignore
+    // @ts-ignore
     app._deleted = true;
     onAppDestroyFn(app);
     delete APP_REGISTRY[name];
