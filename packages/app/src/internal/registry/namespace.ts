@@ -34,7 +34,7 @@ const APP_MODULE_INSTANCE: {
 const MODULE_GETTER_FOR_APP: {
   [appName: string]: { [moduleNamespace: string]: FirebaseModule };
 } = {};
-const MODULE_GETTER_FOR_ROOT = {};
+const MODULE_GETTER_FOR_ROOT: { [path: string]: string } = {};
 
 /**
  * Attaches module namespace getters on every newly created app.
@@ -138,7 +138,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
   const { statics, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[moduleNamespace];
 
   // e.g. firebase.storage(app)
-  function firebaseModuleWithApp(app) {
+  function firebaseModuleWithApp(app: FirebaseApp) {
     const _app = app || getApp();
 
     if (!(_app instanceof FirebaseApp)) {

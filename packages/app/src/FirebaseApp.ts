@@ -16,7 +16,9 @@
  */
 
 import { getAppModule } from './internal/registry/nativeModule';
-import { FirebaseAppImpl, FirebaseOptionsImpl, DeleteAppType } from './types';
+import { FirebaseAppImpl, FirebaseOptionsImpl, DeleteAppType, FirebaseConfigImpl } from './types';
+import version from './version';
+import { getApps, initializeApp } from './internal/registry/app';
 
 export default class FirebaseApp implements FirebaseAppImpl {
   private _name: string;
@@ -48,6 +50,27 @@ export default class FirebaseApp implements FirebaseAppImpl {
       this._initialized = false;
       this._nativeInitialized = false;
     }
+  }
+
+  readonly SDK_VERSION = version;
+
+  get apps() {
+    return getApps();
+  }
+
+  app(name?: string): Promise<FirebaseAppImpl> {
+    throw new Error('Method not implemented.');
+  }
+
+  initializeApp(
+    options: FirebaseOptionsImpl,
+    configOrName: string | FirebaseConfigImpl,
+  ): Promise<FirebaseAppImpl> {
+    return initializeApp(options, configOrName);
+  }
+
+  utils() {
+    throw new Error('Method not implemented.');
   }
 
   get name() {

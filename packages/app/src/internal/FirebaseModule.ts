@@ -19,13 +19,14 @@ import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import { FirebaseModuleImpl, FirebaseModuleNamespaceImpl } from '../types';
 import { FirebaseApp } from '.';
-let firebaseJson:any = null;
+let firebaseJson: any = null;
 
 export default class FirebaseModule implements FirebaseModuleImpl {
-   private _app: FirebaseApp;
-   private _nativeModule: null;
-   private _customUrlOrRegion: string;
-   private _config: FirebaseModuleNamespaceImpl;
+  private _app: FirebaseApp;
+  private _nativeModule: null;
+  private _customUrlOrRegion: string;
+  private _config: FirebaseModuleNamespaceImpl;
+
   constructor(app: FirebaseApp, config: FirebaseModuleNamespaceImpl, customUrlOrRegion: string) {
     this._app = app;
     this._nativeModule = null;
@@ -50,7 +51,7 @@ export default class FirebaseModule implements FirebaseModuleImpl {
   }
 
   // TODO Handle custom url or region?
-  eventNameForApp(...args) {
+  eventNameForApp({ ...args }) {
     return `${this.app.name}-${args.join('-')}`;
   }
 

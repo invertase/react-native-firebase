@@ -1,4 +1,5 @@
 import { FirebaseModule } from './internal';
+import FirebaseApp from './FirebaseApp';
 
 export type DeleteAppType = () => Promise<never | void>;
 
@@ -28,6 +29,7 @@ export interface FirebaseAppImpl {
   /**
    * Make this app unusable and free up resources.
    */
+  // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
   delete(): Promise<void>;
 
   utils(): any;
