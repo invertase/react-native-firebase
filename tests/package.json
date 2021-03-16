@@ -24,8 +24,8 @@
     "@react-native-firebase/perf": "11.1.1",
     "@react-native-firebase/remote-config": "11.1.1",
     "@react-native-firebase/storage": "11.1.1",
-    "react": "16.13.1",
-    "react-native": "0.63.4"
+    "react": "17.0.1",
+    "react-native": "0.64.0"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
@@ -36,10 +36,10 @@
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jet": "^0.6.6-0",
-    "metro-react-native-babel-preset": "0.59.0",
-    "mocha": "^8.3.1",
+    "metro-react-native-babel-preset": "0.64.0",
+    "mocha": "^8.3.2",
     "nyc": "^15.0.1",
-    "patch-package": "^6.4.6",
+    "patch-package": "^6.4.7",
     "react-native-port-patcher": "^1.0.4",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
