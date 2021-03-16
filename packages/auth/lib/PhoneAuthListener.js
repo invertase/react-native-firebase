@@ -68,7 +68,10 @@ export default class PhoneAuthListener {
 
     for (let i = 0, len = events.length; i < len; i++) {
       const type = events[i];
-      this._auth.emitter.once(this._internalEvents[type], this[`_${type}Handler`].bind(this));
+      const subscription = this._auth.emitter.addListener(this._internalEvents[type], event => {
+        this[`_${type}Handler`](event);
+        subscription.remove();
+      });
     }
   }
 
@@ -203,11 +206,17 @@ export default class PhoneAuthListener {
     this._addUserObserver(observer);
 
     if (isFunction(errorCb)) {
-      this._auth.emitter.once(this._publicEvents.error, errorCb);
+      const subscription = this._auth.emitter.addListener(this._publicEvents.error, () => {
+        errorCb;
+        subscription.remove();
+      });
     }
 
     if (isFunction(successCb)) {
-      this._auth.emitter.once(this._publicEvents.success, successCb);
+      const subscription = this._auth.emitter.addListener(this._publicEvents.success, () => {
+        successCb;
+        subscription.remove();
+      });
     }
 
     return this;
