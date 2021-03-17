@@ -599,7 +599,11 @@ export namespace FirebaseDatabaseTypes {
      * @param callback The callback function that was passed to `on()` or `undefined` to remove all callbacks.
      * @param context The context that was passed to `on()`.
      */
-    off(eventType?: EventType, callback?: () => void, context?: Record<string, any>): void;
+    off(
+      eventType?: EventType,
+      callback?: (a: DataSnapshot, b?: string | null) => void,
+      context?: Record<string, any>,
+    ): void;
 
     /**
      * Listens for data changes at a particular location.
@@ -656,9 +660,9 @@ export namespace FirebaseDatabaseTypes {
     on(
       eventType?: EventType,
       callback?: (data: DataSnapshot, previousChildKey?: string) => void,
-      cancelCallbackOrContext?: Record<string, any>,
+      cancelCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
       context?: Record<string, any> | null,
-    ): () => void;
+    ): (a: DataSnapshot, b?: string | null) => void;
 
     /**
      * Listens for exactly one event of the specified event type, and then stops listening.
