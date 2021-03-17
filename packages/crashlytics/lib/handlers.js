@@ -15,9 +15,12 @@
  *
  */
 
+import { firebase } from '@react-native-firebase/app';
 import { isError, once } from '@react-native-firebase/app/lib/common';
 import tracking from 'promise/setimmediate/rejection-tracking';
 import StackTrace from 'stacktrace-js';
+
+export const FATAL_FLAG = 'com.firebase.crashlytics.reactnative.fatal';
 
 export function createNativeErrorObj(error, stackFrames, isUnhandledRejection, jsErrorName) {
   const nativeObj = {};
@@ -79,8 +82,34 @@ export const setGlobalErrorHandler = once(nativeModule => {
       try {
         const stackFrames = await StackTrace.fromError(error, { offline: true });
         await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
-      } catch (_) {
+
+        // The backend conversion scan converts the closest event to this timestamp without going over
+        // from the timestamp here. So the timestamp *must* be greater then the event log time.
+        //
+        // For that reason we always round up (`.ceil`) and add a second in case of latency
+        //
+        // Time is specified as seconds since start of Unix epoch as a baseline, as a string
+        const fatalTime = Math.ceil(new Date() / 1000) + 1 + '';
+
+        // Flag the Crashlytics backend that we have a fatal error, they will transform it
+        await nativeModule.setAttribute(FATAL_FLAG, fatalTime);
+
+        // Notify analytics, if it exists - throws error if not
+        try {
+          await firebase.app().analytics().logEvent(
+            'app_exception', // 'app_exception' is reserved but we make an exception for JS->fatal transforms
+            {
+              fatal: 1, // as in firebase-android-sdk
+              timestamp: fatalTime,
+            },
+          );
+        } catch (e) {
+          // This just means analytics was not present, so we could not log the analytics event
+          // console.log('error logging analytics app_exception: ' + e);
+        }
+      } catch (e) {
         // do nothing
+        // console.log('error logging handling the exception: ' + e);
       }
     }
     return originalHandler(error, fatal);

@@ -40,7 +40,7 @@ const ReservedEventNames = [
   'ad_reward',
   'app_background',
   'app_clear_data',
-  'app_exception',
+  // 'app_exception',
   'app_remove',
   'app_store_refund',
   'app_store_subscription_cancel',
