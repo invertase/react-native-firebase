@@ -34,7 +34,7 @@ const APP_MODULE_INSTANCE: {
 const MODULE_GETTER_FOR_APP: {
   [appName: string]: { [moduleNamespace: string]: FirebaseModule };
 } = {};
-const MODULE_GETTER_FOR_ROOT: { [path: string]: string } = {};
+const MODULE_GETTER_FOR_ROOT: { [path: string]: FirebaseModule } = {};
 
 /**
  * Attaches module namespace getters on every newly created app.
@@ -46,7 +46,7 @@ setOnAppCreate(app => {
     const moduleNamespace = KNOWN_NAMESPACES[i];
     Object.defineProperty(app, moduleNamespace, {
       enumerable: false,
-      get: firebaseAppModuleProxy.bind(null, app, moduleNamespace),
+      get: () => firebaseAppModuleProxy.bind(moduleNamespace),
     });
   }
 });
@@ -77,9 +77,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTyp
     MODULE_GETTER_FOR_APP[app.name] = {};
   }
 
-  const { hasCustomUrlOrRegionSupport, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[
-    moduleNamespace
-  ];
+  const { hasCustomUrlOrRegionSupport, hasMultiAppSupport } = NAMESPACE_REGISTRY[moduleNamespace];
 
   // modules such as analytics only run on the default app
   if (!hasMultiAppSupport && app.name !== DEFAULT_APP_NAME) {
@@ -93,7 +91,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTyp
   }
 
   // e.g. firebase.storage(customUrlOrRegion)
-  function firebaseModuleWithArgs(customUrlOrRegion: string | undefined) {
+  function firebaseModuleWithArgs(customUrlOrRegion: string) {
     if (customUrlOrRegion !== undefined) {
       if (!hasCustomUrlOrRegionSupport) {
         // TODO throw Module does not support arguments error
@@ -111,7 +109,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTyp
     }
 
     if (!APP_MODULE_INSTANCE[app.name][key]) {
-      APP_MODULE_INSTANCE[app.name][key] = new ModuleClass(
+      APP_MODULE_INSTANCE[app.name][key] = new FirebaseModule(
         app,
         NAMESPACE_REGISTRY[moduleNamespace],
         customUrlOrRegion,
@@ -121,7 +119,7 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTyp
     return APP_MODULE_INSTANCE[app.name][key];
   }
 
-  MODULE_GETTER_FOR_APP[app.name][moduleNamespace] = firebaseModuleWithArgs;
+  MODULE_GETTER_FOR_APP[app.name][moduleNamespace] = firebaseModuleWithArgs('');
   return MODULE_GETTER_FOR_APP[app.name][moduleNamespace];
 }
 
@@ -130,15 +128,15 @@ function getOrCreateModuleForApp(app: FirebaseApp, moduleNamespace: NamespaceTyp
  * @param moduleNamespace
  * @returns {*}
  */
-function getOrCreateModuleForRoot(moduleNamespace) {
+function getOrCreateModuleForRoot(moduleNamespace: string) {
   if (MODULE_GETTER_FOR_ROOT[moduleNamespace]) {
     return MODULE_GETTER_FOR_ROOT[moduleNamespace];
   }
 
-  const { statics, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[moduleNamespace];
+  const { statics, hasMultiAppSupport } = NAMESPACE_REGISTRY[moduleNamespace];
 
   // e.g. firebase.storage(app)
-  function firebaseModuleWithApp(app: FirebaseApp) {
+  function firebaseModuleWithApp(app: FirebaseApp | undefined) {
     const _app = app || getApp();
 
     if (!(_app instanceof FirebaseApp)) {
@@ -167,9 +165,10 @@ function getOrCreateModuleForRoot(moduleNamespace) {
     }
 
     if (!APP_MODULE_INSTANCE[_app.name][moduleNamespace]) {
-      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new ModuleClass(
+      APP_MODULE_INSTANCE[_app.name][moduleNamespace] = new FirebaseModule(
         _app,
         NAMESPACE_REGISTRY[moduleNamespace],
+        '',
       );
     }
 
@@ -178,7 +177,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
 
   Object.assign(firebaseModuleWithApp, statics || {});
   Object.freeze(firebaseModuleWithApp);
-  MODULE_GETTER_FOR_ROOT[moduleNamespace] = firebaseModuleWithApp;
+  MODULE_GETTER_FOR_ROOT[moduleNamespace] = firebaseModuleWithApp(undefined);
 
   return MODULE_GETTER_FOR_ROOT[moduleNamespace];
 }
@@ -189,7 +188,7 @@ function getOrCreateModuleForRoot(moduleNamespace) {
  * @param moduleNamespace
  * @returns {*}
  */
-function firebaseRootModuleProxy(firebaseNamespace, moduleNamespace) {
+function firebaseRootModuleProxy(moduleNamespace: string) {
   if (NAMESPACE_REGISTRY[moduleNamespace]) {
     return getOrCreateModuleForRoot(moduleNamespace);
   }
@@ -209,9 +208,9 @@ function firebaseRootModuleProxy(firebaseNamespace, moduleNamespace) {
  * @param moduleNamespace
  * @returns {*}
  */
-export function firebaseAppModuleProxy(app, moduleNamespace) {
+export function firebaseAppModuleProxy(app: FirebaseApp, moduleNamespace: NamespaceTypes) {
   if (NAMESPACE_REGISTRY[moduleNamespace]) {
-    app._checkDestroyed();
+    // app._checkDestroyed();
     return getOrCreateModuleForApp(app, moduleNamespace);
   }
 
@@ -244,7 +243,7 @@ export function createFirebaseRoot() {
     const namespace = KNOWN_NAMESPACES[i];
     Object.defineProperty(FIREBASE_ROOT, namespace, {
       enumerable: false,
-      get: firebaseRootModuleProxy.bind(null, FIREBASE_ROOT, namespace),
+      get: firebaseRootModuleProxy.bind(null, namespace),
     });
   }
 
@@ -270,14 +269,21 @@ export function getFirebaseRoot() {
 export function createModuleNamespace(options: {
   namespace: NamespaceTypes;
   ModuleClass: FirebaseModule;
+  nativeEvents: any;
+  statics: any;
+  version: any;
+  nativeModuleName: any;
+  hasMultiAppSupport: any;
+  hasCustomUrlOrRegionSupport: boolean;
+  disablePrependCustomUrlOrRegion: boolean;
 }) {
-  const { namespace, ModuleClass } = options;
+  const { namespace } = options;
 
   if (!NAMESPACE_REGISTRY[namespace]) {
     // validation only for internal / module dev usage
-    if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
-      throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
-    }
+    // if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
+    //   throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
+    // }
 
     NAMESPACE_REGISTRY[namespace] = Object.assign({}, options);
   }

@@ -24,8 +24,9 @@ let firebaseJson: any = null;
 export default class FirebaseModule implements FirebaseModuleImpl {
   private _app: FirebaseApp;
   private _nativeModule: null;
-  private _customUrlOrRegion: string;
+  private _customUrlOrRegion: string | undefined;
   private _config: FirebaseModuleNamespaceImpl;
+  static __extended__: Record<string, unknown>;
 
   constructor(app: FirebaseApp, config: FirebaseModuleNamespaceImpl, customUrlOrRegion: string) {
     this._app = app;
@@ -50,6 +51,14 @@ export default class FirebaseModule implements FirebaseModuleImpl {
     return SharedEventEmitter;
   }
 
+  get customUrlOrRegion() {
+    return this._customUrlOrRegion;
+  }
+
+  get config() {
+    return this._config;
+  }
+
   // TODO Handle custom url or region?
   eventNameForApp({ ...args }) {
     return `${this.app.name}-${args.join('-')}`;
@@ -65,4 +74,4 @@ export default class FirebaseModule implements FirebaseModuleImpl {
 }
 
 // Instance of checks don't work once compiled
-FirebaseModule.__extended__ = {};
+// FirebaseModule.__extended__ = {};

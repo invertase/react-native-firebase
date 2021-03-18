@@ -19,7 +19,6 @@ import { isString } from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
-import FirebaseModule from '../FirebaseModule';
 import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
 
 // firebase.X
@@ -262,14 +261,9 @@ export function getFirebaseRoot() {
  * @returns {*}
  */
 export function createModuleNamespace(options = {}) {
-  const { namespace, ModuleClass } = options;
+  const { namespace } = options;
 
   if (!NAMESPACE_REGISTRY[namespace]) {
-    // validation only for internal / module dev usage
-    if (FirebaseModule.__extended__ !== ModuleClass.__extended__) {
-      throw new Error('INTERNAL ERROR: ModuleClass must be an instance of FirebaseModule.');
-    }
-
     NAMESPACE_REGISTRY[namespace] = Object.assign({}, options);
   }
 
