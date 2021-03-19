@@ -83,10 +83,15 @@ jobs:
           max_attempts: 3
           command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
 
-      - name: Verify JDK 1.8
-        # OpenJDK1.8 is the default in GitHub macOS 10.15 runner, setup is not required
-        # Run a check that exits with error unless it is 1.8 version to future-proof against unexpected upgrades
-        run: java -fullversion 2>&1 | grep '1.8'
+      - name: Configure JDK 1.11
+        uses: actions/setup-java@v1
+        with:
+          java-version: "11" # ubuntu-latest is about to default to 11, force it everywhere
+
+      - name: Verify JDK11
+        # Default JDK varies depending on different runner flavors, make sure we are on 11
+        # Run a check that exits with error unless it is 11 version to future-proof against unexpected upgrades
+        run: java -fullversion 2>&1 | grep '11.0'
         shell: bash
 
       - name: Build Android App
@@ -117,10 +122,10 @@ jobs:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
+          command: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
 
       - name: Create Emulator
-        run: echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
+        run: echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
 
       # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
       - name: Start Android Emulator
