@@ -38,8 +38,9 @@ jobs:
         with:
           fetch-depth: 50
 
-      - uses: actions/setup-node@v2-beta
-
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Install firebase CLI
         uses: nick-invision/retry@v2
         with:
@@ -217,7 +218,9 @@ jobs:
         with:
           fetch-depth: 50
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
