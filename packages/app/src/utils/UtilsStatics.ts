@@ -44,7 +44,7 @@ function processPathConstants(nativeModule: any) {
 
   for (let i = 0; i < PATH_NAMES.length; i++) {
     const path = PATH_NAMES[i];
-    paths[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
+    paths[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : '';
   }
 
   for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
