@@ -20,6 +20,8 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 const { RNFBAppModule } = NativeModules;
 
 class RNFBNativeEventEmitter extends NativeEventEmitter {
+  public ready: boolean;
+
   constructor() {
     super(RNFBAppModule);
     this.ready = false;

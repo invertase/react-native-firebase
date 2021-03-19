@@ -28,7 +28,7 @@ export function objectKeyValuesAreStrings(object: any) {
 
   for (let i = 0; i < entries.length; i++) {
     const [key, value] = entries[i];
-    if (!isString(key) || !isString(value)) {
+    if (!isString(key) || !isString(value as any)) {
       return false;
     }
   }

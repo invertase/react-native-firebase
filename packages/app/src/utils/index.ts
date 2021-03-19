@@ -83,5 +83,5 @@ export default createModuleNamespace({
   nativeEvents: false,
   hasMultiAppSupport: false,
   hasCustomUrlOrRegionSupport: false,
-  ModuleClass: FirebaseUtilsModule,
+  ModuleClass: null,
 });

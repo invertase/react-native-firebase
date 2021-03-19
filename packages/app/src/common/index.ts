@@ -46,7 +46,7 @@ export function once(fn: any, context: any) {
   let onceResult: any;
   let ranOnce = false;
 
-  return function onceInner(args: any) {
+  return function onceInner(this: any, args: any) {
     if (!ranOnce) {
       ranOnce = true;
       onceResult = fn.apply(context || this, args);

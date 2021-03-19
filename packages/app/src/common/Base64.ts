@@ -96,7 +96,7 @@ function fromData(data: Blob | ArrayBuffer | Uint8Array) {
 
     fileReader.onerror = function onerror(event) {
       fileReader.abort();
-      reject(event);
+      reject(event as any);
     };
 
     return promise;

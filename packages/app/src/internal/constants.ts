@@ -30,13 +30,10 @@ export const KNOWN_NAMESPACES = [
   'firestore',
   'functions',
   'iid',
-  'indexing',
   'storage',
   'dynamicLinks',
   'messaging',
   'naturalLanguage',
-  'ml',
-  'notifications',
   'perf',
   'utils',
 ];

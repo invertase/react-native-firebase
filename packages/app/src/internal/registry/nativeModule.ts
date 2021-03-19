@@ -153,15 +153,19 @@ function initialiseNativeModule(module: FirebaseModule) {
  */
 function subscribeToNativeModuleEvent(eventName: string) {
   if (!NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName]) {
-    RNFBNativeEventEmitter.addListener(eventName, event => {
-      if (event.appName) {
-        // native event has an appName property - auto prefix and internally emit
-        SharedEventEmitter.emit(`${event.appName}-${eventName}`, event, null);
-      } else {
-        // standard event - no need to prefix
-        SharedEventEmitter.emit(eventName, event, null);
-      }
-    });
+    RNFBNativeEventEmitter.addListener(
+      eventName,
+      (event: any) => {
+        if (event.appName) {
+          // native event has an appName property - auto prefix and internally emit
+          SharedEventEmitter.emit(`${event.appName}-${eventName}`, event, null);
+        } else {
+          // standard event - no need to prefix
+          SharedEventEmitter.emit(eventName, event, null);
+        }
+      },
+      null,
+    );
 
     NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName] = true;
   }

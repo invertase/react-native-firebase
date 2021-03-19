@@ -17,13 +17,16 @@
 
 import { isFunction } from './validate';
 
-/**
- *
- */
-export function promiseDefer() {
+interface PromiseDefer<T = void> {
+  promise: Promise<T>;
+  resolve: (result: T) => void;
+  reject: (error?: Error) => void;
+}
+export function promiseDefer<T>(): PromiseDefer<T> {
   const deferred = {
-    resolve: null,
-    reject: null,
+    promise: null as any,
+    resolve: null as any,
+    reject: null as any,
   };
 
   deferred.promise = new Promise((resolve, reject) => {
