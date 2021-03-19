@@ -120,7 +120,7 @@ export function initializeApp(
     };
   }
 
-  if (isUndefined(appConfig?.name)) {
+  if (isUndefined(appConfig?.name || '')) {
     appConfig.name = DEFAULT_APP_NAME;
   }
 

@@ -71,10 +71,6 @@ class FirebaseUtilsModule extends FirebaseModule {
     }
     return this.native.androidResolutionForPlayServices();
   }
-
-  logInfo(...args) {
-    return logger.logInfo(...args);
-  }
 }
 
 // import { utils } from '@react-native-firebase/app';

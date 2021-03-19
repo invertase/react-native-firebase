@@ -61,7 +61,7 @@ export function pathLastComponent(path) {
  * @param path
  * @returns {*}
  */
-export function pathPieces(path) {
+export function pathPieces(path: string) {
   return path.split('/').filter($ => $.length > 0);
 }
 

@@ -25,7 +25,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     this.ready = false;
   }
 
-  addListener(eventType, listener, context) {
+  addListener(eventType: any, listener: any, context: any) {
     if (!this.ready) {
       RNFBAppModule.eventsNotifyReady(true);
       this.ready = true;
@@ -34,12 +34,12 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     return super.addListener(`rnfb_${eventType}`, listener, context);
   }
 
-  removeAllListeners(eventType) {
+  removeAllListeners(eventType: any) {
     RNFBAppModule.eventsRemoveListener(eventType, true);
     super.removeAllListeners(`rnfb_${eventType}`);
   }
 
-  removeSubscription(subscription) {
+  removeSubscription(subscription: any) {
     RNFBAppModule.eventsRemoveListener(subscription.eventType.replace('rnfb_'), false);
     super.removeSubscription(subscription);
   }

@@ -9,7 +9,7 @@ let lastPushTime = 0;
 // timestamp to prevent collisions with other clients.  We store the last characters we
 // generated because in the event of a collision, we'll use those same characters except
 // "incremented" by one.
-const lastRandChars = [];
+const lastRandChars: Array<any> = [];
 
 /**
  * Generate a firebase id - for use with ref().push(val, cb) - e.g. -KXMr7k2tXUFQqiaZRY4'

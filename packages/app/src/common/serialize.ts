@@ -18,7 +18,7 @@
 import { tryJSONParse, tryJSONStringify } from './index';
 import { isObject } from './validate';
 
-export function serializeType(value) {
+export function serializeType(value: any) {
   if (isObject(value)) {
     return {
       type: 'object',
@@ -32,7 +32,7 @@ export function serializeType(value) {
   };
 }
 
-export function serializeObject(object) {
+export function serializeObject(object: any) {
   if (!isObject(object)) {
     return object;
   }

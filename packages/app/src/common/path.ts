@@ -18,7 +18,7 @@
 /**
  * Returns the next parent of the path e.g. /foo/bar/car -> /foo/bar
  */
-export function pathParent(path) {
+export function pathParent(path: string) {
   if (path.length === 0) {
     return null;
   }
@@ -34,7 +34,7 @@ export function pathParent(path) {
 /**
  * Joins a parent and a child path
  */
-export function pathChild(path, childPath) {
+export function pathChild(path: string, childPath: string) {
   const canonicalChildPath = pathPieces(childPath).join('/');
 
   if (path.length === 0) {
@@ -47,7 +47,7 @@ export function pathChild(path, childPath) {
 /**
  * Returns the last component of a path, e.g /foo/bar.jpeg -> bar.jpeg
  */
-export function pathLastComponent(path) {
+export function pathLastComponent(path: string) {
   const index = path.lastIndexOf('/', path.length - 2);
   if (index === -1) {
     return path;
@@ -61,7 +61,7 @@ export function pathLastComponent(path) {
  * @param path
  * @returns {*}
  */
-export function pathPieces(path) {
+export function pathPieces(path: string) {
   return path.split('/').filter($ => $.length > 0);
 }
 
@@ -70,7 +70,7 @@ export function pathPieces(path) {
  * @param path
  * @returns {boolean}
  */
-export function pathIsEmpty(path) {
+export function pathIsEmpty(path: string) {
   return !pathPieces(path).length;
 }
 
@@ -79,7 +79,7 @@ export function pathIsEmpty(path) {
  * @param path
  * @returns {string|string}
  */
-export function pathToUrlEncodedString(path) {
+export function pathToUrlEncodedString(path: string) {
   const pieces = pathPieces(path);
   let pathString = '';
   for (let i = 0; i < pieces.length; i++) {
@@ -96,7 +96,7 @@ export const INVALID_PATH_REGEX = /[[\].#$\u0000-\u001F\u007F]/;
  * @param path
  * @returns {boolean}
  */
-export function isValidPath(path) {
+export function isValidPath(path: string) {
   return typeof path === 'string' && path.length !== 0 && !INVALID_PATH_REGEX.test(path);
 }
 
@@ -108,8 +108,8 @@ export const INVALID_KEY_REGEX = /[\[\].#$\/\u0000-\u001F\u007F]/;
  * @param key
  * @returns {boolean}
  */
-export function isValidKey(key) {
-  return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(path);
+export function isValidKey(key: string) {
+  return typeof key === 'string' && key.length !== 0 && !INVALID_KEY_REGEX.test(key);
 }
 
 /**
@@ -117,7 +117,7 @@ export function isValidKey(key) {
  * @param path
  * @returns {*}
  */
-export function toFilePath(path) {
+export function toFilePath(path: string) {
   let _filePath = path.replace('file://', '');
   if (_filePath.includes('%')) {
     _filePath = decodeURIComponent(_filePath);

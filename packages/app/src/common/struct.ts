@@ -19,11 +19,11 @@ import { isUndefined } from './validate';
 
 export default superstruct({
   types: {
-    shortDate: value => typeof value === 'string' && !!value.match(/^\d{4}-\d{2}-\d{2}$/),
+    shortDate: (value: string) => typeof value === 'string' && !!value.match(/^\d{4}-\d{2}-\d{2}$/),
   },
 });
 
-export const validateStruct = (value = {}, struct, prefix = '') => {
+export const validateStruct = (value: any = {}, struct: any, prefix = '') => {
   try {
     return struct(value);
   } catch (e) {
@@ -40,7 +40,12 @@ export const validateStruct = (value = {}, struct, prefix = '') => {
   }
 };
 
-export const validateCompound = (source = {}, a, b, prefix = '') => {
+export const validateCompound = (
+  source: { [path: string]: any } = {},
+  a: string,
+  b: string,
+  prefix = '',
+) => {
   if (
     (isUndefined(source[a]) && !isUndefined(source[b])) ||
     (!isUndefined(source[a]) && isUndefined(source[b]))

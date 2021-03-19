@@ -16,11 +16,19 @@
  */
 
 export default class NativeFirebaseError extends Error {
-  static fromEvent(errorEvent, namespace, stack) {
+  static fromEvent(errorEvent: any, namespace: any, stack: any) {
     return new NativeFirebaseError({ userInfo: errorEvent }, stack || new Error().stack, namespace);
   }
 
-  constructor(nativeError, jsStack, namespace) {
+  namespace!: any;
+  code!: any;
+  message!: any;
+  jsStack!: any;
+  userInfo!: any;
+  nativeErrorCode!: any;
+  nativeErrorMessage!: any;
+
+  constructor(nativeError: any, jsStack: any, namespace: any) {
     super();
     const { userInfo } = nativeError;
 
@@ -74,7 +82,7 @@ export default class NativeFirebaseError extends Error {
    *
    * @returns {string}
    */
-  static getStackWithMessage(message, jsStack) {
+  static getStackWithMessage(message: string, jsStack: string) {
     return [message, ...jsStack.split('\n').slice(2, 13)].join('\n');
   }
 }

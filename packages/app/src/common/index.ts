@@ -26,7 +26,7 @@ export * from './validate';
 export { default as Base64 } from './Base64';
 export { default as ReferenceBase } from './ReferenceBase';
 
-export function getDataUrlParts(dataUrlString) {
+export function getDataUrlParts(dataUrlString: string) {
   const isBase64 = dataUrlString.includes(';base64');
   let [mediaType, base64String] = dataUrlString.split(',');
   if (!mediaType || !base64String) {
@@ -42,11 +42,11 @@ export function getDataUrlParts(dataUrlString) {
   return { base64String, mediaType };
 }
 
-export function once(fn, context) {
-  let onceResult;
+export function once(fn: any, context: any) {
+  let onceResult: any;
   let ranOnce = false;
 
-  return function onceInner(...args) {
+  return function onceInner(args: any) {
     if (!ranOnce) {
       ranOnce = true;
       onceResult = fn.apply(context || this, args);
@@ -56,7 +56,7 @@ export function once(fn, context) {
   };
 }
 
-export function isError(value) {
+export function isError(value: any) {
   if (Object.prototype.toString.call(value) === '[object Error]') {
     return true;
   }
@@ -64,7 +64,7 @@ export function isError(value) {
   return value instanceof Error;
 }
 
-export function hasOwnProperty(target, property) {
+export function hasOwnProperty(target: any, property: any) {
   return Object.hasOwnProperty.call(target, property);
 }
 
@@ -74,7 +74,7 @@ export function hasOwnProperty(target, property) {
  * @param string
  * @returns {*}
  */
-export function stripTrailingSlash(string) {
+export function stripTrailingSlash(string: string) {
   if (!isString(string)) {
     return string;
   }
@@ -85,7 +85,7 @@ export const isIOS = Platform.OS === 'ios';
 
 export const isAndroid = Platform.OS === 'android';
 
-export function tryJSONParse(string) {
+export function tryJSONParse(string: string) {
   try {
     return string && JSON.parse(string);
   } catch (jsonError) {
@@ -93,10 +93,10 @@ export function tryJSONParse(string) {
   }
 }
 
-export function tryJSONStringify(data) {
+export function tryJSONStringify(data: any) {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {
-    return null;
+    return '';
   }
 }

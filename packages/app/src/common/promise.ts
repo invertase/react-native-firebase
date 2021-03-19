@@ -38,13 +38,13 @@ export function promiseDefer() {
  * @param promise
  * @param callback
  */
-export function promiseWithOptionalCallback(promise, callback) {
+export function promiseWithOptionalCallback(promise: any, callback: any) {
   if (!isFunction(callback)) {
     return promise;
   }
 
   return promise
-    .then(result => {
+    .then((result: any) => {
       if (callback && callback.length === 1) {
         callback(null);
       } else if (callback) {
@@ -53,7 +53,7 @@ export function promiseWithOptionalCallback(promise, callback) {
 
       return result;
     })
-    .catch(error => {
+    .catch((error: any) => {
       if (callback) {
         callback(error);
       }

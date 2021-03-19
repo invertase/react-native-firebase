@@ -23,7 +23,7 @@ let firebaseJson: any = null;
 
 export default class FirebaseModule implements FirebaseModuleImpl {
   private _app: FirebaseApp;
-  private _nativeModule: null;
+  private _nativeModule: any;
   private _customUrlOrRegion: string | undefined;
   private _config: FirebaseModuleNamespaceImpl;
   static __extended__: Record<string, unknown>;

@@ -25,7 +25,7 @@ import { isArray, isObject } from './validate';
  * @param joiner
  * @returns {*}
  */
-export function deepGet(object, path, joiner = '/') {
+export function deepGet(object: any, path: any, joiner = '/') {
   if (!isObject(object) && !Array.isArray(object)) {
     return undefined;
   }
@@ -54,7 +54,7 @@ export function deepGet(object, path, joiner = '/') {
  * @param initPaths
  * @param joiner
  */
-export function deepSet(object, path, value, initPaths = true, joiner = '.') {
+export function deepSet(object: any, path: any, value: any, initPaths = true, joiner = '.') {
   if (!isObject(object)) {
     return false;
   }

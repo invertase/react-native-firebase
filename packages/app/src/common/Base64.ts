@@ -24,7 +24,7 @@ const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=
 /**
  * window.btoa
  */
-function btoa(input) {
+function btoa(input: string) {
   let map;
   let i = 0;
   let block = 0;
@@ -52,7 +52,7 @@ function btoa(input) {
 /**
  * window.atob
  */
-function atob(input) {
+function atob(input: any) {
   let i = 0;
   let bc = 0;
   let bs = 0;
@@ -83,7 +83,7 @@ function atob(input) {
 /**
  * Converts a Blob, ArrayBuffer or Uint8Array to a base64 string.
  */
-function fromData(data) {
+function fromData(data: Blob | ArrayBuffer | Uint8Array) {
   if (data instanceof Blob) {
     const fileReader = new FileReader();
     const { resolve, reject, promise } = promiseDefer();
