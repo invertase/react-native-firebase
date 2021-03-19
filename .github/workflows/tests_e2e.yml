@@ -32,9 +32,7 @@ jobs:
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      - uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.8.0
 
       - uses: actions/checkout@v2
         with:
@@ -213,9 +211,7 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.8.0
 
       - uses: actions/checkout@v2
         with:
