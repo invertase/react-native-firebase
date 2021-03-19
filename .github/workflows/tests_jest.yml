@@ -26,9 +26,7 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.6.0
-        with:
-          access_token: ${{ github.token }}
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
         with:
           fetch-depth: 50
