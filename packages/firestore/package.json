@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/firestore",
-  "version": "11.1.2",
+  "version": "11.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Cloud Firestore is a NoSQL cloud database to store and sync data between your React Native application and Firebase's database. The API matches the Firebase Web SDK whilst taking advantage of the native SDKs performance and offline capabilities.",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
     "firestore"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "11.1.2"
+    "@react-native-firebase/app": "11.2.0"
   },
   "publishConfig": {
     "access": "public"
