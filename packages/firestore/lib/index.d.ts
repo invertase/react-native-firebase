@@ -1549,7 +1549,7 @@ export namespace FirebaseFirestoreTypes {
    * A reference to a transaction. The `Transaction` object passed to a transaction's updateFunction provides the methods to
    * read and write data within the transaction context. See `Firestore.runTransaction()`.
    *
-   * A transaction consists of any number of `get()` operations followed by any number of write operations such as set(),
+   * A transaction consists of any number of `get()` operations followed by any number of write operations such as `set()`,
    * `update()`, or `delete()`. In the case of a concurrent edit, Cloud Firestore runs the entire transaction again. For example,
    * if a transaction reads documents and another client modifies any of those documents, Cloud Firestore retries the transaction.
    * This feature ensures that the transaction runs on up-to-date and consistent data.
