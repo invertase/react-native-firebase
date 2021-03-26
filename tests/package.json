@@ -24,7 +24,7 @@
     "@react-native-firebase/perf": "11.1.2",
     "@react-native-firebase/remote-config": "11.1.2",
     "@react-native-firebase/storage": "11.1.2",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-native": "0.64.0"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "17.14.6",
-    "firebase-tools": "^9.6.0",
+    "firebase-tools": "^9.8.0",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jet": "^0.6.6-0",
@@ -43,7 +43,7 @@
     "react-native-port-patcher": "^1.0.4",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^9.2.2"
+    "sinon": "^10.0.0"
   },
   "detox": {
     "test-runner": "mocha",
