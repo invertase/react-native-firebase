@@ -1045,8 +1045,11 @@ describe('auth()', function () {
   });
 
   describe('useUserAccessGroup()', function () {
-    it('should return "null" on successful keychain implementation', async function () {
-      const successfulKeychain = await firebase.auth().useUserAccessGroup('mysecretkeychain');
+    // Android simply does Promise.resolve, that is sufficient for this test multi-platform
+    it('should return "null" when accessing a group that exists', async function () {
+      const successfulKeychain = await firebase
+        .auth()
+        .useUserAccessGroup('YYX2P3XVJ7.com.invertase.testing'); // iOS signing team is YYX2P3XVJ7
 
       should.not.exist(successfulKeychain);
 
@@ -1055,5 +1058,38 @@ describe('auth()', function () {
 
       should.not.exist(resetKeychain);
     });
+
+    it('should throw when requesting an inaccessible group', async function () {
+      // Android will never throw, so this test is iOS only
+      if (device.getPlatform() === 'ios') {
+        try {
+          await firebase.auth().useUserAccessGroup('there.is.no.way.this.group.exists');
+          throw new Error('Should have thrown an error for inaccessible group');
+        } catch (e) {
+          e.message.should.containEql('auth/keychain-error');
+        }
+      }
+    });
+  });
+
+  describe('setTenantId()', function () {
+    it('should return null if tenantId unset', function () {
+      should.not.exist(firebase.auth().tenantId);
+    });
+
+    // multi-tenant is not supported by the firebase auth emulator, and requires a valid multi-tenant tenantid
+    // After setting this, next user creation will result in internal error on emulator, or auth/invalid-tenant-id live
+    // it('should return tenantId correctly after setting', async function () {
+    //   await firebase.auth().setTenantId('testTenantId');
+    //   firebase.auth().tenantId.should.equal('testTenantId');
+    // });
+    // it('user should have tenant after setting tenantId', async function () {
+    //   await firebase.auth().setTenantId('userTestTenantId');
+    //   firebase.auth().tenantId.should.equal('userTestTenantId');
+    //   const random = Utils.randString(12, '#a');
+    //   const email = `${random}@${random}.com`;
+    //   const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, random);
+    //   userCredential.user.tenantId.should.equal('userTestTenantId');
+    // });
   });
 });

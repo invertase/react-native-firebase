@@ -160,9 +160,8 @@ the problem, however it is recommended you read the Android documentation to und
 
 ### Hermes Support
 
-At this time, React Native Firebase does not support the [Hermes](https://hermesengine.dev/) JavaScript engine due to
-compatibility issues. We are actively tracking the changes to Hermes and will ensure support once both are compatible
-with each other.
+To support the [Hermes](https://hermesengine.dev/) JavaScript engine, React Native 0.64.0 or newer is required.
+However, we cannot guarantee that React Native Firebase works perfectly on it, so please test your project carefully.
 
 ### Overriding Native SDK Versions
 

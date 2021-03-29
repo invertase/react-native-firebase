@@ -900,6 +900,13 @@ RCT_EXPORT_METHOD(setLanguageCode:
   
 }
 
+RCT_EXPORT_METHOD(setTenantId:
+  (FIRApp *) firebaseApp
+    :(NSString *) tenantID
+) {
+    [FIRAuth authWithApp:firebaseApp].tenantID = tenantID;
+}
+
 RCT_EXPORT_METHOD(useDeviceLanguage:
   (FIRApp *) firebaseApp
 ) {
@@ -1203,6 +1210,7 @@ RCT_EXPORT_METHOD(useEmulator:
       @"providerData": [self convertProviderData:user.providerData],
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
+      @"tenantId": user.tenantID ? (id) user.tenantID : [NSNull null],
       keyUid: user.uid
   };
 }

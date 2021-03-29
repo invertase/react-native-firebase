@@ -1628,6 +1628,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * setTenantId
+   *
+   * @param appName
+   * @param tenantId
+   */
+  @ReactMethod
+  public void setTenantId(String appName, String tenantId) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth.setTenantId(tenantId);
+  }
+
+  /**
    * useDeviceLanguage
    *
    * @param appName
@@ -1957,6 +1970,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     final String provider = user.getProviderId();
     final boolean verified = user.isEmailVerified();
     final String phoneNumber = user.getPhoneNumber();
+    final String tenantId = user.getTenantId();
 
     userMap.putString("uid", uid);
     userMap.putString("providerId", provider);
@@ -1985,6 +1999,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       userMap.putString("phoneNumber", phoneNumber);
     } else {
       userMap.putNull("phoneNumber");
+    }
+
+    if (tenantId != null && !"".equals(tenantId)) {
+      userMap.putString("tenantId", tenantId);
+    } else {
+      userMap.putNull("tenantId");
     }
 
     userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));

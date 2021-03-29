@@ -233,3 +233,37 @@ React Native Crashlytics module is generating additional non-fatal issues on Jav
   }
 }
 ```
+
+## Crashlytics non-fatal exceptions native handling
+
+In case you need to log non-fatal (handled) exceptions on the native side (e.g from `try catch` block), you may use the following static methods:
+<br />
+### Android
+
+```
+try {
+  //...
+} catch (Exception e) {
+  ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
+  return null;
+}
+```
+
+### iOS
+
+```
+@try {
+  //...
+} @catch (NSException *exception) {
+  NSMutableDictionary * info = [NSMutableDictionary dictionary];
+  [info setValue:exception.name forKey:@"ExceptionName"];
+  [info setValue:exception.reason forKey:@"ExceptionReason"];
+  [info setValue:exception.callStackReturnAddresses forKey:@"ExceptionCallStackReturnAddresses"];
+  [info setValue:exception.callStackSymbols forKey:@"ExceptionCallStackSymbols"];
+  [info setValue:exception.userInfo forKey:@"ExceptionUserInfo"];
+
+  NSError *error = [[NSError alloc] initWithDomain:yourdomain code:errorcode userInfo:info];
+  [RNFBCrashlyticsNativeHelper recordNativeError:error];
+}
+
+```

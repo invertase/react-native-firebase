@@ -69,6 +69,7 @@ class FirebaseAuthModule extends FirebaseModule {
     this._settings = null;
     this._authResult = false;
     this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+    this._tenantId = null;
 
     if (!this.languageCode) {
       this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
@@ -99,6 +100,10 @@ class FirebaseAuthModule extends FirebaseModule {
 
   get languageCode() {
     return this._languageCode;
+  }
+
+  get tenantId() {
+    return this._tenantId;
   }
 
   get settings() {
@@ -148,6 +153,14 @@ class FirebaseAuthModule extends FirebaseModule {
     } else {
       this._languageCode = code;
     }
+  }
+
+  async setTenantId(tenantId) {
+    if (!isString(tenantId)) {
+      throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
+    }
+    this._tenantId = tenantId;
+    await this.native.setTenantId(tenantId);
   }
 
   _parseListener(listenerOrObserver) {

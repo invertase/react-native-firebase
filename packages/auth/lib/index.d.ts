@@ -398,6 +398,10 @@ export namespace FirebaseAuthTypes {
      */
     providerId: string;
     /**
+     * Returns a string representing the multi-tenant tenant id. This is null if the user is not associated with a tenant.
+     */
+    tenantId?: string;
+    /**
      * Returns a user identifier as specified by the authentication provider.
      */
     uid: string;
@@ -1202,6 +1206,16 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * Returns the current tenant Id or null if it has never been set
+     *
+     * #### Example
+     *
+     * ```js
+     * const tenantId = firebase.auth().tenantId;
+     * ```
+     */
+    tenantId: string | null;
+    /**
      * Returns the current language code.
      *
      * #### Example
@@ -1228,6 +1242,19 @@ export namespace FirebaseAuthTypes {
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
+    /**
+     * Sets the tenant id.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().setTenantId('tenant-123');
+     * ```
+     *
+     * @error auth/invalid-tenant-id if the tenant id is invalid for some reason
+     * @param tenantId the tenantID current app bind to.
+     */
+    setTenantId(tenantId: string): Promise<void>;
     /**
      * Sets the language code.
      *
@@ -1638,6 +1665,7 @@ export namespace FirebaseAuthTypes {
      *
      * @platform ios
      *
+     * @error auth/keychain-error Thrown if you attempt to access an inaccessible keychain
      * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
      */
     useUserAccessGroup(userAccessGroup: string): Promise<null>;

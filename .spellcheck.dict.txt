@@ -62,6 +62,7 @@ Invertase
 invertase
 iOS
 iOS13
+IPs
 JS
 JSON
 launchProperties
@@ -136,6 +137,7 @@ utils
 Utils
 v5
 v6
+VPN
 VSCode
 Wix
 Xcode
