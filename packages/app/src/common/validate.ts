@@ -19,7 +19,7 @@ import { Platform } from 'react-native';
 
 const AlphaNumericUnderscore = /^[a-zA-Z0-9_]+$/;
 
-export function objectKeyValuesAreStrings(object: any) {
+export function objectKeyValuesAreStrings(object: any): object is string[] {
   if (!isObject(object)) {
     return false;
   }
@@ -42,7 +42,7 @@ export function objectKeyValuesAreStrings(object: any) {
  * @param value
  * @returns {boolean}
  */
-export function isNull(value: any) {
+export function isNull(value: any): value is null {
   return value === null;
 }
 
@@ -52,7 +52,7 @@ export function isNull(value: any) {
  * @param value
  * @returns {boolean}
  */
-export function isObject(value: any) {
+export function isObject(value: any): value is Record<string, unknown> {
   return value ? typeof value === 'object' && !Array.isArray(value) && !isNull(value) : false;
 }
 
@@ -62,7 +62,7 @@ export function isObject(value: any) {
  * @param value
  * @returns {boolean}
  */
-export function isDate(value: any) {
+export function isDate(value: any): value is Date {
   // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
   return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
 }
@@ -73,7 +73,9 @@ export function isDate(value: any) {
  * @param value
  * @returns {*|boolean}
  */
-export function isFunction(value: any) {
+// TODO(ehesp): Better function type
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function isFunction(value: any): value is Function {
   return value ? typeof value === 'function' : false;
 }
 
@@ -82,7 +84,7 @@ export function isFunction(value: any) {
  * @param value
  * @return {boolean}
  */
-export function isString(value: string) {
+export function isString(value: any): value is string {
   return typeof value === 'string';
 }
 
@@ -91,7 +93,7 @@ export function isString(value: string) {
  * @param value
  * @return {boolean}
  */
-export function isNumber(value: number) {
+export function isNumber(value: any): value is number {
   return typeof value === 'number';
 }
 
@@ -100,7 +102,7 @@ export function isNumber(value: number) {
  * @param value
  * @returns {boolean}
  */
-export function isFinite(value: number) {
+export function isFinite(value: any): boolean {
   return Number.isFinite(value);
 }
 
@@ -109,7 +111,7 @@ export function isFinite(value: number) {
  * @param value
  * @returns {boolean}
  */
-export function isInteger(value: number) {
+export function isInteger(value: any): boolean {
   return Number.isInteger(value);
 }
 
@@ -119,7 +121,7 @@ export function isInteger(value: number) {
  * @param value
  * @return {boolean}
  */
-export function isBoolean(value: string) {
+export function isBoolean(value: any): value is boolean {
   return typeof value === 'boolean';
 }
 
@@ -128,7 +130,7 @@ export function isBoolean(value: string) {
  * @param value
  * @returns {arg is Array<any>}
  */
-export function isArray(value: Array<any>) {
+export function isArray<T = unknown>(value: any): value is Array<T> {
   return Array.isArray(value);
 }
 
@@ -137,7 +139,7 @@ export function isArray(value: Array<any>) {
  * @param value
  * @returns {boolean}
  */
-export function isUndefined(value: string) {
+export function isUndefined(value: any): value is undefined {
   return typeof value === 'undefined';
 }
 
@@ -147,7 +149,7 @@ export function isUndefined(value: string) {
  * @param value
  * @returns {boolean}
  */
-export function isAlphaNumericUnderscore(value: string) {
+export function isAlphaNumericUnderscore(value: string): boolean {
   return AlphaNumericUnderscore.test(value);
 }
 
@@ -157,7 +159,7 @@ export function isAlphaNumericUnderscore(value: string) {
  * @returns {boolean}
  */
 const IS_VALID_URL_REGEX = /^(http|https):\/\/[^ "]+$/;
-export function isValidUrl(url: string) {
+export function isValidUrl(url: string): boolean {
   return IS_VALID_URL_REGEX.test(url);
 }
 
@@ -168,14 +170,14 @@ export function isValidUrl(url: string) {
  * @param oneOf
  * @returns {boolean}
  */
-export function isOneOf(value: any, oneOf: Array<any>) {
+export function isOneOf(value: any, oneOf: Array<any>): boolean {
   if (!isArray(oneOf)) {
     return false;
   }
   return oneOf.includes(value);
 }
 
-export function noop() {
+export function noop(): void {
   // noop-🐈
 }
 
@@ -183,7 +185,7 @@ export function validateOptionalNativeDependencyExists(
   firebaseJsonKey: any,
   apiName: any,
   nativeFnExists: any,
-) {
+): void {
   if (nativeFnExists) {
     return;
   }

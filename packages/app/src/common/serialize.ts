@@ -18,7 +18,9 @@
 import { tryJSONParse, tryJSONStringify } from './index';
 import { isObject } from './validate';
 
-export function serializeType(value: any) {
+type SerializedType = { type: string; value: string };
+
+export function serializeType(value: any): SerializedType {
   if (isObject(value)) {
     return {
       type: 'object',
@@ -32,9 +34,9 @@ export function serializeType(value: any) {
   };
 }
 
-export function serializeObject(object: any) {
+export function serializeObject(object: any): string {
   if (!isObject(object)) {
-    return object;
+    return `${object}`;
   }
 
   // json stringify then parse it calls toString on Objects / Classes

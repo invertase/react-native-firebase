@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import { superstruct } from 'superstruct/lib/index';
+import { superstruct } from 'superstruct';
 import { isUndefined } from './validate';
 
 export default superstruct({

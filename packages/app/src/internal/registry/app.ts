@@ -33,7 +33,7 @@ let initializedNativeApps = false;
  * This was needed to avoid metro require cycles...
  * @param fn
  */
-export function setOnAppCreate(fn: AppFn) {
+export function setOnAppCreate(fn: AppFn): void {
   onAppCreateFn = fn;
 }
 
@@ -41,7 +41,7 @@ export function setOnAppCreate(fn: AppFn) {
  * This was needed to avoid metro require cycles...
  * @param fn
  */
-export function setOnAppDestroy(fn: AppFn) {
+export function setOnAppDestroy(fn: AppFn): void {
   onAppDestroyFn = fn;
 }
 
