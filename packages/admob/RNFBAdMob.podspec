@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.dependency          'RNFBApp'
 
   # Other dependencies
-  s.dependency          'PersonalizedAdConsent', '~> 1.0.4'
+  s.dependency          'PersonalizedAdConsent', '~> 1.0.5'
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
