@@ -47,6 +47,13 @@ NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED = @"cras
     enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
     DLog(@"isCrashlyticsCollectionEnabled via RNFBMeta: %d", enabled);
   }
+  
+#ifdef DEBUG
+  enabled = NO;
+  if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
+    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
+  }
+#endif
 
   DLog(@"isCrashlyticsCollectionEnabled: %d", enabled);
 
