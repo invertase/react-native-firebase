@@ -187,10 +187,10 @@ describe('firestore.Transaction', function () {
       });
 
       await firebase.firestore().runTransaction(async t => {
-        t.update(docRef1, {
+        await t.update(docRef1, {
           bar: value,
         });
-        t.update(docRef2, 'bar', value);
+        await t.update(docRef2, 'bar', value);
       });
 
       const expected = {
@@ -266,7 +266,7 @@ describe('firestore.Transaction', function () {
       };
 
       await firebase.firestore().runTransaction(async t => {
-        t.set(docRef, expected);
+        return t.set(docRef, expected);
       });
 
       const snapshot = await docRef.get();
