@@ -67,7 +67,7 @@
           "type": "boolean"
         },
         "android_task_executor_maximum_pool_size" : {
-          "description": "Maximum pool size of ThreadPoolExecutor used by RNFirebase for Android. Defaults to `1`.\n Larger value typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries.",
+          "description": "Maximum pool size of ThreadPoolExecutor used by RNFirebase for Android. Defaults to `1`.\n Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries.",d
           "type": "number"
         },
         "android_task_executor_keep_alive_seconds" : {
