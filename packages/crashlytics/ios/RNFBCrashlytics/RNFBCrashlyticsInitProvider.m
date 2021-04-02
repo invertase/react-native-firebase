@@ -49,10 +49,10 @@ NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED = @"cras
   }
   
 #ifdef DEBUG
-  enabled = NO;
-  if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_DEBUG_ENABLED]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO];
+  if (![[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO]) {
+    enabled = NO;
   }
+  DLog(@"isCrashlyticsCollectionEnabled after checking RNFBJSON %@: %d", KEY_CRASHLYTICS_DEBUG_ENABLED, enabled);
 #endif
 
   DLog(@"isCrashlyticsCollectionEnabled: %d", enabled);
