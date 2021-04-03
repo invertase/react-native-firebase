@@ -61,11 +61,15 @@ public class TaskExecutorService {
 
   public ExecutorService getExecutor(boolean isTransactional, String identifier) {
     String executorName = getExecutorName(isTransactional, identifier);
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) return existingExecutor;
-    ExecutorService newExecutor = getNewExecutor(isTransactional);
-    executors.put(executorName, newExecutor);
-    return newExecutor;
+    synchronized(executors) {
+      ExecutorService existingExecutor = executors.get(executorName);
+      if (existingExecutor == null) {
+        ExecutorService newExecutor = getNewExecutor(isTransactional);
+        executors.put(executorName, newExecutor);
+        return newExecutor;
+      }
+      return existingExecutor;
+    }
   }
 
   private ExecutorService getNewExecutor(boolean isTransactional) {
@@ -106,10 +110,12 @@ public class TaskExecutorService {
   }
 
   public void removeExecutor(String executorName) {
-    ExecutorService existingExecutor = executors.get(executorName);
-    if (existingExecutor != null) {
-      existingExecutor.shutdownNow();
-      executors.remove(executorName);
+    synchronized(executors) {
+      ExecutorService existingExecutor = executors.get(executorName);
+      if (existingExecutor != null) {
+        existingExecutor.shutdownNow();
+        executors.remove(executorName);
+      }
     }
   }
 }
