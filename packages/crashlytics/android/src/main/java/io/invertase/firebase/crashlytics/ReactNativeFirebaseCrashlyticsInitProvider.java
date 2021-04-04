@@ -42,6 +42,10 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
     } else {
       enabled = meta.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
     }
+    
+    if (!json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false) && BuildConfig.DEBUG) {
+      enabled = false;
+    }
 
     return enabled;
   }
