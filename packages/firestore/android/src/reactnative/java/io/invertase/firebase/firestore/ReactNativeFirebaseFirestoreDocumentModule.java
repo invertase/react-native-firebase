@@ -145,7 +145,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   public void documentDelete(String appName, String path, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
-    Tasks.call(getExecutor(), documentReference::delete).addOnCompleteListener(task -> {
+    Tasks.call(getTransactionalExecutor(), documentReference::delete).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(null);
       } else {
@@ -160,7 +160,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
 
-    Tasks.call(getExecutor(), () -> parseReadableMap(firebaseFirestore, data)).continueWithTask(getExecutor(), task -> {
+    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data)).continueWithTask(getTransactionalExecutor(), task -> {
       Task<Void> setTask;
       Map<String, Object> settableData = Objects.requireNonNull(task.getResult());
 
@@ -193,8 +193,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    Tasks.call(getExecutor(), () -> parseReadableMap(firebaseFirestore, data))
-      .continueWithTask(getExecutor(), task -> documentReference.update(Objects.requireNonNull(task.getResult())))
+    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+      .continueWithTask(getTransactionalExecutor(), task -> documentReference.update(Objects.requireNonNull(task.getResult())))
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(null);
@@ -208,8 +208,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   public void documentBatch(String appName, ReadableArray writes, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
 
-    Tasks.call(getExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
-      .continueWithTask(getExecutor(), task -> {
+    Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
+      .continueWithTask(getTransactionalExecutor(), task -> {
         WriteBatch batch = firebaseFirestore.batch();
         List<Object> writesArray = task.getResult();
 
