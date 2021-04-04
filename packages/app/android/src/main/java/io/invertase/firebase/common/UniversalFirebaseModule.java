@@ -18,16 +18,16 @@ package io.invertase.firebase.common;
  */
 
 import android.content.Context;
+import io.invertase.firebase.common.TaskExecutorService;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class UniversalFirebaseModule {
-  private static Map<String, ExecutorService> executors = new HashMap<>();
+  private final TaskExecutorService executorService;
 
   private final Context context;
   private final String serviceName;
@@ -35,6 +35,7 @@ public class UniversalFirebaseModule {
   protected UniversalFirebaseModule(Context context, String serviceName) {
     this.context = context;
     this.serviceName = serviceName;
+    this.executorService = new TaskExecutorService(getName());
   }
 
   public Context getContext() {
@@ -46,11 +47,7 @@ public class UniversalFirebaseModule {
   }
 
   protected ExecutorService getExecutor() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
-    if (existingSingleThreadExecutor != null) return existingSingleThreadExecutor;
-    ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor();
-    executors.put(getName(), newSingleThreadExecutor);
-    return newSingleThreadExecutor;
+    return executorService.getExecutor();
   }
 
   public String getName() {
@@ -59,11 +56,7 @@ public class UniversalFirebaseModule {
 
   @OverridingMethodsMustInvokeSuper
   public void onTearDown() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
-    if (existingSingleThreadExecutor != null) {
-      existingSingleThreadExecutor.shutdownNow();
-      executors.remove(getName());
-    }
+    executorService.shutdown();
   }
 
   public Map<String, Object> getConstants() {

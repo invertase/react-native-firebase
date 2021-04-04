@@ -221,8 +221,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(getExecutor(), localFilePath);
-    storageTask.addOnCompleteListener(getExecutor(), promise);
+    storageTask.begin(getTransactionalExecutor(), localFilePath);
+    storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
   }
 
   /**
@@ -244,8 +244,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(getExecutor(), string, format, metadataMap);
-    storageTask.addOnCompleteListener(getExecutor(),promise);
+    storageTask.begin(getTransactionalExecutor(), string, format, metadataMap);
+    storageTask.addOnCompleteListener(getTransactionalExecutor(),promise);
   }
 
   /**
@@ -266,8 +266,8 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       reference,
       appName
     );
-    storageTask.begin(getExecutor(),localFilePath, metadata);
-    storageTask.addOnCompleteListener(getExecutor(), promise);
+    storageTask.begin(getTransactionalExecutor(),localFilePath, metadata);
+    storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
   }
 
   @ReactMethod
