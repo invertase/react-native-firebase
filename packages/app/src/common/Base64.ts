@@ -16,6 +16,7 @@
  *
  */
 
+// @ts-ignore
 import binaryToBase64 from 'react-native/Libraries/Utilities/binaryToBase64';
 import { promiseDefer } from './promise';
 
@@ -24,7 +25,7 @@ const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=
 /**
  * window.btoa
  */
-function btoa(input: string) {
+function btoa(input: string): string {
   let map;
   let i = 0;
   let block = 0;
@@ -52,7 +53,7 @@ function btoa(input: string) {
 /**
  * window.atob
  */
-function atob(input: any) {
+function atob(input: string): string {
   let i = 0;
   let bc = 0;
   let bs = 0;
@@ -83,10 +84,12 @@ function atob(input: any) {
 /**
  * Converts a Blob, ArrayBuffer or Uint8Array to a base64 string.
  */
-function fromData(data: Blob | ArrayBuffer | Uint8Array) {
+type Base64Response = { string: string | ArrayBuffer; format: string };
+
+function fromData(data: Blob | ArrayBuffer | Uint8Array): Promise<Base64Response> {
   if (data instanceof Blob) {
     const fileReader = new FileReader();
-    const { resolve, reject, promise } = promiseDefer();
+    const { resolve, reject, promise } = promiseDefer<Base64Response, ProgressEvent<FileReader>>();
 
     fileReader.readAsDataURL(data);
 
@@ -96,7 +99,7 @@ function fromData(data: Blob | ArrayBuffer | Uint8Array) {
 
     fileReader.onerror = function onerror(event) {
       fileReader.abort();
-      reject(event as any);
+      reject(event);
     };
 
     return promise;

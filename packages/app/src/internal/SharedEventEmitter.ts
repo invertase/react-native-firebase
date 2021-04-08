@@ -15,6 +15,8 @@
  *
  */
 
+// @ts-ignore
+// TODO (ehesp): Types...
 import EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 export default new EventEmitter();

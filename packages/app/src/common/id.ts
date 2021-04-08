@@ -9,14 +9,14 @@ let lastPushTime = 0;
 // timestamp to prevent collisions with other clients.  We store the last characters we
 // generated because in the event of a collision, we'll use those same characters except
 // "incremented" by one.
-const lastRandChars: Array<any> = [];
+const lastRandChars: Array<number> = [];
 
 /**
  * Generate a firebase id - for use with ref().push(val, cb) - e.g. -KXMr7k2tXUFQqiaZRY4'
  * @param serverTimeOffset - pass in server time offset from native side
  * @returns {string}
  */
-export function generateDatabaseId(serverTimeOffset = 0) {
+export function generateDatabaseId(serverTimeOffset = 0): string {
   const timeStampChars = new Array(8);
   let now = new Date().getTime() + serverTimeOffset;
   const duplicateTime = now === lastPushTime;
@@ -41,7 +41,7 @@ export function generateDatabaseId(serverTimeOffset = 0) {
   } else {
     // if the timestamp hasn't changed since last push,
     // use the same random number, but increment it by 1.
-    let i;
+    let i: number;
     for (i = 11; i >= 0 && lastRandChars[i] === 63; i -= 1) {
       lastRandChars[i] = 0;
     }
@@ -64,7 +64,7 @@ export function generateDatabaseId(serverTimeOffset = 0) {
  * Generate a firestore auto id for use with collection/document .add()
  * @return {string}
  */
-export function generateFirestoreId() {
+export function generateFirestoreId(): string {
   let autoId = '';
 
   for (let i = 0; i < 20; i++) {

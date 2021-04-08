@@ -56,7 +56,7 @@ export function once(fn: any, context: any) {
   };
 }
 
-export function isError(value: any) {
+export function isError(value: any): value is Error {
   if (Object.prototype.toString.call(value) === '[object Error]') {
     return true;
   }
@@ -64,7 +64,7 @@ export function isError(value: any) {
   return value instanceof Error;
 }
 
-export function hasOwnProperty(target: any, property: any) {
+export function hasOwnProperty(target: any, property: any): boolean {
   return Object.hasOwnProperty.call(target, property);
 }
 
@@ -74,7 +74,7 @@ export function hasOwnProperty(target: any, property: any) {
  * @param string
  * @returns {*}
  */
-export function stripTrailingSlash(string: string) {
+export function stripTrailingSlash(string: string): string {
   if (!isString(string)) {
     return string;
   }
@@ -85,7 +85,7 @@ export const isIOS = Platform.OS === 'ios';
 
 export const isAndroid = Platform.OS === 'android';
 
-export function tryJSONParse(string: string) {
+export function tryJSONParse(string: string): string {
   try {
     return string && JSON.parse(string);
   } catch (jsonError) {
@@ -93,7 +93,7 @@ export function tryJSONParse(string: string) {
   }
 }
 
-export function tryJSONStringify(data: any) {
+export function tryJSONStringify(data: any): string {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {

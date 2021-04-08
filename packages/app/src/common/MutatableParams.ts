@@ -18,33 +18,32 @@
 import { deepGet, deepSet } from './deeps';
 
 export default class MutatableParams {
-  private _mutatableParams: any;
-  private _parentInstance: any;
+  private _mutatableParams: MutatableParams | undefined = undefined;
+  private _parentInstance: MutatableParams;
 
-  constructor(parentInstance: any) {
+  constructor(parentInstance?: MutatableParams) {
     if (parentInstance) {
       this._mutatableParams = parentInstance._mutatableParams;
       this._parentInstance = parentInstance;
     } else {
-      this._mutatableParams = {};
       this._parentInstance = this;
     }
   }
 
-  set(param: any, value: any) {
-    deepSet(this._mutatableParams, param, value);
+  set(param: string, value: any): MutatableParams {
+    deepSet(this._mutatableParams || {}, param, value);
     return this._parentInstance;
   }
 
-  get(param: any) {
-    return deepGet(this._mutatableParams, param, '.');
+  get<T = unknown>(param: string) {
+    return deepGet<T>(this._mutatableParams || {}, param, '.');
   }
 
-  toJSON() {
-    return Object.assign({}, this._mutatableParams);
+  toJSON(): MutatableParams {
+    return Object.assign({}, this._mutatableParams || {}) as MutatableParams;
   }
 
-  validate() {
+  validate(): void {
     // do nothing
   }
 }

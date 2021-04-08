@@ -39,7 +39,7 @@ export default class ReferenceBase {
    * @type {String}
    * {@link https://firebase.google.com/docs/reference/js/firebase.database.Reference#key}
    */
-  get key() {
+  get key(): string | null {
     return this.path === '/' ? null : this.path.substring(this.path.lastIndexOf('/') + 1);
   }
 }
