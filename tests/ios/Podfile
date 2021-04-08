@@ -5,7 +5,7 @@ appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
 #$FirebaseSDKVersion = '7.7.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
-$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
+#$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
 # Versions used below, for quick reference / outdated+upgrade checks
 $iOSMinimumDeployVersion = '10.0'
@@ -26,6 +26,9 @@ target 'testing' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => false
   )
+
+  # Use pre-compiled firestore frameworks to optimize compile time. But make sure there are not leveldb conflicts.
+  $FirebaseFirestoreExcludeLeveldb = true
   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # Enables Flipper.
