@@ -658,11 +658,11 @@ export namespace FirebaseDatabaseTypes {
      *
      */
     on(
-      eventType?: EventType,
-      callback?: (data: DataSnapshot, previousChildKey?: string) => void,
+      eventType: EventType,
+      callback: (data: DataSnapshot, previousChildKey?: string | null) => void,
       cancelCallbackOrContext?: ((a: Error) => void) | Record<string, any> | null,
       context?: Record<string, any> | null,
-    ): (a: DataSnapshot, b?: string | null) => void;
+    ): (a: DataSnapshot | null, b?: string | null) => void;
 
     /**
      * Listens for exactly one event of the specified event type, and then stops listening.
