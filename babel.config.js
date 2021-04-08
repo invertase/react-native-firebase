@@ -1,15 +1,5 @@
 module.exports = {
   env: {
-    development: {
-      presets: [
-        [
-          '@invertase/react-native-syntax',
-          {
-            flow: 'comment',
-          },
-        ],
-      ],
-    },
     test: {
       presets: [
         [
@@ -21,17 +11,6 @@ module.exports = {
           },
         ],
         'module:./tests/node_modules/metro-react-native-babel-preset',
-        '@babel/preset-flow',
-      ],
-    },
-    publish: {
-      presets: [
-        [
-          '@invertase/react-native-syntax',
-          {
-            flow: 'strip',
-          },
-        ],
       ],
     },
   },
