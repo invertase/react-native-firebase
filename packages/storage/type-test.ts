@@ -39,11 +39,8 @@ console.log(firebase.storage().maxDownloadRetryTime);
 console.log(firebase.storage().maxOperationRetryTime);
 
 const ref = firebase.storage().ref('foo');
-ref
-  .child('foo')
-  .delete()
-  .then();
-ref.listAll().then(result => {
+ref.child('foo').delete().then();
+ref.listAll().then((result: any) => {
   console.log(result.items);
   console.log(result.nextPageToken);
   console.log(result.prefixes);
@@ -51,10 +48,7 @@ ref.listAll().then(result => {
   console.log(result.prefixes[0].parent);
 });
 
-const task = firebase
-  .storage()
-  .ref('foo')
-  .putString('foo');
+const task = firebase.storage().ref('foo').putString('foo');
 task.pause().then();
 task.resume().then(bool => console.log(bool));
 task.cancel().then(bool => console.log(bool));
