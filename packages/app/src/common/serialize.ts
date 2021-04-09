@@ -20,7 +20,7 @@ import { isObject } from './validate';
 
 type SerializedType = { type: string; value: string };
 
-export function serializeType(value: any): SerializedType {
+export function serializeType(value: Record<string, unknown> | unknown): SerializedType {
   if (isObject(value)) {
     return {
       type: 'object',
@@ -34,7 +34,7 @@ export function serializeType(value: any): SerializedType {
   };
 }
 
-export function serializeObject(object: any): string {
+export function serializeObject(object: Record<string, unknown>): string {
   if (!isObject(object)) {
     return `${object}`;
   }

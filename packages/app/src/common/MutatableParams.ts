@@ -30,7 +30,7 @@ export default class MutatableParams {
     }
   }
 
-  set(param: string, value: any): MutatableParams {
+  set(param: string, value: unknown): MutatableParams {
     deepSet(this._mutatableParams || {}, param, value);
     return this._parentInstance;
   }

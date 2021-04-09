@@ -15,7 +15,7 @@
  *
  */
 
-import { EventEmitter, NativeModule } from "react-native";
+import { EventEmitter, NativeModule } from 'react-native';
 
 /**
  * Core React Native Firebase package.
@@ -114,7 +114,7 @@ export namespace ReactNativeFirebase {
      * iOS only - The URL scheme used to set up Durable Deep Link service.
      */
     deepLinkURLScheme?: string;
-    [name: string]: any;
+    [name: string]: unknown;
   }
 
   export interface FirebaseAppConfig {

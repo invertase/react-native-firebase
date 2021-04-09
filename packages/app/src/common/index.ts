@@ -42,8 +42,8 @@ export function getDataUrlParts(dataUrlString: string) {
   return { base64String, mediaType };
 }
 
-export function once(fn: any, context: any) {
-  let onceResult: any;
+export function once(fn: any, context: unknown) {
+  let onceResult: unknown;
   let ranOnce = false;
 
   return function onceInner(this: any, args: any) {
@@ -56,7 +56,7 @@ export function once(fn: any, context: any) {
   };
 }
 
-export function isError(value: any): value is Error {
+export function isError(value: Error): value is Error {
   if (Object.prototype.toString.call(value) === '[object Error]') {
     return true;
   }
@@ -93,7 +93,7 @@ export function tryJSONParse(string: string): string {
   }
 }
 
-export function tryJSONStringify(data: any): string {
+export function tryJSONStringify(data: Record<string, unknown>): string {
   try {
     return JSON.stringify(data);
   } catch (jsonError) {

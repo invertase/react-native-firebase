@@ -114,7 +114,11 @@ function generateTableOfContentsFromEntities({
   properties,
   methods,
   statics,
-}: TableOfContentsGenerationProps): { url: string; title: string; items: any }[] {
+}: TableOfContentsGenerationProps): {
+  url: string;
+  title: string;
+  items: Record<string, unknown>;
+}[] {
   const items = [];
 
   if (members?.length) {
@@ -140,7 +144,7 @@ function generateTableOfContentsFromEntities({
   }
 
   if (methods?.length) {
-    const signatures: any = [];
+    const signatures: Array<unknown> = [];
 
     methods.forEach(method => {
       const signaturesTotal = method.signatures?.length || 0;

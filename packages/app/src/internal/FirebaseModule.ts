@@ -19,11 +19,12 @@ import { getAppModule, getNativeModule } from './registry/nativeModule';
 import SharedEventEmitter from './SharedEventEmitter';
 import { FirebaseModuleImpl, FirebaseModuleNamespaceImpl } from '../types';
 import { FirebaseApp } from '.';
-let firebaseJson: any = null;
+import { NativeModule } from 'react-native';
+let firebaseJson: Record<string, unknown> | null = null;
 
 export default class FirebaseModule implements FirebaseModuleImpl {
   private _app: FirebaseApp;
-  private _nativeModule: any;
+  private _nativeModule: NativeModule | null;
   private _customUrlOrRegion: string | undefined;
   private _config: FirebaseModuleNamespaceImpl;
   static __extended__: Record<string, unknown>;

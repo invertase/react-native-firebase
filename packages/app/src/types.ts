@@ -16,7 +16,7 @@ export interface FirebaseAppImpl {
    * The (read-only) configuration options from the app initialization.
    */
 
-  extendApp(extendedProps: any): void;
+  extendApp(extendedProps: Record<string, unknown>): void;
   delete(): Promise<void>;
   toString(): string;
   SDK_VERSION: string;
@@ -40,8 +40,8 @@ export interface FirebaseModuleNamespaceImpl {
   statics: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
   version: string;
   namespace: NamespaceTypes;
-  nativeModuleName: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
-  nativeEvents: any; //this prop will have to be removed & extended for each namespace as each package has its own statics type
+  nativeModuleName: string; //this prop will have to be removed & extended for each namespace as each package has its own statics type
+  nativeEvents: Array<EventEmitter>; //this prop will have to be removed & extended for each namespace as each package has its own statics type
   hasMultiAppSupport: boolean;
   hasCustomUrlOrRegionSupport: boolean;
   ModuleClass: FirebaseModule;

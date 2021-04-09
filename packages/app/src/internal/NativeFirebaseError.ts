@@ -18,14 +18,14 @@
 // TODO(ehesp): Create custom error type with userInfo defined
 
 export default class NativeFirebaseError extends Error {
-  static fromEvent(errorEvent: any, namespace: any, stack: any) {
+  static fromEvent(errorEvent: Error, namespace: string, stack: unknown) {
     return new NativeFirebaseError({ userInfo: errorEvent }, stack || new Error().stack, namespace);
   }
 
   namespace!: string;
   code!: string;
   message!: string;
-  jsStack!: any;
+  jsStack!: string | undefined;
   userInfo!: any;
   nativeErrorCode!: any;
   nativeErrorMessage!: any;

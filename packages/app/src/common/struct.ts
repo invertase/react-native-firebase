@@ -23,7 +23,7 @@ export default superstruct({
   },
 });
 
-export const validateStruct = (value: any = {}, struct: any, prefix = '') => {
+export const validateStruct = (value: Record<string, unknown> = {}, struct: any, prefix = '') => {
   try {
     return struct(value);
   } catch (e) {
@@ -41,7 +41,7 @@ export const validateStruct = (value: any = {}, struct: any, prefix = '') => {
 };
 
 export const validateCompound = (
-  source: { [path: string]: any } = {},
+  source: { [path: string]: unknown } = {},
   a: string,
   b: string,
   prefix = '',

@@ -16,7 +16,7 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { NativeModules, NativeModulesStatic } from 'react-native';
 import { stripTrailingSlash } from '../common';
 
 const PATH_NAMES = [
@@ -36,7 +36,7 @@ const PATH_FILE_TYPES = ['FILE_TYPE_REGULAR', 'FILE_TYPE_DIRECTORY'];
 const paths: { [key: string]: string } = {};
 let processedPathConstants = false;
 
-function processPathConstants(nativeModule: any) {
+function processPathConstants(nativeModule: NativeModulesStatic) {
   if (processedPathConstants || !nativeModule) {
     return paths;
   }

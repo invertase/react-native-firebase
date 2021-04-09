@@ -27,7 +27,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     this.ready = false;
   }
 
-  addListener(eventType: any, listener: any, context: any) {
+  addListener(eventType: string, listener: any, context: Record<string, unknown>) {
     if (!this.ready) {
       RNFBAppModule.eventsNotifyReady(true);
       this.ready = true;
@@ -36,7 +36,7 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     return super.addListener(`rnfb_${eventType}`, listener, context);
   }
 
-  removeAllListeners(eventType: any) {
+  removeAllListeners(eventType: string) {
     RNFBAppModule.eventsRemoveListener(eventType, true);
     super.removeAllListeners(`rnfb_${eventType}`);
   }

@@ -164,7 +164,7 @@ function subscribeToNativeModuleEvent(eventName: string) {
           SharedEventEmitter.emit(eventName, event, null);
         }
       },
-      null,
+      {},
     );
 
     NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName] = true;

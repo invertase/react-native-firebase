@@ -651,7 +651,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
      */
-    logEvent(name: string, params?: { [key: string]: any }): Promise<void>;
+    logEvent(name: string, params?: { [key: string]: unknown }): Promise<void>;
 
     /**
      * If true, allows the device to collect analytical data and send it to
@@ -1234,7 +1234,7 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param params See {@link analytics.SetCheckoutOptionEventParameters}.
      */
-    logSetCheckoutOption(params: any): Promise<void>;
+    logSetCheckoutOption(params: unknown): Promise<void>;
 
     /**
      * Share event. Apps with social features can log the Share event to identify the most viral content.
