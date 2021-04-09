@@ -69,6 +69,7 @@ export default class FirebaseApp implements FirebaseAppImpl {
     return initializeApp(options, configOrName);
   }
 
+  // @ts-ignore
   utils() {
     throw new Error('Method not implemented.');
   }
@@ -105,7 +106,7 @@ export default class FirebaseApp implements FirebaseAppImpl {
     }
   }
 
-  extendApp(extendedProps: any) {
+  extendApp(extendedProps: Record<string, unknown>) {
     this._checkDestroyed();
     Object.assign(this, extendedProps);
   }

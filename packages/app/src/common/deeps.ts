@@ -25,7 +25,7 @@ import { isArray, isObject } from './validate';
  * @param joiner
  * @returns {*}
  */
-export function deepGet<T = unknown>(object: any, path: string, joiner = '/'): undefined | T {
+export function deepGet<T = unknown>(object: unknown, path: string, joiner = '/'): undefined | T {
   if (!isObject(object) && !isArray(object)) {
     return undefined;
   }
@@ -58,9 +58,9 @@ export function deepGet<T = unknown>(object: any, path: string, joiner = '/'): u
  * @param joiner
  */
 export function deepSet(
-  object: any,
+  object: unknown,
   path: string,
-  value: any,
+  value: string | number,
   initPaths = true,
   joiner = '.',
 ): boolean {
@@ -83,7 +83,7 @@ export function deepSet(
     _object = _object[key] as Record<string, unknown>;
   }
 
-  if (isObject(_object) || (isArray(_object) && !Number.isNaN(keys[i]))) {
+  if (isObject(_object) || isArray(_object)) {
     _object[keys[i]] = value;
   } else {
     return false;

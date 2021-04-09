@@ -1,5 +1,6 @@
 import { FirebaseModule } from './internal';
 import FirebaseApp from './FirebaseApp';
+import { EventEmitter, NativeModule } from 'react-native';
 
 export type DeleteAppType = () => Promise<never | void>;
 
@@ -54,12 +55,12 @@ export interface FirebaseModuleImpl {
   /**
    * The native module instance for this Firebase service.
    */
-  readonly native: any;
+  readonly native: NativeModule;
 
   /**
    * Returns the shared event emitter instance used for all JS event routing.
    */
-  readonly emitter: any;
+  readonly emitter: EventEmitter;
   /**
    * The current `FirebaseApp` instance for this Firebase service.
    */

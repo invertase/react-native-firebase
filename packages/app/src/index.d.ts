@@ -15,6 +15,8 @@
  *
  */
 
+import { EventEmitter, NativeModule } from 'react-native';
+
 /**
  * Core React Native Firebase package.
  *
@@ -212,12 +214,12 @@ export namespace ReactNativeFirebase {
     /**
      * The native module instance for this Firebase service.
      */
-    private native: any;
+    private native: NativeModule;
 
     /**
      * Returns the shared event emitter instance used for all JS event routing.
      */
-    private emitter: any;
+    private emitter: EventEmitter;
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
