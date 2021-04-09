@@ -284,6 +284,11 @@ export namespace Utils {
      *
      * Use this directory to place documents that have been created by the user.
      *
+     * Normally this is the external files directory on Android but if no external storage directory found,
+     * e.g. removable media has been ejected by the user, it will fall back to internal storage. This may
+     * under rare circumstances where device storage environment changes cause the directory to be different
+     * between runs of the application
+     *
      * ```js
      * firebase.utils.FilePath.DOCUMENT_DIRECTORY;
      * ```

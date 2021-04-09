@@ -161,10 +161,18 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
 
     File externalDirectory = context.getExternalFilesDir(null);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      if ( externalDirectory != null ) {
+      if (externalDirectory != null) {
         constants.put(KEY_DOCUMENT_DIRECTORY, externalDirectory.getAbsolutePath());
+      } else {
+        // The external directory may be null if it is truly external *and*
+        // the device's external storage environment changes. We will use the regular
+        // Files directory as a backup and note in the documentation that the directory may
+        // vary under rare conditions
+        constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
       }
-    } else {
+    }
+
+    if (!constants.containsKey(KEY_DOCUMENT_DIRECTORY))  {
       constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     }
 
