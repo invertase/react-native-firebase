@@ -126,6 +126,8 @@ export namespace FirebaseCrashlyticsTypes {
 
     /**
      * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
+     * Note that crashes are intercepted by debuggers on iOS so no report will be seen under those conditions. Additionally
+     * if it is a debug build you will need to ensure your firebase.json is configured to enable crashlytics even in debug mode.
      *
      * #### Example
      *
