@@ -35,7 +35,7 @@ import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
-import { AppRegistry, NativeModules, Text, View } from 'react-native';
+import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -53,7 +53,19 @@ function Root() {
       style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
     >
       <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App2</Text>
+      <Button
+        title={'Test Native Crash Now.'}
+        onPress={() => {
+          firebase.crashlytics().crash();
+        }}
+      />
+      <Button
+        title={'Test Javascript Crash Now.'}
+        onPress={() => {
+          undefinedVariable.notAFunction();
+        }}
+      />
     </View>
   );
 }
