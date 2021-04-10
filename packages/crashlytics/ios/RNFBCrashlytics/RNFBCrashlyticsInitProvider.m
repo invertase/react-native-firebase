@@ -21,7 +21,8 @@
 #import "RNFBPreferences.h"
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
-#import "RNFBApp/RNFBSharedUtils.h"
+#import "RNFBVersion.h"
+#import "RNFBSharedUtils.h"
 
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";
 NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_collection_enabled";
@@ -31,7 +32,7 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED = 
 @implementation RNFBCrashlyticsInitProvider
 
 + (void)load {
-  [FIRApp registerInternalLibrary:self withName:@"react-native-firebase-crashlytics" withVersion:@"11.3.0"];
+  [FIRApp registerInternalLibrary:self withName:@"react-native-firebase-crashlytics" withVersion:RNFBVersionString];
 }
 
 + (BOOL)isCrashlyticsCollectionEnabled {
