@@ -37,16 +37,23 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
 
     if (prefs.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
       enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+      Log.d(TAG, "isCrashlyticsCollectionEnabled via RNFBPreferences: " + enabled);
     } else if (json.contains(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED)) {
       enabled = json.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
+      Log.d(TAG, "isCrashlyticsCollectionEnabled via RNFBJSON: " + enabled);
     } else {
       enabled = meta.getBooleanValue(KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, true);
-    }
-    
-    if (!json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false) && BuildConfig.DEBUG) {
-      enabled = false;
+      Log.d(TAG, "isCrashlyticsCollectionEnabled via RNFBMeta: " + enabled);
     }
 
+    if (BuildConfig.DEBUG) {
+      if (!json.getBooleanValue(KEY_CRASHLYTICS_DEBUG_ENABLED, false)) {
+        enabled = false;
+      }
+      Log.d(TAG, "isCrashlyticsCollectionEnabled after checking " + KEY_CRASHLYTICS_DEBUG_ENABLED + ": " + enabled);
+    }
+
+    Log.d(TAG, "isCrashlyticsCollectionEnabled final value: " + enabled);
     return enabled;
   }
 
@@ -58,12 +65,37 @@ public class ReactNativeFirebaseCrashlyticsInitProvider extends ReactNativeFireb
 
     if (prefs.contains(KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED)) {
       enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED, true);
+      Log.d(TAG, "isErrorGenerationOnJSCrashEnabled via RNFBPreferences: " + enabled);
     } else if (json.contains(KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED)) {
       enabled = json.getBooleanValue(KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED, true);
+      Log.d(TAG, "isErrorGenerationOnJSCrashEnabled via RNFBJSON: " + enabled);
     } else {
       enabled = meta.getBooleanValue(KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED, true);
+      Log.d(TAG, "isErrorGenerationOnJSCrashEnabled via RNFBMeta: " + enabled);
     }
 
+    Log.d(TAG, "isErrorGenerationOnJSCrashEnabled final value: " + enabled);
+    return enabled;
+  }
+
+  static boolean isCrashlyticsJavascriptExceptionHandlerChainingEnabled() {
+    boolean enabled;
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+    ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
+    ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
+
+    if (prefs.contains(KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED)) {
+      enabled = prefs.getBooleanValue(KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED, true);
+      Log.d(TAG, "isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBPreferences: " + enabled);
+    } else if (json.contains(KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED)) {
+      enabled = json.getBooleanValue(KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED, true);
+      Log.d(TAG, "isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBJSON: " + enabled);
+    } else {
+      enabled = meta.getBooleanValue(KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED, true);
+      Log.d(TAG, "isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBMeta: " + enabled);
+    }
+
+      Log.d(TAG, "isCrashlyticsJavascriptExceptionHandlerChainingEnabled final value: " + enabled);
     return enabled;
   }
 

@@ -63,6 +63,8 @@ invertase
 iOS
 iOS13
 IPs
+Javascript
+javascript
 JS
 JSON
 launchProperties
@@ -122,6 +124,7 @@ SHA-256
 SIGABRT
 SMS
 src
+stacktrace
 SVG
 TestLab
 TFUA
