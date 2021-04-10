@@ -163,14 +163,14 @@ describe('crashlytics()', function () {
   });
 
   describe('setCrashlyticsCollectionEnabled()', function () {
-    it('true', async function () {
-      await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
-      should.equal(firebase.crashlytics().isCrashlyticsCollectionEnabled, true);
-    });
-
     it('false', async function () {
       await firebase.crashlytics().setCrashlyticsCollectionEnabled(false);
       should.equal(firebase.crashlytics().isCrashlyticsCollectionEnabled, false);
+    });
+
+    it('true', async function () {
+      await firebase.crashlytics().setCrashlyticsCollectionEnabled(true);
+      should.equal(firebase.crashlytics().isCrashlyticsCollectionEnabled, true);
     });
 
     it('errors if not boolean', async function () {
