@@ -18,6 +18,7 @@ package io.invertase.firebase.crashlytics;
  */
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.facebook.react.bridge.*;
@@ -53,6 +54,19 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   }
 
   @ReactMethod
+  public void crashWithStackPromise(ReadableMap jsErrorMap, Promise promise) {
+    if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
+      Exception e = recordJavaScriptError(jsErrorMap);
+      e.printStackTrace(System.err);
+      Log.e(TAG, "Crash logged. Terminating app.");
+      System.exit(0);
+    } else {
+      Log.i(TAG, "crashlytics collection is not enabled, not crashing.");
+    }
+    promise.resolve(null);
+  }
+
+  @ReactMethod
   public void crash() {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       // async task so as not to get caught by the React Native redbox handler in debug
@@ -62,6 +76,8 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
           throw new RuntimeException("Crash Test");
         }
       }, 50);
+    } else {
+      Log.i(TAG, "crashlytics collection is not enabled, not crashing.");
     }
   }
 
@@ -141,6 +157,8 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   public void recordError(ReadableMap jsErrorMap) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       recordJavaScriptError(jsErrorMap);
+    } else {
+      Log.i(TAG, "crashlytics collection is not enabled, not crashing.");
     }
   }
 
@@ -148,11 +166,13 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
   public void recordErrorPromise(ReadableMap jsErrorMap, Promise promise) {
     if (ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()) {
       recordJavaScriptError(jsErrorMap);
+    } else {
+      Log.i(TAG, "crashlytics collection is not enabled, not crashing.");
     }
     promise.resolve(null);
   }
 
-  private void recordJavaScriptError(ReadableMap jsErrorMap) {
+  private Exception recordJavaScriptError(ReadableMap jsErrorMap) {
     String message = jsErrorMap.getString("message");
     ReadableArray stackFrames = Objects.requireNonNull(jsErrorMap.getArray("frames"));
     boolean isUnhandledPromiseRejection = jsErrorMap.getBoolean("isUnhandledRejection");
@@ -176,6 +196,7 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     customException.setStackTrace(stackTraceElements);
 
     FirebaseCrashlytics.getInstance().recordException(customException);
+    return customException;
   }
 
   @Override
@@ -188,6 +209,10 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
     constants.put(
       "isErrorGenerationOnJSCrashEnabled",
       ReactNativeFirebaseCrashlyticsInitProvider.isErrorGenerationOnJSCrashEnabled()
+    );
+    constants.put(
+      "isCrashlyticsJavascriptExceptionHandlerChainingEnabled",
+      ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsJavascriptExceptionHandlerChainingEnabled()
     );
     return constants;
   }

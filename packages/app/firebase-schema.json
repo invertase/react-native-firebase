@@ -26,7 +26,15 @@
           "type": "boolean"
         },
         "crashlytics_debug_enabled": {
-          "description": "Because you have stack traces readily available while you`re debugging your app, Crashlytics is disabled by default in debug mode. You can set Crashlytics to be enabled regardless of debug mode through the debug_enabled option in your firebase.json.",
+          "description": "Stack traces are readily available while you`re debugging your app, so Crashlytics is disabled by default in debug mode. You can set Crashlytics to be enabled regardless of debug mode through the debug_enabled option in your firebase.json. This may be useful to test your integration, remembering reports are sent next app start.",
+          "type": "boolean"
+        },
+        "crashlytics_is_error_generation_on_js_crash_enabled": {
+          "description": "By default React Native Firebase Crashlytics installs a global javascript-level unhandled exception handler that will log unhandled javascript exceptions as fatal crashes (since v11.3.0, non-fatal prior) with javascript stacks. Set to false to disable javascript-level crash handling.",
+          "type": "boolean"
+        },
+        "crashlytics_javascript_exception_handler_chaining_enabled": {
+          "description": "By default React Native Firebase Crashlytics will preserve existing global javascript-level uhandled exception handlers by reporting to Crashlytics then passing the exception on for further handling. This could lead to duplicate reports, for example a fatal javascript-level report and a fatal native level report for the same crash. Set to false to terminate error handling after logging the javascript-level crash.",
           "type": "boolean"
         },
         "crashlytics_ndk_enabled": {

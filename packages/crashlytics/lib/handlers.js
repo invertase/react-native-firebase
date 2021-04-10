@@ -69,7 +69,8 @@ export const setGlobalErrorHandler = once(nativeModule => {
   const originalHandler = ErrorUtils.getGlobalHandler();
 
   async function handler(error, fatal) {
-    if (__DEV__) {
+    // If collection is disabled, just forward to the original handler
+    if (!nativeModule.isCrashlyticsCollectionEnabled) {
       return originalHandler(error, fatal);
     }
 
@@ -78,11 +79,10 @@ export const setGlobalErrorHandler = once(nativeModule => {
       return originalHandler(error, fatal);
     }
 
+    // If we are supposed to log javascript-level stack traces, convert this error and log it
     if (nativeModule.isErrorGenerationOnJSCrashEnabled) {
       try {
         const stackFrames = await StackTrace.fromError(error, { offline: true });
-        await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
-
         // The backend conversion scan converts the closest event to this timestamp without going over
         // from the timestamp here. So the timestamp *must* be greater then the event log time.
         //
@@ -107,12 +107,23 @@ export const setGlobalErrorHandler = once(nativeModule => {
           // This just means analytics was not present, so we could not log the analytics event
           // console.log('error logging analytics app_exception: ' + e);
         }
+
+        // If we are chaining to other handlers, just record the error, otherwise we need to crash with it
+        if (nativeModule.isCrashlyticsJavascriptExceptionHandlerChainingEnabled) {
+          await nativeModule.recordErrorPromise(createNativeErrorObj(error, stackFrames, false));
+        } else {
+          await nativeModule.crashWithStackPromise(createNativeErrorObj(error, stackFrames, false));
+        }
       } catch (e) {
         // do nothing
         // console.log('error logging handling the exception: ' + e);
       }
     }
-    return originalHandler(error, fatal);
+
+    // If we are configured to chain exception handlers, do so. It could result in duplicate errors though.
+    if (nativeModule.isCrashlyticsJavascriptExceptionHandlerChainingEnabled) {
+      return originalHandler(error, fatal);
+    }
   }
 
   ErrorUtils.setGlobalHandler(handler);

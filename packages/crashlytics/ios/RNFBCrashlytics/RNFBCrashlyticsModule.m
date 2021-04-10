@@ -25,6 +25,7 @@
 #import "RNFBCrashlyticsInitProvider.h"
 #import "RCTConvert.h"
 #import "RNFBPreferences.h"
+#import "RNFBApp/RNFBSharedUtils.h"
 #import <Firebase/Firebase.h>
 
 @implementation RNFBCrashlyticsModule
@@ -37,8 +38,9 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isCrashlyticsCollectionEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled])]);
   constants[@"isErrorGenerationOnJSCrashEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isErrorGenerationOnJSCrashEnabled])]);
+  constants[@"isCrashlyticsJavascriptExceptionHandlerChainingEnabled"] = @([RCTConvert BOOL:@([RNFBCrashlyticsInitProvider isCrashlyticsJavascriptExceptionHandlerChainingEnabled])]);
   if ([self isDebuggerAttached]) {
-    RCTLog(@"@react-native-firebase/crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
+    RCTLog(@"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
   }
   return constants;
 }
@@ -62,14 +64,39 @@ RCT_EXPORT_METHOD(checkForUnsentReports:
 RCT_EXPORT_METHOD(crash) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     if ([self isDebuggerAttached]) {
-      RCTLog(@"@react-native-firebase/crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
+      RCTLog(@"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
     }
 
     // https://firebase.google.com/docs/crashlytics/test-implementation?platform=ios recommends using "@[][1]" to crash,
     // but that gets caught by react-native and shown as a red box for debug builds. Raise SIGSEGV here to generate a hard crash.
     int *p = 0;
     *p = 0;
+  } else {
+      RCTLog(@"Crashlytics - INFO: crashlytics collection is not enabled, not crashing.");
   }
+}
+
+RCT_EXPORT_METHOD(crashWithStackPromise:
+  (NSDictionary *) jsErrorDict
+      resolver:
+      (RCTPromiseResolveBlock) resolve
+      rejecter:
+      (RCTPromiseRejectBlock) reject) {
+  if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
+    if ([self isDebuggerAttached]) {
+      RCTLog(@"Crashlytics - WARNING: Debugger detected. Crashlytics will not receive crash reports.");
+    }
+    [self recordJavaScriptError:jsErrorDict];
+
+    // This is strongly discouraged by Apple as "it will appear as though your app has crashed".
+    // Coincidentally, we are *in* a crash handler and have logged a crash report.
+    // It seems like the one place calling exit cleanly is valid.
+    ELog(@"Crashlytics - Crash logged. Terminating app.");
+    exit(0);
+  } else {
+    RCTLog(@"Crashlytics - INFO: crashlytics collection is not enabled, not crashing.");
+  }
+  resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(deleteUnsentReports) {
@@ -218,7 +245,7 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled:
     name[3] = getpid(); // from unistd.h, included by Foundation
 
     if (sysctl(name, 4, &info, &info_size, NULL, 0) == -1) {
-      RCTLog(@"@react-native-firebase/crashlytics ERROR: Checking for a running debugger via sysctl() failed: %s", strerror(errno));
+      ELog(@"Crashlytics ERROR: Checking for a running debugger via sysctl() failed: %s", strerror(errno));
       debuggerIsAttached = false;
     }
 
