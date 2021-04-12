@@ -1964,6 +1964,32 @@ export namespace FirebaseFirestoreTypes {
     enableNetwork(): Promise<void>;
 
     /**
+     * Attaches a listener for a snapshots-in-sync event.
+     *
+     * The snapshots-in-sync event indicates that all listeners affected by a given change have fired, even
+     * if a single server-generated change affects multiple listeners.
+     *
+     * NOTE: The snapshots-in-sync event only indicates that listeners are in sync with each other, but does not relate
+     * to whether those snapshots are in sync with the server. Use SnapshotMetadata in the individual listeners to determine
+     * if a snapshot is from the cache or the server.
+     *
+     * Returns an unsubscribe function.
+     *
+     * @param observer A callback to listen to in-sync events.
+     *
+     * #### Example
+     *
+     * ```js
+     * const unsubscribe = firebase.firestore().onSnapshotsInSync(() => {
+     *   // in-sync event
+     * });
+     *
+     * unsubscribe();
+     * ```
+     */
+    onSnapshotsInSync(observer: (error?: Error) => void): () => void;
+
+    /**
      * Executes the given `updateFunction` and then attempts to commit the changes applied within the transaction.
      * If any document read within the transaction has changed, Cloud Firestore retries the `updateFunction`.
      * If it fails to commit after 5 attempts, the transaction fails.

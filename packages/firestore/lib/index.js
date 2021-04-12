@@ -49,10 +49,13 @@ const nativeModuleName = [
 ];
 
 const nativeEvents = [
+  'firestore_snapshots_in_sync_event',
   'firestore_collection_sync_event',
   'firestore_document_sync_event',
   'firestore_transaction_event',
 ];
+
+let _id = 0;
 
 class FirebaseFirestoreModule extends FirebaseModule {
   constructor(app, config) {
@@ -166,6 +169,34 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
   async enableNetwork() {
     await this.native.enableNetwork();
+  }
+
+  onSnapshotsInSync(callback) {
+    if (!isFunction(callback)) {
+      throw new Error("firebase.firestore().onSnapshotsInSync(*) 'callback' must be a function.");
+    }
+
+    const listenerId = _id++;
+
+    const onSnapshotsInSyncSubscription = this._firestore.emitter.addListener(
+      this._firestore.eventNameForApp(`firestore_snapshots_in_sync_event:${listenerId}`),
+      event => {
+        if (event.body.error) {
+          callback(NativeError.fromEvent(event.body.error, 'firestore'));
+        } else {
+          callback();
+        }
+      },
+    );
+
+    const unsubscribe = () => {
+      onSnapshotsInSyncSubscription.remove();
+      this._firestore.native.snapshotsInSyncOff(listenerId);
+    };
+
+    this._firestore.native.snapshotsInSync(listenerId);
+
+    return unsubscribe;
   }
 
   runTransaction(updateFunction) {

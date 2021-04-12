@@ -20,10 +20,12 @@
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
 
+static __strong NSMutableDictionary *snapshotsInSyncListeners;
+static NSString *const RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC_EVENT = @"firestore_snapshots_in_sync_event";
+
 @implementation RNFBFirestoreModule
 #pragma mark -
 #pragma mark Module Setup
-
 
 RCT_EXPORT_MODULE();
 
@@ -33,6 +35,27 @@ RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup {
   return YES;
+}
+
+- (id)init {
+  self = [super init];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    snapshotsInSyncListeners = [[NSMutableDictionary alloc] init];
+  });
+  return self;
+}
+
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  for (NSString *key in [snapshotsInSyncListeners allKeys]) {
+    id <FIRListenerRegistration> listener = snapshotsInSyncListeners[key];
+    [listener remove];
+    [snapshotsInSyncListeners removeObjectForKey:key];
+  }
 }
 
 #pragma mark -
@@ -148,5 +171,37 @@ RCT_EXPORT_METHOD(terminate:
     }];
 }
 
+RCT_EXPORT_METHOD(snapshotsInSync:
+  (FIRApp *) firebaseApp
+    :(nonnull NSNumber *)listenerId
+) {
+  if (snapshotsInSyncListeners[listenerId]) {
+    return;
+  }
+
+  __weak RNFBFirestoreModule *weakSelf = self;
+    id listenerBlock = ^() {
+    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_SNAPSHOTS_IN_SYNC_EVENT body:@{
+      @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
+      @"listenerId": listenerId,
+      @"body": @{}
+  }];
+  };
+
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  id <FIRListenerRegistration> listener = [firestore addSnapshotsInSyncListener:listenerBlock];
+  snapshotsInSyncListeners[listenerId] = listener;
+}
+
+RCT_EXPORT_METHOD(snapshotsInSyncOff:
+  (FIRApp *) firebaseApp
+    :(nonnull NSNumber *)listenerId
+) {
+  id <FIRListenerRegistration> listener = snapshotsInSyncListeners[listenerId];
+  if (listener) {
+    [listener remove];
+    [snapshotsInSyncListeners removeObjectForKey:listenerId];
+  }
+}
 
 @end
