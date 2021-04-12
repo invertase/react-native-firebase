@@ -164,7 +164,7 @@ export default class FirestoreQueryModifiers {
     return !isNumber(limit) || Math.floor(limit) !== limit || limit <= 0;
   }
 
-  validatelimitToLast() {
+  validateLimitToLast() {
     if (this._limitToLast) {
       if (!this._orders.length) {
         throw new Error(

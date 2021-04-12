@@ -23,8 +23,8 @@ import FirestoreQuery from './FirestoreQuery';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 
 export default class FirestoreCollectionReference extends FirestoreQuery {
-  constructor(firestore, collectionPath, converter) {
-    super(firestore, collectionPath, new FirestoreQueryModifiers(), converter);
+  constructor(firestore, collectionPath) {
+    super(firestore, collectionPath, new FirestoreQueryModifiers());
   }
 
   get id() {
@@ -36,7 +36,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
     if (!parent) {
       return null;
     }
-    return new FirestoreDocumentReference(this._firestore, parent, this._converter);
+    return new FirestoreDocumentReference(this._firestore, parent);
   }
 
   get path() {
@@ -54,9 +54,7 @@ export default class FirestoreCollectionReference extends FirestoreQuery {
         converted = this._converter.toFirestore(data);
       } catch (e) {
         throw new Error(
-          `firebase.firestore().collection().add(*) "withConverter.toFirestore" threw an error: ${
-            e.message
-          }.`,
+          `firebase.firestore().collection().add(*) "withConverter.toFirestore" threw an error: ${e.message}.`,
         );
       }
     }

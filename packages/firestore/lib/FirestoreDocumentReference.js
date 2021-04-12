@@ -55,7 +55,7 @@ export default class FirestoreDocumentReference {
 
   get parent() {
     const parentPath = this._documentPath.parent();
-    return new FirestoreCollectionReference(this._firestore, parentPath, this._converter);
+    return new FirestoreCollectionReference(this._firestore, parentPath);
   }
 
   get path() {
@@ -83,7 +83,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return new FirestoreCollectionReference(this._firestore, path, this._converter);
+    return new FirestoreCollectionReference(this._firestore, path);
   }
 
   delete() {
@@ -224,6 +224,10 @@ export default class FirestoreDocumentReference {
   }
 
   withConverter(converter) {
+    if (isUndefined(converter) || isNull(converter)) {
+      return new FirestoreDocumentReference(this._firestore, this._documentPath);
+    }
+
     try {
       validateWithConverter(converter);
     } catch (e) {
