@@ -329,7 +329,7 @@ documentation.
 
 #### Subscribing to topics
 
-To subscribe a device, call the `subscribeToTopic` method with the topic name:
+To subscribe a device, call the `subscribeToTopic` method with the topic name (must not include "/"):
 
 ```js
 messaging()
