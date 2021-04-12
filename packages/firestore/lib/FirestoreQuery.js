@@ -82,9 +82,7 @@ export default class FirestoreQuery {
 
         if (value === undefined) {
           throw new Error(
-            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${
-              order.fieldPath
-            }' (used as the orderBy) does not exist.`,
+            `firebase.firestore().collection().${cursor}(*) You are trying to start or end a query using a document for which the field '${order.fieldPath}' (used as the orderBy) does not exist.`,
           );
         }
 
@@ -435,7 +433,6 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().withConverter() ${e.message}`);
     }
 
-    // todo validate converter
     return new FirestoreQuery(this._firestore, this._collectionPath, this._modifiers, converter);
   }
 }

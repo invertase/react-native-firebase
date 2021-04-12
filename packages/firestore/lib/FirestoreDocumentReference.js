@@ -198,9 +198,7 @@ export default class FirestoreDocumentReference {
         converted = this._converter.toFirestore(data);
       } catch (e) {
         throw new Error(
-          `firebase.firestore().doc().set(*) "withConverter.toFirestore" threw an error: ${
-            e.message
-          }.`,
+          `firebase.firestore().doc().set(*) "withConverter.toFirestore" threw an error: ${e.message}.`,
         );
       }
     }
