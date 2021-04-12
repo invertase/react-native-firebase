@@ -16,6 +16,9 @@
  */
 const COLLECTION = 'firestore';
 const COLLECTION_GROUP = 'collectionGroup';
+const { Utils } = require('@react-native-firebase/app');
+const { firebase } = require('../lib');
+const { wipe } = require('./helpers');
 
 describe('firestore()', function () {
   describe('namespace', function () {
@@ -413,6 +416,55 @@ describe('firestore()', function () {
       ]);
 
       should(timedOutWithNetworkEnabled).equal(false);
+    });
+  });
+
+  describe('onSnapshotsInSync', function () {
+    before(function () {
+      return wipe();
+    });
+
+    it('throws if the callback is not a function', async function () {
+      try {
+        firebase.firestore().onSnapshotsInSync('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'callback' must be a function");
+        return Promise.resolve();
+      }
+    });
+
+    it('returns events when snapshots are in sync', async function () {
+      const docRef = firestore.firestore().doc('firestore/onSnapshotsInSyncExists');
+
+      let unsubscribe = () => {};
+      const result = [];
+
+      await new Promise(async res => {
+        let _count = 0;
+        unsubscribe = firebase.firestore().onSnapshotsInSync(() => {
+          result.push(`insync=${_count}`);
+          _count++;
+        });
+
+        docRef.onSnapshot(snapshot => {
+          result.push(`snapshot-exists=${snapshot.exists}`);
+        });
+
+        await Utils.sleep(1000);
+        await docRef.set({ foo: 'bar' });
+        await Utils.sleep(1000);
+        return res();
+      });
+
+      result.length.should.eql(5);
+      result[0].id.should.eql('insync=0');
+      result[0].id.should.eql('snapshot-exists=false');
+      result[0].id.should.eql('insync=1');
+      result[0].id.should.eql('snapshot-exists=true');
+      result[0].id.should.eql('insync=2');
+
+      unsubscribe();
     });
   });
 });
