@@ -468,6 +468,15 @@ export namespace FirebaseFirestoreTypes {
      * @param moreFieldsAndValues Additional key value pairs.
      */
     update(field: keyof T | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
+
+    /**
+     * Applies a custom data converter to this Query, allowing you to use your own custom model objects with Firestore.
+     *
+     * When you call `get()` on the returned Query, the provided converter will convert between Firestore data and your custom type.
+     *
+     * Passing in `null` as the converter parameter removes the current converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U> | null): DocumentReference<U>;
   }
 
   /**
@@ -1244,7 +1253,37 @@ export namespace FirebaseFirestoreTypes {
      * @param value The comparison value.
      */
     where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
+
+    /**
+     * Applies a custom data converter to this Query, allowing you to use your own custom model objects with Firestore.
+     *
+     * When you call `get()` on the returned Query, the provided converter will convert between Firestore data and your custom type.
+     *
+     * Passing in `null` as the converter parameter removes the current converter.
+     */
+    withConverter<U>(converter: FirestoreDataConverter<U> | null): Query<U>;
   }
+
+  /**
+   * Converter used by withConverter() to transform user objects of type `T` into Firestore data.
+   *
+   * Using the converter allows you to specify generic type arguments when storing and retrieving objects from Firestore.
+   */
+  export type FirestoreDataConverter<T extends DocumentData = DocumentData> = {
+    /**
+     * Called by the Firestore SDK to convert Firestore data into an object of type `T`.
+     *
+     * @param snapshot The document snapshot of the incoming Firestore data to convert.
+     */
+    fromFirestore(snapshot: QueryDocumentSnapshot<T>): T;
+
+    /**
+     * Called by the Firestore SDK to convert a custom model object of type `T` into a plain Javascript object (suitable for writing directly to the Firestore database).
+     *
+     * @param data The data provided to calls to the mutation (`set`/`add`).
+     */
+    toFirestore(data: Partial<T>): DocumentData;
+  };
 
   /**
    * Filter conditions in a `Query.where()` clause are specified using the strings '<', '<=', '==', '>=', '>', 'array-contains', 'array-contains-any' or 'in'.
