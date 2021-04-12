@@ -18,11 +18,16 @@ package io.invertase.firebase.analytics;
  */
 
 
+import android.os.Bundle;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -39,7 +44,7 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
-    module.logEvent(name, Arguments.toBundle(params)).addOnCompleteListener(task -> {
+    module.logEvent(name, toBundle(params)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -51,34 +56,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
     module.setAnalyticsCollectionEnabled(enabled).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
-  }
-
-  @ReactMethod
-  public void setCurrentScreen(
-    String screenName,
-    @Nullable String screenClassOverride,
-    Promise promise
-  ) {
-    module
-      .setAnalyticsCollectionEnabled(getCurrentActivity(), screenName, screenClassOverride)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
-  }
-
-  @ReactMethod
-  public void setMinimumSessionDuration(double milliseconds, Promise promise) {
-    module.setMinimumSessionDuration((long) milliseconds).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
       } else {
@@ -141,5 +118,20 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
         rejectPromiseWithExceptionMap(promise, task.getException());
       }
     });
+  }
+
+  private Bundle toBundle(ReadableMap readableMap) {
+    Bundle bundle = Arguments.toBundle(readableMap);
+    if (bundle == null) {
+      return null;
+    }
+    ArrayList itemsArray = (ArrayList) bundle.getSerializable(FirebaseAnalytics.Param.ITEMS);
+    for (Object item : itemsArray != null ? itemsArray : new ArrayList()) {
+      if (item instanceof Bundle && ((Bundle) item).containsKey(FirebaseAnalytics.Param.QUANTITY)) {
+        double number = ((Bundle) item).getDouble(FirebaseAnalytics.Param.QUANTITY);
+        ((Bundle) item).putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
+      }
+    }
+    return bundle;
   }
 }

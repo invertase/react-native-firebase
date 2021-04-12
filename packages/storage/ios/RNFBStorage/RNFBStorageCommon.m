@@ -63,7 +63,7 @@
       (__bridge CFStringRef) [localFilePath pathExtension],
       NULL);
   CFStringRef mimeType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
-  CFRelease(UTI);
+  if (UTI) { CFRelease(UTI); }
 
   if (!mimeType) {
     return @"application/octet-stream";

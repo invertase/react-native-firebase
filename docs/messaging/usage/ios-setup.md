@@ -89,7 +89,7 @@ navigate to the "Project settings" and select the "Cloud Messaging" tab. Select 
 
 Upload the downloaded file and enter the Key ID:
 
-![Upload the key & Key ID](https://images.prismic.io/invertase/7539b8ec-c310-40dd-91e5-69f19009786f_apple-fcm-upload-key.gif?auto=format)
+![Upload the key & Key ID](https://images.prismic.io/invertase/74bd1df4-c9e9-465c-9e0f-cacf6e26d68c_7539b8ec-c310-40dd-91e5-69f19009786f_apple-fcm-upload-key.gif?auto=compress,format)
 
 ### 2. Registering an App Identifier
 

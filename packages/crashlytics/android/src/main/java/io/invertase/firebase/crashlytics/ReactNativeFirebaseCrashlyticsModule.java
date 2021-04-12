@@ -185,6 +185,10 @@ public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseMod
       "isCrashlyticsCollectionEnabled",
       ReactNativeFirebaseCrashlyticsInitProvider.isCrashlyticsCollectionEnabled()
     );
+    constants.put(
+      "isErrorGenerationOnJSCrashEnabled",
+      ReactNativeFirebaseCrashlyticsInitProvider.isErrorGenerationOnJSCrashEnabled()
+    );
     return constants;
   }
 }

@@ -4,11 +4,7 @@ appPackage = JSON.parse(File.read(File.join('..', 'app', 'package.json')))
 
 coreVersionDetected = appPackage['version']
 coreVersionRequired = package['peerDependencies'][appPackage['name']]
-if appPackage['sdkVersions']
-  firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
-else
-  firebase_sdk_version = '~> 6.28.1'
-end
+firebase_sdk_version = appPackage['sdkVersions']['ios']['firebase']
 if coreVersionDetected != coreVersionRequired
   Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
 end
@@ -25,11 +21,11 @@ Pod::Spec.new do |s|
   s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/invertaseio'
-  s.ios.deployment_target = "9.0"
+  s.ios.deployment_target = "10.0"
   s.source_files        = 'ios/**/*.{h,m}'
 
   # React Native dependencies
-  s.dependency          'React'
+  s.dependency          'React-Core'
   s.dependency          'RNFBApp'
 
   if defined?($FirebaseSDKVersion)

@@ -7,13 +7,11 @@
 
   <application
     android:name=".MainApplication"
-    android:hardwareAccelerated="false"
     android:allowBackup="false"
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
     android:launchMode="singleTask"
     android:theme="@style/AppTheme"
-    android:usesCleartextTraffic="true"
     tools:targetApi="m">
     <meta-data android:name="rnfirebase_meta_testing_string" android:value="abc" />
     <meta-data android:name="rnfirebase_meta_testing_boolean_false" android:value="false" />
@@ -40,6 +38,5 @@
           android:scheme="https" />
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
   </application>
 </manifest>

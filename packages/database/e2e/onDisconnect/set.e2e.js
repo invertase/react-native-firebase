@@ -19,19 +19,18 @@ const { PATH, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/onDisconnectSet`;
 
-describe('database().ref().onDisconnect().set()', () => {
-  after(() => wipe(TEST_PATH));
+describe('database().ref().onDisconnect().set()', function () {
+  after(function () {
+    return wipe(TEST_PATH);
+  });
 
-  afterEach(() => {
+  afterEach(function () {
     // Ensures the db is online before running each test
     firebase.database().goOnline();
   });
 
-  it('throws if value is not a defined', () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .onDisconnect();
+  it('throws if value is not a defined', function () {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
     try {
       ref.set();
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -41,11 +40,8 @@ describe('database().ref().onDisconnect().set()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', () => {
-    const ref = firebase
-      .database()
-      .ref(TEST_PATH)
-      .onDisconnect();
+  it('throws if onComplete is not a function', function () {
+    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
     try {
       ref.set(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -55,7 +51,7 @@ describe('database().ref().onDisconnect().set()', () => {
     }
   });
 
-  it('sets value when disconnected', async () => {
+  it('sets value when disconnected', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
@@ -68,7 +64,7 @@ describe('database().ref().onDisconnect().set()', () => {
     snapshot.val().should.eql(value);
   });
 
-  it('calls back to the onComplete function', async () => {
+  it('calls back to the onComplete function', async function () {
     const callback = sinon.spy();
     const ref = firebase.database().ref(TEST_PATH);
 

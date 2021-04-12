@@ -11,7 +11,7 @@ import io.invertase.firebase.common.SharedUtils;
 import java.util.Map;
 import java.util.Set;
 
-class ReactNativeFirebaseMessagingSerializer {
+public class ReactNativeFirebaseMessagingSerializer {
   private static final String KEY_TOKEN = "token";
   private static final String KEY_COLLAPSE_KEY = "collapseKey";
   private static final String KEY_DATA = "data";
@@ -29,28 +29,28 @@ class ReactNativeFirebaseMessagingSerializer {
   private static final String EVENT_MESSAGE_SEND_ERROR = "messaging_message_send_error";
   private static final String EVENT_NEW_TOKEN = "messaging_token_refresh";
 
-  static ReactNativeFirebaseEvent messagesDeletedToEvent() {
+  public static ReactNativeFirebaseEvent messagesDeletedToEvent() {
     return new ReactNativeFirebaseEvent(EVENT_MESSAGES_DELETED, Arguments.createMap());
   }
 
-  static ReactNativeFirebaseEvent messageSentToEvent(String messageId) {
+  public static ReactNativeFirebaseEvent messageSentToEvent(String messageId) {
     WritableMap eventBody = Arguments.createMap();
     eventBody.putString(KEY_MESSAGE_ID, messageId);
     return new ReactNativeFirebaseEvent(EVENT_MESSAGE_SENT, eventBody);
   }
 
-  static ReactNativeFirebaseEvent messageSendErrorToEvent(String messageId, Exception sendError) {
+  public static ReactNativeFirebaseEvent messageSendErrorToEvent(String messageId, Exception sendError) {
     WritableMap eventBody = Arguments.createMap();
     eventBody.putString(KEY_MESSAGE_ID, messageId);
     eventBody.putMap(KEY_ERROR, SharedUtils.getExceptionMap(sendError));
     return new ReactNativeFirebaseEvent(EVENT_MESSAGE_SEND_ERROR, eventBody);
   }
 
-  static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage, Boolean openEvent) {
+  public static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage, Boolean openEvent) {
     return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
   }
 
-  static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {
+  public static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {
     WritableMap eventBody = Arguments.createMap();
     eventBody.putString(KEY_TOKEN, newToken);
     return new ReactNativeFirebaseEvent(EVENT_NEW_TOKEN, eventBody);

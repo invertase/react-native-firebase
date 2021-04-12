@@ -193,7 +193,7 @@ RCT_EXPORT_METHOD(resolveLink:
             @"url": dynamicLink.url.absoluteString,
             @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
         });
-    } else if (!error) {
+    } else if (!error || (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
           @"code": @"not-found",
           @"message": @"Dynamic link not found"
@@ -206,14 +206,7 @@ RCT_EXPORT_METHOD(resolveLink:
     }
   };
 
-  NSURL *linkURL = [NSURL URLWithString:link];
-  BOOL success = [[FIRDynamicLinks dynamicLinks] handleUniversalLink:linkURL completion:completion];
-  if (!success) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"not-found",
-        @"message": @"Dynamic link not found"
-    }];
-  }
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:[NSURL URLWithString:link] completion:completion];
 }
 
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {

@@ -126,6 +126,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.getInitialNotification();
   }
 
+  getIsHeadless() {
+    return this.native.getIsHeadless();
+  }
+
   getToken(authorizedEntity, scope) {
     if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
       throw new Error(
@@ -324,6 +328,9 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   sendMessage(remoteMessage) {
+    if (isIOS) {
+      throw new Error(`firebase.messaging().sendMessage() is only supported on Android devices.`);
+    }
     let options;
     try {
       options = remoteMessageOptions(this.app.options.messagingSenderId, remoteMessage);

@@ -53,16 +53,13 @@ passing in the scope required for our application:
 
 ```js
 import auth from '@react-native-firebase/auth';
-import appleAuth, {
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
 async function onAppleButtonPress() {
   // Start the sign-in request
   const appleAuthRequestResponse = await appleAuth.performRequest({
-    requestedOperation: AppleAuthRequestOperation.LOGIN,
-    requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
   });
 
   // Ensure Apple returned a user identityToken
@@ -202,20 +199,22 @@ with the new authentication state of the user.
 
 ## Google
 
-The [`google-signin`](https://github.com/react-native-community/react-native-google-signin) library provides a wrapper around the official Google login library,
+The [`google-signin`](https://github.com/react-native-google-signin/google-signin) library provides a wrapper around the official Google login library,
 allowing you to create a credential and sign-in to Firebase.
 
 Most configuration is already setup when using Google Sign-In with Firebase, however you need to ensure your machines
-SHA1 key has been configured for use with Android. You can see view how to generate the key on the [Getting Started](/)
+SHA1 key has been configured for use with Android. You can see how to generate the key on the [Getting Started](/)
 documentation.
 
 Ensure the "Google" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
+Follow [these](https://github.com/react-native-google-signin/google-signin#project-setup-and-initialization) instructions to install and setup `google-signin`
+
 Before triggering a sign-in request, you must initialize the Google SDK using your any required scopes and the
-`webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`).
+`webClientId`, which can be found in the `android/app/google-services.json` file as the `client/oauth_client/client_id` property (the id ends with `.apps.googleusercontent.com`). Make sure to pick the `client_id` with `client_type: 3` 
 
 ```js
-import { GoogleSignin } from '@react-native-community/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
   webClientId: '',
@@ -242,7 +241,7 @@ The `onGoogleButtonPress` can then be implemented as follows:
 
 ```js
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-community/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleButtonPress() {
   // Get the users ID token

@@ -28,6 +28,7 @@ export default class MobileAd {
     this._requestOptions = requestOptions;
 
     this._loaded = false;
+    this._isLoadCalled = false;
     this._onAdEventHandler = null;
 
     this._nativeListener = admob.emitter.addListener(
@@ -45,6 +46,7 @@ export default class MobileAd {
 
     if (type === AdEventType.CLOSED || type === RewardedAdEventType.CLOSED) {
       this._loaded = false;
+      this._isLoadCalled = false;
     }
 
     if (this._onAdEventHandler) {
@@ -59,7 +61,7 @@ export default class MobileAd {
 
   _setAdEventHandler(handler) {
     this._onAdEventHandler = handler;
-    return () => this._nativeListener.remove();
+    return () => (this._onAdEventHandler = null);
   }
 
   get adUnitId() {

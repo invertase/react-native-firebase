@@ -14,18 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.doc().update()', () => {
-  before(() => wipe());
-
-  it('throws if no arguments are provided', () => {
+describe('firestore.doc().update()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if no arguments are provided', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .update();
+      firebase.firestore().doc(`${COLLECTION}/baz`).update();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -35,12 +33,9 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('throws if document does not exist', async () => {
+  it('throws if document does not exist', async function () {
     try {
-      await firebase
-        .firestore()
-        .doc('v6/idonotexistonthedatabase')
-        .update({});
+      await firebase.firestore().doc(`${COLLECTION}/idonotexistonthedatabase`).update({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.code.should.containEql('firestore/not-found');
@@ -48,12 +43,9 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('throws if field/value sequence is invalid', () => {
+  it('throws if field/value sequence is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .update('foo', 'bar', 'baz');
+      firebase.firestore().doc(`${COLLECTION}/baz`).update('foo', 'bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('or equal numbers of key/value pairs');
@@ -61,8 +53,8 @@ describe('firestore.doc().update()', () => {
     }
   });
 
-  it('updates data with an object value', async () => {
-    const ref = firebase.firestore().doc('v6/update-obj');
+  it('updates data with an object value', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value };
     const data2 = { foo: 'bar' };
@@ -75,8 +67,8 @@ describe('firestore.doc().update()', () => {
     await ref.delete();
   });
 
-  it('updates data with an key/value pairs', async () => {
-    const ref = firebase.firestore().doc('v6/update-obj');
+  it('updates data with an key/value pairs', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/update-obj`);
     const value = Date.now();
     const data1 = { foo: value, bar: value };
     await ref.set(data1);

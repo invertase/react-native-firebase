@@ -1,0 +1,17 @@
+name: 'PR Title is Conventional'
+on:
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+      - uses: amannn/action-semantic-pull-request@v3.4.0
+        with:
+          validateSingleCommit: true

@@ -40,7 +40,11 @@
                                                    launchOptions:launchOptions];
 
 
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
+  if (@available(iOS 13.0, *)) {
+      rootView.backgroundColor = [UIColor systemBackgroundColor];
+  } else {
+      rootView.backgroundColor = [UIColor whiteColor];
+  }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
@@ -71,12 +75,6 @@
 
 - (void)aTest {
   NSLog(@"TESTING3");
-}
-
-- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  NSLog(@"TESTING1");
-  [self aTest];
-  NSLog(@"TESTING2");
 }
 
 @end

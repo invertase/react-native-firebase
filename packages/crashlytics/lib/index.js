@@ -109,10 +109,10 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
     return this.native.setUserId(userId);
   }
 
-  recordError(error) {
+  recordError(error, jsErrorName) {
     if (isError(error)) {
       StackTrace.fromError(error, { offline: true }).then(stackFrames => {
-        this.native.recordError(createNativeErrorObj(error, stackFrames, false));
+        this.native.recordError(createNativeErrorObj(error, stackFrames, false, jsErrorName));
       });
     } else {
       console.warn(

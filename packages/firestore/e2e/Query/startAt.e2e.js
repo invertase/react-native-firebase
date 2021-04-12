@@ -14,18 +14,15 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-
-describe('firestore().collection().starAt()', () => {
-  before(() => wipe());
-
-  it('throws if no argument provided', () => {
+describe('firestore().collection().starAt()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if no argument provided', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .startAt();
+      firebase.firestore().collection(COLLECTION).startAt();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -35,13 +32,9 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if a inconsistent order number', () => {
+  it('throws if a inconsistent order number', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .orderBy('foo')
-        .startAt('bar', 'baz');
+      firebase.firestore().collection(COLLECTION).orderBy('foo').startAt('bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('The number of arguments must be less than or equal');
@@ -49,16 +42,10 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if providing snapshot and field values', async () => {
+  it('throws if providing snapshot and field values', async function () {
     try {
-      const doc = await firebase
-        .firestore()
-        .doc('v6/foo')
-        .get();
-      firebase
-        .firestore()
-        .collection('v6')
-        .startAt(doc, 'baz');
+      const doc = await firebase.firestore().doc(`${COLLECTION}/foo`).get();
+      firebase.firestore().collection(COLLECTION).startAt(doc, 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Expected DocumentSnapshot or list of field values');
@@ -66,16 +53,10 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if provided snapshot does not exist', async () => {
+  it('throws if provided snapshot does not exist', async function () {
     try {
-      const doc = await firebase
-        .firestore()
-        .doc('v6/idonotexist')
-        .get();
-      firebase
-        .firestore()
-        .collection('v6')
-        .startAt(doc);
+      const doc = await firebase.firestore().doc(`${COLLECTION}/idonotexist`).get();
+      firebase.firestore().collection(COLLECTION).startAt(doc);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("Can't use a DocumentSnapshot that doesn't exist");
@@ -83,17 +64,14 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('throws if order used with snapshot but fields do not exist', async () => {
+  it('throws if order used with snapshot but fields do not exist', async function () {
     try {
-      const doc = firebase.firestore().doc('v6/iexist');
+      const doc = firebase.firestore().doc(`${COLLECTION}/iexist`);
+
       await doc.set({ foo: { bar: 'baz' } });
       const snap = await doc.get();
 
-      firebase
-        .firestore()
-        .collection('v6')
-        .orderBy('foo.baz')
-        .startAt(snap);
+      firebase.firestore().collection(COLLECTION).orderBy('foo.baz').startAt(snap);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -103,8 +81,8 @@ describe('firestore().collection().starAt()', () => {
     }
   });
 
-  it('starts at field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAt/collection');
+  it('starts at field values', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/startAt/collection`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -115,18 +93,15 @@ describe('firestore().collection().starAt()', () => {
       doc3.set({ foo: 3, bar: { value: 3 } }),
     ]);
 
-    const qs = await colRef
-      .orderBy('bar.value', 'desc')
-      .startAt(2)
-      .get();
+    const qs = await colRef.orderBy('bar.value', 'desc').startAt(2).get();
 
     qs.docs.length.should.eql(2);
     qs.docs[0].id.should.eql('doc2');
     qs.docs[1].id.should.eql('doc1');
   });
 
-  it('starts at snapshot field values', async () => {
-    const colRef = firebase.firestore().collection('v6/startAt/snapshotFields');
+  it('starts at snapshot field values', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/startAt/snapshotFields`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');
@@ -139,18 +114,15 @@ describe('firestore().collection().starAt()', () => {
 
     const startAt = await doc2.get();
 
-    const qs = await colRef
-      .orderBy('bar.value')
-      .startAt(startAt)
-      .get();
+    const qs = await colRef.orderBy('bar.value').startAt(startAt).get();
 
     qs.docs.length.should.eql(2);
     qs.docs[0].id.should.eql('doc2');
     qs.docs[1].id.should.eql('doc3');
   });
 
-  it('startAt at snapshot', async () => {
-    const colRef = firebase.firestore().collection('v6/endsAt/snapshot');
+  it('startAt at snapshot', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/endsAt/snapshot`);
     const doc1 = colRef.doc('doc1');
     const doc2 = colRef.doc('doc2');
     const doc3 = colRef.doc('doc3');

@@ -1,3 +1,0 @@
----
-redirect: /ml-vision/usage
----

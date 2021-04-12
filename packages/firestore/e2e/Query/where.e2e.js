@@ -14,18 +14,15 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-
-describe('firestore().collection().where()', () => {
-  before(() => wipe());
-
-  it('throws if fieldPath is invalid', () => {
+describe('firestore().collection().where()', function () {
+  beforeEach(async function () {
+    return await wipe();
+  });
+  it('throws if fieldPath is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where(123);
+      firebase.firestore().collection(COLLECTION).where(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'fieldPath' must be a string or instance of FieldPath");
@@ -33,12 +30,9 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if fieldPath string is invalid', () => {
+  it('throws if fieldPath string is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('.foo.bar');
+      firebase.firestore().collection(COLLECTION).where('.foo.bar');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'fieldPath' Invalid field path");
@@ -46,12 +40,9 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if operator string is invalid', () => {
+  it('throws if operator string is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', '!');
+      firebase.firestore().collection(COLLECTION).where('foo.bar', '!');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'opStr' is invalid");
@@ -59,11 +50,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if query contains multiple array-contains', () => {
+  it('throws if query contains multiple array-contains', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'array-contains', 123)
         .where('foo.bar', 'array-contains', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -73,12 +64,9 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if value is not defined', () => {
+  it('throws if value is not defined', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', 'array-contains');
+      firebase.firestore().collection(COLLECTION).where('foo.bar', 'array-contains');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'value' argument expected");
@@ -86,12 +74,9 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if null value and no equal operator', () => {
+  it('throws if null value and no equal operator', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', 'array-contains', null);
+      firebase.firestore().collection(COLLECTION).where('foo.bar', 'array-contains', null);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('You can only perform equals comparisons on null');
@@ -99,20 +84,13 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('allows null to be used with equal operator', () => {
-    firebase
-      .firestore()
-      .collection('v6')
-      .where('foo.bar', '==', null);
+  it('allows null to be used with equal operator', function () {
+    firebase.firestore().collection(COLLECTION).where('foo.bar', '==', null);
   });
 
-  it('throws if multiple inequalities on different paths is provided', () => {
+  it('throws if multiple inequalities on different paths is provided', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', '>', 123)
-        .where('bar', '>', 123);
+      firebase.firestore().collection(COLLECTION).where('foo.bar', '>', 123).where('bar', '>', 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('All where filters with an inequality');
@@ -120,20 +98,17 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('allows inequality on the same path', () => {
+  it('allows inequality on the same path', function () {
     firebase
       .firestore()
-      .collection('v6')
+      .collection(COLLECTION)
       .where('foo.bar', '>', 123)
       .where(new firebase.firestore.FieldPath('foo', 'bar'), '>', 1234);
   });
 
-  it('throws if in query with no array value', () => {
+  it('throws if in query with no array value', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', 'in', '123');
+      firebase.firestore().collection(COLLECTION).where('foo.bar', 'in', '123');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('A non-empty array is required');
@@ -141,12 +116,9 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if array-contains-any query with no array value', () => {
+  it('throws if array-contains-any query with no array value', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .where('foo.bar', 'array-contains-any', '123');
+      firebase.firestore().collection(COLLECTION).where('foo.bar', 'array-contains-any', '123');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('A non-empty array is required');
@@ -154,11 +126,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if in query array length is greater than 10', () => {
+  it('throws if in query array length is greater than 10', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -167,11 +139,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if query has multiple array-contains-any filter', () => {
+  it('throws if query has multiple array-contains-any filter', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'array-contains-any', [1])
         .where('foo.bar', 'array-contains-any', [2]);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -181,11 +153,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if query has array-contains-any & in filter', () => {
+  it('throws if query has array-contains-any & in filter', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'array-contains-any', [1])
         .where('foo.bar', 'in', [2]);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -197,11 +169,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if query has multiple in filter', () => {
+  it('throws if query has multiple in filter', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'in', [1])
         .where('foo.bar', 'in', [2]);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -211,11 +183,11 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('throws if query has in & array-contains-any filter', () => {
+  it('throws if query has in & array-contains-any filter', function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where('foo.bar', 'in', [1])
         .where('foo.bar', 'array-contains-any', [2]);
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -229,8 +201,8 @@ describe('firestore().collection().where()', () => {
 
   /* Queries */
 
-  it('returns with where equal filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/equal');
+  it('returns with where equal filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equal`);
 
     const search = Date.now();
     await Promise.all([
@@ -247,8 +219,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with where greater than filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/greater');
+  it('returns with where greater than filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greater`);
 
     const search = Date.now();
     await Promise.all([
@@ -266,8 +238,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with where greater than or equal filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/greaterequal');
+  it('returns with where greater than or equal filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterequal`);
 
     const search = Date.now();
     await Promise.all([
@@ -285,8 +257,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with where less than filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/less');
+  it('returns with where less than filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/less`);
 
     const search = -Date.now();
     await Promise.all([
@@ -303,8 +275,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with where less than or equal filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/lessequal');
+  it('returns with where less than or equal filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/lessequal`);
 
     const search = -Date.now();
     await Promise.all([
@@ -322,8 +294,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with where array-contains filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/array-contains');
+  it('returns with where array-contains filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains`);
 
     const match = Date.now();
     await Promise.all([
@@ -341,8 +313,8 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with in filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/in');
+  it('returns with in filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in${Date.now() + ''}`);
 
     await Promise.all([
       colRef.add({ status: 'Ordered' }),
@@ -360,8 +332,10 @@ describe('firestore().collection().where()', () => {
     });
   });
 
-  it('returns with array-contains-any filter', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/array-contains-any');
+  it('returns with array-contains-any filter', async function () {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/array-contains-any${Date.now() + ''}`);
 
     await Promise.all([
       colRef.add({ category: ['Appliances', 'Housewares', 'Cooking'] }),
@@ -375,8 +349,10 @@ describe('firestore().collection().where()', () => {
     snapshot.size.should.eql(3); // 2nd record should only be returned once
   });
 
-  it('returns with a FieldPath', async () => {
-    const colRef = firebase.firestore().collection('v6/filter/where-fieldpath');
+  it('returns with a FieldPath', async function () {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/where-fieldpath${Date.now() + ''}`);
     const fieldPath = new firebase.firestore.FieldPath('map', 'foo.bar@gmail.com');
 
     await colRef.add({
@@ -396,11 +372,11 @@ describe('firestore().collection().where()', () => {
     should.equal(data.map['foo.bar@gmail.com'], true);
   });
 
-  it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async () => {
+  it('should throw an error if you use a FieldPath on a filter in conjunction with an orderBy() parameter that is not FieldPath', async function () {
     try {
       firebase
         .firestore()
-        .collection('v6')
+        .collection(COLLECTION)
         .where(firebase.firestore.FieldPath.documentId(), 'in', ['document-id'])
         .orderBy('differentOrderBy', 'desc');
 
@@ -411,8 +387,8 @@ describe('firestore().collection().where()', () => {
     }
   });
 
-  it('should correctly query integer values with in operator', async () => {
-    const ref = firebase.firestore().collection('v6');
+  it('should correctly query integer values with in operator', async function () {
+    const ref = firebase.firestore().collection(`${COLLECTION}/filter/int-in${Date.now() + ''}`);
 
     await ref.add({ status: 1 });
 
@@ -425,8 +401,10 @@ describe('firestore().collection().where()', () => {
     items.length.should.equal(1);
   });
 
-  it('should correctly query integer values with array-contains operator', async () => {
-    const ref = firebase.firestore().collection('v6');
+  it('should correctly query integer values with array-contains operator', async function () {
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/int-array-contains${Date.now() + ''}`);
 
     await ref.add({ status: [1, 2, 3] });
 
@@ -437,5 +415,161 @@ describe('firestore().collection().where()', () => {
       .then($ => $.forEach(doc => items.push(doc.data())));
 
     items.length.should.equal(1);
+  });
+
+  it("should correctly retrieve data when using 'not-in' operator", async function () {
+    const ref = firebase.firestore().collection(`${COLLECTION}/filter/not-in${Date.now() + ''}`);
+
+    await Promise.all([ref.add({ notIn: 'here' }), ref.add({ notIn: 'now' })]);
+
+    const result = await ref.where('notIn', 'not-in', ['here', 'there', 'everywhere']).get();
+    should(result.docs.length).equal(1);
+    should(result.docs[0].data().notIn).equal('now');
+  });
+
+  it("should throw error when using 'not-in' operator twice", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'not-in', [1]).where('test', 'not-in', [2]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one 'not-in' filter.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with '!=' operator", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'not-in' filters with '!=' inequality filters",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with 'in' operator", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'in', [2]).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use 'not-in' filters with 'in' filters.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining 'not-in' operator with 'array-contains-any' operator", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'array-contains-any', [2]).where('test', 'not-in', [1]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        "You cannot use 'not-in' filters with 'array-contains-any' filters.",
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when 'not-in' filter has a list of more than 10 items", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', 'not-in', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql(
+        'filters support a maximum of 10 elements in the value array.',
+      );
+      return Promise.resolve();
+    }
+  });
+
+  it("should correctly retrieve data when using '!=' operator", async function () {
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/bang-equals${Date.now() + ''}`);
+
+    await Promise.all([ref.add({ notEqual: 'here' }), ref.add({ notEqual: 'now' })]);
+
+    const result = await ref.where('notEqual', '!=', 'here').get();
+
+    should(result.docs.length).equal(1);
+    should(result.docs[0].data().notEqual).equal('now');
+  });
+
+  it("should throw error when using '!=' operator twice ", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('test', '!=', 2);
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql("You cannot use more than one '!=' inequality filter.");
+      return Promise.resolve();
+    }
+  });
+
+  it("should throw error when combining '!=' operator with any other inequality operator on a different field", async function () {
+    const ref = firebase.firestore().collection(COLLECTION);
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '>', 1);
+      return Promise.reject(new Error('Did not throw an Error on >.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '<', 1);
+      return Promise.reject(new Error('Did not throw an Error on <.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '<=', 1);
+      return Promise.reject(new Error('Did not throw an Error <=.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    try {
+      ref.where('test', '!=', 1).where('differentField', '>=', 1);
+      return Promise.reject(new Error('Did not throw an Error >=.'));
+    } catch (error) {
+      error.message.should.containEql('must be on the same field.');
+    }
+
+    return Promise.resolve();
+  });
+
+  it('should handle where clause after sort by', async function () {
+    const ref = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/sort-by-where${Date.now() + ''}`);
+
+    await ref.add({ status: 1 });
+    await ref.add({ status: 2 });
+    await ref.add({ status: 3 });
+
+    const items = [];
+    await ref
+      .orderBy('status', 'desc')
+      .where('status', '<=', 2)
+      .get()
+      .then($ => $.forEach(doc => items.push(doc.data())));
+
+    items.length.should.equal(2);
+    items[0].status.should.equal(2);
+    items[1].status.should.equal(1);
   });
 });

@@ -4,24 +4,35 @@ on:
   pull_request:
     branches:
       - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
   push:
     branches:
       - master
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
 
 jobs:
   jest:
     name: Jest
-    timeout-minutes: 5
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
-      - uses: actions/setup-node@v2-beta
+          fetch-depth: 50
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -34,14 +45,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        run: yarn --no-audit --prefer-offline
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 5
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
       - name: Jest
-        run: yarn run tests:jest-coverage
+        run: yarn tests:jest-coverage
       - name: Submit Coverage
         # This can fail on timeouts etc, wrap with retry
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 3
           retry_wait_seconds: 60
           max_attempts: 3
           command: ./node_modules/.bin/codecov

@@ -3,6 +3,231 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.2.0](https://github.com/invertase/react-native-firebase/compare/v11.1.2...v11.2.0) (2021-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [11.1.2](https://github.com/invertase/react-native-firebase/compare/v11.1.1...v11.1.2) (2021-03-17)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [11.1.1](https://github.com/invertase/react-native-firebase/compare/v11.1.0...v11.1.1) (2021-03-16)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [11.1.0](https://github.com/invertase/react-native-firebase/compare/v11.0.0...v11.1.0) (2021-03-13)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [11.0.0](https://github.com/invertase/react-native-firebase/compare/v10.8.1...v11.0.0) (2021-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [10.8.1](https://github.com/invertase/react-native-firebase/compare/v10.8.0...v10.8.1) (2021-02-22)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.8.0](https://github.com/invertase/react-native-firebase/compare/v10.7.0...v10.8.0) (2021-02-13)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.7.0](https://github.com/invertase/react-native-firebase/compare/v10.6.4...v10.7.0) (2021-02-09)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [10.6.4](https://github.com/invertase/react-native-firebase/compare/v10.6.3...v10.6.4) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [10.6.3](https://github.com/invertase/react-native-firebase/compare/v10.6.2...v10.6.3) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [10.6.1](https://github.com/invertase/react-native-firebase/compare/v10.6.0...v10.6.1) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.6.0](https://github.com/invertase/react-native-firebase/compare/v10.5.1...v10.6.0) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [10.5.1](https://github.com/invertase/react-native-firebase/compare/v10.5.0...v10.5.1) (2021-01-19)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.5.0](https://github.com/invertase/react-native-firebase/compare/v10.4.1...v10.5.0) (2021-01-18)
+
+### Bug Fixes
+
+- **app, android:** require default firebase.json boolean key ([#4791](https://github.com/invertase/react-native-firebase/issues/4791)) ([483d9d3](https://github.com/invertase/react-native-firebase/commit/483d9d3655844e4c40cb42f3b0da865ada971515))
+
+## [10.4.1](https://github.com/invertase/react-native-firebase/compare/v10.4.0...v10.4.1) (2021-01-08)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.4.0](https://github.com/invertase/react-native-firebase/compare/v10.3.1...v10.4.0) (2020-12-30)
+
+### Bug Fixes
+
+- **ios:** bump ios min deployment to ios10 - remnant from [#4471](https://github.com/invertase/react-native-firebase/issues/4471) ([4a57578](https://github.com/invertase/react-native-firebase/commit/4a5757827789141600625eebe5e13c976ddb7402))
+
+## [10.3.1](https://github.com/invertase/react-native-firebase/compare/v10.3.0...v10.3.1) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.3.0](https://github.com/invertase/react-native-firebase/compare/v10.2.0...v10.3.0) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [10.2.0](https://github.com/invertase/react-native-firebase/compare/v10.1.1...v10.2.0) (2020-12-11)
+
+### Features
+
+- firebase-ios-sdk 7.2.0 / firebase-android-sdk 26.1.1 ([#4648](https://github.com/invertase/react-native-firebase/issues/4648)) ([a158a74](https://github.com/invertase/react-native-firebase/commit/a158a74dee0dd6774c725ff1213453f8dfdcb8f5))
+
+## [10.1.1](https://github.com/invertase/react-native-firebase/compare/v10.1.0...v10.1.1) (2020-12-02)
+
+### Bug Fixes
+
+- **messaging:** remote message from messaging store on new intent ([#4634](https://github.com/invertase/react-native-firebase/issues/4634)) ([00b83af](https://github.com/invertase/react-native-firebase/commit/00b83af15ca23d667e4258a1cf3e5b6a830a8f2d))
+
+# [10.1.0](https://github.com/invertase/react-native-firebase/compare/v10.0.0...v10.1.0) (2020-11-26)
+
+### Bug Fixes
+
+- **messaging, badge:** use new iOS JSON location for FCM badge information ([#4560](https://github.com/invertase/react-native-firebase/issues/4560)) ([bda2d67](https://github.com/invertase/react-native-firebase/commit/bda2d67ddaf7f12ac3143b564e7e94974e8356db))
+
+### Features
+
+- **messaging, android:** make native serializer object + events builder APIs public ([#4618](https://github.com/invertase/react-native-firebase/issues/4618)) ([e54fecc](https://github.com/invertase/react-native-firebase/commit/e54feccea41fdbe4a7b10554b32ce2cef6068c66))
+
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/fc8c4c0622f8e6814879d0306f66012df5b83cd8...v10.0.0) (2020-11-17)
+
+### BREAKING CHANGES
+
+- breaking change to mark new internal versioning requirements.
+
+## [8.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@8.0.0...@react-native-firebase/messaging@8.0.1) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.9.2...@react-native-firebase/messaging@8.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **messaging:** BREAKING drop iOS FCM direct channel + upstream send APIs ([22ede33](https://github.com/invertase/react-native-firebase/commit/22ede3303d640364782a14a6813a5b8efc9e459e))
+
+### BREAKING CHANGES
+
+- **messaging:** Upstream send should be done with cloud functions. FCM Direct channel has no replacement.
+
+## [7.9.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.9.1...@react-native-firebase/messaging@7.9.2) (2020-10-30)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.9.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.9.0...@react-native-firebase/messaging@7.9.1) (2020-10-16)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.9.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.11...@react-native-firebase/messaging@7.9.0) (2020-10-07)
+
+### Features
+
+- **ios, messaging:** add getIsHeadless method to access iOS launch state ([#4304](https://github.com/invertase/react-native-firebase/issues/4304)) ([8a4e9a5](https://github.com/invertase/react-native-firebase/commit/8a4e9a5259fd89885f3f5e825328899476e9e3ee))
+
+## [7.8.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.10...@react-native-firebase/messaging@7.8.11) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.9...@react-native-firebase/messaging@7.8.10) (2020-09-30)
+
+### Bug Fixes
+
+- **types:** enable TypeScript libCheck & resolve type conflicts ([#4306](https://github.com/invertase/react-native-firebase/issues/4306)) ([aa8ee8b](https://github.com/invertase/react-native-firebase/commit/aa8ee8b7e83443d2c1664993800e15faf4b59b0e))
+- **android, messaging:** fix(android, messaging): store notifications for initial/open attribution [#4317](https://github.com/invertase/react-native-firebase/issues/4317) ([a7cafc9](https://github.com/invertase/react-native-firebase/commit/a7cafc92f4250d2ccb16cb181a4029f14b76b8ca))
+
+## [7.8.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.8...@react-native-firebase/messaging@7.8.9) (2020-09-30)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.7...@react-native-firebase/messaging@7.8.8) (2020-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.7](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.6...@react-native-firebase/messaging@7.8.7) (2020-09-17)
+
+### Bug Fixes
+
+- **ios, podspec:** depend on React-Core instead of React ([#4275](https://github.com/invertase/react-native-firebase/issues/4275)) ([fd1a2be](https://github.com/invertase/react-native-firebase/commit/fd1a2be6b6ab1dec89e5dce1fc237435c3e1d510))
+
+## [7.8.6](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.5...@react-native-firebase/messaging@7.8.6) (2020-09-11)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.5](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.4...@react-native-firebase/messaging@7.8.5) (2020-09-11)
+
+### Bug Fixes
+
+- **ios, messaging:** remove UNNotificationServiceExtension / use local target extension ([#4226](https://github.com/invertase/react-native-firebase/issues/4226)) ([1be2a39](https://github.com/invertase/react-native-firebase/commit/1be2a3915ad4e5062779e86e7c9b78c970ca9c64))
+
+## [7.8.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.3...@react-native-firebase/messaging@7.8.4) (2020-08-31)
+
+### Bug Fixes
+
+- **ios, messaging:** register background handler task for FCM events ([#4180](https://github.com/invertase/react-native-firebase/issues/4180)) ([cf706c6](https://github.com/invertase/react-native-firebase/commit/cf706c683dd1d23860f15df636cc345cb6f3b60a))
+
+## [7.8.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.2...@react-native-firebase/messaging@7.8.3) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.1...@react-native-firebase/messaging@7.8.2) (2020-08-28)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [7.8.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.8.0...@react-native-firebase/messaging@7.8.1) (2020-08-26)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.8.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.4...@react-native-firebase/messaging@7.8.0) (2020-08-26)
+
+### Features
+
+- bump firebase sdk versions, add GoogleApi dep, use Android API29 ([#4122](https://github.com/invertase/react-native-firebase/issues/4122)) ([728f418](https://github.com/invertase/react-native-firebase/commit/728f41863832d21230c6eb1f55385284fef03c09))
+
+## [7.7.4](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.3...@react-native-firebase/messaging@7.7.4) (2020-08-26)
+
+### Bug Fixes
+
+- undelivered background data message ios ([#4144](https://github.com/invertase/react-native-firebase/issues/4144)) ([415dba4](https://github.com/invertase/react-native-firebase/commit/415dba496ddf0551019e1bcfea4080809c300980))
+
+## [7.7.3](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.2...@react-native-firebase/messaging@7.7.3) (2020-08-25)
+
+### Bug Fixes
+
+- **ios, analytics:** remove now-optional analytics dependencies ([#4131](https://github.com/invertase/react-native-firebase/issues/4131)) ([fdb5e9f](https://github.com/invertase/react-native-firebase/commit/fdb5e9f5786822343b11d3257d9f466a9d593fa4))
+
+## [7.7.2](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.1...@react-native-firebase/messaging@7.7.2) (2020-08-21)
+
+### Bug Fixes
+
+- **messaging,ios:** fix build error ([#4119](https://github.com/invertase/react-native-firebase/issues/4119)) ([06fcd84](https://github.com/invertase/react-native-firebase/commit/06fcd84c9b3968a0f4d408c2db7bafe4323591ac))
+
+## [7.7.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.7.0...@react-native-firebase/messaging@7.7.1) (2020-08-15)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+# [7.7.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.6.1...@react-native-firebase/messaging@7.7.0) (2020-08-15)
+
+### Bug Fixes
+
+- **messaging:** initialize app props method to fix isHeadless property ([#4082](https://github.com/invertase/react-native-firebase/issues/4082)) ([2bdebb1](https://github.com/invertase/react-native-firebase/commit/2bdebb1d3d82915d0aa9a49431d26658721a2f86))
+- **messaging, ios:** call original delegate when intercepting willPresentNotification ([#4088](https://github.com/invertase/react-native-firebase/issues/4088)) ([62ee961](https://github.com/invertase/react-native-firebase/commit/62ee961d6ebffe529bdfa938443e1f25a0201e0e))
+
+### Features
+
+- **messaging:** allow messaging services to hook into FCM ([#4087](https://github.com/invertase/react-native-firebase/issues/4087)) ([bff8f9f](https://github.com/invertase/react-native-firebase/commit/bff8f9fba8dd46a5cea71461fc7a2c4f0fddb48e))
+- **messaging, ios:** add notification extension for ios notification images ([#4085](https://github.com/invertase/react-native-firebase/issues/4085)) ([32ab205](https://github.com/invertase/react-native-firebase/commit/32ab2054c0f8c8db4b6127f4ba1f50c9064e83d9))
+
 ## [7.6.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/messaging@7.6.0...@react-native-firebase/messaging@7.6.1) (2020-08-03)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

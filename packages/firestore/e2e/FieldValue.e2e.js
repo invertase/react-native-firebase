@@ -14,13 +14,14 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.FieldValue', () => {
-  before(() => wipe());
-
-  it('should throw if constructed manually', () => {
+describe('firestore.FieldValue', function () {
+  before(function () {
+    return wipe();
+  });
+  it('should throw if constructed manually', function () {
     try {
       new firebase.firestore.FieldValue();
       return Promise.reject(new Error('Did not throw an Error.'));
@@ -30,8 +31,8 @@ describe('firestore.FieldValue', () => {
     }
   });
 
-  describe('isEqual()', () => {
-    it('throws if other is not a FieldValue', () => {
+  describe('isEqual()', function () {
+    it('throws if other is not a FieldValue', function () {
       try {
         firebase.firestore.FieldValue.increment(1).isEqual(1);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -41,7 +42,7 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('returns false if not equal', () => {
+    it('returns false if not equal', function () {
       const fv = firebase.firestore.FieldValue.increment(1);
 
       const fieldValue1 = firebase.firestore.FieldValue.increment(2);
@@ -54,7 +55,7 @@ describe('firestore.FieldValue', () => {
       eql2.should.be.False();
     });
 
-    it('returns true if equal', () => {
+    it('returns true if equal', function () {
       const fv = firebase.firestore.FieldValue.arrayUnion(1, '123', 3);
 
       const fieldValue1 = firebase.firestore.FieldValue.arrayUnion(1, '123', 3);
@@ -65,8 +66,8 @@ describe('firestore.FieldValue', () => {
     });
   });
 
-  describe('increment()', () => {
-    it('throws if value is not a number', () => {
+  describe('increment()', function () {
+    it('throws if value is not a number', function () {
       try {
         firebase.firestore.FieldValue.increment('1');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -76,8 +77,8 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('increments a number if it exists', async () => {
-      const ref = firebase.firestore().doc('v6/increment');
+    it('increments a number if it exists', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/increment`);
       await ref.set({ foo: 2 });
       await ref.update({ foo: firebase.firestore.FieldValue.increment(1) });
       const snapshot = await ref.get();
@@ -85,8 +86,8 @@ describe('firestore.FieldValue', () => {
       await ref.delete();
     });
 
-    it('sets the value if it doesnt exist or being set', async () => {
-      const ref = firebase.firestore().doc('v6/increment');
+    it('sets the value if it doesnt exist or being set', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/increment`);
       await ref.set({ foo: firebase.firestore.FieldValue.increment(1) });
       const snapshot = await ref.get();
       snapshot.data().foo.should.equal(1);
@@ -94,17 +95,17 @@ describe('firestore.FieldValue', () => {
     });
   });
 
-  describe('serverTime()', () => {
-    it('sets a new server time value', async () => {
-      const ref = firebase.firestore().doc('v6/servertime');
+  describe('serverTime()', function () {
+    it('sets a new server time value', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/servertime`);
       await ref.set({ foo: firebase.firestore.FieldValue.serverTimestamp() });
       const snapshot = await ref.get();
       snapshot.data().foo.seconds.should.be.a.Number();
       await ref.delete();
     });
 
-    it('updates a server time value', async () => {
-      const ref = firebase.firestore().doc('v6/servertime');
+    it('updates a server time value', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/servertime`);
       await ref.set({ foo: firebase.firestore.FieldValue.serverTimestamp() });
       const snapshot1 = await ref.get();
       snapshot1.data().foo.nanoseconds.should.be.a.Number();
@@ -118,9 +119,9 @@ describe('firestore.FieldValue', () => {
     });
   });
 
-  describe('delete()', () => {
-    it('removes a value', async () => {
-      const ref = firebase.firestore().doc('v6/valuedelete');
+  describe('delete()', function () {
+    it('removes a value', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/valuedelete`);
       await ref.set({ foo: 'bar', bar: 'baz' });
       await ref.update({ bar: firebase.firestore.FieldValue.delete() });
       const snapshot = await ref.get();
@@ -129,8 +130,8 @@ describe('firestore.FieldValue', () => {
     });
   });
 
-  describe('arrayUnion()', () => {
-    it('throws if attempting to use own class', () => {
+  describe('arrayUnion()', function () {
+    it('throws if attempting to use own class', function () {
       try {
         firebase.firestore.FieldValue.arrayUnion(firebase.firestore.FieldValue.serverTimestamp());
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -142,7 +143,7 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('throws if using nested arrays', () => {
+    it('throws if using nested arrays', function () {
       try {
         firebase.firestore.FieldValue.arrayUnion([1]);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -152,8 +153,8 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('updates an existing array', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+    it('updates an existing array', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: [1, 2],
       });
@@ -166,8 +167,8 @@ describe('firestore.FieldValue', () => {
       await ref.delete();
     });
 
-    it('sets an array if existing value isnt an array with update', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+    it('sets an array if existing value isnt an array with update', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });
@@ -180,8 +181,8 @@ describe('firestore.FieldValue', () => {
       await ref.delete();
     });
 
-    it('sets an existing array to the new array with set', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+    it('sets an existing array to the new array with set', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: [1, 2],
       });
@@ -195,8 +196,8 @@ describe('firestore.FieldValue', () => {
     });
   });
 
-  describe('arrayRemove()', () => {
-    it('throws if attempting to use own class', () => {
+  describe('arrayRemove()', function () {
+    it('throws if attempting to use own class', function () {
       try {
         firebase.firestore.FieldValue.arrayRemove(firebase.firestore.FieldValue.serverTimestamp());
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -208,7 +209,7 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('throws if using nested arrays', () => {
+    it('throws if using nested arrays', function () {
       try {
         firebase.firestore.FieldValue.arrayRemove([1]);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -218,8 +219,8 @@ describe('firestore.FieldValue', () => {
       }
     });
 
-    it('removes items in an array', async () => {
-      const ref = firebase.firestore().doc('v6/arrayremove');
+    it('removes items in an array', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayremove`);
       await ref.set({
         foo: [1, 2, 3, 4],
       });
@@ -232,8 +233,8 @@ describe('firestore.FieldValue', () => {
       await ref.delete();
     });
 
-    it('removes all items in the array if existing value isnt array with update', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+    it('removes all items in the array if existing value isnt array with update', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });
@@ -246,8 +247,8 @@ describe('firestore.FieldValue', () => {
       await ref.delete();
     });
 
-    it('removes all items in the array if existing value isnt array with set', async () => {
-      const ref = firebase.firestore().doc('v6/arrayunion');
+    it('removes all items in the array if existing value isnt array with set', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/arrayunion`);
       await ref.set({
         foo: 123,
       });

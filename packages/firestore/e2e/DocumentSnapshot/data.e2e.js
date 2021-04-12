@@ -14,8 +14,8 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
 // Used to create a Blob
 const blobObject = { hello: 'world' };
@@ -23,17 +23,18 @@ const blobString = JSON.stringify(blobObject);
 const blobBuffer = Buffer.from(blobString);
 const blobBase64 = blobBuffer.toString('base64');
 
-describe('firestore().doc() -> snapshot.data()', () => {
-  before(() => wipe());
-
-  it('returns undefined if documet does not exist', async () => {
-    const ref = firebase.firestore().doc('v6/idonotexist');
+describe('firestore().doc() -> snapshot.data()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('returns undefined if documet does not exist', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const snapshot = await ref.get();
     should.equal(snapshot.data(), undefined);
   });
 
-  it('returns an object if exists', async () => {
-    const ref = firebase.firestore().doc('v6/getData');
+  it('returns an object if exists', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
     const data = { foo: 'bar' };
     await ref.set(data);
     const snapshot = await ref.get();
@@ -41,8 +42,8 @@ describe('firestore().doc() -> snapshot.data()', () => {
     await ref.delete();
   });
 
-  it('returns an object when document is empty', async () => {
-    const ref = firebase.firestore().doc('v6/getData');
+  it('returns an object when document is empty', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
     const data = {};
     await ref.set(data);
     const snapshot = await ref.get();
@@ -50,11 +51,11 @@ describe('firestore().doc() -> snapshot.data()', () => {
     await ref.delete();
   });
 
-  xit('handles SnapshotOptions', () => {
-    // TODO
-  });
+  // it('handles SnapshotOptions', function () {
+  //   // TODO
+  // });
 
-  it('handles all data types', async () => {
+  it('handles all data types', async function () {
     const types = {
       string: '123456',
       stringEmpty: '',
@@ -70,7 +71,7 @@ describe('firestore().doc() -> snapshot.data()', () => {
       timestamp: new firebase.firestore.Timestamp(123, 123456),
       date: new Date(),
       geopoint: new firebase.firestore.GeoPoint(1, 2),
-      reference: firebase.firestore().doc('v6/foobar'),
+      reference: firebase.firestore().doc(`${COLLECTION}/foobar`),
       blob: firebase.firestore.Blob.fromBase64String(blobBase64),
     };
 
@@ -79,7 +80,7 @@ describe('firestore().doc() -> snapshot.data()', () => {
     types.map = map;
     types.array = array;
 
-    const ref = firebase.firestore().doc('v6/types');
+    const ref = firebase.firestore().doc(`${COLLECTION}/types`);
     await ref.set(types);
     const snapshot = await ref.get();
     const data = snapshot.data();
@@ -131,7 +132,7 @@ describe('firestore().doc() -> snapshot.data()', () => {
 
     // Reference
     // data.reference.should.be.an.instanceOf();
-    data.reference.path.should.equal('v6/foobar');
+    data.reference.path.should.equal(`${COLLECTION}/foobar`);
 
     // Blob
     data.blob.toBase64.should.be.a.Function();

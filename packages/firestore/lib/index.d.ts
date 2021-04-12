@@ -87,10 +87,17 @@ export namespace FirebaseFirestoreTypes {
   }
 
   /**
+   * A `DocumentData` object represents the data in a document.
+   */
+  export interface DocumentData {
+    [key: string]: any;
+  }
+
+  /**
    * A `CollectionReference` object can be used for adding documents, getting document references, and querying for
    * documents (using the methods inherited from `Query`).
    */
-  export interface CollectionReference<T> extends Query<T> {
+  export interface CollectionReference<T extends DocumentData = DocumentData> extends Query<T> {
     /**
      * The collection's identifier.
      */
@@ -121,7 +128,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An Object containing the data for the new document.
      */
-    add(data: { [key: string]: any }): Promise<DocumentReference<T>>;
+    add(data: T): Promise<DocumentReference<T>>;
 
     /**
      * Get a DocumentReference for the document within the collection at the specified path. If no
@@ -145,11 +152,11 @@ export namespace FirebaseFirestoreTypes {
    * A DocumentChange represents a change to the documents matching a query. It contains the document affected and the
    * type of change that occurred.
    */
-  export interface DocumentChange {
+  export interface DocumentChange<T extends DocumentData = DocumentData> {
     /**
      * The document affected by this change.
      */
-    doc: QueryDocumentSnapshot;
+    doc: QueryDocumentSnapshot<T>;
 
     /**
      * The index of the changed document in the result set immediately after this `DocumentChange`
@@ -198,7 +205,7 @@ export namespace FirebaseFirestoreTypes {
    * to the location. The document at the referenced location may or may not exist. A `DocumentReference` can also be used
    * to create a `CollectionReference` to a subcollection.
    */
-  export interface DocumentReference<T> {
+  export interface DocumentReference<T extends DocumentData = DocumentData> {
     /**
      * The Firestore instance the document is in. This is useful for performing transactions, for example.
      */
@@ -212,7 +219,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The Collection this `DocumentReference` belongs to.
      */
-    parent: CollectionReference;
+    parent: CollectionReference<T>;
 
     /**
      * A string representing the path of the referenced document (relative to the root of the database).
@@ -306,7 +313,7 @@ export namespace FirebaseFirestoreTypes {
     onSnapshot(observer: {
       complete?: () => void;
       error?: (error: Error) => void;
-      next?: (snapshot: DocumentSnapshot) => void;
+      next?: (snapshot: DocumentSnapshot<T>) => void;
     }): () => void;
 
     /**
@@ -338,7 +345,7 @@ export namespace FirebaseFirestoreTypes {
       observer: {
         complete?: () => void;
         error?: (error: Error) => void;
-        next?: (snapshot: DocumentSnapshot) => void;
+        next?: (snapshot: DocumentSnapshot<T>) => void;
       },
     ): () => void;
 
@@ -365,7 +372,7 @@ export namespace FirebaseFirestoreTypes {
      * @param onCompletion An optional function which will never be called.
      */
     onSnapshot(
-      onNext: (snapshot: DocumentSnapshot) => void,
+      onNext: (snapshot: DocumentSnapshot<T>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -396,7 +403,7 @@ export namespace FirebaseFirestoreTypes {
      */
     onSnapshot(
       options: SnapshotListenOptions,
-      onNext: (snapshot: DocumentSnapshot) => void,
+      onNext: (snapshot: DocumentSnapshot<T>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -422,7 +429,7 @@ export namespace FirebaseFirestoreTypes {
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(data: { [key: string]: any }, options?: SetOptions): Promise<void>;
+    set(data: T, options?: SetOptions): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this `DocumentReference`. The update will fail
@@ -441,7 +448,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(data: { [key: string]: any }): Promise<void>;
+    update(data: Partial<{ [K in keyof T]: T[K] | FieldValue }>): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if
@@ -460,16 +467,7 @@ export namespace FirebaseFirestoreTypes {
      * @param value The first value.
      * @param moreFieldsAndValues Additional key value pairs.
      */
-    update(field: string | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
-
-    withConverter<U>(converter: FirestoreDataConverter<U>): DocumentReference<U>;
-  }
-
-  // TODO test this
-  export interface FirestoreDataConverter<T> {
-    toFirestore: (modelObject: T) => { [key: string]: any };
-    // Handle options: https://firebase.google.com/docs/reference/js/firebase.firestore.FirestoreDataConverter
-    fromFirestore: (snapshot: QueryDocumentSnapshot) => T;
+    update(field: keyof T | FieldPath, value: any, ...moreFieldsAndValues: any[]): Promise<void>;
   }
 
   /**
@@ -479,7 +477,7 @@ export namespace FirebaseFirestoreTypes {
    * For a DocumentSnapshot that points to a non-existing document, any data access will return 'undefined'.
    * You can use the `exists` property to explicitly verify a document's existence.
    */
-  export interface DocumentSnapshot {
+  export interface DocumentSnapshot<T extends DocumentData = DocumentData> {
     /**
      * Property of the `DocumentSnapshot` that signals whether or not the data exists. True if the document exists.
      */
@@ -498,7 +496,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The `DocumentReference` for the document included in the `DocumentSnapshot`.
      */
-    ref: DocumentReference;
+    ref: DocumentReference<T>;
 
     /**
      * Retrieves all fields in the document as an Object. Returns 'undefined' if the document doesn't exist.
@@ -511,7 +509,7 @@ export namespace FirebaseFirestoreTypes {
      * console.log('User', user.data());
      * ```
      */
-    data(): { [key: string]: any } | undefined;
+    data(): T | undefined;
 
     /**
      * Retrieves the field specified by fieldPath. Returns undefined if the document or field doesn't exist.
@@ -526,7 +524,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldPath The path (e.g. 'foo' or 'foo.bar') to a specific field.
      */
-    get<fieldType extends DocumentFieldType>(fieldPath: string | FieldPath): fieldType;
+    get<fieldType extends DocumentFieldType>(fieldPath: keyof T | FieldPath): fieldType;
 
     /**
      * Returns true if this `DocumentSnapshot` is equal to the provided one.
@@ -553,7 +551,8 @@ export namespace FirebaseFirestoreTypes {
    * A QueryDocumentSnapshot offers the same API surface as a DocumentSnapshot.
    * Since query results contain only existing documents, the exists property will always be true and data() will never return 'undefined'.
    */
-  export interface QueryDocumentSnapshot extends DocumentSnapshot {
+  export interface QueryDocumentSnapshot<T extends DocumentData = DocumentData>
+    extends DocumentSnapshot<T> {
     /**
      * A QueryDocumentSnapshot is always guaranteed to exist.
      */
@@ -572,7 +571,7 @@ export namespace FirebaseFirestoreTypes {
      * }
      * ```
      */
-    data(): { [key: string]: any };
+    data(): T;
   }
 
   /**
@@ -637,7 +636,7 @@ export namespace FirebaseFirestoreTypes {
    * ```js
    * const increment = firebase.firestore.FieldValue.increment(1);
    *
-   * await firebase.firestore().doc('users/alovelace).update({
+   * await firebase.firestore().doc('users/alovelace').update({
    *   age: increment, // increment age by 1
    * });
    * ```
@@ -836,7 +835,7 @@ export namespace FirebaseFirestoreTypes {
    * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
    * adding filters and ordering.
    */
-  export interface Query {
+  export interface Query<T extends DocumentData = DocumentData> {
     /**
      * Creates and returns a new Query that ends at the provided document (inclusive). The end
      * position is relative to the order of the query. The document must contain all of the
@@ -858,7 +857,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to end at.
      */
-    endAt(snapshot: DocumentSnapshot): Query;
+    endAt(snapshot: DocumentSnapshot<T>): Query<T>;
 
     /**
      * Creates and returns a new Query that ends at the provided fields relative to the order of the query.
@@ -876,7 +875,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to end this query at, in order of the query's order by.
      */
-    endAt(...fieldValues: any[]): Query;
+    endAt(...fieldValues: any[]): Query<T>;
 
     /**
      * Creates and returns a new Query that ends before the provided document (exclusive). The end
@@ -899,7 +898,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to end before.
      */
-    endBefore(snapshot: DocumentSnapshot): Query;
+    endBefore(snapshot: DocumentSnapshot<T>): Query<T>;
 
     /**
      * Creates and returns a new Query that ends before the provided fields relative to the order of
@@ -917,7 +916,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to end this query before, in order of the query's order by.
      */
-    endBefore(...fieldValues: any[]): Query;
+    endBefore(...fieldValues: any[]): Query<T>;
 
     /**
      * Executes the query and returns the results as a QuerySnapshot.
@@ -939,7 +938,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param options An object to configure the get behavior.
      */
-    get(options?: GetOptions): Promise<QuerySnapshot>;
+    get(options?: GetOptions): Promise<QuerySnapshot<T>>;
 
     /**
      * Returns true if this Query is equal to the provided one.
@@ -979,7 +978,8 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param limit The maximum number of items to return.
      */
-    limit(limit: number): Query;
+    limit(limit: number): Query<T>;
+
     /**
      * Creates and returns a new Query where the results are limited to the specified number of documents
      * starting from the last document. The order is dependent on the second parameter for the `orderBy`
@@ -998,7 +998,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param limitToLast The maximum number of items to return.
      */
-    limitToLast(limitToLast: number): Query;
+    limitToLast(limitToLast: number): Query<T>;
 
     /**
      * Attaches a listener for `QuerySnapshot` events.
@@ -1024,7 +1024,7 @@ export namespace FirebaseFirestoreTypes {
     onSnapshot(observer: {
       complete?: () => void;
       error?: (error: Error) => void;
-      next?: (snapshot: QuerySnapshot) => void;
+      next?: (snapshot: QuerySnapshot<T>) => void;
     }): () => void;
 
     /**
@@ -1056,7 +1056,7 @@ export namespace FirebaseFirestoreTypes {
       observer: {
         complete?: () => void;
         error?: (error: Error) => void;
-        next?: (snapshot: QuerySnapshot) => void;
+        next?: (snapshot: QuerySnapshot<T>) => void;
       },
     ): () => void;
 
@@ -1083,7 +1083,7 @@ export namespace FirebaseFirestoreTypes {
      * @param onCompletion An optional function which will never be called.
      */
     onSnapshot(
-      onNext: (snapshot: QuerySnapshot) => void,
+      onNext: (snapshot: QuerySnapshot<T>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -1114,7 +1114,7 @@ export namespace FirebaseFirestoreTypes {
      */
     onSnapshot(
       options: SnapshotListenOptions,
-      onNext: (snapshot: QuerySnapshot) => void,
+      onNext: (snapshot: QuerySnapshot<T>) => void,
       onError?: (error: Error) => void,
       onCompletion?: () => void,
     ): () => void;
@@ -1137,7 +1137,7 @@ export namespace FirebaseFirestoreTypes {
      * @param fieldPath The field to sort by. Either a string or FieldPath instance.
      * @param directionStr Optional direction to sort by (`asc` or `desc`). If not specified, order will be ascending.
      */
-    orderBy(fieldPath: string | FieldPath, directionStr?: 'asc' | 'desc'): Query;
+    orderBy(fieldPath: keyof T | FieldPath, directionStr?: 'asc' | 'desc'): Query<T>;
 
     /**
      * Creates and returns a new Query that starts after the provided document (exclusive). The start
@@ -1161,7 +1161,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to start after.
      */
-    startAfter(snapshot: DocumentSnapshot): Query;
+    startAfter(snapshot: DocumentSnapshot<T>): Query<T>;
 
     /**
      * Creates and returns a new Query that starts after the provided fields relative to the order of
@@ -1180,7 +1180,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to start this query after, in order of the query's order by.
      */
-    startAfter(...fieldValues: any[]): Query;
+    startAfter(...fieldValues: any[]): Query<T>;
 
     /**
      * Creates and returns a new Query that starts at the provided document (inclusive). The start
@@ -1204,7 +1204,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param snapshot The snapshot of the document to start at.
      */
-    startAt(snapshot: DocumentSnapshot): Query;
+    startAt(snapshot: DocumentSnapshot<T>): Query<T>;
 
     /**
      * Creates and returns a new Query that starts at the provided fields relative to the order of the query.
@@ -1223,7 +1223,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param fieldValues The field values to start this query at, in order of the query's order by.
      */
-    startAt(...fieldValues: any[]): Query;
+    startAt(...fieldValues: any[]): Query<T>;
 
     /**
      * Creates and returns a new Query with the additional filter that documents must contain the specified field and
@@ -1240,10 +1240,10 @@ export namespace FirebaseFirestoreTypes {
      * ```
      *
      * @param fieldPath The path to compare.
-     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains", "array-contains-any", "in").
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "!=", "array-contains", "array-contains-any", "in", "not-in").
      * @param value The comparison value.
      */
-    where(fieldPath: string | FieldPath, opStr: WhereFilterOp, value: any): Query;
+    where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
   }
 
   /**
@@ -1255,20 +1255,22 @@ export namespace FirebaseFirestoreTypes {
     | '=='
     | '>'
     | '>='
+    | '!='
     | 'array-contains'
     | 'array-contains-any'
-    | 'in';
+    | 'in'
+    | 'not-in';
 
   /**
    * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
    * can be accessed as an array via the `docs` property or enumerated using the `forEach` method. The number of documents
    * can be determined via the `empty` and `size` properties.
    */
-  export interface QuerySnapshot {
+  export interface QuerySnapshot<T extends DocumentData = DocumentData> {
     /**
      * An array of all the documents in the `QuerySnapshot`.
      */
-    docs: QueryDocumentSnapshot[];
+    docs: QueryDocumentSnapshot<T>[];
 
     /**
      * True if there are no documents in the `QuerySnapshot`.
@@ -1283,7 +1285,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * The query on which you called get or `onSnapshot` in order to `get` this `QuerySnapshot`.
      */
-    query: Query;
+    query: Query<T>;
 
     /**
      * The number of documents in the `QuerySnapshot`.
@@ -1318,7 +1320,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param options `SnapshotListenOptions` that control whether metadata-only changes (i.e. only `DocumentSnapshot.metadata` changed) should trigger snapshot events.
      */
-    docChanges(options?: SnapshotListenOptions): DocumentChange[];
+    docChanges(options?: SnapshotListenOptions): DocumentChange<T>[];
 
     /**
      * Enumerates all of the documents in the `QuerySnapshot`.
@@ -1337,7 +1339,10 @@ export namespace FirebaseFirestoreTypes {
      * @param thisArg The `this` binding for the callback.
      */
 
-    forEach(callback: (result: QueryDocumentSnapshot, index: number) => void, thisArg?: any): void;
+    forEach(
+      callback: (result: QueryDocumentSnapshot<T>, index: number) => void,
+      thisArg?: any,
+    ): void;
 
     /**
      * Returns true if this `QuerySnapshot` is equal to the provided one.
@@ -1389,7 +1394,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * Enables or disables local persistent storage.
      */
-    persistence: boolean;
+    persistence?: boolean;
 
     /**
      * An approximate cache size threshold for the on-disk data. If the cache grows beyond this size, Firestore will start
@@ -1398,17 +1403,22 @@ export namespace FirebaseFirestoreTypes {
      *
      * To disable garbage collection and set an unlimited cache size, use `firebase.firestore.CACHE_SIZE_UNLIMITED`.
      */
-    cacheSizeBytes: number;
+    cacheSizeBytes?: number;
 
     /**
      * The hostname to connect to.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
      */
-    host: string;
+    host?: string;
 
     /**
      * Whether to use SSL when connecting.
      */
-    ssl: boolean;
+    ssl?: boolean;
   }
 
   /**
@@ -1511,18 +1521,35 @@ export namespace FirebaseFirestoreTypes {
     toDate(): Date;
 
     /**
-     * Convert a timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
+     * Convert a Timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
      *
      * The point in time corresponding to this timestamp, represented as the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
      */
     toMillis(): number;
+
+    /**
+     * Convert a timestamp to a string in format "FirestoreTimestamp(seconds=`seconds`, nanoseconds=`nanoseconds`)",
+     * with the `seconds` and `nanoseconds` replaced by the values in the Timestamp object
+     */
+    toString(): string;
+
+    /**
+     * Convert a Timestamp to a JSON object with seconds and nanoseconds members
+     */
+    toJSON(): { seconds: number; nanoseconds: number };
+
+    /**
+     * Converts this object to a primitive string, which allows Timestamp objects to be compared
+     * using the `>`, `<=`, `>=` and `>` operators.
+     */
+    valueOf(): string;
   }
 
   /**
    * A reference to a transaction. The `Transaction` object passed to a transaction's updateFunction provides the methods to
    * read and write data within the transaction context. See `Firestore.runTransaction()`.
    *
-   * A transaction consists of any number of `get()` operations followed by any number of write operations such as set(),
+   * A transaction consists of any number of `get()` operations followed by any number of write operations such as `set()`,
    * `update()`, or `delete()`. In the case of a concurrent edit, Cloud Firestore runs the entire transaction again. For example,
    * if a transaction reads documents and another client modifies any of those documents, Cloud Firestore retries the transaction.
    * This feature ensures that the transaction runs on up-to-date and consistent data.
@@ -1570,7 +1597,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param documentRef A reference to the document to be read.
      */
-    get(documentRef: DocumentReference): Promise<DocumentSnapshot>;
+    get<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+    ): Promise<DocumentSnapshot<T>>;
 
     /**
      * Writes to the document referred to by the provided `DocumentReference`. If the document does not exist yet,
@@ -1596,9 +1625,9 @@ export namespace FirebaseFirestoreTypes {
      * @param data An object of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(
-      documentRef: DocumentReference,
-      data: { [key: string]: any },
+    set<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+      data: T,
       options?: SetOptions,
     ): Transaction;
 
@@ -1623,7 +1652,10 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key: string]: any }): Transaction;
+    update<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+      data: Partial<{ [K in keyof T]: T[K] | FieldValue }>,
+    ): Transaction;
 
     /**
      * Updates fields in the document referred to by the provided DocumentReference. The update will fail if applied to
@@ -1648,15 +1680,12 @@ export namespace FirebaseFirestoreTypes {
      * @param value The first value.
      * @param moreFieldsAndValues Additional key/value pairs.
      */
-    update(
-      documentRef: DocumentReference,
-      field: string | FieldPath,
-      value: any,
+    update<T extends DocumentData = DocumentData, K extends keyof T = string>(
+      documentRef: DocumentReference<T>,
+      field: K | FieldPath,
+      value: T[K],
       ...moreFieldsAndValues: any[]
     ): Transaction;
-
-    // TODO test passing U down? How does it effect the documents
-    withConverter<U>(converter: FirestoreDataConverter<U>): CollectionReference<U>;
   }
 
   /**
@@ -1725,9 +1754,9 @@ export namespace FirebaseFirestoreTypes {
      * @param data An object of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(
-      documentRef: DocumentReference,
-      data: { [key: string]: any },
+    set<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+      data: T,
       options?: SetOptions,
     ): WriteBatch;
 
@@ -1748,7 +1777,10 @@ export namespace FirebaseFirestoreTypes {
      * @param documentRef A reference to the document to be updated.
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(documentRef: DocumentReference, data: { [key: string]: any }): WriteBatch;
+    update<T extends DocumentData = DocumentData>(
+      documentRef: DocumentReference<T>,
+      data: Partial<{ [K in keyof T]: T[K] | FieldValue }>,
+    ): WriteBatch;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a document that does not exist.
@@ -1769,10 +1801,10 @@ export namespace FirebaseFirestoreTypes {
      * @param value The first value.
      * @param moreFieldAndValues Additional key value pairs.
      */
-    update(
-      documentRef: DocumentReference,
-      field: string | FieldPath,
-      value: any,
+    update<T extends DocumentData = DocumentData, K extends keyof T = string>(
+      documentRef: DocumentReference<T>,
+      field: K | FieldPath,
+      value: T[K] | FieldValue,
       ...moreFieldAndValues: any[]
     ): WriteBatch;
   }
@@ -1874,7 +1906,9 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param collectionPath A slash-separated path to a collection.
      */
-    collection(collectionPath: string): CollectionReference;
+    collection<T extends DocumentData = DocumentData>(
+      collectionPath: string,
+    ): CollectionReference<T>;
 
     /**
      * Creates and returns a new Query that includes all documents in the database that are contained
@@ -1888,7 +1922,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param collectionId Identifies the collections to query over. Every collection or subcollection with this ID as the last segment of its path will be included. Cannot contain a slash.
      */
-    collectionGroup(collectionId: string): Query;
+    collectionGroup<T extends DocumentData = DocumentData>(collectionId: string): Query<T>;
 
     /**
      * Disables network usage for this instance. It can be re-enabled via `enableNetwork()`. While the
@@ -1916,7 +1950,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param documentPath A slash-separated path to a document.
      */
-    doc(documentPath: string): DocumentReference;
+    doc<T extends DocumentData = DocumentData>(documentPath: string): DocumentReference<T>;
 
     /**
      * Re-enables use of the network for this Firestore instance after a prior call to `disableNetwork()`.
@@ -1952,7 +1986,7 @@ export namespace FirebaseFirestoreTypes {
      *   });
      * ```
      */
-    runTransaction(updateFunction: (transaction: Transaction) => Promise): Promise<any>;
+    runTransaction(updateFunction: (transaction: Transaction) => Promise<any>): Promise<any>;
 
     /**
      * Specifies custom settings to be used to configure the Firestore instance. Must be set before invoking any other methods.
@@ -1982,6 +2016,24 @@ export namespace FirebaseFirestoreTypes {
      */
     clearPersistence(): Promise<void>;
     /**
+     * Waits until all currently pending writes for the active user have been acknowledged by the
+     * backend.
+     *
+     * The returned Promise resolves immediately if there are no outstanding writes. Otherwise, the
+     * Promise waits for all previously issued writes (including those written in a previous app
+     * session), but it does not wait for writes that were added after the method is called. If you
+     * want to wait for additional writes, call `waitForPendingWrites()` again.
+     *
+     * Any outstanding `waitForPendingWrites()` Promises are rejected when the logged-in user changes.
+     *
+     * #### Example
+     *
+     *```js
+     * await firebase.firestore().waitForPendingWrites();
+     * ```
+     */
+    waitForPendingWrites(): Promise<void>;
+    /**
      * Typically called to ensure a new Firestore instance is initialized before calling
      * `firebase.firestore().clearPersistence()`.
      *
@@ -1995,26 +2047,25 @@ export namespace FirebaseFirestoreTypes {
   }
 }
 
-declare module '@react-native-firebase/firestore' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
+  FirebaseFirestoreTypes.Module,
+  FirebaseFirestoreTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  firestore: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { firestore(): FirebaseFirestoreTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStaticsAndApp<
-    FirebaseFirestoreTypes.Module,
-    FirebaseFirestoreTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

@@ -194,7 +194,16 @@ RCT_EXPORT_METHOD(listAll:
 ) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
+  __block bool alreadyCompleted = false;
+
   id completionBlock = ^(FIRStorageListResult *result, NSError *error) {
+    // This may be called multiple times if an error occurs
+    // Make sure we won't try to resolve the promise twice in this case
+    // TODO - remove pending resolution of https://github.com/firebase/firebase-ios-sdk/issues/7197
+    if (alreadyCompleted) {
+      return;
+    }
+    alreadyCompleted = true;
     if (error != nil) {
       [self promiseRejectStorageException:reject error:error];
     } else {
@@ -517,7 +526,11 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
 - (FIRStorageReference *)getReferenceFromUrl:(NSString *)url app:(FIRApp *)firebaseApp {
   NSString *pathWithBucketName = [url substringWithRange:NSMakeRange(5, [url length] - 5)];
-  NSString *bucket = [url substringWithRange:NSMakeRange(0, [pathWithBucketName rangeOfString:@"/"].location + 5)];
+  NSString *bucket = url;
+  NSRange rangeOfSlash = [pathWithBucketName rangeOfString:@"/"];
+  if (rangeOfSlash.location != NSNotFound) {
+    bucket = [url substringWithRange:NSMakeRange(0, rangeOfSlash.location + 5)];
+  }
   return [[FIRStorage storageForApp:firebaseApp URL:bucket] referenceForURL:url];
 }
 

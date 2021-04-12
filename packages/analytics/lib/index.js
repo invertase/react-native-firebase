@@ -37,9 +37,20 @@ import version from './version';
 import * as structs from './structs';
 
 const ReservedEventNames = [
+  'ad_reward',
+  'app_background',
   'app_clear_data',
-  'app_uninstall',
+  // 'app_exception',
+  'app_remove',
+  'app_store_refund',
+  'app_store_subscription_cancel',
+  'app_store_subscription_convert',
+  'app_store_subscription_renew',
   'app_update',
+  'app_upgrade',
+  'dynamic_link_app_open',
+  'dynamic_link_app_update',
+  'dynamic_link_first_open',
   'error',
   'first_open',
   'in_app_purchase',
@@ -49,6 +60,7 @@ const ReservedEventNames = [
   'notification_receive',
   'os_update',
   'session_start',
+  'session_start_with_rollout',
   'user_engagement',
 ];
 
@@ -76,9 +88,9 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     // name format validation
-    if (!isAlphaNumericUnderscore(name)) {
+    if (!isAlphaNumericUnderscore(name) || name.length > 40) {
       throw new Error(
-        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 32 alphanumeric characters or underscores.`,
+        `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 40 alphanumeric characters or underscores.`,
       );
     }
 
@@ -100,38 +112,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     return this.native.setAnalyticsCollectionEnabled(enabled);
-  }
-
-  setCurrentScreen(screenName, screenClassOverride) {
-    if (!isString(screenName)) {
-      throw new Error(
-        "firebase.analytics().setCurrentScreen(*) 'screenName' expected a string value.",
-      );
-    }
-
-    if (!isUndefined(screenClassOverride) && !isString(screenClassOverride)) {
-      throw new Error(
-        "firebase.analytics().setCurrentScreen(_, *) 'screenClassOverride' expected a string value.",
-      );
-    }
-
-    return this.native.setCurrentScreen(screenName, screenClassOverride);
-  }
-
-  setMinimumSessionDuration(milliseconds = 10000) {
-    if (!isNumber(milliseconds)) {
-      throw new Error(
-        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a number value.",
-      );
-    }
-
-    if (milliseconds < 0) {
-      throw new Error(
-        "firebase.analytics().setMinimumSessionDuration(*) 'milliseconds' expected a positive number value.",
-      );
-    }
-
-    return this.native.setMinimumSessionDuration(milliseconds);
   }
 
   setSessionTimeoutDuration(milliseconds = 1800000) {
@@ -211,6 +191,19 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent(
       'add_payment_info',
       validateStruct(object, structs.AddPaymentInfo, 'firebase.analytics().logAddPaymentInfo(*):'),
+    );
+  }
+
+  logScreenView(object) {
+    if (!isObject(object)) {
+      throw new Error(
+        'firebase.analytics().logScreenView(*): The supplied arg must be an object of key/values.',
+      );
+    }
+
+    return this.logEvent(
+      'screen_view',
+      validateStruct(object, structs.ScreenView, 'firebase.analytics().logScreenView(*):'),
     );
   }
 
@@ -315,16 +308,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       ),
     );
   }
-  /**
-   * logEcommercePurchase purchase is now deprecated, use logPurchase instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-ecommerce_purchase
-   */
-  logEcommercePurchase() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logEcommercePurchase(), "ECOMMERCE_PURCHASE" event is now deprecated. Please use firebase.analytics().logPurchase() instead',
-    );
-  }
 
   logGenerateLead(object = {}) {
     if (!isObject(object)) {
@@ -416,28 +399,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.logEvent(
       'post_score',
       validateStruct(object, structs.PostScore, 'firebase.analytics().logPostScore(*):'),
-    );
-  }
-
-  /**
-   * Deprecated, use logRefundEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-present_offer
-   */
-  logPresentOffer() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logPresentOffer(), "PRESENT_OFFER" event is now deprecated. Please use firebase.analytics().logViewPromotion() instead',
-    );
-  }
-
-  /**
-   * Deprecated, use logRefundEvent instead:
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-purchase_refund
-   */
-  logPurchaseRefund() {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'firebase.analytics().logPurchaseRefund(), "PURCHASE_REFUND" event is now deprecated. Please use firebase.analytics().logRefund() instead',
     );
   }
 

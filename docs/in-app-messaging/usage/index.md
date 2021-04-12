@@ -2,7 +2,7 @@
 title: In App Messaging
 description: Installation and getting started with In App Messaging.
 icon: //static.invertase.io/assets/firebase/in-app-messaging.svg
-next: /ml-natural-language/usage
+next: /ml/usage
 previous: /iid/usage
 ---
 
@@ -10,6 +10,8 @@ previous: /iid/usage
 
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
 [Getting Started](/) documentation.
+
+This module also requires that the `@react-native-firebase/analytics` module is already setup and installed. To install the "analytics" module, view it's [Getting Started](/analytics/usage) documentation.
 
 ```bash
 # Install & setup the app module
@@ -21,6 +23,8 @@ yarn add @react-native-firebase/in-app-messaging
 # If you're developing your app using iOS, run this command
 cd ios/ && pod install
 ```
+
+Note: in-app-messaging requires a minimum android gradle plugin version of 3.5.4 to compile or you will see `AAPT` errors regarding unexpected XML with `<queries>` elements. However, `react-native@0.63.4` still ships with a default of 3.5.3. If you have not already, you must update the line `classpath("com.android.tools.build:gradle:3.5.3")`in `android/build.gradle` to a minimum of `3.5.4` for android builds to work.
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/in-app-messaging/usage/installation/ios) and [Android](/in-app-messaging/usage/installation/android).

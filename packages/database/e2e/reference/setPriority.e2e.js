@@ -19,16 +19,17 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/priority`;
 
-describe('database().ref().setPriority()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().setPriority()', function () {
+  before(function () {
+    return seed(TEST_PATH);
+  });
+  after(function () {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if priority is not a valid type', async () => {
+  it('throws if priority is not a valid type', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .setPriority({});
+      await firebase.database().ref().setPriority({});
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'priority' must be a number, string or null value");
@@ -36,12 +37,9 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .setPriority(null, 'foo');
+      await firebase.database().ref().setPriority(null, 'foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'onComplete' must be a function if provided");
@@ -49,7 +47,7 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('should correctly set a priority for all non-null values', async () => {
+  it('should correctly set a priority for all non-null values', async function () {
     await Promise.all(
       Object.keys(CONTENT.TYPES).map(async dataRef => {
         const ref = firebase.database().ref(`${TEST_PATH}/types/${dataRef}`);
@@ -62,22 +60,16 @@ describe('database().ref().setPriority()', () => {
     );
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function () {
     const value = Date.now();
     return new Promise(async resolve => {
-      await firebase
-        .database()
-        .ref(`${TEST_PATH}/types/string`)
-        .set(value, resolve);
+      await firebase.database().ref(`${TEST_PATH}/types/string`).set(value, resolve);
     });
   });
 
-  it('throws if setting priority on non-existent node', async () => {
+  it('throws if setting priority on non-existent node', async function () {
     try {
-      await firebase
-        .database()
-        .ref('tests/siudfhsuidfj')
-        .setPriority(1);
+      await firebase.database().ref('tests/siudfhsuidfj').setPriority(1);
       return Promise.reject(new Error('Did not throw error.'));
     } catch (error) {
       // WEB SDK: INVALID_PARAMETERS: could not set priority on non-existent node
@@ -86,12 +78,9 @@ describe('database().ref().setPriority()', () => {
     }
   });
 
-  it('throws if permission defined', async () => {
+  it('throws if permission defined', async function () {
     try {
-      await firebase
-        .database()
-        .ref('nope/foo')
-        .setPriority(1);
+      await firebase.database().ref('nope/foo').setPriority(1);
       return Promise.reject(new Error('Did not throw error.'));
     } catch (error) {
       error.code.includes('database/permission-denied').should.be.true();

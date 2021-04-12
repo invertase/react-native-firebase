@@ -21,15 +21,16 @@ import android.app.Activity;
 import android.content.Context;
 import com.facebook.react.bridge.*;
 import io.invertase.firebase.interfaces.ContextProvider;
+import io.invertase.firebase.common.TaskExecutorService;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
-  private static Map<String, ExecutorService> executors = new HashMap<>();
+  private final TaskExecutorService executorService;
+
   private String moduleName;
 
   public ReactNativeFirebaseModule(
@@ -38,6 +39,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   ) {
     super(reactContext);
     this.moduleName = moduleName;
+    this.executorService = new TaskExecutorService(getName());
   }
 
   public static void rejectPromiseWithExceptionMap(Promise promise, Exception exception) {
@@ -74,20 +76,25 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public ExecutorService getExecutor() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
-    if (existingSingleThreadExecutor != null) return existingSingleThreadExecutor;
-    ExecutorService newSingleThreadExecutor = Executors.newSingleThreadExecutor();
-    executors.put(getName(), newSingleThreadExecutor);
-    return newSingleThreadExecutor;
+    return executorService.getExecutor();
+  }
+
+  public ExecutorService getTransactionalExecutor() {
+    return executorService.getTransactionalExecutor();
+  }
+
+  public ExecutorService getTransactionalExecutor(String identifier) {
+    return executorService.getTransactionalExecutor(identifier);
   }
 
   @Override
   public void onCatalystInstanceDestroy() {
-    ExecutorService existingSingleThreadExecutor = executors.get(getName());
-    if (existingSingleThreadExecutor != null) {
-      existingSingleThreadExecutor.shutdownNow();
-      executors.remove(getName());
-    }
+    executorService.shutdown();
+  }
+
+  public void removeEventListeningExecutor(String identifier) {
+    String executorName = executorService.getExecutorName(true, identifier);
+    executorService.removeExecutor(executorName);
   }
 
   public Context getApplicationContext() {

@@ -53,6 +53,11 @@ public class ReactNativeFirebaseJSON {
     return jsonObject.optBoolean(key, defaultValue);
   }
 
+  public int getIntValue(String key, int defaultValue) {
+    if (jsonObject == null) return defaultValue;
+    return jsonObject.optInt(key, defaultValue);
+  }
+
   public long getLongValue(String key, long defaultValue) {
     if (jsonObject == null) return defaultValue;
     return jsonObject.optLong(key, defaultValue);

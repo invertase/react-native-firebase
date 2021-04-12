@@ -14,14 +14,15 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.DocumentChange', () => {
-  before(() => wipe());
-
-  it('.doc -> returns a DocumentSnapshot', async () => {
-    const colRef = firebase.firestore().collection('v6');
+describe('firestore.DocumentChange', function () {
+  before(function () {
+    return wipe();
+  });
+  it('.doc -> returns a DocumentSnapshot', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     await colRef.add({});
     const snapshot = await colRef.limit(1).get();
     const changes = snapshot.docChanges();
@@ -31,9 +32,9 @@ describe('firestore.DocumentChange', () => {
     docChange.doc.constructor.name.should.eql('FirestoreDocumentSnapshot');
   });
 
-  it('returns the correct metadata when adding and removing', async () => {
-    const colRef = firebase.firestore().collection('v6/docChanges/docChangesCollection');
-    const doc1 = firebase.firestore().doc('v6/docChanges/docChangesCollection/doc1');
+  it('returns the correct metadata when adding and removing', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/docChanges/docChangesCollection`);
+    const doc1 = firebase.firestore().doc(`${COLLECTION}/docChanges/docChangesCollection/doc1`);
 
     // Set something in the database
     await doc1.set({ name: 'doc1' });
@@ -71,12 +72,12 @@ describe('firestore.DocumentChange', () => {
     unsub();
   });
 
-  it('returns the correct metadata when modifying documents', async () => {
-    const colRef = firebase.firestore().collection('v6/docChanges/docMovedCollection');
+  it('returns the correct metadata when modifying documents', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/docChanges/docMovedCollection`);
 
-    const doc1 = firebase.firestore().doc('v6/docChanges/docMovedCollection/doc1');
-    const doc2 = firebase.firestore().doc('v6/docChanges/docMovedCollection/doc2');
-    const doc3 = firebase.firestore().doc('v6/docChanges/docMovedCollection/doc3');
+    const doc1 = firebase.firestore().doc(`${COLLECTION}/docChanges/docMovedCollection/doc1`);
+    const doc2 = firebase.firestore().doc(`${COLLECTION}/docChanges/docMovedCollection/doc2`);
+    const doc3 = firebase.firestore().doc(`${COLLECTION}/docChanges/docMovedCollection/doc3`);
 
     await Promise.all([doc1.set({ value: 1 }), doc2.set({ value: 2 }), doc3.set({ value: 3 })]);
 

@@ -1,16 +1,16 @@
 import functions, { firebase } from '../lib';
 
-describe('Cloud Functions', () => {
-  describe('namespace', () => {
-    it('accessible from firebase.app()', () => {
+describe('Cloud Functions', function () {
+  describe('namespace', function () {
+    it('accessible from firebase.app()', function () {
       const app = firebase.app();
       expect(app.functions).toBeDefined();
       expect(app.functions().httpsCallable).toBeDefined();
     });
   });
 
-  describe('useFunctionsEmulator()', () => {
-    it('useFunctionsEmulator -> uses 10.0.2.2', () => {
+  describe('useFunctionsEmulator()', function () {
+    it('useFunctionsEmulator -> uses 10.0.2.2', function () {
       functions().useFunctionsEmulator('http://localhost');
 
       // @ts-ignore
@@ -21,10 +21,21 @@ describe('Cloud Functions', () => {
       // @ts-ignore
       expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
     });
+
+    it('prefers emulator to custom domain', function () {
+      const app = firebase.app();
+      const customUrl = 'https://test.com';
+      const functions = app.functions(customUrl);
+
+      functions.useFunctionsEmulator('http://10.0.2.2');
+
+      // @ts-ignore
+      expect(functions._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+    });
   });
 
-  describe('httpcallable()', () => {
-    it('throws an error with an incorrect timeout', () => {
+  describe('httpcallable()', function () {
+    it('throws an error with an incorrect timeout', function () {
       const app = firebase.app();
 
       // @ts-ignore

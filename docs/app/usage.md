@@ -2,7 +2,7 @@
 title: Core/App
 description: Functionality & examples of using the Core/App dependency with React Native Firebase.
 icon: //static.invertase.io/assets/social/firebase-logo.png
-next: /app/utils
+next: /app/json-config
 previous: /storage/usage
 ---
 
@@ -21,15 +21,14 @@ for manually initializing secondary Firebase app instances.
 
 Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
-- [Authentication](/auth).
-- [Realtime Database](/database).
-- [Cloud Firestore](/firestore).
-- [Cloud Functions](/functions)
-- [Cloud Storage](/storage).
-- [Instance ID](/iid).
-- [ML Kit Natural Language](/ml-language).
-- [ML Kit Vision](/ml-vision).
-- [Remote Config](/remote-config).
+- [Authentication](/auth/usage).
+- [Realtime Database](/database/usage).
+- [Cloud Firestore](/firestore/usage).
+- [Cloud Functions](/functions/usage)
+- [Cloud Storage](/storage/usage).
+- [Instance ID](/iid/usage).
+- [ML](/ml/usage).
+- [Remote Config](/remote-config/usage).
 
 ## Initializing secondary apps
 
@@ -52,6 +51,47 @@ const credentials = {
 
 const config = {
   name: 'SECONDARY_APP',
+};
+
+await firebase.initializeApp(credentials, config);
+```
+
+Note that if you use multiple platforms, you will need to use the credentials relevant to that platform:
+
+```js
+import firebase from "@react-native-firebase/app";
+import { Platform } from "react-native";
+
+// Your secondary Firebase project credentials for Android...
+const androidCredentials = {
+  clientId: "",
+  appId: "",
+  apiKey: "",
+  databaseURL: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  projectId: "",
+};
+
+// Your secondary Firebase project credentials for iOS...
+const iosCredentials = {
+  clientId: "",
+  appId: "",
+  apiKey: "",
+  databaseURL: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  projectId: "",
+};
+
+// Select the relevant credentials
+const credentials = Platform.select({
+  android: androidCredentials,
+  ios: iosCredentials,
+});
+
+const config = {
+  name: "SECONDARY_APP",
 };
 
 await firebase.initializeApp(credentials, config);

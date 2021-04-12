@@ -220,3 +220,50 @@ React Native. You can disable Crashlytics NDK in your `firebase.json` config.
   }
 }
 ```
+
+## Crashlytics additional non-fatal issue generation
+
+React Native Crashlytics module is generating additional non-fatal issues on JavaScript exceptions by default. Sometimes it is not desirable behavior since it might duplicate issues and hide original exceptions logs. You can disable this behavior by setting appropriate option to false:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "crashlytics_is_error_generation_on_js_crash_enabled": false
+  }
+}
+```
+
+## Crashlytics non-fatal exceptions native handling
+
+In case you need to log non-fatal (handled) exceptions on the native side (e.g from `try catch` block), you may use the following static methods:
+<br />
+### Android
+
+```
+try {
+  //...
+} catch (Exception e) {
+  ReactNativeFirebaseCrashlyticsNativeHelper.recordNativeException(e);
+  return null;
+}
+```
+
+### iOS
+
+```
+@try {
+  //...
+} @catch (NSException *exception) {
+  NSMutableDictionary * info = [NSMutableDictionary dictionary];
+  [info setValue:exception.name forKey:@"ExceptionName"];
+  [info setValue:exception.reason forKey:@"ExceptionReason"];
+  [info setValue:exception.callStackReturnAddresses forKey:@"ExceptionCallStackReturnAddresses"];
+  [info setValue:exception.callStackSymbols forKey:@"ExceptionCallStackSymbols"];
+  [info setValue:exception.userInfo forKey:@"ExceptionUserInfo"];
+
+  NSError *error = [[NSError alloc] initWithDomain:yourdomain code:errorcode userInfo:info];
+  [RNFBCrashlyticsNativeHelper recordNativeError:error];
+}
+
+```

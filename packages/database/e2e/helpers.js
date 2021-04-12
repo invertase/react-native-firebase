@@ -32,22 +32,13 @@ const CONTENT = {
 
 exports.seed = function seed(path) {
   return Promise.all([
-    firebase
-      .database()
-      .ref(`${path}/types`)
-      .set(CONTENT.TYPES),
-    firebase
-      .database()
-      .ref(`${path}/query`)
-      .set(CONTENT.QUERY),
+    firebase.database().ref(`${path}/types`).set(CONTENT.TYPES),
+    firebase.database().ref(`${path}/query`).set(CONTENT.QUERY),
   ]);
 };
 
 exports.wipe = function wipe(path) {
-  return firebase
-    .database()
-    .ref(path)
-    .remove();
+  return firebase.database().ref(path).remove();
 };
 
 exports.PATH = PATH;

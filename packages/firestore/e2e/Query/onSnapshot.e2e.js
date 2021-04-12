@@ -14,18 +14,17 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
+const NO_RULE_COLLECTION = 'no_rules';
 
-describe('firestore().collection().onSnapshot()', () => {
-  before(() => wipe());
-
-  it('throws if no arguments are provided', () => {
+describe('firestore().collection().onSnapshot()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if no arguments are provided', function () {
     try {
-      firebase
-        .firestore()
-        .collection('v6')
-        .onSnapshot();
+      firebase.firestore().collection(COLLECTION).onSnapshot();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('expected at least one argument');
@@ -33,22 +32,19 @@ describe('firestore().collection().onSnapshot()', () => {
     }
   });
 
-  it('returns an unsubscribe function', () => {
+  it('returns an unsubscribe function', function () {
     const unsub = firebase
       .firestore()
-      .collection('v6/foo/bar1')
+      .collection(`${COLLECTION}/foo/bar1`)
       .onSnapshot(() => {});
 
     unsub.should.be.a.Function();
     unsub();
   });
 
-  it('accepts a single callback function with snapshot', async () => {
+  it('accepts a single callback function with snapshot', async function () {
     const callback = sinon.spy();
-    const unsub = firebase
-      .firestore()
-      .collection('v6/foo/bar2')
-      .onSnapshot(callback);
+    const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar2`).onSnapshot(callback);
 
     await Utils.spyToBeCalledOnceAsync(callback);
 
@@ -58,12 +54,9 @@ describe('firestore().collection().onSnapshot()', () => {
     unsub();
   });
 
-  it('accepts a single callback function with Error', async () => {
+  it('accepts a single callback function with Error', async function () {
     const callback = sinon.spy();
-    const unsub = firebase
-      .firestore()
-      .collection('nope')
-      .onSnapshot(callback);
+    const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(callback);
 
     await Utils.spyToBeCalledOnceAsync(callback);
 
@@ -73,13 +66,13 @@ describe('firestore().collection().onSnapshot()', () => {
     unsub();
   });
 
-  describe('multiple callbacks', () => {
-    it('calls onNext when successful', async () => {
+  describe('multiple callbacks', function () {
+    it('calls onNext when successful', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
       const unsub = firebase
         .firestore()
-        .collection('v6/foo/bar3')
+        .collection(`${COLLECTION}/foo/bar3`)
         .onSnapshot(onNext, onError);
 
       await Utils.spyToBeCalledOnceAsync(onNext);
@@ -91,13 +84,10 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls onError with Error', async () => {
+    it('calls onError with Error', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot(onNext, onError);
+      const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(onNext, onError);
 
       await Utils.spyToBeCalledOnceAsync(onError);
 
@@ -109,17 +99,14 @@ describe('firestore().collection().onSnapshot()', () => {
     });
   });
 
-  describe('objects of callbacks', () => {
-    it('calls next when successful', async () => {
+  describe('objects of callbacks', function () {
+    it('calls next when successful', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('v6/foo/bar4')
-        .onSnapshot({
-          next: onNext,
-          error: onError,
-        });
+      const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar4`).onSnapshot({
+        next: onNext,
+        error: onError,
+      });
 
       await Utils.spyToBeCalledOnceAsync(onNext);
 
@@ -130,16 +117,13 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot({
-          next: onNext,
-          error: onError,
-        });
+      const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+        next: onNext,
+        error: onError,
+      });
 
       await Utils.spyToBeCalledOnceAsync(onError);
 
@@ -151,18 +135,15 @@ describe('firestore().collection().onSnapshot()', () => {
     });
   });
 
-  describe('SnapshotListenerOptions + callbacks', () => {
-    it('calls callback with snapshot when successful', async () => {
+  describe('SnapshotListenerOptions + callbacks', function () {
+    it('calls callback with snapshot when successful', async function () {
       const callback = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('v6/foo/bar5')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          callback,
-        );
+      const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar5`).onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        callback,
+      );
 
       await Utils.spyToBeCalledOnceAsync(callback);
 
@@ -172,17 +153,14 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls callback with Error', async () => {
+    it('calls callback with Error', async function () {
       const callback = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          callback,
-        );
+      const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        callback,
+      );
 
       await Utils.spyToBeCalledOnceAsync(callback);
 
@@ -192,19 +170,21 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls next with snapshot when successful', async () => {
+    it('calls next with snapshot when successful', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
+      const colRef = firebase
         .firestore()
-        .collection('v6/foo/bar6')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          onNext,
-          onError,
-        );
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/next-with-snapshot`);
+      const unsub = colRef.onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        onNext,
+        onError,
+      );
 
       await Utils.spyToBeCalledOnceAsync(onNext);
 
@@ -215,19 +195,16 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          onNext,
-          onError,
-        );
+      const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        onNext,
+        onError,
+      );
 
       await Utils.spyToBeCalledOnceAsync(onError);
 
@@ -239,22 +216,19 @@ describe('firestore().collection().onSnapshot()', () => {
     });
   });
 
-  describe('SnapshotListenerOptions + object of callbacks', () => {
-    it('calls next with snapshot when successful', async () => {
+  describe('SnapshotListenerOptions + object of callbacks', function () {
+    it('calls next with snapshot when successful', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('v6/foo/bar7')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          {
-            next: onNext,
-            error: onError,
-          },
-        );
+      const unsub = firebase.firestore().collection(`${COLLECTION}/foo/bar7`).onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        {
+          next: onNext,
+          error: onError,
+        },
+      );
 
       await Utils.spyToBeCalledOnceAsync(onNext);
 
@@ -265,21 +239,18 @@ describe('firestore().collection().onSnapshot()', () => {
       unsub();
     });
 
-    it('calls error with Error', async () => {
+    it('calls error with Error', async function () {
       const onNext = sinon.spy();
       const onError = sinon.spy();
-      const unsub = firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot(
-          {
-            includeMetadataChanges: false,
-          },
-          {
-            next: onNext,
-            error: onError,
-          },
-        );
+      const unsub = firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot(
+        {
+          includeMetadataChanges: false,
+        },
+        {
+          next: onNext,
+          error: onError,
+        },
+      );
 
       await Utils.spyToBeCalledOnceAsync(onError);
 
@@ -291,14 +262,11 @@ describe('firestore().collection().onSnapshot()', () => {
     });
   });
 
-  it('throws if SnapshotListenerOptions is invalid', () => {
+  it('throws if SnapshotListenerOptions is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot({
-          includeMetadataChanges: 123,
-        });
+      firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+        includeMetadataChanges: 123,
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -308,14 +276,11 @@ describe('firestore().collection().onSnapshot()', () => {
     }
   });
 
-  it('throws if next callback is invalid', () => {
+  it('throws if next callback is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot({
-          next: 'foo',
-        });
+      firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+        next: 'foo',
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'observer.next' or 'onNext' expected a function");
@@ -323,14 +288,11 @@ describe('firestore().collection().onSnapshot()', () => {
     }
   });
 
-  it('throws if error callback is invalid', () => {
+  it('throws if error callback is invalid', function () {
     try {
-      firebase
-        .firestore()
-        .collection('nope')
-        .onSnapshot({
-          error: 'foo',
-        });
+      firebase.firestore().collection(NO_RULE_COLLECTION).onSnapshot({
+        error: 'foo',
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'observer.error' or 'onError' expected a function");
@@ -340,17 +302,23 @@ describe('firestore().collection().onSnapshot()', () => {
 
   // FIXME test disabled due to flakiness in CI E2E tests.
   // Registered 4 of 3 expected calls once (!?), 3 of 2 expected calls once.
-  xit('unsubscribes from further updates', async () => {
+  it('unsubscribes from further updates', async function () {
     const callback = sinon.spy();
-    const collection = firebase.firestore().collection('v6/foo/bar7');
+
+    const collection = firebase
+      .firestore()
+      // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+      // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+      .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/unsubscribe-updates`);
 
     const unsub = collection.onSnapshot(callback);
-    await Utils.sleep(800);
+    await Utils.sleep(2000);
     await collection.add({});
     await collection.add({});
     unsub();
-    await Utils.sleep(800);
+    await Utils.sleep(2000);
     await collection.add({});
+    await Utils.sleep(2000);
     callback.should.be.callCount(3);
   });
 });

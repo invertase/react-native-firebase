@@ -166,8 +166,9 @@ export namespace FirebaseCrashlyticsTypes {
      * ```
      *
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
+     * @param jsErrorName Optional string containing Javascript error name
      */
-    recordError(error: Error): void;
+    recordError(error: Error, jsErrorName?: string): void;
     /**
      * Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
      * automatic data collection is disabled.
@@ -249,26 +250,25 @@ export namespace FirebaseCrashlyticsTypes {
   }
 }
 
-declare module '@react-native-firebase/crashlytics' {
-  // tslint:disable-next-line:no-duplicate-imports required otherwise doesn't work
-  import { ReactNativeFirebase } from '@react-native-firebase/app';
-  import ReactNativeFirebaseModule = ReactNativeFirebase.Module;
-  import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
+  FirebaseCrashlyticsTypes.Module,
+  FirebaseCrashlyticsTypes.Statics
+>;
 
-  const firebaseNamedExport: {} & ReactNativeFirebaseModule;
-  export const firebase = firebaseNamedExport;
+export const firebase: ReactNativeFirebase.Module & {
+  crashlytics: typeof defaultExport;
+  app(
+    name?: string,
+  ): ReactNativeFirebase.FirebaseApp & { crashlytics(): FirebaseCrashlyticsTypes.Module };
+};
 
-  const defaultExport: FirebaseModuleWithStatics<
-    FirebaseCrashlyticsTypes.Module,
-    FirebaseCrashlyticsTypes.Statics
-  >;
-  export default defaultExport;
-}
+export default defaultExport;
 
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
@@ -280,13 +280,5 @@ declare module '@react-native-firebase/app' {
     interface FirebaseApp {
       crashlytics(): FirebaseCrashlyticsTypes.Module;
     }
-  }
-}
-
-namespace ReactNativeFirebase {
-  interface FirebaseJsonConfig {
-    crashlytics_ndk_enabled: boolean;
-    crashlytics_debug_enabled: boolean;
-    crashlytics_auto_collection_enabled: boolean;
   }
 }

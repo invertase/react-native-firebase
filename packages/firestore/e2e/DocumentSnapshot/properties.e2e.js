@@ -14,15 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore().doc() -> snapshot', () => {
-  before(() => wipe());
-
-  it('.exists -> returns a boolean for exists', async () => {
-    const ref1 = firebase.firestore().doc('v6/exists');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+describe('firestore().doc() -> snapshot', function () {
+  before(function () {
+    return wipe();
+  });
+  it('.exists -> returns a boolean for exists', async function () {
+    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     await ref1.set({ foo: ' bar' });
     const snapshot1 = await ref1.get();
     const snapshot2 = await ref2.get();
@@ -32,9 +33,9 @@ describe('firestore().doc() -> snapshot', () => {
     await ref1.delete();
   });
 
-  it('.id -> returns the correct id', async () => {
-    const ref1 = firebase.firestore().doc('v6/exists');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+  it('.id -> returns the correct id', async function () {
+    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     await ref1.set({ foo: ' bar' });
     const snapshot1 = await ref1.get();
     const snapshot2 = await ref2.get();
@@ -44,21 +45,21 @@ describe('firestore().doc() -> snapshot', () => {
     await ref1.delete();
   });
 
-  it('.metadata -> returns a SnapshotMetadata instance', async () => {
-    const ref = firebase.firestore().doc('v6/exists');
+  it('.metadata -> returns a SnapshotMetadata instance', async function () {
+    const ref = firebase.firestore().doc(`${COLLECTION}/exists`);
     const snapshot = await ref.get();
     snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
   });
 
-  it('.ref -> returns the correct document ref', async () => {
-    const ref1 = firebase.firestore().doc('v6/exists');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+  it('.ref -> returns the correct document ref', async function () {
+    const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     await ref1.set({ foo: ' bar' });
     const snapshot1 = await ref1.get();
     const snapshot2 = await ref2.get();
 
-    snapshot1.ref.path.should.equal('v6/exists');
-    snapshot2.ref.path.should.equal('v6/idonotexist');
+    snapshot1.ref.path.should.equal(`${COLLECTION}/exists`);
+    snapshot2.ref.path.should.equal(`${COLLECTION}/idonotexist`);
     await ref1.delete();
   });
 });

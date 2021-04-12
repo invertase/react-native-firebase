@@ -86,6 +86,22 @@ if [[ ${_SEARCH_RESULT} ]]; then
   _PLIST_ENTRY_TYPES+=("string")
   _PLIST_ENTRY_VALUES+=("$_JSON_OUTPUT_BASE64")
 
+  # config.analytics_auto_collection_enabled
+  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_auto_collection_enabled")
+  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then
+    _PLIST_ENTRY_KEYS+=("FIREBASE_ANALYTICS_COLLECTION_ENABLED")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_AUTO_COLLECTION")")
+  fi
+
+  # config.perf_auto_collection_enabled
+  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_auto_collection_enabled")
+  if [[ $_PERF_AUTO_COLLECTION ]]; then
+    _PLIST_ENTRY_KEYS+=("firebase_performance_collection_enabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_PERF_AUTO_COLLECTION")")
+  fi
+
   # config.messaging_auto_init_enabled
   _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "messaging_auto_init_enabled")
   if [[ $_MESSAGING_AUTO_INIT ]]; then
@@ -94,7 +110,7 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_MESSAGING_AUTO_INIT")")
   fi
 
-  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes usful
+  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful
   _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "crashlytics_disable_auto_disabler")
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
     echo "Disabled Crashlytics auto disabler." # do nothing
@@ -137,7 +153,7 @@ for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
   if [[ -f "${plist}" ]]; then
 
     # paths with spaces break the call to setPlistValue. temporarily modify
-    # the shell internal field separator variable (IFS), which normally 
+    # the shell internal field separator variable (IFS), which normally
     # includes spaces, to consist only of line breaks
     oldifs=$IFS
     IFS="
@@ -155,4 +171,3 @@ for plist in "${_TARGET_PLIST}" "${_DSYM_PLIST}" ; do
 done
 
 echo "info: <- RNFB build script finished"
-

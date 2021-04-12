@@ -289,7 +289,8 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     DataSnapshot dataSnapshot,
     @Nullable String previousChildName
   ) {
-    Tasks.call(getExecutor(), () -> {
+    final String eventRegistrationKey = registration.getString("eventRegistrationKey");
+    Tasks.call(getTransactionalExecutor(eventRegistrationKey), () -> {
       if (eventType.equals("value")) {
         return snapshotToMap(dataSnapshot);
       } else {
@@ -407,6 +408,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
 
     if (databaseQuery != null) {
       databaseQuery.removeEventListener(eventRegistrationKey);
+      removeEventListeningExecutor(eventRegistrationKey);
 
       if (!databaseQuery.hasListeners()) {
         queryMap.remove(queryKey);

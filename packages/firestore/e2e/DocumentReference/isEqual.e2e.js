@@ -14,14 +14,12 @@
  * limitations under the License.
  *
  */
+const COLLECTION = 'firestore';
 
-describe('firestore.doc().isEqual()', () => {
-  it('throws if other is not a DocumentReference', () => {
+describe('firestore.doc().isEqual()', function () {
+  it('throws if other is not a DocumentReference', function () {
     try {
-      firebase
-        .firestore()
-        .doc('bar/baz')
-        .isEqual(123);
+      firebase.firestore().doc('bar/baz').isEqual(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'other' expected a DocumentReference instance");
@@ -29,23 +27,23 @@ describe('firestore.doc().isEqual()', () => {
     }
   });
 
-  it('returns false when not equal', () => {
-    const docRef = firebase.firestore().doc('bar/baz');
+  it('returns false when not equal', function () {
+    const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
-    const eql1 = docRef.isEqual(firebase.firestore().doc('bar/foo'));
+    const eql1 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/foo`));
     const eql2 = docRef.isEqual(
-      firebase.firestore(firebase.app('secondaryFromNative')).doc('bar/baz'),
+      firebase.firestore(firebase.app('secondaryFromNative')).doc(`${COLLECTION}/baz`),
     );
 
     eql1.should.be.False();
     eql2.should.be.False();
   });
 
-  it('returns true when equal', () => {
-    const docRef = firebase.firestore().doc('bar/baz');
+  it('returns true when equal', function () {
+    const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
 
     const eql1 = docRef.isEqual(docRef);
-    const eql2 = docRef.isEqual(firebase.firestore().doc('bar/baz'));
+    const eql2 = docRef.isEqual(firebase.firestore().doc(`${COLLECTION}/baz`));
 
     eql1.should.be.True();
     eql2.should.be.True();

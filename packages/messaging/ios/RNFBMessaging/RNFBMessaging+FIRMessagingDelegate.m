@@ -40,7 +40,6 @@
   dispatch_once(&once, ^{
     RNFBMessagingFIRMessagingDelegate *strongSelf = weakSelf;
     [FIRMessaging messaging].delegate = strongSelf;
-    [FIRMessaging messaging].shouldEstablishDirectChannel = NO;
   });
 }
 
@@ -62,21 +61,6 @@
   if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
     void (*usersDidReceiveRegistrationTokenIMP)(id, SEL, FIRMessaging *, NSString *) = (typeof(usersDidReceiveRegistrationTokenIMP)) &objc_msgSend;
     usersDidReceiveRegistrationTokenIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveRegistrationTokenSelector, messaging, fcmToken);
-  }
-}
-
-// JS -> `onMessage`
-// Receive data messages on iOS 10+ directly from FCM (bypassing APNs) when the app is in the foreground.
-// To enable direct data messages, you can set [Messaging messaging].shouldEstablishDirectChannel to YES.
-- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageToDict:remoteMessage]];
-
-  // If the users AppDelegate implements messaging:didReceiveMessage: then call it
-  SEL messaging_didReceiveMessageSelector =
-      NSSelectorFromString(@"messaging:didReceiveMessage:");
-  if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveMessageSelector]) {
-    void (*usersDidReceiveMessageIMP)(id, SEL, FIRMessaging *, FIRMessagingRemoteMessage *) = (typeof(usersDidReceiveMessageIMP)) &objc_msgSend;
-    usersDidReceiveMessageIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveMessageSelector, messaging, remoteMessage);
   }
 }
 

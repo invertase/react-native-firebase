@@ -14,33 +14,28 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.QuerySnapshot', () => {
-  before(() => wipe());
-
-  it('is returned from a collection get()', async () => {
-    const snapshot = await firebase
-      .firestore()
-      .collection('v6')
-      .get();
+describe('firestore.QuerySnapshot', function () {
+  before(function () {
+    return wipe();
+  });
+  it('is returned from a collection get()', async function () {
+    const snapshot = await firebase.firestore().collection(COLLECTION).get();
 
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
   });
 
-  it('is returned from a collection onSnapshot()', async () => {
+  it('is returned from a collection onSnapshot()', async function () {
     const callback = sinon.spy();
-    firebase
-      .firestore()
-      .collection('v6')
-      .onSnapshot(callback);
+    firebase.firestore().collection(COLLECTION).onSnapshot(callback);
     await Utils.spyToBeCalledOnceAsync(callback);
     callback.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
   });
 
-  it('returns an array of DocumentSnapshots', async () => {
-    const colRef = firebase.firestore().collection('v6');
+  it('returns an array of DocumentSnapshots', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     await colRef.add({});
     const snapshot = await colRef.get();
     snapshot.docs.should.be.Array();
@@ -48,43 +43,43 @@ describe('firestore.QuerySnapshot', () => {
     snapshot.docs[0].constructor.name.should.eql('FirestoreDocumentSnapshot');
   });
 
-  it('returns false if not empty', async () => {
-    const colRef = firebase.firestore().collection('v6');
+  it('returns false if not empty', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     await colRef.add({});
     const snapshot = await colRef.get();
     snapshot.empty.should.be.Boolean();
     snapshot.empty.should.be.False();
   });
 
-  it('returns true if empty', async () => {
-    const colRef = firebase.firestore().collection('v6/foo/emptycollection');
+  it('returns true if empty', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/foo/emptycollection`);
     const snapshot = await colRef.get();
     snapshot.empty.should.be.Boolean();
     snapshot.empty.should.be.True();
   });
 
-  it('returns a SnapshotMetadata instance', async () => {
-    const colRef = firebase.firestore().collection('v6');
+  it('returns a SnapshotMetadata instance', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     const snapshot = await colRef.get();
     snapshot.metadata.constructor.name.should.eql('FirestoreSnapshotMetadata');
   });
 
-  it('returns a Query instance', async () => {
-    const colRef = firebase.firestore().collection('v6');
+  it('returns a Query instance', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     const snapshot = await colRef.get();
     snapshot.query.constructor.name.should.eql('FirestoreCollectionReference');
   });
 
-  it('returns size as a number', async () => {
-    const colRef = firebase.firestore().collection('v6');
+  it('returns size as a number', async function () {
+    const colRef = firebase.firestore().collection(COLLECTION);
     const snapshot = await colRef.get();
     snapshot.size.should.be.Number();
   });
 
-  describe('docChanges()', () => {
-    it('throws if options is not an object', async () => {
+  describe('docChanges()', function () {
+    it('throws if options is not an object', async function () {
       try {
-        const colRef = firebase.firestore().collection('v6');
+        const colRef = firebase.firestore().collection(COLLECTION);
         const snapshot = await colRef.limit(1).get();
         snapshot.docChanges(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -94,9 +89,9 @@ describe('firestore.QuerySnapshot', () => {
       }
     });
 
-    it('throws if options.includeMetadataChanges is not a boolean', async () => {
+    it('throws if options.includeMetadataChanges is not a boolean', async function () {
       try {
-        const colRef = firebase.firestore().collection('v6');
+        const colRef = firebase.firestore().collection(COLLECTION);
         const snapshot = await colRef.limit(1).get();
         snapshot.docChanges({ includeMetadataChanges: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -106,9 +101,9 @@ describe('firestore.QuerySnapshot', () => {
       }
     });
 
-    it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async () => {
+    it('throws if options.includeMetadataChanges is true, but snapshot does not include those changes', async function () {
       const callback = sinon.spy();
-      const colRef = firebase.firestore().collection('v6');
+      const colRef = firebase.firestore().collection(COLLECTION);
       const unsub = colRef.onSnapshot(
         {
           includeMetadataChanges: false,
@@ -128,9 +123,9 @@ describe('firestore.QuerySnapshot', () => {
       }
     });
 
-    it('returns an array of DocumentChange instances', async () => {
-      const colRef = firebase.firestore().collection('v6');
-      colRef.add({});
+    it('returns an array of DocumentChange instances', async function () {
+      const colRef = firebase.firestore().collection(COLLECTION);
+      await colRef.add({});
       const snapshot = await colRef.limit(1).get();
       const changes = snapshot.docChanges();
       changes.should.be.Array();
@@ -138,10 +133,13 @@ describe('firestore.QuerySnapshot', () => {
       changes[0].constructor.name.should.eql('FirestoreDocumentChange');
     });
 
-    // TODO: fixme @ehesp - flaky test: `AssertionError: expected 3 to equal 1` on  line 155
-    xit('returns the correct number of document changes if listening to metadata changes', async () => {
+    it('returns the correct number of document changes if listening to metadata changes', async function () {
       const callback = sinon.spy();
-      const colRef = firebase.firestore().collection('v6/metadatachanges/true-true');
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/metadatachanges-true-true`);
       const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
       await colRef.add({ foo: 'bar' });
       await Utils.spyToBeCalledTimesAsync(callback, 3);
@@ -156,10 +154,13 @@ describe('firestore.QuerySnapshot', () => {
       snap3.docChanges({ includeMetadataChanges: true }).length.should.be.eql(1);
     });
 
-    // TODO: fixme @ehesp - flaky test: `AssertionError: expected 5 to equal 1`
-    xit('returns the correct number of document changes if listening to metadata changes, but not including them in docChanges', async () => {
+    it('returns the correct number of document changes if listening to metadata changes, but not including them in docChanges', async function () {
       const callback = sinon.spy();
-      const colRef = firebase.firestore().collection('v6/metadatachanges/true-false');
+      const colRef = firebase
+        .firestore()
+        // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
+        // between runs, so use random collections to make sure `tests:*:test-reuse` works while iterating
+        .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/metadatachanges-true-false`);
       const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
       await colRef.add({ foo: 'bar' });
       await Utils.spyToBeCalledTimesAsync(callback, 3);
@@ -175,10 +176,11 @@ describe('firestore.QuerySnapshot', () => {
     });
   });
 
-  describe('forEach()', () => {
-    it('throws if callback is not a function', async () => {
+  describe('forEach()', function () {
+    it('throws if callback is not a function', async function () {
       try {
-        const colRef = firebase.firestore().collection('v6');
+        const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/nonfunction`);
+        await colRef.add({});
         const snapshot = await colRef.limit(1).get();
         snapshot.forEach(123);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -188,14 +190,15 @@ describe('firestore.QuerySnapshot', () => {
       }
     });
 
-    it('calls back a function', async () => {
-      const colRef = firebase.firestore().collection('v6');
-      colRef.add({});
-      colRef.add({});
+    it('calls back a function', async function () {
+      const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/function`);
+      await colRef.add({});
+      await colRef.add({});
       const snapshot = await colRef.limit(2).get();
       const callback = sinon.spy();
       snapshot.forEach.should.be.Function();
       snapshot.forEach(callback);
+      await Utils.spyToBeCalledTimesAsync(callback, 2, 20000);
       callback.should.be.calledTwice();
       callback.args[0][0].constructor.name.should.eql('FirestoreDocumentSnapshot');
       callback.args[0][1].should.be.Number();
@@ -203,26 +206,24 @@ describe('firestore.QuerySnapshot', () => {
       callback.args[1][1].should.be.Number();
     });
 
-    it('provides context to the callback', async () => {
-      const colRef = firebase.firestore().collection('v6');
-      colRef.add({});
+    it('provides context to the callback', async function () {
+      const colRef = firebase.firestore().collection(`${COLLECTION}/callbacks/function-context`);
+      await colRef.add({});
       const snapshot = await colRef.limit(1).get();
       const callback = sinon.spy();
       snapshot.forEach.should.be.Function();
       class Foo {}
       snapshot.forEach(callback, Foo);
+      await Utils.spyToBeCalledOnceAsync(callback, 20000);
       callback.should.be.calledOnce();
       callback.firstCall.thisValue.should.eql(Foo);
     });
   });
 
-  describe('isEqual()', () => {
-    it('throws if other is not a QuerySnapshot', async () => {
+  describe('isEqual()', function () {
+    it('throws if other is not a QuerySnapshot', async function () {
       try {
-        const qs = await firebase
-          .firestore()
-          .collection('v6')
-          .get();
+        const qs = await firebase.firestore().collection(COLLECTION).get();
         qs.isEqual(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -231,8 +232,8 @@ describe('firestore.QuerySnapshot', () => {
       }
     });
 
-    it('returns false if not equal (simple checks)', async () => {
-      const colRef = firebase.firestore().collection('v6');
+    it('returns false if not equal (simple checks)', async function () {
+      const colRef = firebase.firestore().collection(COLLECTION);
       // Ensure a doc exists
       await colRef.add({});
 
@@ -240,7 +241,7 @@ describe('firestore.QuerySnapshot', () => {
 
       const querySnap1 = await firebase
         .firestore()
-        .collection('v6/querysnapshot/querySnapshotIsEqual')
+        .collection(`${COLLECTION}/querysnapshot/querySnapshotIsEqual`)
         .get();
 
       const eq1 = qs.isEqual(querySnap1);
@@ -248,8 +249,10 @@ describe('firestore.QuerySnapshot', () => {
       eq1.should.be.False();
     });
 
-    it('returns false if not equal (expensive checks)', async () => {
-      const colRef = firebase.firestore().collection('v6/querysnapshot/querySnapshotIsEqual-False');
+    it('returns false if not equal (expensive checks)', async function () {
+      const colRef = firebase
+        .firestore()
+        .collection(`${COLLECTION}/querysnapshot/querySnapshotIsEqual-False`);
       // Ensure a doc exists
       const docRef = colRef.doc('firstdoc');
       await docRef.set({
@@ -276,8 +279,10 @@ describe('firestore.QuerySnapshot', () => {
       eq1.should.be.False();
     });
 
-    it('returns true when equal', async () => {
-      const colRef = firebase.firestore().collection('v6/querysnapshot/querySnapshotIsEqual-True');
+    it('returns true when equal', async function () {
+      const colRef = firebase
+        .firestore()
+        .collection(`${COLLECTION}/querysnapshot/querySnapshotIsEqual-True`);
 
       await Promise.all([
         colRef.add({ foo: 'bar' }),

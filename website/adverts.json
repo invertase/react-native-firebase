@@ -1,0 +1,12 @@
+[
+  {
+    "text": "A feature rich local notifications library for React Native by the team behind React Native Firebase.",
+    "image": "//static.invertase.io/assets/sidebar/notifee.png",
+    "url": "https://notifee.app/?utm_source=react-native-firebase&utm_medium=toc&utm_campaign=docs"
+  },
+  {
+    "text": "A feature rich Android & iOS local notifications library for React Native by the team behind React Native Firebase.",
+    "image": "//static.invertase.io/assets/sidebar/notifee.png",
+    "url": "https://notifee.app/react-native/docs/overview?utm_source=react-native-firebase&utm_medium=toc2&utm_campaign=docs"
+  }
+]

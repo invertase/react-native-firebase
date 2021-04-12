@@ -14,29 +14,24 @@
  * limitations under the License.
  *
  */
-
+const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 
-describe('firestore.WriteBatch.commit()', () => {
-  before(() => wipe());
-
-  it('returns a Promise', () => {
-    const commit = firebase
-      .firestore()
-      .batch()
-      .commit();
+describe('firestore.WriteBatch.commit()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('returns a Promise', function () {
+    const commit = firebase.firestore().batch().commit();
     commit.should.be.a.Promise();
   });
 
-  it('throws if committing more than 500 writes', async () => {
+  it('throws if committing more than 500 writes', async function () {
     const filledArray = new Array(501).fill({ foo: 'bar' });
     const batch = firebase.firestore().batch();
 
     for (let i = 0; i < filledArray.length; i++) {
-      const doc = firebase
-        .firestore()
-        .collection('v6')
-        .doc(i.toString());
+      const doc = firebase.firestore().collection(COLLECTION).doc(i.toString());
       const filledArrayElement = filledArray[i];
       batch.set(doc, filledArrayElement);
     }
@@ -50,7 +45,7 @@ describe('firestore.WriteBatch.commit()', () => {
     }
   });
 
-  it('throws if already committed', async () => {
+  it('throws if already committed', async function () {
     try {
       const batch = firebase.firestore().batch();
       await batch.commit();
@@ -62,10 +57,10 @@ describe('firestore.WriteBatch.commit()', () => {
     }
   });
 
-  it('should set & commit', async () => {
-    const lRef = firebase.firestore().doc('v6/LON');
-    const nycRef = firebase.firestore().doc('v6/NYC');
-    const sfRef = firebase.firestore().doc('v6/SF');
+  it('should set & commit', async function () {
+    const lRef = firebase.firestore().doc(`${COLLECTION}/LON`);
+    const nycRef = firebase.firestore().doc(`${COLLECTION}/NYC`);
+    const sfRef = firebase.firestore().doc(`${COLLECTION}/SF`);
 
     const batch = firebase.firestore().batch();
 
@@ -83,10 +78,10 @@ describe('firestore.WriteBatch.commit()', () => {
     await Promise.all([lRef.delete(), nycRef.delete(), sfRef.delete()]);
   });
 
-  it('should set/merge & commit', async () => {
-    const lRef = firebase.firestore().doc('v6/LON');
-    const nycRef = firebase.firestore().doc('v6/NYC');
-    const sfRef = firebase.firestore().doc('v6/SF');
+  it('should set/merge & commit', async function () {
+    const lRef = firebase.firestore().doc(`${COLLECTION}/LON`);
+    const nycRef = firebase.firestore().doc(`${COLLECTION}/NYC`);
+    const sfRef = firebase.firestore().doc(`${COLLECTION}/SF`);
 
     await Promise.all([
       lRef.set({ name: 'London' }),
@@ -114,10 +109,10 @@ describe('firestore.WriteBatch.commit()', () => {
     await Promise.all([lRef.delete(), nycRef.delete(), sfRef.delete()]);
   });
 
-  it('should set/mergeFields & commit', async () => {
-    const lRef = firebase.firestore().doc('v6/LON');
-    const nycRef = firebase.firestore().doc('v6/NYC');
-    const sfRef = firebase.firestore().doc('v6/SF');
+  it('should set/mergeFields & commit', async function () {
+    const lRef = firebase.firestore().doc(`${COLLECTION}/LON`);
+    const nycRef = firebase.firestore().doc(`${COLLECTION}/NYC`);
+    const sfRef = firebase.firestore().doc(`${COLLECTION}/SF`);
 
     await Promise.all([
       lRef.set({ name: 'London' }),
@@ -149,10 +144,10 @@ describe('firestore.WriteBatch.commit()', () => {
     await Promise.all([lRef.delete(), nycRef.delete(), sfRef.delete()]);
   });
 
-  it('should delete & commit', async () => {
-    const lRef = firebase.firestore().doc('v6/LON');
-    const nycRef = firebase.firestore().doc('v6/NYC');
-    const sfRef = firebase.firestore().doc('v6/SF');
+  it('should delete & commit', async function () {
+    const lRef = firebase.firestore().doc(`${COLLECTION}/LON`);
+    const nycRef = firebase.firestore().doc(`${COLLECTION}/NYC`);
+    const sfRef = firebase.firestore().doc(`${COLLECTION}/SF`);
 
     await Promise.all([
       lRef.set({ name: 'London' }),
@@ -175,10 +170,10 @@ describe('firestore.WriteBatch.commit()', () => {
     sDoc.exists.should.be.False();
   });
 
-  it('should update & commit', async () => {
-    const lRef = firebase.firestore().doc('v6/LON');
-    const nycRef = firebase.firestore().doc('v6/NYC');
-    const sfRef = firebase.firestore().doc('v6/SF');
+  it('should update & commit', async function () {
+    const lRef = firebase.firestore().doc(`${COLLECTION}/LON`);
+    const nycRef = firebase.firestore().doc(`${COLLECTION}/NYC`);
+    const sfRef = firebase.firestore().doc(`${COLLECTION}/SF`);
 
     await Promise.all([
       lRef.set({ name: 'London' }),

@@ -15,13 +15,12 @@
  *
  */
 
-describe('firestore.WriteBatch.update()', () => {
-  it('throws if a DocumentReference instance is not provided', () => {
+const COLLECTION = 'firestore';
+
+describe('firestore.WriteBatch.update()', function () {
+  it('throws if a DocumentReference instance is not provided', function () {
     try {
-      firebase
-        .firestore()
-        .batch()
-        .update(123);
+      firebase.firestore().batch().update(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
@@ -29,14 +28,12 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if a DocumentReference firestore instance is different', () => {
+  it('throws if a DocumentReference firestore instance is different', function () {
     try {
       const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc('v6/foo');
-      firebase
-        .firestore()
-        .batch()
-        .update(docRef);
+      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+
+      firebase.firestore().batch().update(docRef);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -46,13 +43,10 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update args are not provided', () => {
+  it('throws if update args are not provided', function () {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
-      firebase
-        .firestore()
-        .batch()
-        .update(docRef);
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+      firebase.firestore().batch().update(docRef);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('Expected update object or list of key/value pairs');
@@ -60,13 +54,10 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update arg is not an object', () => {
+  it('throws if update arg is not an object', function () {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
-      firebase
-        .firestore()
-        .batch()
-        .update(docRef, 123);
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+      firebase.firestore().batch().update(docRef, 123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('if using a single update argument, it must be an object');
@@ -74,13 +65,10 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update key/values are invalid', () => {
+  it('throws if update key/values are invalid', function () {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
-      firebase
-        .firestore()
-        .batch()
-        .update(docRef, 'foo', 'bar', 'baz');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+      firebase.firestore().batch().update(docRef, 'foo', 'bar', 'baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('equal numbers of key/value pairs');
@@ -88,13 +76,10 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('throws if update keys are invalid', () => {
+  it('throws if update keys are invalid', function () {
     try {
-      const docRef = firebase.firestore().doc('v6/foo');
-      firebase
-        .firestore()
-        .batch()
-        .update(docRef, 'foo', 'bar', 123, 'ben');
+      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+      firebase.firestore().batch().update(docRef, 'foo', 'bar', 123, 'ben');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql('argument at index 2 must be a string or FieldPath');
@@ -102,15 +87,12 @@ describe('firestore.WriteBatch.update()', () => {
     }
   });
 
-  it('adds the DocumentReference to the internal writes', () => {
-    const docRef = firebase.firestore().doc('v6/foo');
-    const wb = firebase
-      .firestore()
-      .batch()
-      .update(docRef, { foo: 'bar' });
+  it('adds the DocumentReference to the internal writes', function () {
+    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+    const wb = firebase.firestore().batch().update(docRef, { foo: 'bar' });
     wb._writes.length.should.eql(1);
     const expected = {
-      path: 'v6/foo',
+      path: `${COLLECTION}/foo`,
       type: 'UPDATE',
     };
     wb._writes[0].should.containEql(jet.contextify(expected));

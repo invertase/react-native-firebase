@@ -46,6 +46,13 @@ public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
     });
   }
 
+  Task<Void> triggerEvent(String eventId) {
+    return Tasks.call(() -> {
+      FirebaseInAppMessaging.getInstance().triggerEvent(eventId);
+      return null;
+    });
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();

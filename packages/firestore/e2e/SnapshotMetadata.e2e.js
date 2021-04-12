@@ -14,37 +14,35 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('./helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.SnapshotMetadata', () => {
-  before(() => wipe());
-
-  it('.fromCache -> returns a boolean', async () => {
-    const ref1 = firebase.firestore().collection('v6');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+describe('firestore.SnapshotMetadata', function () {
+  before(function () {
+    return wipe();
+  });
+  it('.fromCache -> returns a boolean', async function () {
+    const ref1 = firebase.firestore().collection(COLLECTION);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const colRef = await ref1.get();
     const docRef = await ref2.get();
     colRef.metadata.fromCache.should.be.Boolean();
     docRef.metadata.fromCache.should.be.Boolean();
   });
 
-  it('.hasPendingWrites -> returns a boolean', async () => {
-    const ref1 = firebase.firestore().collection('v6');
-    const ref2 = firebase.firestore().doc('v6/idonotexist');
+  it('.hasPendingWrites -> returns a boolean', async function () {
+    const ref1 = firebase.firestore().collection(COLLECTION);
+    const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
     const colRef = await ref1.get();
     const docRef = await ref2.get();
     colRef.metadata.hasPendingWrites.should.be.Boolean();
     docRef.metadata.hasPendingWrites.should.be.Boolean();
   });
 
-  describe('isEqual()', () => {
-    it('throws if other is not a valid type', async () => {
+  describe('isEqual()', function () {
+    it('throws if other is not a valid type', async function () {
       try {
-        const snapshot = await firebase
-          .firestore()
-          .collection('v6')
-          .get();
+        const snapshot = await firebase.firestore().collection(COLLECTION).get();
         snapshot.metadata.isEqual();
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
@@ -53,27 +51,15 @@ describe('firestore.SnapshotMetadata', () => {
       }
     });
 
-    it('returns true if is equal', async () => {
-      const snapshot1 = await firebase
-        .firestore()
-        .collection('v6')
-        .get({ source: 'cache' });
-      const snapshot2 = await firebase
-        .firestore()
-        .collection('v6')
-        .get({ source: 'cache' });
+    it('returns true if is equal', async function () {
+      const snapshot1 = await firebase.firestore().collection(COLLECTION).get({ source: 'cache' });
+      const snapshot2 = await firebase.firestore().collection(COLLECTION).get({ source: 'cache' });
       snapshot1.metadata.isEqual(snapshot2.metadata).should.eql(true);
     });
 
-    it('returns false if not equal', async () => {
-      const snapshot1 = await firebase
-        .firestore()
-        .collection('v6')
-        .get({ source: 'cache' });
-      const snapshot2 = await firebase
-        .firestore()
-        .collection('v6')
-        .get({ source: 'server' });
+    it('returns false if not equal', async function () {
+      const snapshot1 = await firebase.firestore().collection(COLLECTION).get({ source: 'cache' });
+      const snapshot2 = await firebase.firestore().collection(COLLECTION).get({ source: 'server' });
       snapshot1.metadata.isEqual(snapshot2.metadata).should.eql(false);
     });
   });

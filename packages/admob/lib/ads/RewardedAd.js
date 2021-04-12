@@ -45,11 +45,11 @@ export default class RewardedAd extends MobileAd {
 
   load() {
     // Prevent multiple load calls
-    if (this._loaded) {
+    if (this._loaded || this._isLoadCalled) {
       return;
     }
 
-    this._loaded = true;
+    this._isLoadCalled = true;
     this._admob.native.rewardedLoad(this._requestId, this._adUnitId, this._requestOptions);
   }
 

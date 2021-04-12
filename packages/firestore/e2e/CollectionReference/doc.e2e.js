@@ -14,18 +14,16 @@
  * limitations under the License.
  *
  */
-
 const { wipe } = require('../helpers');
+const COLLECTION = 'firestore';
 
-describe('firestore.collection().doc()', () => {
-  before(() => wipe());
-
-  it('throws if path is not a document', () => {
+describe('firestore.collection().doc()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if path is not a document', function () {
     try {
-      firebase
-        .firestore()
-        .collection('foo')
-        .doc('bar/baz');
+      firebase.firestore().collection(COLLECTION).doc('bar/baz');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'documentPath' must point to a document");
@@ -33,19 +31,13 @@ describe('firestore.collection().doc()', () => {
     }
   });
 
-  it('generates an ID if no path is provided', () => {
-    const instance = firebase
-      .firestore()
-      .collection('foo')
-      .doc();
+  it('generates an ID if no path is provided', function () {
+    const instance = firebase.firestore().collection(COLLECTION).doc();
     should.equal(20, instance.id.length);
   });
 
-  it('uses path if provided', () => {
-    const instance = firebase
-      .firestore()
-      .collection('foo')
-      .doc('bar');
+  it('uses path if provided', function () {
+    const instance = firebase.firestore().collection(COLLECTION).doc('bar');
     instance.id.should.eql('bar');
   });
 });

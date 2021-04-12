@@ -18,7 +18,7 @@
 const { resolve, join } = require('path');
 const { readdirSync, statSync } = require('fs');
 
-const blacklist = require('metro-config/src/defaults/blacklist');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
 
 const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');
@@ -32,7 +32,7 @@ const config = {
   projectRoot: __dirname,
   resolver: {
     useWatchman: !process.env.CI,
-    blackListRE: blacklist([
+    blocklist: exclusionList([
       /.*\/__fixtures__\/.*/,
       /.*\/template\/project\/node_modules\/react-native\/.*/,
       new RegExp(`^${escape(resolve(rootDir, 'docs'))}\\/.*$`),
@@ -64,6 +64,14 @@ const config = {
   },
   server: {
     runInspectorProxy: !process.env.CI,
+  },
+  transformer: {
+    getTransformOptions: async () => ({
+      transform: {
+        experimentalImportSupport: false,
+        inlineRequires: true,
+      },
+    }),
   },
   watchFolders: [resolve(__dirname, '.'), ...firebaseModules],
 };
