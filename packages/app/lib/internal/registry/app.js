@@ -167,6 +167,8 @@ export function initializeApp(options = {}, configOrName) {
 
   const app = new FirebaseApp(options, { name }, false, deleteApp.bind(null, name, true));
 
+  // Note these initialization actions with side effects are performed prior to knowledge of
+  // successful initialization in the native code. Native code *may* throw an error.
   APP_REGISTRY[name] = app;
   onAppCreateFn(APP_REGISTRY[name]);
 
@@ -175,6 +177,16 @@ export function initializeApp(options = {}, configOrName) {
     .then(() => {
       app._initialized = true;
       return app;
+    })
+    .catch(e => {
+      // we need to clean the app entry from registry as the app does not actually exist
+      // There are still possible side effects from `onAppCreateFn` to consider but as existing
+      // code may rely on that function running prior to native create, re-ordering it is a semantic change
+      // and will be avoided
+      delete APP_REGISTRY[name];
+
+      // Now allow calling code to handle the initialization issue
+      throw e;
     });
 }
 
