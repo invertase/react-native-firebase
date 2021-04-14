@@ -32,6 +32,7 @@ import { NavigationContainer } from '@react-navigation/native';
         screen_class: currentRouteName,
       });
     }
+  }}>
 ```
 
 For a full working example, view the [Screen tracking for analytics](https://reactnavigation.org/docs/screen-tracking/)
