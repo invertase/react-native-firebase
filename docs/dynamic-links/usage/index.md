@@ -133,6 +133,8 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 5. There is a known bug that you can follow [here](http://bit.ly/2y8gey4) that stops Apple from downloading the app site association file. The work around is to uninstall your app, restart your device and reinstall your app.
 
+6. Make sure your [deep link parameter](https://firebase.google.com/docs/dynamic-links/create-manually?authuser=0#parameters) is properly URL-encoded, especially if it contains a query string.
+
 ## Android Setup
 
 1. Create a SHA-256 fingerprint using these [instructions](https://developers.google.com/android/guides/client-auth) for your app, and add to your app in your Firebase console.
