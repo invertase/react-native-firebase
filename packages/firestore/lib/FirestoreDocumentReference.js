@@ -15,7 +15,7 @@
  *
  */
 
-import { isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import { isObject, isString, isUndefined, isNull } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
 import {
   parseSetOptions,
