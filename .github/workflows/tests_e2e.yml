@@ -32,7 +32,9 @@ jobs:
       EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
       EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
 
       - uses: actions/checkout@v2
         with:
@@ -84,9 +86,10 @@ jobs:
           command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
 
       - name: Configure JDK 1.11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
-          java-version: "11" # ubuntu-latest is about to default to 11, force it everywhere
+          distribution: 'adopt'
+          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
 
       - name: Verify JDK11
         # Default JDK varies depending on different runner flavors, make sure we are on 11
@@ -217,7 +220,9 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
 
       - uses: actions/checkout@v2
         with:
