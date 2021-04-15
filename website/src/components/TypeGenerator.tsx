@@ -57,6 +57,23 @@ function TypeGenerator({ type }: Props): JSX.Element {
 
   const out = [];
 
+  if (exposed.type === 'typeParameter') {
+    out.push(
+      <span key={`typeParameter-${exposed.name}`} className="typeParameter">
+        {exposed.name}
+      </span>,
+    );
+
+    if (exposed.constraint) {
+      out.push(
+        <span key={`typeParameter-default-${exposed.name}`} className="typeParameter">
+          {' = '}
+          <TypeGenerator type={exposed.constraint} />
+        </span>,
+      );
+    }
+  }
+
   // string
   if (exposed.type === 'intrinsic') {
     out.push(
@@ -200,7 +217,13 @@ function TypeGenerator({ type }: Props): JSX.Element {
         out.push(<span key={`reflection-children-variable-optional-${signature.name}`}>?</span>);
       }
       out.push(<span key={`reflection-children-variable-cursor-${signature.name}`}>{': '}</span>);
-      out.push(<TypeGenerator type={signature.type} />);
+      if (signature.signatures) {
+        signature.signatures.forEach(childSignature => {
+          out.push(<TypeGenerator type={childSignature.type} />);
+        });
+      } else {
+        out.push(<TypeGenerator type={signature.type} />);
+      }
 
       if (si + 1 < reflectionChildrenLength) {
         out.push(<span key={`reflection-children-divider-params-${si}`}>{', '}</span>);
