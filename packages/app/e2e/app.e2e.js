@@ -53,21 +53,55 @@ describe('firebase', function () {
   });
 
   it('it should initialize dynamic apps', async function () {
+    const appCount = firebase.apps.length;
     const name = `testscoreapp${FirebaseHelpers.id}`;
     const platformAppConfig = FirebaseHelpers.app.config();
     const newApp = await firebase.initializeApp(platformAppConfig, name);
     newApp.name.should.equal(name);
     newApp.toString().should.equal(name);
     newApp.options.apiKey.should.equal(platformAppConfig.apiKey);
+    should.equal(firebase.apps.includes(firebase.app(name)), true);
+    should.equal(firebase.apps.length, appCount + 1);
     return newApp.delete();
   });
 
   it('should error if dynamic app initialization values are incorrect', async function () {
+    const appCount = firebase.apps.length;
     try {
       await firebase.initializeApp({ appId: 'myid' }, 'myname');
       throw new Error('Should have rejected incorrect initializeApp input');
     } catch (e) {
       e.message.should.equal("Missing or invalid FirebaseOptions property 'apiKey'.");
+      should.equal(firebase.apps.length, appCount);
+      should.equal(firebase.apps.includes('myname'), false);
+    }
+  });
+
+  it('should error if dynamic app initialization values are invalid', async function () {
+    // firebase-android-sdk will not complain on invalid initialization values, iOS throws
+    if (device.getPlatform() === 'android') {
+      return;
+    }
+
+    const appCount = firebase.apps.length;
+    try {
+      const firebaseConfig = {
+        apiKey: 'XXXXXXXXXXXXXXXXXXXXXXX',
+        authDomain: 'test-XXXXX.firebaseapp.com',
+        databaseURL: 'https://test-XXXXXX.firebaseio.com',
+        projectId: 'test-XXXXX',
+        storageBucket: 'tes-XXXXX.appspot.com',
+        messagingSenderId: 'XXXXXXXXXXXXX',
+        appId: '1:XXXXXXXXX',
+        app_name: 'TEST',
+      };
+      await firebase.initializeApp(firebaseConfig, 'myname');
+      throw new Error('Should have rejected incorrect initializeApp input');
+    } catch (e) {
+      e.code.should.containEql('app/unknown');
+      e.message.should.containEql('Configuration fails');
+      should.equal(firebase.apps.length, appCount);
+      should.equal(firebase.apps.includes('myname'), false);
     }
   });
 
