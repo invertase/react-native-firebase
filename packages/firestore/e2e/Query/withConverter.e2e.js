@@ -108,9 +108,9 @@ describe('firestore().collection().withConverter()', function () {
       .orderBy('foo')
       .withConverter({
         toFirestore() {},
-        fromFirestore(snapshot) {
+        fromFirestore(data) {
           return {
-            foo: snapshot.data().foo - 1,
+            foo: data.foo - 1,
           };
         },
       })
