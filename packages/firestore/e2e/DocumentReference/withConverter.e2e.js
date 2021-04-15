@@ -95,9 +95,9 @@ describe('firestore().doc().withConverter()', function () {
     const snapshot = await docRef
       .withConverter({
         toFirestore() {},
-        fromFirestore(data) {
+        fromFirestore(snapshot) {
           return {
-            foo: data.foo + 1,
+            foo: snapshot.data().foo + 1,
           };
         },
       })

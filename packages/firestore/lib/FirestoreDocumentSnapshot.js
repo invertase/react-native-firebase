@@ -26,12 +26,11 @@ import { extractFieldPathData } from './utils';
 import { parseNativeMap } from './utils/serialize';
 
 export default class FirestoreDocumentSnapshot {
-  constructor(firestore, nativeData, converter) {
+  constructor(firestore, nativeData) {
     this._data = parseNativeMap(firestore, nativeData.data);
     this._metadata = new FirestoreSnapshotMetadata(nativeData.metadata);
     this._ref = new FirestoreDocumentReference(firestore, FirestorePath.fromName(nativeData.path));
     this._exists = nativeData.exists;
-    this._converter = converter;
   }
 
   get exists() {
@@ -72,11 +71,6 @@ export default class FirestoreDocumentSnapshot {
     //     );
     //   }
     // }
-
-    // Apply any user conversions from withConverter
-    if (this._converter) {
-      return this._converter.fromFirestore(this._data);
-    }
 
     return this._data;
   }

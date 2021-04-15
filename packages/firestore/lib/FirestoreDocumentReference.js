@@ -45,6 +45,26 @@ export default class FirestoreDocumentReference {
     this._converter = converter;
   }
 
+  // Returns a FirestoreDocumentSnapshot depending on whether a converter has been provided.
+  _getConvertedSnapshot(data) {
+    const documentSnapshot = new FirestoreDocumentSnapshot(this._firestore, data);
+
+    if (this._converter && this._converter.fromFirestore) {
+      try {
+        return new FirestoreDocumentSnapshot(
+          this._firestore,
+          this._converter.fromFirestore(documentSnapshot),
+        );
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore().doc() "withConverter.fromFirestore" threw an error: ${e.message}.`,
+        );
+      }
+    }
+
+    return documentSnapshot;
+  }
+
   get firestore() {
     return this._firestore;
   }
@@ -107,9 +127,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return this._firestore.native
-      .documentGet(this.path, options)
-      .then(data => new FirestoreDocumentSnapshot(this._firestore, data, this._converter));
+    return this._firestore.native.documentGet(this.path, options).then(_getConvertedSnapshot);
   }
 
   isEqual(other) {
@@ -160,12 +178,7 @@ export default class FirestoreDocumentReference {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
-          const documentSnapshot = new FirestoreDocumentSnapshot(
-            this._firestore,
-            event.body.snapshot,
-            this._converter,
-          );
-          handleSuccess(documentSnapshot);
+          handleSuccess(_getConvertedSnapshot(event.body.snapshot));
         }
       },
     );
