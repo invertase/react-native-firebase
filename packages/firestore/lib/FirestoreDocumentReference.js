@@ -127,7 +127,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return this._firestore.native.documentGet(this.path, options).then(_getConvertedSnapshot);
+    return this._firestore.native.documentGet(this.path, options).then(this._getConvertedSnapshot);
   }
 
   isEqual(other) {
@@ -178,7 +178,7 @@ export default class FirestoreDocumentReference {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
-          handleSuccess(_getConvertedSnapshot(event.body.snapshot));
+          handleSuccess(this._getConvertedSnapshot(event.body.snapshot));
         }
       },
     );
