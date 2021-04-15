@@ -27,7 +27,7 @@
     "tests:android:test": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug",
     "tests:android:test:debug": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug --inspect",
     "tests:android:test-reuse": "cd tests && ./node_modules/.bin/detox test --configuration android.emu.debug --reuse",
-    "tests:android:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --loglevel trace --configuration android.emu.debug",
+    "tests:android:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug",
     "tests:android:test-cover-reuse": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration android.emu.debug --reuse",
     "tests:ios:build": "cd tests && ./node_modules/.bin/detox build --configuration ios.sim.debug",
     "tests:ios:build-release": "cd tests && ./node_modules/.bin/detox build --configuration ios.sim.release",
