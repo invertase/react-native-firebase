@@ -2,7 +2,6 @@
   "name": "react-native-firebase",
   "private": true,
   "scripts": {
-//    "version": "node ./scripts/version.js",
     "version": "11.2.0",
     "prepare": "yarn run lerna:link && lerna run prepare --parallel",
     "build:all:clean": "lerna run build:clean",
