@@ -257,4 +257,4 @@ $RNFirebaseAsStaticFramework = true
 
 ### Expo
 
-Expo does not support integration with native modules via it's ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).
+Expo does not support integration with native modules via its ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).
