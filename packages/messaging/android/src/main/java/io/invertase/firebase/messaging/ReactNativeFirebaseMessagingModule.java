@@ -73,7 +73,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           // messageId can be either one...
           String messageId = intent.getExtras().getString("google.message_id");
           if (messageId == null) messageId = intent.getExtras().getString("message_id");
-          
+
           // only handle non-consumed initial notifications
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
             WritableMap remoteMessageMap;

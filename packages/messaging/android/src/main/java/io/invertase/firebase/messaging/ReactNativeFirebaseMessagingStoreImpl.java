@@ -50,7 +50,7 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   @Deprecated
   @Override
   public RemoteMessage getFirebaseMessage(String remoteMessageId) {
-    WritableMap messageMap = getFirebaseMessageMap(remoteMessageId);
+    ReadableMap messageMap = getFirebaseMessageMap(remoteMessageId);
     if (messageMap != null){
       return remoteMessageFromReadableMap(messageMap);
     }
