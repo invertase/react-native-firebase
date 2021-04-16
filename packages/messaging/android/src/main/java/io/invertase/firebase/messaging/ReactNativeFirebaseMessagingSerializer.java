@@ -2,8 +2,8 @@ package io.invertase.firebase.messaging;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.SharedUtils;
@@ -48,6 +48,10 @@ public class ReactNativeFirebaseMessagingSerializer {
 
   public static ReactNativeFirebaseEvent remoteMessageToEvent(RemoteMessage remoteMessage, Boolean openEvent) {
     return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
+  }
+
+  public static ReactNativeFirebaseEvent remoteMessageMapToEvent(WritableMap remoteMessageMap, Boolean openEvent) {
+    return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageMap);
   }
 
   public static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {

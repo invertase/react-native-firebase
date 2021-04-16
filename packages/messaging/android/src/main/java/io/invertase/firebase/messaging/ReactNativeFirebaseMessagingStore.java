@@ -2,10 +2,12 @@ package io.invertase.firebase.messaging;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import com.facebook.react.bridge.WritableMap;
+
 public interface ReactNativeFirebaseMessagingStore {
   void storeFirebaseMessage(RemoteMessage remoteMessage);
 
-  RemoteMessage getFirebaseMessage(String remoteMessageId);
+  WritableMap getFirebaseMessage(String remoteMessageId);
 
   void clearFirebaseMessage(String remoteMessageId);
 }

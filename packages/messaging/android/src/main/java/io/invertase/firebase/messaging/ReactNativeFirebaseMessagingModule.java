@@ -28,6 +28,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -41,7 +42,7 @@ import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModule implements ActivityEventListener {
   private static final String TAG = "Messaging";
-  RemoteMessage initialNotification = null;
+  ReadableMap initialNotification = null;
   private HashMap<String, Boolean> initialNotificationMap = new HashMap<>();
 
   ReactNativeFirebaseMessagingModule(ReactApplicationContext reactContext) {
@@ -49,17 +50,17 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
     reactContext.addActivityEventListener(this);
   }
 
-  private RemoteMessage popRemoteMessageFromMessagingStore(String messageId) {
+  private WritableMap popRemoteMessageMapFromMessagingStore(String messageId) {
     ReactNativeFirebaseMessagingStore messagingStore = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore();
-    RemoteMessage remoteMessage = messagingStore.getFirebaseMessage(messageId);
+    WritableMap remoteMessageMap = messagingStore.getFirebaseMessage(messageId);
     messagingStore.clearFirebaseMessage(messageId);
-    return remoteMessage;
+    return remoteMessageMap;
   }
 
   @ReactMethod
   public void getInitialNotification(Promise promise) {
     if (initialNotification != null) {
-      promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(initialNotification));
+      promise.resolve(initialNotification);
       initialNotification = null;
       return;
     } else {
@@ -77,9 +78,10 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
             RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
             if (remoteMessage == null) {
-              remoteMessage = popRemoteMessageFromMessagingStore(messageId);
-            }
-            if (remoteMessage != null) {
+              promise.resolve(popRemoteMessageMapFromMessagingStore(messageId));
+              initialNotificationMap.put(messageId, true);
+              return;
+            } else {
               promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
               initialNotificationMap.put(messageId, true);
               return;
@@ -216,18 +218,19 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       if (messageId == null) messageId = intent.getExtras().getString("message_id");
 
       if (messageId != null) {
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
         RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+
         if (remoteMessage == null) {
-          remoteMessage = popRemoteMessageFromMessagingStore(messageId);
-        }
-
-        if (remoteMessage != null) {
-          initialNotification = remoteMessage;
+          WritableMap remoteMessageMap = popRemoteMessageMapFromMessagingStore(messageId);
+          initialNotification = remoteMessageMap;
+          emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageMapToEvent(remoteMessageMap, true));
+        } else {
+          initialNotification = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
           ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
-
-          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
           emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageToEvent(remoteMessage, true));
         }
+        ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
       }
     }
   }

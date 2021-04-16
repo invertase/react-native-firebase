@@ -48,15 +48,15 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
   }
 
   @Override
-  public RemoteMessage getFirebaseMessage(String remoteMessageId) {
+  public WritableMap getFirebaseMessage(String remoteMessageId) {
     String remoteMessageString = UniversalFirebasePreferences.getSharedInstance().getStringValue(remoteMessageId, null);
     if (remoteMessageString != null) {
 //      Log.d("getFirebaseMessage", remoteMessageString);
       try {
-        WritableMap readableMap = jsonToReact(new JSONObject(remoteMessageString));
-        readableMap.putString("to", remoteMessageId);//fake to
-        return remoteMessageFromReadableMap(readableMap);
-      } catch (JSONException e) {
+        WritableMap remoteMessageMap = jsonToReact(new JSONObject(remoteMessageString));
+        remoteMessageMap.putString("to", remoteMessageId);//fake to
+        return remoteMessageMap;
+       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
