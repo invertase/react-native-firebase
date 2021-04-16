@@ -52,7 +52,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
 
   private WritableMap popRemoteMessageMapFromMessagingStore(String messageId) {
     ReactNativeFirebaseMessagingStore messagingStore = ReactNativeFirebaseMessagingStoreHelper.getInstance().getMessagingStore();
-    WritableMap remoteMessageMap = messagingStore.getFirebaseMessage(messageId);
+    WritableMap remoteMessageMap = messagingStore.getFirebaseMessageMap(messageId);
     messagingStore.clearFirebaseMessage(messageId);
     return remoteMessageMap;
   }
@@ -73,16 +73,18 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
           // messageId can be either one...
           String messageId = intent.getExtras().getString("google.message_id");
           if (messageId == null) messageId = intent.getExtras().getString("message_id");
-
+          
           // only handle non-consumed initial notifications
           if (messageId != null && initialNotificationMap.get(messageId) == null) {
+            WritableMap remoteMessageMap;
             RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
             if (remoteMessage == null) {
-              promise.resolve(popRemoteMessageMapFromMessagingStore(messageId));
-              initialNotificationMap.put(messageId, true);
-              return;
+              remoteMessageMap = popRemoteMessageMapFromMessagingStore(messageId);
             } else {
-              promise.resolve(ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage));
+              remoteMessageMap = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
+            }
+            if (remoteMessageMap != null){
+              promise.resolve(remoteMessageMap);
               initialNotificationMap.put(messageId, true);
               return;
             }
@@ -218,19 +220,22 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
       if (messageId == null) messageId = intent.getExtras().getString("message_id");
 
       if (messageId != null) {
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
         RemoteMessage remoteMessage = ReactNativeFirebaseMessagingReceiver.notifications.get(messageId);
+        WritableMap remoteMessageMap;
 
         if (remoteMessage == null) {
-          WritableMap remoteMessageMap = popRemoteMessageMapFromMessagingStore(messageId);
-          initialNotification = remoteMessageMap;
-          emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageMapToEvent(remoteMessageMap, true));
+          remoteMessageMap = popRemoteMessageMapFromMessagingStore(messageId);
         } else {
-          initialNotification = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
-          ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
-          emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageToEvent(remoteMessage, true));
+          remoteMessageMap = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
         }
-        ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
+        
+        if (remoteMessageMap != null){
+          initialNotification = remoteMessageMap;
+          ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
+
+          ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+          emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.remoteMessageMapToEvent(remoteMessageMap, true));
+        }
       }
     }
   }

@@ -7,7 +7,10 @@ import com.facebook.react.bridge.WritableMap;
 public interface ReactNativeFirebaseMessagingStore {
   void storeFirebaseMessage(RemoteMessage remoteMessage);
 
-  WritableMap getFirebaseMessage(String remoteMessageId);
+  @Deprecated
+  RemoteMessage getFirebaseMessage(String remoteMessageId);
+
+  WritableMap getFirebaseMessageMap(String remoteMessageId);
 
   void clearFirebaseMessage(String remoteMessageId);
 }

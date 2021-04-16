@@ -2,8 +2,8 @@ package io.invertase.firebase.messaging;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.RemoteMessage;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.SharedUtils;
