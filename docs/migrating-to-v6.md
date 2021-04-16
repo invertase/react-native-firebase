@@ -418,6 +418,7 @@ How to migrate: If you use device-local notification APIs and user-visible notif
 - [android] The manually added `RNFirebaseMessagingService` service in your `AndroidManifest.xml` file is no longer required - you can safely remove it.
 - [iOS] The manually added `RNFirebaseMessaging` usages in your `AppDelegate` files are no longer required - you can safely remove them.
 - The _builder_ syntax has been deprecated in favor of simple objects. See `newRemoteMessage()` documentation for an example.
+- `subscribeToTopic('some-topic')` method must not include "/" in topic.
 - [iOS] The minimum supported iOS version is now 10
 - iOS 9 or lower only accounts for 0.% of all iPhone devices.
 - To see a detailed device versions breakdown see [this link](https://david-smith.org/iosversionstats/).
