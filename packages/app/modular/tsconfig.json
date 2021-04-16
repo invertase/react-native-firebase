@@ -1,0 +1,24 @@
+{
+  "include": ["src/*"],
+  "compilerOptions": {
+    "baseUrl": "./src/",
+    "jsx": "react-native",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": ["es2017"],
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "dist",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true
+  }
+}
