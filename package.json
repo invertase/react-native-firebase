@@ -73,6 +73,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
+      "packages/**/modular",
+      "packages/**/legacy",
       "tests"
     ],
     "nohoist": [

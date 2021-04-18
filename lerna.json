@@ -2,6 +2,8 @@
   "npmClient": "yarn",
   "packages": [
     "packages/*",
+    "packages/**/modular",
+    "packages/**/legacy",
     "tests"
   ],
   "useWorkspaces": true,

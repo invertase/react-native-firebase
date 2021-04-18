@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import * as impl from './impl';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 
 export * from './types';
@@ -12,11 +12,13 @@ export * from './types';
  * @returns FirebaseApp
  */
 export function getApp(name?: string): FirebaseApp {
-  try {
-    return convertJsApp(firebase.app(name));
-  } catch {
-    // Throw generic error handler if not exists
+  const app = impl.getApp(name);
+
+  if (!app) {
+    throw new Error('Could not find app!!!');
   }
+
+  return app;
 }
 
 export function initalizeApp(options: FirebaseOptions, name?: string): FirebaseApp;
@@ -27,7 +29,9 @@ export function initalizeApp(
   options: FirebaseOptions,
   nameOrConfig?: string | FirebaseAppConfig,
 ): FirebaseApp {
-  console.log(options);
-  console.log(nameOrConfig);
+  // if (isUndefined(options) || !isFirebaseOptions(options)) {
+  //   throw new Error('Options cannot be undefined');
+  // }
+
   return {} as FirebaseApp;
 }
