@@ -1,7 +1,22 @@
 import * as impl from './impl';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 
+import { isString, isUndefined } from './common';
+
 export * from './types';
+
+export const SDK_VERSION = 'TODO';
+
+/**
+ * Renders this app unusable and frees the resources of all associated services.
+ *
+ * @param app
+ * @returns
+ */
+export function deleteApp(app: FirebaseApp): Promise<void> {
+  // TODO validate Firebase app
+  return impl.deleteApp(app.name);
+}
 
 /**
  * Retrieves a FirebaseApp instance.
@@ -21,17 +36,42 @@ export function getApp(name?: string): FirebaseApp {
   return app;
 }
 
-export function initalizeApp(options: FirebaseOptions, name?: string): FirebaseApp;
+/**
+ * A (read-only) array of all initialized apps.
+ *
+ * @returns
+ */
+export function getApps(): ReadonlyArray<FirebaseApp> {
+  return impl.getApps();
+}
 
-export function initalizeApp(options: FirebaseOptions, conifg?: FirebaseAppConfig): FirebaseApp;
+export function initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
 
-export function initalizeApp(
+export function initializeApp(options: FirebaseOptions, conifg?: FirebaseAppConfig): FirebaseApp;
+
+export function initializeApp(
   options: FirebaseOptions,
   nameOrConfig?: string | FirebaseAppConfig,
 ): FirebaseApp {
-  // if (isUndefined(options) || !isFirebaseOptions(options)) {
-  //   throw new Error('Options cannot be undefined');
-  // }
+  if (isUndefined(options) || !isFirebaseOptions(options)) {
+    throw new Error('Options cannot be undefined');
+  }
 
-  return {} as FirebaseApp;
+  if (isString(nameOrConfig)) {
+    return impl.initializeApp(options, {
+      name: nameOrConfig,
+    });
+  }
+
+  return impl.initializeApp(options, nameOrConfig);
 }
+
+/**
+ * Sets log handler for all Firebase SDKs.
+ */
+export function onLog() {}
+
+// https://firebase.google.com/docs/reference/js/v9/app.md#registerversion
+// registerVersion?
+
+export function setLogLevel() {}
