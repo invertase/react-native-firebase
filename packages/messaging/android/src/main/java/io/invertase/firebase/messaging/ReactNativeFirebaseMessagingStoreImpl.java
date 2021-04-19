@@ -1,5 +1,6 @@
 package io.invertase.firebase.messaging;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -47,16 +48,26 @@ public class ReactNativeFirebaseMessagingStoreImpl implements ReactNativeFirebas
     }
   }
 
+  @Deprecated
   @Override
   public RemoteMessage getFirebaseMessage(String remoteMessageId) {
+    ReadableMap messageMap = getFirebaseMessageMap(remoteMessageId);
+    if (messageMap != null){
+      return remoteMessageFromReadableMap(messageMap);
+    }
+    return null;
+  }
+
+  @Override
+  public WritableMap getFirebaseMessageMap(String remoteMessageId) {
     String remoteMessageString = UniversalFirebasePreferences.getSharedInstance().getStringValue(remoteMessageId, null);
     if (remoteMessageString != null) {
 //      Log.d("getFirebaseMessage", remoteMessageString);
       try {
-        WritableMap readableMap = jsonToReact(new JSONObject(remoteMessageString));
-        readableMap.putString("to", remoteMessageId);//fake to
-        return remoteMessageFromReadableMap(readableMap);
-      } catch (JSONException e) {
+        WritableMap remoteMessageMap = jsonToReact(new JSONObject(remoteMessageString));
+        remoteMessageMap.putString("to", remoteMessageId);//fake to
+        return remoteMessageMap;
+       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
