@@ -50,6 +50,10 @@ public class ReactNativeFirebaseMessagingSerializer {
     return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageToWritableMap(remoteMessage));
   }
 
+  public static ReactNativeFirebaseEvent remoteMessageMapToEvent(WritableMap remoteMessageMap, Boolean openEvent) {
+    return new ReactNativeFirebaseEvent(openEvent ? EVENT_NOTIFICATION_OPENED : EVENT_MESSAGE_RECEIVED, remoteMessageMap);
+  }
+
   public static ReactNativeFirebaseEvent newTokenToTokenEvent(String newToken) {
     WritableMap eventBody = Arguments.createMap();
     eventBody.putString(KEY_TOKEN, newToken);
