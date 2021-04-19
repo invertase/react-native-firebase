@@ -1,18 +1,17 @@
-import { NativeModules } from 'react-native';
-
-interface BridgeAppModule {
+import { FirebaseOptions } from 'types';
+import { getNativeModule } from './native';
+interface AppModule {
+  readonly NATIVE_FIREBASE_APPS: any[];
   deleteApp(name: string): Promise<void>;
+  initializeApp(options: FirebaseOptions, config: { name: string }): Promise<void>;
 }
 
-const config = {
-  events: ['123'],
-};
-
-export default function bridge(app: FirebaseApp) {
-  const module = getNativeModule(app, config);
-  return module;
-}
-
-const bridge: BridgeAppModule = NativeModules.RNFirebaseModuleApp;
-
-export default bridge;
+export const bridge = getNativeModule<AppModule>({
+  namespace: 'app',
+  nativeModule: 'RNFBAppModule',
+  config: {
+    events: [],
+    hasMultiAppSupport: true,
+    hasCustomUrlOrRegionSupport: false,
+  },
+});

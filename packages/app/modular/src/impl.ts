@@ -1,25 +1,23 @@
 import * as web from 'firebase/app';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
+import { FirebaseAppImpl } from './implementations/firebaseApp';
+import { defaultAppName } from 'common';
 
 function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
-  return {
-    name: app.name,
-    options: app.options,
-    automaticDataCollectionEnabled: app.automaticDataCollectionEnabled,
-  };
+  return new FirebaseAppImpl(app.name, app.options, app.automaticDataCollectionEnabled);
 }
 
 export async function deleteApp(name: string) {
   const app = getApp(name);
 
-  if (!app || name === '[DEFAULT]') {
+  if (!app) {
     return;
   }
 
   return web.deleteApp(app);
 }
 
-export function getApp(name = '[DEFAULT]'): FirebaseApp | undefined {
+export function getApp(name = defaultAppName): FirebaseApp | undefined {
   // Find via the `getApps` array rather than via `getApp` so no error is thrown.
   const app = web.getApps().find(app => app.name === name);
 

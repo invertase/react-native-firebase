@@ -17,7 +17,7 @@ export function objectKeyValuesAreStrings(object: unknown): object is string[] {
   return true;
 }
 
-**
+/**
  * Simple is null check.
  *
  * @param value
@@ -151,13 +151,13 @@ export function isValidUrl(url: string): boolean {
  * @param oneOf
  * @returns {boolean}
  */
-export function isOneOf(value: unknown, oneOf: Array<any>): boolean {
+export function isOneOf(value: unknown, oneOf: Array<unknown>): boolean {
   if (!isArray(oneOf)) {
     return false;
   }
   return oneOf.includes(value);
 }
 
-export function noop(): void {
-  // noop-🐈
+export function isPromise<T = unknown>(fn: any): fn is Promise<T> {
+  return !!fn?.then;
 }

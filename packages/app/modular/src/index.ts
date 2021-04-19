@@ -1,10 +1,19 @@
 import * as impl from './impl';
-import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-
-import { isString, isUndefined } from './common';
+import {
+  FirebaseApp,
+  FirebaseAppConfig,
+  FirebaseOptions,
+  isFirebaseApp,
+  isFirebaseOptions,
+} from './types';
+import { defaultAppName, isString, isUndefined } from './common';
+import { defaultAppNotInitialized, invalidApp, noApp } from './errors';
 
 export * from './types';
 
+/**
+ * The current SDK version.
+ */
 export const SDK_VERSION = 'TODO';
 
 /**
@@ -14,7 +23,14 @@ export const SDK_VERSION = 'TODO';
  * @returns
  */
 export function deleteApp(app: FirebaseApp): Promise<void> {
-  // TODO validate Firebase app
+  if (!isFirebaseApp(app)) {
+    throw invalidApp();
+  }
+
+  if (app.name === defaultAppName) {
+    throw new Error('Cannot delete the default app!');
+  }
+
   return impl.deleteApp(app.name);
 }
 
@@ -30,7 +46,11 @@ export function getApp(name?: string): FirebaseApp {
   const app = impl.getApp(name);
 
   if (!app) {
-    throw new Error('Could not find app!!!');
+    if (!name || name === defaultAppName) {
+      throw defaultAppNotInitialized();
+    }
+
+    throw noApp(name);
   }
 
   return app;
@@ -45,16 +65,35 @@ export function getApps(): ReadonlyArray<FirebaseApp> {
   return impl.getApps();
 }
 
-export function initializeApp(options: FirebaseOptions, name?: string): FirebaseApp;
+/**
+ * Creates and initializes a FirebaseApp instance.
+ *
+ * @param options Options to configure the app's services.
+ * @param name Optional name of the app to initialize. If no name is provided, the default is "[DEFAULT]".
+ */
+export function initializeApp(options: FirebaseOptions, name?: string): Promise<FirebaseApp>;
 
-export function initializeApp(options: FirebaseOptions, conifg?: FirebaseAppConfig): FirebaseApp;
-
+/**
+ * Creates and initializes a FirebaseApp instance.
+ *
+ * @param options Options to configure the app's services.
+ * @param config FirebaseApp Configuration.
+ */
 export function initializeApp(
   options: FirebaseOptions,
+  config?: FirebaseAppConfig,
+): Promise<FirebaseApp>;
+
+export async function initializeApp(
+  options: FirebaseOptions,
   nameOrConfig?: string | FirebaseAppConfig,
-): FirebaseApp {
-  if (isUndefined(options) || !isFirebaseOptions(options)) {
-    throw new Error('Options cannot be undefined');
+): Promise<FirebaseApp> {
+  if (!isFirebaseOptions(options)) {
+    throw new Error(`Argument 'options' is not a valid FirebaseOptions object.`);
+  }
+
+  if (isUndefined(nameOrConfig)) {
+    return impl.initializeApp(options);
   }
 
   if (isString(nameOrConfig)) {
