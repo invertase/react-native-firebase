@@ -7,7 +7,7 @@ import {
   isFirebaseOptions,
 } from './types';
 import { defaultAppName, isString, isUndefined } from './common';
-import { defaultAppNotInitialized, invalidApp, noApp } from './errors';
+import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
 
 export * from './types';
 
@@ -22,13 +22,12 @@ export const SDK_VERSION = 'TODO';
  * @param app
  * @returns
  */
-export function deleteApp(app: FirebaseApp): Promise<void> {
+export async function deleteApp(app: FirebaseApp): Promise<void> {
   if (!isFirebaseApp(app)) {
     throw invalidApp();
   }
-
   if (app.name === defaultAppName) {
-    throw new Error('Cannot delete the default app!');
+    throw noDefaultAppDelete();
   }
 
   return impl.deleteApp(app.name);
@@ -104,13 +103,3 @@ export async function initializeApp(
 
   return impl.initializeApp(options, nameOrConfig);
 }
-
-/**
- * Sets log handler for all Firebase SDKs.
- */
-export function onLog() {}
-
-// https://firebase.google.com/docs/reference/js/v9/app.md#registerversion
-// registerVersion?
-
-export function setLogLevel() {}

@@ -44,6 +44,10 @@ export function isObject(value: unknown): value is Record<string, unknown> {
  * @returns {boolean}
  */
 export function isDate(value: any): value is Date {
+  if (isUndefined(value) || isNull(value)) {
+    return false;
+  }
+
   // use the global isNaN() and not Number.isNaN() since it will validate an Invalid Date
   return value && Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value);
 }
@@ -83,7 +87,11 @@ export function isNumber(value: unknown): value is number {
  * @param value
  * @returns {boolean}
  */
-export function isFinite(value: unknown): boolean {
+export function isFinite(value: number): boolean {
+  if (!isNumber(value)) {
+    throw new Error('isFinite requires a number value');
+  }
+
   return Number.isFinite(value);
 }
 
@@ -92,7 +100,11 @@ export function isFinite(value: unknown): boolean {
  * @param value
  * @returns {boolean}
  */
-export function isInteger(value: unknown): boolean {
+export function isInteger(value: number): boolean {
+  if (!isNumber(value)) {
+    throw new Error('isInteger requires a number value');
+  }
+
   return Number.isInteger(value);
 }
 
@@ -131,6 +143,10 @@ export function isUndefined(value: unknown): value is undefined {
  * @returns {boolean}
  */
 export function isAlphaNumericUnderscore(value: string): boolean {
+  if (!isString(value)) {
+    return false;
+  }
+
   return AlphaNumericUnderscore.test(value);
 }
 
@@ -141,6 +157,10 @@ export function isAlphaNumericUnderscore(value: string): boolean {
  */
 const IS_VALID_URL_REGEX = /^(http|https):\/\/[^ "]+$/;
 export function isValidUrl(url: string): boolean {
+  if (!isString(url)) {
+    return false;
+  }
+
   return IS_VALID_URL_REGEX.test(url);
 }
 
@@ -158,6 +178,12 @@ export function isOneOf(value: unknown, oneOf: Array<unknown>): boolean {
   return oneOf.includes(value);
 }
 
+/**
+ * Checks whether a provided function is a promise.
+ *
+ * @param fn
+ * @returns
+ */
 export function isPromise<T = unknown>(fn: any): fn is Promise<T> {
   return !!fn?.then;
 }

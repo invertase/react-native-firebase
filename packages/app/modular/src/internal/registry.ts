@@ -20,4 +20,3 @@ export function initializeNativeApps(): void {
 
   _initializedNativeApps = true;
 }
-

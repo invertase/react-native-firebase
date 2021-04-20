@@ -1,4 +1,4 @@
-import { FirebaseOptions } from 'types';
+import { FirebaseOptions } from '../types';
 import { getNativeModule } from './native';
 interface AppModule {
   readonly NATIVE_FIREBASE_APPS: any[];

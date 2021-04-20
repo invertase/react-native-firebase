@@ -1,7 +1,7 @@
 import * as web from 'firebase/app';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-import { FirebaseAppImpl } from './implementations/firebaseApp';
-import { defaultAppName } from 'common';
+import FirebaseAppImpl from './implementations/firebaseApp';
+import { defaultAppName } from './common';
 
 function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
   return new FirebaseAppImpl(app.name, app.options, app.automaticDataCollectionEnabled);

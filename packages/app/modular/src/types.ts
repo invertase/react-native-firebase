@@ -1,5 +1,5 @@
 import * as web from 'firebase/app';
-import { FirebaseAppImpl } from './implementations/firebaseApp';
+import FirebaseAppImpl from './implementations/firebaseApp';
 import { isObject } from './common';
 
 /**

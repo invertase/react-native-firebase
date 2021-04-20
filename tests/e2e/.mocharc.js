@@ -11,7 +11,7 @@ module.exports = {
   recursive: true,
   require: 'node_modules/jet/platform/node',
   spec: [
-    '../packages/app/e2e/*.e2e.js',
+    '../packages/app/legacy/e2e/*.e2e.js',
     '../packages/analytics/e2e/*.e2e.js',
     '../packages/auth/e2e/*.e2e.js',
     '../packages/admob/e2e/*.e2e.js',

@@ -3,7 +3,7 @@ import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import { bridge } from './internal/bridge';
 import { apps, initializeNativeApps } from './internal/registry';
 import { defaultAppNotInitialized, noApp } from './errors';
-import { FirebaseAppImpl } from 'implementations/firebaseApp';
+import FirebaseAppImpl from './implementations/firebaseApp';
 
 export async function deleteApp(name: string) {
   const app = getApp(name);
