@@ -33,9 +33,11 @@ export function isFirebaseAppConfig(config: any): config is FirebaseAppConfig {
 
 export interface FirebaseApp extends web.FirebaseApp {
   readonly options: FirebaseOptions;
+  automaticDataCollectionEnabled: boolean;
+  automaticResourceManagement: boolean;
 }
 
-export interface FirebaseOptions extends web.FirebaseOptions, FirebaseAppConfig {
+export interface FirebaseOptions extends web.FirebaseOptions {
   readonly androidClientId?: string;
   readonly clientId?: string;
   readonly deepLinkURLScheme?: string;

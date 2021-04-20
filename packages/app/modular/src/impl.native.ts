@@ -46,9 +46,25 @@ export async function initializeApp(
     throw new Error('Already initialized!');
   }
 
-  const app = new FirebaseAppImpl(name, options, !!config?.automaticDataCollectionEnabled);
-  await bridge.module.initializeApp(options, { name });
+  const app = new FirebaseAppImpl(name, options, {
+    automaticDataCollectionEnabled: config?.automaticDataCollectionEnabled,
+  });
+
+  await bridge.module.initializeApp(options, {
+    name,
+    automaticDataCollectionEnabled: config?.automaticDataCollectionEnabled,
+    automaticResourceManagement: config?.automaticResourceManagement,
+  });
 
   apps.set(name, app);
   return app;
+}
+
+export function setAutomaticDataCollectionEnabled(name: string, enabled: boolean) {
+  const app = getApp(name);
+
+  if (app) {
+    app.automaticDataCollectionEnabled = enabled;
+    bridge.module.setAutomaticDataCollectionEnabled(name, enabled);
+  }
 }

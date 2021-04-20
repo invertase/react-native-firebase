@@ -1,4 +1,4 @@
-import { FirebaseAppImpl } from '../implementations/firebaseApp';
+import FirebaseAppImpl from '../implementations/firebaseApp';
 import { FirebaseApp } from '../types';
 import { bridge } from './bridge';
 
@@ -15,7 +15,12 @@ export function initializeNativeApps(): void {
 
   for (const app of nativeApps) {
     const { appConfig, options } = app;
-    apps.set(appConfig.name, new FirebaseAppImpl(appConfig.name, options, appConfig.automatic));
+    apps.set(
+      appConfig.name,
+      new FirebaseAppImpl(appConfig.name, options, {
+        automaticDataCollectionEnabled: appConfig.automaticDataCollectionEnabled,
+      }),
+    );
   }
 
   _initializedNativeApps = true;

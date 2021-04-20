@@ -7,7 +7,7 @@ import {
   isFirebaseOptions,
   isFirebaseAppConfig,
 } from './types';
-import { defaultAppName, isString, isUndefined } from './common';
+import { defaultAppName, isBoolean, isString, isUndefined } from './common';
 import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
 
 export * from './types';
@@ -85,6 +85,11 @@ export function initializeApp(
   config?: FirebaseAppConfig,
 ): Promise<FirebaseApp>;
 
+/**
+ * @param options
+ * @param nameOrConfig
+ * @returns
+ */
 export async function initializeApp(
   options: FirebaseOptions,
   nameOrConfig?: string | FirebaseAppConfig,
@@ -108,4 +113,17 @@ export async function initializeApp(
   }
 
   return impl.initializeApp(options, nameOrConfig);
+}
+
+export async function setAutomaticDataCollectionEnabled(app: FirebaseApp, enabled: boolean) {
+  if (!isFirebaseApp(app)) {
+    throw invalidApp();
+  }
+
+  if (!isBoolean(enabled)) {
+    throw new Error(`Argument 'enabled' is not a boolean value.`);
+  }
+
+  // Calling `getApp` validates there is actually an app which hasn't since been deleted.
+  return impl.setAutomaticDataCollectionEnabled(getApp(app.name).name, enabled);
 }
