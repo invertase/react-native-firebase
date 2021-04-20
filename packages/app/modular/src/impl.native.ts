@@ -5,6 +5,8 @@ import { apps, initializeNativeApps } from './internal/registry';
 import { defaultAppNotInitialized, noApp } from './errors';
 import FirebaseAppImpl from './implementations/firebaseApp';
 
+export const SDK_VERSION = 'TODO';
+
 export async function deleteApp(name: string) {
   const app = getApp(name);
 

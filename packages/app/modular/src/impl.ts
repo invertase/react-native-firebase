@@ -7,6 +7,8 @@ function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
   return new FirebaseAppImpl(app.name, app.options, app.automaticDataCollectionEnabled);
 }
 
+export { SDK_VERSION } from 'firebase/app';
+
 export async function deleteApp(name: string) {
   const app = getApp(name);
 

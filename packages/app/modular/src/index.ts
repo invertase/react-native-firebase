@@ -5,6 +5,7 @@ import {
   FirebaseOptions,
   isFirebaseApp,
   isFirebaseOptions,
+  isFirebaseAppConfig,
 } from './types';
 import { defaultAppName, isString, isUndefined } from './common';
 import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
@@ -14,7 +15,7 @@ export * from './types';
 /**
  * The current SDK version.
  */
-export const SDK_VERSION = 'TODO';
+export const SDK_VERSION = impl.SDK_VERSION;
 
 /**
  * Renders this app unusable and frees the resources of all associated services.
@@ -26,6 +27,7 @@ export async function deleteApp(app: FirebaseApp): Promise<void> {
   if (!isFirebaseApp(app)) {
     throw invalidApp();
   }
+
   if (app.name === defaultAppName) {
     throw noDefaultAppDelete();
   }
@@ -99,6 +101,10 @@ export async function initializeApp(
     return impl.initializeApp(options, {
       name: nameOrConfig,
     });
+  }
+
+  if (!isFirebaseAppConfig(nameOrConfig)) {
+    throw new Error(`Argument 'config' is not a valid FirebaseAppConfig object.`);
   }
 
   return impl.initializeApp(options, nameOrConfig);

@@ -1,6 +1,6 @@
 module.exports = {
   maxConcurrency: 10,
-  preset: './tests/node_modules/react-native/jest-preset.js',
+  preset: './tests_modular/node_modules/react-native-web/jest-preset.js',
   transform: {
     '^.+\\.(js)$': '<rootDir>/node_modules/babel-jest',
     '\\.(ts|tsx)$': 'ts-jest',
