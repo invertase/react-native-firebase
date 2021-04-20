@@ -20,6 +20,7 @@ describe('app', () => {
       impl.deleteApp.mockResolvedValue(undefined);
       await expect(deleteApp(app)).resolves.toBeUndefined();
       expect(impl.deleteApp.mock.calls).toHaveLength(1);
+      expect(impl.deleteApp.mock.calls[0][0]).toBe(app.name);
     });
 
     test('throws if an invalid app is provided', async () => {
@@ -31,9 +32,9 @@ describe('app', () => {
     test('it does not allow deletion of the default app', async () => {
       impl.deleteApp.mockResolvedValue(undefined);
       expect.assertions(2);
+      const app = createFirebaseApp();
 
       try {
-        const app = createFirebaseApp();
         await deleteApp(app);
       } catch (e) {
         expect(impl.deleteApp.mock.calls).toHaveLength(0);
@@ -48,11 +49,12 @@ describe('app', () => {
       impl.getApp.mockReturnValueOnce(created);
       const app = getApp();
       expect(impl.getApp.mock.calls).toHaveLength(1);
+      expect(impl.getApp.mock.calls[0][0]).toBe(undefined);
       expect(app.name).toEqual(created.name);
     });
 
     test('it throws if no app is found', () => {
-      expect.assertions(2);
+      expect.assertions(3);
       impl.getApp.mockReturnValueOnce(undefined);
 
       try {
@@ -60,6 +62,7 @@ describe('app', () => {
       } catch (e) {
         expect(e.code).toBe('app/no-app');
         expect(impl.getApp.mock.calls).toHaveLength(1);
+        expect(impl.getApp.mock.calls[0][0]).toBe('foo');
       }
     });
 
@@ -93,6 +96,7 @@ describe('app', () => {
       impl.getApps.mockReturnValueOnce([]);
       expect(getApps()).toEqual([]);
       expect(impl.getApps.mock.calls).toHaveLength(1);
+      expect(impl.getApps.mock.calls[0][0]).toBe(undefined);
     });
   });
 
