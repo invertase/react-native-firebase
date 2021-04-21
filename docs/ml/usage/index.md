@@ -42,7 +42,7 @@ The table below outlines the current module support for each available service, 
 | API                                                                               | Cloud Model |
 | --------------------------------------------------------------------------------- | ----------- |
 | [Text Recognition](https://firebase.google.com/docs/ml/recognize-text)            | ✅          |
-| [Document Text Recognition](https://firebase.google.com/docs/ml/recognize-text))  | ✅          |
+| [Document Text Recognition](https://firebase.google.com/docs/ml/recognize-text)   | ✅          |
 | [Image Labeling](https://firebase.google.com/docs/ml/label-images)                | ✅          |
 | [AutoML Vision Edge](https://firebase.google.com/docs/ml/automl-image-labeling)   | ❌          |
 | [Object Detection/Tracking](https://firebase.google.com/docs/ml/object-detection) | ❌          |
