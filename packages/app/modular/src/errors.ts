@@ -4,7 +4,7 @@ export function noDefaultAppDelete(): FirebaseError {
   return new FirebaseError(
     new Error(`Unable to delete the default FirebaseApp instance.`),
     'app',
-    'no-default-app-delete',
+    'no-delete-default',
   );
 }
 

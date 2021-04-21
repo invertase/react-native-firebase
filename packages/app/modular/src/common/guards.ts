@@ -74,6 +74,20 @@ export function isString(value: unknown): value is string {
 }
 
 /**
+ * Simple is string check, only if the value is defined.
+ *
+ * @param value
+ * @return {boolean}
+ */
+export function isOptionalString(value: unknown): boolean {
+  if (isUndefined(value)) {
+    return true;
+  }
+
+  return isString(value);
+}
+
+/**
  * Simple is number check
  * @param value
  * @return {boolean}
@@ -116,6 +130,20 @@ export function isInteger(value: number): boolean {
  */
 export function isBoolean(value: unknown): value is boolean {
   return typeof value === 'boolean';
+}
+
+/**
+ * Simple is boolean check, only if the value is defined.
+ *
+ * @param value
+ * @return {boolean}
+ */
+export function isOptionalBoolean(value: unknown): boolean {
+  if (isUndefined(value)) {
+    return true;
+  }
+
+  return isBoolean(value);
 }
 
 /**

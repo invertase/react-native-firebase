@@ -28,7 +28,7 @@ export const bridge = getNativeModule<AppModule>({
   nativeModule: 'RNFBAppModule',
   config: {
     events: [],
-    hasMultiAppSupport: true,
+    // hasMultiAppSupport: true,
     hasCustomUrlOrRegionSupport: false,
   },
 });

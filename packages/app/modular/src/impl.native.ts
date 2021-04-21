@@ -1,4 +1,4 @@
-import { defaultAppName } from './common';
+import { defaultAppName, Mutable } from './common';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import { bridge } from './internal/bridge';
 import { apps, initializeNativeApps } from './internal/registry';
@@ -48,23 +48,31 @@ export async function initializeApp(
 
   const app = new FirebaseAppImpl(name, options, {
     automaticDataCollectionEnabled: config?.automaticDataCollectionEnabled,
+    automaticResourceManagement: config?.automaticResourceManagement,
   });
 
-  await bridge.module.initializeApp(options, {
-    name,
-    automaticDataCollectionEnabled: config?.automaticDataCollectionEnabled,
-    automaticResourceManagement: config?.automaticResourceManagement,
+  await bridge.module.initializeApp(app.options, {
+    name: app.name,
+    automaticDataCollectionEnabled: app.automaticDataCollectionEnabled,
+    automaticResourceManagement: app.automaticResourceManagement,
   });
 
   apps.set(name, app);
   return app;
 }
 
-export function setAutomaticDataCollectionEnabled(name: string, enabled: boolean) {
+export async function setAutomaticDataCollectionEnabled(
+  name: string,
+  enabled: boolean,
+): Promise<void> {
   const app = getApp(name);
 
   if (app) {
-    app.automaticDataCollectionEnabled = enabled;
-    bridge.module.setAutomaticDataCollectionEnabled(name, enabled);
+    const mutable = app as Mutable<FirebaseApp>;
+    mutable.automaticDataCollectionEnabled = enabled;
+    await bridge.module.setAutomaticDataCollectionEnabled(name, enabled);
+
+    // Update the internal app instance with the new property.
+    apps.set(app.name, mutable);
   }
 }

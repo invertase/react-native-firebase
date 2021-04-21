@@ -10,9 +10,27 @@ import { defaultAppName } from './common';
  * @returns
  */
 function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
-  return new FirebaseAppImpl(app.name, app.options, {
+  return new FirebaseAppImpl(app.name, convertFirebaseOptions(app.options), {
     automaticDataCollectionEnabled: app.automaticDataCollectionEnabled,
+    automaticResourceManagement: false, // Not applicable to web.
   });
+}
+
+/**
+ * Converts a `web.FirebaseOptions` into `FirebaseOptions`.
+ *
+ * @param app
+ * @returns
+ */
+function convertFirebaseOptions(options: web.FirebaseOptions): FirebaseOptions {
+  return {
+    ...options,
+    apiKey: options.apiKey || '',
+    appId: options.appId || '',
+    databaseURL: options.databaseURL || '',
+    messagingSenderId: options.messagingSenderId || '',
+    projectId: options.projectId || '',
+  };
 }
 
 /**
@@ -59,7 +77,10 @@ export function initializeApp(options: FirebaseOptions, config?: FirebaseAppConf
   return convertFirebaseApp(app);
 }
 
-export function setAutomaticDataCollectionEnabled(name: string, enabled: boolean) {
+export async function setAutomaticDataCollectionEnabled(
+  name: string,
+  enabled: boolean,
+): Promise<void> {
   const app = getFirebaseApp(name);
 
   if (app) {

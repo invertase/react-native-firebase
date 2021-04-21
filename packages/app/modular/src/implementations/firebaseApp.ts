@@ -13,6 +13,6 @@ export default class FirebaseAppImpl implements FirebaseApp {
 
   readonly name: string;
   readonly options: FirebaseOptions;
-  automaticDataCollectionEnabled: boolean;
-  automaticResourceManagement: boolean;
+  readonly automaticDataCollectionEnabled: boolean;
+  readonly automaticResourceManagement: boolean;
 }

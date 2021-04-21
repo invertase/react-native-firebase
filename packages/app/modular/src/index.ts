@@ -7,7 +7,7 @@ import {
   isFirebaseOptions,
   isFirebaseAppConfig,
 } from './types';
-import { defaultAppName, isBoolean, isString, isUndefined } from './common';
+import { ArgumentError, defaultAppName, isBoolean, isString, isUndefined, Mutable } from './common';
 import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
 
 export * from './types';
@@ -95,7 +95,7 @@ export async function initializeApp(
   nameOrConfig?: string | FirebaseAppConfig,
 ): Promise<FirebaseApp> {
   if (!isFirebaseOptions(options)) {
-    throw new Error(`Argument 'options' is not a valid FirebaseOptions object.`);
+    throw new ArgumentError('options', 'Expected a FirebaseOptions object');
   }
 
   if (isUndefined(nameOrConfig)) {
@@ -109,21 +109,28 @@ export async function initializeApp(
   }
 
   if (!isFirebaseAppConfig(nameOrConfig)) {
-    throw new Error(`Argument 'config' is not a valid FirebaseAppConfig object.`);
+    throw new ArgumentError('config', 'Expected a FirebaseAppConfig object');
   }
 
   return impl.initializeApp(options, nameOrConfig);
 }
 
-export async function setAutomaticDataCollectionEnabled(app: FirebaseApp, enabled: boolean) {
+export async function setAutomaticDataCollectionEnabled(
+  app: FirebaseApp,
+  enabled: boolean,
+): Promise<void> {
   if (!isFirebaseApp(app)) {
     throw invalidApp();
   }
 
   if (!isBoolean(enabled)) {
-    throw new Error(`Argument 'enabled' is not a boolean value.`);
+    throw new ArgumentError('enabled', 'Expected a boolean value');
   }
 
   // Calling `getApp` validates there is actually an app which hasn't since been deleted.
-  return impl.setAutomaticDataCollectionEnabled(getApp(app.name).name, enabled);
+  await impl.setAutomaticDataCollectionEnabled(getApp(app.name).name, enabled);
+
+  // Update the current app instance.
+  const mutable = app as Mutable<FirebaseApp>;
+  mutable.automaticDataCollectionEnabled = enabled;
 }
