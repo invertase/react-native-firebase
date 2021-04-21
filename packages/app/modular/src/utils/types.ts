@@ -1,4 +1,7 @@
-export type PlayServicesStatus =
+/**
+ * Information regarding the current Google Play Services availability.
+ */
+export type PlayServicesAvailability =
   | {
       /**
        * Whether Play Services are available.
@@ -6,6 +9,9 @@ export type PlayServicesStatus =
        * On iOS and Web, this is always `true`.
        */
       isAvailable: true;
+      /**
+       * The returned status result from Google Play.
+       */
       status: PlayServicesConnectionStatus.SUCCESS;
     }
   | {
@@ -15,9 +21,22 @@ export type PlayServicesStatus =
        * On iOS and Web, this is always `true`.
        */
       isAvailable: false;
+      /**
+       * The returned status result from Google Play.
+       */
       status: PlayServicesConnectionStatus;
+      /**
+       * If an error was received, this indicates whether the error is resolvable.
+       */
       isUserResolvableError: boolean;
+      /**
+       * If Play Services is not available on the device, this indicates whether it is possible to do something about it (e.g. install Play Services).
+       */
       hasResolution: boolean;
+      /**
+       * A human readable error string.
+       */
+      error: string;
     };
 
 export enum PlayServicesConnectionStatus {
@@ -143,15 +162,74 @@ export enum PlayServicesConnectionStatus {
   TIMEOUT = 14,
 }
 
+/**
+ * A collection of native device file paths to aid in the usage of file path based methods.
+ *
+ * Concatenate a file path with your target file name when using with Storage `putFile` or `writeToFile`.
+ */
 export interface FilePaths {
+  /**
+   * Returns an absolute path to the applications main bundle.
+   *
+   * iOS Only.
+   */
   readonly MAIN_BUNDLE?: string;
+  /**
+   * Returns an absolute path to the application specific cache directory on the filesystem.
+   *
+   * The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+   */
   readonly CACHES_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to the users Documents directory.
+   *
+   * Use this directory to place documents that have been created by the user.
+   *
+   * Normally this is the external files directory on Android but if no external storage directory found,
+   * e.g. removable media has been ejected by the user, it will fall back to internal storage. This may
+   * under rare circumstances where device storage environment changes cause the directory to be different
+   * between runs of the application.
+   */
   readonly DOCUMENT_DIRECTORY?: string;
-  readonly EXTERNAL_DIRECTORY?: string;
-  readonly EXTERNAL_STORAGE_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to a temporary directory.
+   *
+   * Use this directory to create temporary files. The system will automatically delete files in this directory when disk space is needed elsewhere on the device, starting with the oldest files first.
+   */
   readonly TEMP_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to the apps library/resources directory.
+   *
+   * E.g. this can be used for things like documentation, support files, and configuration files and generic resources.
+   */
   readonly LIBRARY_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to the directory on the primary shared/external storage device.
+   *
+   * Here your application can place persistent files it owns. These files are internal to the application, and not typically visible to the user as media.
+   *
+   * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+   *
+   * Android only.
+   */
+  readonly EXTERNAL_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to the primary shared/external storage directory.
+   *
+   * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
+   *
+   * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+   *
+   * Android only.
+   */
+  readonly EXTERNAL_STORAGE_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to a directory in which to place pictures that are available to the user.
+   */
   readonly PICTURES_DIRECTORY?: string;
+  /**
+   * Returns an absolute path to a directory in which to place movies that are available to the user.
+   */
   readonly MOVIES_DIRECTORY?: string;
   readonly FILE_TYPE_REGULAR?: string;
   readonly FILE_TYPE_DIRECTORY?: string;

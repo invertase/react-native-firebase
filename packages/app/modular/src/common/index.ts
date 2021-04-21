@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { FirebaseApp } from 'types';
 
 export * from './ArgumentError';
 export * from './FirebaseError';
@@ -52,4 +53,14 @@ export type Mutable<T> = {
  */
 export function stripTrailingSlash(value: string): string {
   return value.endsWith('/') ? value.slice(0, -1) : value;
+}
+
+/**
+ * Returns a unique name for events, prefixed for the specific `FirebaseApp`.
+ * @param app
+ * @param args
+ * @returns
+ */
+export function eventNameForApp(app: FirebaseApp, ...args: string[]) {
+  return `${app.name}-${args.join('-')}`;
 }

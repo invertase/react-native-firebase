@@ -1,14 +1,8 @@
 import * as impl from './impl';
-import {
-  FirebaseApp,
-  FirebaseAppConfig,
-  FirebaseOptions,
-  isFirebaseApp,
-  isFirebaseOptions,
-  isFirebaseAppConfig,
-} from './types';
+import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import { ArgumentError, defaultAppName, isBoolean, isString, isUndefined, Mutable } from './common';
 import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
+import { isFirebaseApp, isFirebaseAppConfig, isFirebaseOptions } from './validation';
 
 export * from './types';
 

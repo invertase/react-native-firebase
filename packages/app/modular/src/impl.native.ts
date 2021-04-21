@@ -1,9 +1,70 @@
 import { defaultAppName, Mutable } from './common';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-import { bridge } from './internal/bridge';
-import { apps, initializeNativeApps } from './internal/registry';
 import { defaultAppNotInitialized, noApp } from './errors';
 import FirebaseAppImpl from './implementations/firebaseApp';
+import { getNativeModule } from './internal/native';
+
+interface AppModule {
+  readonly NATIVE_FIREBASE_APPS: NativeFirebaseApp[];
+  readonly FIREBASE_RAW_JSON: string;
+  deleteApp(name: string): Promise<void>;
+  initializeApp(options: FirebaseOptions, config: FirebaseAppConfig): Promise<void>;
+  setAutomaticDataCollectionEnabled(name: string, enabled: boolean): Promise<void>;
+}
+
+type NativeFirebaseApp = {
+  /**
+   * `automaticResourceManagement` is not a readable value on the native SDKs. It is only settable when creating secondary apps.
+   */
+  appConfig: Required<Omit<FirebaseAppConfig, 'automaticResourceManagement'>>;
+  options: FirebaseOptions;
+};
+
+export const bridge = getNativeModule<AppModule>({
+  namespace: 'app',
+  nativeModule: 'RNFBAppModule',
+});
+
+/**
+ * A `Map` containing all `FirebaseApp` instance, stored by their name.
+ */
+const apps = new Map<string, FirebaseApp>();
+
+/**
+ * Private boolean value representing whether native apps have been initialized.
+ */
+let _initializedNativeApps = false;
+
+/**
+ * Native provides all initially created `FirebaseApp` instances during build time,
+ * meaning they've been made available via native mechanisms (e.g. `google-services.json`).
+ *
+ * This function maps the returned native objects into a `FirebaseApp`, so they're readily
+ * available for the user to consume.
+ *
+ * This function is idempotent and will only trigger this functionality once.
+ *
+ * @returns void
+ */
+function initializeNativeApps(): void {
+  if (_initializedNativeApps) {
+    return;
+  }
+
+  const nativeApps = bridge.module.NATIVE_FIREBASE_APPS;
+
+  for (const app of nativeApps) {
+    const { appConfig, options } = app;
+    apps.set(
+      appConfig.name,
+      new FirebaseAppImpl(appConfig.name, options, {
+        automaticDataCollectionEnabled: appConfig.automaticDataCollectionEnabled,
+      }),
+    );
+  }
+
+  _initializedNativeApps = true;
+}
 
 export const SDK_VERSION = 'TODO';
 
