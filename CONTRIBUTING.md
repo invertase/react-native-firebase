@@ -9,7 +9,6 @@ We welcome any type of contribution, not just code. You can help with;
   - At the top of every page on our docs site you can click the `Edit Page` button to go to that pages markdown file or TypeScript definition file, or view the [documents](https://github.com/invertase/react-native-firebase/tree/master/docs) directly
 - **Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
 - **Code**: take a look at the [open issues](issues). Even if you can't write code, commenting on them, showing that you care about a given issue matters.
-- **Donations**: we welcome financial contributions in full transparency on our [open collective](https://opencollective.com/react-native-firebase).
 
 ---
 
