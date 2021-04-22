@@ -1,7 +1,7 @@
 import * as web from 'firebase/app';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import FirebaseAppImpl from './implementations/firebaseApp';
-import { defaultAppName } from './common';
+import { defaultAppName } from './internal';
 
 /**
  * Converts a `web.FirebaseApp` into `FirebaseApp`.

@@ -1,6 +1,6 @@
-import FirebaseAppImpl from './implementations/firebaseApp';
-import { isObject, isOptionalBoolean, isOptionalString, isString } from './common';
-import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
+import FirebaseAppImpl from '../implementations/firebaseApp';
+import { isObject, isOptionalBoolean, isOptionalString, isString } from '.';
+import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from '../types';
 
 /**
  * Checks whether a provided value is a FirebaseAppImpl.

@@ -11,12 +11,10 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 
-import {getApp, getApps} from '@react-native-firebase-modular/app';
+import {getApp} from '@react-native-firebase-modular/app';
 
 function App() {
-  getApps().forEach(app => {
-    console.log(app.name);
-  });
+  console.log('!!!!!', getApp());
 
   return (
     <View>

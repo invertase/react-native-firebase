@@ -1,4 +1,4 @@
-import { defaultAppName, Mutable } from './common';
+import { defaultAppName, Mutable } from './internal';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import { defaultAppNotInitialized, noApp } from './errors';
 import FirebaseAppImpl from './implementations/firebaseApp';

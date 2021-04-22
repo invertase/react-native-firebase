@@ -14,7 +14,7 @@ const rootDir = resolve(__dirname, '..');
 const packagesDir = resolve(rootDir, 'packages');
 
 const isDirectory = source => {
-  const path = join(source, 'modular');
+  const path = join(source, 'modular', 'src');
   return existsSync(path);
 };
 const firebaseModules = readdirSync(packagesDir)
@@ -34,6 +34,9 @@ module.exports = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
     ]),
+    resolveRequest: (context, realModuleName, platform, moduleName) => {
+      console.log(context, realModuleName, platform, moduleName);
+    },
     extraNodeModules: new Proxy(
       {},
       {
@@ -50,7 +53,6 @@ module.exports = {
               '@react-native-firebase-modular/',
               '',
             );
-            console.log(join(__dirname, `../packages/${packageName}/modular`));
             return join(__dirname, `../packages/${packageName}/modular`);
           }
           return join(__dirname, `node_modules/${name}`);

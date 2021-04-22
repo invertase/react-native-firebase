@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import { FirebaseError, isAndroid, isFunction, isIOS, isPromise } from '../common';
+import { FirebaseError, isAndroid, isFunction, isIOS, isPromise } from './common';
 import RNFBNativeEventEmitter from './RNFBNativeEventEmitter';
 import SharedEventEmitter from './SharedEventEmitter';
 

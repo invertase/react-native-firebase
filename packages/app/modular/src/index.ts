@@ -1,10 +1,20 @@
 import * as impl from './impl';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-import { ArgumentError, defaultAppName, isBoolean, isString, isUndefined, Mutable } from './common';
+import {
+  ArgumentError,
+  defaultAppName,
+  isBoolean,
+  isString,
+  isUndefined,
+  Mutable,
+  isFirebaseApp,
+  isFirebaseAppConfig,
+  isFirebaseOptions,
+} from './internal';
 import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
-import { isFirebaseApp, isFirebaseAppConfig, isFirebaseOptions } from './validation';
 
 export * from './types';
+export * from './utils';
 
 /**
  * The current SDK version.

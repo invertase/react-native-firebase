@@ -1,5 +1,5 @@
 {
-  "include": ["src/*", "src/internal/validation.ts"],
+  "include": ["src/*"],
   "compilerOptions": {
     "baseUrl": "./src/",
     "jsx": "react-native",

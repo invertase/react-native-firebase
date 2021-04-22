@@ -1,4 +1,4 @@
-import { FirebaseError, isAndroid, isIOS } from './common';
+import { FirebaseError, isAndroid, isIOS } from './internal';
 
 export function noDefaultAppDelete(): FirebaseError {
   return new FirebaseError(
