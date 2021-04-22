@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "tests_modular.app"
-               BlueprintName = "tests_modular"
-               ReferencedContainer = "container:tests_modular.xcodeproj">
+               BuildableName = "testing.app"
+               BlueprintName = "testing"
+               ReferencedContainer = "container:testing.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "tests_modularTests.xctest"
-               BlueprintName = "tests_modularTests"
-               ReferencedContainer = "container:tests_modular.xcodeproj">
+               BuildableName = "testingTests.xctest"
+               BlueprintName = "testingTests"
+               ReferencedContainer = "container:testing.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "tests_modular.app"
-            BlueprintName = "tests_modular"
-            ReferencedContainer = "container:tests_modular.xcodeproj">
+            BuildableName = "testing.app"
+            BlueprintName = "testing"
+            ReferencedContainer = "container:testing.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "tests_modular.app"
-            BlueprintName = "tests_modular"
-            ReferencedContainer = "container:tests_modular.xcodeproj">
+            BuildableName = "testing.app"
+            BlueprintName = "testing"
+            ReferencedContainer = "container:testing.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

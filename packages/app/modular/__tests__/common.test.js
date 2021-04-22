@@ -1,5 +1,5 @@
 import { stripTrailingSlash, eventNameForApp, FirebaseError, ArgumentError } from '../src/common';
-import { createFirebaseApp } from './utils';
+import { createFirebaseApp } from './helpers';
 
 describe('common', () => {
   describe('stripTrailingSlash', () => {

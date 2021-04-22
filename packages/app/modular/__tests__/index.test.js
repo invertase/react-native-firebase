@@ -1,7 +1,7 @@
 import { deleteApp, getApp, getApps, initializeApp } from '../src';
 import * as impl from '../src/impl';
 import { defaultAppName } from '../src/common';
-import { createFirebaseApp, createFirebaseOptions } from './utils';
+import { createFirebaseApp, createFirebaseOptions } from './helpers';
 
 jest.mock('../src/impl');
 

@@ -1,4 +1,4 @@
-package com.tests_modular;
+package com.invertase.testing;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "tests_modular";
+    return "testing";
   }
 }

@@ -23,6 +23,7 @@ import {
   isOneOf,
   isString,
   isUndefined,
+  isBoolean,
 } from '@react-native-firebase/app/lib/common';
 import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 
@@ -31,7 +32,6 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { isBoolean } from '../../app/lib/common';
 
 import version from './version';
 import * as structs from './structs';
