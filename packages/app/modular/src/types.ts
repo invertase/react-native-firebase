@@ -1,5 +1,5 @@
-import * as web from 'firebase/app';
-export interface FirebaseApp extends web.FirebaseApp {
+import * as delegate from 'firebase/app';
+export interface FirebaseApp extends delegate.FirebaseApp {
   readonly options: FirebaseOptions;
   /**
    * The config flag for GDPR opt-in/opt-out.
@@ -17,12 +17,14 @@ export interface FirebaseApp extends web.FirebaseApp {
   readonly automaticResourceManagement: boolean;
 }
 
-export interface FirebaseOptions extends web.FirebaseOptions {
+export interface FirebaseOptions extends delegate.FirebaseOptions {
   readonly apiKey: string;
   readonly appId: string;
   readonly databaseURL: string;
   readonly messagingSenderId: string;
   readonly projectId: string;
+  readonly storageBucket: string;
+
   /**
    * The Android client ID used in Google AppInvite when an iOS app has its Android version, for example "12345.apps.googleusercontent.com".
    *
@@ -43,7 +45,7 @@ export interface FirebaseOptions extends web.FirebaseOptions {
   readonly deepLinkURLScheme?: string;
 }
 
-export interface FirebaseAppConfig extends web.FirebaseAppConfig {
+export interface FirebaseAppConfig extends delegate.FirebaseAppConfig {
   /**
    * If set to true it indicates that Firebase should close database connections automatically when the app is in the background.
    *

@@ -1,10 +1,10 @@
 import * as web from 'firebase/storage';
 import { FirebaseApp } from '@react-native-firebase-modular/app';
-import { getStorage } from 'index';
 
 export interface StorageService extends web.StorageService {
   readonly app: FirebaseApp;
   readonly maxOperationRetryTime: number;
+  readonly maxDownloadRetryTime: number;
   readonly maxUploadRetryTime: number;
   readonly bucket: string;
 }

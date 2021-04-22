@@ -21,9 +21,27 @@ function getStorageReference(ref: StorageReference): delegate.StorageReference {
 function convertListResult(storage: StorageService, result: delegate.ListResult): ListResult {
   return {
     nextPageToken: result.nextPageToken,
-    items: result.items.map(item => StorageReferenceImpl.fromPath(storage, item.fullPath)),
-    prefixes: result.items.map(item => StorageReferenceImpl.fromPath(storage, item.fullPath)),
+    items: result.items.map(item => new StorageReferenceImpl(storage, item.fullPath)),
+    prefixes: result.prefixes.map(item => new StorageReferenceImpl(storage, item.fullPath)),
   };
+}
+
+export async function setMaxOperationRetryTime(
+  storage: StorageService,
+  time: number,
+): Promise<void> {
+  getStorageService(storage).maxOperationRetryTime = time;
+}
+
+export async function setMaxUploadRetryTime(storage: StorageService, time: number): Promise<void> {
+  getStorageService(storage).maxUploadRetryTime = time;
+}
+
+export async function setMaxDownloadRetryTime(
+  _storage: StorageService,
+  _time: number,
+): Promise<void> {
+  // Noop on web
 }
 
 export function deleteObject(ref: StorageReference): Promise<void> {

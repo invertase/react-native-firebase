@@ -20,10 +20,11 @@ type NativeFirebaseApp = {
   options: FirebaseOptions;
 };
 
-export const bridge = getNativeModule<AppModule>({
-  namespace: 'app',
-  nativeModule: 'RNFBAppModule',
-});
+const delegate = () =>
+  getNativeModule<AppModule>({
+    namespace: 'app',
+    nativeModule: 'RNFBAppModule',
+  });
 
 /**
  * A `Map` containing all `FirebaseApp` instance, stored by their name.
@@ -51,7 +52,7 @@ function initializeNativeApps(): void {
     return;
   }
 
-  const nativeApps = bridge.module.NATIVE_FIREBASE_APPS;
+  const nativeApps = delegate().module.NATIVE_FIREBASE_APPS;
 
   for (const app of nativeApps) {
     const { appConfig, options } = app;
@@ -75,7 +76,7 @@ export async function deleteApp(name: string) {
     return;
   }
 
-  await bridge.module.deleteApp(name);
+  await delegate().module.deleteApp(name);
 }
 
 export function getApp(name = defaultAppName): FirebaseApp | undefined {
@@ -112,7 +113,7 @@ export async function initializeApp(
     automaticResourceManagement: config?.automaticResourceManagement,
   });
 
-  await bridge.module.initializeApp(app.options, {
+  await delegate().module.initializeApp(app.options, {
     name: app.name,
     automaticDataCollectionEnabled: app.automaticDataCollectionEnabled,
     automaticResourceManagement: app.automaticResourceManagement,
@@ -131,7 +132,7 @@ export async function setAutomaticDataCollectionEnabled(
   if (app) {
     const mutable = app as Mutable<FirebaseApp>;
     mutable.automaticDataCollectionEnabled = enabled;
-    await bridge.module.setAutomaticDataCollectionEnabled(name, enabled);
+    await delegate().module.setAutomaticDataCollectionEnabled(name, enabled);
 
     // Update the internal app instance with the new property.
     apps.set(app.name, mutable);

@@ -103,7 +103,7 @@ export function isNumber(value: unknown): value is number {
  */
 export function isFinite(value: number): boolean {
   if (!isNumber(value)) {
-    throw new Error('isFinite requires a number value');
+    return false;
   }
 
   return Number.isFinite(value);
@@ -116,10 +116,24 @@ export function isFinite(value: number): boolean {
  */
 export function isInteger(value: number): boolean {
   if (!isNumber(value)) {
-    throw new Error('isInteger requires a number value');
+    return false;
   }
 
   return Number.isInteger(value);
+}
+
+/**
+ * Checks whether a given value is a positive number.
+ *
+ * @param value
+ * @returns
+ */
+export function isPositiveNumber(value: number): boolean {
+  if (!isNumber(value)) {
+    return false;
+  }
+
+  return Math.sign(value) === 1;
 }
 
 /**

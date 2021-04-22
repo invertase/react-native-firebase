@@ -1,4 +1,4 @@
-import * as web from 'firebase/app';
+import * as delegate from 'firebase/app';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import FirebaseAppImpl from './implementations/firebaseApp';
 import { defaultAppName } from './internal';
@@ -9,7 +9,7 @@ import { defaultAppName } from './internal';
  * @param app
  * @returns
  */
-function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
+function convertFirebaseApp(app: delegate.FirebaseApp): FirebaseApp {
   return new FirebaseAppImpl(app.name, convertFirebaseOptions(app.options), {
     automaticDataCollectionEnabled: app.automaticDataCollectionEnabled,
     automaticResourceManagement: false, // Not applicable to web.
@@ -22,7 +22,7 @@ function convertFirebaseApp(app: web.FirebaseApp): FirebaseApp {
  * @param app
  * @returns
  */
-function convertFirebaseOptions(options: web.FirebaseOptions): FirebaseOptions {
+function convertFirebaseOptions(options: delegate.FirebaseOptions): FirebaseOptions {
   return {
     ...options,
     apiKey: options.apiKey || '',
@@ -30,6 +30,7 @@ function convertFirebaseOptions(options: web.FirebaseOptions): FirebaseOptions {
     databaseURL: options.databaseURL || '',
     messagingSenderId: options.messagingSenderId || '',
     projectId: options.projectId || '',
+    storageBucket: options.storageBucket || '',
   };
 }
 
@@ -41,8 +42,8 @@ function convertFirebaseOptions(options: web.FirebaseOptions): FirebaseOptions {
  * @param name
  * @returns
  */
-function getFirebaseApp(name = defaultAppName): web.FirebaseApp | undefined {
-  return web.getApps().find(app => app.name === name);
+function getFirebaseApp(name = defaultAppName): delegate.FirebaseApp | undefined {
+  return delegate.getApps().find(app => app.name === name);
 }
 
 export { SDK_VERSION } from 'firebase/app';
@@ -54,7 +55,7 @@ export async function deleteApp(name: string) {
     return;
   }
 
-  return web.deleteApp(app);
+  return delegate.deleteApp(app);
 }
 
 export function getApp(name?: string): FirebaseApp | undefined {
@@ -69,11 +70,11 @@ export function getApp(name?: string): FirebaseApp | undefined {
 }
 
 export function getApps(): FirebaseApp[] {
-  return web.getApps().map(convertFirebaseApp);
+  return delegate.getApps().map(convertFirebaseApp);
 }
 
 export function initializeApp(options: FirebaseOptions, config?: FirebaseAppConfig): FirebaseApp {
-  const app = web.initializeApp(options, config);
+  const app = delegate.initializeApp(options, config);
   return convertFirebaseApp(app);
 }
 
