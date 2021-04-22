@@ -1,13 +1,9 @@
 import { deleteApp, getApp, getApps, initializeApp } from '../src';
 import * as impl from '../src/impl';
-import FirebaseAppImpl from '../src/implementations/firebaseApp';
 import { defaultAppName } from '../src/common';
+import { createFirebaseApp, createFirebaseOptions } from './utils';
 
 jest.mock('../src/impl');
-
-function createFirebaseApp(name) {
-  return new FirebaseAppImpl(name || defaultAppName, {}, false);
-}
 
 describe('app', () => {
   beforeEach(() => {
@@ -38,7 +34,7 @@ describe('app', () => {
         await deleteApp(app);
       } catch (e) {
         expect(impl.deleteApp.mock.calls).toHaveLength(0);
-        expect(e.code).toEqual('app/no-default-app-delete');
+        expect(e.code).toEqual('app/no-delete-default');
       }
     });
   });
@@ -102,23 +98,20 @@ describe('app', () => {
 
   describe('initializeApp', () => {
     test('it throws if an invalid object is provided', async () => {
-      await expect(() => initializeApp()).rejects.toThrow(
-        /Argument 'options' is not a valid FirebaseOptions object/,
-      );
+      await expect(() => initializeApp()).rejects.toThrow(/Expected a FirebaseOptions object/);
     });
 
     test('throws if an invalid config is provided', async () => {
       await expect(() => initializeApp({}, 123)).rejects.toThrow(
-        /Argument 'config' is not a valid FirebaseAppConfig object/,
+        /Expected a FirebaseOptions object/,
       );
     });
 
     test('it does not require a name or config', async () => {
       const app = createFirebaseApp();
+      const options = createFirebaseOptions();
+
       impl.initializeApp.mockReturnValueOnce(app);
-      const options = {
-        appId: '123',
-      };
 
       const created = await initializeApp(options);
       expect(impl.initializeApp.mock.calls).toHaveLength(1);
@@ -130,10 +123,9 @@ describe('app', () => {
     test('it creates a config object if name is provided', async () => {
       const name = 'foo';
       const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
+
       impl.initializeApp.mockReturnValueOnce(app);
-      const options = {
-        appId: '123',
-      };
 
       const created = await initializeApp(options, name);
       expect(impl.initializeApp.mock.calls).toHaveLength(1);
@@ -145,10 +137,10 @@ describe('app', () => {
     test('it uses a config object if provided', async () => {
       const name = 'foo';
       const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
+
       impl.initializeApp.mockReturnValueOnce(app);
-      const options = {
-        appId: '123',
-      };
+
       const config = {
         name,
       };

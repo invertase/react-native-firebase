@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { FirebaseApp } from 'types';
+import { FirebaseApp } from '../types';
 
 export * from './ArgumentError';
 export * from './FirebaseError';

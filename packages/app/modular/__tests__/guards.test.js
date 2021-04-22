@@ -5,10 +5,12 @@ import {
   isDate,
   isFunction,
   isString,
+  isOptionalString,
   isNumber,
   isFinite,
   isInteger,
   isBoolean,
+  isOptionalBoolean,
   isArray,
   isUndefined,
   isAlphaNumericUnderscore,
@@ -108,6 +110,20 @@ describe('guards', () => {
     });
   });
 
+  describe('isOptionalString', () => {
+    test('it checks against an string value', () => {
+      expect(isOptionalString(undefined)).toBe(true);
+      expect(isOptionalString(123)).toBe(false);
+      expect(isOptionalString('foo')).toBe(true);
+      expect(isOptionalString([])).toBe(false);
+      expect(isOptionalString(null)).toBe(false);
+      expect(isOptionalString({})).toBe(false);
+      expect(isOptionalString(new Date())).toBe(false);
+      expect(isOptionalString(() => {})).toBe(false);
+      expect(isOptionalString(async () => {})).toBe(false);
+    });
+  });
+
   describe('isNumber', () => {
     test('it checks against an String value', () => {
       expect(isNumber(undefined)).toBe(false);
@@ -153,6 +169,23 @@ describe('guards', () => {
       expect(isBoolean(async () => {})).toBe(false);
       expect(isBoolean(true)).toBe(true);
       expect(isBoolean(false)).toBe(true);
+    });
+  });
+
+  describe('isOptionalBoolean', () => {
+    test('it checks against an boolean value', () => {
+      expect(isOptionalBoolean(undefined)).toBe(true);
+      expect(isOptionalBoolean(123)).toBe(false);
+      expect(isOptionalBoolean(123.456)).toBe(false);
+      expect(isOptionalBoolean('foo')).toBe(false);
+      expect(isOptionalBoolean([])).toBe(false);
+      expect(isOptionalBoolean(null)).toBe(false);
+      expect(isOptionalBoolean({})).toBe(false);
+      expect(isOptionalBoolean(new Date())).toBe(false);
+      expect(isOptionalBoolean(() => {})).toBe(false);
+      expect(isOptionalBoolean(async () => {})).toBe(false);
+      expect(isOptionalBoolean(true)).toBe(true);
+      expect(isOptionalBoolean(false)).toBe(true);
     });
   });
 

@@ -72,6 +72,10 @@ export async function getPlayServicesStatus(): Promise<PlayServicesAvailability>
 }
 
 export async function promptForPlayServices(): Promise<void> {
+  if (isIOS) {
+    return;
+  }
+
   return bridge.module.androidPromptForPlayServices();
 }
 
