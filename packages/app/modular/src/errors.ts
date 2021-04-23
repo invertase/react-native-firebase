@@ -8,21 +8,19 @@ export function noDefaultAppDelete(): FirebaseError {
   );
 }
 
-export function invalidApp(): FirebaseError {
-  return new FirebaseError(
-    new Error(
-      `An invalid FirebaseApp was provided. Use initializeApp() or getApp() to get a FirebaseApp instance.`,
-    ),
-    'app',
-    'invalid-app',
-  );
-}
-
 export function noApp(name: string): FirebaseError {
   return new FirebaseError(
     new Error(`No Firebase App '${name}' has been created - call Firebase initializeApp()`),
     'app',
     'no-app',
+  );
+}
+
+export function duplicateApp(name: string) {
+  return new FirebaseError(
+    new Error(`Firebase App named '${name}' already exists`),
+    'app',
+    'app/duplicate-app',
   );
 }
 

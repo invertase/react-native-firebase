@@ -1,4 +1,4 @@
-import { isFirebaseApp, isFirebaseOptions, isFirebaseAppConfig } from '../src/validation';
+import { isFirebaseApp, isFirebaseOptions, isFirebaseAppConfig } from '../src/internal';
 import { createFirebaseApp, createFirebaseOptions } from './helpers';
 
 describe('validation', () => {

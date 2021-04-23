@@ -1,4 +1,10 @@
-import { stripTrailingSlash, eventNameForApp, FirebaseError, ArgumentError } from '../src/common';
+import {
+  stripTrailingSlash,
+  eventNameForApp,
+  FirebaseError,
+  guard,
+  ArgumentError,
+} from '../src/internal';
 import { createFirebaseApp } from './helpers';
 
 describe('common', () => {
@@ -55,6 +61,25 @@ describe('common', () => {
       expect(error.message).toBe('foo (bar/baz)');
     });
   });
+
+  // describe('guard', () => {
+  //   test('it converts a generic error with a valid code to a FirebaseError', async () => {
+  //     const error = new Error('foo');
+  //     error.code = 'test/unknown';
+
+  //     const promise = new Promise((_, reject) => {
+  //       return reject(error);
+  //     });
+
+  //     expect.assertions(3);
+
+  //     return guard(promise).catch(e => {
+  //       expect(e).toBeInstanceOf(Error);
+  //       expect(e).toHaveProperty('code');
+  //       expect(e.code).toBe('test/unknown');
+  //     });
+  //   });
+  // });
 
   describe('ArgumentError', () => {
     test('it creates an argument property', () => {

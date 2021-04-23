@@ -1,7 +1,8 @@
 import * as delegate from 'firebase/app';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
 import FirebaseAppImpl from './implementations/firebaseApp';
-import { defaultAppName } from './internal';
+import { defaultAppName, guard } from './internal';
+import { duplicateApp } from './errors';
 
 /**
  * Converts a `web.FirebaseApp` into `FirebaseApp`.
@@ -55,18 +56,13 @@ export async function deleteApp(name: string) {
     return;
   }
 
-  return delegate.deleteApp(app);
+  return guard(delegate.deleteApp(app));
 }
 
 export function getApp(name?: string): FirebaseApp | undefined {
   // Find via the `getApps` array rather than via `getApp` so no error is thrown.
   const app = getFirebaseApp(name);
-
-  if (app) {
-    return convertFirebaseApp(app);
-  }
-
-  return;
+  return app ? convertFirebaseApp(app) : undefined;
 }
 
 export function getApps(): FirebaseApp[] {
@@ -74,6 +70,12 @@ export function getApps(): FirebaseApp[] {
 }
 
 export function initializeApp(options: FirebaseOptions, config?: FirebaseAppConfig): FirebaseApp {
+  const exists = getApp(config?.name ?? defaultAppName);
+
+  if (exists) {
+    throw duplicateApp(exists.name);
+  }
+
   const app = delegate.initializeApp(options, config);
   return convertFirebaseApp(app);
 }

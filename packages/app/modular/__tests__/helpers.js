@@ -1,8 +1,8 @@
 import FirebaseAppImpl from '../src/implementations/firebaseApp';
-import { defaultAppName } from '../src/common';
+import { defaultAppName } from '../internal';
 
-export function createFirebaseApp(name) {
-  return new FirebaseAppImpl(name || defaultAppName, {}, false);
+export function createFirebaseApp(name, config) {
+  return new FirebaseAppImpl(name || defaultAppName, {}, config);
 }
 
 export function createFirebaseOptions() {

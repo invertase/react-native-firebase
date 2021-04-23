@@ -1,8 +1,8 @@
 import { defaultAppName, Mutable } from './internal';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-import { defaultAppNotInitialized, noApp } from './errors';
+import { defaultAppNotInitialized, duplicateApp, noApp } from './errors';
 import FirebaseAppImpl from './implementations/firebaseApp';
-import { getNativeModule } from './internal/native';
+import { getNativeModule } from './internal/native/module.native';
 
 interface AppModule {
   readonly NATIVE_FIREBASE_APPS: NativeFirebaseApp[];
@@ -77,6 +77,7 @@ export async function deleteApp(name: string) {
   }
 
   await delegate().module.deleteApp(name);
+  apps.delete(name);
 }
 
 export function getApp(name = defaultAppName): FirebaseApp | undefined {
@@ -105,7 +106,7 @@ export async function initializeApp(
   const name = config?.name ?? defaultAppName;
 
   if (apps.has(name)) {
-    throw new Error('Already initialized!');
+    throw duplicateApp(name);
   }
 
   const app = new FirebaseAppImpl(name, options, {

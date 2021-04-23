@@ -1,1 +1,1 @@
-module.exports = require('./dist/internal');
+export * from './dist/internal';

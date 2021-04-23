@@ -11,7 +11,7 @@ import {
   isFirebaseAppConfig,
   isFirebaseOptions,
 } from './internal';
-import { defaultAppNotInitialized, invalidApp, noApp, noDefaultAppDelete } from './errors';
+import { defaultAppNotInitialized, noApp, noDefaultAppDelete } from './errors';
 
 export * from './types';
 export * from './utils';
@@ -29,7 +29,7 @@ export const SDK_VERSION = impl.SDK_VERSION;
  */
 export async function deleteApp(app: FirebaseApp): Promise<void> {
   if (!isFirebaseApp(app)) {
-    throw invalidApp();
+    throw new ArgumentError('app', 'Expected a valid FirebaseApp instance');
   }
 
   if (app.name === defaultAppName) {
@@ -124,7 +124,7 @@ export async function setAutomaticDataCollectionEnabled(
   enabled: boolean,
 ): Promise<void> {
   if (!isFirebaseApp(app)) {
-    throw invalidApp();
+    throw new ArgumentError('app', 'Expected a valid FirebaseApp instance');
   }
 
   if (!isBoolean(enabled)) {

@@ -7,7 +7,7 @@ import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from '../types';
  * @param app
  * @returns
  */
-export function isFirebaseApp(app: any): app is FirebaseApp {
+export function isFirebaseApp(app: unknown): app is FirebaseApp {
   return app instanceof FirebaseAppImpl;
 }
 
@@ -17,7 +17,7 @@ export function isFirebaseApp(app: any): app is FirebaseApp {
  * @param options
  * @returns
  */
-export function isFirebaseOptions(options: any): options is FirebaseOptions {
+export function isFirebaseOptions(options: unknown): options is FirebaseOptions {
   if (!isObject(options)) {
     return false;
   }
@@ -43,7 +43,7 @@ export function isFirebaseOptions(options: any): options is FirebaseOptions {
  * @param config
  * @returns
  */
-export function isFirebaseAppConfig(config: any): config is FirebaseAppConfig {
+export function isFirebaseAppConfig(config: unknown): config is FirebaseAppConfig {
   if (!isObject(config)) {
     return false;
   }

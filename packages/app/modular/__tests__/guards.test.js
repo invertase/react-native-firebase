@@ -17,7 +17,7 @@ import {
   isValidUrl,
   isOneOf,
   isPromise,
-} from '../src/common';
+} from '../src/internal';
 
 describe('guards', () => {
   describe('objectKeyValuesAreStrings', () => {
@@ -143,7 +143,7 @@ describe('guards', () => {
     test('it checks against an finite value', () => {
       expect(isFinite(10 / 5)).toBe(true);
       expect(isFinite(1 / 0)).toBe(false);
-      expect(() => isFinite('foo')).toThrowError(/isFinite requires a number value/);
+      expect(isFinite('foo')).toBe(false);
     });
   });
 
@@ -151,7 +151,7 @@ describe('guards', () => {
     test('it checks against an integer value', () => {
       expect(isInteger(10)).toBe(true);
       expect(isInteger(10.1)).toBe(false);
-      expect(() => isInteger('foo')).toThrowError(/isInteger requires a number value/);
+      expect(isInteger('foo')).toBe(false);
     });
   });
 

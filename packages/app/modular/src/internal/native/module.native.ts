@@ -1,52 +1,9 @@
 import { NativeModules } from 'react-native';
-import { FirebaseError, isAndroid, isFunction, isIOS, isPromise } from './common';
-import RNFBNativeEventEmitter from './RNFBNativeEventEmitter';
-import SharedEventEmitter from './SharedEventEmitter';
+import { FirebaseError, isAndroid, isFunction, isIOS, isPromise } from '../common';
+import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
+import SharedEventEmitter from '../SharedEventEmitter';
 
-export type NativeNamespace = 'app' | 'utils' | 'storage';
-
-/**
- * Options used to create a bridge to the native module.
- */
-export interface NativeModuleOptions {
-  /**
-   * The namespace of the module, e.g. `firestore`.
-   *
-   * This is used to automatically prefix error messages with a code.
-   */
-  namespace: NativeNamespace;
-  /**
-   * The name of the registered native module, e.g. `RNFBAppModule`.
-   */
-  nativeModule: string;
-  /**
-   * Additional configuration options.
-   */
-  config?: NativeModuleConfig;
-}
-
-export type NativeModuleConfig = {
-  // hasMultiAppSupport: boolean; // TODO Not used yet
-  hasCustomUrlOrRegionSupport?: boolean; // TODO Not used yet
-  events?: ReadonlyArray<string>;
-};
-
-/**
- * The interface describing what a Native Module contains.
- */
-export interface NativeModule<T = unknown> {
-  /**
-   * A singleton event emitter.
-   *
-   * When creating a native module, ensure the `events` key is populated
-   * with event names to be able to listen to those events via this emitter.
-   */
-  readonly emitter: typeof SharedEventEmitter;
-  /**
-   * The Native Module.
-   */
-  readonly module: T;
-}
+import { NativeModule, NativeNamespace, NativeModuleOptions } from './types';
 
 // Cache of native modules.
 const MODULE_CACHE: {
@@ -116,9 +73,16 @@ export function getNativeModule<T = unknown>(options: NativeModuleOptions): Nati
           const result = maybeFunction(args);
 
           if (isPromise(result)) {
-            return result.catch((error: Error) => {
-              // TODO convert native error to FirebaseError
-              return Promise.reject(new FirebaseError(error, options.namespace, 'todo'));
+            return result.catch((nativeError: NativeError) => {
+              const error = new Error(nativeError.userInfo.message || nativeError.message);
+              return Promise.reject(
+                new FirebaseError(
+                  error,
+                  options.namespace,
+                  nativeError.userInfo.code,
+                  nativeError.userInfo,
+                ),
+              );
             });
           }
 
@@ -135,6 +99,26 @@ export function getNativeModule<T = unknown>(options: NativeModuleOptions): Nati
 
   return _module;
 }
+
+/**
+ * When native rejects a promise, the data returned is an object,
+ * which needs then constructing into a JavaScript error.
+ */
+type NativeError = {
+  // The raw error from Native
+  message: string;
+  // Custom returned data from the error.
+  userInfo: {
+    // A Firebase error code.
+    code?: string;
+    // A user friendly message of an error.
+    message?: string;
+    // Native returned error code.
+    nativeErrorCode?: string;
+    // Native returned message.
+    nativeErrorMessage?: string;
+  };
+};
 
 /**
  * Creates a native subscription for a given event name.
