@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import { FirebaseApp } from '../../types';
 
+import { binaryToBase64 } from './base64';
+
 export * from './ArgumentError';
 export * from './FirebaseError';
 export * from './guards';
@@ -63,4 +65,36 @@ export function stripTrailingSlash(value: string): string {
  */
 export function eventNameForApp(app: FirebaseApp, ...args: string[]) {
   return `${app.name}-${args.join('-')}`;
+}
+
+type Base64Response = {
+  value: string;
+  format: string;
+};
+
+export function toBase64String(data: Blob | ArrayBuffer | Uint8Array): Promise<Base64Response> {
+  if (data instanceof Blob) {
+    return new Promise<Base64Response>((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(data);
+
+      fileReader.onloadend = function onloadend() {
+        return resolve({ value: fileReader.result as string, format: 'data_url' });
+      };
+
+      fileReader.onerror = function onerror() {
+        fileReader.abort();
+        return reject(new Error('FileReader failed to parse Blob value.'));
+      };
+    });
+  }
+
+  if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+    return Promise.resolve({
+      value: binaryToBase64(data),
+      format: 'base64',
+    });
+  }
+
+  throw new Error('toBase64String: unexpected value provided');
 }
