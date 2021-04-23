@@ -20,11 +20,7 @@ export function getStorage(app?: FirebaseApp, bucketUrl?: string): StorageServic
     throw new ArgumentError('app', 'Expected a valid FirebaseApp instance.');
   }
 
-  const _app = app ?? getApp();
-
-  return new StorageServiceImpl(_app, {
-    bucket: bucketUrl,
-  });
+  return impl.getStorage(app ?? getApp(), bucketUrl);
 }
 
 export function ref(storage: StorageService, url?: string): StorageReference;
@@ -123,6 +119,10 @@ export async function setMaxDownloadRetryTime(
 }
 
 export function listAll(ref: StorageReference): Promise<ListResult> {
+  if (!isStorageReference(ref)) {
+    throw new ArgumentError('ref', 'Expected a StorageReference instance');
+  }
+
   // TODO validate
   return impl.listAll(ref);
 }

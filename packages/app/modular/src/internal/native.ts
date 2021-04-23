@@ -3,7 +3,7 @@ import { FirebaseError, isAndroid, isFunction, isIOS, isPromise } from './common
 import RNFBNativeEventEmitter from './RNFBNativeEventEmitter';
 import SharedEventEmitter from './SharedEventEmitter';
 
-export type NativeNamespace = 'app' | 'utils';
+export type NativeNamespace = 'app' | 'utils' | 'storage';
 
 /**
  * Options used to create a bridge to the native module.

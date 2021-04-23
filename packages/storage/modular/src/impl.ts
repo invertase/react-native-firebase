@@ -1,5 +1,8 @@
+import { FirebaseApp } from '@react-native-firebase-modular/app';
+import { Mutable } from '@react-native-firebase-modular/app/internal';
 import * as app from 'firebase/app';
 import * as delegate from 'firebase/storage';
+import StorageServiceImpl from 'implementations/storageService';
 import StorageReferenceImpl from './implementations/storageReference';
 import {
   StorageService,
@@ -24,6 +27,19 @@ function convertListResult(storage: StorageService, result: delegate.ListResult)
     items: result.items.map(item => new StorageReferenceImpl(storage, item.fullPath)),
     prefixes: result.prefixes.map(item => new StorageReferenceImpl(storage, item.fullPath)),
   };
+}
+
+export function getStorage(app: FirebaseApp, bucketUrl?: string): StorageService {
+  const storage = new StorageServiceImpl(app, {
+    bucket: bucketUrl,
+  }) as Mutable<StorageService>;
+
+  const delegate = getStorageService(storage);
+
+  storage.maxOperationRetryTime = delegate.maxOperationRetryTime;
+  storage.maxUploadRetryTime = delegate.maxUploadRetryTime;
+
+  return storage;
 }
 
 export async function setMaxOperationRetryTime(
