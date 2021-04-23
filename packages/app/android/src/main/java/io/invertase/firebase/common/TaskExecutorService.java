@@ -101,12 +101,13 @@ public class TaskExecutorService {
 
   public void shutdown() {
     Set<String> existingExecutorNames = executors.keySet();
-    existingExecutorNames.removeIf((executorName) -> {
-      return executorName.startsWith(name) == false;
-    });
-    existingExecutorNames.forEach((executorName) -> {
-      removeExecutor(executorName);
-    });
+    for (String executorName : existingExecutorNames) {
+      if (executorName.startsWith(name) == false) {
+        existingExecutorNames.remove(executorName);
+      } else {
+        removeExecutor(executorName);  
+      }
+    }
   }
 
   public void removeExecutor(String executorName) {
