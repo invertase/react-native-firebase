@@ -120,6 +120,18 @@ with any of the following event names will throw an error.
 | `ad_click`             | `ad_query`                | `ad_exposure`       |
 | `adunit_exposure`      | `ad_activeiew`            |
 
+## App instance id
+
+Below is an example showing how to retrieve the app instance id of the application. This will return null on android
+if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on
+iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+
+```jsx
+import analytics from '@react-native-firebase/analytics';
+// ...
+const appInstanceId = await analytics().getAppInstanceId();
+```
+
 # firebase.json
 
 ## Disable Auto-Initialization

@@ -59,6 +59,10 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     });
   }
 
+  Task<String> getAppInstanceId() {
+    return FirebaseAnalytics.getInstance(getContext()).getAppInstanceId();
+  }
+
   Task<Void> setUserId(String id) {
     return Tasks.call(() -> {
       FirebaseAnalytics.getInstance(getContext()).setUserId(id);

@@ -76,6 +76,17 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void getAppInstanceId(Promise promise) {
+    module.getAppInstanceId().addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
+  @ReactMethod
   public void setUserId(String id, Promise promise) {
     module.setUserId(id).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {

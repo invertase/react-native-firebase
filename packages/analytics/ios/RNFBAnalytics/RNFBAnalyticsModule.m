@@ -135,6 +135,13 @@
     return resolve([NSNull null]);
   }
 
+  RCT_EXPORT_METHOD(getAppInstanceId:
+  (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+      return resolve([FIRAnalytics appInstanceID]);
+  }
+
 #pragma mark -
 #pragma mark Private methods
 

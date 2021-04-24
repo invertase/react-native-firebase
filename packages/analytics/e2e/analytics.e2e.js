@@ -58,6 +58,12 @@ describe('analytics()', function () {
     });
   });
 
+  describe('getAppInstanceId()', function () {
+    it('calls native fn without error', async function () {
+      await firebase.analytics().getAppInstanceId();
+    });
+  });
+
   describe('setUserId()', function () {
     it('allows a null values to be set', async function () {
       await firebase.analytics().setUserId(null);
