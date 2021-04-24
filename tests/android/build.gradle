@@ -80,5 +80,21 @@ subprojects {
         }
       }
     }
+    if (project.name.contains('firebase')
+      && project.hasProperty('android')) {
+      android {
+        lintOptions {
+          abortOnError = true
+          warningsAsErrors false
+          lintConfig file('./lint.xml')
+          checkReleaseBuilds = true
+          checkAllWarnings true
+          showAll true
+          textReport true
+          textOutput 'stdout'
+          htmlReport true
+        }
+      }
+    }
   }
 }
