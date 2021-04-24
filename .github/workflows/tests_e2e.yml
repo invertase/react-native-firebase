@@ -103,7 +103,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug -Dorg.gradle.daemon=false
+          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug -Dorg.gradle.daemon=false
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
