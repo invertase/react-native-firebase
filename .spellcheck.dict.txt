@@ -8,6 +8,8 @@ APIs
 APIs.
 APNs
 async
+ATT
+ATT-compatible
 auth
 Auth
 authenticator
@@ -46,6 +48,7 @@ Fastlane
 FCM
 firebase
 Firebase
+firebase-ios-sdk
 Firestore
 GDPR
 globals
@@ -55,6 +58,7 @@ Hesp
 Homebrew
 HTTP
 HTTPS
+IDFA
 installable
 Interstitials
 interstitials
