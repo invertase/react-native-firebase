@@ -683,6 +683,19 @@ export namespace FirebaseAnalyticsTypes {
     setSessionTimeoutDuration(milliseconds?: number): Promise<void>;
 
     /**
+     * Retrieve the app instance id of the application.
+     *
+     * #### Example
+     *
+     * ```js
+     * const appInstanceId = await firebase.analytics().getAppInstanceId();
+     * ```
+     *
+     * @returns Returns the app instance id or null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+     */
+    getAppInstanceId(): Promise<string | null>;
+
+    /**
      * Gives a user a unique identification.
      *
      * #### Example
