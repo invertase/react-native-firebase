@@ -34,16 +34,6 @@ describe('database().ref().update()', function () {
     }
   });
 
-  it('throws if values does not contain any values', async function () {
-    try {
-      await firebase.database().ref(TEST_PATH).update({});
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'values' must be an object containing multiple values");
-      return Promise.resolve();
-    }
-  });
-
   it('throws if update paths are not valid', async function () {
     try {
       await firebase.database().ref(TEST_PATH).update({
@@ -79,6 +69,14 @@ describe('database().ref().update()', function () {
     });
     const snapshot = await ref.once('value');
     snapshot.val().should.eql(
+      jet.contextify({
+        foo: value,
+      }),
+    );
+
+    await ref.update({}); // empty update should pass, but no side effects
+    const snapshot2 = await ref.once('value');
+    snapshot2.val().should.eql(
       jet.contextify({
         foo: value,
       }),
