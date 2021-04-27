@@ -37,6 +37,11 @@ Pod::Spec.new do |s|
     firebase_sdk_version = $FirebaseSDKVersion
   end
 
+  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+    # Trying to use AdMob *and* AnalyticsWIthoutAdIdSupport is not a valid combination
+    raise "#{s.name} and Firebase/AnalyticsWithoutAdIdSupport are not compatible. Ad Ids are required for #{s.name}"
+  end
+
   # Firebase dependencies
   s.dependency          'Firebase/AdMob', firebase_sdk_version
 
