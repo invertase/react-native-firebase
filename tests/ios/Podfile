@@ -7,6 +7,14 @@ $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
 #$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
+# Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
+# See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
+#$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
+
+# This is needed to reduce flakiness where leveldb is transitively included by database, and packed as framework
+# from the pre-compiled firestore-ios-sdk-frameworks
+$FirebaseFirestoreExcludeLeveldb = true
+
 # Versions used below, for quick reference / outdated+upgrade checks
 $iOSMinimumDeployVersion = '10.0'
 
@@ -28,7 +36,6 @@ target 'testing' do
   )
 
   # Use pre-compiled firestore frameworks to optimize compile time. But make sure there are not leveldb conflicts.
-  $FirebaseFirestoreExcludeLeveldb = true
   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # Enables Flipper.
