@@ -1,7 +1,8 @@
 import { FirebaseApp } from '@react-native-firebase-modular/app';
 import { getNativeModule, toBase64String } from '@react-native-firebase-modular/app/internal';
-import StorageServiceImpl from 'implementations/storageService';
-import UploadTaskImpl from 'implementations/uploadTask';
+import StorageServiceImpl from './implementations/storageService';
+import UploadTaskImpl from './implementations/uploadTask.native';
+import { toFullMetadata, toUploadResult } from './validation';
 import StorageReferenceImpl from './implementations/storageReference';
 import {
   StorageService,
@@ -21,10 +22,14 @@ interface StorageModule {
   readonly maxDownloadRetryTime?: number;
   delete(appName: string, url: string): Promise<void>;
   getDownloadURL(appName: string, url: string): Promise<string>;
-  getMetadata(appName: string, url: string): Promise<void>;
+  getMetadata(appName: string, url: string): Promise<Record<string, unknown>>;
   list(appName: string, url: string, options: ListOptions): Promise<NativeListResult>;
   listAll(appName: string, url: string): Promise<NativeListResult>;
-  // updateMetadata(appName: string, url: string, metadata: any): Promise<Metadata>;
+  updateMetadata(
+    appName: string,
+    url: string,
+    metadata: SettableMetadata,
+  ): Promise<Record<string, unknown>>;
   setMaxDownloadRetryTime(appName: string, time: number): Promise<void>;
   setMaxOperationRetryTime(appName: string, time: number): Promise<void>;
   setMaxUploadRetryTime(appName: string, time: number): Promise<void>;
@@ -62,15 +67,50 @@ const delegate = () =>
     },
   });
 
+function convertListResult(storage: StorageService, result: NativeListResult): ListResult {
+  return {
+    nextPageToken: result.nextPageToken,
+    items: result.items.map(path => new StorageReferenceImpl(storage, path)),
+    prefixes: result.prefixes.map(path => new StorageReferenceImpl(storage, path)),
+  };
+}
+
+export function deleteObject(ref: StorageReference): Promise<void> {
+  return delegate().module.delete(ref.storage.app.name, ref.fullPath);
+}
+
+export function getDownloadURL(ref: StorageReference): Promise<string> {
+  return delegate().module.getDownloadURL(ref.storage.app.name, ref.fullPath);
+}
+
+export async function getMetadata(ref: StorageReference): Promise<FullMetadata> {
+  const record = await delegate().module.getMetadata(ref.storage.app.name, ref.fullPath);
+  return toFullMetadata(record, ref);
+}
+
 export function getStorage(app: FirebaseApp, bucketUrl?: string): StorageService {
-  const module = delegate().module;
+  const { maxDownloadRetryTime, maxOperationRetryTime, maxUploadRetryTime } = delegate().module;
 
   return new StorageServiceImpl(app, {
     bucket: bucketUrl,
-    maxDownloadRetryTime: module.maxDownloadRetryTime,
-    maxOperationRetryTime: module.maxOperationRetryTime,
-    maxUploadRetryTime: module.maxUploadRetryTime,
+    maxDownloadRetryTime,
+    maxOperationRetryTime,
+    maxUploadRetryTime,
   });
+}
+
+export async function list(ref: StorageReference, options: ListOptions): Promise<ListResult> {
+  return convertListResult(
+    ref.storage,
+    await delegate().module.list(ref.storage.app.name, ref.fullPath, options),
+  );
+}
+
+export async function listAll(ref: StorageReference): Promise<ListResult> {
+  return convertListResult(
+    ref.storage,
+    await delegate().module.listAll(ref.storage.app.name, ref.fullPath),
+  );
 }
 
 export async function setMaxOperationRetryTime(
@@ -91,34 +131,17 @@ export async function setMaxDownloadRetryTime(
   return delegate().module.setMaxDownloadRetryTime(storage.app.name, time);
 }
 
-export function deleteObject(ref: StorageReference): Promise<void> {
-  // TODO correct path?
-  return delegate().module.delete(ref.storage.app.name, ref.fullPath);
+export async function updateMetadata(
+  ref: StorageReference,
+  metadata: SettableMetadata,
+): Promise<FullMetadata> {
+  const record = await delegate().module.updateMetadata(
+    ref.storage.app.name,
+    ref.fullPath,
+    metadata,
+  );
+  return toFullMetadata(record, ref);
 }
-
-export function getDownloadURL(ref: StorageReference): Promise<string> {
-  return delegate().module.getDownloadURL(ref.storage.app.name, ref.fullPath);
-}
-
-// // TODO return type
-// export async function getMetadata(ref: StorageReference): Promise<FullMetadata> {
-//   return delegate.getMetadata(getStorageReference(ref));
-// }
-
-// export async function list(ref: StorageReference, options: ListOptions): Promise<ListResult> {
-//   return convertListResult(ref.storage, await delegate.list(getStorageReference(ref), options));
-// }
-
-// export async function listAll(ref: StorageReference): Promise<ListResult> {
-//   return convertListResult(ref.storage, await delegate.listAll(getStorageReference(ref)));
-// }
-
-// export function updateMetadata(
-//   ref: StorageReference,
-//   metadata: SettableMetadata,
-// ): Promise<FullMetadata> {
-//   return delegate.updateMetadata(getStorageReference(ref), metadata);
-// }
 
 export async function uploadBytes(
   ref: StorageReference,
@@ -140,13 +163,12 @@ export async function uploadBytes(
   };
 }
 
-export async function uploadBytesResumable(
+export function uploadBytesResumable(
   ref: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: UploadMetadata,
 ): UploadTask {
-  return new UploadTaskImpl({
-  });
+  return {} as UploadTask;
 }
 
 export async function uploadString(
@@ -163,13 +185,5 @@ export async function uploadString(
     metadata,
   );
 
-  return {
-    ref,
-    metadata: result.metadata,
-  };
+  return toUploadResult(ref, result.metadata);
 }
-
-// export function useStorageEmulator(storage: StorageService, host: string, port: number): void {
-//   const service = getStorageService(storage);
-//   delegate.useStorageEmulator(service, host, port);
-// }

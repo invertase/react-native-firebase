@@ -103,6 +103,7 @@ export async function initializeApp(
   options: FirebaseOptions,
   config?: FirebaseAppConfig,
 ): Promise<FirebaseApp> {
+  initializeNativeApps();
   const name = config?.name ?? defaultAppName;
 
   if (apps.has(name)) {

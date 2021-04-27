@@ -5,7 +5,7 @@ import type {
   UploadTaskCommand,
   OnUploadTaskError,
   OnUploadTaskSuccess,
-} from './implementations/uploadTask';
+} from './implementations/uploadTask.native';
 
 export interface StorageService extends web.StorageService {
   readonly app: FirebaseApp;
@@ -52,12 +52,35 @@ export interface UploadResult extends web.UploadResult {
   readonly metadata: FullMetadata;
 }
 
-export type UploadTask = {
-  readonly snapshot: any;
-  cancel: UploadTaskCommand;
-  pause: UploadTaskCommand;
-  resume: UploadTaskCommand;
-  then: UploadTaskCommand;
-  catch: OnUploadTaskError;
-  on(event: 'state_changed', nextOrObserver: any, error?: any): () => void;
-};
+export interface UploadTask {
+  readonly snapshot: UploadTaskSnapshot;
+  cancel(): Promise<boolean>;
+  resume(): Promise<boolean>;
+  pause(): Promise<boolean>;
+  on(
+    event: web.TaskEvent,
+    observer?: (snapshot: UploadTaskSnapshot) => unknown,
+    error?: (error: any) => unknown,
+  ): () => void;
+  then(onFulfilled?: (snapshot: UploadTaskSnapshot) => unknown): Promise<unknown>;
+  catch(onRejected?: (error: any) => unknown): Promise<unknown>;
+}
+
+export interface UploadTaskSnapshot {
+  readonly bytesTransferred: number;
+  readonly metadata: FullMetadata;
+  readonly ref: StorageReference;
+  readonly state: web.TaskState;
+  readonly task: UploadTask;
+  readonly totalBytes: number;
+}
+
+// export type UploadTask = {
+//   readonly snapshot: any;
+//   cancel: UploadTaskCommand;
+//   pause: UploadTaskCommand;
+//   resume: UploadTaskCommand;
+//   then: UploadTaskCommand;
+//   catch: OnUploadTaskError;
+//   on(event: 'state_changed', nextOrObserver: any, error?: any): () => void;
+// };

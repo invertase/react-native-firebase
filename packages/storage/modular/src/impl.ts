@@ -2,7 +2,9 @@ import { FirebaseApp } from '@react-native-firebase-modular/app';
 import { Mutable } from '@react-native-firebase-modular/app/internal';
 import * as app from 'firebase/app';
 import * as delegate from 'firebase/storage';
-import StorageServiceImpl from 'implementations/storageService';
+import { toFullMetadata, toUploadResult } from 'validation';
+import StorageServiceImpl, { StorageServiceInternal } from './implementations/storageService';
+import UploadTaskImpl from './implementations/uploadTask';
 import StorageReferenceImpl from './implementations/storageReference';
 import {
   StorageService,
@@ -11,14 +13,24 @@ import {
   ListOptions,
   FullMetadata,
   SettableMetadata,
+  UploadMetadata,
+  UploadResult,
+  UploadTask,
 } from './types';
 
 function getStorageService(storage: StorageService): delegate.StorageService {
-  return delegate.getStorage(app.getApp(storage.app.name));
+  const service = delegate.getStorage(app.getApp(storage.app.name));
+  const instance = storage as StorageServiceInternal;
+
+  if (instance.host && instance.port) {
+    delegate.useStorageEmulator(service, instance.host, instance.port);
+  }
+
+  return service;
 }
 
 function getStorageReference(ref: StorageReference): delegate.StorageReference {
-  return delegate.ref(getStorageService(ref.storage));
+  return delegate.ref(getStorageService(ref.storage), ref.fullPath);
 }
 
 function convertListResult(storage: StorageService, result: delegate.ListResult): ListResult {
@@ -27,6 +39,19 @@ function convertListResult(storage: StorageService, result: delegate.ListResult)
     items: result.items.map(item => new StorageReferenceImpl(storage, item.fullPath)),
     prefixes: result.prefixes.map(item => new StorageReferenceImpl(storage, item.fullPath)),
   };
+}
+
+export function deleteObject(ref: StorageReference): Promise<void> {
+  return delegate.deleteObject(getStorageReference(ref));
+}
+
+export function getDownloadURL(ref: StorageReference): Promise<string> {
+  return delegate.getDownloadURL(getStorageReference(ref));
+}
+
+export async function getMetadata(ref: StorageReference): Promise<FullMetadata> {
+  const result = await delegate.getMetadata(getStorageReference(ref));
+  return toFullMetadata(result);
 }
 
 export function getStorage(app: FirebaseApp, bucketUrl?: string): StorageService {
@@ -42,6 +67,14 @@ export function getStorage(app: FirebaseApp, bucketUrl?: string): StorageService
   return storage;
 }
 
+export async function list(ref: StorageReference, options: ListOptions): Promise<ListResult> {
+  return convertListResult(ref.storage, await delegate.list(getStorageReference(ref), options));
+}
+
+export async function listAll(ref: StorageReference): Promise<ListResult> {
+  return convertListResult(ref.storage, await delegate.listAll(getStorageReference(ref)));
+}
+
 export async function setMaxOperationRetryTime(
   storage: StorageService,
   time: number,
@@ -54,47 +87,46 @@ export async function setMaxUploadRetryTime(storage: StorageService, time: numbe
 }
 
 export async function setMaxDownloadRetryTime(
-  _storage: StorageService,
-  _time: number,
+  storage: StorageService,
+  time: number,
 ): Promise<void> {
   // Noop on web
 }
 
-export function deleteObject(ref: StorageReference): Promise<void> {
-  return delegate.deleteObject(getStorageReference(ref));
-}
-
-export function getDownloadURL(ref: StorageReference): Promise<string> {
-  return delegate.getDownloadURL(getStorageReference(ref));
-}
-
-// TODO return type
-export async function getMetadata(ref: StorageReference): Promise<FullMetadata> {
-  return delegate.getMetadata(getStorageReference(ref));
-}
-
-export async function list(ref: StorageReference, options: ListOptions): Promise<ListResult> {
-  return convertListResult(ref.storage, await delegate.list(getStorageReference(ref), options));
-}
-
-export async function listAll(ref: StorageReference): Promise<ListResult> {
-  return convertListResult(ref.storage, await delegate.listAll(getStorageReference(ref)));
-}
-
-export function updateMetadata(
+export async function updateMetadata(
   ref: StorageReference,
   metadata: SettableMetadata,
 ): Promise<FullMetadata> {
-  return delegate.updateMetadata(getStorageReference(ref), metadata);
+  const result = await delegate.updateMetadata(getStorageReference(ref), metadata);
+  return toFullMetadata(result);
 }
 
-export function uploadBytes() {}
+export async function uploadBytes(
+  ref: StorageReference,
+  data: Blob | Uint8Array | ArrayBuffer,
+  metadata: UploadMetadata,
+): Promise<UploadResult> {
+  const result = await delegate.uploadBytes(getStorageReference(ref), data, metadata);
+  return toUploadResult(ref, result.metadata);
+}
 
-export function uploadBytesResumable() {}
+export function uploadBytesResumable(
+  ref: StorageReference,
+  data: Blob | Uint8Array | ArrayBuffer,
+  metadata?: UploadMetadata,
+): UploadTask {
+  return new UploadTaskImpl(
+    ref,
+    delegate.uploadBytesResumable(getStorageReference(ref), data, metadata),
+  );
+}
 
-export function uploadString() {}
-
-export function useStorageEmulator(storage: StorageService, host: string, port: number): void {
-  const service = getStorageService(storage);
-  delegate.useStorageEmulator(service, host, port);
+export async function uploadString(
+  ref: StorageReference,
+  value: string,
+  format?: string,
+  metadata?: UploadMetadata,
+): Promise<UploadResult> {
+  const result = await delegate.uploadString(getStorageReference(ref), value, format, metadata);
+  return toUploadResult(ref, result.metadata);
 }

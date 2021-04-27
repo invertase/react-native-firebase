@@ -1,6 +1,7 @@
 {
   "include": ["src/*"],
   "compilerOptions": {
+    "target": "ES5",
     "baseUrl": "./src/",
     "jsx": "react-native",
     "module": "esnext",

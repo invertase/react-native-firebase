@@ -6,6 +6,7 @@ import { binaryToBase64 } from './base64';
 export * from './ArgumentError';
 export * from './FirebaseError';
 export * from './guards';
+export * from './path';
 
 /**
  * A constant value representing whether the current platform is Android.

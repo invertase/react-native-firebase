@@ -80,7 +80,7 @@ export function isString(value: unknown): value is string {
  * @return {boolean}
  */
 export function isOptionalString(value: unknown): boolean {
-  if (isUndefined(value)) {
+  if (isUndefined(value) || isNull(value)) {
     return true;
   }
 
@@ -93,6 +93,19 @@ export function isOptionalString(value: unknown): boolean {
  * @return {boolean}
  */
 export function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
+}
+
+/**
+ * Simple is number check
+ * @param value
+ * @return {boolean}
+ */
+export function isOptionalNumber(value: unknown): value is number {
+  if (isUndefined(value) || isNull(value)) {
+    return true;
+  }
+
   return typeof value === 'number';
 }
 
@@ -153,7 +166,7 @@ export function isBoolean(value: unknown): value is boolean {
  * @return {boolean}
  */
 export function isOptionalBoolean(value: unknown): boolean {
-  if (isUndefined(value)) {
+  if (isUndefined(value) || isNull(value)) {
     return true;
   }
 

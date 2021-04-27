@@ -1,13 +1,7 @@
-import {
-  deleteApp,
-  getApp,
-  getApps,
-  initializeApp,
-  setAutomaticDataCollectionEnabled,
-} from '../src';
+import { deleteApp, getApp, getApps, setAutomaticDataCollectionEnabled } from '../src';
 import * as impl from '../src/impl';
 import { defaultAppName } from '../src/internal';
-import { createFirebaseApp, createFirebaseOptions } from './helpers';
+import { createFirebaseApp } from './helpers';
 
 jest.mock('../src/impl');
 

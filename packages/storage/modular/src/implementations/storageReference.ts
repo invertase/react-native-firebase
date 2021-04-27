@@ -1,11 +1,18 @@
+import {
+  pathParsed,
+  pathLastComponent,
+  pathParent,
+} from '@react-native-firebase-modular/app/internal';
 import { StorageReference, StorageService } from '../types';
 
 export default class StorageReferenceImpl implements StorageReference {
-  constructor(storage: StorageService, fullPath: string) {
-    this.fullPath = fullPath;
+  constructor(storage: StorageService, path: string) {
+    const parent = pathParent(path);
+
+    this.fullPath = pathParsed(path);
     this.bucket = storage.bucket;
-    this.name = fullPath;
-    this.parent = null;
+    this.name = pathLastComponent(path);
+    this.parent = parent ? new StorageReferenceImpl(storage, parent) : null;
     this.root = new StorageReferenceImpl(storage, '/');
     this.storage = storage;
   }

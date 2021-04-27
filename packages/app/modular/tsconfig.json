@@ -1,11 +1,11 @@
 {
-  "include": ["src/*", "src/internal/validation.ts"],
+  "include": ["src/*"],
   "compilerOptions": {
     "baseUrl": "./src/",
     "jsx": "react-native",
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": ["es2017"],
+    "lib": ["es2017", "DOM"],
     "declaration": true,
     "declarationMap": true,
     "outDir": "dist",

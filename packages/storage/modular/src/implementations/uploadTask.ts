@@ -1,59 +1,60 @@
-import { FirebaseError } from '@react-native-firebase-modular/app/internal';
-import { UploadTask } from '../types';
-
-export type UploadTaskCommand = () => Promise<boolean>;
-
-export type OnUploadTaskError = (error: FirebaseError) => Promise<unknown>;
-
-export type OnUploadTaskSuccess = (
-  onFulfilled?: (snapshot: any) => unknown | null,
-  onRejected?: (error: FirebaseError) => unknown | null,
-) => Promise<unknown>;
-
-type UploadTaskImplArguments = {
-  onCancel: UploadTaskCommand;
-  onResume: UploadTaskCommand;
-  onPause: UploadTaskCommand;
-  onError: OnUploadTaskError;
-  onSuccess: OnUploadTaskSuccess;
-};
-
+import * as delegate from 'firebase/storage';
+import { StorageReference, UploadTask, UploadTaskSnapshot } from '../types';
+import UploadTaskSnapshotImpl from './uploadTaskSnapshot';
 export default class UploadTaskImpl implements UploadTask {
-  constructor(args: UploadTaskImplArguments) {
-    this.onCancel = args.onCancel;
-    this.onResume = args.onResume;
-    this.onPause = args.onPause;
-    this.onError = args.onError;
-    this.onSuccess = args.onSuccess;
+  constructor(ref: StorageReference, task: delegate.UploadTask) {
+    this._ref = ref;
+    this._task = task;
   }
 
-  readonly snapshot: any;
+  private _ref: StorageReference;
+  private _task: delegate.UploadTask;
 
-  private onCancel: UploadTaskCommand;
-  private onResume: UploadTaskCommand;
-  private onPause: UploadTaskCommand;
-  private onError: OnUploadTaskError;
-  private onSuccess: OnUploadTaskSuccess;
-
-  cancel(): Promise<boolean> {
-    return this.onCancel();
+  private getUploadTaskSnapshot(snapshot: delegate.UploadTaskSnapshot): UploadTaskSnapshot {
+    return new UploadTaskSnapshotImpl(this._ref, this, snapshot);
   }
 
-  pause(): Promise<boolean> {
-    return this.onPause();
+  get snapshot(): UploadTaskSnapshot {
+    return this.getUploadTaskSnapshot(this._task.snapshot);
   }
 
-  resume(): Promise<boolean> {
-    return this.onResume();
+  async cancel() {
+    return this._task.cancel();
   }
 
-  then() {
-    return this.onSuccess();
+  async resume() {
+    return this._task.resume();
   }
 
-  catch() {
-    return this.onError();
+  async pause() {
+    return this._task.pause();
   }
 
-  on() {}
+  async then(onFulfilled?: (snapshot: any) => unknown) {
+    this._task.then(snapshot => {
+      onFulfilled?.(snapshot);
+    });
+  }
+
+  async catch(onRejected?: (error: any) => unknown) {
+    this._task.catch(error => {
+      onRejected?.(error);
+    });
+  }
+
+  on(
+    event: delegate.TaskEvent,
+    observer?: (snapshot: UploadTaskSnapshot) => unknown,
+    onError?: (error: any) => unknown,
+  ) {
+    return this._task.on(
+      event,
+      snapshot => {
+        observer?.(this.getUploadTaskSnapshot(snapshot));
+      },
+      error => {
+        onError?.(error);
+      },
+    );
+  }
 }
