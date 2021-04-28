@@ -26,7 +26,7 @@ describe('config', function () {
   });
 
   describe('json', function () {
-    xit('should read firebase.json data', async function () {
+    it('should read firebase.json data', async function () {
       const jsonData = await NativeModules.RNFBAppModule.jsonGetAll();
       jsonData.rnfirebase_json_testing_string.should.equal('abc');
       jsonData.rnfirebase_json_testing_boolean_false.should.equal(false);
