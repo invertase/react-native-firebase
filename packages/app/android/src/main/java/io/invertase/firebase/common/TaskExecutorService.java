@@ -17,9 +17,10 @@ package io.invertase.firebase.common;
  *
  */
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -96,12 +97,14 @@ public class TaskExecutorService {
   }
 
   public void shutdown() {
-    Set<String> existingExecutorNames = executors.keySet();
-    for (String executorName : existingExecutorNames) {
-      if (!executorName.startsWith(name)) {
-        existingExecutorNames.remove(executorName);
-      } else {
-        removeExecutor(executorName);
+    synchronized(executors) {
+      List<String> existingExecutorNames = new ArrayList<>(executors.keySet());
+      for (String executorName : existingExecutorNames) {
+        if (!executorName.startsWith(name)) {
+          executors.remove(executorName);
+        } else {
+          removeExecutor(executorName);
+        }
       }
     }
   }
