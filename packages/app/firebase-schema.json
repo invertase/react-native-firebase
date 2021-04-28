@@ -83,7 +83,7 @@
           "type": "number"
         },
         "android_background_activity_names": {
-          "description": "On Android, list the names of additional native activities which are used outside the context of the react native application",
+          "description": "The names of Activities used outside the context of react native, to be ignored when determining if foreground or background javascript handlers should be called",
           "type": "array"
         }
       }
