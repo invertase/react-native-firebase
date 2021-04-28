@@ -53,14 +53,17 @@ function Root() {
       style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
     >
       <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App2</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
       <Button
+        style={{ flex: 1, marginTop: 20 }}
         title={'Test Native Crash Now.'}
         onPress={() => {
           firebase.crashlytics().crash();
         }}
       />
+      <View testId="spacer" style={{ height: 20 }} />
       <Button
+        style={{ flex: 1, marginTop: 20 }}
         title={'Test Javascript Crash Now.'}
         onPress={() => {
           undefinedVariable.notAFunction();
