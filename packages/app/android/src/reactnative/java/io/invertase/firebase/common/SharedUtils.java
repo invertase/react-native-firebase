@@ -137,7 +137,7 @@ public class SharedUtils {
       if (backgroundActivities.size() != 0) {
         List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
 
-        if(taskInfo.size() > 0) {
+        if (taskInfo.size() > 0) {
           String currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
           if(backgroundActivities.contains(currentActivity)) {
             return false;
