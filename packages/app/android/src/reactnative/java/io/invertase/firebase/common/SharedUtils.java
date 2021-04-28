@@ -139,7 +139,7 @@ public class SharedUtils {
 
         if (taskInfo.size() > 0) {
           String currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
-          if(backgroundActivities.contains(currentActivity)) {
+          if (backgroundActivities.contains(currentActivity)) {
             return false;
           }
         }
