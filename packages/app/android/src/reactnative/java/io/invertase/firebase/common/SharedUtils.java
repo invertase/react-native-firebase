@@ -130,6 +130,23 @@ public class SharedUtils {
     List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
     if (appProcesses == null) return false;
 
+    // Check if current activity is a background activity
+    if(json.contains("background_activity_names"))
+    {
+      ArrayList<String> backgroundActivities = json.getArrayValue("background_activity_names");
+
+      if(backgroundActivities.size() != 0) {
+        List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
+
+        if(taskInfo.size() > 0) {
+          String currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
+          if(backgroundActivities.contains(currentActivity)) {
+            return false;
+          }
+        }
+      }
+    }
+
     final String packageName = context.getPackageName();
     for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
       if (

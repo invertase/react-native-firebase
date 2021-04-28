@@ -68,6 +68,26 @@ public class ReactNativeFirebaseJSON {
     return jsonObject.optString(key, defaultValue);
   }
 
+  public ArrayList<String> getArrayValue(String key) {
+    if (jsonObject == null) return new ArrayList<String>();
+
+    try {
+      ArrayList<String> result = new ArrayList<String>();
+      
+      JSONArray array = jsonObject.optJSONArray(key);
+      if(array != null){
+        for (int i=0;i<array.length();i++) {
+          result.add(array.getString(i));
+        }
+      }
+
+      return result;
+    }
+    catch (JSONException e) {
+      return new ArrayList<String>();
+    }
+  }
+
   public String getRawJSON() {
     return BuildConfig.FIREBASE_JSON_RAW;
   }
