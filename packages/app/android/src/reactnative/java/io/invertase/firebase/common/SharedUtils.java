@@ -131,8 +131,7 @@ public class SharedUtils {
     if (appProcesses == null) return false;
 
     // Check if current activity is a background activity
-    if(json.contains("background_activity_names"))
-    {
+    if (json.contains("android_background_activity_names")) {
       ArrayList<String> backgroundActivities = json.getArrayValue("background_activity_names");
 
       if(backgroundActivities.size() != 0) {
