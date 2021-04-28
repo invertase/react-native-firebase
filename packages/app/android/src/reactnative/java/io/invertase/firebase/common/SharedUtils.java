@@ -134,7 +134,7 @@ public class SharedUtils {
     if (json.contains("android_background_activity_names")) {
       ArrayList<String> backgroundActivities = json.getArrayValue("background_activity_names");
 
-      if(backgroundActivities.size() != 0) {
+      if (backgroundActivities.size() != 0) {
         List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
 
         if(taskInfo.size() > 0) {
