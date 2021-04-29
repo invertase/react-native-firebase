@@ -131,17 +131,26 @@ public class SharedUtils {
     if (appProcesses == null) return false;
 
     // Check if current activity is a background activity
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
     if (json.contains("android_background_activity_names")) {
       ArrayList<String> backgroundActivities = json.getArrayValue("android_background_activity_names");
-
+      
       if (backgroundActivities.size() != 0) {
-        List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
-
-        if (taskInfo.size() > 0) {
-          String currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
-          if (backgroundActivities.contains(currentActivity)) {
-            return false;
+        String currentActivity = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
+          if(taskInfo.size() > 0) {
+            currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
           }
+        } else {
+          List<ActivityManager.RunningTaskInfo> taskInfo = activityManager.getRunningTasks(1);
+          if(taskInfo.size() > 0) {
+            currentActivity = taskInfo.get(0).topActivity.getShortClassName();
+          }
+        }
+
+        if (currentActivity != "" && backgroundActivities.contains(currentActivity)) {
+          return false;
         }
       }
     }
