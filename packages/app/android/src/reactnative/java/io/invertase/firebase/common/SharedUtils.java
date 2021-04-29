@@ -149,7 +149,7 @@ public class SharedUtils {
           }
         }
 
-        if (currentActivity != "" && backgroundActivities.contains(currentActivity)) {
+        if (!"".equals(currentActivity) && backgroundActivities.contains(currentActivity)) {
           return false;
         }
       }
