@@ -144,7 +144,7 @@ public class SharedUtils {
           }
         } else {
           List<ActivityManager.RunningTaskInfo> taskInfo = activityManager.getRunningTasks(1);
-          if(taskInfo.size() > 0) {
+          if (taskInfo.size() > 0) {
             currentActivity = taskInfo.get(0).topActivity.getShortClassName();
           }
         }
