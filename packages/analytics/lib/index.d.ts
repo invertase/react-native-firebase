@@ -103,6 +103,10 @@ export namespace FirebaseAnalyticsTypes {
      * The Item quantity.
      */
     quantity?: number;
+    /**
+     * The Item price.
+     */
+    price?: number;
   }
 
   export interface AddPaymentInfoEventParameters {
