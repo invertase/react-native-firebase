@@ -376,7 +376,7 @@ describe('analytics()', function () {
             item_location_id: 'foo',
             price: 123,
           },
-        ]
+        ],
       });
     });
   });
