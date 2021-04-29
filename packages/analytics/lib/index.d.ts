@@ -105,6 +105,8 @@ export namespace FirebaseAnalyticsTypes {
     quantity?: number;
     /**
      * The Item price.
+     * Note that firebase analytics will display this as an integer with trailing zeros, due to some firebase-internal conversion.
+     * See https://github.com/invertase/react-native-firebase/issues/4578#issuecomment-771703420 for more information
      */
     price?: number;
   }
