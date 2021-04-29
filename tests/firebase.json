@@ -1,5 +1,7 @@
 {
   "react-native": {
+    "android_background_activity_names": "NotActuallyAnActivity",
+
     "admob_delay_app_measurement_init": true,
     "admob_ios_app_id": "ca-app-pub-4406399463942824~1625911479",
     "admob_android_app_id": "ca-app-pub-4406399463942824~1625911479",
