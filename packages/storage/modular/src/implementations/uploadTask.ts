@@ -30,14 +30,14 @@ export default class UploadTaskImpl implements UploadTask {
     return this._task.pause();
   }
 
-  async then(onFulfilled?: (snapshot: any) => unknown) {
-    this._task.then(snapshot => {
-      onFulfilled?.(snapshot);
+  async then(onFulfilled?: (snapshot: UploadTaskSnapshot) => unknown): Promise<unknown> {
+    return this._task.then(snapshot => {
+      onFulfilled?.(this.getUploadTaskSnapshot(snapshot));
     });
   }
 
-  async catch(onRejected?: (error: any) => unknown) {
-    this._task.catch(error => {
+  async catch(onRejected?: (error: any) => unknown): Promise<unknown> {
+    return this._task.catch(error => {
       onRejected?.(error);
     });
   }

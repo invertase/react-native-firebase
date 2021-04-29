@@ -1,12 +1,6 @@
 import * as web from 'firebase/storage';
 import { FirebaseApp } from '@react-native-firebase-modular/app';
 
-import type {
-  UploadTaskCommand,
-  OnUploadTaskError,
-  OnUploadTaskSuccess,
-} from './implementations/uploadTask.native';
-
 export interface StorageService extends web.StorageService {
   readonly app: FirebaseApp;
   readonly maxOperationRetryTime: number;
@@ -58,7 +52,7 @@ export interface UploadTask {
   resume(): Promise<boolean>;
   pause(): Promise<boolean>;
   on(
-    event: web.TaskEvent,
+    event: typeof TaskEvent,
     observer?: (snapshot: UploadTaskSnapshot) => unknown,
     error?: (error: any) => unknown,
   ): () => void;
@@ -70,17 +64,11 @@ export interface UploadTaskSnapshot {
   readonly bytesTransferred: number;
   readonly metadata: FullMetadata;
   readonly ref: StorageReference;
-  readonly state: web.TaskState;
+  readonly state: TaskState;
   readonly task: UploadTask;
   readonly totalBytes: number;
 }
 
-// export type UploadTask = {
-//   readonly snapshot: any;
-//   cancel: UploadTaskCommand;
-//   pause: UploadTaskCommand;
-//   resume: UploadTaskCommand;
-//   then: UploadTaskCommand;
-//   catch: OnUploadTaskError;
-//   on(event: 'state_changed', nextOrObserver: any, error?: any): () => void;
-// };
+export const TaskEvent = 'state_changed';
+
+export type TaskState = web.TaskState;

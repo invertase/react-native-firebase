@@ -1,59 +1,104 @@
-import { FirebaseError } from '@react-native-firebase-modular/app/internal';
-import { UploadTask } from '../types';
+import { StorageReference, TaskEvent, UploadTask, UploadTaskSnapshot } from '../types';
+import UploadTaskSnapshotImpl from './uploadTaskSnapshot.native';
+import { NativeTaskSnapshot } from '../impl.native';
 
-export type UploadTaskCommand = () => Promise<boolean>;
+type OnCreateTaskCallback = (taskId: number) => Promise<NativeTaskSnapshot>;
 
-export type OnUploadTaskError = (error: FirebaseError) => Promise<unknown>;
+type OnSetTaskStatusCallback = (taskId: number, status: any) => Promise<boolean>;
 
-export type OnUploadTaskSuccess = (
-  onFulfilled?: (snapshot: any) => unknown | null,
-  onRejected?: (error: FirebaseError) => unknown | null,
-) => Promise<unknown>;
+type OnSetTaskEventCallback = (taskId: number, callbacks: TaskEventCallbacks) => () => void;
 
-type UploadTaskImplArguments = {
-  onCancel: UploadTaskCommand;
-  onResume: UploadTaskCommand;
-  onPause: UploadTaskCommand;
-  onError: OnUploadTaskError;
-  onSuccess: OnUploadTaskSuccess;
+type TaskEventCallbacks = {
+  onStateChanged: (snapshot: NativeTaskSnapshot) => void;
+  onFailure: (error: any) => void;
+  onSuccess: (snapshot: NativeTaskSnapshot) => void;
 };
 
+type UploadTaskImplConfig = {
+  onTaskCreate: OnCreateTaskCallback;
+  onSetTaskStatus: OnSetTaskStatusCallback;
+  onTaskEvent: OnSetTaskEventCallback;
+};
+
+// Internal task ID tracking
+let TASK_ID = 0;
+
 export default class UploadTaskImpl implements UploadTask {
-  constructor(args: UploadTaskImplArguments) {
-    this.onCancel = args.onCancel;
-    this.onResume = args.onResume;
-    this.onPause = args.onPause;
-    this.onError = args.onError;
-    this.onSuccess = args.onSuccess;
+  constructor(ref: StorageReference, config: UploadTaskImplConfig) {
+    this._ref = ref;
+    this._id = TASK_ID++;
+    this._config = config;
+    this._promise = null;
+    this._snapshot = null;
   }
 
-  readonly snapshot: any;
+  private _ref: StorageReference;
+  private _id: number;
+  private _config: UploadTaskImplConfig;
+  private _promise: Promise<NativeTaskSnapshot> | null;
+  private _snapshot: UploadTaskSnapshot | null;
 
-  private onCancel: UploadTaskCommand;
-  private onResume: UploadTaskCommand;
-  private onPause: UploadTaskCommand;
-  private onError: OnUploadTaskError;
-  private onSuccess: OnUploadTaskSuccess;
+  get snapshot(): UploadTaskSnapshot {
+    if (!this._snapshot) {
+      return UploadTaskSnapshotImpl.stub(this._ref, this);
+    }
+
+    return this._snapshot;
+  }
 
   cancel(): Promise<boolean> {
-    return this.onCancel();
+    // TODO enum
+    return this._config.onSetTaskStatus(this._id, 2);
   }
 
   pause(): Promise<boolean> {
-    return this.onPause();
+    // TODO enum
+    return this._config.onSetTaskStatus(this._id, 0);
   }
 
   resume(): Promise<boolean> {
-    return this.onResume();
+    // TODO enum
+    return this._config.onSetTaskStatus(this._id, 1);
   }
 
-  then() {
-    return this.onSuccess();
+  async then(onFulfilled?: (snapshot: UploadTaskSnapshot) => unknown): Promise<unknown> {
+    if (!this._promise) {
+      this._promise = this._config.onTaskCreate(this._id);
+    }
+
+    return this._promise.then(nativeSnapshot => {
+      this._snapshot = new UploadTaskSnapshotImpl(this._ref, this, nativeSnapshot);
+      onFulfilled?.(this._snapshot);
+    });
   }
 
-  catch() {
-    return this.onError();
+  async catch(onRejected?: (error: any) => unknown) {
+    if (!this._promise) {
+      this._promise = this._config.onTaskCreate(this._id);
+    }
+
+    return this._promise.catch(error => {
+      onRejected?.(error);
+    });
   }
 
-  on() {}
+  on(
+    event: typeof TaskEvent,
+    observer?: (snapshot: UploadTaskSnapshot) => unknown,
+    onError?: (error: any) => unknown,
+  ) {
+    return this._config.onTaskEvent(this._id, {
+      onFailure(error) {
+        onError?.(error);
+      },
+      onSuccess: nativeSnapshot => {
+        this._snapshot = new UploadTaskSnapshotImpl(this._ref, this, nativeSnapshot);
+        observer?.(this._snapshot);
+      },
+      onStateChanged: nativeSnapshot => {
+        this._snapshot = new UploadTaskSnapshotImpl(this._ref, this, nativeSnapshot);
+        observer?.(this._snapshot);
+      },
+    });
+  }
 }

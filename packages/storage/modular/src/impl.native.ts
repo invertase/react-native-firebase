@@ -1,5 +1,10 @@
+import { EmitterSubscription } from 'react-native';
 import { FirebaseApp } from '@react-native-firebase-modular/app';
-import { getNativeModule, toBase64String } from '@react-native-firebase-modular/app/internal';
+import {
+  eventNameForApp,
+  getNativeModule,
+  toBase64String,
+} from '@react-native-firebase-modular/app/internal';
 import StorageServiceImpl from './implementations/storageService';
 import UploadTaskImpl from './implementations/uploadTask.native';
 import { toFullMetadata, toUploadResult } from './validation';
@@ -14,6 +19,8 @@ import {
   UploadResult,
   UploadMetadata,
   UploadTask,
+  TaskEvent,
+  TaskState,
 } from './types';
 
 interface StorageModule {
@@ -38,11 +45,12 @@ interface StorageModule {
     appName: string,
     url: string,
     value: string,
-    format?: string,
-    metadata?: UploadMetadata,
+    format: string,
+    metadata: UploadMetadata,
+    taskId: number,
   ): Promise<NativeTaskSnapshot>;
   // putFile(appName: string, time: number): Promise<void>;
-  // setTaskStatus(appName: string, taskId: number, status: number): Promise<boolean>;
+  setTaskStatus(appName: string, taskId: number, status: number): Promise<boolean>;
 }
 
 type NativeListResult = {
@@ -51,10 +59,10 @@ type NativeListResult = {
   readonly prefixes: ReadonlyArray<string>;
 };
 
-type NativeTaskSnapshot = {
+export type NativeTaskSnapshot = {
   totalBytes: number;
   bytesTransferred: number;
-  state: any; // TODO
+  state: TaskState; // TODO
   metadata: FullMetadata;
 };
 
@@ -146,7 +154,7 @@ export async function updateMetadata(
 export async function uploadBytes(
   ref: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
-  metadata?: UploadMetadata,
+  metadata: UploadMetadata,
 ): Promise<UploadResult> {
   const { value, format } = await toBase64String(data);
   const result = await delegate().module.putString(
@@ -155,6 +163,7 @@ export async function uploadBytes(
     value,
     format,
     metadata,
+    -1, // TODO is this right?
   );
 
   return {
@@ -166,23 +175,69 @@ export async function uploadBytes(
 export function uploadBytesResumable(
   ref: StorageReference,
   data: Blob | Uint8Array | ArrayBuffer,
-  metadata?: UploadMetadata,
+  metadata: UploadMetadata,
 ): UploadTask {
-  return {} as UploadTask;
+  return new UploadTaskImpl(ref, {
+    async onTaskCreate(taskId) {
+      const { value, format } = await toBase64String(data);
+      return delegate().module.putString(
+        ref.storage.app.name,
+        ref.fullPath,
+        value,
+        format,
+        metadata,
+        taskId,
+      );
+    },
+    onSetTaskStatus(taskId, status) {
+      return delegate().module.setTaskStatus(ref.storage.app.name, taskId, status);
+    },
+    onTaskEvent(taskId, callbacks) {
+      const listeners: EmitterSubscription[] = [];
+
+      listeners.push(
+        delegate().emitter.addListener(
+          `${eventNameForApp(ref.storage.app, taskId.toString(), 'failure')}`,
+          callbacks.onStateChanged,
+        ),
+      );
+
+      listeners.push(
+        delegate().emitter.addListener(
+          `${eventNameForApp(ref.storage.app, taskId.toString(), 'success')}`,
+          callbacks.onSuccess,
+        ),
+      );
+
+      listeners.push(
+        delegate().emitter.addListener(
+          `${eventNameForApp(ref.storage.app, taskId.toString(), TaskEvent)}`,
+          callbacks.onStateChanged,
+        ),
+      );
+
+      return () => {
+        for (const listener of listeners) {
+          listener.remove();
+        }
+      };
+    },
+  });
 }
 
 export async function uploadString(
   ref: StorageReference,
   value: string,
-  format?: string,
-  metadata?: UploadMetadata,
+  format: string,
+  metadata: UploadMetadata,
 ): Promise<UploadResult> {
   const result = await delegate().module.putString(
     ref.storage.app.name,
     ref.fullPath,
     value,
-    format,
+    format ?? '',
     metadata,
+    -1, // TODO is this right
   );
 
   return toUploadResult(ref, result.metadata);
