@@ -81,6 +81,10 @@
         "android_task_executor_keep_alive_seconds": {
           "description": "Keep-alive time of ThreadPoolExecutor used by RNFirebase for Android, in seconds. Defaults to `3`.\n Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time.",
           "type": "number"
+        },
+        "android_background_activity_names": {
+          "description": "The names (as returned by `getShortClassName()` of Activities used outside the context of react native.\nThese are ignored when determining if the app is in foreground for purposes of calling javascript background handlers",
+          "type": "array"
         }
       }
     }
