@@ -83,7 +83,7 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
             } else {
               remoteMessageMap = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
             }
-            if (remoteMessageMap != null){
+            if (remoteMessageMap != null) {
               promise.resolve(remoteMessageMap);
               initialNotificationMap.put(messageId, true);
               return;
@@ -228,9 +228,10 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
         } else {
           remoteMessageMap = ReactNativeFirebaseMessagingSerializer.remoteMessageToWritableMap(remoteMessage);
         }
-        
-        if (remoteMessageMap != null){
-          initialNotification = remoteMessageMap;
+
+        if (remoteMessageMap != null) {
+          // WritableNativeMap not be consumed twice. But it is resolved in future and in event below. Make a copy - issue #5231
+          initialNotification = remoteMessageMap.copy();
           ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
 
           ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
