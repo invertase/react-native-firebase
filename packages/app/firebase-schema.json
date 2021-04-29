@@ -83,7 +83,7 @@
           "type": "number"
         },
         "android_background_activity_names": {
-          "description": "The names of Activities used outside the context of react native, to be ignored when determining if foreground or background javascript handlers should be called",
+          "description": "The names (as returned by `getShortClassName()` of Activities used outside the context of react native.\nThese are ignored when determining if the app is in foreground for purposes of calling javascript background handlers",
           "type": "array"
         }
       }
