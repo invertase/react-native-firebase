@@ -139,7 +139,7 @@ public class SharedUtils {
         String currentActivity = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           List<ActivityManager.AppTask> taskInfo = activityManager.getAppTasks();
-          if(taskInfo.size() > 0) {
+          if (taskInfo.size() > 0) {
             currentActivity = taskInfo.get(0).getTaskInfo().baseActivity.getShortClassName();
           }
         } else {
