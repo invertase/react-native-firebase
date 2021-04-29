@@ -368,6 +368,15 @@ describe('analytics()', function () {
     it('calls logViewItemList', async function () {
       await firebase.analytics().logViewItemList({
         item_list_name: 'foo',
+        items: [
+          {
+            item_id: 'foo',
+            item_name: 'foo',
+            item_category: 'foo',
+            item_location_id: 'foo',
+            price: 123,
+          },
+        ],
       });
     });
   });
