@@ -44,6 +44,10 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Get Xcode version
+        id: xcode-version
+        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
+
       - name: Install firebase CLI
         uses: nick-invision/retry@v2
         with:
@@ -60,10 +64,6 @@ jobs:
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
-
-      - name: Get Xcode version
-        id: xcode-version
-        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
