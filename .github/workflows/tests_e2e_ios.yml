@@ -75,15 +75,19 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+          restore-keys: ${{ runner.os }}-yarn-
 
       - uses: actions/cache@v2
         name: Cache Pods
+        id: pods-cache
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+          restore-keys: ${{ runner.os }}-pods-
 
       - uses: actions/cache@v2
         name: Detox Framework Cache
+        id: detox-cache
         with:
           path: ~/Library/Detox/ios
           key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
