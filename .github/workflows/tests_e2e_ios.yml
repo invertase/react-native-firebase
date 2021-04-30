@@ -1,0 +1,174 @@
+name: Testing E2E iOS
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+jobs:
+  ios:
+    name: iOS
+    runs-on: macos-latest
+    # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
+    timeout-minutes: 60
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install firebase CLI
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
+
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1
+
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
+
+      - name: Get Xcode version
+        id: xcode-version
+        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+
+      - uses: actions/cache@v2
+        name: Cache Pods
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
+
+      - uses: actions/cache@v2
+        name: Detox Framework Cache
+        with:
+          path: ~/Library/Detox/ios
+          key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
+
+      - name: Yarn Install
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn --no-audit --prefer-offline
+
+      - name: Update Ruby build tools
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: gem update cocoapods xcodeproj
+
+      - name: Pod Install
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: yarn tests:ios:pod:install
+
+      - name: Build iOS App
+        run: |
+          export SKIP_BUNDLING=1
+          export RCT_NO_LAUNCH_PACKAGER=1
+          cd tests
+          set -o pipefail
+          ./node_modules/.bin/detox build --configuration ios.sim.debug
+        shell: bash
+
+      - name: Install applesimutils
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils && applesimutils --list
+
+      - name: Pre-fetch Javascript bundle
+        run: |
+          nohup yarn tests:packager:jet &
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online! Preparing bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=ios&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready"
+
+      - name: Create Simulator Log
+        # With a little delay so the detox test below has time to spawn it, missing the first part of boot is fine
+        # If you boot the simulator separately from detox, some other race fails and detox testee never sends ready to proxy
+        continue-on-error: true
+        run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
+
+      - name: Detox Test
+        timeout-minutes: 40
+        run: |
+          cd tests
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --debug-synchronization 200 --configuration ios.sim.debug --cleanup
+
+      - name: Compress Simulator Log
+        if: always()
+        run: gzip -9 simulator.log
+
+      - name: Upload Simulator Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: simulator_logs
+          path: simulator.log.gz
+
+      - name: Submit Coverage
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
