@@ -150,7 +150,7 @@
         rejecter:
         (RCTPromiseRejectBlock) reject) {
     @try {
-      [FIRAnalytics setDefaultEventParameters:parameters:[self cleanJavascriptParams:params]];
+      [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
     } @catch (NSException *exception) {
       return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
