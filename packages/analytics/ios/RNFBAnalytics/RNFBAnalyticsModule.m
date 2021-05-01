@@ -143,7 +143,6 @@
   }
 
   RCT_EXPORT_METHOD(setDefaultEventParameters:
-    params:
         (NSDictionary *) params
         resolver:
         (RCTPromiseResolveBlock) resolve
