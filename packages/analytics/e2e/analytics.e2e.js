@@ -428,7 +428,7 @@ describe('analytics()', function () {
       await firebase.analytics().setDefaultEventParameters(undefined);
     });
 
-    it('log an event with parameters', async function () {
+    it('set default parameters', async function () {
       await firebase.analytics().setDefaultEventParameters({ number: 1, stringn: '123' });
     });
   });
