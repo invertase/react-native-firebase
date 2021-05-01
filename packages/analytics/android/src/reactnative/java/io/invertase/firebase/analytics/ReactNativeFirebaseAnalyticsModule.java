@@ -131,6 +131,17 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
     });
   }
 
+  @ReactMethod
+  public void setDefaultEventParameters(@Nullable ReadableMap params, Promise promise) {
+    module.setDefaultEventParameters(toBundle(params)).addOnCompleteListener(task -> {
+      if (task.isSuccessful()) {
+        promise.resolve(task.getResult());
+      } else {
+        rejectPromiseWithExceptionMap(promise, task.getException());
+      }
+    });
+  }
+
   private Bundle toBundle(ReadableMap readableMap) {
     Bundle bundle = Arguments.toBundle(readableMap);
     if (bundle == null) {
