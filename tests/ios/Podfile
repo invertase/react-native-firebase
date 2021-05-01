@@ -11,10 +11,6 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
-# This is needed to reduce flakiness where leveldb is transitively included by database, and packed as framework
-# from the pre-compiled firestore-ios-sdk-frameworks
-$FirebaseFirestoreExcludeLeveldb = true
-
 # Versions used below, for quick reference / outdated+upgrade checks
 $iOSMinimumDeployVersion = '10.0'
 
@@ -35,8 +31,11 @@ target 'testing' do
     :hermes_enabled => false
   )
 
-  # Use pre-compiled firestore frameworks to optimize compile time. But make sure there are not leveldb conflicts.
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
+  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+
+  # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
+  pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :commit => 'af5c7177c896d69d73acb173c265d7efe8886126'
 
   # Enables Flipper.
   #
