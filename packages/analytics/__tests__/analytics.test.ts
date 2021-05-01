@@ -168,7 +168,7 @@ describe('Analytics', function () {
     it('errors if params is not a object', function () {
       // @ts-ignore test
       expect(() => firebase.analytics().setDefaultEventParameters('123')).toThrowError(
-        "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value.",
+        "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
       );
     });
   });
