@@ -1487,7 +1487,7 @@ export namespace FirebaseAnalyticsTypes {
      * Setting a key's value to null will clear that parameter. Passing in a null bundle
      * will clear all parameters.
      */
-     setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
+    setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
   }
 }
 
