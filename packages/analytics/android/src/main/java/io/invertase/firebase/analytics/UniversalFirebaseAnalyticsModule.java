@@ -96,4 +96,11 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
       return null;
     });
   }
+
+  Task<Void> setDefaultEventParameters(Bundle parameters) {
+    return Tasks.call(() -> {
+      FirebaseAnalytics.getInstance(getContext()).setDefaultEventParameters(parameters);
+      return null;
+    });
+  }
 }

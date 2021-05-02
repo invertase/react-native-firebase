@@ -142,6 +142,21 @@
       return resolve([FIRAnalytics appInstanceID]);
   }
 
+  RCT_EXPORT_METHOD(setDefaultEventParameters:
+        (NSDictionary *) params
+        resolver:
+        (RCTPromiseResolveBlock) resolve
+        rejecter:
+        (RCTPromiseRejectBlock) reject) {
+    @try {
+      [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
+    } @catch (NSException *exception) {
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    }
+
+    return resolve([NSNull null]);
+  }
+
 #pragma mark -
 #pragma mark Private methods
 
