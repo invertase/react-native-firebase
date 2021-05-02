@@ -1468,6 +1468,26 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.ViewSearchResultsParameters}.
      */
     logViewSearchResults(params: ViewSearchResultsParameters): Promise<void>;
+
+    /**
+     * Adds parameters that will be set on every event logged from the SDK, including automatic ones.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.analytics().setDefaultEventParameters({
+     *   userId: '1234',
+     * });
+     * ```
+     *
+     *
+     * @param params Parameters to be added to the map of parameters added to every event.
+     * They will be added to the map of default event parameters, replacing any existing
+     * parameter with the same name. Valid parameter values are String, long, and double.
+     * Setting a key's value to null will clear that parameter. Passing in a null bundle
+     * will clear all parameters.
+     */
+    setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
   }
 }
 

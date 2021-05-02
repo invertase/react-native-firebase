@@ -164,6 +164,15 @@ describe('Analytics', function () {
     });
   });
 
+  describe('setDefaultEventParameters()', function () {
+    it('errors if params is not a object', function () {
+      // @ts-ignore test
+      expect(() => firebase.analytics().setDefaultEventParameters('123')).toThrowError(
+        "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
+      );
+    });
+  });
+
   describe('logAddToCart()', function () {
     it('errors if param is not an object', function () {
       // @ts-ignore test

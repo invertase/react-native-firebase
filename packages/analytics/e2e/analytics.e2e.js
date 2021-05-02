@@ -418,4 +418,18 @@ describe('analytics()', function () {
       });
     });
   });
+
+  describe('setDefaultEventParameters()', function () {
+    it('set null default parameter', async function () {
+      await firebase.analytics().setDefaultEventParameters(null);
+    });
+
+    it('set undefined default parameter', async function () {
+      await firebase.analytics().setDefaultEventParameters(undefined);
+    });
+
+    it('set default parameters', async function () {
+      await firebase.analytics().setDefaultEventParameters({ number: 1, stringn: '123' });
+    });
+  });
 });

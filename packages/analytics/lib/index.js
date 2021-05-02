@@ -666,6 +666,16 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       ),
     );
   }
+
+  setDefaultEventParameters(params) {
+    if (!isObject(params) && !isNull(params) && !isUndefined(params)) {
+      throw new Error(
+        "firebase.analytics().setDefaultEventParameters(*) 'params' expected an object value when it is defined.",
+      );
+    }
+
+    return this.native.setDefaultEventParameters(params);
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/analytics';
