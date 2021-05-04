@@ -239,11 +239,6 @@ export namespace FirebaseAdMobTypes {
 
     /**
      * A (next generation) dynamically sized banner that is full-width and auto-height.
-<<<<<<< HEAD
-     *
-     * iOS only
-=======
->>>>>>> 684bb50368cb797ae9fda8fb56df2e2376d59c30
      */
     ADAPTIVE_BANNER: 'ADAPTIVE_BANNER';
 
