@@ -116,45 +116,18 @@ jobs:
           max_attempts: 3
           command: yarn tests:ios:pod:install
 
-      - uses: actions/cache@v2
-        name: Buildcache Cache
-        id: buildcache-cache
+      - uses: mikehardy/buildcache-action@v1
+        name: Buildcache
         with:
-          path: ~/.buildcache
           key: ${{ runner.os }}-v1
-
-      - name: Fetch buildcache
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: cd $HOME && curl -s https://api.github.com/repos/mbitsnbites/buildcache/releases/latest | grep -o "https://.*macos\.zip" | xargs curl -fsLJO
-
-      - name: Install buildcache
-        run: |
-          pwd
-          cd $HOME
-          ls -la
-          unzip buildcache-macos.zip
-          ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang
-          ln -s $HOME/buildcache/bin/buildcache $HOME/buildcache/bin/clang++
-          echo "BUILDCACHE_MAX_CACHE_SIZE=525288000" >> $GITHUB_ENV
-          echo "BUILDCACHE_DEBUG=2" >> $GITHUB_ENV
-          echo "BUILDCACHE_LOG_FILE=$HOME/buildcache.log" >> $GITHUB_ENV
-          echo $HOME/buildcache/bin >> $GITHUB_PATH
 
       - name: Build iOS App
         run: |
-          $HOME/buildcache/bin/buildcache -c
-          $HOME/buildcache/bin/buildcache -s
-          which clang
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
           cd tests
           set -o pipefail
           ./node_modules/.bin/detox build --configuration ios.sim.debug
-          $HOME/buildcache/bin/buildcache -s
         shell: bash
 
       - name: Install applesimutils
@@ -194,7 +167,7 @@ jobs:
         if: always()
         with:
           name: buildcache_log
-          path: $BUILDCACHE_LOG_FILE
+          path: ./.buildcache/buildcache.log
 
       - name: Compress Simulator Log
         if: always()
