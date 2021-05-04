@@ -1204,7 +1204,7 @@ export namespace FirebaseAnalyticsTypes {
      * can help you identify popular content and categories of content in your app.
      *
      * Logged event name: `select_content`
-     *ana
+     *
      * #### Example
      *
      * ```js
@@ -1218,19 +1218,24 @@ export namespace FirebaseAnalyticsTypes {
      */
     logSelectContent(params: SelectContentEventParameters): Promise<void>;
     /**
-     * Select Content event. This general purpose event signifies that a user has selected some
-     * content of a certain type in an app. The content can be any object in your app. This event
-     * can help you identify popular content and categories of content in your app.
+     * Select Item event. This event signifies that an item was selected by a user from a list.
+     * Use the appropriate parameters to contextualize the event.
+     * Use this event to discover the most popular items selected.
      *
-     * Logged event name: `select_content`
-     *ana
+     * Logged event name: `select_item`
+     *
      * #### Example
      *
      * ```js
      * await firebase.analytics().logSelectItem({
      *  item_list_id: '54690834',
-     *  item_list_name: 'purple baseball cap',
-     *  content_type: 'cap',
+     *  item_list_name: 't-shirts',
+     *  items: [{
+     *     item_brand: 'cool-shirt-brand',
+     *     item_id: '23456',
+     *     item_name: 'orange t-shirt',
+     *     item_category: 'round necked t-shirts',
+     *   }]
      * });
      * ```
      *
