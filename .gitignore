@@ -558,7 +558,7 @@ app.playground.js
 app.admob.js
 app.smartreply.js
 eslint-report.json
-yarn.lock
+spelling.json
 
 # Gatsby / Website
 website/.cache

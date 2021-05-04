@@ -3,13 +3,15 @@ title: Remote Config
 description: Installation and getting started with Remote Config.
 icon: //static.invertase.io/assets/firebase/remote-config.svg
 next: /perf/usage
-previous: /ml-vision/face-detection
+previous: /ml/image-labeling
 ---
 
 # Installation
 
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
 [Getting Started](/) documentation.
+
+This module also requires that the `@react-native-firebase/analytics` module is already setup and installed. To install the "analytics" module, view it's [Getting Started](/analytics/usage) documentation.
 
 ```bash
 # Install & setup the app module
@@ -85,8 +87,10 @@ remoteConfig()
   .then(fetchedRemotely => {
     if (fetchedRemotely) {
       console.log('Configs were retrieved from the backend and activated.');
-      } else {
-      console.log('No configs were fetched from the backend, and the local configs were already activated');
+    } else {
+      console.log(
+        'No configs were fetched from the backend, and the local configs were already activated',
+      );
     }
   });
 ```
@@ -121,11 +125,11 @@ The API also provides a `getAll` method to read all parameters at once rather th
 ```js
 const parameters = remoteConfig().getAll();
 
-Object.entries(parameters).forEach(($) => {
+Object.entries(parameters).forEach($ => {
   const [key, entry] = $;
-  console.log('Key: ', key); 
-  console.log('Source: ', entry.getSource()); 
-  console.log('Value: ', entry.asString()); 
+  console.log('Key: ', key);
+  console.log('Source: ', entry.getSource());
+  console.log('Value: ', entry.asString());
 });
 ```
 

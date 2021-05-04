@@ -15,11 +15,16 @@
  *
  */
 
+
 module.exports = async function parseMdx({ node, getNode, actions }) {
+
   if (node.internal.type !== 'Mdx') return;
 
   // Mdx nodes parents are a File
   const File = getNode(node.parent);
+
+  // Skip Script Generated MDX
+  if (!File.relativePath) return;
 
   // Create a slug for the file
   let slug = `/${File.relativePath.toLowerCase()}`;

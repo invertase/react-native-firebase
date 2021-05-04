@@ -159,7 +159,7 @@ export namespace ReactNativeFirebase {
      * @param options Options to configure the services used in the App.
      * @param config The optional config for your firebase app
      */
-    initializeApp(options: FirebaseAppOptions, config?: FirebaseAppConfig): FirebaseApp;
+    initializeApp(options: FirebaseAppOptions, config?: FirebaseAppConfig): Promise<FirebaseApp>;
 
     /**
      * Create (and initialize) a FirebaseApp.
@@ -168,7 +168,7 @@ export namespace ReactNativeFirebase {
      * @param name The optional name of the app to initialize ('[DEFAULT]' if
      * omitted)
      */
-    initializeApp(options: FirebaseAppOptions, name?: string): FirebaseApp;
+    initializeApp(options: FirebaseAppOptions, name?: string): Promise<FirebaseApp>;
 
     /**
      * Retrieve an instance of a FirebaseApp.
@@ -220,6 +220,7 @@ export namespace ReactNativeFirebase {
     private emitter: any;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   export type FirebaseModuleWithStatics<M, S = {}> = {
     (): M;
 
@@ -229,6 +230,7 @@ export namespace ReactNativeFirebase {
     readonly SDK_VERSION: string;
   } & S;
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   export type FirebaseModuleWithStaticsAndApp<M, S = {}> = {
     (app?: FirebaseApp): M;
 
@@ -237,12 +239,6 @@ export namespace ReactNativeFirebase {
      */
     readonly SDK_VERSION: string;
   } & S;
-
-  /**
-   * React Native Firebase `firebase.json` config
-   */
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface FirebaseJsonConfig {}
 }
 
 /*
@@ -287,6 +283,11 @@ export namespace Utils {
      * Returns an absolute path to the users Documents directory.
      *
      * Use this directory to place documents that have been created by the user.
+     *
+     * Normally this is the external files directory on Android but if no external storage directory found,
+     * e.g. removable media has been ejected by the user, it will fall back to internal storage. This may
+     * under rare circumstances where device storage environment changes cause the directory to be different
+     * between runs of the application
      *
      * ```js
      * firebase.utils.FilePath.DOCUMENT_DIRECTORY;

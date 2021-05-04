@@ -29,14 +29,13 @@ import '@react-native-firebase/functions';
 import '@react-native-firebase/iid';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/messaging';
-import '@react-native-firebase/ml-natural-language';
-import '@react-native-firebase/ml-vision';
+import '@react-native-firebase/ml';
 import '@react-native-firebase/perf';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
-import { AppRegistry, NativeModules, Text, View } from 'react-native';
+import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -45,13 +44,31 @@ jet.exposeContextProperty('module', firebase);
 const firestore = firebase.firestore();
 firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
 
+firebase.auth().useEmulator('http://localhost:9099');
+
 function Root() {
   return (
     <View
       testID="welcome"
       style={{ flex: 1, paddingTop: 20, justifyContent: 'center', alignItems: 'center' }}
     >
-      <Text style={{ fontSize: 25, marginBottom: 30 }}>Testing App</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>React Native Firebase</Text>
+      <Text style={{ fontSize: 25, marginBottom: 30 }}>End-to-End Testing App</Text>
+      <Button
+        style={{ flex: 1, marginTop: 20 }}
+        title={'Test Native Crash Now.'}
+        onPress={() => {
+          firebase.crashlytics().crash();
+        }}
+      />
+      <View testId="spacer" style={{ height: 20 }} />
+      <Button
+        style={{ flex: 1, marginTop: 20 }}
+        title={'Test Javascript Crash Now.'}
+        onPress={() => {
+          undefinedVariable.notAFunction();
+        }}
+      />
     </View>
   );
 }

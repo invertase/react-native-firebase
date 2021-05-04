@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/invertaseio'
-  s.ios.deployment_target = "9.0"
+  s.ios.deployment_target = "10.0"
   s.source_files        = 'ios/**/*.{h,m}'
 
   # React Native dependencies
@@ -30,11 +30,16 @@ Pod::Spec.new do |s|
   s.dependency          'RNFBApp'
 
   # Other dependencies
-  s.dependency          'PersonalizedAdConsent', '~> 1.0.4'
+  s.dependency          'PersonalizedAdConsent', '~> 1.0.5'
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
     firebase_sdk_version = $FirebaseSDKVersion
+  end
+
+  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+    # Trying to use AdMob *and* AnalyticsWIthoutAdIdSupport is not a valid combination
+    raise "#{s.name} and Firebase/AnalyticsWithoutAdIdSupport are not compatible. Ad Ids are required for #{s.name}"
   end
 
   # Firebase dependencies

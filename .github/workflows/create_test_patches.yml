@@ -24,13 +24,19 @@ jobs:
     name: Create patch-package Patches
     runs-on: ubuntu-latest
     steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
+
       - uses: actions/checkout@v2
 
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
@@ -44,7 +50,7 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
 
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60

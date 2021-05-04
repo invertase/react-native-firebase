@@ -17,6 +17,14 @@ end-user consent prior to using the Firebase Authentication phone number sign-in
 
 Ensure the "Phone" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
+# iOS Setup
+
+Ensure that all parts of step 1 and 2 from [the official firebase iOS phone auth docs](https://firebase.google.com/docs/auth/ios/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed, noting in particular that you may need to re-download your firebase GoogleService-Info.plist file and for the reCAPTCHA flow to work you must make sure you have added your custom URL scheme to your project plist file.
+
+Phone auth requires app verification, and the automatic app verification process uses data-only firebase cloud messages to the app. Data-only cloud messaging only works on real devices where the app has background refresh enabled. If background refresh disabled, or if using the Simulator, app verification uses the fallback reCAPTCHA flow allowing you to check if it is configured correctly.
+
+For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling any phone auth methods.
+
 # Sign-in
 
 The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the

@@ -306,19 +306,6 @@ RCT_EXPORT_METHOD(hasPermission:
   }
 }
 
-RCT_EXPORT_METHOD(sendMessage:
-  (NSDictionary *) message
-    :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject
-) {
-  NSString *to = message[@"to"];
-  NSNumber *ttl = message[@"ttl"];
-  NSDictionary *data = message[@"data"];
-  NSString *messageId = message[@"messageId"];
-  [[FIRMessaging messaging] sendMessage:data to:to withMessageID:messageId timeToLive:[ttl intValue]];
-  resolve(nil);
-}
-
 RCT_EXPORT_METHOD(subscribeToTopic:
   (NSString *) topic
     :(RCTPromiseResolveBlock) resolve

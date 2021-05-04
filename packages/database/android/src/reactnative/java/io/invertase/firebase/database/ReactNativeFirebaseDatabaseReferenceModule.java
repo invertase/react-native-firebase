@@ -41,9 +41,9 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void set(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     Tasks
-      .call(getExecutor(), () -> toHashMap(props).get("value"))
+      .call(getTransactionalExecutor(), () -> toHashMap(props).get("value"))
       .onSuccessTask(aValue -> module.set(app, dbURL, path, aValue))
-      .addOnCompleteListener(getExecutor(), task -> {
+      .addOnCompleteListener(getTransactionalExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
@@ -56,9 +56,9 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void update(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     Tasks
-      .call(getExecutor(), () -> toHashMap(props).get("values"))
+      .call(getTransactionalExecutor(), () -> toHashMap(props).get("values"))
       .onSuccessTask(aMap -> module.update(app, dbURL, path, (Map<String, Object>) aMap))
-      .addOnCompleteListener(getExecutor(), task -> {
+      .addOnCompleteListener(getTransactionalExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
@@ -70,9 +70,9 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   @ReactMethod
   public void setWithPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     Tasks
-      .call(getExecutor(), () -> toHashMap(props))
+      .call(getTransactionalExecutor(), () -> toHashMap(props))
       .onSuccessTask(aMap -> module.setWithPriority(app, dbURL, path, aMap.get("value"), aMap.get("priority")))
-      .addOnCompleteListener(getExecutor(), task -> {
+      .addOnCompleteListener(getTransactionalExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
@@ -85,7 +85,7 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   public void remove(String app, String dbURL, String path, Promise promise) {
     // continuation tasks not needed for this as no data
     module.remove(app, dbURL, path)
-      .addOnCompleteListener(getExecutor(), task -> {
+      .addOnCompleteListener(getTransactionalExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {
@@ -98,7 +98,7 @@ public class ReactNativeFirebaseDatabaseReferenceModule extends ReactNativeFireb
   public void setPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
     // continuation tasks not needed for this as minimal data
     module.setPriority(app, dbURL, path, toHashMap(props).get("priority"))
-      .addOnCompleteListener(getExecutor(), task -> {
+      .addOnCompleteListener(getTransactionalExecutor(), task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
         } else {

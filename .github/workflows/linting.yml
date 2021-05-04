@@ -14,15 +14,15 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ github.token }}
+          all_but_latest: true
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -35,44 +35,43 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Lint
-        run: yarn run lint
+        run: yarn lint
       - name: Save Code Linting Report JSON
-        run: yarn run lint:report
+        run: yarn lint:report
         continue-on-error: true
       - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@1.0.4
+        uses: ataylorme/eslint-annotate-action@1.1.2
         continue-on-error: true
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          report-json: "eslint-report.json"
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          report-json: 'eslint-report.json'
       - name: Upload ESLint report
         uses: actions/upload-artifact@v2
         with:
           name: eslint-report.json
           path: eslint-report.json
 
-
   typescript:
     name: TypeScript Build Validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ github.token }}
+          all_but_latest: true
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -85,30 +84,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Lint
-        run: yarn run tsc:compile
-
+        run: yarn tsc:compile
 
   typedoc:
     name: TypeDoc Generation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: styfle/cancel-workflow-action@0.4.1
+      - uses: styfle/cancel-workflow-action@0.9.0
         with:
-          access_token: ${{ github.token }}
+          all_but_latest: true
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -121,14 +119,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Yarn Install
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Yarn Install (Website)
-        uses: nick-invision/retry@v1
+        uses: nick-invision/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30

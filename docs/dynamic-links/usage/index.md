@@ -11,6 +11,8 @@ previous: /database/presence-detection
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
 [Getting Started](/) documentation.
 
+This module also requires that the `@react-native-firebase/analytics` module is already setup and installed. To install the "analytics" module, view it's [Getting Started](/analytics/usage) documentation.
+
 ```bash
 # Install & setup the app module
 yarn add @react-native-firebase/app
@@ -38,7 +40,7 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ## Firebase Setup
 
-1. Open the Dynamic Links tab and configure a new domain for your app. In this test example, I've created one for `https://rnfbtestapplication.page.link`.
+1. Open the Dynamic Links tab and configure a new domain for your app. In this test example, we've created one for `https://rnfbtestapplication.page.link`.
 
 ![Firebase console dynamic link first step](https://images.prismic.io/invertase/4152f98c-b4e9-4561-a790-a0750a0392bb_Screenshot+2020-05-07+at+09.26.47.png?auto=compress,format)
 
@@ -131,6 +133,8 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 5. There is a known bug that you can follow [here](http://bit.ly/2y8gey4) that stops Apple from downloading the app site association file. The work around is to uninstall your app, restart your device and reinstall your app.
 
+6. Make sure your [deep link parameter](https://firebase.google.com/docs/dynamic-links/create-manually?authuser=0#parameters) is properly URL-encoded, especially if it contains a query string.
+
 ## Android Setup
 
 1. Create a SHA-256 fingerprint using these [instructions](https://developers.google.com/android/guides/client-auth) for your app, and add to your app in your Firebase console.
@@ -139,8 +143,10 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 2. Test the domain you created in your Firebase console (first step in `Firebase Setup`). Go to the following location in your browser `[your-domain]/.well-known/assetlinks.json`. The response will have a `target` object containing a `package_name` which ought to have your app's package name. Please
    do not proceed until you see this, it may take a while to register.
+   
+3. Add your domains to the android/app/src/main/AndroidManifest.xml so that your app knows what links to open in the app. Refer to [the official docs](https://firebase.google.com/docs/dynamic-links/android/receive#add-an-intent-filter-for-deep-links) for example code.
 
-3. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emulator).
+4. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emulator).
 
 ## Create a Link
 
@@ -154,7 +160,7 @@ async function buildLink() {
     link: 'https://invertase.io',
     // domainUriPrefix is created in your Firebase console
     domainUriPrefix: 'https://xyz.page.link',
-    // optional set up which updates Firebase analytics campaign
+    // optional setup which updates Firebase analytics campaign
     // "banner". This also needs setting up before hand
     analytics: {
       campaign: 'banner',
@@ -171,7 +177,7 @@ The module provides two methods for reacting to events related to the applicatio
 
 ### Foreground events
 
-When the app is in the foreground (visible on the device), you can use the `onLink` method to subscribe to events as and
+When the app is in the foreground state (visible on the device), you can use the `onLink` method to subscribe to events as and
 when they happen:
 
 ```jsx
@@ -187,7 +193,7 @@ function App() {
 
   useEffect(() => {
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-    // When the is component unmounted, remove the listener
+    // When the component is unmounted, remove the listener
     return () => unsubscribe();
   }, []);
 
@@ -197,7 +203,7 @@ function App() {
 
 ### Background/Quit events
 
-If the application is in a background state / has fully quit then the `getInitialLink` method can be used to detect whether
+If the application is in a background state or has fully quit then the `getInitialLink` method can be used to detect whether
 the application was opened via a link:
 
 ```jsx

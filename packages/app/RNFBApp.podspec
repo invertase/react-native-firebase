@@ -1,7 +1,7 @@
 require 'json'
 require './firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
-firebase_sdk_version = package['sdkVersions']['ios']['firebase'] || '~> 6.31.0'
+firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
@@ -15,7 +15,8 @@ Pod::Spec.new do |s|
   s.authors             = "Invertase Limited"
   s.source              = { :git => "https://github.com/invertase/react-native-firebase.git", :tag => "v#{s.version}" }
   s.social_media_url    = 'http://twitter.com/invertaseio'
-  s.ios.deployment_target = "9.0"
+  s.ios.deployment_target = "10.0"
+  s.cocoapods_version   = '>= 1.10.0'
   s.source_files        = "ios/**/*.{h,m}"
 
   # React Native dependencies

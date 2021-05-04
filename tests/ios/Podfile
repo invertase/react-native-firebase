@@ -1,63 +1,56 @@
-platform :ios, '9.0'
+require 'json'
 
-# Allow using RNFirebase as static frameworks
-$RNFirebaseAsStaticFramework = false
+# Settings to test various overrides if desired
+appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
+$FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
+#$FirebaseSDKVersion = '7.7.0' # https://firebase.google.com/support/release-notes/ios
+Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
+#$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
-# Version override testing
-$FirebaseSDKVersion = '6.34.0'
-# $FabricSDKVersion = '1.6.0'
-# $CrashlyticsSDKVersion = '3.1.0'
+# Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
+# See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
+#$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
+# Versions used below, for quick reference / outdated+upgrade checks
+$iOSMinimumDeployVersion = '10.0'
+
+platform :ios, $iOSMinimumDeployVersion
+
+
+require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'testing' do
+  # set this and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
   # use_frameworks!
 
-  pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
-  pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "../node_modules/react-native/Libraries/TypeSafety"
-  pod 'React', :path => '../node_modules/react-native/'
-  pod 'React-Core', :path => '../node_modules/react-native/'
-  pod 'React-CoreModules', :path => '../node_modules/react-native/React/CoreModules'
-  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
-  pod 'React-RCTActionSheet', :path => '../node_modules/react-native/Libraries/ActionSheetIOS'
-  pod 'React-RCTAnimation', :path => '../node_modules/react-native/Libraries/NativeAnimation'
-  pod 'React-RCTBlob', :path => '../node_modules/react-native/Libraries/Blob'
-  pod 'React-RCTImage', :path => '../node_modules/react-native/Libraries/Image'
-  pod 'React-RCTLinking', :path => '../node_modules/react-native/Libraries/LinkingIOS'
-  pod 'React-RCTSettings', :path => '../node_modules/react-native/Libraries/Settings'
-  pod 'React-RCTVibration', :path => '../node_modules/react-native/Libraries/Vibration'
-  pod 'React-RCTNetwork', :path => '../node_modules/react-native/Libraries/Network'
-  pod 'React-RCTText', :path => '../node_modules/react-native/Libraries/Text'
-  pod 'React-Core/RCTWebSocket', :path => '../node_modules/react-native/'
+  config = use_native_modules!
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
+  )
 
-  pod 'React-cxxreact', :path => '../node_modules/react-native/ReactCommon/cxxreact'
-  pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi'
-  pod 'React-jsiexecutor', :path => '../node_modules/react-native/ReactCommon/jsiexecutor'
-  pod 'React-jsinspector', :path => '../node_modules/react-native/ReactCommon/jsinspector'
-  pod 'ReactCommon/callinvoker', :path => "../node_modules/react-native/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "../node_modules/react-native/ReactCommon"
-  pod 'Yoga', :path => '../node_modules/react-native/ReactCommon/yoga', :modular_headers => true
+  # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
+  # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
-  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+  # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
+  pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :commit => 'af5c7177c896d69d73acb173c265d7efe8886126'
 
-  use_native_modules!
-  #pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :branch => 'master'
-end
+  # Enables Flipper.
+  #
+  # Note that if you have use_frameworks! enabled, Flipper will not work and
+  # you should disable the next line.
+  #use_flipper!()
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = "YES"
-      config.build_settings['GCC_TREAT_WARNINGS_AS_ERRORS'] = "NO"
-      config.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = "NO"
-      config.build_settings["ONLY_ACTIVE_ARCH"] = "YES"
+  post_install do |installer|
+    react_native_post_install(installer)
+
+    # We support a smaller range of deployment than some libraries, eliminate related noise
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSMinimumDeployVersion
+      end
     end
-  end
-  installer.pods_project.build_configurations.each do |config|
-    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "i386 arm64"
   end
 end

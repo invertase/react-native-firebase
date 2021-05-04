@@ -26,7 +26,7 @@ interface Props {
   onMenuToggle: () => void;
 }
 
-function Header({ onMenuToggle }: Props) {
+function Header({ onMenuToggle }: Props): JSX.Element {
   return (
     <header className="h-32 pl-6 pr-6 lg:pl-12 flex bg-white flex items-center">
       <div className="flex items-center flex-1">

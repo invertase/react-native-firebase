@@ -2,7 +2,7 @@
 title: Core/App
 description: Functionality & examples of using the Core/App dependency with React Native Firebase.
 icon: //static.invertase.io/assets/social/firebase-logo.png
-next: /app/utils
+next: /app/json-config
 previous: /storage/usage
 ---
 
@@ -21,15 +21,14 @@ for manually initializing secondary Firebase app instances.
 
 Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
-- [Authentication](/auth).
-- [Realtime Database](/database).
-- [Cloud Firestore](/firestore).
-- [Cloud Functions](/functions)
-- [Cloud Storage](/storage).
-- [Instance ID](/iid).
-- [ML Kit Natural Language](/ml-language).
-- [ML Kit Vision](/ml-vision).
-- [Remote Config](/remote-config).
+- [Authentication](/auth/usage).
+- [Realtime Database](/database/usage).
+- [Cloud Firestore](/firestore/usage).
+- [Cloud Functions](/functions/usage)
+- [Cloud Storage](/storage/usage).
+- [Instance ID](/iid/usage).
+- [ML](/ml/usage).
+- [Remote Config](/remote-config/usage).
 
 ## Initializing secondary apps
 

@@ -329,6 +329,32 @@ database and the new [`DataSnapshot`](/reference/database/datasnapshot) containi
 It is important that you understand how to write rules in your Firebase console to ensure that your data is secure.
 Please follow the Firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
+# Using Emulator
+The Realtime Database currently has no direct support to use Firebase emulator, meaning that there is no "useEmulator" function to be used.
+To use Firebase emulator with Realtime Database, please, refer to "Using a secondary database section" or use approach from the code snippet below:
+```
+// databaseWrapper.js
+import {firebase} from '@react-native-firebase/database';
+
+class DatabaseWrapper {
+  constructor(){
+    if(__DEV__){
+      // setup correct address and port of the firebase emulator
+      this.database = firebase.app().database("http://localhost:9000?ns=YOUR_EMULATOR_DATABASE_NAME");
+    } else {
+      this.database = firebase.app().database("http://yourProductionUrl?ns=YOUR_PRODUCTION_DATABASE_NAME");
+    }   
+  }
+}
+export const RealtimeDatabase = new DatabaseWrapper();
+
+
+//fetchData.js
+import {RealtimeDatabase} from "./databaseWrapper.js"
+
+const myRealtimeRef = RealtimeDatabase.database.ref("1234")...
+```
+
 # Using a secondary database
 
 If the default installed Firebase instance needs to address a different database within the same project, call the database method on the default app with passing the database URL.

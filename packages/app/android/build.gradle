@@ -7,17 +7,17 @@ buildscript {
   if (project == rootProject) {
     repositories {
       google()
-      jcenter()
+      mavenCentral()
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.0.1")
+      classpath("com.android.tools.build:gradle:4.1.3")
     }
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.4"
+  id "io.invertase.gradle.build" version "1.5"
 }
 
 def packageJson = PackageJson.getForProject(project)
@@ -73,12 +73,11 @@ android {
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-core"
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
 }

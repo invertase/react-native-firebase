@@ -17,14 +17,13 @@
 const { wipe } = require('../helpers');
 const COLLECTION = 'firestore';
 
-describe('firestore().collection().get()', () => {
-  before(() => wipe());
-  it('throws if get options is not an object', () => {
+describe('firestore().collection().get()', function () {
+  before(function () {
+    return wipe();
+  });
+  it('throws if get options is not an object', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .get(123);
+      firebase.firestore().collection(COLLECTION).get(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'options' must be an object is provided");
@@ -32,14 +31,11 @@ describe('firestore().collection().get()', () => {
     }
   });
 
-  it('throws if get options.source is not valid', () => {
+  it('throws if get options.source is not valid', function () {
     try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .get({
-          source: 'foo',
-        });
+      firebase.firestore().collection(COLLECTION).get({
+        source: 'foo',
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql(
@@ -49,22 +45,16 @@ describe('firestore().collection().get()', () => {
     }
   });
 
-  it('returns a QuerySnapshot', async () => {
-    const docRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .doc('nestedcollection');
+  it('returns a QuerySnapshot', async function () {
+    const docRef = firebase.firestore().collection(COLLECTION).doc('nestedcollection');
     const colRef = docRef.collection('get');
     const snapshot = await colRef.get();
 
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
   });
 
-  it('returns a correct cache setting (true)', async () => {
-    const docRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .doc('nestedcollection');
+  it('returns a correct cache setting (true)', async function () {
+    const docRef = firebase.firestore().collection(COLLECTION).doc('nestedcollection');
     const colRef = docRef.collection('get');
     const snapshot = await colRef.get({
       source: 'cache',
@@ -74,11 +64,8 @@ describe('firestore().collection().get()', () => {
     snapshot.metadata.fromCache.should.be.True();
   });
 
-  it('returns a correct cache setting (false)', async () => {
-    const docRef = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .doc('nestedcollection');
+  it('returns a correct cache setting (false)', async function () {
+    const docRef = firebase.firestore().collection(COLLECTION).doc('nestedcollection');
     const colRef = docRef.collection('get');
     await colRef.get(); // Puts it in cache
     const snapshot = await colRef.get({

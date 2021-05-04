@@ -398,6 +398,10 @@ export namespace FirebaseAuthTypes {
      */
     providerId: string;
     /**
+     * Returns a string representing the multi-tenant tenant id. This is null if the user is not associated with a tenant.
+     */
+    tenantId?: string;
+    /**
      * Returns a user identifier as specified by the authentication provider.
      */
     uid: string;
@@ -1082,6 +1086,7 @@ export namespace FirebaseAuthTypes {
      * const user = firebase.auth().currentUser.toJSON();
      * ```
      */
+    // eslint-disable-next-line @typescript-eslint/ban-types
     toJSON(): object;
 
     /**
@@ -1201,6 +1206,16 @@ export namespace FirebaseAuthTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * Returns the current tenant Id or null if it has never been set
+     *
+     * #### Example
+     *
+     * ```js
+     * const tenantId = firebase.auth().tenantId;
+     * ```
+     */
+    tenantId: string | null;
+    /**
      * Returns the current language code.
      *
      * #### Example
@@ -1227,6 +1242,19 @@ export namespace FirebaseAuthTypes {
      * > It is recommended to use {@link auth#onAuthStateChanged} to track whether the user is currently signed in.
      */
     currentUser: User | null;
+    /**
+     * Sets the tenant id.
+     *
+     * #### Example
+     *
+     * ```js
+     * await firebase.auth().setTenantId('tenant-123');
+     * ```
+     *
+     * @error auth/invalid-tenant-id if the tenant id is invalid for some reason
+     * @param tenantId the tenantID current app bind to.
+     */
+    setTenantId(tenantId: string): Promise<void>;
     /**
      * Sets the language code.
      *
@@ -1637,9 +1665,23 @@ export namespace FirebaseAuthTypes {
      *
      * @platform ios
      *
+     * @error auth/keychain-error Thrown if you attempt to access an inaccessible keychain
      * @param userAccessGroup A string of the keychain id i.e. "TEAMID.com.example.group1"
      */
     useUserAccessGroup(userAccessGroup: string): Promise<null>;
+    /**
+     * Modify this Auth instance to communicate with the Firebase Auth emulator.
+     * This must be called synchronously immediately following the first call to firebase.auth().
+     * Do not use with production credentials as emulator traffic is not encrypted.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
+     *
+     * @param url: emulator URL, must have host and port (eg, 'http://localhost:9099')
+     */
+    useEmulator(url: string): void;
   }
 }
 
@@ -1661,6 +1703,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

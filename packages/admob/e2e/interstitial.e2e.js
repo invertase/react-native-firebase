@@ -17,15 +17,15 @@
 
 let InterstitialAd;
 
-describe('admob() InterstitialAd', () => {
-  before(() => {
+describe('admob() InterstitialAd', function () {
+  before(function () {
     InterstitialAd = jet.require('packages/admob/lib/ads/InterstitialAd');
   });
 
-  describe('createForAdRequest', () => {
+  describe('createForAdRequest', function () {
     // has own tests
 
-    it('loads with requestOptions', async () => {
+    it('loads with requestOptions', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL, {
@@ -43,15 +43,15 @@ describe('admob() InterstitialAd', () => {
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('loaded');
     });
   });
 
-  describe('onAdEvent', () => {
-    it('unsubscribe should prevent events', async () => {
+  describe('onAdEvent', function () {
+    it('unsubscribe should prevent events', async function () {
       const spy = sinon.spy();
       const i = InterstitialAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(spy);
@@ -61,20 +61,20 @@ describe('admob() InterstitialAd', () => {
       spy.callCount.should.be.eql(0);
     });
 
-    it('loads with a valid ad unit id', async () => {
+    it('loads with a valid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL);
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('loaded');
     });
 
-    it('errors with an invalid ad unit id', async () => {
+    it('errors with an invalid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest('123');

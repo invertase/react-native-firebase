@@ -552,7 +552,7 @@ RCT_EXPORT_METHOD(signInWithCredential:
     }];
   }
 
-  [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
+  [[FIRAuth authWithApp:firebaseApp] signInWithCredential:credential completion:^(
       FIRAuthDataResult *authResult,
       NSError *error
   ) {
@@ -624,14 +624,14 @@ RCT_EXPORT_METHOD(checkActionCode:
 
       NSMutableDictionary *data = [NSMutableDictionary dictionary];
 
-      if ([info dataForKey:FIRActionCodeEmailKey] != nil) {
-        [data setValue:[info dataForKey:FIRActionCodeEmailKey] forKey:keyEmail];
+      if (info.email != nil) {
+        [data setValue:info.email forKey:keyEmail];
       } else {
         [data setValue:[NSNull null] forKey:keyEmail];
       }
 
-      if ([info dataForKey:FIRActionCodeFromEmailKey] != nil) {
-        [data setValue:[info dataForKey:FIRActionCodeFromEmailKey] forKey:@"fromEmail"];
+      if (info.previousEmail != nil) {
+        [data setValue:info.previousEmail forKey:@"fromEmail"];
       } else {
         [data setValue:[NSNull null] forKey:@"fromEmail"];
       }
@@ -767,7 +767,7 @@ RCT_EXPORT_METHOD(confirmationResultConfirm:
   FIRAuthCredential *credential =
       [[FIRPhoneAuthProvider provider] credentialWithVerificationID:verificationId verificationCode:verificationCode];
 
-  [[FIRAuth authWithApp:firebaseApp] signInAndRetrieveDataWithCredential:credential completion:^(
+  [[FIRAuth authWithApp:firebaseApp] signInWithCredential:credential completion:^(
       FIRAuthDataResult *authResult,
       NSError *error
   ) {
@@ -798,7 +798,7 @@ RCT_EXPORT_METHOD(linkWithCredential:
 
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user) {
-    [user linkAndRetrieveDataWithCredential:credential
+    [user linkWithCredential:credential
                                  completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
                                    if (error) {
                                      [self promiseRejectAuthException:reject error:error];
@@ -852,7 +852,7 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential:
   FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
 
   if (user) {
-    [user reauthenticateAndRetrieveDataWithCredential:credential completion:^(
+    [user reauthenticateWithCredential:credential completion:^(
         FIRAuthDataResult *_Nullable authResult,
         NSError *_Nullable error
     ) {
@@ -900,6 +900,13 @@ RCT_EXPORT_METHOD(setLanguageCode:
   
 }
 
+RCT_EXPORT_METHOD(setTenantId:
+  (FIRApp *) firebaseApp
+    :(NSString *) tenantID
+) {
+    [FIRAuth authWithApp:firebaseApp].tenantID = tenantID;
+}
+
 RCT_EXPORT_METHOD(useDeviceLanguage:
   (FIRApp *) firebaseApp
 ) {
@@ -922,6 +929,14 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
       resolve(email);
     }
   }];
+}
+
+RCT_EXPORT_METHOD(useEmulator:
+  (FIRApp *) firebaseApp
+    :(nonnull NSString *)host
+    :(NSInteger)port
+) {
+      [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
 }
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
@@ -1195,6 +1210,7 @@ RCT_EXPORT_METHOD(verifyPasswordResetCode:
       @"providerData": [self convertProviderData:user.providerData],
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
+      @"tenantId": user.tenantID ? (id) user.tenantID : [NSNull null],
       keyUid: user.uid
   };
 }

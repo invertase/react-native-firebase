@@ -1,64 +1,66 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "8.4.21",
+  "version": "11.4.1",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/admob": "7.6.9",
-    "@react-native-firebase/analytics": "7.6.8",
-    "@react-native-firebase/app": "8.4.6",
+    "@react-native-firebase/admob": "11.4.1",
+    "@react-native-firebase/analytics": "11.4.1",
+    "@react-native-firebase/app": "11.4.1",
     "@react-native-firebase/app-types": "6.7.2",
-    "@react-native-firebase/auth": "9.3.1",
-    "@react-native-firebase/crashlytics": "8.4.11",
-    "@react-native-firebase/database": "7.5.12",
-    "@react-native-firebase/dynamic-links": "7.5.10",
-    "@react-native-firebase/firestore": "7.8.7",
-    "@react-native-firebase/functions": "7.4.9",
-    "@react-native-firebase/iid": "7.4.9",
-    "@react-native-firebase/in-app-messaging": "7.5.7",
-    "@react-native-firebase/messaging": "7.9.1",
-    "@react-native-firebase/ml-natural-language": "7.4.9",
-    "@react-native-firebase/ml-vision": "7.4.11",
-    "@react-native-firebase/perf": "7.4.9",
-    "@react-native-firebase/remote-config": "9.0.11",
-    "@react-native-firebase/storage": "7.4.10",
-    "react": "16.11.0",
-    "react-native": "0.62.2"
+    "@react-native-firebase/auth": "11.4.1",
+    "@react-native-firebase/crashlytics": "11.4.1",
+    "@react-native-firebase/database": "11.4.1",
+    "@react-native-firebase/dynamic-links": "11.4.1",
+    "@react-native-firebase/firestore": "11.4.1",
+    "@react-native-firebase/functions": "11.4.1",
+    "@react-native-firebase/iid": "11.4.1",
+    "@react-native-firebase/in-app-messaging": "11.4.1",
+    "@react-native-firebase/messaging": "11.4.1",
+    "@react-native-firebase/ml": "11.4.1",
+    "@react-native-firebase/perf": "11.4.1",
+    "@react-native-firebase/remote-config": "11.4.1",
+    "@react-native-firebase/storage": "11.4.1",
+    "react": "17.0.2",
+    "react-native": "0.64.0"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
-    "detox": "16.7.2",
-    "firebase-tools": "^8.12.1",
+    "detox": "17.14.6",
+    "firebase-tools": "^9.9.0",
+    "jest-circus": "^26.6.3",
+    "jest-environment-node": "^26.6.2",
     "jet": "^0.6.6-0",
-    "mocha": "^6.1.4",
+    "metro-react-native-babel-preset": "0.64.0",
+    "mocha": "^8.3.2",
     "nyc": "^15.0.1",
-    "patch-package": "^6.2.2",
+    "patch-package": "^6.4.7",
     "react-native-port-patcher": "^1.0.4",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^9.0.2"
+    "sinon": "^10.0.1"
   },
   "detox": {
     "test-runner": "mocha",
     "specs": "e2e",
-    "runner-config": "e2e/mocha.opts",
+    "runner-config": "e2e/.mocharc.js",
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
+        "build": "xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 8"
+          "type": "iPhone 11"
         }
       },
-      "ios.ci": {
-        "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES | xcpretty -k",
+      "ios.sim.release": {
+        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
+        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11"
@@ -66,23 +68,15 @@
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "pushd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && popd",
+        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
         "device": {
           "avdName": "TestingAVD"
         }
       },
-      "ios.sim.release": {
-        "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/testing.app",
-        "build": "export RCT_NO_LAUNCH_PACKAGER=true && xcodebuild -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES -quiet | xcpretty -k",
-        "type": "ios.simulator",
-        "device": {
-          "type": "iPhone X"
-        }
-      },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
-        "build": "pushd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && popd",
+        "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
         "device": {
           "avdName": "TestingAVD"

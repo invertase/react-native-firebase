@@ -1,20 +1,17 @@
 {
   "react-native": {
+    "android_background_activity_names": "NotActuallyAnActivity",
+
     "admob_delay_app_measurement_init": true,
     "admob_ios_app_id": "ca-app-pub-4406399463942824~1625911479",
     "admob_android_app_id": "ca-app-pub-4406399463942824~1625911479",
 
     "crashlytics_ndk_enabled": true,
     "crashlytics_debug_enabled": true,
-    "crashlytics_disable_auto_disabler": false,
+    "crashlytics_disable_auto_disabler": true,
     "crashlytics_auto_collection_enabled": true,
-
-    "ml_natural_language_language_id_model" : true,
-    "ml_natural_language_smart_reply_model" : true,
-
-    "ml_vision_face_model" : true,
-    "ml_vision_ocr_model" : true,
-    "ml_vision_barcode_model" : true,
+    "crashlytics_is_error_generation_on_js_crash_enabled": true,
+    "crashlytics_javascript_exception_handler_chaining_enabled": false,
 
     "messaging_auto_init_enabled": true,
     "messaging_android_headless_task_timeout": 30000,
@@ -22,12 +19,13 @@
     "messaging_android_notification_color": "@color/hotpink",
     "messaging_ios_auto_register_for_remote_messages": true,
 
-    "ml_vision_label_model": true,
-    "ml_vision_image_label_model": true,
+    "analytics_auto_collection_enabled": true,
 
-    "TODO_ml_natural_language_translate_model" : true,
-    "TODO_analytics_auto_collection_enabled": true,
-    "TODO_perf_auto_collection_enabled": true,
+    "perf_auto_collection_enabled": true,
+
+    "android_task_executor_maximum_pool_size": 10,
+    "android_task_executor_keep_alive_seconds": 3,
+
     "TODO_in_app_messaging_auto_collection_enabled": true,
     "TODO_database_persistence_enabled": true,
     "TODO_firestore_persistence_enabled": true,

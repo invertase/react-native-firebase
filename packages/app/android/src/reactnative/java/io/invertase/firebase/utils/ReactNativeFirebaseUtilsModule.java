@@ -159,11 +159,20 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
     constants.put(KEY_TEMP_DIRECTORY, context.getCacheDir().getAbsolutePath());
     constants.put(KEY_CACHE_DIRECTORY, context.getCacheDir().getAbsolutePath());
 
-
+    File externalDirectory = context.getExternalFilesDir(null);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-      constants.put(KEY_DOCUMENT_DIRECTORY, folder.getAbsolutePath());
-    } else {
+      if (externalDirectory != null) {
+        constants.put(KEY_DOCUMENT_DIRECTORY, externalDirectory.getAbsolutePath());
+      } else {
+        // The external directory may be null if it is truly external *and*
+        // the device's external storage environment changes. We will use the regular
+        // Files directory as a backup and note in the documentation that the directory may
+        // vary under rare conditions
+        constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
+      }
+    }
+
+    if (!constants.containsKey(KEY_DOCUMENT_DIRECTORY))  {
       constants.put(KEY_DOCUMENT_DIRECTORY, context.getFilesDir().getAbsolutePath());
     }
 
@@ -180,7 +189,6 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
       constants.put(KEY_EXT_STORAGE_DIRECTORY, externalStorageDirectory.getAbsolutePath());
     }
 
-    File externalDirectory = context.getExternalFilesDir(null);
     if (externalDirectory != null) {
       constants.put(KEY_EXTERNAL_DIRECTORY, externalDirectory.getAbsolutePath());
     }

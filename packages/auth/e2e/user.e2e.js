@@ -1,13 +1,38 @@
-describe('auth().currentUser', () => {
-  beforeEach(async () => {
+const TEST_EMAIL = 'test@test.com';
+const TEST_PASS = 'test1234';
+
+const {
+  clearAllUsers,
+  getLastSmsCode,
+  getRandomPhoneNumber,
+  getLastOob,
+  verifyEmail,
+} = require('./helpers');
+
+describe('auth().currentUser', function () {
+  before(async function () {
+    try {
+      await clearAllUsers();
+    } catch (e) {
+      throw e;
+    }
+    firebase.auth().settings.appVerificationDisabledForTesting = true;
+    try {
+      await firebase.auth().createUserWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
+    } catch (e) {
+      // they may already exist, that's fine
+    }
+  });
+
+  beforeEach(async function () {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     }
   });
 
-  describe('getIdToken()', () => {
-    it('should return a token', async () => {
+  describe('getIdToken()', function () {
+    it('should return a token', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
@@ -25,8 +50,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('getIdTokenResult()', () => {
-    it('should return a valid IdTokenResult Object', async () => {
+  describe('getIdTokenResult()', function () {
+    it('should return a valid IdTokenResult Object', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
@@ -46,7 +71,11 @@ describe('auth().currentUser', () => {
 
       tokenResult.claims.should.be.a.Object();
       tokenResult.claims.iat.should.be.a.Number();
+      tokenResult.claims.exp.should.be.a.Number();
       tokenResult.claims.iss.should.be.a.String();
+
+      new Date(tokenResult.issuedAtTime).getTime().should.equal(tokenResult.claims.iat * 1000);
+      new Date(tokenResult.expirationTime).getTime().should.equal(tokenResult.claims.exp * 1000);
 
       tokenResult.signInProvider.should.equal('password');
       tokenResult.token.length.should.be.greaterThan(24);
@@ -56,8 +85,9 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('linkWithCredential()', () => {
-    it('should link anonymous account <-> email account', async () => {
+  describe('linkWithCredential()', function () {
+    // hanging against auth emulator?
+    it('should link anonymous account <-> email account', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -84,16 +114,13 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error on link anon <-> email if email already exists', async () => {
-      const email = 'test@test.com';
-      const pass = 'test1234';
-
+    it('should error on link anon <-> email if email already exists', async function () {
       await firebase.auth().signInAnonymously();
       const { currentUser } = firebase.auth();
 
       // Test
       try {
-        const credential = firebase.auth.EmailAuthProvider.credential(email, pass);
+        const credential = firebase.auth.EmailAuthProvider.credential(TEST_EMAIL, TEST_PASS);
         await currentUser.linkWithCredential(credential);
 
         // Clean up
@@ -114,8 +141,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('reauthenticateWithCredential()', () => {
-    it('should reauthenticate correctly', async () => {
+  describe('reauthenticateWithCredential()', function () {
+    it('should reauthenticate correctly', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -136,8 +163,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('reload()', () => {
-    it('should not error', async () => {
+  describe('reload()', function () {
+    it('should not error', async function () {
       await firebase.auth().signInAnonymously();
 
       try {
@@ -153,8 +180,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('sendEmailVerification()', () => {
-    it('should error if actionCodeSettings.url is not present', async () => {
+  describe('sendEmailVerification()', function () {
+    it('should error if actionCodeSettings.url is not present', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -167,7 +194,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.url is not a string', async () => {
+    it('should error if actionCodeSettings.url is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -180,7 +207,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async () => {
+    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -197,7 +224,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if handleCodeInApp is not a string', async () => {
+    it('should error if handleCodeInApp is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -212,7 +239,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.iOS is not an object', async () => {
+    it('should error if actionCodeSettings.iOS is not an object', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -225,7 +252,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.iOS.bundleId is not a string', async () => {
+    it('should error if actionCodeSettings.iOS.bundleId is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -242,7 +269,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android is not an object', async () => {
+    it('should error if actionCodeSettings.android is not an object', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -255,7 +282,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.packageName is not a string', async () => {
+    it('should error if actionCodeSettings.android.packageName is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -272,7 +299,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.installApp is not a string', async () => {
+    it('should error if actionCodeSettings.android.installApp is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -290,7 +317,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.minimumVersion is not a string', async () => {
+    it('should error if actionCodeSettings.android.minimumVersion is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -308,28 +335,46 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should not error', async () => {
+    it('should not error', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
 
       try {
         await firebase.auth().currentUser.sendEmailVerification();
-        await firebase.auth().currentUser.delete();
       } catch (error) {
-        // Reject
-        try {
-          await firebase.auth().currentUser.delete();
-        } catch (_) {
-          /* do nothing */
-        }
         return Promise.reject(new Error('sendEmailVerification() caused an error', error));
+      } finally {
+        await firebase.auth().currentUser.delete();
       }
 
       return Promise.resolve();
     });
 
-    it('should work with actionCodeSettings', async () => {
+    it('should correctly report emailVerified status', async function () {
+      const random = Utils.randString(12, '#a');
+      const email = `${random}@${random}.com`;
+      await firebase.auth().createUserWithEmailAndPassword(email, random);
+      firebase.auth().currentUser.email.should.equal(email);
+      firebase.auth().currentUser.emailVerified.should.equal(false);
+
+      try {
+        await firebase.auth().currentUser.sendEmailVerification();
+        const { oobCode } = await getLastOob(email);
+        await verifyEmail(oobCode);
+        firebase.auth().currentUser.emailVerified.should.equal(false);
+        await firebase.auth().currentUser.reload();
+        firebase.auth().currentUser.emailVerified.should.equal(true);
+      } catch (error) {
+        return Promise.reject(new Error('sendEmailVerification() caused an error', error));
+      } finally {
+        await firebase.auth().currentUser.delete();
+      }
+
+      return Promise.resolve();
+    });
+
+    it('should work with actionCodeSettings', async function () {
       const actionCodeSettings = {
         handleCodeInApp: true,
         url: 'https://react-native-firebase-testing.firebaseapp.com/foo',
@@ -340,24 +385,18 @@ describe('auth().currentUser', () => {
 
       try {
         await firebase.auth().currentUser.sendEmailVerification(actionCodeSettings);
-        await firebase.auth().currentUser.delete();
       } catch (error) {
-        // Reject
-        try {
-          await firebase.auth().currentUser.delete();
-        } catch (_) {
-          /* do nothing */
-        }
-
         return Promise.reject(
-          new Error('sendEmailVerification(actionCodeSettings) caused an error' + error.message),
+          new Error('sendEmailVerification(actionCodeSettings) error' + error.message),
         );
+      } finally {
+        await firebase.auth().currentUser.delete();
       }
 
       return Promise.resolve();
     });
 
-    it('should throw an error within an invalid action code url', async () => {
+    it('should throw an error within an invalid action code url', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       await firebase.auth().createUserWithEmailAndPassword(email, random);
@@ -370,8 +409,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('verifyBeforeUpdateEmail()', () => {
-    it('should error if newEmail is not a string', async () => {
+  describe('verifyBeforeUpdateEmail()', function () {
+    it('should error if newEmail is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
@@ -384,7 +423,7 @@ describe('auth().currentUser', () => {
       }
       await firebase.auth().currentUser.delete();
     });
-    it('should error if actionCodeSettings.url is not present', async () => {
+    it('should error if actionCodeSettings.url is not present', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -400,7 +439,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.url is not a string', async () => {
+    it('should error if actionCodeSettings.url is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -416,7 +455,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async () => {
+    it('should error if actionCodeSettings.dynamicLinkDomain is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -437,7 +476,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if handleCodeInApp is not a boolean', async () => {
+    it('should error if handleCodeInApp is not a boolean', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -458,7 +497,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.iOS is not an object', async () => {
+    it('should error if actionCodeSettings.iOS is not an object', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -477,7 +516,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.iOS.bundleId is not a string', async () => {
+    it('should error if actionCodeSettings.iOS.bundleId is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -498,7 +537,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android is not an object', async () => {
+    it('should error if actionCodeSettings.android is not an object', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -517,7 +556,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.packageName is not a string', async () => {
+    it('should error if actionCodeSettings.android.packageName is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -538,7 +577,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.installApp is not a boolean', async () => {
+    it('should error if actionCodeSettings.android.installApp is not a boolean', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -559,7 +598,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should error if actionCodeSettings.android.minimumVersion is not a string', async () => {
+    it('should error if actionCodeSettings.android.minimumVersion is not a string', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -580,7 +619,9 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    xit('should not error', async () => {
+    // FIXME ios+android failing with an internal error against auth emulator
+    // com.google.firebase.FirebaseException: An internal error has occurred. [ VERIFY_AND_CHANGE_EMAIL ]
+    xit('should not error', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -589,13 +630,15 @@ describe('auth().currentUser', () => {
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, random);
         await firebase.auth().currentUser.verifyBeforeUpdateEmail(updateEmail);
-      } catch (_) {
+      } catch (e) {
         return Promise.reject("'verifyBeforeUpdateEmail()' did not work");
       }
       await firebase.auth().currentUser.delete();
     });
 
-    xit('should work with actionCodeSettings', async () => {
+    // FIXME ios+android failing with an internal error against auth emulator
+    // com.google.firebase.FirebaseException: An internal error has occurred. [ VERIFY_AND_CHANGE_EMAIL ]
+    xit('should work with actionCodeSettings', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -610,7 +653,8 @@ describe('auth().currentUser', () => {
       } catch (error) {
         try {
           await firebase.auth().currentUser.delete();
-        } catch (_) {
+        } catch (e) {
+          consle.log(e);
           /* do nothing */
         }
 
@@ -619,8 +663,8 @@ describe('auth().currentUser', () => {
       return Promise.resolve();
     });
   });
-  describe('unlink()', () => {
-    it('should unlink the email address', async () => {
+  describe('unlink()', function () {
+    it('should unlink the email address', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -644,75 +688,72 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('updateEmail()', () => {
-    it('should update the email address', async () => {
-      const random = Utils.randString(12, '#aA');
-      const random2 = Utils.randString(12, '#aA');
+  describe('updateEmail()', function () {
+    it('should update the email address', async function () {
+      const random = Utils.randString(12, '#a');
+      const random2 = Utils.randString(12, '#a');
       const email = `${random}@${random}.com`;
       const email2 = `${random2}@${random2}.com`;
       // Setup
       await firebase.auth().createUserWithEmailAndPassword(email, random);
-      firebase
-        .auth()
-        .currentUser.email.toLowerCase()
-        .should.equal(email.toLowerCase());
+      firebase.auth().currentUser.email.should.equal(email);
 
       // Update user email
       await firebase.auth().currentUser.updateEmail(email2);
 
       // Assertions
-      firebase
-        .auth()
-        .currentUser.email.toLowerCase()
-        .should.equal(email2.toLowerCase());
+      firebase.auth().currentUser.email.should.equal(email2);
 
       // Clean up
       await firebase.auth().currentUser.delete();
     });
   });
 
-  // TODO: Figure how to mock phone credentials on updating a phone number
-  describe('updatePhoneNumber()', () => {
-    it('should update the profile', async () => {
-      // Create with initial number
-      const TEST_PHONE_A = '+447445255123';
-      const TEST_CODE_A = '123456';
+  describe('updatePhoneNumber()', function () {
+    it('should update the phone number', async function () {
+      const testPhone = await getRandomPhoneNumber();
+      const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
+      const smsCode = await getLastSmsCode(testPhone);
+      await confirmResult.confirm(smsCode);
 
-      firebase.auth().settings.appVerificationDisabledForTesting = true;
+      firebase.auth().currentUser.phoneNumber.should.equal(testPhone);
 
-      await firebase
-        .auth()
-        .settings.setAutoRetrievedSmsCodeForPhoneNumber(TEST_PHONE_A, TEST_CODE_A);
-      await Utils.sleep(50);
+      const newPhone = await getRandomPhoneNumber();
+      const newPhoneVerificationId = await new Promise((resolve, reject) => {
+        firebase
+          .auth()
+          .verifyPhoneNumber(newPhone)
+          .on('state_changed', phoneAuthSnapshot => {
+            if (phoneAuthSnapshot.error) {
+              reject(phoneAuthSnapshot.error);
+            } else {
+              resolve(phoneAuthSnapshot.verificationId);
+            }
+          });
+      });
 
-      //Sign Out
-      if (firebase.auth().currentUser) {
-        await firebase.auth().signOut();
-        await Utils.sleep(50);
+      try {
+        const newSmsCode = await getLastSmsCode(newPhone);
+        const credential = await firebase.auth.PhoneAuthProvider.credential(
+          newPhoneVerificationId,
+          newSmsCode,
+        );
+
+        //Update with number?
+        await firebase
+          .auth()
+          .currentUser.updatePhoneNumber(credential)
+          .then($ => $);
+      } catch (e) {
+        throw e;
       }
 
-      //Sign in number
-      const confirmResult = await firebase.auth().signInWithPhoneNumber(TEST_PHONE_A);
-
-      await confirmResult.confirm(TEST_CODE_A);
-
-      const credential = await firebase.auth.PhoneAuthProvider.credential(
-        confirmResult.verificationId,
-        TEST_CODE_A,
-      );
-
-      //Update with number?
-      await firebase
-        .auth()
-        .currentUser.updatePhoneNumber(credential)
-        .then($ => $);
-
-      // TODO Add assertions, what exactly does this update. No phone number included to update?
+      firebase.auth().currentUser.phoneNumber.should.equal(newPhone);
     });
   });
 
-  describe('updatePassword()', () => {
-    it('should update the password', async () => {
+  describe('updatePassword()', function () {
+    it('should update the password', async function () {
       const random = Utils.randString(12, '#aA');
       const random2 = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
@@ -740,7 +781,7 @@ describe('auth().currentUser', () => {
     });
 
     // Can only be run/reproduced locally with Firebase Auth rate limits lowered on the Firebase console.
-    xit('should throw too many requests when limit has been reached', async () => {
+    xit('should throw too many requests when limit has been reached', async function () {
       await Utils.sleep(10000);
       try {
         // Setup for creating new accounts
@@ -767,8 +808,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('updateProfile()', () => {
-    it('should update the profile', async () => {
+  describe('updateProfile()', function () {
+    it('should update the profile', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       const pass = random;
@@ -795,7 +836,7 @@ describe('auth().currentUser', () => {
       await firebase.auth().currentUser.delete();
     });
 
-    it('should return a valid profile when signing in anonymously', async () => {
+    it('should return a valid profile when signing in anonymously', async function () {
       // Setup
       await firebase.auth().signInAnonymously();
       const { currentUser } = firebase.auth();
@@ -819,8 +860,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('linkWithPhoneNumber()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('linkWithPhoneNumber()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithPhoneNumber();
@@ -831,8 +872,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('linkWithPopup()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('linkWithPopup()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithPopup();
@@ -843,8 +884,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('linkWithRedirect()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('linkWithRedirect()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.linkWithRedirect();
@@ -855,8 +896,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('reauthenticateWithPhoneNumber()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('reauthenticateWithPhoneNumber()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.reauthenticateWithPhoneNumber();
@@ -867,8 +908,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('reauthenticateWithPopup()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('reauthenticateWithPopup()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.reauthenticateWithPopup();
@@ -879,8 +920,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('reauthenticateWithRedirect()', () => {
-    it('should throw an unsupported error', async () => {
+  describe('reauthenticateWithRedirect()', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => {
         firebase.auth().currentUser.reauthenticateWithRedirect();
@@ -891,8 +932,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('refreshToken', () => {
-    it('should throw an unsupported error', async () => {
+  describe('refreshToken', function () {
+    it('should throw an unsupported error', async function () {
       await firebase.auth().signInAnonymously();
       (() => firebase.auth().currentUser.refreshToken).should.throw(
         'firebase.auth.User.refreshToken is unsupported by the native Firebase SDKs.',
@@ -901,8 +942,8 @@ describe('auth().currentUser', () => {
     });
   });
 
-  describe('user.metadata', () => {
-    it("should have the properties 'lastSignInTime' & 'creationTime' which are ISO strings", async () => {
+  describe('user.metadata', function () {
+    it("should have the properties 'lastSignInTime' & 'creationTime' which are ISO strings", async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 

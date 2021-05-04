@@ -45,6 +45,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -990,10 +991,17 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    PhoneAuthCredential credential = PhoneAuthProvider.getCredential(
-      mVerificationId,
-      verificationCode
-    );
+    PhoneAuthCredential credential = null;
+    try {
+      credential = PhoneAuthProvider.getCredential(
+        mVerificationId,
+        verificationCode
+      );
+    } catch (Exception e) {
+      Log.d(TAG, "confirmationResultConfirm::getCredential::failure", e);
+      promiseRejectAuthException(promise, e);
+      return;
+    }
 
     firebaseAuth.signInWithCredential(credential).addOnCompleteListener(getExecutor(), task -> {
       if (task.isSuccessful()) {
@@ -1303,9 +1311,25 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             } else {
               Exception exception = task.getException();
               Log.e(TAG, "link:onComplete:failure", exception);
-              promiseRejectAuthException(promise, exception);
-            }
-          });
+              if (exception instanceof FirebaseAuthUserCollisionException) {
+                FirebaseAuthUserCollisionException authUserCollisionException = (FirebaseAuthUserCollisionException) exception;
+                AuthCredential updatedCredential = authUserCollisionException.getUpdatedCredential();
+                try {
+                  firebaseAuth.signInWithCredential(updatedCredential).addOnCompleteListener(getExecutor(), result -> {
+                    if (result.isSuccessful()) {
+                      promiseWithAuthResult(result.getResult(), promise);
+                    } else {
+                      promiseRejectAuthException(promise, exception);
+                    }
+                  });
+                } catch (Exception e) {
+                  // we the attempt to log in after the collision failed, reject back to JS
+                  promiseRejectAuthException(promise, exception);
+                }
+              } else {
+                promiseRejectAuthException(promise, exception);
+              }
+            }});
       } else {
         promiseNoUser(promise, true);
       }
@@ -1604,6 +1628,19 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * setTenantId
+   *
+   * @param appName
+   * @param tenantId
+   */
+  @ReactMethod
+  public void setTenantId(String appName, String tenantId) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth.setTenantId(tenantId);
+  }
+
+  /**
    * useDeviceLanguage
    *
    * @param appName
@@ -1635,6 +1672,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
           promiseRejectAuthException(promise, exception);
         }
       });
+  }
+
+  @ReactMethod
+  public void useEmulator(String appName, String host, int port) {
+    Log.d(TAG, "useEmulator");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth.useEmulator(host, port);
   }
 
   /* ------------------
@@ -1925,6 +1970,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     final String provider = user.getProviderId();
     final boolean verified = user.isEmailVerified();
     final String phoneNumber = user.getPhoneNumber();
+    final String tenantId = user.getTenantId();
 
     userMap.putString("uid", uid);
     userMap.putString("providerId", provider);
@@ -1953,6 +1999,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       userMap.putString("phoneNumber", phoneNumber);
     } else {
       userMap.putNull("phoneNumber");
+    }
+
+    if (tenantId != null && !"".equals(tenantId)) {
+      userMap.putString("tenantId", tenantId);
+    } else {
+      userMap.putNull("tenantId");
     }
 
     userMap.putArray("providerData", convertProviderData(user.getProviderData(), user));

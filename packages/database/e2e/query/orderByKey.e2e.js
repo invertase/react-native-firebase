@@ -19,17 +19,17 @@ const { PATH, seed, wipe } = require('../helpers');
 
 const TEST_PATH = `${PATH}/orderByKey`;
 
-describe('database().ref().orderByKey()', () => {
-  before(() => seed(TEST_PATH));
-  after(() => wipe(TEST_PATH));
+describe('database().ref().orderByKey()', function () {
+  before(function () {
+    return seed(TEST_PATH);
+  });
+  after(function () {
+    return wipe(TEST_PATH);
+  });
 
-  it('throws if an orderBy call has already been set', async () => {
+  it('throws if an orderBy call has already been set', async function () {
     try {
-      await firebase
-        .database()
-        .ref()
-        .orderByChild('foo')
-        .orderByKey();
+      await firebase.database().ref().orderByChild('foo').orderByKey();
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("You can't combine multiple orderBy calls");
@@ -37,14 +37,11 @@ describe('database().ref().orderByKey()', () => {
     }
   });
 
-  it('order by a key', async () => {
+  it('order by a key', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     try {
-      const snapshot = await ref
-        .child('query')
-        .orderByKey()
-        .once('value');
+      const snapshot = await ref.child('query').orderByKey().once('value');
 
       const expected = ['a', 'b', 'c'];
 

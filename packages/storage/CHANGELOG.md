@@ -3,6 +3,146 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/invertase/react-native-firebase/compare/v11.4.0...v11.4.1) (2021-04-29)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [11.4.0](https://github.com/invertase/react-native-firebase/compare/v11.3.3...v11.4.0) (2021-04-29)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [11.3.3](https://github.com/invertase/react-native-firebase/compare/v11.3.2...v11.3.3) (2021-04-24)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [11.3.2](https://github.com/invertase/react-native-firebase/compare/v11.3.1...v11.3.2) (2021-04-19)
+
+### Bug Fixes
+
+- **all, android:** purge jcenter() from android build ([2c6a6a8](https://github.com/invertase/react-native-firebase/commit/2c6a6a82ec363fd948ea880fd397acb886c97453))
+
+## [11.3.1](https://github.com/invertase/react-native-firebase/compare/v11.3.0...v11.3.1) (2021-04-18)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [11.3.0](https://github.com/invertase/react-native-firebase/compare/v11.2.0...v11.3.0) (2021-04-16)
+
+### Performance Improvements
+
+- increase task throughput in Android using thread pool executor ([#4981](https://github.com/invertase/react-native-firebase/issues/4981)) ([0e4e331](https://github.com/invertase/react-native-firebase/commit/0e4e3312315c020ecd760f8d3fea4f0347d2276b))
+
+# [11.2.0](https://github.com/invertase/react-native-firebase/compare/v11.1.2...v11.2.0) (2021-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [11.1.2](https://github.com/invertase/react-native-firebase/compare/v11.1.1...v11.1.2) (2021-03-17)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [11.1.1](https://github.com/invertase/react-native-firebase/compare/v11.1.0...v11.1.1) (2021-03-16)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [11.1.0](https://github.com/invertase/react-native-firebase/compare/v11.0.0...v11.1.0) (2021-03-13)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [11.0.0](https://github.com/invertase/react-native-firebase/compare/v10.8.1...v11.0.0) (2021-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.8.1](https://github.com/invertase/react-native-firebase/compare/v10.8.0...v10.8.1) (2021-02-22)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.8.0](https://github.com/invertase/react-native-firebase/compare/v10.7.0...v10.8.0) (2021-02-13)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.7.0](https://github.com/invertase/react-native-firebase/compare/v10.6.4...v10.7.0) (2021-02-09)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.6.4](https://github.com/invertase/react-native-firebase/compare/v10.6.3...v10.6.4) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.6.3](https://github.com/invertase/react-native-firebase/compare/v10.6.2...v10.6.3) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.6.1](https://github.com/invertase/react-native-firebase/compare/v10.6.0...v10.6.1) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.6.0](https://github.com/invertase/react-native-firebase/compare/v10.5.1...v10.6.0) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.5.1](https://github.com/invertase/react-native-firebase/compare/v10.5.0...v10.5.1) (2021-01-19)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [10.4.1](https://github.com/invertase/react-native-firebase/compare/v10.4.0...v10.4.1) (2021-01-08)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.4.0](https://github.com/invertase/react-native-firebase/compare/v10.3.1...v10.4.0) (2020-12-30)
+
+### Bug Fixes
+
+- **ios:** bump ios min deployment to ios10 - remnant from [#4471](https://github.com/invertase/react-native-firebase/issues/4471) ([4a57578](https://github.com/invertase/react-native-firebase/commit/4a5757827789141600625eebe5e13c976ddb7402))
+
+## [10.3.1](https://github.com/invertase/react-native-firebase/compare/v10.3.0...v10.3.1) (2020-12-18)
+
+### Bug Fixes
+
+- **storage, ios:** resolve listAll promise once and only once on error ([#4688](https://github.com/invertase/react-native-firebase/issues/4688)) ([762bf6f](https://github.com/invertase/react-native-firebase/commit/762bf6f55d809f9bccbac847c92074a2b8c41150)), closes [/github.com/firebase/firebase-ios-sdk/blob/14764b8d60a6ad023d8fa5b7f81d42378d92e6fe/FirebaseStorage/Sources/FIRStorageReference.m#L417](https://github.com/invertase/react-native-firebase/issues/L417)
+
+# [10.3.0](https://github.com/invertase/react-native-firebase/compare/v10.2.0...v10.3.0) (2020-12-18)
+
+### Bug Fixes
+
+- **ios, storage:** handle nil file extension from ios14 M1 emulators ([#4676](https://github.com/invertase/react-native-firebase/issues/4676)) ([e1eb992](https://github.com/invertase/react-native-firebase/commit/e1eb9928ce6d629d75b8e9462a823cace7373767))
+
+# [10.2.0](https://github.com/invertase/react-native-firebase/compare/v10.1.1...v10.2.0) (2020-12-11)
+
+### Features
+
+- firebase-ios-sdk 7.2.0 / firebase-android-sdk 26.1.1 ([#4648](https://github.com/invertase/react-native-firebase/issues/4648)) ([a158a74](https://github.com/invertase/react-native-firebase/commit/a158a74dee0dd6774c725ff1213453f8dfdcb8f5))
+
+## [10.1.1](https://github.com/invertase/react-native-firebase/compare/v10.1.0...v10.1.1) (2020-12-02)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.1.0](https://github.com/invertase/react-native-firebase/compare/v10.0.0...v10.1.0) (2020-11-26)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/fc8c4c0622f8e6814879d0306f66012df5b83cd8...v10.0.0) (2020-11-17)
+
+### BREAKING CHANGES
+
+- breaking change to mark new internal versioning requirements.
+
+## [7.4.14](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.13...@react-native-firebase/storage@7.4.14) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [7.4.13](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.12...@react-native-firebase/storage@7.4.13) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
+## [7.4.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.11...@react-native-firebase/storage@7.4.12) (2020-11-10)
+
+### Bug Fixes
+
+- **storage:** Changed refFromUrl regex to exclude appspot.com ([#3775](https://github.com/invertase/react-native-firebase/issues/3775)) ([c6f4699](https://github.com/invertase/react-native-firebase/commit/c6f46996191126513e02f3d20efa78d166c4db0a))
+
+## [7.4.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.10...@react-native-firebase/storage@7.4.11) (2020-10-30)
+
+**Note:** Version bump only for package @react-native-firebase/storage
+
 ## [7.4.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/storage@7.4.9...@react-native-firebase/storage@7.4.10) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/storage

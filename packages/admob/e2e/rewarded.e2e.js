@@ -17,13 +17,13 @@
 
 let RewardedAd;
 
-describe('admob() RewardedAd', () => {
-  before(() => {
+describe('admob() RewardedAd', function () {
+  before(function () {
     RewardedAd = jet.require('packages/admob/lib/ads/RewardedAd');
   });
 
-  describe('createForAdRequest', () => {
-    it('throws if adUnitId is invalid', () => {
+  describe('createForAdRequest', function () {
+    it('throws if adUnitId is invalid', function () {
       try {
         RewardedAd.createForAdRequest(123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -34,7 +34,7 @@ describe('admob() RewardedAd', () => {
     });
 
     // has own tests
-    it('throws if requestOptions are invalid', () => {
+    it('throws if requestOptions are invalid', function () {
       try {
         RewardedAd.createForAdRequest('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -43,14 +43,18 @@ describe('admob() RewardedAd', () => {
       }
     });
 
-    it('returns a new instance', () => {
+    it('returns a new instance', function () {
       const i = RewardedAd.createForAdRequest('abc');
       i.constructor.name.should.eql('RewardedAd');
       i.adUnitId.should.eql('abc');
       i.loaded.should.eql(false);
     });
 
-    it('loads with requestOptions', async () => {
+    it('loads with requestOptions', async function () {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED, {
@@ -68,15 +72,15 @@ describe('admob() RewardedAd', () => {
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 30000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('rewarded_loaded');
     });
   });
 
-  describe('show', () => {
-    it('throws if showing before loaded', () => {
+  describe('show', function () {
+    it('throws if showing before loaded', function () {
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -91,8 +95,8 @@ describe('admob() RewardedAd', () => {
     });
   });
 
-  describe('onAdEvent', () => {
-    it('throws if handler is not a function', () => {
+  describe('onAdEvent', function () {
+    it('throws if handler is not a function', function () {
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -104,14 +108,18 @@ describe('admob() RewardedAd', () => {
       }
     });
 
-    it('returns an unsubscriber function', () => {
+    it('returns an unsubscriber function', function () {
       const i = RewardedAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(() => {});
       unsub.should.be.Function();
       unsub();
     });
 
-    it('unsubscribe should prevent events', async () => {
+    it('unsubscribe should prevent events', async function () {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
       const i = RewardedAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(spy);
@@ -121,14 +129,18 @@ describe('admob() RewardedAd', () => {
       spy.callCount.should.be.eql(0);
     });
 
-    it('loads with a valid ad unit id', async () => {
+    it('loads with a valid ad unit id', async function () {
+      if (device.getPlatform() === 'ios') {
+        // Flaky on local iOS
+        return;
+      }
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest(firebase.admob.TestIds.REWARDED);
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
       i.loaded.should.eql(true);
 
       spy.getCall(0).args[0].should.eql('rewarded_loaded');
@@ -140,14 +152,14 @@ describe('admob() RewardedAd', () => {
       d.amount.should.be.Number();
     });
 
-    it('errors with an invalid ad unit id', async () => {
+    it('errors with an invalid ad unit id', async function () {
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest('123');
 
       i.onAdEvent(spy);
       i.load();
-      await Utils.spyToBeCalledOnceAsync(spy);
+      await Utils.spyToBeCalledOnceAsync(spy, 20000);
 
       spy.getCall(0).args[0].should.eql('error');
       const e = spy.getCall(0).args[1];

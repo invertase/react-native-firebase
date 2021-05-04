@@ -52,18 +52,15 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     });
   }
 
-  Task<Void> setMinimumSessionDuration(long milliseconds) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setMinimumSessionDuration(milliseconds);
-      return null;
-    });
-  }
-
   Task<Void> setSessionTimeoutDuration(long milliseconds) {
     return Tasks.call(() -> {
       FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration(milliseconds);
       return null;
     });
+  }
+
+  Task<String> getAppInstanceId() {
+    return FirebaseAnalytics.getInstance(getContext()).getAppInstanceId();
   }
 
   Task<Void> setUserId(String id) {
@@ -96,6 +93,13 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
   Task<Void> resetAnalyticsData() {
     return Tasks.call(() -> {
       FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
+      return null;
+    });
+  }
+
+  Task<Void> setDefaultEventParameters(Bundle parameters) {
+    return Tasks.call(() -> {
+      FirebaseAnalytics.getInstance(getContext()).setDefaultEventParameters(parameters);
       return null;
     });
   }

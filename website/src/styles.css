@@ -22,7 +22,7 @@ main a:hover {
 
 main p,
 main li {
-  @apply text-gray-600;
+  @apply text-gray-800;
 }
 
 li code,
@@ -54,6 +54,10 @@ table {
 
   tbody tr:nth-child(even) {
     @apply bg-gray-100;
+  }
+
+  p {
+    word-break: break-word;
   }
 }
 

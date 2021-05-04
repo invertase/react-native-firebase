@@ -15,7 +15,13 @@
  *
  */
 
-import { isAndroid, isBoolean, isString, isNull } from '@react-native-firebase/app/lib/common';
+import {
+  isAndroid,
+  isBoolean,
+  isString,
+  isNull,
+  isValidUrl,
+} from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -63,6 +69,7 @@ class FirebaseAuthModule extends FirebaseModule {
     this._settings = null;
     this._authResult = false;
     this._languageCode = this.native.APP_LANGUAGE[this.app._name];
+    this._tenantId = null;
 
     if (!this.languageCode) {
       this._languageCode = this.native.APP_LANGUAGE['[DEFAULT]'];
@@ -93,6 +100,10 @@ class FirebaseAuthModule extends FirebaseModule {
 
   get languageCode() {
     return this._languageCode;
+  }
+
+  get tenantId() {
+    return this._tenantId;
   }
 
   get settings() {
@@ -142,6 +153,14 @@ class FirebaseAuthModule extends FirebaseModule {
     } else {
       this._languageCode = code;
     }
+  }
+
+  async setTenantId(tenantId) {
+    if (!isString(tenantId)) {
+      throw new Error("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
+    }
+    this._tenantId = tenantId;
+    await this.native.setTenantId(tenantId);
   }
 
   _parseListener(listenerOrObserver) {
@@ -333,6 +352,41 @@ class FirebaseAuthModule extends FirebaseModule {
     throw new Error(
       'firebase.auth().useDeviceLanguage() is unsupported by the native Firebase SDKs.',
     );
+  }
+
+  useEmulator(url) {
+    if (!url || !isString(url) || !isValidUrl(url)) {
+      throw new Error('firebase.auth().useEmulator() takes a non-empty string URL');
+    }
+
+    let _url = url;
+    if (isAndroid && _url) {
+      if (_url.startsWith('http://localhost')) {
+        _url = _url.replace('http://localhost', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping auth host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
+      }
+      if (_url.startsWith('http://127.0.0.1')) {
+        _url = _url.replace('http://127.0.0.1', 'http://10.0.2.2');
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping auth host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
+      }
+    }
+
+    // Native calls take the host and port split out
+    const hostPortRegex = /^http:\/\/([\w\d.]+):(\d+)$/;
+    const urlMatches = _url.match(hostPortRegex);
+    if (!urlMatches) {
+      throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
+    }
+    const host = urlMatches[1];
+    const port = parseInt(urlMatches[2], 10);
+    this.native.useEmulator(host, port);
+    return [host, port]; // undocumented return, useful for unit testing
   }
 }
 

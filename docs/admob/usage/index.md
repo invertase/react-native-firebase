@@ -20,7 +20,7 @@ yarn add @react-native-firebase/app
 yarn add @react-native-firebase/admob
 ```
 
-> On Android, you must update the "Contains ads" setting in the Google Play Store dashboard before releasing your app (under "Pricing & Distribution").
+> On Android, before releasing your app, you must select _Yes, my app contains ads_ in the Google Play Store, Policy, App content, Manage under Ads.
 
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/admob/usage/installation/ios) and [Android](/admob/usage/installation/android).

@@ -52,6 +52,10 @@ export default class User {
     return this._user.phoneNumber || null;
   }
 
+  get tenantId() {
+    return this._user.tenantId || null;
+  }
+
   get photoURL() {
     return this._user.photoURL || null;
   }

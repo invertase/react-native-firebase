@@ -3,6 +3,168 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/invertase/react-native-firebase/compare/v11.4.0...v11.4.1) (2021-04-29)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [11.4.0](https://github.com/invertase/react-native-firebase/compare/v11.3.3...v11.4.0) (2021-04-29)
+
+### Bug Fixes
+
+- **analytics:** added missing price parameter to the Item structure ([#5232](https://github.com/invertase/react-native-firebase/issues/5232)) ([b972cb6](https://github.com/invertase/react-native-firebase/commit/b972cb6c835288b8bd882f84222f1c3accf1afdc))
+- **analytics:** import using package name not relative path ([#5229](https://github.com/invertase/react-native-firebase/issues/5229)) ([99f8d2c](https://github.com/invertase/react-native-firebase/commit/99f8d2c912d9fe63fc6243bc0b5d43b6813a2fe5))
+
+### Features
+
+- **analytics, appInstanceId:** implement getAppIntanceId() method for GA4 use ([#5210](https://github.com/invertase/react-native-firebase/issues/5210)) ([a51e97b](https://github.com/invertase/react-native-firebase/commit/a51e97b208e32cca00f36d14187ac6ba5378e3cd))
+- **analytics, ATT:** allow use of AnalyticsWithoutAdIdSupport pod ([da6b811](https://github.com/invertase/react-native-firebase/commit/da6b811e15b480ad55c1e804da40387ecfdef3ee))
+
+## [11.3.3](https://github.com/invertase/react-native-firebase/compare/v11.3.2...v11.3.3) (2021-04-24)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [11.3.2](https://github.com/invertase/react-native-firebase/compare/v11.3.1...v11.3.2) (2021-04-19)
+
+### Bug Fixes
+
+- **all, android:** purge jcenter() from android build ([2c6a6a8](https://github.com/invertase/react-native-firebase/commit/2c6a6a82ec363fd948ea880fd397acb886c97453))
+
+## [11.3.1](https://github.com/invertase/react-native-firebase/compare/v11.3.0...v11.3.1) (2021-04-18)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [11.3.0](https://github.com/invertase/react-native-firebase/compare/v11.2.0...v11.3.0) (2021-04-16)
+
+### Features
+
+- **crashlytics:** flag fatal errors for crashlytics and analytics ([c94546d](https://github.com/invertase/react-native-firebase/commit/c94546d8127606dca5bfd09ef92ec32eec333f19))
+
+# [11.2.0](https://github.com/invertase/react-native-firebase/compare/v11.1.2...v11.2.0) (2021-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [11.1.2](https://github.com/invertase/react-native-firebase/compare/v11.1.1...v11.1.2) (2021-03-17)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [11.1.1](https://github.com/invertase/react-native-firebase/compare/v11.1.0...v11.1.1) (2021-03-16)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [11.1.0](https://github.com/invertase/react-native-firebase/compare/v11.0.0...v11.1.0) (2021-03-13)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [11.0.0](https://github.com/invertase/react-native-firebase/compare/v10.8.1...v11.0.0) (2021-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [10.8.1](https://github.com/invertase/react-native-firebase/compare/v10.8.0...v10.8.1) (2021-02-22)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.8.0](https://github.com/invertase/react-native-firebase/compare/v10.7.0...v10.8.0) (2021-02-13)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.7.0](https://github.com/invertase/react-native-firebase/compare/v10.6.4...v10.7.0) (2021-02-09)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [10.6.4](https://github.com/invertase/react-native-firebase/compare/v10.6.3...v10.6.4) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [10.6.3](https://github.com/invertase/react-native-firebase/compare/v10.6.2...v10.6.3) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [10.6.1](https://github.com/invertase/react-native-firebase/compare/v10.6.0...v10.6.1) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.6.0](https://github.com/invertase/react-native-firebase/compare/v10.5.1...v10.6.0) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+## [10.5.1](https://github.com/invertase/react-native-firebase/compare/v10.5.0...v10.5.1) (2021-01-19)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.5.0](https://github.com/invertase/react-native-firebase/compare/v10.4.1...v10.5.0) (2021-01-18)
+
+### Bug Fixes
+
+- **app, android:** require default firebase.json boolean key ([#4791](https://github.com/invertase/react-native-firebase/issues/4791)) ([483d9d3](https://github.com/invertase/react-native-firebase/commit/483d9d3655844e4c40cb42f3b0da865ada971515))
+
+## [10.4.1](https://github.com/invertase/react-native-firebase/compare/v10.4.0...v10.4.1) (2021-01-08)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.4.0](https://github.com/invertase/react-native-firebase/compare/v10.3.1...v10.4.0) (2020-12-30)
+
+### Bug Fixes
+
+- **ios:** bump ios min deployment to ios10 - remnant from [#4471](https://github.com/invertase/react-native-firebase/issues/4471) ([4a57578](https://github.com/invertase/react-native-firebase/commit/4a5757827789141600625eebe5e13c976ddb7402))
+
+### Features
+
+- **analytics:** add support for analytics_auto_collection_enabled in firebase.json ([#4730](https://github.com/invertase/react-native-firebase/issues/4730)) ([9a24ecd](https://github.com/invertase/react-native-firebase/commit/9a24ecd2826bfa8ab30657287432ccaeff8b7c7c))
+
+## [10.3.1](https://github.com/invertase/react-native-firebase/compare/v10.3.0...v10.3.1) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.3.0](https://github.com/invertase/react-native-firebase/compare/v10.2.0...v10.3.0) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.2.0](https://github.com/invertase/react-native-firebase/compare/v10.1.1...v10.2.0) (2020-12-11)
+
+### Features
+
+- firebase-ios-sdk 7.2.0 / firebase-android-sdk 26.1.1 ([#4648](https://github.com/invertase/react-native-firebase/issues/4648)) ([a158a74](https://github.com/invertase/react-native-firebase/commit/a158a74dee0dd6774c725ff1213453f8dfdcb8f5))
+
+## [10.1.1](https://github.com/invertase/react-native-firebase/compare/v10.1.0...v10.1.1) (2020-12-02)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [10.1.0](https://github.com/invertase/react-native-firebase/compare/v10.0.0...v10.1.0) (2020-11-26)
+
+### Bug Fixes
+
+- **analytics:** add missing quantity parameter to the Item structure ([#4536](https://github.com/invertase/react-native-firebase/issues/4536)) ([f9935e7](https://github.com/invertase/react-native-firebase/commit/f9935e78f181a5bfb718094487a5368472232b2d))
+
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/fc8c4c0622f8e6814879d0306f66012df5b83cd8...v10.0.0) (2020-11-17)
+
+### BREAKING
+
+- remove deprecated analytics methods ([18f5b0f](https://github.com/invertase/react-native-firebase/commit/18f5b0f7e65a3bddc92d3d23e31efb42a518ec12))
+
+## [8.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@8.0.0...@react-native-firebase/analytics@8.0.1) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
+# [8.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.10...@react-native-firebase/analytics@8.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **analytics:** BREAKING drop deprecated setMinimumSessionDuration API ([a675cd7](https://github.com/invertase/react-native-firebase/commit/a675cd7f7cf808e6a6d10cc174eeff3007ceac58))
+
+### BREAKING CHANGES
+
+- **analytics:** there is no replacement for the setMinimumSessionDuration API
+
+## [7.6.10](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.9...@react-native-firebase/analytics@7.6.10) (2020-11-10)
+
+### Bug Fixes
+
+- **analytics:** added a validation for length in analytics().logEvent(name, params) ([#4522](https://github.com/invertase/react-native-firebase/issues/4522)) ([107b07d](https://github.com/invertase/react-native-firebase/commit/107b07dc15f1199e08384f0ad5bbbff44f738056))
+
+## [7.6.9](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.8...@react-native-firebase/analytics@7.6.9) (2020-10-30)
+
+**Note:** Version bump only for package @react-native-firebase/analytics
+
 ## [7.6.8](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/analytics@7.6.7...@react-native-firebase/analytics@7.6.8) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

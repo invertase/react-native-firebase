@@ -382,7 +382,6 @@ export namespace FirebaseMessagingTypes {
    * An interface representing all the available permissions that can be requested by your app via
    * the `requestPermission` API.
    */
-  // eslint-disable-next-line @typescript-eslint/interface-name-prefix
   export interface IOSPermissions {
     /**
      * Request permission to display alerts.
@@ -839,6 +838,8 @@ export namespace FirebaseMessagingTypes {
      * unsubscribe();
      * ```
      *
+     * NOTE: Android only
+     *
      * @param listener Called when the FCM deletes pending messages.
      */
     onDeletedMessages(listener: () => void): () => void;
@@ -858,6 +859,8 @@ export namespace FirebaseMessagingTypes {
      * // Unsubscribe from message sent events
      * unsubscribe();
      * ```
+     *
+     * NOTE: Android only
      *
      * @param listener Called when the FCM sends the remote message to FCM.
      */
@@ -879,6 +882,8 @@ export namespace FirebaseMessagingTypes {
      * // Unsubscribe from message sent error events
      * unsubscribe();
      * ```
+     *
+     * NOTE: Android only
      *
      * @param listener
      */
@@ -924,6 +929,8 @@ export namespace FirebaseMessagingTypes {
      *   }
      * });
      * ```
+     *
+     * NOTE: Android only
      *
      * @param message A `RemoteMessage` interface.
      */
@@ -976,6 +983,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
@@ -987,22 +995,6 @@ declare module '@react-native-firebase/app' {
 
     interface FirebaseApp {
       messaging(): FirebaseMessagingTypes.Module;
-    }
-
-    interface FirebaseJsonConfig {
-      messaging_auto_init_enabled?: boolean;
-      messaging_android_headless_task_timeout?: number;
-      messaging_android_notification_channel_id?: string;
-      messaging_android_notification_color?: string;
-      /**
-       * Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`
-       * automatically on app launch (recommended) - defaults to true.
-       *
-       * If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`
-       * early on in your app startup - otherwise you will NOT receive remote messages/notifications
-       * in your app.
-       */
-      messaging_ios_auto_register_for_remote_messages?: boolean;
     }
   }
 }

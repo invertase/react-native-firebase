@@ -1,5 +1,6 @@
 package io.invertase.firebase.admob;
 
+import android.app.Activity;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -51,15 +52,16 @@ public class ReactNativeFirebaseAdMobRewardedModule extends ReactNativeFirebaseM
 
   @ReactMethod
   public void rewardedLoad(int requestId, String adUnitId, ReadableMap adRequestOptions) {
-    if (getCurrentActivity() == null) {
+    Activity activity = getCurrentActivity();
+    if (activity == null) {
       WritableMap error = Arguments.createMap();
       error.putString("code", "null-activity");
       error.putString("message", "Rewarded ad attempted to load but the current Activity was null.");
       sendRewardedEvent(AD_ERROR, requestId, adUnitId, error, null);
       return;
     }
-    getCurrentActivity().runOnUiThread(() -> {
-      RewardedAd rewardedAd = new RewardedAd(getApplicationContext(), adUnitId);
+    activity.runOnUiThread(() -> {
+      RewardedAd rewardedAd = new RewardedAd(activity, adUnitId);
 
       RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
         @Override

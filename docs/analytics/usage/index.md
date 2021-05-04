@@ -120,6 +120,39 @@ with any of the following event names will throw an error.
 | `ad_click`             | `ad_query`                | `ad_exposure`       |
 | `adunit_exposure`      | `ad_activeiew`            |
 
+## App instance id
+
+Below is an example showing how to retrieve the app instance id of the application. This will return null on android
+if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on
+iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+
+```jsx
+import analytics from '@react-native-firebase/analytics';
+// ...
+const appInstanceId = await analytics().getAppInstanceId();
+```
+
+# Disable Ad Id usage on iOS
+
+Apple has a strict ban on the usage of Ad Ids ("IDFA") in Kids Category apps. They will not accept any app
+in the Kids category if the app accesses the IDFA iOS symbols.
+
+Additionally, apps must implement Apples "App Tracking Transparency" (or "ATT") requirements if they access IDFA symbols.
+However, if an app does not use IDFA and otherwise handles data in an ATT-compatible way, it eliminates this ATT requirement.
+
+If avoiding the usage of IDFA is a requirement for your app, you must use firebase-ios-sdk 7.11.0 or greater, then you may define a variable in your Podfile like this:
+
+```ruby
+$RNFirebaseAnalyticsWithoutAdIdSupport = true
+```
+
+During `pod install`, using that variable installs a new
+["Analytics With No Ad Ids"](https://firebase.google.com/support/release-notes/ios#version_7110_-_april_20_2021)
+pod the firebase-ios-sdk team has created, and allows both the use of Firebase Analytics in Kids Category apps,
+and use of Firebase Analytics without needing the App Tracking Transparency handling (assuming no other parts
+of your app handle data in a way that requires ATT)
+
+Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
 # firebase.json
 
 ## Disable Auto-Initialization

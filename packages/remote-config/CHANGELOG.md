@@ -3,6 +3,146 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.4.1](https://github.com/invertase/react-native-firebase/compare/v11.4.0...v11.4.1) (2021-04-29)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [11.4.0](https://github.com/invertase/react-native-firebase/compare/v11.3.3...v11.4.0) (2021-04-29)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [11.3.3](https://github.com/invertase/react-native-firebase/compare/v11.3.2...v11.3.3) (2021-04-24)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [11.3.2](https://github.com/invertase/react-native-firebase/compare/v11.3.1...v11.3.2) (2021-04-19)
+
+### Bug Fixes
+
+- **all, android:** purge jcenter() from android build ([2c6a6a8](https://github.com/invertase/react-native-firebase/commit/2c6a6a82ec363fd948ea880fd397acb886c97453))
+
+## [11.3.1](https://github.com/invertase/react-native-firebase/compare/v11.3.0...v11.3.1) (2021-04-18)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [11.3.0](https://github.com/invertase/react-native-firebase/compare/v11.2.0...v11.3.0) (2021-04-16)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [11.2.0](https://github.com/invertase/react-native-firebase/compare/v11.1.2...v11.2.0) (2021-03-26)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [11.1.2](https://github.com/invertase/react-native-firebase/compare/v11.1.1...v11.1.2) (2021-03-17)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [11.1.1](https://github.com/invertase/react-native-firebase/compare/v11.1.0...v11.1.1) (2021-03-16)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [11.1.0](https://github.com/invertase/react-native-firebase/compare/v11.0.0...v11.1.0) (2021-03-13)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [11.0.0](https://github.com/invertase/react-native-firebase/compare/v10.8.1...v11.0.0) (2021-03-03)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [10.8.1](https://github.com/invertase/react-native-firebase/compare/v10.8.0...v10.8.1) (2021-02-22)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.8.0](https://github.com/invertase/react-native-firebase/compare/v10.7.0...v10.8.0) (2021-02-13)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.7.0](https://github.com/invertase/react-native-firebase/compare/v10.6.4...v10.7.0) (2021-02-09)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [10.6.4](https://github.com/invertase/react-native-firebase/compare/v10.6.3...v10.6.4) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [10.6.3](https://github.com/invertase/react-native-firebase/compare/v10.6.2...v10.6.3) (2021-02-05)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [10.6.1](https://github.com/invertase/react-native-firebase/compare/v10.6.0...v10.6.1) (2021-02-04)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.6.0](https://github.com/invertase/react-native-firebase/compare/v10.5.1...v10.6.0) (2021-02-04)
+
+### Bug Fixes
+
+- **remote-config:** remote-config requires analytics, add peer dependency ([06c2a18](https://github.com/invertase/react-native-firebase/commit/06c2a187cfab6fe7c359dc80a7841281cab9de55)), closes [#4821](https://github.com/invertase/react-native-firebase/issues/4821)
+
+## [10.5.1](https://github.com/invertase/react-native-firebase/compare/v10.5.0...v10.5.1) (2021-01-19)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+## [10.4.1](https://github.com/invertase/react-native-firebase/compare/v10.4.0...v10.4.1) (2021-01-08)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.4.0](https://github.com/invertase/react-native-firebase/compare/v10.3.1...v10.4.0) (2020-12-30)
+
+### Bug Fixes
+
+- **ios:** bump ios min deployment to ios10 - remnant from [#4471](https://github.com/invertase/react-native-firebase/issues/4471) ([4a57578](https://github.com/invertase/react-native-firebase/commit/4a5757827789141600625eebe5e13c976ddb7402))
+
+## [10.3.1](https://github.com/invertase/react-native-firebase/compare/v10.3.0...v10.3.1) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.3.0](https://github.com/invertase/react-native-firebase/compare/v10.2.0...v10.3.0) (2020-12-18)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.2.0](https://github.com/invertase/react-native-firebase/compare/v10.1.1...v10.2.0) (2020-12-11)
+
+### Bug Fixes
+
+- **remote-config, ios:** correct number comparison / fix fetch throttling ([#4664](https://github.com/invertase/react-native-firebase/issues/4664)) ([5a68a8a](https://github.com/invertase/react-native-firebase/commit/5a68a8a2767f65905c32c06145cb3b0b9432c397))
+
+### Features
+
+- firebase-ios-sdk 7.2.0 / firebase-android-sdk 26.1.1 ([#4648](https://github.com/invertase/react-native-firebase/issues/4648)) ([a158a74](https://github.com/invertase/react-native-firebase/commit/a158a74dee0dd6774c725ff1213453f8dfdcb8f5))
+
+## [10.1.1](https://github.com/invertase/react-native-firebase/compare/v10.1.0...v10.1.1) (2020-12-02)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.1.0](https://github.com/invertase/react-native-firebase/compare/v10.0.0...v10.1.0) (2020-11-26)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/fc8c4c0622f8e6814879d0306f66012df5b83cd8...v10.0.0) (2020-11-17)
+
+### BREAKING CHANGES
+
+- breaking change to mark new internal versioning requirements.
+
+## [10.0.1](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@10.0.0...@react-native-firebase/remote-config@10.0.1) (2020-11-10)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
+# [10.0.0](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.12...@react-native-firebase/remote-config@10.0.0) (2020-11-10)
+
+### Bug Fixes
+
+- **remote-config:** BREAKING drop deprecated APIs ([86b6086](https://github.com/invertase/react-native-firebase/commit/86b6086da9fe535e0cd0f4ddbb3152b0275e3904))
+
+### BREAKING CHANGES
+
+- **remote-config:** drop defaultConfig, settings, isDeveloperModeEnabled, minimumFetchInterval, setLogLevel
+
+## [9.0.12](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.11...@react-native-firebase/remote-config@9.0.12) (2020-10-30)
+
+**Note:** Version bump only for package @react-native-firebase/remote-config
+
 ## [9.0.11](https://github.com/invertase/react-native-firebase/compare/@react-native-firebase/remote-config@9.0.10...@react-native-firebase/remote-config@9.0.11) (2020-10-16)
 
 **Note:** Version bump only for package @react-native-firebase/remote-config

@@ -7,17 +7,17 @@ buildscript {
   if (project == rootProject) {
     repositories {
       google()
-      jcenter()
+      mavenCentral()
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.0.1")
+      classpath("com.android.tools.build:gradle:4.1.3")
     }
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.4"
+  id "io.invertase.gradle.build" version "1.5"
 }
 
 def appProject
@@ -79,7 +79,7 @@ android {
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {

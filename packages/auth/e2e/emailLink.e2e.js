@@ -1,13 +1,15 @@
-describe('auth() -> emailLink Provider', () => {
-  beforeEach(async () => {
+const { getLastOob, signInUser } = require('./helpers');
+
+describe('auth() -> emailLink Provider', function () {
+  beforeEach(async function () {
     if (firebase.auth().currentUser) {
       await firebase.auth().signOut();
       await Utils.sleep(50);
     }
   });
 
-  describe('sendSignInLinkToEmail', () => {
-    it('should send email', async () => {
+  describe('sendSignInLinkToEmail', function () {
+    it('should send email', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
       // const email = 'MANUAL TEST EMAIL HERE';
@@ -26,7 +28,31 @@ describe('auth() -> emailLink Provider', () => {
       await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
     });
 
-    xit('should send email with defaults', async () => {
+    it('sign in via email works', async function () {
+      const random = Utils.randString(12, '#aa');
+      const email = `${random}@${random}.com`;
+      const continueUrl = 'http://localhost:1337/authLinkFoo?bar=' + random;
+      const actionCodeSettings = {
+        url: continueUrl,
+        handleCodeInApp: true,
+        iOS: {
+          bundleId: 'com.testing',
+        },
+        android: {
+          packageName: 'com.testing',
+          installApp: true,
+          minimumVersion: '12',
+        },
+      };
+      await firebase.auth().sendSignInLinkToEmail(email, actionCodeSettings);
+      const oobInfo = await getLastOob(email);
+      oobInfo.oobLink.should.containEql(encodeURIComponent(continueUrl));
+      const signInResponse = await signInUser(oobInfo.oobLink);
+      signInResponse.should.containEql(continueUrl);
+      signInResponse.should.containEql(oobInfo.oobCode);
+    });
+
+    xit('should send email with defaults', async function () {
       const random = Utils.randString(12, '#aA');
       const email = `${random}@${random}.com`;
 
@@ -34,8 +60,8 @@ describe('auth() -> emailLink Provider', () => {
     });
   });
 
-  describe('isSignInWithEmailLink', () => {
-    it('should return true/false', async () => {
+  describe('isSignInWithEmailLink', function () {
+    it('should return true/false', async function () {
       const emailLink1 = 'https://www.example.com/action?mode=signIn&oobCode=oobCode';
       const emailLink2 = 'https://www.example.com/action?mode=verifyEmail&oobCode=oobCode';
       const emailLink3 = 'https://www.example.com/action?mode=signIn';
@@ -50,8 +76,8 @@ describe('auth() -> emailLink Provider', () => {
   });
 
   // FOR MANUAL TESTING ONLY
-  xdescribe('signInWithEmailLink', () => {
-    it('should signIn', async () => {
+  xdescribe('signInWithEmailLink', function () {
+    it('should signIn', async function () {
       const email = 'MANUAL TEST EMAIL HERE';
       const emailLink = 'MANUAL TEST CODE HERE';
 

@@ -205,8 +205,7 @@ RCT_EXPORT_METHOD(initializeApp:
         firApp = [FIRApp appNamed:appName];
       }
     } @catch (NSException *exception) {
-      // TODO js error builder
-      // reject(@"code",@"message",[exception ]);
+      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
     }
 
     firApp.dataCollectionDefaultEnabled = (BOOL) [appConfig valueForKey:@"automaticDataCollectionEnabled"];

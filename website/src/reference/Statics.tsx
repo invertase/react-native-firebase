@@ -24,7 +24,7 @@ import { SourceLink } from '../components/SourceLink';
 import { MethodReference } from './Methods';
 import { ReferenceProperty } from './Properties';
 
-function Statics({ prefix, statics }: { prefix: string; statics: Static[] }) {
+function Statics({ prefix, statics }: { prefix: string; statics: Static[] }): JSX.Element {
   return (
     <>
       <Divider />

@@ -51,7 +51,13 @@ interface Props {
   style?: CSSProperties;
 }
 
-function Sidebar({ items, collapsible, className, innerClassName, style = {} }: Props) {
+function Sidebar({
+  items,
+  collapsible,
+  className,
+  innerClassName,
+  style = {},
+}: Props): JSX.Element {
   return (
     <>
       <Aside className={cx('relative pl-1', className)}>
@@ -97,17 +103,15 @@ function Sidebar({ items, collapsible, className, innerClassName, style = {} }: 
                 }
 
                 if (Array.isArray(items)) {
+                  const itemArray = items as Item[];
                   return (
                     <Group
                       collapsible={collapsible}
                       title={title}
                       icon={icon as string}
-                      items={items.map(item => ({
-                        // @ts-ignore
+                      items={itemArray.map(item => ({
                         to: item[1] as string,
-                        // @ts-ignore
                         text: item[0] as string,
-                        // @ts-ignore
                         exact: !!item[2] as boolean,
                       }))}
                     />

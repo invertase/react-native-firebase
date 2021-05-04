@@ -61,7 +61,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.3.3'
+    classpath 'com.google.gms:google-services:4.3.4'
     // Add me --- /\
   }
 }
@@ -138,7 +138,7 @@ cd ..
 npx react-native run-ios
 ```
 
-Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services; each of the modules for the individual Firebase services need installing separately.
+Once successfully linked and rebuilt, your application will be connected to Firebase using the `@react-native-firebase/app` module. This module does not provide much functionality, therefore to use other Firebase services, each of the modules for the individual Firebase services need installing separately.
 
 #### Manual Linking
 
@@ -160,9 +160,8 @@ the problem, however it is recommended you read the Android documentation to und
 
 ### Hermes Support
 
-At this time, React Native Firebase does not support the [Hermes](https://hermesengine.dev/) JavaScript engine due to
-compatibility issues. We are actively tracking the changes to Hermes and will ensure support once both are compatible
-with each other.
+To support the [Hermes](https://hermesengine.dev/) JavaScript engine, React Native 0.64.0 or newer is required.
+However, we cannot guarantee that React Native Firebase works perfectly on it, so please test your project carefully.
 
 ### Overriding Native SDK Versions
 
@@ -186,15 +185,15 @@ project.ext {
       // Overriding Build/Android SDK Versions
       android : [
         minSdk    : 16,
-        targetSdk : 29,
-        compileSdk: 29,
-        buildTools: "29.0.3"
+        targetSdk : 30,
+        compileSdk: 30,
+        buildTools: "30.0.2"
       ],
 
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "25.12.0"
+        bom           : "26.6.0"
       ],
     ],
   ])
@@ -209,7 +208,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '6.34.0'
+$FirebaseSDKVersion = '7.7.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
@@ -227,6 +226,26 @@ setting present in `/android/gradle.properties`:
 org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 ```
 
+### Android Performance
+
+On Android, React Native Firebase uses [thread pool executor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) to provide improved performance and managed resources.
+To increase throughput, you can tune the thread pool executor via `firebase.json` file within the root of your project:
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "android_task_executor_maximum_pool_size": 10,
+    "android_task_executor_keep_alive_seconds": 3,
+  }
+}
+```
+
+| Key          | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `android_task_executor_maximum_pool_size` | Maximum pool size of ThreadPoolExecutor. Defaults to `1`. Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries. Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module. |
+| `android_task_executor_keep_alive_seconds` | Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`. Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time. This value doesn't have any effect when the maximum pool size is lower than `2`. |
+
 ### Allow iOS Static Frameworks
 
 If you are using Static Frameworks on iOS, you need to manually enable this for the project. To enable Static Framework
@@ -238,4 +257,4 @@ $RNFirebaseAsStaticFramework = true
 
 ### Expo
 
-Expo does not support integration with native modules via it's ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).
+Expo does not support integration with native modules via its ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).

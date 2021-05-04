@@ -19,20 +19,14 @@ const { PATH } = require('../helpers');
 
 const TEST_PATH = `${PATH}/update`;
 
-describe('database().ref().update()', () => {
-  after(async () => {
-    await firebase
-      .database()
-      .ref(TEST_PATH)
-      .remove();
+describe('database().ref().update()', function () {
+  after(async function () {
+    await firebase.database().ref(TEST_PATH).remove();
   });
 
-  it('throws if values is not an object', async () => {
+  it('throws if values is not an object', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .update('foo');
+      await firebase.database().ref(TEST_PATH).update('foo');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'values' must be an object");
@@ -40,27 +34,11 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('throws if values does not contain any values', async () => {
+  it('throws if update paths are not valid', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .update({});
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'values' must be an object containing multiple values");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if update paths are not valid', async () => {
-    try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .update({
-          $$$$: 'foo',
-        });
+      await firebase.database().ref(TEST_PATH).update({
+        $$$$: 'foo',
+      });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'values' contains an invalid path.");
@@ -68,17 +46,14 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('throws if onComplete is not a function', async () => {
+  it('throws if onComplete is not a function', async function () {
     try {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .update(
-          {
-            foo: 'bar',
-          },
-          'foo',
-        );
+      await firebase.database().ref(TEST_PATH).update(
+        {
+          foo: 'bar',
+        },
+        'foo',
+      );
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       error.message.should.containEql("'onComplete' must be a function if provided");
@@ -86,7 +61,7 @@ describe('database().ref().update()', () => {
     }
   });
 
-  it('updates values', async () => {
+  it('updates values', async function () {
     const value = Date.now();
     const ref = firebase.database().ref(TEST_PATH);
     await ref.update({
@@ -98,20 +73,25 @@ describe('database().ref().update()', () => {
         foo: value,
       }),
     );
+
+    await ref.update({}); // empty update should pass, but no side effects
+    const snapshot2 = await ref.once('value');
+    snapshot2.val().should.eql(
+      jet.contextify({
+        foo: value,
+      }),
+    );
   });
 
-  it('callback if function is passed', async () => {
+  it('callback if function is passed', async function () {
     const value = Date.now();
     return new Promise(async resolve => {
-      await firebase
-        .database()
-        .ref(TEST_PATH)
-        .update(
-          {
-            foo: value,
-          },
-          resolve,
-        );
+      await firebase.database().ref(TEST_PATH).update(
+        {
+          foo: value,
+        },
+        resolve,
+      );
     });
   });
 });

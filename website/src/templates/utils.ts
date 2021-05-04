@@ -45,11 +45,7 @@ function iconForModule(module: string): string {
       return '//static.invertase.io/assets/firebase/dynamic-links.svg';
     case 'in-app-messaging':
       return '//static.invertase.io/assets/firebase/in-app-messaging.svg';
-    case 'ml-natural-language':
-      return '//static.invertase.io/assets/firebase/ml-kit.svg';
-    case 'ml-language':
-      return '//static.invertase.io/assets/firebase/ml-kit.svg';
-    case 'ml-vision':
+    case 'ml':
       return '//static.invertase.io/assets/firebase/ml-kit.svg';
     case 'remote-config':
       return '//static.invertase.io/assets/firebase/remote-config.svg';
@@ -60,7 +56,7 @@ function iconForModule(module: string): string {
   }
 }
 
-function dashCaseToCamelCase(str: string) {
+function dashCaseToCamelCase(str: string): string {
   return str;
 }
 
@@ -83,7 +79,9 @@ function extractEntityFromModules(modules: Module[], findBySlug: string): Entity
  * Generate a sidebar from the modules & their entities
  * @param modules
  */
-function generateReferenceSidebarFromModules(modules: Module[]) {
+function generateReferenceSidebarFromModules(
+  modules: Module[],
+): (string | (string | boolean)[][])[][] {
   return modules
     .filter(({ module }) => module !== 'indexing')
     .map(({ module, moduleName, entities }) => {
@@ -116,7 +114,7 @@ function generateTableOfContentsFromEntities({
   properties,
   methods,
   statics,
-}: TableOfContentsGenerationProps) {
+}: TableOfContentsGenerationProps): { url: string; title: string; items: any }[] {
   const items = [];
 
   if (members?.length) {
@@ -175,7 +173,7 @@ function generateTableOfContentsFromEntities({
   return items;
 }
 
-function stringToColour(str: string) {
+function stringToColour(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);

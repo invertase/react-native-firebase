@@ -43,7 +43,7 @@
   - - - Usage
       - '/firestore/usage'
     - - Usage with Emulator
-      - '/firestore/emulator'  
+      - '/firestore/emulator'
     - - Usage with FlatLists
       - '/firestore/usage-with-flatlists'
     - - Building a "TODO" app
@@ -74,6 +74,8 @@
 - - Core / App
   - - - Usage
       - '/app/usage'
+    - - JSON Config
+      - '/app/json-config'
     - - Utils
       - '/app/utils'
   - '//static.invertase.io/assets/social/firebase-logo.png'
@@ -103,23 +105,15 @@
   - - - Usage
       - '/in-app-messaging/usage'
   - '//static.invertase.io/assets/firebase/in-app-messaging.svg'
-- - ML Kit Natural Language
+- - ML
   - - - Usage
-      - '/ml-natural-language/usage'
-  - '//static.invertase.io/assets/firebase/ml-kit.svg'
-- - ML Kit Vision
-  - - - Usage
-      - '/ml-vision/usage'
+      - '/ml/usage'
     - - Text Recognition
-      - '/ml-vision/text-recognition'
+      - '/ml/text-recognition'
     - - Landmark Recognition
-      - '/ml-vision/landmark-recognition'
-    - - Barcode Scanning
-      - '/ml-vision/barcode-scanning'
+      - '/ml/landmark-recognition'
     - - Image Labeling
-      - '/ml-vision/image-labeling'
-    - - Face Detection
-      - '/ml-vision/face-detection'
+      - '/ml/image-labeling'
   - '//static.invertase.io/assets/firebase/ml-kit.svg'
 - - Remote Config
   - - - Usage

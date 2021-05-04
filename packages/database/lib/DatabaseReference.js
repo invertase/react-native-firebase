@@ -112,12 +112,6 @@ export default class DatabaseReference extends DatabaseQuery {
       throw new Error("firebase.database().ref().update(*) 'values' must be an object.");
     }
 
-    if (!Object.keys(values).length) {
-      throw new Error(
-        "firebase.database().ref().update(*) 'values' must be an object containing multiple values.",
-      );
-    }
-
     const keys = Object.keys(values);
     for (let i = 0; i < keys.length; i++) {
       if (!isValidPath(keys[i])) {

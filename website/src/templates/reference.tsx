@@ -30,7 +30,7 @@ type Props = {
   data: PageReferenceQuery;
 };
 
-function ReferenceTemplate({ location, data }: Props) {
+function ReferenceTemplate({ location, data }: Props): JSX.Element {
   const { allModule } = data;
 
   const toc = (

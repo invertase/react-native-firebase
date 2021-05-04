@@ -7,17 +7,17 @@ buildscript {
   if (project == rootProject) {
     repositories {
       google()
-      jcenter()
+      mavenCentral()
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.0.1")
+      classpath("com.android.tools.build:gradle:4.1.3")
     }
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.4"
+  id "io.invertase.gradle.build" version "1.5"
 }
 
 def appProject
@@ -72,7 +72,7 @@ def notificationColor = defaultNotificationColor
 
 
 if (rootProject.ext && rootProject.ext.firebaseJson) {
-  if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled") == false) {
+  if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled", true) == false) {
     autoInitEnabled = "false"
   }
   notificationChannelId = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_channel_id", "")
@@ -100,7 +100,7 @@ android {
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 
 dependencies {

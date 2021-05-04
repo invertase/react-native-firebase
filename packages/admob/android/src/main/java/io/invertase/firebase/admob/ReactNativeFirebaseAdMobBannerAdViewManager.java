@@ -96,7 +96,7 @@ public class ReactNativeFirebaseAdMobBannerAdViewManager extends SimpleViewManag
 
   @ReactProp(name = "size")
   public void setSize(ReactViewGroup reactViewGroup, String value) {
-    size = ReactNativeFirebaseAdMobCommon.stringToAdSize(value);
+    size = ReactNativeFirebaseAdMobCommon.getAdSize(value, reactViewGroup);
 
     int width;
     int height;

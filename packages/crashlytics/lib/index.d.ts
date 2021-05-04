@@ -126,6 +126,8 @@ export namespace FirebaseCrashlyticsTypes {
 
     /**
      * Cause your app to crash for testing purposes. This is a native crash and will not contain a javascript stack trace.
+     * Note that crashes are intercepted by debuggers on iOS so no report will be seen under those conditions. Additionally
+     * if it is a debug build you will need to ensure your firebase.json is configured to enable crashlytics even in debug mode.
      *
      * #### Example
      *
@@ -166,8 +168,9 @@ export namespace FirebaseCrashlyticsTypes {
      * ```
      *
      * @param error Expects an instance of Error; e.g. classes that extend Error will also be supported.
+     * @param jsErrorName Optional string containing Javascript error name
      */
-    recordError(error: Error): void;
+    recordError(error: Error, jsErrorName?: string): void;
     /**
      * Enqueues any unsent reports on the device to upload to Crashlytics. This method only applies if
      * automatic data collection is disabled.
@@ -267,6 +270,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {
@@ -277,12 +281,6 @@ declare module '@react-native-firebase/app' {
     }
     interface FirebaseApp {
       crashlytics(): FirebaseCrashlyticsTypes.Module;
-    }
-
-    interface FirebaseJsonConfig {
-      crashlytics_ndk_enabled: boolean;
-      crashlytics_debug_enabled: boolean;
-      crashlytics_auto_collection_enabled: boolean;
     }
   }
 }

@@ -250,6 +250,7 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * The example below shows how to set a time limit to the length of time the request for remote config values
    *
+   * ```js
    * await firebase.remoteConfig().setConfigSettings({
    *    fetchTimeoutMillis: 6000,
    * });
@@ -535,6 +536,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
     interface Module {

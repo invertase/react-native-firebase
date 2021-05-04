@@ -15,12 +15,9 @@
  */
 const COLLECTION = 'firestore';
 
-describe('FirestoreQuery/FirestoreQueryModifiers', () => {
-  it('should not mutate previous queries (#2691)', async () => {
-    const queryBefore = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('age', '>', 30);
+describe('FirestoreQuery/FirestoreQueryModifiers', function () {
+  it('should not mutate previous queries (#2691)', async function () {
+    const queryBefore = firebase.firestore().collection(COLLECTION).where('age', '>', 30);
     const queryAfter = queryBefore.orderBy('age');
     queryBefore._modifiers._orders.length.should.equal(0);
     queryBefore._modifiers._filters.length.should.equal(1);
@@ -29,7 +26,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     queryAfter._modifiers._filters.length.should.equal(1);
   });
 
-  it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async () => {
+  it('throws if where equality operator is invoked, and the where fieldPath parameter matches any orderBy parameter', async function () {
     try {
       firebase
         .firestore()
@@ -58,7 +55,7 @@ describe('FirestoreQuery/FirestoreQueryModifiers', () => {
     }
   });
 
-  it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async () => {
+  it('throws if where inequality operator is invoked, and the where fieldPath does not match initial orderBy parameter', async function () {
     try {
       firebase
         .firestore()

@@ -636,7 +636,7 @@ export namespace FirebaseFirestoreTypes {
    * ```js
    * const increment = firebase.firestore.FieldValue.increment(1);
    *
-   * await firebase.firestore().doc('users/alovelace).update({
+   * await firebase.firestore().doc('users/alovelace').update({
    *   age: increment, // increment age by 1
    * });
    * ```
@@ -1240,7 +1240,7 @@ export namespace FirebaseFirestoreTypes {
      * ```
      *
      * @param fieldPath The path to compare.
-     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "array-contains", "array-contains-any", "in").
+     * @param opStr The operation string (e.g "<", "<=", "==", ">", ">=", "!=", "array-contains", "array-contains-any", "in", "not-in").
      * @param value The comparison value.
      */
     where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
@@ -1255,9 +1255,11 @@ export namespace FirebaseFirestoreTypes {
     | '=='
     | '>'
     | '>='
+    | '!='
     | 'array-contains'
     | 'array-contains-any'
-    | 'in';
+    | 'in'
+    | 'not-in';
 
   /**
    * A `QuerySnapshot` contains zero or more `QueryDocumentSnapshot` objects representing the results of a query. The documents
@@ -1392,7 +1394,7 @@ export namespace FirebaseFirestoreTypes {
     /**
      * Enables or disables local persistent storage.
      */
-    persistence: boolean;
+    persistence?: boolean;
 
     /**
      * An approximate cache size threshold for the on-disk data. If the cache grows beyond this size, Firestore will start
@@ -1401,17 +1403,22 @@ export namespace FirebaseFirestoreTypes {
      *
      * To disable garbage collection and set an unlimited cache size, use `firebase.firestore.CACHE_SIZE_UNLIMITED`.
      */
-    cacheSizeBytes: number;
+    cacheSizeBytes?: number;
 
     /**
      * The hostname to connect to.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
      */
-    host: string;
+    host?: string;
 
     /**
      * Whether to use SSL when connecting.
      */
-    ssl: boolean;
+    ssl?: boolean;
   }
 
   /**
@@ -1514,18 +1521,35 @@ export namespace FirebaseFirestoreTypes {
     toDate(): Date;
 
     /**
-     * Convert a timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
+     * Convert a Timestamp to a numeric timestamp (in milliseconds since epoch). This operation causes a loss of precision.
      *
      * The point in time corresponding to this timestamp, represented as the number of milliseconds since Unix epoch 1970-01-01T00:00:00Z.
      */
     toMillis(): number;
+
+    /**
+     * Convert a timestamp to a string in format "FirestoreTimestamp(seconds=`seconds`, nanoseconds=`nanoseconds`)",
+     * with the `seconds` and `nanoseconds` replaced by the values in the Timestamp object
+     */
+    toString(): string;
+
+    /**
+     * Convert a Timestamp to a JSON object with seconds and nanoseconds members
+     */
+    toJSON(): { seconds: number; nanoseconds: number };
+
+    /**
+     * Converts this object to a primitive string, which allows Timestamp objects to be compared
+     * using the `>`, `<=`, `>=` and `>` operators.
+     */
+    valueOf(): string;
   }
 
   /**
    * A reference to a transaction. The `Transaction` object passed to a transaction's updateFunction provides the methods to
    * read and write data within the transaction context. See `Firestore.runTransaction()`.
    *
-   * A transaction consists of any number of `get()` operations followed by any number of write operations such as set(),
+   * A transaction consists of any number of `get()` operations followed by any number of write operations such as `set()`,
    * `update()`, or `delete()`. In the case of a concurrent edit, Cloud Firestore runs the entire transaction again. For example,
    * if a transaction reads documents and another client modifies any of those documents, Cloud Firestore retries the transaction.
    * This feature ensures that the transaction runs on up-to-date and consistent data.
@@ -2041,6 +2065,7 @@ export default defaultExport;
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
 declare module '@react-native-firebase/app' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
     interface Module {

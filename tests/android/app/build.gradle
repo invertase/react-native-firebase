@@ -37,14 +37,16 @@ def enableSeparateBuildPerCPUArchitecture = false
 def useIntlJsc = false
 
 android {
-  compileSdkVersion 29
+  ndkVersion rootProject.ext.ndkVersion
+  compileSdkVersion rootProject.ext.compileSdkVersion
   aaptOptions {
+    // https://firebase.google.com/docs/ml/android/use-custom-models#local_model
     noCompress "tflite"
   }
   defaultConfig {
     applicationId "com.invertase.testing"
-    minSdkVersion 21
-    targetSdkVersion 29
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
 
@@ -98,34 +100,22 @@ android {
       }
     }
   }
-
-  packagingOptions {
-    exclude 'META-INF/proguard/androidx-annotations.pro'
-    exclude 'META-INF/-no-jdk.kotlin_module'
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/LICENSE.txt'
-    exclude 'META-INF/NOTICE.txt'
-    pickFirst "lib/armeabi-v7a/libc++_shared.so"
-    pickFirst "lib/arm64-v8a/libc++_shared.so"
-    pickFirst "lib/x86/libc++_shared.so"
-    pickFirst "lib/x86_64/libc++_shared.so"
-  }
-}
-
-// Can probably remove this when tests upgrades to react-native 0.63
-configurations.all {
-    resolutionStrategy {
-        force "com.facebook.soloader:soloader:0.8.2"
-    }
 }
 
 dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-  implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+  implementation("androidx.annotation:annotation:${rootProject.ext.androidxAnnotationVersion}")
+  implementation("androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}")
+  implementation("androidx.core:core:${rootProject.ext.supportLibVersion}")
+  implementation("androidx.fragment:fragment:${rootProject.ext.fragmentVersion}")
+  implementation("androidx.legacy:legacy-support-core-ui:${rootProject.ext.supportV4Version}")
+  implementation("androidx.legacy:legacy-support-core-utils:${rootProject.ext.supportV4Version}")
+  implementation("androidx.swiperefreshlayout:swiperefreshlayout:${rootProject.ext.swiperefreshlayoutVersion}")
+  implementation("androidx.vectordrawable:vectordrawable-animated:${rootProject.ext.vectordrawableVersion}")
+  implementation("androidx.vectordrawable:vectordrawable:${rootProject.ext.vectordrawableVersion}")
 
   // JSC from node_modules
   implementation jscFlavor

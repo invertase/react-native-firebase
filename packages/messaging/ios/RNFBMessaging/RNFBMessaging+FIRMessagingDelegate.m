@@ -64,14 +64,4 @@
   }
 }
 
-- (void)messaging:(nonnull FIRMessaging *)messaging didReceiveMessage:(nonnull FIRMessagingRemoteMessage *)remoteMessage {
-  // If the users AppDelegate implements messaging:didReceiveMessage: then call it
-  SEL messaging_didReceiveMessageSelector =
-      NSSelectorFromString(@"messaging:didReceiveMessage:");
-  if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveMessageSelector]) {
-    void (*usersDidReceiveMessageIMP)(id, SEL, FIRMessaging *, FIRMessagingRemoteMessage *) = (typeof(usersDidReceiveMessageIMP)) &objc_msgSend;
-    usersDidReceiveMessageIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveMessageSelector, messaging, remoteMessage);
-  }
-}
-
 @end

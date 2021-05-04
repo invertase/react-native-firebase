@@ -1,0 +1,207 @@
+name: Testing E2E Android
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'docs/**'
+      - 'website/**'
+      - '.spellcheck.dict.txt'
+      - '**/*.md'
+
+jobs:
+  android:
+    name: Android
+    runs-on: macos-latest
+    timeout-minutes: 70
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      EMULATOR_COMMAND: "-avd TestingAVD -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
+      EMULATOR_EXECUTABLE: qemu-system-x86_64-headless
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.0
+        with:
+          all_but_latest: true
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install firebase CLI
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: npm i -g firebase-tools
+
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1
+
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+
+      - uses: actions/cache@v2
+        name: Gradle Cache
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
+
+      - name: Yarn Install
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
+
+      - name: Configure JDK 1.11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
+
+      - name: Verify JDK11
+        # Default JDK varies depending on different runner flavors, make sure we are on 11
+        # Run a check that exits with error unless it is 11 version to future-proof against unexpected upgrades
+        run: java -fullversion 2>&1 | grep '11.0'
+        shell: bash
+
+      - name: Build Android App
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 15
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug -Dorg.gradle.daemon=false
+
+      - name: Pre-fetch Javascript bundle
+        # Prebuild the bundle so that's fast when the app starts.
+        run: |
+          nohup yarn tests:packager:jet &
+          printf 'Waiting for packager to come online'
+          until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
+            printf '.'
+            sleep 2
+          done
+          echo "Packager is online! Preparing javascript bundle..."
+          curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
+          echo "...javascript bundle ready."
+
+      - name: Download Emulator Image
+        # This can fail on network request, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
+
+      - name: Create Emulator
+        run: echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
+
+      # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
+      - name: Start Android Emulator
+        id: emu1
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator"
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Start Android Emulator Retry 1
+        id: emu2
+        if: steps.emu1.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, second attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Start Android Emulator Retry 2
+        id: emu3
+        if: steps.emu2.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, third attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+
+      - name: Emulator Status
+        if: always()
+        run: |
+          if ${{ steps.emu1.outcome=='success' || steps.emu2.outcome=='success' || steps.emu3.outcome=='success' }}; then
+             echo "Emulator Started"
+          else
+             exit 1
+          fi
+
+      - name: Detox Test
+        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
+        timeout-minutes: 40
+        run: |
+          $ANDROID_HOME/platform-tools/adb devices
+          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+          nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
+          nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
+          yarn tests:android:test-cover --cleanup
+        shell: bash
+
+      - name: Submit Coverage
+        # This can fail on timeouts etc, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: ./node_modules/.bin/codecov
+
+      - name: Compress Emulator Log
+        if: always()
+        run: gzip -9 adb-log.txt
+        shell: bash
+
+      - name: Upload Emulator Log
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: adb_logs
+          path: adb-log.txt.gz
