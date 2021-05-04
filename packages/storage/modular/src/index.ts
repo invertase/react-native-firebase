@@ -1,4 +1,4 @@
-import { FirebaseApp, getApp } from '@react-native-firebase-modular/app';
+import { FirebaseApp, getApp } from '@react-native-firebase/app-exp';
 import {
   isFirebaseApp,
   isUndefined,
@@ -10,7 +10,7 @@ import {
   pathJoin,
   isOptionalString,
   isString,
-} from '@react-native-firebase-modular/app/internal';
+} from '@react-native-firebase/app-exp/internal';
 import * as impl from './impl';
 import {
   StorageService,

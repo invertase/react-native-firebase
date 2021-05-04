@@ -11,7 +11,7 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 
-import {getApp} from '@react-native-firebase-modular/app';
+import {getApp} from '@react-native-firebase/app-exp';
 
 function App() {
   console.log('!!!!!', getApp());

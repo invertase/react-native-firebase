@@ -83,7 +83,7 @@ export default class UploadTaskImpl implements UploadTask {
   }
 
   on(
-    event: typeof TaskEvent,
+    _event: typeof TaskEvent,
     observer?: (snapshot: UploadTaskSnapshot) => unknown,
     onError?: (error: any) => unknown,
   ) {

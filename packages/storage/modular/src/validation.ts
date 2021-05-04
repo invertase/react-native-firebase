@@ -1,5 +1,6 @@
-import StorageServiceImpl from 'implementations/storageService';
-import StorageReferenceImpl from 'implementations/storageReference';
+import { isObject, isString } from '@react-native-firebase/app-exp/internal';
+import StorageServiceImpl from './implementations/storageService';
+import StorageReferenceImpl from './implementations/storageReference';
 import {
   FullMetadata,
   SettableMetadata,
@@ -8,7 +9,6 @@ import {
   UploadMetadata,
   UploadResult,
 } from './types';
-import { isObject, isString } from '@react-native-firebase-modular/app/internal';
 
 /**
  * Returns whether a value is a StorageService instance.

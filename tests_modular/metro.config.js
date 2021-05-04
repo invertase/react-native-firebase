@@ -34,9 +34,6 @@ module.exports = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
     ]),
-    resolveRequest: (context, realModuleName, platform, moduleName) => {
-      console.log(context, realModuleName, platform, moduleName);
-    },
     extraNodeModules: new Proxy(
       {},
       {
@@ -47,12 +44,12 @@ module.exports = {
           if (
             name &&
             name.startsWith &&
-            name.startsWith('@react-native-firebase-modular')
+            name.startsWith('@react-native-firebase/') &&
+            name.endsWith('-exp')
           ) {
-            const packageName = name.replace(
-              '@react-native-firebase-modular/',
-              '',
-            );
+            const packageName = name
+              .replace('@react-native-firebase/', '')
+              .replace('-exp', '');
             return join(__dirname, `../packages/${packageName}/modular`);
           }
           return join(__dirname, `node_modules/${name}`);

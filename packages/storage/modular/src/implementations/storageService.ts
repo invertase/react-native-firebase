@@ -1,4 +1,4 @@
-import { FirebaseApp } from '@react-native-firebase-modular/app';
+import { FirebaseApp } from '@react-native-firebase/app-exp';
 import { StorageService } from '../types';
 
 /**

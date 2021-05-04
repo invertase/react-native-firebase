@@ -1,8 +1,4 @@
-import {
-  pathParsed,
-  pathLastComponent,
-  pathParent,
-} from '@react-native-firebase-modular/app/internal';
+import { pathParsed, pathLastComponent, pathParent } from '@react-native-firebase/app-exp/internal';
 import { StorageReference, StorageService } from '../types';
 
 export default class StorageReferenceImpl implements StorageReference {

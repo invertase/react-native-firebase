@@ -1,5 +1,5 @@
-import { FirebaseApp } from '@react-native-firebase-modular/app';
-import { Mutable } from '@react-native-firebase-modular/app/internal';
+import { FirebaseApp } from '@react-native-firebase/app-exp';
+import { Mutable } from '@react-native-firebase/app-exp/internal';
 import * as app from 'firebase/app';
 import * as delegate from 'firebase/storage';
 import { toFullMetadata, toUploadResult } from 'validation';
@@ -87,8 +87,10 @@ export async function setMaxUploadRetryTime(storage: StorageService, time: numbe
 }
 
 export async function setMaxDownloadRetryTime(
-  storage: StorageService,
-  time: number,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _storage: StorageService,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _time: number,
 ): Promise<void> {
   // Noop on web
 }

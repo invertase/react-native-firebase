@@ -1,5 +1,5 @@
 import * as web from 'firebase/storage';
-import { FirebaseApp } from '@react-native-firebase-modular/app';
+import { FirebaseApp } from '@react-native-firebase/app-exp';
 
 export interface StorageService extends web.StorageService {
   readonly app: FirebaseApp;

@@ -1,10 +1,10 @@
 import { EmitterSubscription } from 'react-native';
-import { FirebaseApp } from '@react-native-firebase-modular/app';
+import { FirebaseApp } from '@react-native-firebase/app-exp';
 import {
   eventNameForApp,
   getNativeModule,
   toBase64String,
-} from '@react-native-firebase-modular/app/internal';
+} from '@react-native-firebase/app-exp/internal';
 import StorageServiceImpl from './implementations/storageService';
 import UploadTaskImpl from './implementations/uploadTask.native';
 import { toFullMetadata, toUploadResult } from './validation';

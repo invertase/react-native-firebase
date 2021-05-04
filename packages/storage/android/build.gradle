@@ -21,12 +21,10 @@ plugins {
 }
 
 def appProject
-if (findProject(':@react-native-firebase_app')) {
-  appProject = project(':@react-native-firebase_app')
-} else if (findProject(':react-native-firebase_app')) {
-  appProject = project(':react-native-firebase_app')
+if (findProject(':react-native-firebase_app-exp')) {
+  appProject = project(':react-native-firebase_app-exp')
 } else {
-  throw new GradleException('Could not find the react-native-firebase/app package, have you installed it?')
+  throw new GradleException('Could not find the @react-native-firebase/app-exp package, have you installed it?')
 }
 def packageJson = PackageJson.getForProject(project)
 def appPackageJson = PackageJson.getForProject(appProject)
