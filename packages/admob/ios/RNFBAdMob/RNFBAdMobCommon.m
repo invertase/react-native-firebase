@@ -49,7 +49,7 @@ NSString *const ADMOB_EVENT_REWARDED_EARNED_REWARD = @"rewarded_earned_reward";
     GADRequest *request = [GADRequest request];
     NSMutableDictionary *extras = [@{} mutableCopy];
 
-    if (adRequestOptions[@"requestNonPersonalizedAdsOnly"]) {
+    if (adRequestOptions[@"requestNonPersonalizedAdsOnly"] && [adRequestOptions[@"requestNonPersonalizedAdsOnly"] boolValue]) {
         extras[@"npa"] = @"1";
     }
 
