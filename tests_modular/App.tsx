@@ -8,13 +8,26 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
 
 import {getApp} from '@react-native-firebase/app-exp';
+// import {
+//   getStorage,
+//   ref,
+//   uploadString,
+// } from '@react-native-firebase/storage-exp';
 
 function App() {
-  console.log('!!!!!', getApp());
+  // console.log('SSS', getStorage().bucket);
+
+  useEffect(() => {
+    console.log('AAA', getApp());
+    // console.log(ref(getStorage(), 'elliot.txt'));
+    // uploadString(ref(getStorage(), 'elliot.txt'), 'woo!')
+    //   .then(console.log)
+    //   .catch(console.log);
+  }, []);
 
   return (
     <View>

@@ -1,4 +1,4 @@
-import { isIOS, isNull, stripTrailingSlash } from '../common';
+import { isIOS, isNull, stripTrailingSlash } from '../internal';
 import { getNativeModule } from '../internal/native';
 import { PlayServicesAvailability, PlayServicesConnectionStatus, FilePaths } from './types';
 

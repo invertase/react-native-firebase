@@ -218,7 +218,9 @@ export function ref(
     }
   }
 
+  console.log('>>>>>');
   if (isStorageReference(storageOrRef)) {
+    console.log('is REF');
     _storage = new StorageServiceImpl(storageOrRef.storage.app, {
       bucket: _bucket ?? storageOrRef.bucket,
     });

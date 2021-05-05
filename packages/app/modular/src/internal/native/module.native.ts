@@ -22,7 +22,7 @@ export function getNativeModule<T = unknown>(options: NativeModuleOptions): Nati
   if (MODULE_CACHE?.[namespace]?.[nativeModule]) {
     return MODULE_CACHE[namespace]?.[nativeModule] as NativeModule<T>;
   }
-
+  console.log('!!!!!!!!', Object.keys(NativeModules), options);
   const module = NativeModules[nativeModule];
 
   if (!module) {

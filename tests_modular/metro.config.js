@@ -34,6 +34,8 @@ module.exports = {
       new RegExp(`^${escape(resolve(rootDir, 'tests/android'))}\\/.*$`),
       new RegExp(`^${escape(resolve(rootDir, 'tests/functions'))}\\/.*$`),
     ]),
+    // Adding a `rnfb` field to the package.json allows Metro to use the src files rather than dist
+    resolverMainFields: ['rnfb', 'react-native', 'browser', 'main'],
     extraNodeModules: new Proxy(
       {},
       {

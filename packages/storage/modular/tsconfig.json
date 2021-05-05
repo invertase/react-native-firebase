@@ -20,9 +20,6 @@
     "pretty": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
-    // "paths": {
-    //   "@react-native-firebase-modular/app": ["../../../app/modular/dist"]
-    // }
+    "strict": true
   }
 }
