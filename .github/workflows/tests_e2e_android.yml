@@ -52,7 +52,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/firebase/emulators
-          key: firebase-emulators-v1
+          key: firebase-emulators-${{ github.run_id }}-v1
+          restore-key: firebase-emulators
 
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
@@ -67,12 +68,14 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
+          restore-keys: ${{ runner.os }}-yarn
 
       - uses: actions/cache@v2
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-v1
+          restore-keys: ${{ runner.os }}-gradle
 
       - name: Yarn Install
         uses: nick-invision/retry@v2
