@@ -36,6 +36,12 @@ jobs:
         with:
           fetch-depth: 50
 
+      - uses: mikehardy/buildcache-action@v1
+        name: Buildcache
+        with:
+          cache_key: ${{ runner.os }}-v1
+          upload_buildcache_log: true
+
       - uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -75,7 +81,7 @@ jobs:
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-v1
-          restore-keys: ${{ runner.os }}-yarn-
+          restore-keys: ${{ runner.os }}-yarn
 
       - uses: actions/cache@v2
         name: Cache Pods
@@ -83,7 +89,7 @@ jobs:
         with:
           path: tests/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
-          restore-keys: ${{ runner.os }}-pods-
+          restore-keys: ${{ runner.os }}-pods
 
       - uses: actions/cache@v2
         name: Detox Framework Cache
@@ -115,11 +121,6 @@ jobs:
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn tests:ios:pod:install
-
-      - uses: mikehardy/buildcache-action@v1
-        name: Buildcache
-        with:
-          key: ${{ runner.os }}-v1
 
       - name: Build iOS App
         run: |
