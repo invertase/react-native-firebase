@@ -29,6 +29,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -231,7 +232,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
 
         if (remoteMessageMap != null) {
           // WritableNativeMap not be consumed twice. But it is resolved in future and in event below. Make a copy - issue #5231
-          initialNotification = remoteMessageMap.copy();
+          WritableNativeMap newInitialNotification = new WritableNativeMap();
+          newInitialNotification.merge(remoteMessageMap);
+          initialNotification = newInitialNotification;
           ReactNativeFirebaseMessagingReceiver.notifications.remove(messageId);
 
           ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
