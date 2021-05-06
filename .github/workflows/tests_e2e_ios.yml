@@ -88,8 +88,8 @@ jobs:
         id: pods-cache
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}-v1
-          restore-keys: ${{ runner.os }}-pods
+          key: ${{ runner.os }}-pods-v2-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-pods-v2
 
       - uses: actions/cache@v2
         name: Detox Framework Cache
