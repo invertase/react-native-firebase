@@ -546,7 +546,7 @@ function onPostLike(postId) {
       throw 'Post does not exist!';
     }
 
-    await transaction.update(postReference, {
+    transaction.update(postReference, {
       likes: postSnapshot.data().likes + 1,
     });
   });
