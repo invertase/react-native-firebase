@@ -25,14 +25,14 @@
     "@react-native-firebase/remote-config": "11.4.1",
     "@react-native-firebase/storage": "11.4.1",
     "react": "17.0.2",
-    "react-native": "0.64.0"
+    "react-native": "0.64.1"
   },
   "devDependencies": {
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "17.14.6",
-    "firebase-tools": "^9.9.0",
+    "firebase-tools": "^9.10.1",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jet": "^0.6.6-0",
