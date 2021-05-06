@@ -1,5 +1,17 @@
+import { FirebaseError } from '../internal';
 import * as impl from './impl';
 import { PlayServicesAvailability } from './types';
+
+/**
+ * Exported guard to quickly check whether a provided JavaScript value
+ * is a FirebaseError.
+ *
+ * @param e
+ * @returns
+ */
+export function isFirebaseError(e: any): e is FirebaseError {
+  return e?.constructor?.name === 'Error' && e?.code !== undefined && e?.message?.includes(e?.code);
+}
 
 /**
  * Returns true if this app is running inside a Firebase Test Lab environment.

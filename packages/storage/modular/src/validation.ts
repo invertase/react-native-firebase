@@ -8,6 +8,7 @@ import {
   StorageService,
   UploadMetadata,
   UploadResult,
+  StringFormat,
 } from './types';
 
 /**
@@ -27,6 +28,15 @@ export function isStorageService(storage: any): storage is StorageService {
  */
 export function isStorageReference(reference: any): reference is StorageReference {
   return reference instanceof StorageReferenceImpl;
+}
+
+/**
+ * Returns whether a value is a StringFormat value.
+ * @param format
+ * @returns
+ */
+export function isStringFormat(format: any): format is StringFormat {
+  return Object.values(StringFormat).includes(format);
 }
 
 /**

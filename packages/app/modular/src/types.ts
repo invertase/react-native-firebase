@@ -1,4 +1,4 @@
-import * as delegate from 'firebase/app';
+import type * as delegate from 'firebase/app';
 export interface FirebaseApp extends delegate.FirebaseApp {
   readonly options: FirebaseOptions;
   /**

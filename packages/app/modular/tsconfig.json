@@ -1,5 +1,5 @@
 {
-  "include": ["src/*"],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "baseUrl": "./src/",
     "jsx": "react-native",

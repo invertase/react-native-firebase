@@ -22,16 +22,18 @@ import {
   UploadMetadata,
   UploadResult,
   UploadTask,
+  StringFormat,
 } from './types';
 import StorageServiceImpl, { StorageServiceInternal } from './implementations/storageService';
 import StorageReferenceImpl from './implementations/storageReference';
 import {
   isStorageReference,
   isStorageService,
+  isStringFormat,
   toSettableMetadata,
   toUploadMetadata,
 } from './validation';
-import { partsFromGsUrl, partsFromHttpUrl } from './utils';
+import { decodeStringFormat, partsFromGsUrl, partsFromHttpUrl } from './utils';
 
 export * from './types';
 
@@ -218,9 +220,7 @@ export function ref(
     }
   }
 
-  console.log('>>>>>');
   if (isStorageReference(storageOrRef)) {
-    console.log('is REF');
     _storage = new StorageServiceImpl(storageOrRef.storage.app, {
       bucket: _bucket ?? storageOrRef.bucket,
     });
@@ -371,7 +371,7 @@ export function uploadBytesResumable(
     throw new ArgumentError('ref', 'Expected a StorageReference instance');
   }
 
-  if (!(data instanceof Blob) || !(data instanceof Uint8Array) || !(data instanceof ArrayBuffer)) {
+  if (!(data instanceof Blob) && !(data instanceof Uint8Array) && !(data instanceof ArrayBuffer)) {
     throw new ArgumentError('data', 'Expected a Blob, Uint8Array or ArrayBuffer value');
   }
 
@@ -390,7 +390,7 @@ export function uploadBytesResumable(
 export function uploadString(
   ref: StorageReference,
   value: string,
-  format?: string,
+  format: StringFormat = StringFormat.RAW,
   metadata?: UploadMetadata,
 ): Promise<UploadResult> {
   if (!isStorageReference(ref)) {
@@ -401,11 +401,13 @@ export function uploadString(
     throw new ArgumentError('value', 'Expected a string value');
   }
 
-  if (!isOptionalString(format)) {
-    throw new ArgumentError('format', 'Expected a string value');
+  if (!isStringFormat(format)) {
+    throw new ArgumentError('format', 'Expected a StringFormat value');
   }
 
-  return impl.uploadString(ref, value, format, toUploadMetadata(metadata));
+  const decoded = decodeStringFormat(value, format, metadata);
+
+  return impl.uploadString(ref, decoded.value, decoded.format, decoded.metadata);
 }
 
 /**

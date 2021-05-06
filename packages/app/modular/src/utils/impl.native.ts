@@ -27,6 +27,7 @@ let _paths: FilePaths | null = null;
 function getFilePath(path: keyof FilePaths): string | undefined {
   const value = bridge.module[path];
   if (value) return stripTrailingSlash(value);
+  return undefined;
 }
 
 /**

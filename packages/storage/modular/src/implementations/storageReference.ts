@@ -3,22 +3,37 @@ import { StorageReference, StorageService } from '../types';
 
 export default class StorageReferenceImpl implements StorageReference {
   constructor(storage: StorageService, path: string) {
-    const parent = pathParent(path);
-
-    this.fullPath = pathParsed(path);
-    this.bucket = storage.bucket;
-    this.name = pathLastComponent(path);
-    this.parent = parent ? new StorageReferenceImpl(storage, parent) : null;
-    this.root = new StorageReferenceImpl(storage, '/');
-    this.storage = storage;
+    this._storage = storage;
+    this._path = path;
   }
 
-  readonly bucket: string;
-  readonly fullPath: string;
-  readonly name: string;
-  readonly parent: StorageReference | null;
-  readonly root: StorageReference;
-  readonly storage: StorageService;
+  private _storage: StorageService;
+  private _path: string;
+
+  public get bucket() {
+    return this._storage.bucket;
+  }
+
+  public get fullPath() {
+    return pathParsed(this._path);
+  }
+
+  public get name() {
+    return pathLastComponent(this._path);
+  }
+
+  public get parent() {
+    const parent = pathParent(this._path);
+    return parent ? new StorageReferenceImpl(this._storage, parent) : null;
+  }
+
+  public get root() {
+    return new StorageReferenceImpl(this._storage, '/');
+  }
+
+  public get storage() {
+    return this._storage;
+  }
 
   // TODO(ehesp): Confirm correct format
   public toString(): string {

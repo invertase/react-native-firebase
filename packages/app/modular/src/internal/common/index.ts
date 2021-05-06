@@ -1,12 +1,13 @@
 import { Platform } from 'react-native';
 import { FirebaseApp } from '../../types';
 
-import { binaryToBase64 } from './base64';
+import { binaryToBase64, btoa } from './base64';
 
 export * from './ArgumentError';
 export * from './FirebaseError';
 export * from './guards';
 export * from './path';
+export * from './base64';
 
 /**
  * A constant value representing whether the current platform is Android.
@@ -73,6 +74,11 @@ type Base64Response = {
   format: string;
 };
 
+/**
+ * Converts binary data into a Base64Response.
+ * @param data
+ * @returns
+ */
 export function toBase64String(data: Blob | ArrayBuffer | Uint8Array): Promise<Base64Response> {
   if (data instanceof Blob) {
     return new Promise<Base64Response>((resolve, reject) => {
@@ -98,4 +104,29 @@ export function toBase64String(data: Blob | ArrayBuffer | Uint8Array): Promise<B
   }
 
   throw new Error('toBase64String: unexpected value provided');
+}
+
+/**
+ * Returns the base64 value and media type of a data URL.
+ * @param url
+ */
+export function dataUrlParts(url: string): [string | undefined, string | undefined] {
+  const isBase64 = url.includes(';base64');
+  let [mediaType, base64String] = url.split(',');
+
+  if (!mediaType || !base64String) {
+    return [undefined, undefined];
+  }
+
+  mediaType = mediaType.replace('data:', '').replace(';base64', '');
+
+  if (base64String && base64String.includes('%')) {
+    base64String = decodeURIComponent(base64String);
+  }
+
+  if (!isBase64) {
+    base64String = btoa(base64String);
+  }
+
+  return [base64String, mediaType];
 }

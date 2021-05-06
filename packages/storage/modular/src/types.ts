@@ -15,6 +15,30 @@ export interface StorageReference extends web.StorageReference {
   readonly storage: StorageService;
 }
 
+/**
+ * Possible string formats used whilst uploading data.
+ */
+export enum StringFormat {
+  /**
+   * Represents a raw string format.
+   */
+  RAW = 'raw',
+  /**
+   * Represents Base64 string format.
+   *
+   * Learn more about Base64 [on the Mozilla Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding)
+   */
+  BASE64 = 'base64',
+  /**
+   * Represents Base64Url string format.
+   */
+  BASE64URL = 'base64url',
+  /**
+   * Represents data URL string format.
+   */
+  DATA_URL = 'data_url',
+}
+
 export interface ListResult extends web.ListResult {
   readonly items: StorageReference[];
   readonly nextPageToken?: string;

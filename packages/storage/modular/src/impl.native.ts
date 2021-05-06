@@ -75,6 +75,9 @@ const delegate = () =>
     },
   });
 
+/**
+ * Converts a NativeListResult response into a ListResult.
+ */
 function convertListResult(storage: StorageService, result: NativeListResult): ListResult {
   return {
     nextPageToken: result.nextPageToken,
@@ -83,16 +86,32 @@ function convertListResult(storage: StorageService, result: NativeListResult): L
   };
 }
 
+/**
+ * Subscribes to specific tasks by taskId & returns the event body.
+ */
+function subscribeToTaskEvent<T>(
+  ref: StorageReference,
+  taskId: number,
+  event: string,
+  cb: (e: T) => void,
+) {
+  return delegate().emitter.addListener(`${eventNameForApp(ref.storage.app, event)}`, e => {
+    if (e?.taskId === taskId) {
+      cb(e?.body);
+    }
+  });
+}
+
 export function deleteObject(ref: StorageReference): Promise<void> {
-  return delegate().module.delete(ref.storage.app.name, ref.fullPath);
+  return delegate().module.delete(ref.storage.app.name, ref.toString());
 }
 
 export function getDownloadURL(ref: StorageReference): Promise<string> {
-  return delegate().module.getDownloadURL(ref.storage.app.name, ref.fullPath);
+  return delegate().module.getDownloadURL(ref.storage.app.name, ref.toString());
 }
 
 export async function getMetadata(ref: StorageReference): Promise<FullMetadata> {
-  const record = await delegate().module.getMetadata(ref.storage.app.name, ref.fullPath);
+  const record = await delegate().module.getMetadata(ref.storage.app.name, ref.toString());
   return toFullMetadata(record, ref);
 }
 
@@ -110,14 +129,14 @@ export function getStorage(app: FirebaseApp, bucketUrl?: string): StorageService
 export async function list(ref: StorageReference, options: ListOptions): Promise<ListResult> {
   return convertListResult(
     ref.storage,
-    await delegate().module.list(ref.storage.app.name, ref.fullPath, options),
+    await delegate().module.list(ref.storage.app.name, ref.toString(), options),
   );
 }
 
 export async function listAll(ref: StorageReference): Promise<ListResult> {
   return convertListResult(
     ref.storage,
-    await delegate().module.listAll(ref.storage.app.name, ref.fullPath),
+    await delegate().module.listAll(ref.storage.app.name, ref.toString()),
   );
 }
 
@@ -145,7 +164,7 @@ export async function updateMetadata(
 ): Promise<FullMetadata> {
   const record = await delegate().module.updateMetadata(
     ref.storage.app.name,
-    ref.fullPath,
+    ref.toString(),
     metadata,
   );
   return toFullMetadata(record, ref);
@@ -159,7 +178,7 @@ export async function uploadBytes(
   const { value, format } = await toBase64String(data);
   const result = await delegate().module.putString(
     ref.storage.app.name,
-    ref.fullPath,
+    ref.toString(),
     value,
     format,
     metadata,
@@ -182,7 +201,7 @@ export function uploadBytesResumable(
       const { value, format } = await toBase64String(data);
       return delegate().module.putString(
         ref.storage.app.name,
-        ref.fullPath,
+        ref.toString(),
         value,
         format,
         metadata,
@@ -195,26 +214,9 @@ export function uploadBytesResumable(
     onTaskEvent(taskId, callbacks) {
       const listeners: EmitterSubscription[] = [];
 
-      listeners.push(
-        delegate().emitter.addListener(
-          `${eventNameForApp(ref.storage.app, taskId.toString(), 'failure')}`,
-          callbacks.onStateChanged,
-        ),
-      );
-
-      listeners.push(
-        delegate().emitter.addListener(
-          `${eventNameForApp(ref.storage.app, taskId.toString(), 'success')}`,
-          callbacks.onSuccess,
-        ),
-      );
-
-      listeners.push(
-        delegate().emitter.addListener(
-          `${eventNameForApp(ref.storage.app, taskId.toString(), TaskEvent)}`,
-          callbacks.onStateChanged,
-        ),
-      );
+      listeners.push(subscribeToTaskEvent(ref, taskId, 'upload_failure', callbacks.onFailure));
+      listeners.push(subscribeToTaskEvent(ref, taskId, 'upload_success', callbacks.onSuccess));
+      listeners.push(subscribeToTaskEvent(ref, taskId, TaskEvent, callbacks.onStateChanged));
 
       return () => {
         for (const listener of listeners) {
@@ -233,9 +235,9 @@ export async function uploadString(
 ): Promise<UploadResult> {
   const result = await delegate().module.putString(
     ref.storage.app.name,
-    ref.fullPath,
+    ref.toString(),
     value,
-    format ?? '',
+    format,
     metadata,
     -1, // TODO is this right
   );
