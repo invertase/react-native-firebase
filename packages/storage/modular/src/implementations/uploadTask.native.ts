@@ -1,3 +1,4 @@
+import { FirebaseError } from '@react-native-firebase/app-exp/internal';
 import { StorageReference, TaskEvent, UploadTask, UploadTaskSnapshot } from '../types';
 import UploadTaskSnapshotImpl from './uploadTaskSnapshot.native';
 import { NativeTaskSnapshot } from '../impl.native';
@@ -10,7 +11,7 @@ type OnSetTaskEventCallback = (taskId: number, callbacks: TaskEventCallbacks) =>
 
 type TaskEventCallbacks = {
   onStateChanged: (snapshot: NativeTaskSnapshot) => void;
-  onFailure: (error: any) => void;
+  onFailure: (error: FirebaseError) => void;
   onSuccess: (snapshot: NativeTaskSnapshot) => void;
 };
 
@@ -19,6 +20,12 @@ type UploadTaskImplConfig = {
   onSetTaskStatus: OnSetTaskStatusCallback;
   onTaskEvent: OnSetTaskEventCallback;
 };
+
+enum TaskStatus {
+  PAUSE = 0,
+  RESUME = 1,
+  CANCEL = 2,
+}
 
 // Internal task ID tracking
 let TASK_ID = 0;
@@ -47,18 +54,15 @@ export default class UploadTaskImpl implements UploadTask {
   }
 
   cancel(): Promise<boolean> {
-    // TODO enum
-    return this._config.onSetTaskStatus(this._id, 2);
+    return this._config.onSetTaskStatus(this._id, TaskStatus.CANCEL);
   }
 
   pause(): Promise<boolean> {
-    // TODO enum
-    return this._config.onSetTaskStatus(this._id, 0);
+    return this._config.onSetTaskStatus(this._id, TaskStatus.PAUSE);
   }
 
   resume(): Promise<boolean> {
-    // TODO enum
-    return this._config.onSetTaskStatus(this._id, 1);
+    return this._config.onSetTaskStatus(this._id, TaskStatus.RESUME);
   }
 
   async then(onFulfilled?: (snapshot: UploadTaskSnapshot) => unknown): Promise<unknown> {
@@ -86,7 +90,16 @@ export default class UploadTaskImpl implements UploadTask {
     _event: typeof TaskEvent,
     observer?: (snapshot: UploadTaskSnapshot) => unknown,
     onError?: (error: any) => unknown,
+    onComplete?: () => unknown,
   ) {
+    if (!this._promise) {
+      this._promise = this._config.onTaskCreate(this._id);
+    }
+
+    this._promise.catch(error => {
+      onError?.(error);
+    });
+
     return this._config.onTaskEvent(this._id, {
       onFailure(error) {
         onError?.(error);
@@ -94,6 +107,7 @@ export default class UploadTaskImpl implements UploadTask {
       onSuccess: nativeSnapshot => {
         this._snapshot = new UploadTaskSnapshotImpl(this._ref, this, nativeSnapshot);
         observer?.(this._snapshot);
+        onComplete?.();
       },
       onStateChanged: nativeSnapshot => {
         this._snapshot = new UploadTaskSnapshotImpl(this._ref, this, nativeSnapshot);

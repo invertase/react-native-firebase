@@ -132,3 +132,13 @@ export async function uploadString(
   const result = await delegate.uploadString(getStorageReference(ref), value, format, metadata);
   return toUploadResult(ref, result.metadata);
 }
+
+export async function putFile(
+  _ref: StorageReference,
+  _filePath: string,
+  _metadata?: UploadMetadata,
+): Promise<UploadResult> {
+  throw new Error(
+    'putFile is not supported on the web. Please use uploadBytes instead, passing a File instance',
+  );
+}

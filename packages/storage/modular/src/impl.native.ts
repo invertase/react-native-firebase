@@ -2,6 +2,7 @@ import { EmitterSubscription } from 'react-native';
 import { FirebaseApp } from '@react-native-firebase/app-exp';
 import {
   eventNameForApp,
+  FirebaseError,
   getNativeModule,
   toBase64String,
 } from '@react-native-firebase/app-exp/internal';
@@ -22,6 +23,7 @@ import {
   TaskEvent,
   TaskState,
 } from './types';
+import { decodeFilePath } from './utils';
 
 interface StorageModule {
   readonly maxOperationRetryTime?: number;
@@ -49,7 +51,13 @@ interface StorageModule {
     metadata: UploadMetadata,
     taskId: number,
   ): Promise<NativeTaskSnapshot>;
-  // putFile(appName: string, time: number): Promise<void>;
+  putFile(
+    appName: string,
+    url: string,
+    filePath: string,
+    metadata: UploadMetadata,
+    taskId: number,
+  ): Promise<NativeTaskSnapshot>;
   setTaskStatus(appName: string, taskId: number, status: number): Promise<boolean>;
 }
 
@@ -62,8 +70,12 @@ type NativeListResult = {
 export type NativeTaskSnapshot = {
   totalBytes: number;
   bytesTransferred: number;
-  state: TaskState; // TODO
+  state: TaskState;
   metadata: FullMetadata;
+  error?: {
+    code: string;
+    message: string;
+  };
 };
 
 const delegate = () =>
@@ -96,6 +108,7 @@ function subscribeToTaskEvent<T>(
   cb: (e: T) => void,
 ) {
   return delegate().emitter.addListener(`${eventNameForApp(ref.storage.app, event)}`, e => {
+    console.log('EVENT', e);
     if (e?.taskId === taskId) {
       cb(e?.body);
     }
@@ -214,9 +227,36 @@ export function uploadBytesResumable(
     onTaskEvent(taskId, callbacks) {
       const listeners: EmitterSubscription[] = [];
 
-      listeners.push(subscribeToTaskEvent(ref, taskId, 'upload_failure', callbacks.onFailure));
-      listeners.push(subscribeToTaskEvent(ref, taskId, 'upload_success', callbacks.onSuccess));
-      listeners.push(subscribeToTaskEvent(ref, taskId, TaskEvent, callbacks.onStateChanged));
+      // Push success events to the onSuccess callback
+      listeners.push(
+        subscribeToTaskEvent<NativeTaskSnapshot>(
+          ref,
+          taskId,
+          'upload_success',
+          callbacks.onSuccess,
+        ),
+      );
+
+      // On failure events, pluck the error from the event and call the onFailure callback.
+      listeners.push(
+        subscribeToTaskEvent<NativeTaskSnapshot>(ref, taskId, 'upload_failure', event => {
+          const error = new Error(event.error?.message);
+          callbacks.onFailure(new FirebaseError(error, 'storage', event.error?.code));
+        }),
+      );
+
+      // state_change events can also include errors, so first send the state change
+      // and then check to see whether it includes the error to pass along.
+      listeners.push(
+        subscribeToTaskEvent<NativeTaskSnapshot>(ref, taskId, TaskEvent, event => {
+          callbacks.onStateChanged(event);
+
+          if (event.error) {
+            const error = new Error(event.error?.message);
+            callbacks.onFailure(new FirebaseError(error, 'storage', event.error?.code));
+          }
+        }),
+      );
 
       return () => {
         for (const listener of listeners) {
@@ -239,7 +279,23 @@ export async function uploadString(
     value,
     format,
     metadata,
-    -1, // TODO is this right
+    -1,
+  );
+
+  return toUploadResult(ref, result.metadata);
+}
+
+export async function putFile(
+  ref: StorageReference,
+  filePath: string,
+  metadata: UploadMetadata,
+): Promise<UploadResult> {
+  const result = await delegate().module.putFile(
+    ref.storage.app.name,
+    ref.toString(),
+    decodeFilePath(filePath),
+    metadata,
+    -1,
   );
 
   return toUploadResult(ref, result.metadata);

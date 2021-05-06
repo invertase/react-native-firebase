@@ -45,13 +45,7 @@ export interface ListResult extends web.ListResult {
   readonly prefixes: StorageReference[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface FullMetadata extends web.FullMetadata {
-  // readonly contentDisposition?: string;
-  // readonly contentEncoding?: string;
-  // readonly contentLanguage?: string;
-  // readonly contentType?: string;
-}
+export interface FullMetadata extends web.FullMetadata {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SettableMetadata extends web.SettableMetadata {}
@@ -70,17 +64,49 @@ export interface UploadResult extends web.UploadResult {
   readonly metadata: FullMetadata;
 }
 
+/**
+ * Represents the process of uploading an object. Allows you to monitor and manage the upload.
+ */
 export interface UploadTask {
+  /**
+   * A snapshot of the current task state.
+   */
   readonly snapshot: UploadTaskSnapshot;
+  /**
+   * Cancels a running task. Has no effect on a complete or failed task.
+   */
   cancel(): Promise<boolean>;
+  /**
+   * Resumes a paused task. Has no effect on a currently running or failed task.
+   */
   resume(): Promise<boolean>;
+  /**
+   * Pauses a currently running task. Has no effect on a paused or failed task.
+   */
   pause(): Promise<boolean>;
+  /**
+   * Listens for events on this task.
+   *
+   * In addition, when you add your callbacks, you get a function back. You can call this function to unregister the associated callbacks.
+   * @param event
+   * @param observer
+   * @param error
+   */
   on(
     event: typeof TaskEvent,
     observer?: (snapshot: UploadTaskSnapshot) => unknown,
     error?: (error: any) => unknown,
+    complete?: () => unknown,
   ): () => void;
+  /**
+   * This object behaves like a Promise, and resolves with its snapshot data when the upload completes.
+   * @param onFulfilled
+   */
   then(onFulfilled?: (snapshot: UploadTaskSnapshot) => unknown): Promise<unknown>;
+  /**
+   * Called if the upload task fails.
+   * @param onRejected
+   */
   catch(onRejected?: (error: any) => unknown): Promise<unknown>;
 }
 

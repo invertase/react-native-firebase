@@ -26,6 +26,14 @@ export function partsFromGsUrl(url: string): PathParts | null {
   return { bucket, path };
 }
 
+export function decodeFilePath(filePath: string): string {
+  let _filePath = filePath.replace('file://', '');
+  if (_filePath.includes('%')) {
+    _filePath = decodeURIComponent(_filePath);
+  }
+  return _filePath;
+}
+
 type DecodedStringFormat = {
   value: string;
   format: StringFormat;

@@ -423,3 +423,21 @@ export function useStorageEmulator(storage: StorageService, host: string, port: 
   instance.host = host;
   instance.port = port;
 }
+
+export function putFile(
+  ref: StorageReference,
+  filePath: string,
+  metadata?: UploadMetadata,
+): Promise<UploadResult> {
+  if (!isStorageReference(ref)) {
+    throw new ArgumentError('ref', 'Expected a StorageReference instance');
+  }
+
+  if (!isString(filePath)) {
+    throw new ArgumentError('value', 'Expected a string value');
+  }
+
+  return impl.putFile(ref, filePath, toUploadMetadata(metadata));
+}
+
+// TODO downloadFile / writeToFile
