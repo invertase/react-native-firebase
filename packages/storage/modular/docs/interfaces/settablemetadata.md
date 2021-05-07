@@ -1,0 +1,94 @@
+# Interface: SettableMetadata
+
+## Hierarchy
+
+- *SettableMetadata*
+
+  ↳ **SettableMetadata**
+
+  ↳↳ [*UploadMetadata*](/reference/storage/interfaces/uploadmetadata.md)
+
+## Table of contents
+
+### Properties
+
+- [cacheControl](/reference/storage/interfaces/settablemetadata.md#cachecontrol)
+- [contentDisposition](/reference/storage/interfaces/settablemetadata.md#contentdisposition)
+- [contentEncoding](/reference/storage/interfaces/settablemetadata.md#contentencoding)
+- [contentLanguage](/reference/storage/interfaces/settablemetadata.md#contentlanguage)
+- [contentType](/reference/storage/interfaces/settablemetadata.md#contenttype)
+- [customMetadata](/reference/storage/interfaces/settablemetadata.md#custommetadata)
+
+## Properties
+
+### cacheControl
+
+• `Optional` **cacheControl**: *string*
+
+Served as the 'Cache-Control' header on object download.
+
+Inherited from: web.SettableMetadata.cacheControl
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:216
+
+___
+
+### contentDisposition
+
+• `Optional` **contentDisposition**: *string*
+
+Served as the 'Content-Disposition' header on object download.
+
+Inherited from: web.SettableMetadata.contentDisposition
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:220
+
+___
+
+### contentEncoding
+
+• `Optional` **contentEncoding**: *string*
+
+Served as the 'Content-Encoding' header on object download.
+
+Inherited from: web.SettableMetadata.contentEncoding
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:224
+
+___
+
+### contentLanguage
+
+• `Optional` **contentLanguage**: *string*
+
+Served as the 'Content-Language' header on object download.
+
+Inherited from: web.SettableMetadata.contentLanguage
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:228
+
+___
+
+### contentType
+
+• `Optional` **contentType**: *string*
+
+Served as the 'Content-Type' header on object download.
+
+Inherited from: web.SettableMetadata.contentType
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:232
+
+___
+
+### customMetadata
+
+• `Optional` **customMetadata**: *object*
+
+Additional user-defined custom metadata.
+
+#### Type declaration
+
+Inherited from: web.SettableMetadata.customMetadata
+
+Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:236

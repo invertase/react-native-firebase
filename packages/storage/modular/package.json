@@ -9,6 +9,7 @@
   "scripts": {
     "build": "rimraf dist && tsc",
     "build:clean": "rimraf android/build && rimraf ios/build && rimraf dist",
+    "docs": "typedoc --hideBreadcrumbs --namedAnchors --publicPath /reference/storage/",
     "prepare": "yarn run build"
   },
   "repository": {
