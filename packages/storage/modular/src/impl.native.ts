@@ -108,7 +108,6 @@ function subscribeToTaskEvent<T>(
   cb: (e: T) => void,
 ) {
   return delegate().emitter.addListener(`${eventNameForApp(ref.storage.app, event)}`, e => {
-    console.log('EVENT', e);
     if (e?.taskId === taskId) {
       cb(e?.body);
     }

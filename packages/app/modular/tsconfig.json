@@ -20,5 +20,8 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true
+  },
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
   }
 }
