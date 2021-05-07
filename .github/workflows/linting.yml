@@ -31,8 +31,8 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
-          restore-keys: ${{ runner.os }}-yarn
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
         uses: nick-invision/retry@v2
         with:
@@ -79,8 +79,8 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}
-          restore-keys: ${{ runner.os }}-yarn
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
         uses: nick-invision/retry@v2
         with:
@@ -113,8 +113,8 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/package.json') }}-with-website
-          restore-keys: ${{ runner.os }}-yarn
+          key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-yarn-with-website-v1
       - name: Yarn Install
         uses: nick-invision/retry@v2
         with:
