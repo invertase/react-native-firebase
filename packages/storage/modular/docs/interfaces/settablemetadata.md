@@ -8,17 +8,6 @@
 
   ↳↳ [*UploadMetadata*](/reference/storage/interfaces/uploadmetadata.md)
 
-## Table of contents
-
-### Properties
-
-- [cacheControl](/reference/storage/interfaces/settablemetadata.md#cachecontrol)
-- [contentDisposition](/reference/storage/interfaces/settablemetadata.md#contentdisposition)
-- [contentEncoding](/reference/storage/interfaces/settablemetadata.md#contentencoding)
-- [contentLanguage](/reference/storage/interfaces/settablemetadata.md#contentlanguage)
-- [contentType](/reference/storage/interfaces/settablemetadata.md#contenttype)
-- [customMetadata](/reference/storage/interfaces/settablemetadata.md#custommetadata)
-
 ## Properties
 
 ### cacheControl

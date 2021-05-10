@@ -6,16 +6,6 @@
 
   ↳ **StorageService**
 
-## Table of contents
-
-### Properties
-
-- [app](/reference/storage/interfaces/storageservice.md#app)
-- [bucket](/reference/storage/interfaces/storageservice.md#bucket)
-- [maxDownloadRetryTime](/reference/storage/interfaces/storageservice.md#maxdownloadretrytime)
-- [maxOperationRetryTime](/reference/storage/interfaces/storageservice.md#maxoperationretrytime)
-- [maxUploadRetryTime](/reference/storage/interfaces/storageservice.md#maxuploadretrytime)
-
 ## Properties
 
 ### app
@@ -24,7 +14,7 @@
 
 Overrides: web.StorageService.app
 
-Defined in: [packages/storage/modular/src/types.ts:5](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L5)
+Defined in: [packages/storage/modular/src/types.ts:5](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L5)
 
 ___
 
@@ -32,7 +22,7 @@ ___
 
 • `Readonly` **bucket**: *string*
 
-Defined in: [packages/storage/modular/src/types.ts:9](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L9)
+Defined in: [packages/storage/modular/src/types.ts:9](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L9)
 
 ___
 
@@ -40,7 +30,7 @@ ___
 
 • `Readonly` **maxDownloadRetryTime**: *number*
 
-Defined in: [packages/storage/modular/src/types.ts:7](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L7)
+Defined in: [packages/storage/modular/src/types.ts:7](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L7)
 
 ___
 
@@ -50,7 +40,7 @@ ___
 
 Overrides: web.StorageService.maxOperationRetryTime
 
-Defined in: [packages/storage/modular/src/types.ts:6](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L6)
+Defined in: [packages/storage/modular/src/types.ts:6](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L6)
 
 ___
 
@@ -60,4 +50,4 @@ ___
 
 Overrides: web.StorageService.maxUploadRetryTime
 
-Defined in: [packages/storage/modular/src/types.ts:8](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L8)
+Defined in: [packages/storage/modular/src/types.ts:8](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L8)

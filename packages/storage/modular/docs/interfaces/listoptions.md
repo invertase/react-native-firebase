@@ -6,13 +6,6 @@
 
   ↳ **ListOptions**
 
-## Table of contents
-
-### Properties
-
-- [maxResults](/reference/storage/interfaces/listoptions.md#maxresults)
-- [pageToken](/reference/storage/interfaces/listoptions.md#pagetoken)
-
 ## Properties
 
 ### maxResults

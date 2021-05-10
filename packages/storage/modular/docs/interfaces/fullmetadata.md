@@ -6,28 +6,6 @@
 
   ↳ **FullMetadata**
 
-## Table of contents
-
-### Properties
-
-- [bucket](/reference/storage/interfaces/fullmetadata.md#bucket)
-- [cacheControl](/reference/storage/interfaces/fullmetadata.md#cachecontrol)
-- [contentDisposition](/reference/storage/interfaces/fullmetadata.md#contentdisposition)
-- [contentEncoding](/reference/storage/interfaces/fullmetadata.md#contentencoding)
-- [contentLanguage](/reference/storage/interfaces/fullmetadata.md#contentlanguage)
-- [contentType](/reference/storage/interfaces/fullmetadata.md#contenttype)
-- [customMetadata](/reference/storage/interfaces/fullmetadata.md#custommetadata)
-- [downloadTokens](/reference/storage/interfaces/fullmetadata.md#downloadtokens)
-- [fullPath](/reference/storage/interfaces/fullmetadata.md#fullpath)
-- [generation](/reference/storage/interfaces/fullmetadata.md#generation)
-- [md5Hash](/reference/storage/interfaces/fullmetadata.md#md5hash)
-- [metageneration](/reference/storage/interfaces/fullmetadata.md#metageneration)
-- [name](/reference/storage/interfaces/fullmetadata.md#name)
-- [ref](/reference/storage/interfaces/fullmetadata.md#ref)
-- [size](/reference/storage/interfaces/fullmetadata.md#size)
-- [timeCreated](/reference/storage/interfaces/fullmetadata.md#timecreated)
-- [updated](/reference/storage/interfaces/fullmetadata.md#updated)
-
 ## Properties
 
 ### bucket

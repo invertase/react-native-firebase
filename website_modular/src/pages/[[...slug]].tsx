@@ -1,6 +1,6 @@
 import React from 'react';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
+import Head from 'next/head';
 import matter from 'gray-matter';
 import yaml from 'js-yaml';
 
@@ -9,22 +9,35 @@ import type { ISidebar } from '../components/Sidebar';
 import { Pre } from '../components/Pre';
 
 import { root, listFiles, join, exists, readFile, sidebar } from '../utils/paths';
-import { serialize } from '../utils/mdx';
+import { TableOfContents, unify } from '../utils/unify';
+import { HTMLRender } from '../components/html-render';
 
 export default function Slug({
   source,
   sidebar,
   frontmatter,
+  toc,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const { title, description } = frontmatter;
+
   return (
-    <Layout sidebar={sidebar} title={frontmatter.title} description={frontmatter.description}>
-      <MDXRemote
-        {...source}
-        components={{
-          pre: Pre,
-        }}
-      />
-    </Layout>
+    <>
+      <Head>
+        <title>{title ? `${title} | React Native Firebase` : 'React Native Firebase'}</title>
+        {!!description && <meta name="description">{description}</meta>}
+      </Head>
+      <Layout sidebar={sidebar} toc={toc}>
+        {!!title && (
+          <div className="mb-8 pb-8 border-b">
+            <h2 className="inline-block text-4xl font-extrabold text-gray-900 tracking-tight">
+              {title}
+            </h2>
+            {!!description && <p className="mt-3 text-lg text-gray-500">{description}</p>}
+          </div>
+        )}
+        <HTMLRender source={source} />
+      </Layout>
+    </>
   );
 }
 
@@ -49,9 +62,10 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 type PageProps = {
-  source: MDXRemoteSerializeResult;
+  source: string;
   sidebar: ISidebar;
   frontmatter: { [key: string]: string };
+  toc: TableOfContents;
 };
 
 export const getStaticProps: GetStaticProps<PageProps> = async context => {
@@ -92,13 +106,14 @@ export const getStaticProps: GetStaticProps<PageProps> = async context => {
   }
 
   // Serialize the markdown content via MDX
-  const source = await serialize(content);
+  const { html, toc } = unify(content);
 
   return {
     props: {
       frontmatter: data,
-      source,
+      source: html,
       sidebar: yaml.load(readFile(sidebar)) as ISidebar,
+      toc,
     },
     revalidate: 60,
   };

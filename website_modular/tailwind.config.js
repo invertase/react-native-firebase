@@ -3,7 +3,25 @@ module.exports = {
   mode: 'jit',
   darkMode: false,
   theme: {
-    extend: {},
+    extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            code: {
+              backgroundColor: '#e4e4e4',
+              padding: '3px',
+              borderRadius: '3px',
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+          },
+        },
+      },
+    },
   },
   variants: {
     extend: {},

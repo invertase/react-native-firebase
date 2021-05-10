@@ -1,15 +1,15 @@
 import React from 'react';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import marked from 'marked';
 import { packages, join, exists, readFile } from '../../utils/paths';
-import { serialize } from '../../utils/mdx';
 
 import { Layout } from '../../components/Layout';
+import { TableOfContents, unify } from '../../utils/unify';
+import { HTMLRender } from '../../components/html-render';
 
-export default function Reference({ source }: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Reference({ source, toc }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Layout sidebar={[]}>
-      <div dangerouslySetInnerHTML={{ __html: source }} />
+    <Layout sidebar={[]} toc={toc}>
+      <HTMLRender source={source} />
     </Layout>
   );
 }
@@ -25,6 +25,7 @@ type PageProps = {
   source: string;
   // sidebar: ISidebar;
   frontmatter: { [key: string]: string };
+  toc: TableOfContents;
 };
 
 export const getStaticProps: GetStaticProps = async context => {
@@ -49,11 +50,13 @@ export const getStaticProps: GetStaticProps = async context => {
   // Converts any local URLs to remove the `.md` extension.
   file = file.replace(/(?<=\]\(\/)(.*)(\.md)/gm, `$1`);
 
-  const source = marked(file);
+  // Serialize the markdown content via MDX
+  const { html, toc } = unify(file);
 
   return {
     props: {
-      source,
+      source: html,
+      toc,
     },
     revalidate: 60,
   };

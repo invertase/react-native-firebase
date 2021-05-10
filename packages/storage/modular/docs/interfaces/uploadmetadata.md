@@ -6,18 +6,6 @@
 
   ↳ **UploadMetadata**
 
-## Table of contents
-
-### Properties
-
-- [cacheControl](/reference/storage/interfaces/uploadmetadata.md#cachecontrol)
-- [contentDisposition](/reference/storage/interfaces/uploadmetadata.md#contentdisposition)
-- [contentEncoding](/reference/storage/interfaces/uploadmetadata.md#contentencoding)
-- [contentLanguage](/reference/storage/interfaces/uploadmetadata.md#contentlanguage)
-- [contentType](/reference/storage/interfaces/uploadmetadata.md#contenttype)
-- [customMetadata](/reference/storage/interfaces/uploadmetadata.md#custommetadata)
-- [md5Hash](/reference/storage/interfaces/uploadmetadata.md#md5hash)
-
 ## Properties
 
 ### cacheControl
@@ -100,4 +88,4 @@ ___
 
 A Base64-encoded MD5 hash of the object being uploaded.
 
-Defined in: [packages/storage/modular/src/types.ts:57](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L57)
+Defined in: [packages/storage/modular/src/types.ts:57](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L57)

@@ -6,21 +6,6 @@
 
   ↳ **StorageReference**
 
-## Table of contents
-
-### Properties
-
-- [bucket](/reference/storage/interfaces/storagereference.md#bucket)
-- [fullPath](/reference/storage/interfaces/storagereference.md#fullpath)
-- [name](/reference/storage/interfaces/storagereference.md#name)
-- [parent](/reference/storage/interfaces/storagereference.md#parent)
-- [root](/reference/storage/interfaces/storagereference.md#root)
-- [storage](/reference/storage/interfaces/storagereference.md#storage)
-
-### Methods
-
-- [toString](/reference/storage/interfaces/storagereference.md#tostring)
-
 ## Properties
 
 ### bucket
@@ -66,7 +51,7 @@ ___
 
 Overrides: web.StorageReference.parent
 
-Defined in: [packages/storage/modular/src/types.ts:13](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L13)
+Defined in: [packages/storage/modular/src/types.ts:13](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L13)
 
 ___
 
@@ -76,7 +61,7 @@ ___
 
 Overrides: web.StorageReference.root
 
-Defined in: [packages/storage/modular/src/types.ts:14](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L14)
+Defined in: [packages/storage/modular/src/types.ts:14](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L14)
 
 ___
 
@@ -86,7 +71,7 @@ ___
 
 Overrides: web.StorageReference.storage
 
-Defined in: [packages/storage/modular/src/types.ts:15](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L15)
+Defined in: [packages/storage/modular/src/types.ts:15](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L15)
 
 ## Methods
 

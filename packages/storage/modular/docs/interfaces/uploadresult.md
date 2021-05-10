@@ -6,13 +6,6 @@
 
   ↳ **UploadResult**
 
-## Table of contents
-
-### Properties
-
-- [metadata](/reference/storage/interfaces/uploadresult.md#metadata)
-- [ref](/reference/storage/interfaces/uploadresult.md#ref)
-
 ## Properties
 
 ### metadata
@@ -21,7 +14,7 @@
 
 Overrides: web.UploadResult.metadata
 
-Defined in: [packages/storage/modular/src/types.ts:64](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L64)
+Defined in: [packages/storage/modular/src/types.ts:64](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L64)
 
 ___
 

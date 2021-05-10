@@ -6,14 +6,6 @@
 
   ↳ **ListResult**
 
-## Table of contents
-
-### Properties
-
-- [items](/reference/storage/interfaces/listresult.md#items)
-- [nextPageToken](/reference/storage/interfaces/listresult.md#nextpagetoken)
-- [prefixes](/reference/storage/interfaces/listresult.md#prefixes)
-
 ## Properties
 
 ### items
@@ -22,7 +14,7 @@
 
 Overrides: web.ListResult.items
 
-Defined in: [packages/storage/modular/src/types.ts:43](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L43)
+Defined in: [packages/storage/modular/src/types.ts:43](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L43)
 
 ___
 
@@ -32,7 +24,7 @@ ___
 
 Overrides: web.ListResult.nextPageToken
 
-Defined in: [packages/storage/modular/src/types.ts:44](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L44)
+Defined in: [packages/storage/modular/src/types.ts:44](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L44)
 
 ___
 
@@ -42,4 +34,4 @@ ___
 
 Overrides: web.ListResult.prefixes
 
-Defined in: [packages/storage/modular/src/types.ts:45](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L45)
+Defined in: [packages/storage/modular/src/types.ts:45](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L45)

@@ -9,19 +9,24 @@
   },
   "dependencies": {
     "@mapbox/rehype-prism": "^0.6.0",
+    "@stefanprobst/rehype-extract-toc": "^1.0.3",
     "@tailwindcss/typography": "^0.4.0",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
-    "marked": "^2.0.3",
+    "medium-zoom": "^1.0.6",
     "minimatch": "^3.0.4",
     "next": "10.2.0",
-    "next-mdx-remote": "^3.0.1",
     "prism-react-renderer": "^1.2.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "rehype-accessible-emojis": "^0.3.2",
     "rehype-slug": "^4.0.1",
-    "remark-unwrap-images": "^2.0.0"
+    "rehype-stringify": "^8.0.0",
+    "remark-gfm": "^1.0.0",
+    "remark-parse": "^9.0.0",
+    "remark-rehype": "^8.1.0",
+    "remark-unwrap-images": "^2.0.0",
+    "unified": "^9.2.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.5",

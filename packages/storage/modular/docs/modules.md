@@ -1,12 +1,10 @@
 # @react-native-firebase/storage-exp
 
-## Table of contents
-
-### Enumerations
+## Enumerations
 
 - [StringFormat](/reference/storage/enums/stringformat.md)
 
-### Interfaces
+## Interfaces
 
 - [FullMetadata](/reference/storage/interfaces/fullmetadata.md)
 - [ListOptions](/reference/storage/interfaces/listoptions.md)
@@ -19,40 +17,13 @@
 - [UploadTask](/reference/storage/interfaces/uploadtask.md)
 - [UploadTaskSnapshot](/reference/storage/interfaces/uploadtasksnapshot.md)
 
-### Type aliases
-
-- [TaskState](/reference/storage/modules.md#taskstate)
-
-### Variables
-
-- [TaskEvent](/reference/storage/modules.md#taskevent)
-
-### Functions
-
-- [deleteObject](/reference/storage/modules.md#deleteobject)
-- [getDownloadURL](/reference/storage/modules.md#getdownloadurl)
-- [getMetadata](/reference/storage/modules.md#getmetadata)
-- [getStorage](/reference/storage/modules.md#getstorage)
-- [list](/reference/storage/modules.md#list)
-- [listAll](/reference/storage/modules.md#listall)
-- [putFile](/reference/storage/modules.md#putfile)
-- [ref](/reference/storage/modules.md#ref)
-- [setMaxDownloadRetryTime](/reference/storage/modules.md#setmaxdownloadretrytime)
-- [setMaxOperationRetryTime](/reference/storage/modules.md#setmaxoperationretrytime)
-- [setMaxUploadRetryTime](/reference/storage/modules.md#setmaxuploadretrytime)
-- [updateMetadata](/reference/storage/modules.md#updatemetadata)
-- [uploadBytes](/reference/storage/modules.md#uploadbytes)
-- [uploadBytesResumable](/reference/storage/modules.md#uploadbytesresumable)
-- [uploadString](/reference/storage/modules.md#uploadstring)
-- [useStorageEmulator](/reference/storage/modules.md#usestorageemulator)
-
 ## Type aliases
 
 ### TaskState
 
 Ƭ **TaskState**: web.TaskState
 
-Defined in: [packages/storage/modular/src/types.ts:124](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L124)
+Defined in: [packages/storage/modular/src/types.ts:124](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L124)
 
 ## Variables
 
@@ -60,7 +31,7 @@ Defined in: [packages/storage/modular/src/types.ts:124](https://github.com/inver
 
 • `Const` **TaskEvent**: ``"state_changed"``= 'state\_changed'
 
-Defined in: [packages/storage/modular/src/types.ts:122](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/types.ts#L122)
+Defined in: [packages/storage/modular/src/types.ts:122](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L122)
 
 ## Functions
 
@@ -80,7 +51,7 @@ Deletes the object at this location.
 
 Promise<void>
 
-Defined in: [packages/storage/modular/src/index.ts:46](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L46)
+Defined in: [packages/storage/modular/src/index.ts:46](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L46)
 
 ___
 
@@ -100,7 +71,7 @@ Returns the download URL for the given Reference.
 
 Promise<string>
 
-Defined in: [packages/storage/modular/src/index.ts:60](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L60)
+Defined in: [packages/storage/modular/src/index.ts:60](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L60)
 
 ___
 
@@ -120,7 +91,7 @@ A promise that resolves with the metadata for this object. If this object doesn'
 
 Promise<FullMetadata>
 
-Defined in: [packages/storage/modular/src/index.ts:74](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L74)
+Defined in: [packages/storage/modular/src/index.ts:74](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L74)
 
 ___
 
@@ -141,7 +112,7 @@ Gets a Firebase StorageService instance for the given Firebase app.
 
 StorageService
 
-Defined in: [packages/storage/modular/src/index.ts:89](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L89)
+Defined in: [packages/storage/modular/src/index.ts:89](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L89)
 
 ___
 
@@ -169,7 +140,7 @@ To adhere to Firebase Rules's Semantics, Firebase Storage does not support objec
 
 Promise<ListResult> A Promise that resolves with the items and prefixes. `prefixes` contains references to sub-folders and items contains references to objects in this folder. `nextPageToken` can be used to get the rest of the results.
 
-Defined in: [packages/storage/modular/src/index.ts:111](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L111)
+Defined in: [packages/storage/modular/src/index.ts:111](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L111)
 
 ___
 
@@ -191,7 +162,7 @@ This is a helper method for calling list() repeatedly until there are no more re
 
 Promise<ListResult> A Promise that resolves with the items and prefixes. `prefixes` contains references to sub-folders and items contains references to objects in this folder. `nextPageToken` can be used to get the rest of the results.
 
-Defined in: [packages/storage/modular/src/index.ts:138](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L138)
+Defined in: [packages/storage/modular/src/index.ts:138](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L138)
 
 ___
 
@@ -209,7 +180,7 @@ ___
 
 **Returns:** *Promise*<[*UploadResult*](/reference/storage/interfaces/uploadresult.md)\>
 
-Defined in: [packages/storage/modular/src/index.ts:427](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L427)
+Defined in: [packages/storage/modular/src/index.ts:427](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L427)
 
 ___
 
@@ -230,7 +201,7 @@ Returns a StorageReference for the given url.
 
 StorageReference
 
-Defined in: [packages/storage/modular/src/index.ts:153](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L153)
+Defined in: [packages/storage/modular/src/index.ts:153](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L153)
 
 ▸ **ref**(`storageOrRef`: [*StorageService*](/reference/storage/interfaces/storageservice.md) \| [*StorageReference*](/reference/storage/interfaces/storagereference.md), `path?`: *string*): [*StorageReference*](/reference/storage/interfaces/storagereference.md)
 
@@ -247,7 +218,7 @@ Returns a StorageReference for the given path in the default bucket.
 
 StorageReference
 
-Defined in: [packages/storage/modular/src/index.ts:162](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L162)
+Defined in: [packages/storage/modular/src/index.ts:162](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L162)
 
 ___
 
@@ -270,7 +241,7 @@ This operation is a noop on Web.
 
 Promise<void>
 
-Defined in: [packages/storage/modular/src/index.ts:297](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L297)
+Defined in: [packages/storage/modular/src/index.ts:297](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L297)
 
 ___
 
@@ -291,7 +262,7 @@ Sets the maximum time in milliseconds to retry operations other than upload and 
 
 Promise<void>
 
-Defined in: [packages/storage/modular/src/index.ts:248](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L248)
+Defined in: [packages/storage/modular/src/index.ts:248](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L248)
 
 ___
 
@@ -312,7 +283,7 @@ Sets the maximum time in milliseconds to retry an upload if a failure occurs.
 
 Promise<void>
 
-Defined in: [packages/storage/modular/src/index.ts:273](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L273)
+Defined in: [packages/storage/modular/src/index.ts:273](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L273)
 
 ___
 
@@ -333,7 +304,7 @@ Updates the metadata for this object.
 
 Promise<FullMetadata>
 
-Defined in: [packages/storage/modular/src/index.ts:322](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L322)
+Defined in: [packages/storage/modular/src/index.ts:322](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L322)
 
 ___
 
@@ -355,7 +326,7 @@ Uploads data to this object's location. The upload is not resumable.
 
 Promise<UploadResult>
 
-Defined in: [packages/storage/modular/src/index.ts:341](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L341)
+Defined in: [packages/storage/modular/src/index.ts:341](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L341)
 
 ___
 
@@ -377,7 +348,7 @@ Uploads data to this object's location. The upload can be paused and resumed, an
 
 UploadTask
 
-Defined in: [packages/storage/modular/src/index.ts:365](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L365)
+Defined in: [packages/storage/modular/src/index.ts:365](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L365)
 
 ___
 
@@ -400,7 +371,7 @@ Uploads a string to this object's location. The upload is not resumable.
 
 Promise<UploadResult>
 
-Defined in: [packages/storage/modular/src/index.ts:390](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L390)
+Defined in: [packages/storage/modular/src/index.ts:390](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L390)
 
 ___
 
@@ -420,4 +391,4 @@ Modify this StorageService instance to communicate with the Cloud Storage emulat
 
 **Returns:** *void*
 
-Defined in: [packages/storage/modular/src/index.ts:420](https://github.com/invertase/react-native-firebase/blob/e2e22540/packages/storage/modular/src/index.ts#L420)
+Defined in: [packages/storage/modular/src/index.ts:420](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/index.ts#L420)
