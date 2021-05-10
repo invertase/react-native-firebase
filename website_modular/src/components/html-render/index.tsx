@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect } from 'react';
 import mediumZoom from 'medium-zoom';
 
 export type IHTMLRender = {
@@ -6,7 +6,7 @@ export type IHTMLRender = {
 };
 
 export function HTMLRender(props: IHTMLRender) {
-  useLayoutEffect(() => {
+  useEffect(() => {
     mediumZoom('[data-id="html-render"] img');
   }, []);
 

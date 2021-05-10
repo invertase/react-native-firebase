@@ -11,7 +11,7 @@ import toHtml from 'rehype-stringify';
 import rehypeSlugs from 'rehype-slug';
 import { rehypeAccessibleEmojis } from 'rehype-accessible-emojis';
 import withToc, { Toc } from '@stefanprobst/rehype-extract-toc';
-import toPrism from '@mapbox/rehype-prism';
+import toHighlight from 'rehype-highlight';
 
 const processor = unified()
   // Convert the raw markdown into remark format
@@ -28,8 +28,8 @@ const processor = unified()
   .use(withToc)
   // Make any emojis accessible
   .use(rehypeAccessibleEmojis)
-  // Converts code blocks into PrismJS formatting
-  .use(toPrism)
+  // Converts code blocks into Highlight formatting
+  .use(toHighlight)
   // Convert rehype to a HTML string
   .use(toHtml);
 
