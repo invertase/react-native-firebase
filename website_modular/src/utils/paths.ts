@@ -18,6 +18,11 @@ export const root = path.join(__dirname, '../../../../docs');
 export const packages = path.join(__dirname, '../../../../../packages');
 
 /**
+ * Location to the screencasts file.
+ */
+export const screencasts = join(root, 'screencasts.json');
+
+/**
  * Returns the path to a module overview document
  * @param module
  * @returns
