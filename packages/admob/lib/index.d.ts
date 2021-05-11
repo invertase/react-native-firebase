@@ -1132,27 +1132,27 @@ export namespace FirebaseAdMobTypes {
     /**
      * When an ad has finished loading.
      */
-    onAdLoaded: () => void;
+    onAdLoaded?: () => void;
 
     /**
      * When an ad has failed to load. Callback contains an Error.
      */
-    onAdFailedToLoad: (error: Error) => void;
+    onAdFailedToLoad?: (error: Error) => void;
 
     /**
      * The ad is now visible to the user.
      */
-    onAdOpened: () => void;
+    onAdOpened?: () => void;
 
     /**
      * Called when the user is about to return to the app after tapping on an ad.
      */
-    onAdClosed: () => void;
+    onAdClosed?: () => void;
 
     /**
      * Called when the user has left the application (e.g. clicking an advert).
      */
-    onAdLeftApplication: () => void;
+    onAdLeftApplication?: () => void;
   }
 
   /**
