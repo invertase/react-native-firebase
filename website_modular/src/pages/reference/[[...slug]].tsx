@@ -1,23 +1,35 @@
 import React from 'react';
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import sanitizeHtml from 'sanitize-html';
 import { packages, join, exists, readFile, modulesPath, icons } from '../../utils/paths';
 
 import { Layout } from '../../components/Layout';
 import { TableOfContents, unify } from '../../utils/unify';
 import { HTMLRender } from '../../components/html-render';
-import { getDocument, getModuleTypes } from '../../utils/dom';
+import {
+  getDocument,
+  getModuleTypes,
+  highlightDefinitions,
+  ModuleTypes,
+  sanitizeDefinitions,
+} from '../../utils/dom';
 import { ISidebar, ISidebarItem } from '../../components/Sidebar';
+import Head from 'next/head';
 
 export default function Reference({
   source,
   sidebar,
   toc,
+  frontmatter,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <Layout sidebar={sidebar} toc={toc}>
-      <HTMLRender source={source} />
-    </Layout>
+    <>
+      <Head>
+        <title>{frontmatter.title}</title>
+      </Head>
+      <Layout sidebar={sidebar} toc={toc}>
+        <HTMLRender source={source} />
+      </Layout>
+    </>
   );
 }
 
@@ -54,21 +66,30 @@ export const getStaticProps: GetStaticProps<PageProps> = async context => {
     };
   }
 
-  // Path to the module root file
-  const modulePath = modulesPath(module);
-  console.log(params, slug);
-  // Path to the slug file
-  const filePath = join(packages, module, 'modular', 'docs', `${slug}.md`);
-
   // Get the path based on the params
-  const path = params.length === 1 ? modulePath : filePath;
-  console.log(path);
+  const path =
+    params.length === 1
+      ? modulesPath(module)
+      : join(packages, module, 'modular', 'docs', `${slug}.md`);
+
   // File must exist.. otherwise 404
   if (!exists(path)) {
     return {
       notFound: true,
     };
   }
+
+  // Generate a types dictionary for all modules.
+  let types: ModuleTypes = {};
+  Object.keys(modules).forEach(key => {
+    const file = readFile(modulesPath(key));
+    const { html } = unify(file);
+
+    types = {
+      ...types,
+      ...getModuleTypes(getDocument(html)),
+    };
+  });
 
   // Get the file
   let file = readFile(path);
@@ -82,27 +103,10 @@ export const getStaticProps: GetStaticProps<PageProps> = async context => {
   // Get the document from the converted markdown
   const document = getDocument(html);
 
-  document.querySelectorAll('p').forEach(node => {
-    const html = node.innerHTML;
+  // Sanitize the generated definitions
+  sanitizeDefinitions(document);
 
-    if (
-      html.startsWith('\\+') ||
-      html.startsWith('▸') ||
-      html.startsWith('Ƭ') ||
-      html.startsWith('▪') ||
-      html.startsWith('•')
-    ) {
-      const pre = document.createElement('pre');
-      const code = document.createElement('code');
-
-      code.innerHTML = sanitizeHtml(node.innerHTML, {
-        allowedTags: [], // remove all tags and return text content only
-        allowedAttributes: {}, // remove all tags and return text content only
-      });
-      pre.appendChild(code);
-      node.replaceWith(pre);
-    }
-  });
+  highlightDefinitions(document, types);
 
   const sidebar: ISidebar = Object.entries(modules).map(([key, value]) => {
     const file = readFile(modulesPath(key));
@@ -121,7 +125,11 @@ export const getStaticProps: GetStaticProps<PageProps> = async context => {
   return {
     props: {
       sidebar,
-      frontmatter: {},
+      frontmatter: {
+        title:
+          document.getElementsByTagName('h1')[0]?.innerHTML ??
+          `${modules[module]} | React Native Firebase`,
+      },
       source: document.body.innerHTML,
       toc,
     },

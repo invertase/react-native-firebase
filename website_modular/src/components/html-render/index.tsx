@@ -13,7 +13,7 @@ export function HTMLRender(props: IHTMLRender) {
   return (
     <section
       data-id="html-render"
-      className="prose max-w-none"
+      className="prose max-w-none p-8"
       dangerouslySetInnerHTML={{ __html: props.source }}
     />
   );

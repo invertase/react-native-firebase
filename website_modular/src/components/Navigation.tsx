@@ -5,6 +5,8 @@ export type INavigation = {
   toc: TableOfContents;
 };
 
+const DEPTH = 3;
+
 export function Navigation(props: INavigation) {
   return (
     <aside className="sticky top-16">
@@ -24,6 +26,10 @@ function List(props: INavigation) {
   return (
     <ul>
       {props.toc.map(item => {
+        if (item.depth > DEPTH) {
+          return null;
+        }
+
         return (
           <li key={item.value} style={{ paddingLeft: item.depth * 3 }}>
             <a

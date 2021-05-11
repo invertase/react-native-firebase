@@ -3,6 +3,7 @@ import { Header } from './Header';
 import { Sidebar, ISidebar } from './Sidebar';
 import { TableOfContents } from '../utils/unify';
 import { Navigation } from './Navigation';
+import { Footer } from './Footer';
 
 export type ILayoutProps = {
   sidebar: ISidebar;
@@ -18,8 +19,10 @@ export function Layout({ children, sidebar, toc }: ILayoutProps) {
         <Sidebar sidebar={sidebar} />
         <div className="min-w-0 w-full">
           <div className="w-full flex">
-            <main className="flex-grow mb-32 px-8 pt-4 min-w-0">
+            <main className="flex-grow min-w-0">
               <div>{children}</div>
+              <hr />
+              <Footer />
             </main>
             <div className="relative flex-shrink-0 w-[200px]">
               <Navigation toc={toc} />
