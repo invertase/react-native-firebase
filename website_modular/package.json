@@ -34,6 +34,8 @@
     "unified": "^9.2.1"
   },
   "devDependencies": {
+    "@types/jsdom": "^16.2.10",
+    "@types/sanitize-html": "^2.3.1",
     "autoprefixer": "^10.2.5",
     "postcss": "^8.2.14",
     "tailwindcss": "^2.1.2"

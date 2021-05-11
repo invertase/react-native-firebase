@@ -3,6 +3,11 @@ import fs from 'fs';
 import minimatch from 'minimatch';
 
 /**
+ * Join paths together.
+ */
+export const join = path.join;
+
+/**
  * The root location of the documentation.
  */
 export const root = path.join(__dirname, '../../../../docs');
@@ -13,14 +18,40 @@ export const root = path.join(__dirname, '../../../../docs');
 export const packages = path.join(__dirname, '../../../../../packages');
 
 /**
+ * Returns the path to a module overview document
+ * @param module
+ * @returns
+ */
+export const modulesPath = (module: string) => {
+  return join(packages, module, 'modular', 'docs', 'modules.md');
+};
+
+/**
+ * Paths to hosted icons for modules.
+ */
+export const icons = {
+  admob: 'https://static.invertase.io/assets/firebase/google-admob.svg',
+  analytics: 'https://static.invertase.io/assets/firebase/analytics.svg',
+  auth: 'https://static.invertase.io/assets/firebase/authentication.svg',
+  firestore: 'https://static.invertase.io/assets/firebase/cloud-firestore.svg',
+  functions: 'https://static.invertase.io/assets/firebase/cloud-functions.svg',
+  messaging: 'https://static.invertase.io/assets/firebase/cloud-messaging.svg',
+  storage: 'https://static.invertase.io/assets/firebase/cloud-storage.svg',
+  app: 'https://static.invertase.io/assets/social/firebase-logo.png',
+  crashlytics: 'https://static.invertase.io/assets/firebase/crashlytics.svg',
+  database: 'https://static.invertase.io/assets/firebase/realtime-database.svg',
+  'dynamic-links': 'https://static.invertase.io/assets/firebase/dynamic-links.svg',
+  iid: 'https://static.invertase.io/assets/social/firebase-logo.png',
+  'in-app-messaging': 'https://static.invertase.io/assets/firebase/in-app-messaging.svg',
+  ml: 'https://static.invertase.io/assets/firebase/ml-kit.svg',
+  'remote-conifg': 'https://static.invertase.io/assets/firebase/remote-config.svg',
+  perf: 'https://static.invertase.io/assets/firebase/performance-monitoring.svg',
+};
+
+/**
  * The location of the sidebar.yaml file.
  */
 export const sidebar = path.join(root, 'sidebar.yaml');
-
-/**
- * Join paths together.
- */
-export const join = path.join;
 
 /**
  * Returns whether a file at a given path exists.

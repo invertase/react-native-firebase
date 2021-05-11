@@ -6,7 +6,7 @@ import { Link } from '../components/Link';
  *
  * [Title, URL | ISidebarItem, Icon]
  */
-export type ISidebarItem = [string, string | ISidebar, string | undefined];
+export type ISidebarItem = [string, string | ISidebar, string | null];
 
 export type ISidebar = ISidebarItem[];
 

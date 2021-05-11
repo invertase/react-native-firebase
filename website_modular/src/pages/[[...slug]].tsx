@@ -24,7 +24,7 @@ export default function Slug({
     <>
       <Head>
         <title>{title ? `${title} | React Native Firebase` : 'React Native Firebase'}</title>
-        {!!description && <meta name="description">{description}</meta>}
+        {!!description && <meta name="description" content={description} />}
       </Head>
       <Layout sidebar={sidebar} toc={toc}>
         {!!title && (
