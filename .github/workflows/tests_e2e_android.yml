@@ -185,7 +185,8 @@ jobs:
           $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
           nohup sh -c "until false; do $ANDROID_HOME/platform-tools/adb shell input tap 100 800; sleep 0.2; done" &
           nohup sh -c "$ANDROID_HOME/platform-tools/adb logcat '*:D' > adb-log.txt" &
-          yarn tests:android:test-cover --cleanup
+          yarn tests:android:test-cover
+          yarn tests:android:test:jacoco-report
         shell: bash
 
       - name: Submit Coverage

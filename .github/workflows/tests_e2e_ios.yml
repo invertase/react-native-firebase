@@ -162,7 +162,7 @@ jobs:
         timeout-minutes: 40
         run: |
           cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --debug-synchronization 200 --configuration ios.sim.debug --cleanup
+          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --debug-synchronization 200 --configuration ios.sim.debug
 
       - name: Upload Buildcache Log
         uses: actions/upload-artifact@v2
