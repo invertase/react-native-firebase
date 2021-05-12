@@ -1,6 +1,10 @@
 name: Documentation
 
 on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
   pull_request:
     branches:
       - '**'
