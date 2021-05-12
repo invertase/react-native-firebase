@@ -23,9 +23,12 @@ describe('admob() InterstitialAd', function () {
   });
 
   describe('createForAdRequest', function () {
-    // has own tests
-
     it('loads with requestOptions', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL, {
@@ -52,6 +55,11 @@ describe('admob() InterstitialAd', function () {
 
   describe('onAdEvent', function () {
     it('unsubscribe should prevent events', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const spy = sinon.spy();
       const i = InterstitialAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(spy);
@@ -62,6 +70,11 @@ describe('admob() InterstitialAd', function () {
     });
 
     it('loads with a valid ad unit id', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest(firebase.admob.TestIds.INTERSTITIAL);
@@ -75,6 +88,11 @@ describe('admob() InterstitialAd', function () {
     });
 
     it('errors with an invalid ad unit id', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const spy = sinon.spy();
 
       const i = InterstitialAd.createForAdRequest('123');
