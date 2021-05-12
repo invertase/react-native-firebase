@@ -24,6 +24,11 @@ describe('admob() RewardedAd', function () {
 
   describe('createForAdRequest', function () {
     it('throws if adUnitId is invalid', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       try {
         RewardedAd.createForAdRequest(123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -35,6 +40,11 @@ describe('admob() RewardedAd', function () {
 
     // has own tests
     it('throws if requestOptions are invalid', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       try {
         RewardedAd.createForAdRequest('123', 123);
         return Promise.reject(new Error('Did not throw Error.'));
@@ -44,6 +54,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('returns a new instance', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const i = RewardedAd.createForAdRequest('abc');
       i.constructor.name.should.eql('RewardedAd');
       i.adUnitId.should.eql('abc');
@@ -51,6 +66,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('loads with requestOptions', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -81,6 +101,11 @@ describe('admob() RewardedAd', function () {
 
   describe('show', function () {
     it('throws if showing before loaded', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -97,6 +122,11 @@ describe('admob() RewardedAd', function () {
 
   describe('onAdEvent', function () {
     it('throws if handler is not a function', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const i = RewardedAd.createForAdRequest('abc');
 
       try {
@@ -109,6 +139,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('returns an unsubscriber function', function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const i = RewardedAd.createForAdRequest('abc');
       const unsub = i.onAdEvent(() => {});
       unsub.should.be.Function();
@@ -116,6 +151,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('unsubscribe should prevent events', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -130,6 +170,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('loads with a valid ad unit id', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       if (device.getPlatform() === 'ios') {
         // Flaky on local iOS
         return;
@@ -153,6 +198,11 @@ describe('admob() RewardedAd', function () {
     });
 
     it('errors with an invalid ad unit id', async function () {
+      // Ads on Android in CI load a webview and a bunch of other things so slowly the app ANRs.
+      if (device.getPlatform() === 'android' && global.isCI == true) {
+        return;
+      }
+
       const spy = sinon.spy();
 
       const i = RewardedAd.createForAdRequest('123');
