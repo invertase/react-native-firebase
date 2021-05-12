@@ -42,7 +42,8 @@ Within your projects `firebase.json` file, set the `admob_delay_app_measurement_
 ```json
 {
   "react-native": {
-    "admob_app_id": "YOUR_APP_ID",
+    "admob_android_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+    "admob_ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
     "admob_delay_app_measurement_init": true
   }
 }
@@ -251,7 +252,7 @@ non-personalized ad.
 
 This is a common error which occurs on both Android & iOS when making a request to display a Google-rendered consent form. Unfortunately the reasoning for this error is generic, making it hard to debug. There are a number of steps to check which are usually the cause for this error:
 
-- The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the `admob_app_id` key in the `react-native` config.
+- The AdMob App ID is incorrect: Ensure you have entered the correct ID into the `firebase.json` file under the `admob_android_app_id` or `admob_ios_app_id` key in the `react-native` config.
 - A publisher ID is incorrect: Ensure your entered publisher IDs are correct.
   - The publisher ID needs to be available on the same account as your AdMob App ID.
 - The user is outside of the EEA: If a user does not need to provide consent, the form request will error. Ensure you have checked the users status via `requestInfoUpdate`. If using an emulator, ensure you set a debug location via `setDebugGeography`.
