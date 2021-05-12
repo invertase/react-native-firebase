@@ -80,9 +80,17 @@ subprojects {
         }
       }
     }
-    if (project.name.contains('firebase')
+
+    // Configure testing settings - if set in module build.gradle files they affect library consumers
+    if (project.name.contains("react-native-firebase")
       && project.hasProperty('android')) {
       android {
+        // Instrument all our modules for coverage generation
+        buildTypes.debug.testCoverageEnabled true
+        jacoco.version '0.8.7'
+        testOptions.unitTests.includeAndroidResources = true
+
+        // Make sure our project are run through basic lint checks
         lintOptions {
           abortOnError = true
           warningsAsErrors false
