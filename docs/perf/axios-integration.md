@@ -19,7 +19,7 @@ property on the axios instance. At this point, a new HTTP metric can be defined 
 import axios from 'axios';
 import perf from '@react-native-firebase/perf';
 
-axios.interceptors.request.use(async function(config) {
+axios.interceptors.request.use(async function (config) {
   try {
     const httpMetric = perf().newHttpMetric(config.url, config.method);
     config.metadata = { httpMetric };
@@ -46,7 +46,7 @@ interceptor can accept two callbacks, one for successful responses and one reque
 import axios from 'axios';
 
 axios.interceptors.response.use(
-  async function(response) {
+  async function (response) {
     try {
       // Request was successful, e.g. HTTP code 200
 
@@ -62,7 +62,7 @@ axios.interceptors.response.use(
       return response;
     }
   },
-  async function(error) {
+  async function (error) {
     try {
       // Request failed, e.g. HTTP code 500
 
