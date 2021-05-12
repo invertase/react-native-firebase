@@ -106,10 +106,7 @@ function User({ userId }) {
       });
 
     // Stop listening for updates when no longer required
-    return () =>
-      database()
-        .ref(`/users/${userId}`)
-        .off('value', onValueChange);
+    return () => database().ref(`/users/${userId}`).off('value', onValueChange);
   }, [userId]);
 }
 ```
@@ -136,10 +133,7 @@ function User({ userId }) {
       });
 
     // Stop listening for updates when no longer required
-    return () =>
-      database()
-        .ref('/users')
-        .off('child_added', onChildAdd);
+    return () => database().ref('/users').off('child_added', onChildAdd);
   }, [userId]);
 }
 ```
@@ -169,10 +163,7 @@ and Firebase will automatically order the results. The example below would retur
  * }
  */
 
-const scores = database()
-  .ref('scores')
-  .orderByValue()
-  .once('value');
+const scores = database().ref('scores').orderByValue().once('value');
 ```
 
 Please note that the ordering will not be respected if you do not use the `forEach` method provided on the `DataSnapshot`.
@@ -183,10 +174,7 @@ You can limit the number of results returned from a query by using one of the `l
 first 10 results:
 
 ```js
-const users = database()
-  .ref('users')
-  .limitToFirst(10)
-  .once('value');
+const users = database().ref('users').limitToFirst(10).once('value');
 ```
 
 Firebase also provides the ability to return the last set of results in a query via the `limitToLast` method.
@@ -194,11 +182,7 @@ Firebase also provides the ability to return the last set of results in a query 
 Instead of limiting to a specific number of documents, you can also start from, or end at a specific reference node value:
 
 ```js
-await database()
-  .ref('users')
-  .orderByChild('age')
-  .startAt(21)
-  .once('value');
+await database().ref('users').orderByChild('age').startAt(21).once('value');
 ```
 
 ## Writing data
@@ -251,9 +235,7 @@ sent to remote Firebase database.
 The `push` method will automatically generate a new key if one is not provided:
 
 ```js
-const newReference = database()
-  .ref('/users')
-  .push();
+const newReference = database().ref('/users').push();
 
 console.log('Auto generated key: ', newReference.key);
 
@@ -272,17 +254,13 @@ sorted by default.
 To remove data, you can call the `remove` method on a reference:
 
 ```js
-await database()
-  .ref('/users/123')
-  .remove();
+await database().ref('/users/123').remove();
 ```
 
 Optionally, you can also set the value of a reference node to `null` to remove it from the database:
 
 ```js
-await database()
-  .ref('/users/123')
-  .set(null);
+await database().ref('/users/123').set(null);
 ```
 
 ## Transactions
@@ -330,8 +308,10 @@ It is important that you understand how to write rules in your Firebase console 
 Please follow the Firebase Realtime Database documentation on [security](https://firebase.google.com/docs/database/security)
 
 # Using Emulator
+
 The Realtime Database currently has no direct support to use Firebase emulator, meaning that there is no "useEmulator" function to be used.
 To use Firebase emulator with Realtime Database, please, refer to "Using a secondary database section" or use approach from the code snippet below:
+
 ```
 // databaseWrapper.js
 import {firebase} from '@react-native-firebase/database';
@@ -343,7 +323,7 @@ class DatabaseWrapper {
       this.database = firebase.app().database("http://localhost:9000?ns=YOUR_EMULATOR_DATABASE_NAME");
     } else {
       this.database = firebase.app().database("http://yourProductionUrl?ns=YOUR_PRODUCTION_DATABASE_NAME");
-    }   
+    }
   }
 }
 export const RealtimeDatabase = new DatabaseWrapper();

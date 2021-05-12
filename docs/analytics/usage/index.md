@@ -153,6 +153,7 @@ and use of Firebase Analytics without needing the App Tracking Transparency hand
 of your app handle data in a way that requires ATT)
 
 Note that for obvious reasons, configuring Firebase Analytics for use without IDFA is incompatible with AdMob
+
 # firebase.json
 
 ## Disable Auto-Initialization

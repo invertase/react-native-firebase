@@ -86,7 +86,7 @@ include ':app'
 
 #### Removing from Android Manifest
 
-Open your *AndroidManifest.xml* file.  You will need to remove any references to the `io.invertase.firebase.messaging` class
+Open your _AndroidManifest.xml_ file. You will need to remove any references to the `io.invertase.firebase.messaging` class
 
 ```diff
 - <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">

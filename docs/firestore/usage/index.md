@@ -58,9 +58,7 @@ on the collection by calling the `doc` method:
 import firestore from '@react-native-firebase/firestore';
 
 // Get user document with an ID of ABC
-const userDocument = firestore()
-  .collection('Users')
-  .doc('ABC');
+const userDocument = firestore().collection('Users').doc('ABC');
 ```
 
 The `doc` method returns a [`DocumentReference`](/reference/firestore/documentreference).
@@ -82,13 +80,8 @@ or [`DocumentReference`](/reference/firestore/documentreference):
 ```js
 import firestore from '@react-native-firebase/firestore';
 
-const users = await firestore()
-  .collection('Users')
-  .get();
-const user = await firestore()
-  .collection('Users')
-  .doc('ABC')
-  .get();
+const users = await firestore().collection('Users').get();
+const user = await firestore().collection('Users').doc('ABC').get();
 ```
 
 ### Realtime changes
@@ -107,9 +100,7 @@ function onError(error) {
   console.error(error);
 }
 
-firestore()
-  .collection('Users')
-  .onSnapshot(onResult, onError);
+firestore().collection('Users').onSnapshot(onResult, onError);
 ```
 
 The `onSnapshot` method also returns a function, allowing you to unsubscribe from events. This can be used within any
@@ -306,10 +297,7 @@ The above query orders the users by age in descending order, but only returns us
 You can further specify a [`DocumentSnapshot`](/reference/firestore/documentsnapshot) instead of a specific value. For example:
 
 ```js
-const userDocumentSnapshot = await firestore()
-  .collection('Users')
-  .doc('DEF')
-  .get();
+const userDocumentSnapshot = await firestore().collection('Users').doc('DEF').get();
 
 firestore()
   .collection('Users')
@@ -441,11 +429,9 @@ class. When written to the database, the Firebase servers will write a new times
 resolve any data consistency issues with different client timezones:
 
 ```js
-firestore()
-  .doc('users/ABC')
-  .update({
-    createdAt: firestore.FieldValue.serverTimestamp(),
-  });
+firestore().doc('users/ABC').update({
+  createdAt: firestore.FieldValue.serverTimestamp(),
+});
 ```
 
 Cloud Firestore also allows for storing arrays. To help manage the values with an array (adding or removing) the API
@@ -496,12 +482,9 @@ If you need to remove a specific property with a document, rather than the docum
 method on the [`FieldValue`](/reference/firestore/fieldvalue) class:
 
 ```js
-firestore()
-  .collection('Users')
-  .doc('ABC')
-  .update({
-    fcmTokens: firestore.FieldValue.delete(),
-  });
+firestore().collection('Users').doc('ABC').update({
+  fcmTokens: firestore.FieldValue.delete(),
+});
 ```
 
 ## Transactions
@@ -571,9 +554,7 @@ import firestore from '@react-native-firebase/firestore';
 
 async function massDeleteUsers() {
   // Get all users
-  const usersQuerySnapshot = await firestore()
-    .collection('Users')
-    .get();
+  const usersQuerySnapshot = await firestore().collection('Users').get();
 
   // Create a new batch instance
   const batch = firestore().batch();
