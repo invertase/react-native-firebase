@@ -1,0 +1,14 @@
+diff --git a/node_modules/jet/lib/node/patch/detox.js b/node_modules/jet/lib/node/patch/detox.js
+index fdca559..9092118 100644
+--- a/node_modules/jet/lib/node/patch/detox.js
++++ b/node_modules/jet/lib/node/patch/detox.js
+@@ -28,6 +28,9 @@ if (detox) {
+       // device.reloadReactNative({ ... })
+       // todo detoxOriginalReloadReactNative currently broken it seems
+       // const detoxOriginalReloadReactNative = originalDevice.reloadReactNative.bind(originalDevice);
++      if (!originalDevice) {
++        return undefined;
++      }
+       originalDevice.reloadReactNative = async () => {
+         ready.reset();
+         global.jet.reload();
