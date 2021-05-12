@@ -55,7 +55,7 @@ describe('firestore.GeoPoint', function () {
       new firebase.firestore.GeoPoint(-100, 0);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql("'longitude' must be a number between -90 and 90");
+      error.message.should.containEql("'latitude' must be a number between -90 and 90");
       return Promise.resolve();
     }
   });
