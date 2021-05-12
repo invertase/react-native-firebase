@@ -18,6 +18,7 @@
 require('./globals');
 
 const detox = require('detox');
+const { execSync } = require('child_process');
 const jet = require('jet/platform/node');
 
 const { detox: config } = require('../package.json');
@@ -51,5 +52,29 @@ beforeEach(async function beforeEach() {
 
 after(async function () {
   console.log(' ✨ Tests Complete ✨ ');
+  const isAndroid = detox.device.getPlatform() === 'android';
+
+  // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
+  // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
+  await detox.cleanup();
+
+  // Get the file off the device, into standard location for JaCoCo binary report
+  // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now
+  if (isAndroid) {
+    const pkg = 'com.invertase.testing';
+    const emuOrig = `/data/data/${pkg}/files/coverage.ec`;
+    const emuDest = '/data/local/tmp/detox/coverage.ec';
+    const localDestDir = './android/app/build/output/coverage/';
+
+    try {
+      execSync(`adb shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
+      execSync(`mkdir -p ${localDestDir}`);
+      execSync(`adb pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
+      console.log(`Coverage data downloaded to: ${localDestDir}/emulator_coverage.ec`);
+    } catch (e) {
+      console.log('Unable to download coverage data from device: ', e);
+    }
+  }
+
   await device.terminateApp();
 });
