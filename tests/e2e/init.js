@@ -76,5 +76,9 @@ after(async function () {
     }
   }
 
-  await device.terminateApp();
+  try {
+    await device.terminateApp();
+  } catch (e) {
+    console.log('Unable to terminate app?', e);
+  }
 });

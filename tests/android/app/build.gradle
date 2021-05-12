@@ -112,6 +112,8 @@ android {
   }
 }
 
+apply from: './jacoco.gradle'
+
 dependencies {
   implementation fileTree(include: ['*.jar'], dir: 'libs')
   //noinspection GradleDynamicVersion
