@@ -131,9 +131,7 @@ need to call the `getDownloadURL` method on a reference:
 ```js
 import storage from '@react-native-firebase/storage';
 
-const url = await storage()
-  .ref('images/profile-1.png')
-  .getDownloadURL();
+const url = await storage().ref('images/profile-1.png').getDownloadURL();
 ```
 
 > Images uploaded manually via the Firebase Console automatically generate a download URL.
@@ -183,7 +181,6 @@ is passed to the `storage` instance. To switch buckets, provide the module with 
 Firebase Console, under Storage > Files.
 
 ```js
-
 import storage, { firebase } from '@react-native-firebase/storage';
 
 const defaultStorageBucket = storage();

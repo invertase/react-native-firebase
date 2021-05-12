@@ -68,11 +68,11 @@ async function operation() {
 
     xcs.start();
 
-    xcs.on('message', function(messageId, from, data, category) {
+    xcs.on('message', function (messageId, from, data, category) {
       console.log('received message', messageId, from, data, category);
     });
 
-    xcs.on('receipt', function(messageId, from, data, category) {
+    xcs.on('receipt', function (messageId, from, data, category) {
       console.log('received receipt', arguments);
     });
 

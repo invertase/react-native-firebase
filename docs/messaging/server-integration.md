@@ -61,7 +61,7 @@ function App() {
       .then(token => {
         return saveTokenToDatabase(token);
       });
-      
+
     // If using other push notification providers (ie Amazon SNS, etc)
     // you may need to get the APNs token instead for iOS:
     // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
@@ -109,18 +109,10 @@ var admin = require('firebase-admin');
 
 async function onUserPictureLiked(ownerId, userId, picture) {
   // Get the owners details
-  const owner = admin
-    .firestore()
-    .collection('users')
-    .doc(ownerId)
-    .get();
+  const owner = admin.firestore().collection('users').doc(ownerId).get();
 
   // Get the users details
-  const user = admin
-    .firestore()
-    .collection('users')
-    .doc(userId)
-    .get();
+  const user = admin.firestore().collection('users').doc(userId).get();
 
   await admin.messaging().sendToDevice(
     owner.tokens, // ['token_1', 'token_2', ...]
@@ -262,7 +254,6 @@ const payload = {
 
 > Check out the [official Firebase documentation](https://firebase.google.com/docs/cloud-messaging/ios/send-image) to see the list of available configuration for iOS.
 
-
 ## Android
 
 Similarly to iOS, some configurations specific to Android are needed:
@@ -275,7 +266,7 @@ const payload = {
   },
   android: {
     notification: {
-      image: "image-url",
+      image: 'image-url',
     },
   },
 };
@@ -292,10 +283,7 @@ const admin = require('firebase-admin');
 
 // Create a list containing up to 500 registration tokens.
 // These registration tokens come from the client FCM SDKs.
-const registrationTokens = [
-  'YOUR_REGISTRATION_TOKEN_1',
-  'YOUR_REGISTRATION_TOKEN_2',
-];
+const registrationTokens = ['YOUR_REGISTRATION_TOKEN_1', 'YOUR_REGISTRATION_TOKEN_2'];
 
 const message = {
   tokens: registrationTokens,
@@ -315,7 +303,7 @@ const message = {
   },
   android: {
     notification: {
-      image: "image-url",
+      image: 'image-url',
     },
   },
 };

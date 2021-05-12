@@ -93,14 +93,13 @@ Enter a new phone number (e.g. `+44 7444 555666`) and a test code (e.g. `123456`
 Once added, the number can be used with the `signInWithPhoneNumber` method, and entering the code specified will
 cause a successful sign-in.
 
-
 # MFA-like Account Creation
 
 After successfully creating a user with an email and password (see Authentication/Usage/Email/Password sign-in), use the `verifyPhoneNumber` method to send a verification code to a user's phone number and if the user enters the correct code, link the phone number to the authenticated user's account. This creates a MFA-like authentication flow for account creation. However, to implement MFA with firebase, your app must call additional methods and use Google Cloud Identity Platform, which is a paid service, details available in this guide https://cloud.google.com/identity-platform/docs/web/mfa
 
 ```jsx
-import React, {useState, useEffect} from 'react';
-import {Button, TextInput, Text} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Button, TextInput, Text } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 export default function PhoneVerification() {
@@ -127,10 +126,7 @@ export default function PhoneVerification() {
   // Handle create account button press
   async function createAccount() {
     try {
-      await auth().createUserWithEmailAndPassword(
-        'jane.doe@example.com',
-        'SuperSecretPassword!',
-      );
+      await auth().createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!');
       console.log('User account created & signed in!');
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
@@ -153,10 +149,7 @@ export default function PhoneVerification() {
   // Handle confirm code button press
   async function confirmCode() {
     try {
-      const credential = auth.PhoneAuthProvider.credential(
-        confirm.verificationId,
-        code,
-      );
+      const credential = auth.PhoneAuthProvider.credential(confirm.verificationId, code);
       let userData = await auth().currentUser.linkWithCredential(credential);
       setUser(userData.user);
     } catch (error) {
@@ -177,9 +170,7 @@ export default function PhoneVerification() {
       return (
         <Button
           title="Verify Phone Number"
-          onPress={() =>
-            verifyPhoneNumber('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')
-          }
+          onPress={() => verifyPhoneNumber('ENTER A VALID TESTING OR REAL PHONE NUMBER HERE')}
         />
       );
     }

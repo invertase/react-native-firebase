@@ -63,4 +63,3 @@ In most scenarios, not providing any hints will yield better results. Use this c
 to detect a language.
 
 View the [`MLCloudDocumentTextRecognizerOptions`](/reference/ml/mlclouddocumenttextrecognizeroptions) documentation for more information.
-
