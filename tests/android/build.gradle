@@ -23,6 +23,9 @@ buildscript {
   ext.supportV4Version = "1.0.0" // https://developer.android.com/jetpack/androidx/releases/legacy androidx.legacy:legacy-support-v4
   ext.swiperefreshlayoutVersion = "1.1.0" // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
 
+  // used to aggregate all modules for later reporting
+  ext.firebaseModulePaths = []
+
   repositories {
     google()
     mavenCentral()
@@ -59,15 +62,23 @@ allprojects {
   }
 }
 
+// collect all our modules for reporting
+subprojects.forEach { project ->
+  if (project.name.contains("react-native-firebase")) {
+    rootProject.ext.firebaseModulePaths << project.projectDir
+  }
+}
+
 subprojects {
   task listAllDependencies(type: DependencyReportTask) {}
+
+  // Force all subprojects to use one and only one set of versions
   ext {
     compileSdk = rootProject.ext.compileSdkVersion
     buildTools = rootProject.ext.buildToolsVersion
     minSdk = rootProject.ext.minSdkVersion
     targetSdk = rootProject.ext.targetSdkVersion
   }
-
   afterEvaluate { project ->
     if (!project.name.equalsIgnoreCase("app")
       && project.hasProperty("android")) {

@@ -1,0 +1,145 @@
+import groovy.transform.Memoized
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.7'
+}
+
+android {
+    jacoco {
+        version = '0.8.7'
+    }
+}
+
+@Memoized
+Properties getLocalProperties() {
+    final propertiesFile = project.rootProject.file('local.properties')
+
+    final properties = new Properties()
+
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.newDataInputStream())
+    }
+
+    return properties
+}
+
+def openReport(htmlOutDir) {
+    final reportPath = "$htmlOutDir/index.html"
+
+    println "HTML Report: $reportPath"
+
+    if (!project.hasProperty('open-report')) {
+        println "to open the report automatically in your default browser add '-Popen-report' cli argument"
+        return
+    }
+
+    def os = org.gradle.internal.os.OperatingSystem.current()
+    if (os.isWindows()) {
+        exec { commandLine 'cmd', '/c', "start $reportPath" }
+    } else if (os.isMacOsX()) {
+        exec { commandLine 'open', "$reportPath" }
+    } else if (os.isLinux()) {
+        try {
+            exec { commandLine 'xdg-open', "$reportPath" }
+        } catch (Exception ignored) {
+            if (localProperties.containsKey('linux-html-cmd')) {
+                exec { commandLine properties.get('linux-html-cmd'), "$reportPath" }
+            } else {
+                println "'linux-html-cmd' property could not be found in 'local.properties'"
+            }
+        }
+    }
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+// Our merge report task
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'connectedDebugAndroidTest']) {
+    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
+
+    doLast {
+        openReport htmlOutDir
+    }
+
+    reports {
+        xml.enabled = true
+        html.destination htmlOutDir
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
+    def debugTree2 = fileTree(dir: "$project.buildDir/../../node_modules/@react-native-firebase/android/build/intermediates/javac/debug/classes", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+    def mainSrc2 = "$project.projectDir/../../node_modules/@react-native-firebase/android/src/main/java"
+
+    sourceDirectories.from = files([mainSrc, mainSrc2])
+    classDirectories.from = files([debugTree, debugTree2])
+    executionData.from = fileTree(dir: project.buildDir, includes: [
+            '**/*.exec',
+            '**/*.ec'
+    ])
+}
+
+// A unit-test only report task
+task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
+
+    // Runs normal test but with this added:
+    // -javaagent:build/tmp/expandedArchives/org.jacoco.agent-0.8.7.jar_3a83c50b4a016f281c4e9f3500d16b55/jacocoagent.jar=destfile=build/jacoco/testPlayDebugUnitTest.exec,append=true,excludes=jdk.internal.*,inclnolocationclasses=true,dumponexit=true,output=file,jmx=false
+
+    doLast {
+        openReport htmlOutDir
+    }
+
+    reports {
+        xml.enabled = true
+        html.destination htmlOutDir
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.from = files([mainSrc])
+    classDirectories.from = files([debugTree])
+    executionData.from = fileTree(dir: project.buildDir, includes: [
+            '**/*.exec'
+
+    ])
+}
+
+// A connected android tests only report task
+task jacocoAndroidTestReport(type: JacocoReport) {
+    def htmlOutDir = layout.buildDirectory.dir("reports/jacoco/$name/html").get().asFile
+
+    doLast {
+        openReport htmlOutDir
+    }
+
+    reports {
+        xml.enabled = true
+        html.destination htmlOutDir
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+
+    // use our collected firebase module names to aggregate source / class files for reporting
+    def classFiles = []
+    def srcFiles = []
+    rootProject.ext.firebaseModulePaths.forEach { projectPath ->
+      classFiles << fileTree(dir: "$projectPath/build/intermediates/javac/debug/classes", excludes: fileFilter)
+      srcFiles << "$projectPath/src/main/java"
+    }
+
+
+    sourceDirectories.from = files(srcFiles)
+    classDirectories.from = files(classFiles)
+    executionData.from = fileTree(dir: project.buildDir, includes: [
+            '**/*.ec'
+    ])
+}
