@@ -56,13 +56,15 @@ after(async function () {
 
   // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
   // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
+  await Utils.sleep(5000); // give async processes (like Firestore writes) time to complete
   await detox.cleanup();
+  await Utils.sleep(5000); // give client app time to dump coverage report
 
   // Get the file off the device, into standard location for JaCoCo binary report
   // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now
   if (isAndroid) {
     const pkg = 'com.invertase.testing';
-    const emuOrig = `/data/data/${pkg}/files/coverage.ec`;
+    const emuOrig = `/data/user/0/${pkg}/files/coverage.ec`;
     const emuDest = '/data/local/tmp/detox/coverage.ec';
     const localDestDir = './android/app/build/output/coverage/';
 
