@@ -185,7 +185,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     const keys = Object.keys(settings);
 
-    const opts = ['cacheSizeBytes', 'host', 'persistence', 'ssl'];
+    const opts = ['cacheSizeBytes', 'host', 'persistence', 'ssl', 'ignoreUndefinedProperties'];
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -250,6 +250,18 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     if (!isUndefined(settings.ssl) && !isBoolean(settings.ssl)) {
       throw new Error("firebase.firestore().settings(*) 'settings.ssl' must be a boolean value.");
+    }
+
+    if (!isUndefined(settings.ignoreUndefinedProperties)) {
+      if (!isBoolean(settings.ignoreUndefinedProperties)) {
+        throw new Error(
+          "firebase.firestore().settings(*) 'settings.ignoreUndefinedProperties' must be a boolean value.",
+        );
+      } else {
+        this._settings.ignoreUndefined = settings.ignoreUndefined;
+      }
+
+      delete settings.ignoreUndefinedProperties;
     }
 
     return this.native.settings(settings);

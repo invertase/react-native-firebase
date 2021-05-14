@@ -94,7 +94,7 @@ export default class FirestoreWriteBatch {
     this._writes.push({
       path: documentRef.path,
       type: 'SET',
-      data: buildNativeMap(data),
+      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
       options: setOptions,
     });
 
@@ -131,7 +131,7 @@ export default class FirestoreWriteBatch {
     this._writes.push({
       path: documentRef.path,
       type: 'UPDATE',
-      data: buildNativeMap(data),
+      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
     });
 
     return this;
