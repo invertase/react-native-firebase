@@ -185,7 +185,11 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().set(_, *) ${e.message}.`);
     }
 
-    return this._firestore.native.documentSet(this.path, buildNativeMap(data), setOptions);
+    return this._firestore.native.documentSet(
+      this.path,
+      buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+      setOptions,
+    );
   }
 
   update(...args) {
@@ -202,7 +206,10 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().update(*) ${e.message}`);
     }
 
-    return this._firestore.native.documentUpdate(this.path, buildNativeMap(data));
+    return this._firestore.native.documentUpdate(
+      this.path,
+      buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
+    );
   }
 }
 

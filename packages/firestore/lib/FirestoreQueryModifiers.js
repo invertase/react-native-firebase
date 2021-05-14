@@ -204,7 +204,7 @@ export default class FirestoreQueryModifiers {
     const filter = {
       fieldPath,
       operator: OPERATORS[opStr],
-      value: generateNativeData(value),
+      value: generateNativeData(value, true),
     };
 
     this._filters = this._filters.concat(filter);
