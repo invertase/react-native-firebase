@@ -120,6 +120,25 @@ describe('firestore()', function () {
       should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
       docRef.path.should.eql(`${COLLECTION}/bar`);
     });
+
+    it('filters out undefined properties when setting enabled', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+      await docRef.set({
+        field1: 1,
+        field2: undefined,
+      });
+
+      const snap = await docRef.get();
+      const snapData = snap.data();
+      if (!snapData) {
+        return Promise.reject(new Error('Snapshot not saved'));
+      }
+
+      snapData.field1.should.equal(1);
+      snapData.field2.should.not.exist();
+    });
   });
 
   describe('collectionGroup()', function () {
@@ -318,6 +337,18 @@ describe('firestore()', function () {
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'settings.persistence' must be a boolean value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if ignoreUndefinedProperties is not a boolean', function () {
+      try {
+        firebase.firestore().settings({ ignoreUndefinedProperties: 'true' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'settings.ignoreUndefinedProperties' must be a boolean value",
+        );
         return Promise.resolve();
       }
     });
