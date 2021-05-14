@@ -85,7 +85,7 @@ export default class FirestoreTransaction {
     this._commandBuffer.push({
       type: 'SET',
       path: documentRef.path,
-      data: buildNativeMap(data),
+      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
       options: setOptions,
     });
 
@@ -111,7 +111,7 @@ export default class FirestoreTransaction {
     this._commandBuffer.push({
       type: 'UPDATE',
       path: documentRef.path,
-      data: buildNativeMap(data),
+      data: buildNativeMap(data, this._firestore._settings.ignoreUndefinedProperties),
     });
 
     return this;

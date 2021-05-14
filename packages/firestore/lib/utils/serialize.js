@@ -47,16 +47,24 @@ export function provideFieldValueClass(fieldValue) {
 /**
  *
  * @param data
+ * @param ignoreUndefined
  */
-export function buildNativeMap(data) {
+export function buildNativeMap(data, ignoreUndefined) {
   const nativeData = {};
   if (data) {
     const keys = Object.keys(data);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
-      const typeMap = generateNativeData(data[key]);
-      if (typeMap) {
-        nativeData[key] = typeMap;
+
+      if (typeof data[key] === 'undefined') {
+        if (!ignoreUndefined) {
+          throw new Error('firebase.firestore() undefined values cannot be saved');
+        }
+      } else {
+        const typeMap = generateNativeData(data[key], ignoreUndefined);
+        if (typeMap) {
+          nativeData[key] = typeMap;
+        }
       }
     }
   }
@@ -90,9 +98,10 @@ export function buildNativeArray(array) {
  * Example: [7, 'some string'];
  *
  * @param value
+ * @param ignoreUndefined
  * @returns {*}
  */
-export function generateNativeData(value) {
+export function generateNativeData(value, ignoreUndefined) {
   if (Number.isNaN(value)) {
     return getTypeMapInt('nan');
   }
@@ -165,7 +174,7 @@ export function generateNativeData(value) {
       return getTypeMapInt('fieldvalue', [value._type, value._elements]);
     }
 
-    return getTypeMapInt('object', buildNativeMap(value));
+    return getTypeMapInt('object', buildNativeMap(value, ignoreUndefined));
   }
 
   // eslint-disable-next-line no-console
