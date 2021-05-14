@@ -1419,6 +1419,11 @@ export namespace FirebaseFirestoreTypes {
      * Whether to use SSL when connecting.
      */
     ssl?: boolean;
+
+    /**
+     * When this parameter is set, Cloud Firestore ignores undefined properties inside objects.
+     */
+    ignoreUndefinedProperties?: boolean;
   }
 
   /**
