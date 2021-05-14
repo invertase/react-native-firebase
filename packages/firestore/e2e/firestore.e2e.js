@@ -136,8 +136,8 @@ describe('firestore()', function () {
         return Promise.reject(new Error('Snapshot not saved'));
       }
 
-      snapData.field1.should.equal(1);
-      should.not.exist(snapData.field2);
+      snapData.field1.should.eql(1);
+      snapData.hasOwnProperty('field2').should.eql(false);
     });
 
     it('filters out nested undefined properties when setting enabled', async function () {
@@ -157,28 +157,46 @@ describe('firestore()', function () {
         return Promise.reject(new Error('Snapshot not saved'));
       }
 
-      snapData.field1.should.equal(1);
-      should.exist(snapData.field2);
-      should.not.exist(snapData.field2.shouldBeMissing);
+      snapData.field1.should.eql(1);
+      snapData.hasOwnProperty('field2').should.eql(true);
+
+      snapData.field2.hasOwnProperty('shouldBeMissing').should.eql(false);
     });
 
-    it('filters out undefined properties when setting disabled', async function () {
+    it('throws when undefined value provided and ignored undefined is false', async function () {
       await firebase.firestore().settings({ ignoreUndefinedProperties: false });
 
       const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-      await docRef.set({
-        field1: 1,
-        field2: undefined,
-      });
 
-      const snap = await docRef.get();
-      const snapData = snap.data();
-      if (!snapData) {
-        return Promise.reject(new Error('Snapshot not saved'));
+      try {
+        await docRef.set({
+          field1: 1,
+          field2: undefined,
+        });
+
+        return Promise.reject(new Error('Expected set() to throw'));
+      } catch (e) {
+        return Promise.resolve();
       }
+    });
 
-      snapData.field1.should.equal(1);
-      should.equal(snapData.field2, null);
+    it('throws when nested undefined value provided and ignored undefined is false', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: false });
+
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+
+      try {
+        await docRef.set({
+          field1: 1,
+          field2: {
+            shouldNotWork: undefined,
+          },
+        });
+
+        return Promise.reject(new Error('Expected set() to throw'));
+      } catch (e) {
+        return Promise.resolve();
+      }
     });
   });
 

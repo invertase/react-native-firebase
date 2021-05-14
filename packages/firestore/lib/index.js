@@ -262,7 +262,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
           "firebase.firestore().settings(*) 'settings.ignoreUndefinedProperties' must be a boolean value.",
         );
       } else {
-        this._settings.ignoreUndefinedProperties = settings.ignoreUndefined;
+        this._settings.ignoreUndefinedProperties = settings.ignoreUndefinedProperties;
       }
 
       delete settings.ignoreUndefinedProperties;
