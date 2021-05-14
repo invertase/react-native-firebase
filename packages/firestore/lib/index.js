@@ -74,6 +74,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
         event,
       );
     });
+
+    this._settings = {
+      ignoreUndefinedProperties: false,
+    };
   }
 
   batch() {
@@ -258,7 +262,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
           "firebase.firestore().settings(*) 'settings.ignoreUndefinedProperties' must be a boolean value.",
         );
       } else {
-        this._settings.ignoreUndefined = settings.ignoreUndefined;
+        this._settings.ignoreUndefinedProperties = settings.ignoreUndefined;
       }
 
       delete settings.ignoreUndefinedProperties;
