@@ -17,7 +17,7 @@
 const COLLECTION = 'firestore';
 const COLLECTION_GROUP = 'collectionGroup';
 
-describe.only('firestore()', function () {
+describe('firestore()', function () {
   describe('namespace', function () {
     it('accessible from firebase.app()', function () {
       const app = firebase.app();
@@ -138,6 +138,28 @@ describe.only('firestore()', function () {
 
       snapData.field1.should.equal(1);
       should.not.exist(snapData.field2);
+    });
+
+    it('filters out nested undefined properties when setting enabled', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+      await docRef.set({
+        field1: 1,
+        field2: {
+          shouldBeMissing: undefined,
+        },
+      });
+
+      const snap = await docRef.get();
+      const snapData = snap.data();
+      if (!snapData) {
+        return Promise.reject(new Error('Snapshot not saved'));
+      }
+
+      snapData.field1.should.equal(1);
+      should.exist(snapData.field2);
+      should.not.exist(snapData.field2.shouldBeMissing);
     });
 
     it('filters out undefined properties when setting disabled', async function () {
