@@ -15,16 +15,21 @@
  *
  */
 
-const { PATH, wipe } = require('./helpers');
+const { PATH, seed, wipe } = require('./helpers');
 
 const TEST_PATH = `${PATH}/issues`;
 
 describe('database issues', function () {
-  after(function () {
-    return wipe(TEST_PATH);
+  before(async function () {
+    await seed(TEST_PATH);
+  });
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
-  it('#2813 should return a null snapshot key if path is root', async function () {
+  // FIXME requires a second database set up locally, full app initialization etc
+  xit('#2813 should return a null snapshot key if path is root', async function () {
+    firebase.database('https://react-native-firebase-testing-db2.firebaseio.com');
     const ref = firebase
       .app()
       .database('https://react-native-firebase-testing-db2.firebaseio.com')
@@ -38,7 +43,7 @@ describe('database issues', function () {
     const testRef = firebase
       .database()
       .ref()
-      .child('/test')
+      .child(TEST_PATH)
       .orderByChild('disabled')
       .equalTo(false);
 

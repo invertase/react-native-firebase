@@ -45,7 +45,7 @@ beforeEach(async function beforeEach() {
       console.warn(`   🔴  Retry #${retry - 1} failed...`);
     }
 
-    console.warn(`️   ->  Retrying in ${1 * retry} seconds ... (${retry})`);
+    console.warn(`️   ->  Retrying in ${5 * retry} seconds ... (${retry})`);
     await Utils.sleep(5000 * retry);
   }
 });
@@ -56,9 +56,9 @@ after(async function () {
 
   // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
   // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
-  await Utils.sleep(5000); // give async processes (like Firestore writes) time to complete
+  // await Utils.sleep(5000); // give async processes (like Firestore writes) time to complete
   await detox.cleanup();
-  await Utils.sleep(5000); // give client app time to dump coverage report
+  // await Utils.sleep(5000); // give client app time to dump coverage report
 
   // Get the file off the device, into standard location for JaCoCo binary report
   // It will still need processing via gradle jacocoAndroidTestReport task for codecov, but it's available now

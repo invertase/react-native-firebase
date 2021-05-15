@@ -23,6 +23,8 @@ import com.facebook.react.bridge.ReactMethod;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.addEmulatorConfig;
+
 public class ReactNativeFirebaseDatabaseModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Database";
   private final UniversalFirebaseDatabaseModule module;
@@ -76,5 +78,10 @@ public class ReactNativeFirebaseDatabaseModule extends ReactNativeFirebaseModule
       UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE,
       (long) cacheSizeBytes
     );
+  }
+
+  @ReactMethod
+  public void useEmulator(String app, String dbURL, String host, int port) {
+    addEmulatorConfig(app, dbURL, host, port);
   }
 }
