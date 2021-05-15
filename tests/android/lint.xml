@@ -27,7 +27,7 @@
   <issue id="StringFormatCount" severity="fatal" />
   <issue id="StringFormatMatches" severity="fatal" />
   <issue id="StringFormatInvalid" severity="fatal" />
-  <issue id="UnusedResources" severity="fatal" />
+  <issue id="UnusedResources" severity="ignore" />
   <issue id="ViewConstructor" severity="fatal" />
   <issue id="ViewHolder" severity="fatal" />
   <issue id="ViewTag" severity="fatal" />
