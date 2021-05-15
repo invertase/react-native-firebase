@@ -575,39 +575,15 @@ export namespace FirebaseMessagingTypes {
      * await firebase.messaging().registerDeviceForRemoteMessages();
      * const fcmToken = await firebase.messaging().getToken();
      *
-     * // Update backend (e.g. Firestore) with our scoped token for the user
+     * // Update backend (e.g. Firestore) with our token for the user
      * const uid = firebase.auth().currentUser.uid;
      * await firebase.firestore().doc(`users/${uid}`)
      *   .update({
      *     fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),
      *   });
      * ```
-     *
-     * #### Example - Scoped Token
-     *
-     * The below example creates a new token for a specific notification scope (in this case, ALARM).
-     * Your server can specifically send messages to 'ALARM' tokens. By default, all notification scopes
-     * will be received.
-     *
-     * ```js
-     * // Get a token for 'ALARM' notifications
-     * const alarmFcmToken = await firebase.messaging().getToken(
-     *   firebase.app().options.messagingSenderId, // default to this app
-     *   'ALARM', // defaults to 'FCM'
-     * );
-     *
-     * // Update backend (e.g. Firestore) with our scoped token for the user
-     * const uid = firebase.auth().currentUser.uid;
-     * await firebase.firestore().doc(`users/${uid}`)
-     *   .update({
-     *     alarmFcmTokens: firebase.firestore.FieldValues.arrayUnion(alarmFcmToken),
-     *   });
-     * ```
-     *
-     * @param authorizedEntity The messaging sender ID. In most cases this will be the current default app.
-     * @param scope The scope to assign a token, which the sever can use to target messages at.
      */
-    getToken(authorizedEntity?: string, scope?: string): Promise<string>;
+    getToken(): Promise<string>;
 
     /**
      * Returns wether the root view is headless or not
@@ -627,11 +603,8 @@ export namespace FirebaseMessagingTypes {
      * ```js
      * await firebase.messaging().deleteToken();
      * ```
-     *
-     * @param authorizedEntity The messaging sender ID. In most cases this will be the current default app.
-     * @param scope The scope to assign when token will be deleted.
      */
-    deleteToken(authorizedEntity?: string, scope?: string): Promise<void>;
+    deleteToken(): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.

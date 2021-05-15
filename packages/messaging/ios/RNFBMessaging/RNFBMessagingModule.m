@@ -90,9 +90,7 @@ RCT_EXPORT_METHOD(setAutoInitEnabled:
 }
 
 RCT_EXPORT_METHOD(getToken:
-  (NSString *) authorizedEntity
-    :(NSString *) scope
-    :(RCTPromiseResolveBlock) resolve
+  (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
   #if !(TARGET_IPHONE_SIMULATOR)
@@ -105,37 +103,20 @@ RCT_EXPORT_METHOD(getToken:
   }
   #endif
 
-  if ([scope isEqualToString:@"FCM"] && [authorizedEntity isEqualToString:[FIRApp defaultApp].options.GCMSenderID]) {
-    [[FIRInstanceID instanceID] instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable result, NSError *_Nullable error) {
-      if (error) {
-        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-      } else {
-        resolve(result.token);
-      }
-    }];
-  } else {
-    NSDictionary *options = nil;
-    if ([FIRMessaging messaging].APNSToken) {
-      options = @{@"apns_token": [FIRMessaging messaging].APNSToken};
+  [[FIRMessaging messaging] tokenWithCompletion:^(NSString *_Nullable token, NSError *_Nullable error) {
+    if (error) {
+      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+    } else {
+       resolve(token);
     }
-
-    [[FIRInstanceID instanceID] tokenWithAuthorizedEntity:authorizedEntity scope:scope options:options handler:^(NSString *_Nullable identity, NSError *_Nullable error) {
-      if (error) {
-        [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-      } else {
-        resolve(identity);
-      }
-    }];
-  }
+  }];
 }
 
 RCT_EXPORT_METHOD(deleteToken:
-  (NSString *) authorizedEntity
-    :(NSString *) scope
-    :(RCTPromiseResolveBlock) resolve
+  (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  [[FIRInstanceID instanceID] deleteTokenWithAuthorizedEntity:authorizedEntity scope:scope handler:^(NSError *_Nullable error) {
+  [[FIRMessaging messaging] deleteTokenWithCompletion:^(NSError *_Nullable error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
     } else {

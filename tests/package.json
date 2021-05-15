@@ -16,7 +16,6 @@
     "@react-native-firebase/dynamic-links": "11.5.0",
     "@react-native-firebase/firestore": "11.5.0",
     "@react-native-firebase/functions": "11.5.0",
-    "@react-native-firebase/iid": "11.5.0",
     "@react-native-firebase/in-app-messaging": "11.5.0",
     "@react-native-firebase/messaging": "11.5.0",
     "@react-native-firebase/ml": "11.5.0",

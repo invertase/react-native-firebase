@@ -23,7 +23,6 @@ import {
   isIOS,
   isObject,
   isString,
-  isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -130,38 +129,12 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.getIsHeadless();
   }
 
-  getToken(authorizedEntity, scope) {
-    if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
-      throw new Error(
-        "firebase.messaging().getToken(*) 'authorizedEntity' expected a string value.",
-      );
-    }
-
-    if (!isUndefined(scope) && !isString(scope)) {
-      throw new Error("firebase.messaging().getToken(_, *) 'scope' expected a string value.");
-    }
-
-    return this.native.getToken(
-      authorizedEntity || this.app.options.messagingSenderId,
-      scope || 'FCM',
-    );
+  getToken() {
+    return this.native.getToken();
   }
 
-  deleteToken(authorizedEntity, scope) {
-    if (!isUndefined(authorizedEntity) && !isString(authorizedEntity)) {
-      throw new Error(
-        "firebase.messaging().deleteToken(*) 'authorizedEntity' expected a string value.",
-      );
-    }
-
-    if (!isUndefined(scope) && !isString(scope)) {
-      throw new Error("firebase.messaging().deleteToken(_, *) 'scope' expected a string value.");
-    }
-
-    return this.native.deleteToken(
-      authorizedEntity || this.app.options.messagingSenderId,
-      scope || 'FCM',
-    );
+  deleteToken() {
+    return this.native.deleteToken();
   }
 
   onMessage(listener) {

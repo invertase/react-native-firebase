@@ -31,7 +31,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -116,9 +115,9 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void getToken(String authorizedEntity, String scope, Promise promise) {
+  public void getToken(Promise promise) {
     Tasks
-      .call(getExecutor(), () -> FirebaseInstanceId.getInstance().getToken(authorizedEntity, scope))
+      .call(getExecutor(), () -> Tasks.await(FirebaseMessaging.getInstance().getToken()))
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
@@ -129,10 +128,10 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
-  public void deleteToken(String authorizedEntity, String scope, Promise promise) {
+  public void deleteToken(Promise promise) {
     Tasks
       .call(getExecutor(), () -> {
-        FirebaseInstanceId.getInstance().deleteToken(authorizedEntity, scope);
+        Tasks.await(FirebaseMessaging.getInstance().deleteToken());
         return null;
       })
       .addOnCompleteListener(task -> {
