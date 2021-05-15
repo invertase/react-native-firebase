@@ -14,7 +14,6 @@ module.exports = {
     '../packages/app/e2e/*.e2e.js',
     '../packages/analytics/e2e/*.e2e.js',
     '../packages/auth/e2e/*.e2e.js',
-    '../packages/admob/e2e/*.e2e.js',
     '../packages/crashlytics/e2e/*.e2e.js',
     '../packages/dynamic-links/e2e/*.e2e.js',
     '../packages/iid/e2e/*.e2e.js',

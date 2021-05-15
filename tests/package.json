@@ -7,7 +7,6 @@
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/admob": "11.5.0",
     "@react-native-firebase/analytics": "11.5.0",
     "@react-native-firebase/app": "11.5.0",
     "@react-native-firebase/app-types": "6.7.2",
