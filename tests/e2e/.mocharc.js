@@ -16,7 +16,6 @@ module.exports = {
     '../packages/auth/e2e/*.e2e.js',
     '../packages/crashlytics/e2e/*.e2e.js',
     '../packages/dynamic-links/e2e/*.e2e.js',
-    '../packages/iid/e2e/*.e2e.js',
     '../packages/perf/e2e/*.e2e.js',
     '../packages/functions/e2e/*.e2e.js',
     '../packages/remote-config/e2e/*.e2e.js',

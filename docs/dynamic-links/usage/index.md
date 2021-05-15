@@ -2,7 +2,7 @@
 title: Dynamic Links
 description: Installation and getting started with Dynamic Links.
 icon: //static.invertase.io/assets/firebase/dynamic-links.svg
-next: /iid/usage
+next: /in-app-messaging/usage
 previous: /database/presence-detection
 ---
 
