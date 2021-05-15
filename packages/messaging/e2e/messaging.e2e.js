@@ -106,55 +106,14 @@ describe('messaging()', function () {
     });
   });
 
-  describe('getToken()', function () {
-    it('throws if authorizedEntity is not a string', function () {
-      try {
-        firebase.messaging().getToken(123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'authorizedEntity' expected a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if scope is not a string', function () {
-      try {
-        firebase.messaging().getToken('123', 123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'scope' expected a string value");
-        return Promise.resolve();
-      }
-    });
-  });
-
   describe('deleteToken()', function () {
-    it('throws if authorizedEntity is not a string', function () {
-      try {
-        firebase.messaging().deleteToken(123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'authorizedEntity' expected a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if scope is not a string', function () {
-      try {
-        firebase.messaging().deleteToken('123', 123);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql("'scope' expected a string value");
-        return Promise.resolve();
-      }
-    });
-
-    xit('generate a new token after deleting', async function () {
-      // const token1 = await firebase.messaging().getToken();
-
+    it('generate a new token after deleting', async function () {
+      const token1 = await firebase.messaging().getToken();
+      should.exist(token1);
       await firebase.messaging().deleteToken();
-
-      // const token2 = await firebase.messaging().getToken();
+      const token2 = await firebase.messaging().getToken();
+      should.exist(token2);
+      token1.should.not.eql(token2);
     });
   });
 

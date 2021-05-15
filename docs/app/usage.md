@@ -26,7 +26,6 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 - [Cloud Firestore](/firestore/usage).
 - [Cloud Functions](/functions/usage)
 - [Cloud Storage](/storage/usage).
-- [Instance ID](/iid/usage).
 - [ML](/ml/usage).
 - [Remote Config](/remote-config/usage).
 

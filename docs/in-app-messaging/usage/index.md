@@ -3,7 +3,7 @@ title: In App Messaging
 description: Installation and getting started with In App Messaging.
 icon: //static.invertase.io/assets/firebase/in-app-messaging.svg
 next: /ml/usage
-previous: /iid/usage
+previous: /dynamic-links/usage
 ---
 
 # Installation
