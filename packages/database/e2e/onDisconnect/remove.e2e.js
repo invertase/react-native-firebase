@@ -20,13 +20,13 @@ const { PATH, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/onDisconnectRemove`;
 
 describe('database().ref().onDisconnect().remove()', function () {
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
-  afterEach(function () {
+  afterEach(async function () {
     // Ensures the db is online before running each test
-    firebase.database().goOnline();
+    await firebase.database().goOnline();
   });
 
   it('throws if onComplete is not a function', function () {
@@ -40,15 +40,12 @@ describe('database().ref().onDisconnect().remove()', function () {
     }
   });
 
-  it('removes a node whilst offline', async function () {
+  xit('removes a node whilst offline', async function () {
     const ref = firebase.database().ref(TEST_PATH).child('removeMe');
-
     await ref.set('foobar');
-
     await ref.onDisconnect().remove();
     await firebase.database().goOffline();
     await firebase.database().goOnline();
-
     const snapshot = await ref.once('value');
     snapshot.exists().should.eql(false);
   });

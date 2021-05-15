@@ -4,7 +4,7 @@ if ! [ -x "$(command -v firebase)" ]; then
   exit 1
 fi
 
-EMU_START_COMMAND="firebase emulators:start --only firestore,auth --project react-native-firebase-testing"
+EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore --project react-native-firebase-testing"
 
 if [ "$1" == "--no-daemon" ]; then
   $EMU_START_COMMAND

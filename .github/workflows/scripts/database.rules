@@ -1,0 +1,13 @@
+{
+  "rules": {
+    // Database in general is closed. Read/Write to anything but "tests/" will fail.
+    ".read": false,
+    ".write": false,
+
+    // ..."tests" node will succeed
+     "tests": {
+        ".read": true,
+        ".write": true,
+     }
+  }
+}

@@ -25,3 +25,38 @@ index 90bebf4..74d2357 100644
          } catch (ReflectException e) {
              Log.e(LOG_TAG, "Can't set up RN UIModule listener", e.getCause());
          }
+diff --git a/node_modules/detox/android/detox/src/main/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/node_modules/detox/android/detox/src/main/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index be1fdeb..a0c2950 100644
+--- a/node_modules/detox/android/detox/src/main/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/main/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -1,5 +1,6 @@
+ package com.wix.detox.reactnative.idlingresources.timers
+ 
++import android.util.Log;
+ import android.view.Choreographer
+ import androidx.test.espresso.IdlingResource
+ import com.wix.detox.reactnative.idlingresources.DetoxBaseIdlingResource
+@@ -19,13 +20,16 @@ class TimersIdlingResource @JvmOverloads constructor(
+     }
+ 
+     override fun checkIdle(): Boolean {
+-        return interrogationStrategy.isIdleNow().also { result ->
+-            if (result) {
+-                notifyIdle()
+-            } else {
+-                getChoreographer().postFrameCallback(this@TimersIdlingResource)
+-            }
+-        }
++        return true
++        // return interrogationStrategy.isIdleNow().also { result ->
++        //     if (result) {
++        //         notifyIdle()
++        //     } else {
++        //         Log.w(LOG_TAG, "TimersIdlingResource is busy but damn the torpedoes!");
++        //         notifyIdle()
++        //         // getChoreographer().postFrameCallback(this@TimersIdlingResource)
++        //     }
++        // }
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {

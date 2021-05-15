@@ -20,11 +20,11 @@ const { PATH, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/startAt`;
 
 describe('database().ref().startAt()', function () {
-  before(function () {
-    return seed(TEST_PATH);
+  before(async function () {
+    await seed(TEST_PATH);
   });
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
   it('throws if an value is undefined', async function () {

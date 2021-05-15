@@ -20,11 +20,11 @@ const { PATH, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/setWithPriority`;
 
 describe('database().ref().setWithPriority()', function () {
-  before(function () {
-    return seed(TEST_PATH);
+  before(async function () {
+    await seed(TEST_PATH);
   });
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
   it('throws if newVal is not defined', async function () {

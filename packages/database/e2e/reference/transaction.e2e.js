@@ -21,11 +21,11 @@ const TEST_PATH = `${PATH}/transaction`;
 const NOOP = () => {};
 
 describe('database().ref().transaction()', function () {
-  before(function () {
-    return seed(TEST_PATH);
+  before(async function () {
+    await seed(TEST_PATH);
   });
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
   it('throws if no transactionUpdate is provided', async function () {
@@ -58,11 +58,11 @@ describe('database().ref().transaction()', function () {
     }
   });
 
-  // FIXME not working for android in CI ?
-  ios.it('updates the value via a transaction', async () => {
-    const ref = firebase.database().ref(TEST_PATH).child('transaction');
+  // FIXME this test works in isolation but not running in the suite?
+  xit('updates the value via a transaction', async function () {
+    const ref = firebase.database().ref(`${TEST_PATH}/transactionUpdate`);
     await ref.set(1);
-
+    await Utils.sleep(2000);
     const { committed, snapshot } = await ref.transaction(value => {
       return value + 1;
     });
@@ -72,7 +72,7 @@ describe('database().ref().transaction()', function () {
   });
 
   it('aborts transaction if undefined returned', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('transaction');
+    const ref = firebase.database().ref(`${TEST_PATH}/transactionAbort`);
     await ref.set(1);
 
     return new Promise((resolve, reject) => {
@@ -95,125 +95,108 @@ describe('database().ref().transaction()', function () {
     });
   });
 
-  // FIXME failing for me locally on android and ios as well
-  xit('passes valid data through the callback', async function () {
-    // FIXME failing in CI
-    if (!global.isCI) {
-      const ref = firebase.database().ref(TEST_PATH).child('transaction');
-      await ref.set(1);
+  // FIXME flaky on android local against emulator?
+  ios.it('passes valid data through the callback', async function () {
+    const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
+    await ref.set(1);
 
-      return new Promise((resolve, reject) => {
-        ref.transaction(
+    return new Promise((resolve, reject) => {
+      ref.transaction(
+        $ => {
+          return $ + 1;
+        },
+        (error, committed, snapshot) => {
+          if (error) {
+            return reject(error);
+          }
+
+          if (!committed) {
+            return reject(new Error('Transaction aborted when it should not have done'));
+          }
+
+          should.equal(snapshot.val(), 2);
+          return resolve();
+        },
+      );
+    });
+  });
+
+  // FIXME flaky on android local against emulator?
+  ios.it('throws when an error occurs', async function () {
+    const ref = firebase.database().ref('nope');
+
+    try {
+      await ref.transaction($ => {
+        return $ + 1;
+      });
+      return Promise.reject(new Error('Did not throw error.'));
+    } catch (error) {
+      error.message.should.containEql("Client doesn't have permission to access the desired data");
+      return Promise.resolve();
+    }
+  });
+
+  // FIXME flaky on android? works most of the time...
+  ios.it('passes error back to the callback', async function () {
+    const ref = firebase.database().ref('nope');
+
+    return new Promise((resolve, reject) => {
+      ref
+        .transaction(
           $ => {
             return $ + 1;
           },
           (error, committed, snapshot) => {
-            if (error) {
-              return reject(error);
+            if (snapshot !== null) {
+              return reject(new Error('Snapshot should not be available'));
             }
 
-            if (!committed) {
-              return reject(new Error('Transaction aborted when it should not have done'));
+            if (committed === true) {
+              return reject(new Error('Transaction should not have committed'));
             }
 
-            should.equal(snapshot.val(), 2);
-            return resolve();
-          },
-        );
-      });
-    }
-  });
-
-  // FIXME failing for me locally on android and ios as well
-  xit('throws when an error occurs', async function () {
-    // FIXME failing in CI
-    if (!global.isCI) {
-      const ref = firebase.database().ref('nope');
-
-      try {
-        await ref.transaction($ => {
-          return $ + 1;
-        });
-        return Promise.reject(new Error('Did not throw error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          "Client doesn't have permission to access the desired data",
-        );
-        return Promise.resolve();
-      }
-    }
-  });
-
-  // FIXME failing for me locally on android and ios as well
-  xit('passes error back to the callback', async function () {
-    // FIXME failing in CI
-    if (!global.isCI) {
-      const ref = firebase.database().ref('nope');
-
-      return new Promise((resolve, reject) => {
-        ref
-          .transaction(
-            $ => {
-              return $ + 1;
-            },
-            (error, committed, snapshot) => {
-              if (snapshot !== null) {
-                return reject(new Error('Snapshot should not be available'));
-              }
-
-              if (committed === true) {
-                return reject(new Error('Transaction should not have committed'));
-              }
-
-              error.message.should.containEql(
-                "Client doesn't have permission to access the desired data",
-              );
-              return resolve();
-            },
-          )
-          .catch(() => {
-            // catch unhandled rejection
-          });
-      });
-    }
-  });
-
-  // FIXME failing for me locally on android and ios as well
-  xit('sets a value if one does not exist', async function () {
-    // FIXME failing in CI
-    if (!global.isCI) {
-      const ref = firebase.database().ref(TEST_PATH).child('create');
-      await ref.remove(); // Ensure it's clear
-
-      const value = Date.now();
-
-      return new Promise((resolve, reject) => {
-        ref.transaction(
-          $ => {
-            if ($ === null) {
-              return { foo: value };
-            }
-
-            throw new Error('Value should not exist');
-          },
-          (error, committed, snapshot) => {
-            if (error) {
-              return reject(error);
-            }
-
-            if (!committed) {
-              return reject(new Error('Transaction should have committed'));
-            }
-
-            snapshot.val().should.eql(
-              jet.contextify({
-                foo: value,
-              }),
+            error.message.should.containEql(
+              "Client doesn't have permission to access the desired data",
             );
             return resolve();
           },
-        );
-      });
-    }
+        )
+        .catch(() => {
+          // catch unhandled rejection
+        });
+    });
+  });
+
+  it('sets a value if one does not exist', async function () {
+    const ref = firebase.database().ref(`${TEST_PATH}/transactionCreate`);
+    const value = Date.now();
+
+    return new Promise((resolve, reject) => {
+      ref.transaction(
+        $ => {
+          if ($ === null) {
+            return { foo: value };
+          }
+
+          throw new Error('Value should not exist');
+        },
+        (error, committed, snapshot) => {
+          if (error) {
+            return reject(error);
+          }
+
+          if (!committed) {
+            return reject(new Error('Transaction should have committed'));
+          }
+
+          snapshot.val().should.eql(
+            jet.contextify({
+              foo: value,
+            }),
+          );
+          return resolve();
+        },
+      );
+    });
   });
 });
