@@ -30,7 +30,6 @@ public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
     super(context, serviceName);
   }
 
-
   Task<Void> goOnline(String appName, String dbURL) {
     return Tasks.call(() -> {
       getDatabaseForApp(appName, dbURL).goOnline();

@@ -56,6 +56,15 @@ RCT_EXPORT_METHOD(goOffline:
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(useEmulator:
+  (FIRApp *) firebaseApp
+    : (NSString *) dbURL
+    :(nonnull NSString *)host
+    :(NSInteger)port
+) {
+  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost: host port: port];
+}
+
 RCT_EXPORT_METHOD(setPersistenceEnabled:
   (FIRApp *) firebaseApp
     : (NSString *) dbURL

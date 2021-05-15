@@ -20,13 +20,13 @@ const { PATH, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/onDisconnectCancel`;
 
 describe('database().ref().onDisconnect().cancel()', function () {
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
-  afterEach(function () {
+  afterEach(async function () {
     // Ensures the db is online before running each test
-    firebase.database().goOnline();
+    await firebase.database().goOnline();
   });
 
   it('throws if onComplete is not a function', function () {

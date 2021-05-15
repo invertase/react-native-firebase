@@ -20,11 +20,11 @@ const { PATH, CONTENT, seed, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/snapshot`;
 
 describe('database()...snapshot', function () {
-  before(function () {
-    return seed(TEST_PATH);
+  before(async function () {
+    await seed(TEST_PATH);
   });
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
   it('returns the snapshot key', async function () {

@@ -43,6 +43,7 @@ const firestore = firebase.firestore();
 firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
 
 firebase.auth().useEmulator('http://localhost:9099');
+firebase.database().useEmulator('localhost', 9000);
 
 function Root() {
   return (

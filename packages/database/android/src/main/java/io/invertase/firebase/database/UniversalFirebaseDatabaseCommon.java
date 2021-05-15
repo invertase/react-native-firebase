@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 public class UniversalFirebaseDatabaseCommon {
   private static HashMap<String, Boolean> configSettingsLock = new HashMap<>();
+  private static HashMap<String, HashMap<String, Object>> emulatorConfigs = new HashMap<>();
 
   static FirebaseDatabase getDatabaseForApp(String appName, String dbURL) {
     FirebaseDatabase firebaseDatabase;
@@ -44,6 +45,11 @@ public class UniversalFirebaseDatabaseCommon {
     }
 
     setDatabaseConfig(firebaseDatabase, appName, dbURL);
+
+    HashMap emulatorConfig = getEmulatorConfig(appName, dbURL);
+    if (emulatorConfig != null) {
+      firebaseDatabase.useEmulator((String)emulatorConfig.get("host"), (Integer)emulatorConfig.get("port"));
+    }
 
     return firebaseDatabase;
   }
@@ -82,5 +88,18 @@ public class UniversalFirebaseDatabaseCommon {
     }
 
     configSettingsLock.put(lockKey, true);
+  }
+
+  static void addEmulatorConfig(String appName, String dbURL, String host, int port) {
+    System.err.println("adding emulator config");
+    String configKey = appName + dbURL;
+    HashMap<String, Object> emulatorConfig = new HashMap<>();
+    emulatorConfig.put("host", host);
+    emulatorConfig.put("port", new Integer(port));
+    emulatorConfigs.put(configKey, emulatorConfig);
+  }
+
+  private static HashMap<String, Object> getEmulatorConfig(String appName, String dbURL) {
+    return emulatorConfigs.get(appName + dbURL);
   }
 }

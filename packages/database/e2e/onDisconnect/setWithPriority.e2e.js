@@ -20,13 +20,13 @@ const { PATH, wipe } = require('../helpers');
 const TEST_PATH = `${PATH}/onDisconnectSetWithPriority`;
 
 describe('database().ref().onDisconnect().setWithPriority()', function () {
-  after(function () {
-    return wipe(TEST_PATH);
+  after(async function () {
+    await wipe(TEST_PATH);
   });
 
-  afterEach(function () {
+  afterEach(async function () {
     // Ensures the db is online before running each test
-    firebase.database().goOnline();
+    await firebase.database().goOnline();
   });
 
   it('throws if value is not a defined', function () {
@@ -62,7 +62,7 @@ describe('database().ref().onDisconnect().setWithPriority()', function () {
     }
   });
 
-  it('sets value with priority when disconnected', async function () {
+  xit('sets value with priority when disconnected', async function () {
     const ref = firebase.database().ref(TEST_PATH);
 
     const value = Date.now();
