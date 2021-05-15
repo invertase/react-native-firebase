@@ -17,49 +17,9 @@
 
 
 #import <React/RCTConvert.h>
-#import <FirebaseMLVision/FirebaseMLVision.h>
 #import "RNFBMLCommon.h"
 
 @implementation RNFBMLCommon
 
-+ (NSArray *)rectToIntArray:(CGRect)rect {
-  CGSize size = rect.size;
-  CGPoint point = rect.origin;
-  return @[@(point.x), @(point.y), @(point.x + size.width), @(point.y + size.height)];
-}
-
-+ (NSArray *)pointsToArray:(NSArray <NSValue *> *_Nullable)points {
-  if (points == nil) {
-    return @[];
-  }
-
-  NSMutableArray *pointsArray = [[NSMutableArray alloc] init];
-  for (NSValue *point in points) {
-    [pointsArray addObject:[self arrayForCGPoint:point.CGPointValue]];
-  }
-
-  return pointsArray;
-}
-
-+ (NSArray *)arrayForCGPoint:(CGPoint)point {
-  return @[@(point.x), @(point.y)];
-}
-
-+ (NSArray *)arrayForFIRVisionPoint:(FIRVisionPoint *)point {
-  return @[point.x, point.y];
-}
-
-+ (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
-    NSArray *errorCodeMessageArray,
-    UIImage *image
-))completion {
-  if (![[NSFileManager defaultManager] fileExistsAtPath:localFilePath]) {
-    completion(@[@"file-not-found", @"The local file specified does not exist on the device."], nil);
-  } else {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      completion(nil, [RCTConvert UIImage:localFilePath]);
-    });
-  }
-}
 
 @end

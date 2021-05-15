@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:4.1.3")
+      classpath("com.android.tools.build:gradle:4.2.1")
     }
   }
 }
@@ -90,11 +90,7 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  implementation "com.google.firebase:firebase-ml-vision"
-
-  implementation 'com.google.android.gms:play-services-vision:20.1.1'
-  implementation 'com.google.android.gms:play-services-vision-common:19.1.1'
-  implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.4'
+  implementation "com.google.firebase:firebase-ml-modeldownloader"
 }
 
 ReactNative.shared.applyPackageVersion()
