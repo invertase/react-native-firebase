@@ -123,6 +123,7 @@ SDK
 SDK.
 SDKs
 SDKs.
+serverless
 SHA1
 SHA-256
 SIGABRT

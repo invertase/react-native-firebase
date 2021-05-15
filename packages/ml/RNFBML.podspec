@@ -35,12 +35,13 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  s.dependency          'Firebase/MLVision', firebase_sdk_version
+  # s.dependency          'Firebase/MLModelDownloader', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework
   else
+    # raise "#{s.name}: Underlying Firebase/MLModelDownloader requires $RNFirebaseAsStaticFrameworks = true and !use_frameworks in your Podfile"
     s.static_framework = false
   end
 end

@@ -34,10 +34,6 @@ public class ReactNativeFirebaseMLPackage implements ReactPackage {
   @Override
   public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
     List<NativeModule> modules = new ArrayList<>();
-    modules.add(new RNFirebaseMLTextRecognizerModule(reactContext));
-    modules.add(new RNFirebaseMLLandmarkRecognizerModule(reactContext));
-    modules.add(new RNFirebaseMLDocumentTextRecognizerModule(reactContext));
-    modules.add(new RNFirebaseMLImageLabelerModule(reactContext));
     return modules;
   }
 
