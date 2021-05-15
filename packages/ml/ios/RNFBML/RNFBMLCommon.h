@@ -17,13 +17,5 @@
 
 @interface RNFBMLCommon : NSObject
 
-+ (NSArray *)rectToIntArray:(CGRect)rect;
-
-+ (NSArray *)pointsToArray:(NSArray <FIRVisionPoint *> *_Nullable)points;
-
-+ (void)UIImageForFilePath:(NSString *)localFilePath completion:(void (^)(
-    NSArray *errorCodeMessageArray,
-    UIImage *image
-))completion;
 
 @end

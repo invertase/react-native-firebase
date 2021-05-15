@@ -26,12 +26,3 @@ console.log(firebase.ml(firebase.app()).app.name);
 
 // checks default export supports app arg
 console.log(firebase.ml(firebase.app('foo')).app.name);
-
-console.log(firebase.ml.MLCloudTextRecognizerModelType.DENSE_MODEL);
-console.log(ml.MLCloudTextRecognizerModelType.SPARSE_MODEL);
-
-console.log(firebase.ml.MLDocumentTextRecognizedBreakType.EOL_SURE_SPACE);
-console.log(ml.MLDocumentTextRecognizedBreakType.HYPHEN);
-
-console.log(firebase.ml.MLCloudLandmarkRecognizerModelType.LATEST_MODEL);
-console.log(ml.MLCloudLandmarkRecognizerModelType.STABLE_MODEL);

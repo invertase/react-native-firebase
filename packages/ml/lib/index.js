@@ -15,107 +15,20 @@
  *
  */
 
-import { isString, toFilePath } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import version from './version';
-import MLCloudDocumentTextRecognizerOptions from './MLCloudDocumentTextRecognizerOptions';
-import MLCloudImageLabelerOptions from './MLCloudImageLabelerOptions';
-import MLCloudLandmarkRecognizerModelType from './MLCloudLandmarkRecognizerModelType';
-import MLCloudLandmarkRecognizerOptions from './MLCloudLandmarkRecognizerOptions';
-import MLCloudTextRecognizerModelType from './MLCloudTextRecognizerModelType';
-import MLCloudTextRecognizerOptions from './MLCloudTextRecognizerOptions';
-import MLDocumentTextRecognizedBreakType from './MLDocumentTextRecognizedBreakType';
 
-const statics = {
-  MLCloudTextRecognizerModelType,
-  MLCloudLandmarkRecognizerModelType,
-  MLDocumentTextRecognizedBreakType,
-};
+const statics = {};
 
 const namespace = 'ml';
-const nativeModuleName = [
-  'RNFBMLImageLabelerModule',
-  'RNFBMLTextRecognizerModule',
-  'RNFBMLLandmarkRecognizerModule',
-  'RNFBMLDocumentTextRecognizerModule',
-];
 
-class FirebaseMLModule extends FirebaseModule {
-  cloudTextRecognizerProcessImage(localImageFilePath, cloudTextRecognizerOptions) {
-    if (!isString(localImageFilePath)) {
-      throw new Error(
-        "firebase.ml().cloudTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
-      );
-    }
+const nativeModuleName = 'RNFBMLModule';
 
-    let options;
-    try {
-      options = MLCloudTextRecognizerOptions(cloudTextRecognizerOptions);
-    } catch (e) {
-      throw new Error(`firebase.ml().cloudTextRecognizerProcessImage(_, *) ${e.message}`);
-    }
-
-    return this.native.cloudTextRecognizerProcessImage(toFilePath(localImageFilePath), options);
-  }
-
-  cloudDocumentTextRecognizerProcessImage(localImageFilePath, cloudDocumentTextRecognizerOptions) {
-    if (!isString(localImageFilePath)) {
-      throw new Error(
-        "firebase.ml().cloudDocumentTextRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
-      );
-    }
-
-    let options;
-    try {
-      options = MLCloudDocumentTextRecognizerOptions(cloudDocumentTextRecognizerOptions);
-    } catch (e) {
-      throw new Error(`firebase.ml().cloudDocumentTextRecognizerProcessImage(_, *) ${e.message}.`);
-    }
-
-    return this.native.cloudDocumentTextRecognizerProcessImage(
-      toFilePath(localImageFilePath),
-      options,
-    );
-  }
-
-  cloudLandmarkRecognizerProcessImage(localImageFilePath, cloudLandmarkRecognizerOptions) {
-    if (!isString(localImageFilePath)) {
-      throw new Error(
-        "firebase.ml().cloudLandmarkRecognizerProcessImage(*) 'localImageFilePath' expected a string local file path.",
-      );
-    }
-
-    let options;
-    try {
-      options = MLCloudLandmarkRecognizerOptions(cloudLandmarkRecognizerOptions);
-    } catch (e) {
-      throw new Error(`firebase.ml().cloudLandmarkRecognizerProcessImage(_, *) ${e.message}.`);
-    }
-
-    return this.native.cloudLandmarkRecognizerProcessImage(toFilePath(localImageFilePath), options);
-  }
-
-  cloudImageLabelerProcessImage(localImageFilePath, cloudImageLabelerOptions) {
-    if (!isString(localImageFilePath)) {
-      throw new Error(
-        "firebase.ml().cloudImageLabelerProcessImage(*) 'localImageFilePath' expected a string local file path.",
-      );
-    }
-
-    let options;
-    try {
-      options = MLCloudImageLabelerOptions(cloudImageLabelerOptions);
-    } catch (e) {
-      throw new Error(`firebase.ml().cloudImageLabelerProcessImage(_, *) ${e.message}.`);
-    }
-
-    return this.native.cloudImageLabelerProcessImage(toFilePath(localImageFilePath), options);
-  }
-}
+class FirebaseMLModule extends FirebaseModule {}
 
 // import { SDK_VERSION } from '@react-native-firebase/ml';
 export const SDK_VERSION = version;
@@ -140,6 +53,3 @@ export const firebase = getFirebaseRoot();
 
 // e.g.
 // // import { MLCloudTextRecognizerModelType } from '@react-native-firebase/ml';
-export { default as MLCloudTextRecognizerModelType } from './MLCloudTextRecognizerModelType';
-export { default as MLDocumentTextRecognizedBreakType } from './MLDocumentTextRecognizedBreakType';
-export { default as MLCloudLandmarkRecognizerModelType } from './MLCloudLandmarkRecognizerModelType';
