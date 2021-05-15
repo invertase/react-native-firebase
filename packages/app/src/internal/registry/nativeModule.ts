@@ -16,15 +16,17 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
+import { FirebaseModule } from '..';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
 import SharedEventEmitter from '../SharedEventEmitter';
+import { NativeModuleNames } from '../../types';
 
-const NATIVE_MODULE_REGISTRY = {};
-const NATIVE_MODULE_EVENT_SUBSCRIPTIONS = {};
+const NATIVE_MODULE_REGISTRY: { [key: string]: any } = {};
+const NATIVE_MODULE_EVENT_SUBSCRIPTIONS: { [key: string]: any } = {};
 
-function nativeModuleKey(module) {
+function nativeModuleKey(module: any) {
   return `${module._customUrlOrRegion || ''}:${module.app.name}:${module._config.namespace}`;
 }
 
@@ -37,13 +39,13 @@ function nativeModuleKey(module) {
  * @param argToPrepend
  * @returns {Function}
  */
-function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
-  return (...args) => {
+function nativeModuleMethodWrapped(namespace: any, method: any, argToPrepend: any) {
+  return (args: any) => {
     const possiblePromise = method(...[...argToPrepend, ...args]);
 
     if (possiblePromise && possiblePromise.then) {
       const jsStack = new Error().stack;
-      return possiblePromise.catch(nativeError =>
+      return possiblePromise.catch((nativeError: any) =>
         Promise.reject(new NativeFirebaseError(nativeError, jsStack, namespace)),
       );
     }
@@ -59,8 +61,8 @@ function nativeModuleMethodWrapped(namespace, method, argToPrepend) {
  * @param NativeModule
  * @param argToPrepend
  */
-function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
-  const native = {};
+function nativeModuleWrapped(namespace: any, NativeModule: any, argToPrepend: any) {
+  const native: { [native: string]: any } = {};
   if (!NativeModule) {
     return NativeModule;
   }
@@ -85,7 +87,8 @@ function nativeModuleWrapped(namespace, NativeModule, argToPrepend) {
  * @param module
  * @returns {*}
  */
-function initialiseNativeModule(module) {
+function initialiseNativeModule(module: FirebaseModule) {
+  //@ts-ignore
   const config = module._config;
   const key = nativeModuleKey(module);
   const {
@@ -96,7 +99,7 @@ function initialiseNativeModule(module) {
     hasCustomUrlOrRegionSupport,
     disablePrependCustomUrlOrRegion,
   } = config;
-  const multiModuleRoot = {};
+  const multiModuleRoot: { [nativeModuleName in NativeModuleNames]: boolean } = {};
   const multiModule = Array.isArray(nativeModuleName);
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
@@ -120,7 +123,7 @@ function initialiseNativeModule(module) {
     }
 
     if (hasCustomUrlOrRegionSupport && !disablePrependCustomUrlOrRegion) {
-      argToPrepend.push(module._customUrlOrRegion);
+      argToPrepend.push(module.customUrlOrRegion);
     }
 
     Object.assign(multiModuleRoot, nativeModuleWrapped(namespace, nativeModule, argToPrepend));
@@ -148,17 +151,21 @@ function initialiseNativeModule(module) {
  * @param eventName
  * @private
  */
-function subscribeToNativeModuleEvent(eventName) {
+function subscribeToNativeModuleEvent(eventName: string) {
   if (!NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName]) {
-    RNFBNativeEventEmitter.addListener((eventName, context), event => {
-      if (event.appName) {
-        // native event has an appName property - auto prefix and internally emit
-        SharedEventEmitter.emit(`${event.appName}-${eventName}`, event);
-      } else {
-        // standard event - no need to prefix
-        SharedEventEmitter.emit(eventName, event);
-      }
-    });
+    RNFBNativeEventEmitter.addListener(
+      eventName,
+      (event: any) => {
+        if (event.appName) {
+          // native event has an appName property - auto prefix and internally emit
+          SharedEventEmitter.emit(`${event.appName}-${eventName}`, event, null);
+        } else {
+          // standard event - no need to prefix
+          SharedEventEmitter.emit(eventName, event, null);
+        }
+      },
+      {},
+    );
 
     NATIVE_MODULE_EVENT_SUBSCRIPTIONS[eventName] = true;
   }
@@ -170,7 +177,7 @@ function subscribeToNativeModuleEvent(eventName) {
  * @param namespace
  * @returns {string}
  */
-function getMissingModuleHelpText(namespace) {
+function getMissingModuleHelpText(namespace: string) {
   const snippet = `firebase.${namespace}()`;
   const nativeModule = namespace.charAt(0).toUpperCase() + namespace.slice(1);
 
@@ -200,7 +207,7 @@ function getMissingModuleHelpText(namespace) {
  * @param module
  * @returns {*}
  */
-export function getNativeModule(module) {
+export function getNativeModule(module: any) {
   const key = nativeModuleKey(module);
 
   if (NATIVE_MODULE_REGISTRY[key]) {

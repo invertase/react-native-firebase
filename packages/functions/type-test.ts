@@ -13,12 +13,7 @@ console.log(firebase.app().functions().app.name);
 
 // app level module accepts string arg
 console.log(firebase.app().functions('some-string').app.name);
-console.log(
-  firebase
-    .app()
-    .functions('some-string')
-    .httpsCallable('foo'),
-);
+console.log(firebase.app().functions('some-string').httpsCallable('foo'));
 
 // checks statics exist
 console.log(firebase.functions.SDK_VERSION);
@@ -40,7 +35,7 @@ console.log(firebase.functions.HttpsErrorCode.ABORTED);
 firebase
   .functions()
   .httpsCallable('foo')(123)
-  .then(result => {
+  .then((result: any) => {
     console.log(result.data);
   })
   .catch(error => {

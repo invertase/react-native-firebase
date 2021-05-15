@@ -861,7 +861,7 @@ export namespace FirebaseAdMobTypes {
       | RewardedAdEventType['LOADED']
       | RewardedAdEventType['EARNED_REWARD'],
     error?: Error,
-    data?: any | RewardedAdReward,
+    data?: unknown | RewardedAdReward,
   ) => void;
 
   /**
