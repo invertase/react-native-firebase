@@ -116,6 +116,7 @@ describe('database().ref().once()', function () {
     }
   });
 
+  // TODO flaky android
   it('it calls when a child is added', async function () {
     const value = Date.now();
     const callback = sinon.spy();
@@ -123,7 +124,7 @@ describe('database().ref().once()', function () {
 
     ref.once('child_added').then($ => callback($.val()));
     await ref.child('foo').set(value);
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
 
     callback.should.be.calledOnce();
     callback.should.be.calledWith(value);
@@ -135,9 +136,9 @@ describe('database().ref().once()', function () {
 
     await ref.child('foo').set(1);
     ref.once('child_changed').then($ => callback($.val()));
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
     await ref.child('foo').set(2);
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
     callback.should.be.calledOnce();
     callback.should.be.calledWith(2);
   });
@@ -149,9 +150,9 @@ describe('database().ref().once()', function () {
     await child.set('foo');
 
     ref.once('child_removed').then($ => callback($.val()));
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
     await child.remove();
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
 
     callback.should.be.calledOnce();
     callback.should.be.calledWith('foo');

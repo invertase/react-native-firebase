@@ -67,7 +67,7 @@ describe('database().ref().push()', function () {
     ref.push(value, () => {
       callback();
     });
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
     callback.should.be.calledOnce();
   });
 
@@ -86,7 +86,7 @@ describe('database().ref().push()', function () {
       error.message.should.containEql("doesn't have permission to access");
       callback();
     });
-    await Utils.sleep(1000);
+    await Utils.sleep(2000);
     callback.should.be.calledOnce();
   });
 });

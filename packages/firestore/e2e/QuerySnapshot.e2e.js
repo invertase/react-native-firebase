@@ -163,7 +163,7 @@ describe('firestore.QuerySnapshot', function () {
         .collection(`${COLLECTION}/${Utils.randString(12, '#aA')}/metadatachanges-true-false`);
       const unsub = colRef.onSnapshot({ includeMetadataChanges: true }, callback);
       await colRef.add({ foo: 'bar' });
-      await Utils.spyToBeCalledTimesAsync(callback, 3);
+      await Utils.spyToBeCalledTimesAsync(callback, 3, 10000);
       unsub();
 
       const snap1 = callback.args[0][0];
