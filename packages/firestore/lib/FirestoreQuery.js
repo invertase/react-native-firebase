@@ -26,15 +26,16 @@ import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseE
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
-import { parseSnapshotArgs } from './utils';
+import { parseSnapshotArgs, validateWithConverter } from './utils';
 
 let _id = 0;
 
 export default class FirestoreQuery {
-  constructor(firestore, collectionPath, modifiers) {
+  constructor(firestore, collectionPath, modifiers, converter) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
     this._modifiers = modifiers;
+    this._converter = converter;
   }
 
   get firestore() {
@@ -107,6 +108,7 @@ export default class FirestoreQuery {
 
       if (this._modifiers.isCollectionGroupQuery()) {
         values.push(documentSnapshot.ref.path);
+        values.push(documentSnapshot.ref.path);
       } else {
         values.push(documentSnapshot.id);
       }
@@ -134,6 +136,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('endAt', docOrField, fields),
+      this._converter,
     );
   }
 
@@ -142,6 +145,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('endBefore', docOrField, fields),
+      this._converter,
     );
   }
 
@@ -164,7 +168,7 @@ export default class FirestoreQuery {
       );
     }
 
-    this._modifiers.validatelimitToLast();
+    this._modifiers.validateLimitToLast();
 
     return this._firestore.native
       .collectionGet(
@@ -175,7 +179,7 @@ export default class FirestoreQuery {
         this._modifiers.options,
         options,
       )
-      .then(data => new FirestoreQuerySnapshot(this._firestore, this, data));
+      .then(data => new FirestoreQuerySnapshot(this._firestore, this, data, this._converter));
   }
 
   isEqual(other) {
@@ -219,7 +223,7 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limit(limit);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._converter);
   }
 
   limitToLast(limitToLast) {
@@ -231,7 +235,7 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._converter);
   }
 
   onSnapshot(...args) {
@@ -240,7 +244,7 @@ export default class FirestoreQuery {
     let onNext;
     let onError;
 
-    this._modifiers.validatelimitToLast();
+    this._modifiers.validateLimitToLast();
 
     try {
       const options = parseSnapshotArgs(args);
@@ -274,6 +278,7 @@ export default class FirestoreQuery {
             this._firestore,
             this,
             event.body.snapshot,
+            this._converter,
           );
           handleSuccess(querySnapshot);
         }
@@ -343,7 +348,7 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().orderBy() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._converter);
   }
 
   startAfter(docOrField, ...fields) {
@@ -351,6 +356,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('startAfter', docOrField, fields),
+      this._converter,
     );
   }
 
@@ -359,6 +365,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('startAt', docOrField, fields),
+      this._converter,
     );
   }
 
@@ -421,6 +428,20 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().where() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._converter);
+  }
+
+  withConverter(converter) {
+    if (isUndefined(converter) || isNull(converter)) {
+      return new FirestoreQuery(this._firestore, this._collectionPath, this._modifiers);
+    }
+
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().collection().withConverter() ${e.message}`);
+    }
+
+    return new FirestoreQuery(this._firestore, this._collectionPath, this._modifiers, converter);
   }
 }

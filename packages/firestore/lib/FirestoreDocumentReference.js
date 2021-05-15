@@ -15,9 +15,14 @@
  *
  */
 
-import { isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import { isObject, isString, isUndefined, isNull } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
-import { parseSetOptions, parseSnapshotArgs, parseUpdateArgs } from './utils';
+import {
+  parseSetOptions,
+  parseSnapshotArgs,
+  parseUpdateArgs,
+  validateWithConverter,
+} from './utils';
 import { buildNativeMap, provideDocumentReferenceClass } from './utils/serialize';
 
 // To avoid React Native require cycle warnings
@@ -34,9 +39,30 @@ export function provideDocumentSnapshotClass(documentSnapshot) {
 let _id = 0;
 
 export default class FirestoreDocumentReference {
-  constructor(firestore, documentPath) {
+  constructor(firestore, documentPath, converter) {
     this._firestore = firestore;
     this._documentPath = documentPath;
+    this._converter = converter;
+  }
+
+  // Returns a FirestoreDocumentSnapshot depending on whether a converter has been provided.
+  _getConvertedSnapshot(data) {
+    const documentSnapshot = new FirestoreDocumentSnapshot(this._firestore, data);
+
+    if (this._converter && this._converter.fromFirestore) {
+      try {
+        return new FirestoreDocumentSnapshot(
+          this._firestore,
+          this._converter.fromFirestore(documentSnapshot),
+        );
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore().doc() "withConverter.fromFirestore" threw an error: ${e.message}.`,
+        );
+      }
+    }
+
+    return documentSnapshot;
   }
 
   get firestore() {
@@ -101,9 +127,7 @@ export default class FirestoreDocumentReference {
       );
     }
 
-    return this._firestore.native
-      .documentGet(this.path, options)
-      .then(data => new FirestoreDocumentSnapshot(this._firestore, data));
+    return this._firestore.native.documentGet(this.path, options).then(this._getConvertedSnapshot);
   }
 
   isEqual(other) {
@@ -154,11 +178,7 @@ export default class FirestoreDocumentReference {
         if (event.body.error) {
           handleError(NativeError.fromEvent(event.body.error, 'firestore'));
         } else {
-          const documentSnapshot = new FirestoreDocumentSnapshot(
-            this._firestore,
-            event.body.snapshot,
-          );
-          handleSuccess(documentSnapshot);
+          handleSuccess(this._getConvertedSnapshot(event.body.snapshot));
         }
       },
     );
@@ -185,7 +205,18 @@ export default class FirestoreDocumentReference {
       throw new Error(`firebase.firestore().doc().set(_, *) ${e.message}.`);
     }
 
-    return this._firestore.native.documentSet(this.path, buildNativeMap(data), setOptions);
+    let converted = data;
+    if (this._converter) {
+      try {
+        converted = this._converter.toFirestore(data);
+      } catch (e) {
+        throw new Error(
+          `firebase.firestore().doc().set(*) "withConverter.toFirestore" threw an error: ${e.message}.`,
+        );
+      }
+    }
+
+    return this._firestore.native.documentSet(this.path, buildNativeMap(converted), setOptions);
   }
 
   update(...args) {
@@ -203,6 +234,20 @@ export default class FirestoreDocumentReference {
     }
 
     return this._firestore.native.documentUpdate(this.path, buildNativeMap(data));
+  }
+
+  withConverter(converter) {
+    if (isUndefined(converter) || isNull(converter)) {
+      return new FirestoreDocumentReference(this._firestore, this._documentPath);
+    }
+
+    try {
+      validateWithConverter(converter);
+    } catch (e) {
+      throw new Error(`firebase.firestore().doc().withConverter() ${e.message}`);
+    }
+
+    return new FirestoreDocumentReference(this._firestore, this._documentPath, converter);
   }
 }
 

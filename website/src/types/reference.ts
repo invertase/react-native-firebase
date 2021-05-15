@@ -105,11 +105,13 @@ export interface Method {
 export interface Signature extends ReferenceType {
   source: string;
   parameters: Parameter[];
+  signatures: Signature[];
 }
 
 export type Parameter = ReferenceType;
 
 type TypeScriptType =
+  | 'typeParameter'
   | 'intersection'
   | 'reference'
   | 'union'
@@ -123,6 +125,7 @@ export interface ExposedType {
   id?: number;
   name?: string;
   types?: ExposedType[];
+  constraint?: ExposedType;
   typeArguments?: ExposedType[];
   elementType?: ExposedType;
   declaration?: {

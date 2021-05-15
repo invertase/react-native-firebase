@@ -10,12 +10,7 @@ console.log(firebase.firestore().app.name);
 
 // checks module exists at app level
 console.log(firebase.app().firestore().app.name);
-console.log(
-  firebase
-    .app()
-    .firestore()
-    .collection('foo'),
-);
+console.log(firebase.app().firestore().collection('foo'));
 
 // checks statics exist
 console.log(firebase.firestore.SDK_VERSION);
@@ -42,28 +37,10 @@ console.log(firebase.firestore.CACHE_SIZE_UNLIMITED);
 firebase.firestore.setLogLevel('debug');
 
 firebase.firestore().collection('foo');
-firebase
-  .firestore()
-  .collection('foo')
-  .doc('foo')
-  .collection('foo');
-firebase
-  .firestore()
-  .collection('foo')
-  .doc('foo');
-firebase
-  .firestore()
-  .collection('foo')
-  .doc('foo')
-  .collection('foo')
-  .add({ foo: 'bar' })
-  .then();
-firebase
-  .firestore()
-  .collection('foo')
-  .doc('foo')
-  .update({ foo: 'bar' })
-  .then();
+firebase.firestore().collection('foo').doc('foo').collection('foo');
+firebase.firestore().collection('foo').doc('foo');
+firebase.firestore().collection('foo').doc('foo').collection('foo').add({ foo: 'bar' }).then();
+firebase.firestore().collection('foo').doc('foo').update({ foo: 'bar' }).then();
 firebase
   .firestore()
   .collectionGroup('foo')
@@ -136,3 +113,85 @@ firebase
       complete() {},
     },
   );
+
+firebase
+  .firestore()
+  .collection('foo')
+  .orderBy('foo')
+  .withConverter<{ foo: number }>({
+    toFirestore(data) {
+      return {
+        foo: (data.foo ?? 0) + 1,
+        bar: 'baz',
+      };
+    },
+    fromFirestore(snapshot) {
+      return {
+        foo: snapshot.data().foo + 1,
+        bar: 'baz',
+      };
+    },
+  });
+
+firebase
+  .firestore()
+  .collection('foo')
+  .orderBy('foo')
+  .withConverter<{ foo: number }>({
+    toFirestore(data) {
+      return {
+        foo: (data.foo ?? 0) + 1,
+        bar: 'baz',
+      };
+    },
+    fromFirestore(snapshot) {
+      return {
+        foo: snapshot.data().foo + 1,
+        bar: 'baz',
+      };
+    },
+  })
+  .get()
+  .then(snapshot => {
+    console.log(snapshot.docs[0].data().foo);
+  });
+
+firebase
+  .firestore()
+  .doc('foo/bar')
+  .withConverter<{ foo: number }>({
+    toFirestore(data) {
+      return {
+        foo: (data.foo ?? 0) + 1,
+        bar: 'baz',
+      };
+    },
+    fromFirestore(snapshot) {
+      return {
+        foo: snapshot.data().foo + 1,
+        bar: 'baz',
+      };
+    },
+  });
+
+firebase
+  .firestore()
+  .doc('foo/bar')
+  .withConverter<{ foo: number }>({
+    toFirestore(data) {
+      return {
+        foo: (data.foo ?? 0) + 1,
+        bar: 'baz',
+      };
+    },
+    fromFirestore(snapshot) {
+      return {
+        foo: snapshot.data().foo + 1,
+        bar: 'baz',
+      };
+    },
+  })
+  .get()
+  .then(snapshot => {
+    console.log(snapshot.data()!.foo);
+  });
