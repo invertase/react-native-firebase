@@ -3,9 +3,9 @@ require 'json'
 # Settings to test various overrides if desired
 appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-native-firebase', 'app', 'package.json')))
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
-#$FirebaseSDKVersion = '7.7.0' # https://firebase.google.com/support/release-notes/ios
+#$FirebaseSDKVersion = '8.0.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
-#$RNFirebaseAsStaticFramework = false # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
+# $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
@@ -35,7 +35,7 @@ target 'testing' do
   # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
-  pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :commit => 'af5c7177c896d69d73acb173c265d7efe8886126'
+  pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # Enables Flipper.
   #
