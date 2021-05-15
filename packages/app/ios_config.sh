@@ -119,22 +119,6 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_TYPES+=("bool")
     _PLIST_ENTRY_VALUES+=("NO")
   fi
-
-  # config.admob_delay_app_measurement_init
-  _ADMOB_DELAY_APP_MEASUREMENT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "admob_delay_app_measurement_init")
-  if [[ $_ADMOB_DELAY_APP_MEASUREMENT == "true" ]]; then
-    _PLIST_ENTRY_KEYS+=("GADDelayAppMeasurementInit")
-    _PLIST_ENTRY_TYPES+=("bool")
-    _PLIST_ENTRY_VALUES+=("YES")
-  fi
-
-  # config.admob_ios_app_id
-  _ADMOB_IOS_APP_ID=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "admob_ios_app_id")
-  if [[ $_ADMOB_IOS_APP_ID ]]; then
-    _PLIST_ENTRY_KEYS+=("GADApplicationIdentifier")
-    _PLIST_ENTRY_TYPES+=("string")
-    _PLIST_ENTRY_VALUES+=("$_ADMOB_IOS_APP_ID")
-  fi
 else
   _PLIST_ENTRY_KEYS+=("firebase_json_raw")
   _PLIST_ENTRY_TYPES+=("string")

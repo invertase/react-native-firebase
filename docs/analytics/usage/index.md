@@ -3,7 +3,7 @@ title: Analytics
 description: Installation and getting started with Analytics.
 icon: //static.invertase.io/assets/firebase/analytics.svg
 next: /analytics/screen-tracking
-previous: /admob/european-user-consent
+previous: /contributing
 ---
 
 # Installation

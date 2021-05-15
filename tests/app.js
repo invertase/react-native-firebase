@@ -15,7 +15,6 @@
  *
  */
 
-import '@react-native-firebase/admob';
 import '@react-native-firebase/analytics';
 import firebase from '@react-native-firebase/app';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';

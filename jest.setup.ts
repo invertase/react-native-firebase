@@ -9,10 +9,6 @@ jest.doMock('react-native', () => {
       },
       NativeModules: {
         ...ReactNative.NativeModules,
-        RNFBAdMobModule: {},
-        RNFBAdMobInterstitialModule: {},
-        RNFBAdMobRewardedModule: {},
-        RNFBAdsConsentModule: {},
         RNFBAppModule: {
           NATIVE_FIREBASE_APPS: [
             {
