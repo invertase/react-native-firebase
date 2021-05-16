@@ -4,7 +4,7 @@ if ! [ -x "$(command -v firebase)" ]; then
   exit 1
 fi
 
-EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore --project react-native-firebase-testing"
+EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore,storage --project react-native-firebase-testing"
 #EMU_START_COMMAND="sleep 120"
 MAX_RETRIES=3
 MAX_CHECKATTEMPTS=60
