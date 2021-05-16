@@ -61,14 +61,18 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void delete(String appName, String url, final Promise promise) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    reference.delete().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(null);
-      } else {
-        promiseRejectStorageException(promise, Objects.requireNonNull(task.getException()));
-      }
-    });
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      reference.delete().addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(null);
+        } else {
+          promiseRejectStorageException(promise, Objects.requireNonNull(task.getException()));
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -76,16 +80,20 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void getDownloadURL(String appName, final String url, final Promise promise) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    Task<Uri> downloadTask = reference.getDownloadUrl();
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      Task<Uri> downloadTask = reference.getDownloadUrl();
 
-    downloadTask.addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult() != null ? task.getResult().toString() : null);
-      } else {
-        promiseRejectStorageException(promise, task.getException());
-      }
-    });
+      downloadTask.addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(task.getResult() != null ? task.getResult().toString() : null);
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -93,49 +101,61 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
    */
   @ReactMethod
   public void getMetadata(String appName, String url, Promise promise) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    reference.getMetadata().addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(getMetadataAsMap(task.getResult()));
-      } else {
-        promiseRejectStorageException(promise, task.getException());
-      }
-    });
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      reference.getMetadata().addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(getMetadataAsMap(task.getResult()));
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   @ReactMethod
   public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    Task<ListResult> list;
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      Task<ListResult> list;
 
-    int maxResults = listOptions.getInt("maxResults");
+      int maxResults = listOptions.getInt("maxResults");
 
-    if (listOptions.hasKey("pageToken")) {
-      String pageToken = listOptions.getString("pageToken");
-      list = reference.list(maxResults, Objects.requireNonNull(pageToken));
-    } else {
-      list = reference.list(maxResults);
-    }
-
-    list.addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(getListResultAsMap(task.getResult()));
+      if (listOptions.hasKey("pageToken")) {
+        String pageToken = listOptions.getString("pageToken");
+        list = reference.list(maxResults, Objects.requireNonNull(pageToken));
       } else {
-        promiseRejectStorageException(promise, task.getException());
+        list = reference.list(maxResults);
       }
-    });
+
+      list.addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(getListResultAsMap(task.getResult()));
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   @ReactMethod
   public void listAll(String appName, String url, Promise promise) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    reference.listAll().addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(getListResultAsMap(task.getResult()));
-      } else {
-        promiseRejectStorageException(promise, task.getException());
-      }
-    });
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      reference.listAll().addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(getListResultAsMap(task.getResult()));
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -148,16 +168,20 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     ReadableMap metadataMap,
     final Promise promise
   ) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
 
-    reference.updateMetadata(metadata).addOnCompleteListener(getExecutor(), task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(getMetadataAsMap(task.getResult()));
-      } else {
-        promiseRejectStorageException(promise, task.getException());
-      }
-    });
+      reference.updateMetadata(metadata).addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(getMetadataAsMap(task.getResult()));
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -214,15 +238,18 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       );
       return;
     }
-
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    ReactNativeFirebaseStorageDownloadTask storageTask = new ReactNativeFirebaseStorageDownloadTask(
-      taskId,
-      reference,
-      appName
-    );
-    storageTask.begin(getTransactionalExecutor(), localFilePath);
-    storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      ReactNativeFirebaseStorageDownloadTask storageTask = new ReactNativeFirebaseStorageDownloadTask(
+        taskId,
+        reference,
+        appName
+      );
+      storageTask.begin(getTransactionalExecutor(), localFilePath);
+      storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -238,14 +265,18 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     int taskId,
     Promise promise
   ) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
-      taskId,
-      reference,
-      appName
-    );
-    storageTask.begin(getTransactionalExecutor(), string, format, metadataMap);
-    storageTask.addOnCompleteListener(getTransactionalExecutor(),promise);
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
+        taskId,
+        reference,
+        appName
+      );
+      storageTask.begin(getTransactionalExecutor(), string, format, metadataMap);
+      storageTask.addOnCompleteListener(getTransactionalExecutor(),promise);
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   /**
@@ -260,14 +291,18 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     int taskId,
     Promise promise
   ) {
-    StorageReference reference = getReferenceFromUrl(url, appName);
-    ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
-      taskId,
-      reference,
-      appName
-    );
-    storageTask.begin(getTransactionalExecutor(),localFilePath, metadata);
-    storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      ReactNativeFirebaseStorageUploadTask storageTask = new ReactNativeFirebaseStorageUploadTask(
+        taskId,
+        reference,
+        appName
+      );
+      storageTask.begin(getTransactionalExecutor(),localFilePath, metadata);
+      storageTask.addOnCompleteListener(getTransactionalExecutor(), promise);
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
   }
 
   @ReactMethod
@@ -290,7 +325,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     return url.substring(0, pathWithBucketName.indexOf("/") + 5);
   }
 
-  private StorageReference getReferenceFromUrl(String url, String appName) {
+  private StorageReference getReferenceFromUrl(String url, String appName) throws IllegalArgumentException {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(
       firebaseApp,
