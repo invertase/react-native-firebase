@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /writeOnly.txt {
+      allow read: if false;
+      allow write: if true;
+    }
+
+    match /react-native-tests/{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
