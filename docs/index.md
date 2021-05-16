@@ -61,7 +61,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.3.6'
+    classpath 'com.google.gms:google-services:4.3.8'
     // Add me --- /\
   }
 }
