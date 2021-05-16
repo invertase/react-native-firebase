@@ -19,12 +19,6 @@ const COLLECTION_GROUP = 'collectionGroup';
 
 describe('firestore()', function () {
   describe('namespace', function () {
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.firestore);
-      app.firestore().app.should.equal(app);
-    });
-
     // removing as pending if module.options.hasMultiAppSupport = true
     it('supports multiple apps', async function () {
       firebase.firestore().app.name.should.equal('[DEFAULT]');
@@ -37,90 +31,13 @@ describe('firestore()', function () {
     });
   });
 
-  describe('batch()', function () {
-    it('returns a new WriteBatch instance', function () {
-      const instance = firebase.firestore().batch();
-      instance.constructor.name.should.eql('FirestoreWriteBatch');
-    });
-  });
+  describe('batch()', function () {});
 
   describe('clearPersistence()', function () {});
 
-  describe('collection()', function () {
-    it('throws if path is not a string', function () {
-      try {
-        firebase.firestore().collection(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must be a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path is empty string', function () {
-      try {
-        firebase.firestore().collection('');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must be a non-empty string");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path does not point to a collection', function () {
-      try {
-        firebase.firestore().collection(`${COLLECTION}/bar`);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionPath' must point to a collection");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns a new CollectionReference', function () {
-      const collectionReference = firebase.firestore().collection(COLLECTION);
-      should.equal(collectionReference.constructor.name, 'FirestoreCollectionReference');
-      collectionReference.path.should.eql(COLLECTION);
-    });
-  });
+  describe('collection()', function () {});
 
   describe('doc()', function () {
-    it('throws if path is not a string', function () {
-      try {
-        firebase.firestore().doc(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'documentPath' must be a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path is empty string', function () {
-      try {
-        firebase.firestore().doc('');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'documentPath' must be a non-empty string");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if path does not point to a document', function () {
-      try {
-        firebase.firestore().doc(`${COLLECTION}/bar/baz`);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'documentPath' must point to a document");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns a new DocumentReference', function () {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-      should.equal(docRef.constructor.name, 'FirestoreDocumentReference');
-      docRef.path.should.eql(`${COLLECTION}/bar`);
-    });
-
     it('filters out undefined properties when setting enabled', async function () {
       await firebase.firestore().settings({ ignoreUndefinedProperties: true });
 
@@ -162,80 +79,9 @@ describe('firestore()', function () {
 
       snapData.field2.hasOwnProperty('shouldBeMissing').should.eql(false);
     });
-
-    it('throws when undefined value provided and ignored undefined is false', async function () {
-      await firebase.firestore().settings({ ignoreUndefinedProperties: false });
-
-      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-
-      try {
-        await docRef.set({
-          field1: 1,
-          field2: undefined,
-        });
-
-        return Promise.reject(new Error('Expected set() to throw'));
-      } catch (e) {
-        return Promise.resolve();
-      }
-    });
-
-    it('throws when nested undefined value provided and ignored undefined is false', async function () {
-      await firebase.firestore().settings({ ignoreUndefinedProperties: false });
-
-      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-
-      try {
-        await docRef.set({
-          field1: 1,
-          field2: {
-            shouldNotWork: undefined,
-          },
-        });
-
-        return Promise.reject(new Error('Expected set() to throw'));
-      } catch (e) {
-        return Promise.resolve();
-      }
-    });
   });
 
   describe('collectionGroup()', function () {
-    it('throws if id is not a string', function () {
-      try {
-        firebase.firestore().collectionGroup(123);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionId' must be a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if id is empty', function () {
-      try {
-        firebase.firestore().collectionGroup('');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionId' must be a non-empty string");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if id contains forward-slash', function () {
-      try {
-        firebase.firestore().collectionGroup(`${COLLECTION}/bar`);
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'collectionId' must not contain '/'");
-        return Promise.resolve();
-      }
-    });
-
-    it('returns a new query instance', function () {
-      const query = firebase.firestore().collectionGroup(COLLECTION);
-      should.equal(query.constructor.name, 'FirestoreQuery');
-    });
-
     it('performs a collection group query', async function () {
       const docRef1 = firebase.firestore().doc(`${COLLECTION}/collectionGroup1`);
       const docRef2 = firebase.firestore().doc(`${COLLECTION}/collectionGroup2`);
@@ -313,118 +159,8 @@ describe('firestore()', function () {
     });
   });
 
-  describe('runTransaction()', function () {
-    it('throws if updateFunction is not a function', function () {
-      try {
-        firebase.firestore().runTransaction('foo');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'updateFunction' must be a function");
-        return Promise.resolve();
-      }
-    });
-  });
-
-  describe('settings()', function () {
-    it('throws if settings is not an object', function () {
-      try {
-        firebase.firestore().settings('foo');
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings' must be an object");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if passing an incorrect setting key', function () {
-      try {
-        firebase.firestore().settings({ foo: 'bar' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.foo' is not a valid settings field");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if cacheSizeBytes is not a number', function () {
-      try {
-        firebase.firestore().settings({ cacheSizeBytes: 'foo' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.cacheSizeBytes' must be a number value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if cacheSizeBytes is less than 1MB', function () {
-      try {
-        firebase.firestore().settings({ cacheSizeBytes: 123 });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.cacheSizeBytes' the minimum cache size");
-        return Promise.resolve();
-      }
-    });
-    // NOTE: removed as it breaks emulator tests along with 'should clear any cached data' test below
-    xit('accepts an unlimited cache size', function () {
-      firebase.firestore().settings({ cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED });
-    });
-
-    it('throws if host is not a string', function () {
-      try {
-        firebase.firestore().settings({ host: 123 });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.host' must be a string value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if host is an empty string', function () {
-      try {
-        firebase.firestore().settings({ host: '' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.host' must not be an empty string");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if persistence is not a boolean', function () {
-      try {
-        firebase.firestore().settings({ persistence: 'true' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.persistence' must be a boolean value");
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if ignoreUndefinedProperties is not a boolean', function () {
-      try {
-        firebase.firestore().settings({ ignoreUndefinedProperties: 'true' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql(
-          "'settings.ignoreUndefinedProperties' must be a boolean value",
-        );
-        return Promise.resolve();
-      }
-    });
-
-    it('throws if ssl is not a boolean', function () {
-      try {
-        firebase.firestore().settings({ ssl: 'true' });
-        return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (error) {
-        error.message.should.containEql("'settings.ssl' must be a boolean value");
-        return Promise.resolve();
-      }
-    });
-  });
-
   describe('Clear cached data persistence', function () {
-    // NOTE: removed as it breaks emulator tests along with 'accepts an unlimited cache size' test above
+    // NOTE: removed as it breaks emulator tests
     xit('should clear any cached data', async function () {
       const db = firebase.firestore();
       const id = 'foobar';
