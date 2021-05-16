@@ -58,7 +58,7 @@ export function buildNativeMap(data, ignoreUndefined) {
 
       if (typeof data[key] === 'undefined') {
         if (!ignoreUndefined) {
-          throw new Error('firebase.firestore() undefined values cannot be saved');
+          throw new Error('Unsupported field value: undefined');
         }
       } else {
         const typeMap = generateNativeData(data[key], ignoreUndefined);

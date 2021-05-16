@@ -174,8 +174,8 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
   runTransaction(updateFunction) {
     if (!isFunction(updateFunction)) {
-      throw new Error(
-        "firebase.firestore().runTransaction(*) 'updateFunction' must be a function.",
+      return Promise.reject(
+        new Error("firebase.firestore().runTransaction(*) 'updateFunction' must be a function."),
       );
     }
 
@@ -184,7 +184,9 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
   settings(settings) {
     if (!isObject(settings)) {
-      throw new Error("firebase.firestore().settings(*) 'settings' must be an object.");
+      return Promise.reject(
+        new Error("firebase.firestore().settings(*) 'settings' must be an object."),
+      );
     }
 
     const keys = Object.keys(settings);
@@ -194,16 +196,20 @@ class FirebaseFirestoreModule extends FirebaseModule {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       if (!opts.includes(key)) {
-        throw new Error(
-          `firebase.firestore().settings(*) 'settings.${key}' is not a valid settings field.`,
+        return Promise.reject(
+          new Error(
+            `firebase.firestore().settings(*) 'settings.${key}' is not a valid settings field.`,
+          ),
         );
       }
     }
 
     if (!isUndefined(settings.cacheSizeBytes)) {
       if (!isNumber(settings.cacheSizeBytes)) {
-        throw new Error(
-          "firebase.firestore().settings(*) 'settings.cacheSizeBytes' must be a number value.",
+        return Promise.reject(
+          new Error(
+            "firebase.firestore().settings(*) 'settings.cacheSizeBytes' must be a number value.",
+          ),
         );
       }
 
@@ -211,20 +217,26 @@ class FirebaseFirestoreModule extends FirebaseModule {
         settings.cacheSizeBytes !== FirestoreStatics.CACHE_SIZE_UNLIMITED &&
         settings.cacheSizeBytes < 1048576 // 1MB
       ) {
-        throw new Error(
-          "firebase.firestore().settings(*) 'settings.cacheSizeBytes' the minimum cache size is 1048576 bytes (1MB).",
+        return Promise.reject(
+          new Error(
+            "firebase.firestore().settings(*) 'settings.cacheSizeBytes' the minimum cache size is 1048576 bytes (1MB).",
+          ),
         );
       }
     }
 
     if (!isUndefined(settings.host)) {
       if (!isString(settings.host)) {
-        throw new Error("firebase.firestore().settings(*) 'settings.host' must be a string value.");
+        return Promise.reject(
+          new Error("firebase.firestore().settings(*) 'settings.host' must be a string value."),
+        );
       }
 
       if (settings.host === '') {
-        throw new Error(
-          "firebase.firestore().settings(*) 'settings.host' must not be an empty string.",
+        return Promise.reject(
+          new Error(
+            "firebase.firestore().settings(*) 'settings.host' must not be an empty string.",
+          ),
         );
       }
 
@@ -247,8 +259,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     if (!isUndefined(settings.persistence) && !isBoolean(settings.persistence)) {
-      throw new Error(
-        "firebase.firestore().settings(*) 'settings.persistence' must be a boolean value.",
+      return Promise.reject(
+        new Error(
+          "firebase.firestore().settings(*) 'settings.persistence' must be a boolean value.",
+        ),
       );
     }
 
@@ -258,8 +272,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
 
     if (!isUndefined(settings.ignoreUndefinedProperties)) {
       if (!isBoolean(settings.ignoreUndefinedProperties)) {
-        throw new Error(
-          "firebase.firestore().settings(*) 'settings.ignoreUndefinedProperties' must be a boolean value.",
+        return Promise.reject(
+          new Error(
+            "firebase.firestore().settings(*) 'settings.ignoreUndefinedProperties' must be a boolean value.",
+          ),
         );
       } else {
         this._settings.ignoreUndefinedProperties = settings.ignoreUndefinedProperties;
