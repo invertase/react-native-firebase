@@ -29,6 +29,8 @@ Once installed, you must complete the following additional setup steps for Andro
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
 
+> You may like reading a short article we wrote that explains how to configure and _most importantly_ verify your crashlytics installation so you are sure it is working. https://invertase.io/blog/react-native-firebase-crashlytics-configuration
+
 # What does it do
 
 Crashlytics helps you to collect analytics and details about crashes and errors that occur in your app. It does this through three aspects:

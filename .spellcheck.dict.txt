@@ -32,6 +32,7 @@ CocoaPods
 codebase
 config
 Config
+crashlytics
 Crashlytics
 datastore
 deprecations
