@@ -53,6 +53,14 @@ public class ReactNativeFirebaseDatabaseQuery {
       }
     }
   }
+  
+  /**
+   * Gets the server values for this query. Updates the cache and raises events if successful. If
+   * not connected, falls back to a locally-cached value.
+   */
+  public void get() {
+    query.get();
+  }
 
   /**
    * Attaches a single single value event listener to the query
