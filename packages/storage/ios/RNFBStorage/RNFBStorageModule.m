@@ -32,6 +32,13 @@ static NSString *const RNFB_STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 
 static NSMutableDictionary *PENDING_TASKS;
 
+// The iOS SDK has a short memory on settings, store these globally and set them in each time
+static NSString *emulatorHost = nil;
+static NSInteger emulatorPort = 0;
+static NSTimeInterval maxDownloadRetryTime = 600;
+static NSTimeInterval maxUploadRetryTime = 600;
+static NSTimeInterval maxOperationRetryTime = 120;
+
 @implementation RNFBStorageModule
 #pragma mark -
 #pragma mark Module Setup
@@ -223,6 +230,7 @@ RCT_EXPORT_METHOD(setMaxDownloadRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
+  maxDownloadRetryTime = [milliseconds doubleValue] / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
@@ -237,6 +245,7 @@ RCT_EXPORT_METHOD(setMaxOperationRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
+  maxOperationRetryTime = [milliseconds doubleValue] / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
@@ -250,6 +259,7 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
     : (RCTPromiseResolveBlock) resolve
     : (RCTPromiseRejectBlock) reject
 ) {
+  maxUploadRetryTime = [milliseconds doubleValue] / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
@@ -422,6 +432,19 @@ RCT_EXPORT_METHOD(putString:
 }
 
 /**
+ * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
+ */
+RCT_EXPORT_METHOD(useEmulator:
+  (FIRApp *) firebaseApp
+    :(nonnull NSString *)host
+    :(NSInteger)port
+) {
+  emulatorHost = host;
+  emulatorPort = port;
+  [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost: host port: port];
+}
+
+/**
  * @url N/A - RNFB Specific
  */
 RCT_EXPORT_METHOD(setTaskStatus:
@@ -524,14 +547,30 @@ RCT_EXPORT_METHOD(setTaskStatus:
   }];
 }
 
-- (FIRStorageReference *)getReferenceFromUrl:(NSString *)url app:(FIRApp *)firebaseApp {
+- (FIRStorageReference *)getReferenceFromUrl:
+  (NSString *)url 
+    app : (FIRApp *)firebaseApp
+ {
+  FIRStorage *storage;
   NSString *pathWithBucketName = [url substringWithRange:NSMakeRange(5, [url length] - 5)];
   NSString *bucket = url;
   NSRange rangeOfSlash = [pathWithBucketName rangeOfString:@"/"];
   if (rangeOfSlash.location != NSNotFound) {
     bucket = [url substringWithRange:NSMakeRange(0, rangeOfSlash.location + 5)];
   }
-  return [[FIRStorage storageForApp:firebaseApp URL:bucket] referenceForURL:url];
+  storage = [FIRStorage storageForApp:firebaseApp URL:bucket];
+
+  NSLog(@"Setting emulator - host %@ port %ld", emulatorHost, (long)emulatorPort);
+  if (![emulatorHost isEqual:[NSNull null]] && emulatorHost != nil) {
+    @try {
+      [storage useEmulatorWithHost:emulatorHost port:emulatorPort];
+    } @catch (NSException *e) {
+      NSLog(@"WARNING: Unable to set the Firebase Storage emulator settings. These must be set "
+            @"before any usages of Firebase Storage. If you see this log after a hot "
+            @"reload/restart you can safely ignore it.");
+    }
+  }
+  return [storage referenceForURL:url];
 }
 
 - (void)promiseRejectStorageException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
