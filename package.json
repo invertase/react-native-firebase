@@ -36,7 +36,7 @@
     "tests:ios:test": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --loglevel warn",
     "tests:ios:test:debug": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --loglevel warn --inspect",
     "tests:ios:test-reuse": "cd tests && ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "tests:ios:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug",
+    "tests:ios:test-cover": "cd tests && ./node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --loglevel warn",
     "tests:ios:test-cover-reuse": "cd tests && node_modules/.bin/nyc ./node_modules/.bin/detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
     "format:markdown": "prettier --write \"docs/**/*.md\""
