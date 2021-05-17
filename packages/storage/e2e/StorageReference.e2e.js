@@ -351,6 +351,10 @@ describe('storage() -> StorageReference', function () {
       const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
       const metadata = await storageReference.updateMetadata({
         contentType: 'image/jpeg',
+        cacheControl: 'true',
+        contentDisposition: 'disposed',
+        contentEncoding: 'encoded',
+        contentLanguage: 'martian',
         customMetadata: {
           hello: 'world',
         },
@@ -405,6 +409,19 @@ describe('storage() -> StorageReference', function () {
 
       // FIXME this is failing the part that fails
       should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
+    });
+
+    it('should error if updateMetadata includes md5hash', async function () {
+      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
+      try {
+        await storageReference.updateMetadata({
+          md5hash: '0xDEADBEEF',
+        });
+        return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
+      } catch (e) {
+        e.message.should.containEql('md5hash may only be set on upload, not on updateMetadata');
+        return Promise.resolve();
+      }
     });
   });
 
@@ -515,6 +532,21 @@ describe('storage() -> StorageReference', function () {
         return Promise.resolve();
       }
     });
+
+    it('allows valid metadata properties for upload', async function () {
+      const storageReference = firebase.storage().ref(`${PATH}/metadataTest.txt`);
+      await storageReference.putString('foo', 'raw', {
+        contentType: 'text/plain',
+        md5hash: '123412341234',
+        cacheControl: 'true',
+        contentDisposition: 'disposed',
+        contentEncoding: 'encoded',
+        contentLanguage: 'martian',
+        customMetadata: {
+          customMetadata1: 'metadata1value',
+        },
+      });
+    });
   });
 
   describe('put', function () {
@@ -562,6 +594,21 @@ describe('storage() -> StorageReference', function () {
         );
         return Promise.resolve();
       }
+    });
+
+    it('allows valid metadata properties for upload', async function () {
+      const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
+      await storageReference.put(new jet.context.window.ArrayBuffer(), {
+        contentType: 'image/jpg',
+        md5hash: '123412341234',
+        cacheControl: 'true',
+        contentDisposition: 'disposed',
+        contentEncoding: 'encoded',
+        contentLanguage: 'martian',
+        customMetadata: {
+          customMetadata1: 'metadata1value',
+        },
+      });
     });
   });
 });
