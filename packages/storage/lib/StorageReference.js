@@ -179,12 +179,12 @@ export default class StorageReference extends ReferenceBase {
    */
   put(data, metadata) {
     if (!isUndefined(metadata)) {
-      validateMetadata(metadata);
+      validateMetadata(metadata, false);
     }
 
     return new StorageUploadTask(this, task =>
       Base64.fromData(data).then(({ string, format }) => {
-        const { _string, _format, _metadata } = this._updateString(string, format, metadata);
+        const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
         return this._storage.native.putString(
           this.toString(),
           _string,
@@ -200,7 +200,7 @@ export default class StorageReference extends ReferenceBase {
    * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
   putString(string, format = StorageStatics.StringFormat.RAW, metadata) {
-    const { _string, _format, _metadata } = this._updateString(string, format, metadata);
+    const { _string, _format, _metadata } = this._updateString(string, format, metadata, false);
 
     return new StorageUploadTask(this, task =>
       this._storage.native.putString(this.toString(), _string, _format, _metadata, task._id),
@@ -250,7 +250,7 @@ export default class StorageReference extends ReferenceBase {
    */
   putFile(filePath, metadata) {
     if (!isUndefined(metadata)) {
-      validateMetadata(metadata);
+      validateMetadata(metadata, false);
     }
 
     if (!isString(filePath)) {
@@ -264,7 +264,7 @@ export default class StorageReference extends ReferenceBase {
     );
   }
 
-  _updateString(string, format, metadata) {
+  _updateString(string, format, metadata, update = false) {
     if (!isString(string)) {
       throw new Error(
         "firebase.storage.StorageReference.putString(*, _, _) 'string' expects a string value.",
@@ -280,7 +280,7 @@ export default class StorageReference extends ReferenceBase {
     }
 
     if (!isUndefined(metadata)) {
-      validateMetadata(metadata);
+      validateMetadata(metadata, update);
     }
 
     let _string = string;

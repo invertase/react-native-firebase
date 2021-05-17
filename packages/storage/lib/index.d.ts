@@ -316,6 +316,11 @@ export namespace FirebaseStorageTypes {
     contentType?: string | null;
 
     /**
+     * You may specify the md5hash of the file in metadata on upload only. It may not be updated via updateMetadata
+     */
+    md5hash?: string | null;
+
+    /**
      * Additional user-defined custom metadata for this storage object.
      *
      * String values only are supported for custom metadata property values.
