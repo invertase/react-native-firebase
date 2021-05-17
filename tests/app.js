@@ -44,6 +44,7 @@ firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
 
 firebase.auth().useEmulator('http://localhost:9099');
 firebase.database().useEmulator('localhost', 9000);
+firebase.storage().useEmulator('localhost', 9199);
 
 function Root() {
   return (
