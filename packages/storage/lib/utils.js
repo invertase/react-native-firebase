@@ -25,6 +25,7 @@ const SETTABLE_FIELDS = [
   'contentLanguage',
   'contentType',
   'customMetadata',
+  'md5hash',
 ];
 
 export async function handleStorageEvent(storageInstance, event) {
@@ -57,7 +58,7 @@ export function getGsUrlParts(url) {
   return { bucket, path };
 }
 
-export function validateMetadata(metadata) {
+export function validateMetadata(metadata, update = true) {
   if (!isObject(metadata)) {
     throw new Error('firebase.storage.SettableMetadata must be an object value if provided.');
   }
@@ -70,6 +71,13 @@ export function validateMetadata(metadata) {
     if (!SETTABLE_FIELDS.includes(key)) {
       throw new Error(
         `firebase.storage.SettableMetadata unknown property '${key}' provided for metadata.`,
+      );
+    }
+
+    // md5 is only allowed on put, not on update
+    if (key === 'md5hash' && update === true) {
+      throw new Error(
+        `firebase.storage.SettableMetadata md5hash may only be set on upload, not on updateMetadata`,
       );
     }
 
