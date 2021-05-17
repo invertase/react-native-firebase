@@ -116,7 +116,7 @@ describe('guards', () => {
       expect(isOptionalString(123)).toBe(false);
       expect(isOptionalString('foo')).toBe(true);
       expect(isOptionalString([])).toBe(false);
-      expect(isOptionalString(null)).toBe(false);
+      expect(isOptionalString(null)).toBe(true);
       expect(isOptionalString({})).toBe(false);
       expect(isOptionalString(new Date())).toBe(false);
       expect(isOptionalString(() => {})).toBe(false);
@@ -179,7 +179,7 @@ describe('guards', () => {
       expect(isOptionalBoolean(123.456)).toBe(false);
       expect(isOptionalBoolean('foo')).toBe(false);
       expect(isOptionalBoolean([])).toBe(false);
-      expect(isOptionalBoolean(null)).toBe(false);
+      expect(isOptionalBoolean(null)).toBe(true);
       expect(isOptionalBoolean({})).toBe(false);
       expect(isOptionalBoolean(new Date())).toBe(false);
       expect(isOptionalBoolean(() => {})).toBe(false);
