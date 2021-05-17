@@ -53,6 +53,7 @@ beforeEach(async function beforeEach() {
 after(async function () {
   console.log(' ✨ Tests Complete ✨ ');
   const isAndroid = detox.device.getPlatform() === 'android';
+  const deviceId = detox.device.id;
 
   // emits 'cleanup' across socket, which goes native, terminates Detox test Looper
   // This returns control to the java code in our instrumented test, and then Instrumentation lifecycle finishes cleanly
@@ -69,12 +70,12 @@ after(async function () {
     const localDestDir = './android/app/build/output/coverage/';
 
     try {
-      execSync(`adb shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
+      execSync(`adb -s ${deviceId} shell "run-as ${pkg} cat ${emuOrig} > ${emuDest}"`);
       execSync(`mkdir -p ${localDestDir}`);
-      execSync(`adb pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
+      execSync(`adb -s ${deviceId} pull ${emuDest} ${localDestDir}/emulator_coverage.ec`);
       console.log(`Coverage data downloaded to: ${localDestDir}/emulator_coverage.ec`);
     } catch (e) {
-      console.log('Unable to download coverage data from device: ', e);
+      console.log('Unable to download coverage data from device: ', JSON.stringify(e));
     }
   }
 
