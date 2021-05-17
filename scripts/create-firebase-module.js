@@ -25,7 +25,7 @@ const { version } = require('./../lerna');
 function walkDir(dir) {
   let results = [];
   const list = readdirSync(dir);
-  list.forEach(function(file) {
+  list.forEach(function (file) {
     file = dir + '/' + file;
     const stat = statSync(file);
     if (stat && stat.isDirectory()) {
@@ -93,32 +93,21 @@ inquirer
     return Promise.resolve({ name, nameUpper });
   })
   .then(({ name, nameUpper }) => {
-    shelljs.exec(
-      `lerna add @react-native-firebase/${name} tests && yarn`,
-    );
+    shelljs.exec(`lerna add @react-native-firebase/${name} tests && yarn`);
     console.log('');
     console.log(`The module '${name}' (${nameUpper}) has been created!`);
     console.log('');
     console.log('');
-    console.log('TO USE IT ADD TO THE TESTING PROJECT:');
+    console.log('1) ADD IT TO `KNOWN_NAMESPACES` in packages/app/lib/internal/constants.js');
     console.log('');
-    console.log('  iOS:');
-    console.log('    Add the following to tests/ios/Podfile :');
-    console.log(
-      `      pod 'RNFB${nameUpper}', :path => '../../packages/${name}/ios/RNFB${nameUpper}.podspec', :version => "~> #{rnfb_version}"`,
-    );
+    console.log('2) ADD IT TO THE docs:');
+    console.log('  - in website/docs/sidebar.yaml');
+    console.log('  - in website/scripts/source-reference.js');
+    console.log('  - in website/src/templates/utils.ts');
     console.log('');
-    console.log('');
-    console.log('  Android:');
-    console.log('    Add the following to tests/android/settings.gradle :');
-    console.log(`      include ':@react-native-firebase/${name}'`);
-    console.log(
-      `      project(':@react-native-firebase/${name}').projectDir = new File(rootProject.projectDir, './../../packages/${name}/android')`,
-    );
-    console.log('');
-    console.log('    Add the following dependency to tests/android/app/build.gradle :');
-    console.log(`      implementation project(path: ':@react-native-firebase/${name}')`);
-    console.log('');
+    console.log('3) If the name has hyphens, carefully check:');
+    console.log('  - package namespaces in java and package.json and index.d.ts');
+    console.log('  - the @firebase tag in index.d.ts (creates docs site reference API links)');
     console.log('');
   })
   .catch(console.error);

@@ -22,13 +22,8 @@
     "_template_"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "*"
-  },
-  "dependencies": {
-    "@react-native-firebase/app-types": "_VERSION_",
     "@react-native-firebase/app": "_VERSION_"
   },
-  "gitHead": "2787d4413eb70c61a687c4d6913add6a6a01f582",
   "publishConfig": {
     "access": "public"
   }
