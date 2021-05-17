@@ -91,7 +91,6 @@ public class UniversalFirebaseDatabaseCommon {
   }
 
   static void addEmulatorConfig(String appName, String dbURL, String host, int port) {
-    System.err.println("adding emulator config");
     String configKey = appName + dbURL;
     HashMap<String, Object> emulatorConfig = new HashMap<>();
     emulatorConfig.put("host", host);
