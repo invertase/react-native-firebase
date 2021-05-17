@@ -17,17 +17,7 @@ package io.invertase.firebase._template_;
  *
  */
 
-import android.app.Activity;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
-import javax.annotation.Nullable;
-
+import com.facebook.react.bridge.*;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebase_Template_Module extends ReactNativeFirebaseModule {
@@ -37,4 +27,11 @@ public class ReactNativeFirebase_Template_Module extends ReactNativeFirebaseModu
     super(reactContext, TAG);
   }
 
+  @ReactMethod
+  public void aMethod() {
+    // This is just a dummy method. If there are no ReactMethod annotated methods in a module,
+    // react-native won't even load it, which may lead to confusion as you test a new module.
+    System.err.println("_Template_::aMethod - this method just logs to system out, then throws");
+    throw new Exception(TAG + "::aMethod - Implement real methods now.");
+  }
 }
