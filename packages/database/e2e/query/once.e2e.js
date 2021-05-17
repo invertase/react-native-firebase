@@ -142,7 +142,8 @@ describe('database().ref().once()', function () {
     callbackChange.should.be.calledWith(2);
   });
 
-  it('resolves when a child is removed', async function () {
+  // FIXME too flaky against android in CI
+  ios.it('resolves when a child is removed', async function () {
     const callbackAdd = sinon.spy();
     const callbackRemove = sinon.spy();
     const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
