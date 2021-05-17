@@ -4,7 +4,7 @@ export function binaryToBase64(binary: ArrayBuffer | Uint8Array): string {
   return btoa(new Uint8Array(binary).reduce((data, byte) => data + String.fromCharCode(byte), ''));
 }
 
-function btoa(input: string): string {
+export function btoa(input: string): string {
   let map: string;
   let i = 0;
   let block = 0;
