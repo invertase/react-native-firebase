@@ -1094,6 +1094,21 @@ export namespace FirebaseStorageTypes {
      * e.g. `gs://assets/logo.png` or `https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/cats.gif`.
      */
     refFromURL(url: string): Reference;
+
+    /**
+     * Modify this Storage instance to communicate with the Firebase Storage emulator.
+     * This must be called synchronously immediately following the first call to firebase.storage().
+     * Do not use with production credentials as emulator traffic is not encrypted.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
+     *
+     * @param host: emulator host (eg, 'localhost')
+     * @param port: emulator port (eg, 9199)
+     */
+    useEmulator(host: string, port: number): void;
   }
 }
 
