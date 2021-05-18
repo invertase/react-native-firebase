@@ -338,6 +338,7 @@ export namespace Utils {
      * Traditionally this is an SD card, but it may also be implemented as built-in storage on a device.
      *
      * Returns null if no external storage directory found, e.g. removable media has been ejected by the user.
+     * Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
      *
      * ```js
      * firebase.utils.FilePath.EXTERNAL_STORAGE_DIRECTORY;
@@ -349,6 +350,7 @@ export namespace Utils {
 
     /**
      * Returns an absolute path to a directory in which to place pictures that are available to the user.
+     * Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
      *
      * ```js
      * firebase.utils.FilePath.PICTURES_DIRECTORY;
@@ -358,6 +360,7 @@ export namespace Utils {
 
     /**
      * Returns an absolute path to a directory in which to place movies that are available to the user.
+     * Requires special permission granted by Play Store review team on Android, is unlikely to be a valid path.
      *
      * ```js
      * firebase.utils.FilePath.MOVIES_DIRECTORY;
