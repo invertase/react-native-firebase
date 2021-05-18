@@ -54,6 +54,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   @Override
   public void onCatalystInstanceDestroy() {
     ReactNativeFirebaseStorageTask.destroyAllTasks();
+    super.onCatalystInstanceDestroy();
   }
 
   /**

@@ -99,7 +99,7 @@ public class SharedUtils {
 
   public static String timestampToUTC(long timestamp) {
     long millisTimestamp = timestamp * 1000;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
     format.setTimeZone(TimeZone.getTimeZone("UTC"));
     return format.format(millisTimestamp);
   }
