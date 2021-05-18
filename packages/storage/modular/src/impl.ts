@@ -2,7 +2,7 @@ import { FirebaseApp } from '@react-native-firebase/app-exp';
 import { Mutable } from '@react-native-firebase/app-exp/internal';
 import * as app from 'firebase/app';
 import * as delegate from 'firebase/storage';
-import { toFullMetadata, toUploadResult } from 'validation';
+import { toFullMetadata, toUploadResult } from './validation';
 import StorageServiceImpl, { StorageServiceInternal } from './implementations/storageService';
 import UploadTaskImpl from './implementations/uploadTask';
 import StorageReferenceImpl from './implementations/storageReference';
