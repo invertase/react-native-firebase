@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -143,7 +144,7 @@ class ReactNativeFirebaseStorageCommon {
 
       if (mimeType == null) {
         String fileExt = MimeTypeMap.getFileExtensionFromUrl(file.toString());
-        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt.toLowerCase());
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt.toLowerCase(Locale.ROOT));
       }
 
       if (mimeType != null) {
