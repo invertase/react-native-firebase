@@ -61,6 +61,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -1885,7 +1886,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
 
     code = code
-      .toLowerCase()
+      .toLowerCase(Locale.ROOT)
       .replace("error_", "")
       .replace('_', '-');
     error.putString("code", code);

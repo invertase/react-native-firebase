@@ -56,6 +56,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     }
 
     transactionHandlers.clear();
+    super.onCatalystInstanceDestroy();
   }
 
   @ReactMethod

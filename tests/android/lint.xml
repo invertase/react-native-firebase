@@ -21,13 +21,15 @@
        <issue id="NewIssueId" severity="ignore"/>
     -->
 <lint>
+  <issue id="DefaultLocale" severity="fatal" />
   <issue id="NewApi" severity="fatal" />
   <issue id="HardcodedText" severity="fatal" />
   <issue id="InlinedApi" severity="fatal" />
+  <issue id="MissingSuperCall" severity="ignore" />
   <issue id="StringFormatCount" severity="fatal" />
   <issue id="StringFormatMatches" severity="fatal" />
   <issue id="StringFormatInvalid" severity="fatal" />
-  <issue id="UnusedResources" severity="ignore" />
+  <issue id="UseValueOf" severity="fatal" />
   <issue id="ViewConstructor" severity="fatal" />
   <issue id="ViewHolder" severity="fatal" />
   <issue id="ViewTag" severity="fatal" />
@@ -42,6 +44,7 @@
   <issue id="RtlSymmetry" severity="ignore" />
 
   <!-- <issue id="UseCompatTextViewDrawableXml" severity="ignore" /> -->
+  <issue id="UnusedResources" severity="ignore" />
   <issue id="UnknownNullness" severity="ignore" />
   <issue id="SyntheticAccessor" severity="ignore" />
   <!-- FIXME need to remove WRITE_EXTERNAL_STORAGE from storage -->
@@ -91,7 +94,6 @@
   <issue id="ButtonOrder" severity="ignore" />
   <issue id="ButtonStyle" severity="ignore" />
   <issue id="ByteOrderMark" severity="ignore" />
-  <issue id="MissingSuperCall" severity="ignore" />
   <issue id="AdapterViewChildren" severity="ignore" />
   <issue id="ScrollViewCount" severity="ignore" />
   <issue id="PermissionImpliesUnsupportedChromeOsHardware" severity="ignore" />
@@ -183,7 +185,6 @@
   <issue id="InvalidPackage" severity="ignore" />
   <issue id="DrawAllocation" severity="ignore" />
   <issue id="UseSparseArrays" severity="ignore" />
-  <issue id="UseValueOf" severity="ignore" />
   <issue id="JavascriptInterface" severity="ignore" />
   <issue id="JobSchedulerService" severity="ignore" />
   <issue id="KeyboardInaccessibleWidget" severity="ignore" />
@@ -191,7 +192,6 @@
   <issue id="InconsistentLayout" severity="ignore" />
   <issue id="InflateParams" severity="ignore" />
   <issue id="StaticFieldLeak" severity="ignore" />
-  <issue id="DefaultLocale" severity="ignore" />
   <issue id="LocaleFolder" severity="ignore" />
   <issue id="GetLocales" severity="ignore" />
   <issue id="InvalidResourceFolder" severity="ignore" />

@@ -106,6 +106,7 @@ subprojects {
           abortOnError = true
           warningsAsErrors false
           lintConfig file('./lint.xml')
+          ignore 'UnknownNullness', 'SyntheticAccessor', 'LogConditional'
           checkReleaseBuilds = true
           checkAllWarnings true
           showAll true
