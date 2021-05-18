@@ -57,7 +57,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
    */
   @ReactMethod
   public void delete(String appName, String url, final Promise promise) {
@@ -76,7 +76,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
    */
   @ReactMethod
   public void getDownloadURL(String appName, final String url, final Promise promise) {
@@ -97,7 +97,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
    */
   @ReactMethod
   public void getMetadata(String appName, String url, Promise promise) {
@@ -115,6 +115,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
+   */
   @ReactMethod
   public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
     try {
@@ -132,23 +135,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
 
       list.addOnCompleteListener(getExecutor(), task -> {
         if (task.isSuccessful()) {
-          promise.resolve(getListResultAsMap(task.getResult()));
-        } else {
-          promiseRejectStorageException(promise, task.getException());
-        }
-      });
-    } catch (Exception e) {
-      promiseRejectStorageException(promise, e);
-    }
-  }
-
-  @ReactMethod
-  public void listAll(String appName, String url, Promise promise) {
-    try {
-      StorageReference reference = getReferenceFromUrl(url, appName);
-      reference.listAll().addOnCompleteListener(getExecutor(), task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(getListResultAsMap(task.getResult()));
+          promise.resolve(getListResultAsMap(Objects.requireNonNull(task.getResult())));
         } else {
           promiseRejectStorageException(promise, task.getException());
         }
@@ -159,7 +146,26 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
+   */
+  @ReactMethod
+  public void listAll(String appName, String url, Promise promise) {
+    try {
+      StorageReference reference = getReferenceFromUrl(url, appName);
+      reference.listAll().addOnCompleteListener(getExecutor(), task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(getListResultAsMap(Objects.requireNonNull(task.getResult())));
+        } else {
+          promiseRejectStorageException(promise, task.getException());
+        }
+      });
+    } catch (Exception e) {
+      promiseRejectStorageException(promise, e);
+    }
+  }
+
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
    */
   @ReactMethod
   public void updateMetadata(
@@ -185,7 +191,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
    */
   @ReactMethod
   public void setMaxDownloadRetryTime(String appName, double milliseconds, Promise promise) {
@@ -196,7 +202,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
    */
   @ReactMethod
   public void setMaxOperationRetryTime(String appName, double milliseconds, Promise promise) {
@@ -207,7 +213,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
    */
   @ReactMethod
   public void setMaxUploadRetryTime(String appName, double milliseconds, Promise promise) {
@@ -218,7 +224,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
    */
   @ReactMethod
   public void writeToFile(
@@ -253,7 +259,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
    */
   @ReactMethod
   public void putString(
@@ -280,7 +286,7 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   }
 
   /**
-   * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
    */
   @ReactMethod
   public void putFile(
