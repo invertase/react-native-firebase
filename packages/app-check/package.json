@@ -1,0 +1,31 @@
+{
+  "name": "@react-native-firebase/app-check",
+  "version": "12.4.0",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - App Check",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app-check"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "app-check",
+    "appCheck"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "12.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

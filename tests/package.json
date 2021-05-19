@@ -9,6 +9,7 @@
   "dependencies": {
     "@react-native-firebase/analytics": "12.4.0",
     "@react-native-firebase/app": "12.4.0",
+    "@react-native-firebase/app-check": "12.4.0",
     "@react-native-firebase/app-types": "6.7.2",
     "@react-native-firebase/auth": "12.4.0",
     "@react-native-firebase/crashlytics": "12.4.0",
@@ -35,6 +36,7 @@
     "jest-circus": "^27.0.6",
     "jest-environment-node": "^27.0.6",
     "jet": "^0.6.6-0",
+    "jsonwebtoken": "^8.5.1",
     "metro-react-native-babel-preset": "0.66.2",
     "mocha": "^9.0.3",
     "nyc": "^15.0.1",
@@ -51,7 +53,7 @@
     "configurations": {
       "ios.sim.debug": {
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/testing.app",
-        "build": "xcodebuild CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
+        "build": "xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "device": {
           "type": "iPhone 11"

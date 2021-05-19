@@ -140,6 +140,9 @@ dependencies {
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
     androidTestImplementation(project(path: ':detox'))
+
+    // These are beta, so they are not in the BoM yet. We have to specify the versions explicitly.
+    androidTestImplementation 'com.google.firebase:firebase-appcheck-debug-testing:16.0.0-beta02'
 }
 
 apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)
