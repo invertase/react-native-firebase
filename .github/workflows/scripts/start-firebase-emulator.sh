@@ -17,6 +17,7 @@ while [ $RETRIES -le $MAX_RETRIES ]; do
   if [ "$1" == "--no-daemon" ]; then
     echo "Starting Firebase Emulator Suite in foreground."
     $EMU_START_COMMAND
+    exit 0
   else
     echo "Starting Firebase Emulator Suite in background."
     $EMU_START_COMMAND &
