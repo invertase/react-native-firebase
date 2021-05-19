@@ -81,21 +81,10 @@ repositories {
   mavenCentral()
 }
 
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
-def BROWSER_VERSION = safeExtGet('androidxBrowserVersion', '[1.0.0, 2.0.0)')
-
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-auth"
-
-  // This is needed for the reCAPTCHA flow but is incorrectly missing as a transitive dependency upstream
-  // https://github.com/invertase/react-native-firebase/issues/4744
-  // https://github.com/firebase/firebase-android-sdk/issues/2164
-  implementation "androidx.browser:browser:${BROWSER_VERSION}"
 }
 
 ReactNative.shared.applyPackageVersion()
