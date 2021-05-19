@@ -361,6 +361,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = YYX2P3XVJ7;
+				EXCLUDED_ARCHS = i386;
+				"EXCLUDED_ARCHS[sdk=*]" = i386;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/Firebase.framework/Headers/**",
@@ -377,6 +379,7 @@
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
 				PRODUCT_NAME = testing;
@@ -394,6 +397,8 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = YYX2P3XVJ7;
+				EXCLUDED_ARCHS = i386;
+				"EXCLUDED_ARCHS[sdk=*]" = i386;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-firebase/Firebase.framework/Headers/**",
@@ -410,6 +415,7 @@
 					"$(SDKROOT)/usr/lib/swift",
 					"$(inherited)",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = io.invertase.testing;
 				PRODUCT_NAME = testing;

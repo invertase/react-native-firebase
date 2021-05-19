@@ -12,7 +12,7 @@ Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$Fireba
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
 # Versions used below, for quick reference / outdated+upgrade checks
-$iOSMinimumDeployVersion = '10.0'
+$iOSMinimumDeployVersion = '11.0'
 
 platform :ios, $iOSMinimumDeployVersion
 
@@ -35,7 +35,7 @@ target 'testing' do
   # pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
-  pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
+  #pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
   # Enables Flipper.
   #
@@ -50,7 +50,6 @@ target 'testing' do
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSMinimumDeployVersion
-        config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = ""
       end
     end
 
@@ -59,6 +58,8 @@ target 'testing' do
       aggregate_target.user_project.native_targets.each do |target|
         target.build_configurations.each do |config|
           config.build_settings['LIBRARY_SEARCH_PATHS'] = ['$(SDKROOT)/usr/lib/swift', '$(inherited)']
+          config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+          config.build_settings['EXCLUDED_ARCHS'] = 'i386'
         end
       end
       aggregate_target.user_project.save

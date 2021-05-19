@@ -2,7 +2,7 @@
 title: Screen Tracking
 description: Setup Firebase Analytics to track your in-app screen flow.
 previous: /analytics/usage
-next: /
+next: /app-check/usage
 ---
 
 Standard React Native applications run inside a single `Activity`/`ViewController`, meaning any screen changes won't be
