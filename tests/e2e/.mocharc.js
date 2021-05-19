@@ -12,6 +12,7 @@ module.exports = {
   require: 'node_modules/jet/platform/node',
   spec: [
     '../packages/app/e2e/*.e2e.js',
+    '../packages/app-check/e2e/*.e2e.js',
     '../packages/analytics/e2e/*.e2e.js',
     '../packages/auth/e2e/*.e2e.js',
     '../packages/crashlytics/e2e/*.e2e.js',

@@ -21,6 +21,7 @@ for manually initializing secondary Firebase app instances.
 
 Currently, the native Firebase SDKs only provide functionality for creating secondary apps on the following services:
 
+- [AppCheck](/app-check/usage).
 - [Authentication](/auth/usage).
 - [Realtime Database](/database/usage).
 - [Cloud Firestore](/firestore/usage).

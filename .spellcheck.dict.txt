@@ -6,6 +6,8 @@ Analytics
 analytics
 APIs
 APIs.
+AppAttest
+AppCheck
 APNs
 AirPods
 async
@@ -42,7 +44,9 @@ Deprecations
 Detox
 DEVEX
 Diarmid
+DeviceCheck
 dropdown
+e2e
 EEA
 Ehesp
 enum
@@ -55,6 +59,7 @@ firebase-ios-sdk
 Firestore
 getIdToken
 GDPR
+GDPR-compliant
 globals
 Gradle
 gradle
@@ -90,6 +95,7 @@ namespaced
 natively
 NDK
 Node.js
+non-firebase
 NoSQL
 Notifee
 NPE
@@ -121,6 +127,7 @@ RN60
 RN61
 RNFB
 RNFirebase
+SafetyNet
 Salakar
 scalable
 scrollable
@@ -150,6 +157,7 @@ uid
 uncomment
 unhandled
 unsubscriber
+untampered
 utils
 Utils
 v5
