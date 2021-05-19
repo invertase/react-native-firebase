@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.0.0](https://github.com/invertase/react-native-firebase/compare/v11.5.0...v12.0.0) (2021-05-19)
+
+### Features
+
+- **sdks:** firebase-ios-sdk 8.0.0 / firebase-android-sdk 28.0.1 ([d97587b](https://github.com/invertase/react-native-firebase/commit/d97587b33aa4c092a0d34291e24491ca66f9bcaa))
+- **storage, emulator:** implement storage emulator ([1d3e946](https://github.com/invertase/react-native-firebase/commit/1d3e946a4131a9ceaf3e82aab7f1759ef5aa2cb4))
+
+- chore(storage, android)!: remove EXTERNAL_STORAGE permissions for Android 10/11 compat ([69b6f88](https://github.com/invertase/react-native-firebase/commit/69b6f88f078facb07001a6fa8da04812c73077fb))
+
+### Bug Fixes
+
+- **android:** correct lint issues for various API mis-use ([eb8d893](https://github.com/invertase/react-native-firebase/commit/eb8d89306fd569d7ef64298a99e970c653b79178)), closes [#3917](https://github.com/invertase/react-native-firebase/issues/3917)
+
+### BREAKING CHANGES
+
+- if you need READ_EXTERNAL_STORAGE/WRITE_EXTERNAL_STORAGE permission add them in your app AndroidManifest.xml
+
 # [11.5.0](https://github.com/invertase/react-native-firebase/compare/v11.4.1...v11.5.0) (2021-05-12)
 
 ### Bug Fixes
