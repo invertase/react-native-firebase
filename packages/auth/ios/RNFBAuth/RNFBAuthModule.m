@@ -17,8 +17,7 @@
 
 #import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
-#import <Foundation>
-
+#import <Foundation/Foundation.h>
 #import "RNFBAuthModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
@@ -1092,6 +1091,27 @@ RCT_EXPORT_METHOD(signInWithMultiFactorInfoConfirm:
     }];
 }
 
+RCT_EXPORT_METHOD(multiFactorUnenroll:
+                  (FIRApp *) firebaseApp
+                  :(nonnull NSString *)factorUID
+                  :(RCTPromiseResolveBlock) resolve
+                  :(RCTPromiseRejectBlock) reject
+                  )
+{
+    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+    if (user) {
+        [user.multiFactor unenrollWithFactorUID:factorUID completion:^(NSError *_Nullable error) {
+            if (error != nil) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
@@ -1355,6 +1375,11 @@ RCT_EXPORT_METHOD(signInWithMultiFactorInfoConfirm:
 }
 
 - (NSDictionary *)firebaseUserToDict:(FIRUser *)user {
+    NSMutableArray *factors = [NSMutableArray array];
+    for (FIRMultiFactorInfo *factor in user.multiFactor.enrolledFactors) {
+        [factors addObject:[self multiFactorInfoToDict:factor]];
+    }
+
   return @{
       keyDisplayName: user.displayName ? (id) user.displayName : [NSNull null],
       keyEmail: user.email ? (id) user.email : [NSNull null],
@@ -1372,7 +1397,8 @@ RCT_EXPORT_METHOD(signInWithMultiFactorInfoConfirm:
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
       @"tenantId": user.tenantID ? (id) user.tenantID : [NSNull null],
-      keyUid: user.uid
+      keyUid: user.uid,
+      @"multiFactorEnrolledFactors": factors
   };
 }
 

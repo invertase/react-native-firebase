@@ -73,6 +73,22 @@ export default class User {
     return this._user.uid;
   }
 
+  get multiFactor() {
+    return {
+      enroll(phoneNumber) {
+        return this._auth.native
+          .multiFactorEnrollWithPhone(phoneNumber)
+          .then(result => new ConfirmationResultMFAEnroll(this._auth, result.verificationId));
+      },
+      unenroll(hint) {
+        return this._auth.native.multiFactorUnenroll(hint.uid).then(user => {
+          this._auth._setUser(user);
+        });
+      },
+      enrolledFactors: this._user.enrolledFactors,
+    };
+  }
+
   delete() {
     return this._auth.native.delete().then(() => {
       this._auth._setUser();
@@ -295,12 +311,6 @@ export default class User {
     return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
       this._auth._setUser(user);
     });
-  }
-
-  multiFactorEnrollWithPhone(phoneNumber) {
-    return this._auth.native
-      .multiFactorEnrollWithPhone(phoneNumber)
-      .then(result => new ConfirmationResultMFAEnroll(this._auth, result.verificationId));
   }
 
   /**

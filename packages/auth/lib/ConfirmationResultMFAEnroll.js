@@ -24,7 +24,7 @@ export default class ConfirmationResultMFAEnroll {
   confirm(verificationCode) {
     return this._auth.native
       .multiFactorEnrollConfirm(verificationCode)
-      .then(userCredential => this._auth._setUserCredential(userCredential));
+      .then(user => this._auth._setUser(user));
   }
 
   get verificationId() {
