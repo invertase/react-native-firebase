@@ -939,6 +939,58 @@ RCT_EXPORT_METHOD(useEmulator:
       [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
 }
 
+RCT_EXPORT_METHOD(enrollToMFAWithPhone:
+  (FIRApp *) firebaseApp
+    :(NSString *) phoneNumber
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+
+    if (user) {
+        [user.multiFactor getSessionWithCompletion:^(FIRMultiFactorSession * _Nullable session, NSError * _Nullable error) {
+            if (error) {
+              [self promiseRejectAuthException:reject error:error];
+            } else {
+
+                
+                // send SMS
+                [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]] verifyPhoneNumber:phoneNumber UIDelegate:nil                                                                                           multiFactorSession:session
+                    
+                    completion:^(
+                    NSString *_Nullable verificationID,
+                    NSError *_Nullable error
+                ) {
+                  if (error) {
+                    NSDictionary *jsError = [self getJSError:(error)];
+                    NSDictionary *body = @{
+                        @"type": @"onVerificationFailed",
+                        @"requestKey": requestKey,
+                        @"state": @{@"error": jsError},
+                    };
+                    [RNFBSharedUtils sendJSEventForApp:firebaseApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
+                  } else {
+                    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                    [defaults setObject:verificationID forKey:@"authVerificationID"];
+                    NSDictionary *body = @{
+                        @"type": @"onCodeSent",
+                        @"requestKey": requestKey,
+                        @"state": @{@"verificationId": verificationID},
+                    };
+                    [RNFBSharedUtils sendJSEventForApp:firebaseApp name:PHONE_AUTH_STATE_CHANGED_EVENT body:body];
+                  }
+                }];
+                
+                
+                
+            }
+        }];
+    } else {
+      [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+
+}
+
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
 
