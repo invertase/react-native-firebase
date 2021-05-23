@@ -16,6 +16,7 @@
  */
 
 import { isObject, isString, isUndefined, isBoolean } from '@react-native-firebase/app/lib/common';
+import ConfirmationResultMFAEnroll from './ConfirmationResultMFAEnroll';
 
 export default class User {
   constructor(auth, user) {
@@ -294,6 +295,12 @@ export default class User {
     return this._auth.native.verifyBeforeUpdateEmail(newEmail, actionCodeSettings).then(user => {
       this._auth._setUser(user);
     });
+  }
+
+  multiFactorEnrollWithPhone(phoneNumber) {
+    return this._auth.native
+      .multiFactorEnrollWithPhone(phoneNumber)
+      .then(result => new ConfirmationResultMFAEnroll(this._auth, result.verificationId));
   }
 
   /**

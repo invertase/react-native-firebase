@@ -942,7 +942,7 @@ RCT_EXPORT_METHOD(useEmulator:
       [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
 }
 
-RCT_EXPORT_METHOD(enrollToMFAWithPhone:
+RCT_EXPORT_METHOD(multiFactorEnrollWithPhone:
   (FIRApp *) firebaseApp
     :(NSString *) phoneNumber
     :(RCTPromiseResolveBlock) resolve
@@ -988,7 +988,7 @@ RCT_EXPORT_METHOD(enrollToMFAWithPhone:
 }
 
 
-RCT_EXPORT_METHOD(enrollToMFAWithPhoneConfirm:
+RCT_EXPORT_METHOD(multiFactorEnrollConfirm:
                   (FIRApp *) firebaseApp
                   :(NSString *) kPhoneSecondFactorVerificationCode
                   :(RCTPromiseResolveBlock) resolve
@@ -1024,7 +1024,7 @@ RCT_EXPORT_METHOD(enrollToMFAWithPhoneConfirm:
     }
 }
      
-RCT_EXPORT_METHOD(signinWithMultiFactorInfo:
+RCT_EXPORT_METHOD(signInWithMultiFactorInfo:
                   (FIRApp *) firebaseApp
                   :(NSString *) multiFactorHintUID
                   :(RCTPromiseResolveBlock) resolve
@@ -1063,7 +1063,7 @@ RCT_EXPORT_METHOD(signinWithMultiFactorInfo:
     
 }
 
-RCT_EXPORT_METHOD(signinWithMultiFactorInfoConfirm:
+RCT_EXPORT_METHOD(signInWithMultiFactorInfoConfirm:
                   (FIRApp *) firebaseApp
                   :(NSString *) kPhoneSecondFactorVerificationCode
                   :(RCTPromiseResolveBlock) resolve
