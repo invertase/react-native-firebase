@@ -16,6 +16,7 @@ module.exports = {
       version: '16.1.0',
     },
   },
+  env: { node: true },
   rules: {
     'jest/no-identical-title': 0,
     'eslint-comments/no-unlimited-disable': 0,
@@ -27,7 +28,7 @@ module.exports = {
     'class-methods-use-this': 0,
     'no-console': 1,
     'no-plusplus': 0,
-    'no-undef': 0,
+    'no-undef': 2,
     'no-shadow': 0,
     'no-catch-shadow': 0,
     'no-underscore-dangle': 'off',
