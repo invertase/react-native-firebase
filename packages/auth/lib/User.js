@@ -84,7 +84,7 @@ export default class User {
           );
       },
       unenroll: hint => {
-        return this._auth.native.multiFactorUnenroll(hint.uid).then(user => {
+        return this._auth.native.multiFactorUnenroll(hint.UID).then(user => {
           this._auth._setUser(user);
         });
       },
