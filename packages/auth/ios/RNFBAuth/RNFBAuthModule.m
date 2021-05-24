@@ -990,6 +990,7 @@ RCT_EXPORT_METHOD(multiFactorEnrollWithPhone:
 RCT_EXPORT_METHOD(multiFactorEnrollConfirm:
                   (FIRApp *) firebaseApp
                   :(NSString *) kPhoneSecondFactorVerificationCode
+                  :(NSString *) displayName
                   :(RCTPromiseResolveBlock) resolve
                   :(RCTPromiseRejectBlock) reject
                   )
@@ -1009,7 +1010,7 @@ RCT_EXPORT_METHOD(multiFactorEnrollConfirm:
         // Complete enrollment. This will update the underlying tokens
         // and trigger ID token change listener.
         [user.multiFactor enrollWithAssertion:assertion
-                                  displayName:nil
+                                  displayName:displayName
                                    completion:^(NSError * _Nullable error)
         {
             if (error) {
@@ -1035,7 +1036,7 @@ RCT_EXPORT_METHOD(signInWithMultiFactorInfo:
         return [obj.UID isEqual:multiFactorHintUID];
     }]];
     
-    if ([hint.factorID isEqual:@"phone"]) {
+    if ([hint.factorID isEqual:@"1"]  || YES) { // Currently Firebase only supports phone MFA
         // Send SMS verification code
         [
          [FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]] verifyPhoneNumberWithMultiFactorInfo:(FIRPhoneMultiFactorInfo*) hint
@@ -1046,6 +1047,8 @@ RCT_EXPORT_METHOD(signInWithMultiFactorInfo:
                 [self promiseRejectAuthException:reject error:error];
             } else {
                 [mfaResolvers setObject:resolver forKey:verificationID];
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:verificationID forKey:@"authVerificationID"];
                 resolve(@{
                     @"verificationId": verificationID
                         });
@@ -1177,6 +1180,7 @@ RCT_EXPORT_METHOD(multiFactorUnenroll:
       @"message": [jsError valueForKey:@"message"],
       @"nativeErrorMessage": [jsError valueForKey:@"nativeErrorMessage"],
       @"authCredential": [jsError valueForKey:@"authCredential"],
+      @"resolver": [jsError valueForKey:@"resolver"]
   }];
 }
 
@@ -1463,18 +1467,19 @@ RCT_EXPORT_METHOD(multiFactorUnenroll:
 - (NSDictionary*) multiFactorInfoToDict:(FIRMultiFactorInfo *)hint {
     
     
-    if ([hint.factorID  isEqual: @"phone"]) {
+    if ([hint.factorID  isEqual: @"1"]) { // Firebase currently has only this type of hint
         FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *) hint;
         return @{
             @"UID": phoneHint.UID,
-            @"phoneNumber": phoneHint.phoneNumber
+            @"phoneNumber": phoneHint.phoneNumber,
+            @"displayName": hint.displayName,
         };
     } else {
         return @{
             
             @"UID": hint.UID,
             @"displayName": hint.displayName,
-            @"factorID": hint.factorID
+
         };
     }
 }

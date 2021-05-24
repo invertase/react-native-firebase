@@ -16,14 +16,15 @@
  */
 
 export default class ConfirmationResultMFAEnroll {
-  constructor(auth, verificationId) {
+  constructor(auth, verificationId, displayName) {
     this._auth = auth;
     this._verificationId = verificationId;
+    this._displayName = displayName;
   }
 
   confirm(verificationCode) {
     return this._auth.native
-      .multiFactorEnrollConfirm(verificationCode)
+      .multiFactorEnrollConfirm(verificationCode, this._displayName)
       .then(user => this._auth._setUser(user));
   }
 

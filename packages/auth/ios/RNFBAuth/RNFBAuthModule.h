@@ -82,13 +82,13 @@ NSString * const AuthErrorCode_toJSErrorCode[] = {
   [FIRAuthErrorCodeInternalError] = @"internal-error",
   [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
     
-    [FIRAuthErrorCodeSecondFactorRequired] = @"auth/multi-factor-auth-required",
-    [FIRAuthErrorCodeMissingMultiFactorSession] = @"auth/missing-multi-factor-session",
-    [FIRAuthErrorCodeMissingMultiFactorInfo] = @"auth/missing-multi-factor-info",
-    [FIRAuthErrorCodeInvalidMultiFactorSession] = @"auth/invalid-multi-factor-session",
-    [FIRAuthErrorCodeMultiFactorInfoNotFound] = @"auth/multi-factor-info-not-found",
-    [FIRAuthErrorCodeSecondFactorAlreadyEnrolled] = @"auth/second-factor-already-in-use",
-    [FIRAuthErrorCodeMaximumSecondFactorCountExceeded] = @"auth/maximum-second-factor-count-exceeded",
-    [FIRAuthErrorCodeUnsupportedFirstFactor] = @"auth/unsupported-first-factor",
+    [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required",
+    [FIRAuthErrorCodeMissingMultiFactorSession] = @"missing-multi-factor-session",
+    [FIRAuthErrorCodeMissingMultiFactorInfo] = @"missing-multi-factor-info",
+    [FIRAuthErrorCodeInvalidMultiFactorSession] = @"invalid-multi-factor-session",
+    [FIRAuthErrorCodeMultiFactorInfoNotFound] = @"multi-factor-info-not-found",
+    [FIRAuthErrorCodeSecondFactorAlreadyEnrolled] = @"second-factor-already-in-use",
+    [FIRAuthErrorCodeMaximumSecondFactorCountExceeded] = @"maximum-second-factor-count-exceeded",
+    [FIRAuthErrorCodeUnsupportedFirstFactor] = @"unsupported-first-factor",
 
 };

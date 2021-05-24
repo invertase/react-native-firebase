@@ -58,6 +58,10 @@ export default class NativeFirebaseError extends Error {
       enumerable: false,
       value: userInfo.nativeErrorMessage || null,
     });
+    Object.defineProperty(this, 'resolver', {
+      enumerable: false,
+      value: userInfo.resolver || null,
+    });
 
     this.stack = NativeFirebaseError.getStackWithMessage(
       `NativeFirebaseError: ${this.message}`,

@@ -75,17 +75,20 @@ export default class User {
 
   get multiFactor() {
     return {
-      enroll(phoneNumber) {
+      enroll: (phoneNumber, displayName = '') => {
         return this._auth.native
           .multiFactorEnrollWithPhone(phoneNumber)
-          .then(result => new ConfirmationResultMFAEnroll(this._auth, result.verificationId));
+          .then(
+            result =>
+              new ConfirmationResultMFAEnroll(this._auth, result.verificationId, displayName),
+          );
       },
-      unenroll(hint) {
+      unenroll: hint => {
         return this._auth.native.multiFactorUnenroll(hint.uid).then(user => {
           this._auth._setUser(user);
         });
       },
-      enrolledFactors: this._user.enrolledFactors,
+      enrolledFactors: this._user.multiFactorEnrolledFactors,
     };
   }
 
