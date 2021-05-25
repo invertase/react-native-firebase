@@ -140,7 +140,7 @@ in the Kids category if the app accesses the IDFA iOS symbols.
 Additionally, apps must implement Apples "App Tracking Transparency" (or "ATT") requirements if they access IDFA symbols.
 However, if an app does not use IDFA and otherwise handles data in an ATT-compatible way, it eliminates this ATT requirement.
 
-If avoiding the usage of IDFA is a requirement for your app, you must use firebase-ios-sdk 7.11.0 or greater, then you may define a variable in your Podfile like this:
+If you need to avoid IDFA usage while still using analytics, then you need `firebase-ios-sdk` v7.11.0 or greater and to define the following variable in your Podfile:
 
 ```ruby
 $RNFirebaseAnalyticsWithoutAdIdSupport = true
