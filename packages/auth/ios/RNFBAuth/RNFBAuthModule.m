@@ -1016,7 +1016,7 @@ RCT_EXPORT_METHOD(multiFactorEnrollConfirm:
             if (error) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+                [self promiseWithUser:resolve rejecter:reject user:user];
             }
         }];
     } else {
@@ -1107,7 +1107,7 @@ RCT_EXPORT_METHOD(multiFactorUnenroll:
             if (error != nil) {
                 [self promiseRejectAuthException:reject error:error];
             } else {
-                [self reloadAndReturnUser:user resolver:resolve rejecter:reject];
+                [self promiseWithUser:resolve rejecter:reject user:user];
             }
         }];
     } else {
