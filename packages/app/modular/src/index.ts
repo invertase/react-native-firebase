@@ -11,7 +11,7 @@ import {
   isFirebaseAppConfig,
   isFirebaseOptions,
 } from './internal';
-import { defaultAppNotInitialized, noApp, noDefaultAppDelete } from './errors';
+import { defaultAppNotInitialized, noApp, noDefaultAppDelete, duplicateApp } from './errors';
 
 export * from './types';
 export * from './utils';
@@ -98,6 +98,16 @@ export async function initializeApp(
   options: FirebaseOptions,
   nameOrConfig?: string | FirebaseAppConfig,
 ): Promise<FirebaseApp> {
+  const name = isString(nameOrConfig) ? nameOrConfig : nameOrConfig?.name || defaultAppName;
+
+  const exists = getApps()?.some($ => {
+    return $.name === name;
+  });
+
+  if (exists) {
+    throw duplicateApp(name);
+  }
+
   if (!isFirebaseOptions(options)) {
     throw new ArgumentError('options', 'Expected a FirebaseOptions object');
   }

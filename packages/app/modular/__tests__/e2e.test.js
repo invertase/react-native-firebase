@@ -1,4 +1,4 @@
-import { initializeApp, getApp } from '../src';
+import { initializeApp, getApp, deleteApp, setAutomaticDataCollectionEnabled } from '../src';
 
 async function create(name) {
   return initializeApp(
@@ -31,6 +31,35 @@ describe('app', () => {
       const created = await create('foo');
       const app = getApp('foo');
       expect(app.name).toBe(created.name);
+    });
+  });
+
+  describe('deleteApp', () => {
+    test('it successfully delete an app', async () => {
+      const created = await create('deleteApp');
+
+      const deletedApp = await deleteApp(created);
+      expect(deletedApp).toBeUndefined();
+    });
+
+    test('it returns null if app does not exist', async () => {
+      const created = await create('deleteApp');
+      created.name = 'unknown';
+
+      const deletedApp = await deleteApp(created);
+      expect(deletedApp).toBeUndefined();
+    });
+  });
+
+  describe('setAutomaticDataCollectionEnabled', () => {
+    test('it successfully updates setAutomaticDataCollectionEnabled', async () => {
+      const app = await create('setAutomaticDataCollectionEnabledApp');
+
+      expect(app.automaticDataCollectionEnabled).toBe(false);
+
+      await setAutomaticDataCollectionEnabled(app, true);
+
+      expect(app.automaticDataCollectionEnabled).toBe(true);
     });
   });
 });

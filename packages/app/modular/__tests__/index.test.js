@@ -1,7 +1,13 @@
-import { deleteApp, getApp, getApps, setAutomaticDataCollectionEnabled } from '../src';
+import {
+  deleteApp,
+  getApp,
+  getApps,
+  setAutomaticDataCollectionEnabled,
+  initializeApp,
+} from '../src';
 import * as impl from '../src/impl';
 import { defaultAppName } from '../src/internal';
-import { createFirebaseApp } from './helpers';
+import { createFirebaseApp, createFirebaseOptions } from './helpers';
 
 jest.mock('../src/impl');
 
@@ -96,64 +102,99 @@ describe('app', () => {
     });
   });
 
-  // describe('initializeApp', () => {
-  //   test('it throws if an invalid object is provided', async () => {
-  //     await expect(() => initializeApp()).rejects.toThrow(/Expected a FirebaseOptions object/);
-  //   });
+  describe('initializeApp', () => {
+    test('it throws if an invalid object is provided', async () => {
+      await expect(() => initializeApp()).rejects.toThrow(/Expected a FirebaseOptions object/);
+    });
 
-  //   test('throws if an invalid config is provided', async () => {
-  //     await expect(() => initializeApp({}, 123)).rejects.toThrow(
-  //       /Expected a FirebaseOptions object/,
-  //     );
-  //   });
+    test('throws if an invalid config is provided', async () => {
+      await expect(() => initializeApp({}, 123)).rejects.toThrow(
+        /Expected a FirebaseOptions object/,
+      );
+    });
 
-  //   test('it does not require a name or config', async () => {
-  //     const app = createFirebaseApp();
-  //     const options = createFirebaseOptions();
+    test('throws if an invalid config object is provided', async () => {
+      const options = createFirebaseOptions();
 
-  //     impl.initializeApp.mockReturnValueOnce(app);
+      await expect(() => initializeApp({ ...options, name: null }, 123)).rejects.toThrow(
+        /Expected a FirebaseAppConfig object/,
+      );
+    });
 
-  //     const created = await initializeApp(options);
-  //     expect(impl.initializeApp.mock.calls).toHaveLength(1);
-  //     expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
-  //     expect(impl.initializeApp.mock.calls[0][1]).toEqual(undefined);
-  //     expect(created.name).toBe(app.name);
-  //   });
+    test('throws if a duplicate app exists with string name', async () => {
+      const name = 'duplicate';
+      const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
 
-  //   test('it creates a config object if name is provided', async () => {
-  //     const name = 'foo';
-  //     const app = createFirebaseApp(name);
-  //     const options = createFirebaseOptions();
+      impl.getApps.mockReturnValueOnce([app]);
 
-  //     impl.initializeApp.mockReturnValueOnce(app);
+      await expect(() => initializeApp(options, name)).rejects.toThrow(
+        "Firebase App named 'duplicate' already exists (app/app/duplicate-app)",
+      );
+    });
 
-  //     const created = await initializeApp(options, name);
-  //     expect(impl.initializeApp.mock.calls).toHaveLength(1);
-  //     expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
-  //     expect(impl.initializeApp.mock.calls[0][1]).toEqual({ name });
-  //     expect(created.name).toBe(app.name);
-  //   });
+    test('throws if a duplicate app exists with config name', async () => {
+      const name = 'duplicate';
+      const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
+      const config = {
+        name,
+      };
 
-  //   test('it uses a config object if provided', async () => {
-  //     const name = 'foo';
-  //     const app = createFirebaseApp(name);
-  //     const options = createFirebaseOptions();
+      impl.getApps.mockReturnValueOnce([app]);
 
-  //     impl.initializeApp.mockReturnValueOnce(app);
+      await expect(() => initializeApp(options, config)).rejects.toThrow(
+        "Firebase App named 'duplicate' already exists (app/app/duplicate-app)",
+      );
+    });
 
-  //     const config = {
-  //       name,
-  //       automaticDataCollectionEnabled: true,
-  //       automaticResourceManagement: false,
-  //     };
+    test('it does not require a name or config', async () => {
+      const app = createFirebaseApp();
+      const options = createFirebaseOptions();
 
-  //     const created = await initializeApp(options, config);
-  //     expect(impl.initializeApp.mock.calls).toHaveLength(1);
-  //     expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
-  //     expect(impl.initializeApp.mock.calls[0][1]).toEqual(config);
-  //     expect(created.name).toBe(app.name);
-  //   });
-  // });
+      impl.initializeApp.mockReturnValueOnce(app);
+
+      const created = await initializeApp(options);
+      expect(impl.initializeApp.mock.calls).toHaveLength(1);
+      expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
+      expect(impl.initializeApp.mock.calls[0][1]).toEqual(undefined);
+      expect(created.name).toBe(app.name);
+    });
+
+    test('it creates a config object if name is provided', async () => {
+      const name = 'foo';
+      const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
+
+      impl.initializeApp.mockReturnValueOnce(app);
+
+      const created = await initializeApp(options, name);
+      expect(impl.initializeApp.mock.calls).toHaveLength(1);
+      expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
+      expect(impl.initializeApp.mock.calls[0][1]).toEqual({ name });
+      expect(created.name).toBe(app.name);
+    });
+
+    test('it uses a config object if provided', async () => {
+      const name = 'foo';
+      const app = createFirebaseApp(name);
+      const options = createFirebaseOptions();
+
+      impl.initializeApp.mockReturnValueOnce(app);
+
+      const config = {
+        name,
+        automaticDataCollectionEnabled: true,
+        automaticResourceManagement: false,
+      };
+
+      const created = await initializeApp(options, config);
+      expect(impl.initializeApp.mock.calls).toHaveLength(1);
+      expect(impl.initializeApp.mock.calls[0][0]).toEqual(options);
+      expect(impl.initializeApp.mock.calls[0][1]).toEqual(config);
+      expect(created.name).toBe(app.name);
+    });
+  });
 
   describe('setAutomaticDataCollectionEnabled', () => {
     test('it throws if an invalid app is provided', async () => {
@@ -203,6 +244,7 @@ describe('app', () => {
       impl.getApp.mockReturnValueOnce(app);
 
       await setAutomaticDataCollectionEnabled(app, true);
+
       expect(app.automaticDataCollectionEnabled).toBe(true);
     });
   });

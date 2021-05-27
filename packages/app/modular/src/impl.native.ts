@@ -106,10 +106,6 @@ export async function initializeApp(
   initializeNativeApps();
   const name = config?.name ?? defaultAppName;
 
-  if (apps.has(name)) {
-    throw duplicateApp(name);
-  }
-
   const app = new FirebaseAppImpl(name, options, {
     automaticDataCollectionEnabled: config?.automaticDataCollectionEnabled,
     automaticResourceManagement: config?.automaticResourceManagement,
