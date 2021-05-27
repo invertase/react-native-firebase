@@ -7,6 +7,7 @@ analytics
 APIs
 APIs.
 APNs
+AirPods
 async
 ATT
 ATT-compatible
@@ -26,6 +27,7 @@ Barcode
 barcode
 barcodes
 BUGFIX
+CarPlay
 Changelog
 CLI
 CocoaPods
@@ -128,6 +130,7 @@ serverless
 SHA1
 SHA-256
 SIGABRT
+Siri
 SMS
 src
 stacktrace
@@ -135,6 +138,7 @@ SVG
 TestLab
 TFUA
 thenable
+ThreadPoolExecutor
 timezones
 triaging
 TypeDoc
