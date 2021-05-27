@@ -37,16 +37,40 @@ jobs:
         with:
           fetch-depth: 50
 
+      # Set up tool versions
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Install firebase CLI
+
+      - name: Configure JDK 1.11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
+
+      # Set path variables needed for caches
+      - name: Set workflow variables
+        id: workflow-variables
+        run: |
+          echo "::set-output name=metro-cache::$HOME/.metro"
+          echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
+          echo "::set-output name=tempdir::$TMPDIR"
+
+      - uses: actions/cache@v2
+        name: Yarn Cache
+        id: yarn-cache
+        with:
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
+          restore-keys: ${{ runner.os }}-yarn-v1
+
+      - name: Yarn Install
         uses: nick-invision/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
           max_attempts: 3
-          command: npm i -g firebase-tools
+          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
 
       - name: Cache Firestore Emulator
         uses: actions/cache@v2
@@ -58,44 +82,12 @@ jobs:
       - name: Start Firestore Emulator
         run: yarn tests:emulator:start-ci
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v2
-        name: Yarn Cache
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
-          restore-keys: ${{ runner.os }}-yarn-v1
-
       - uses: actions/cache@v2
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-v1-${{ hashFiles('**/*.gradle*') }}
           restore-keys: ${{ runner.os }}-gradle-v1
-
-      - name: Yarn Install
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
-
-      - name: Configure JDK 1.11
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'adopt'
-          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
-
-      - name: Verify JDK11
-        # Default JDK varies depending on different runner flavors, make sure we are on 11
-        # Run a check that exits with error unless it is 11 version to future-proof against unexpected upgrades
-        run: java -fullversion 2>&1 | grep '11.0'
-        shell: bash
 
       - name: Build Android App
         uses: nick-invision/retry@v2
@@ -105,10 +97,17 @@ jobs:
           max_attempts: 3
           command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug -Dorg.gradle.daemon=false
 
+      - name: Metro Bundler Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.workflow-variables.outputs.metro-cache }}
+          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-metro-v1
+
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
         run: |
-          nohup yarn tests:packager:jet &
+          nohup yarn tests:packager:jet-ci &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
