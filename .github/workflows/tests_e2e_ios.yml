@@ -32,16 +32,7 @@ jobs:
         with:
           all_but_latest: true
 
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 50
-
-      - uses: mikehardy/buildcache-action@v1
-        name: Buildcache
-        with:
-          cache_key: ${{ runner.os }}-v1
-          upload_buildcache_log: true
-
+      # Set up tool versions
       - uses: actions/setup-node@v2
         with:
           node-version: 14
@@ -50,54 +41,39 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Get Xcode version
-        id: xcode-version
-        run: echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
-
-      - name: Install firebase CLI
-        uses: nick-invision/retry@v2
+      - uses: actions/checkout@v2
         with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: npm i -g firebase-tools
+          fetch-depth: 50
 
-      - name: Cache Firestore Emulator
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/firebase/emulators
-          key: firebase-emulators-v1-${{ github.run_id }}
-          restore-keys: firebase-emulators-v1
-
-      - name: Start Firestore Emulator
-        run: yarn tests:emulator:start-ci
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      # Set path variables needed for caches
+      - name: Set workflow variables
+        id: workflow-variables
+        run: |
+          echo "::set-output name=metro-cache::$HOME/.metro"
+          echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
+          echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
 
       - uses: actions/cache@v2
         name: Yarn Cache
         id: yarn-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
           restore-keys: ${{ runner.os }}-yarn-v1
-
-      - uses: actions/cache@v2
-        name: Cache Pods
-        id: pods-cache
-        with:
-          path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: ${{ runner.os }}-pods-v2
 
       - uses: actions/cache@v2
         name: Detox Framework Cache
         id: detox-cache
         with:
           path: ~/Library/Detox/ios
-          key: ${{ runner.os }}-detox-framework-cache-${{ steps.xcode-version.outputs.xcode-version }}
+          key: ${{ runner.os }}-detox-framework-cache-${{ steps.workflow-variables.outputs.xcode-version }}
+
+      # Detox is compiled during yarn install, using Xcode, set up cache first
+      - uses: hendrikmuhs/ccache-action@v1
+        name: Xcode Compile Cache
+        with:
+          key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
+          max-size: 400M
 
       - name: Yarn Install
         uses: nick-invision/retry@v2
@@ -110,39 +86,71 @@ jobs:
       - name: Update Ruby build tools
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 2
           retry_wait_seconds: 60
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
+      - uses: actions/cache@v2
+        name: Cache Pods
+        id: pods-cache
+        with:
+          path: tests/ios/Pods
+          key: ${{ runner.os }}-pods-v2-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: ${{ runner.os }}-pods-v2
+
       - name: Pod Install
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 2
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn tests:ios:pod:install
 
+      - name: Cache Firestore Emulator
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-v1-${{ github.run_id }}
+          restore-keys: firebase-emulators-v1
+
+      - name: Start Firestore Emulator
+        run: yarn tests:emulator:start-ci
+
       - name: Build iOS App
         run: |
+          export PATH="/usr/lib/ccache:/usr/local/opt/ccache/libexec:$PATH"
+          export CCACHE_SLOPPINESS=clang_index_store,file_stat_matches,include_file_ctime,include_file_mtime,ivfsoverlay,pch_defines,modules,system_headers,time_macros
+          export CCACHE_FILECLONE=true
+          export CCACHE_DEPEND=true
+          export CCACHE_INODECACHE=true
+          ccache -s
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
           cd tests
           set -o pipefail
           ./node_modules/.bin/detox build --configuration ios.sim.debug
+          ccache -s
         shell: bash
 
       - name: Install applesimutils
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 5
           retry_wait_seconds: 60
           max_attempts: 3
           command: HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew && HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils && applesimutils --list
 
+      - name: Metro Bundler Cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.workflow-variables.outputs.metro-cache }}
+          key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
+          restore-keys: ${{ runner.os }}-metro-v1
+
       - name: Pre-fetch Javascript bundle
         run: |
-          nohup yarn tests:packager:jet &
+          nohup yarn tests:packager:jet-ci &
           printf 'Waiting for packager to come online'
           until curl --output /dev/null --silent --head --fail http://localhost:8081/status; do
             printf '.'
@@ -159,17 +167,10 @@ jobs:
         run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
-        timeout-minutes: 40
+        timeout-minutes: 10
         run: |
           cd tests
           ./node_modules/.bin/nyc ./node_modules/.bin/detox test --debug-synchronization 200 --configuration ios.sim.debug
-
-      - name: Upload Buildcache Log
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: buildcache_log
-          path: ./.buildcache/buildcache.log
 
       - name: Compress Simulator Log
         if: always()

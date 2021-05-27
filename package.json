@@ -20,6 +20,7 @@
     "tests:jest-coverage": "jest --coverage",
     "tests:packager:chrome": "cd tests && node_modules/.bin/react-native start --reset-cache",
     "tests:packager:jet": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
+    "tests:packager:jet-ci": "cd tests && cross-env TMPDIR=$HOME/.metro REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --no-interactive",
     "tests:packager:jet-reset-cache": "cd tests && cross-env REACT_DEBUGGER=\"echo nope\" node_modules/.bin/react-native start --reset-cache --no-interactive",
     "tests:emulator:start": "cd ./.github/workflows/scripts && ./start-firebase-emulator.sh --no-daemon",
     "tests:emulator:start-ci": "cd ./.github/workflows/scripts && ./start-firebase-emulator.sh",
