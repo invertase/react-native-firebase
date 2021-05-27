@@ -691,6 +691,12 @@ export namespace FirebaseDatabaseTypes {
       failureCallbackContext?: ((a: Error) => void) | Record<string, any> | null,
     ): Promise<DataSnapshot>;
 
+    
+    /**
+     * Get the server-value for this query, or return a cached value if not connected.
+     */
+    get(): Promise<DataSnapshot>;
+  
     /**
      * Generates a new `Query` object ordered by the specified child key.
      *
