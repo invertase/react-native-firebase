@@ -80,5 +80,15 @@ NSString * const AuthErrorCode_toJSErrorCode[] = {
   [FIRAuthErrorCodeNullUser] = @"null-user",
   [FIRAuthErrorCodeKeychainError] = @"keychain-error",
   [FIRAuthErrorCodeInternalError] = @"internal-error",
-  [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt"
+  [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
+    
+    [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required",
+    [FIRAuthErrorCodeMissingMultiFactorSession] = @"missing-multi-factor-session",
+    [FIRAuthErrorCodeMissingMultiFactorInfo] = @"missing-multi-factor-info",
+    [FIRAuthErrorCodeInvalidMultiFactorSession] = @"invalid-multi-factor-session",
+    [FIRAuthErrorCodeMultiFactorInfoNotFound] = @"multi-factor-info-not-found",
+    [FIRAuthErrorCodeSecondFactorAlreadyEnrolled] = @"second-factor-already-in-use",
+    [FIRAuthErrorCodeMaximumSecondFactorCountExceeded] = @"maximum-second-factor-count-exceeded",
+    [FIRAuthErrorCodeUnsupportedFirstFactor] = @"unsupported-first-factor",
+
 };

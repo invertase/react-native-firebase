@@ -40,6 +40,7 @@ import AppleAuthProvider from './providers/AppleAuthProvider';
 import Settings from './Settings';
 import User from './User';
 import version from './version';
+import ConfirmationResultMFASignIn from './ConfirmationResultMFASignIn';
 
 const statics = {
   AppleAuthProvider,
@@ -272,6 +273,12 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native
       .signInWithCredential(credential.providerId, credential.token, credential.secret)
       .then(userCredential => this._setUserCredential(userCredential));
+  }
+
+  signInWithMultiFactorInfo(hint) {
+    return this.native
+      .signInWithMultiFactorInfo(hint.UID)
+      .then(result => new ConfirmationResultMFASignIn(this, result.verificationId));
   }
 
   sendPasswordResetEmail(email, actionCodeSettings = null) {

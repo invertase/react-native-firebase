@@ -17,7 +17,7 @@
 
 #import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
-
+#import <Foundation/Foundation.h>
 #import "RNFBAuthModule.h"
 #import "RNFBApp/RNFBSharedUtils.h"
 #import "RNFBApp/RCTConvert+FIRApp.h"
@@ -52,6 +52,7 @@ static __strong NSMutableDictionary *authStateHandlers;
 static __strong NSMutableDictionary *idTokenHandlers;
 // Used for caching credentials between method calls.
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
+static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *mfaResolvers;
 
 @implementation RNFBAuthModule
 #pragma mark -
@@ -70,6 +71,7 @@ RCT_EXPORT_MODULE();
     authStateHandlers = [[NSMutableDictionary alloc] init];
     idTokenHandlers = [[NSMutableDictionary alloc] init];
     credentials = [[NSMutableDictionary alloc] init];
+    mfaResolvers = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -91,7 +93,7 @@ RCT_EXPORT_MODULE();
     [[FIRAuth authWithApp:firebaseApp] removeIDTokenDidChangeListener:[idTokenHandlers valueForKey:key]];
   }
   [idTokenHandlers removeAllObjects];
-  
+  [mfaResolvers removeAllObjects];
   [credentials removeAllObjects];
 }
 
@@ -939,6 +941,181 @@ RCT_EXPORT_METHOD(useEmulator:
       [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost: host port:port];
 }
 
+RCT_EXPORT_METHOD(multiFactorEnrollWithPhone:
+  (FIRApp *) firebaseApp
+    :(NSString *) phoneNumber
+    :(RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+
+    if (user) {
+        [user.multiFactor getSessionWithCompletion:^(FIRMultiFactorSession * _Nullable session, NSError * _Nullable error) {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                
+                
+                // send SMS
+                [
+                 [FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+                 verifyPhoneNumber:phoneNumber
+                 UIDelegate:nil
+                 multiFactorSession:session
+                 
+                 completion:^(
+                              NSString *_Nullable verificationID,
+                              NSError *_Nullable error
+                              )
+                 {
+                    if (error) {
+                        [self promiseRejectAuthException:reject error:error];
+                    } else {
+                        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                        [defaults setObject:verificationID forKey:@"authVerificationID"];
+                        resolve(@{
+                            @"verificationId": verificationID
+                        });
+                        
+                    }
+                }];
+            }
+        }];
+    } else {
+      [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+
+RCT_EXPORT_METHOD(multiFactorEnrollConfirm:
+                  (FIRApp *) firebaseApp
+                  :(NSString *) kPhoneSecondFactorVerificationCode
+                  :(NSString *) displayName
+                  :(RCTPromiseResolveBlock) resolve
+                  :(RCTPromiseRejectBlock) reject
+                  )
+{
+    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
+    if (user)
+    {
+        FIRPhoneAuthCredential *credential = [
+                                         [FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+                                         credentialWithVerificationID:verificationId
+                                         verificationCode:kPhoneSecondFactorVerificationCode
+                                         ];
+        
+        FIRMultiFactorAssertion *assertion = [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
+        // Complete enrollment. This will update the underlying tokens
+        // and trigger ID token change listener.
+        [user.multiFactor enrollWithAssertion:assertion
+                                  displayName:displayName
+                                   completion:^(NSError * _Nullable error)
+        {
+            if (error) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseWithUser:resolve rejecter:reject user:user];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+     
+RCT_EXPORT_METHOD(signInWithMultiFactorInfo:
+                  (FIRApp *) firebaseApp
+                  :(NSString *) multiFactorHintUID
+                  :(RCTPromiseResolveBlock) resolve
+                  :(RCTPromiseRejectBlock) reject
+                  )
+{
+    FIRMultiFactorResolver *resolver = [mfaResolvers objectForKey:multiFactorHintUID];
+    FIRMultiFactorInfo *hint = [resolver.hints objectAtIndex:[resolver.hints indexOfObjectPassingTest:^BOOL(FIRMultiFactorInfo * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [obj.UID isEqual:multiFactorHintUID];
+    }]];
+    
+    if ([hint.factorID isEqual:@"1"]  || YES) { // Currently Firebase only supports phone MFA
+        // Send SMS verification code
+        [
+         [FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]] verifyPhoneNumberWithMultiFactorInfo:(FIRPhoneMultiFactorInfo*) hint
+          UIDelegate:nil
+          multiFactorSession:resolver.session
+          completion:^(NSString * _Nullable verificationID, NSError * _Nullable error) {
+            if (error != nil) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [mfaResolvers setObject:resolver forKey:verificationID];
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                [defaults setObject:verificationID forKey:@"authVerificationID"];
+                resolve(@{
+                    @"verificationId": verificationID
+                        });
+            }
+          }
+        ];
+    } else {
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
+            @"code": @"unsupported-second-factor",
+            @"message": @"This second factor is not supported",
+        }];
+    }
+
+    
+}
+
+RCT_EXPORT_METHOD(signInWithMultiFactorInfoConfirm:
+                  (FIRApp *) firebaseApp
+                  :(NSString *) kPhoneSecondFactorVerificationCode
+                  :(RCTPromiseResolveBlock) resolve
+                  :(RCTPromiseRejectBlock) reject
+                  )
+{
+    // Ask user for the SMS verification code.
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *verificationId = [defaults stringForKey:@"authVerificationID"];
+    FIRPhoneAuthCredential *credential = [
+                                          [FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]] credentialWithVerificationID:verificationId
+                                          verificationCode:kPhoneSecondFactorVerificationCode
+                                          ];
+    FIRMultiFactorAssertion *assertion = [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
+    // Complete sign-in.
+    FIRMultiFactorResolver *resolver = [mfaResolvers objectForKey:verificationId];
+    [resolver resolveSignInWithAssertion:assertion
+                              completion:^(FIRAuthDataResult * _Nullable authResult, NSError * _Nullable error) {
+        if (error != nil) {
+            
+            [self promiseRejectAuthException:reject error:error];
+        } else {
+            // User successfully signed in with the second factor phone number.
+            [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(multiFactorUnenroll:
+                  (FIRApp *) firebaseApp
+                  :(nonnull NSString *)factorUID
+                  :(RCTPromiseResolveBlock) resolve
+                  :(RCTPromiseRejectBlock) reject
+                  )
+{
+    FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+    if (user) {
+        [user.multiFactor unenrollWithFactorUID:factorUID completion:^(NSError *_Nullable error) {
+            if (error != nil) {
+                [self promiseRejectAuthException:reject error:error];
+            } else {
+                [self promiseWithUser:resolve rejecter:reject user:user];
+            }
+        }];
+    } else {
+        [self promiseNoUser:resolve rejecter:reject isError:YES];
+    }
+}
+
+
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider token:(NSString *)authToken secret:(NSString *)authTokenSecret {
   FIRAuthCredential *credential;
 
@@ -1003,6 +1180,7 @@ RCT_EXPORT_METHOD(useEmulator:
       @"message": [jsError valueForKey:@"message"],
       @"nativeErrorMessage": [jsError valueForKey:@"nativeErrorMessage"],
       @"authCredential": [jsError valueForKey:@"authCredential"],
+      @"resolver": [jsError valueForKey:@"resolver"]
   }];
 }
 
@@ -1072,11 +1250,18 @@ RCT_EXPORT_METHOD(useEmulator:
     authCredentialDict = [self authCredentialToDict:authCredential];
   }
 
+    NSDictionary *mfaResolverDict = nil;
+    if  ([error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey] != nil) {
+        FIRMultiFactorResolver *mfaResolver = [error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey];
+        mfaResolverDict = [self convertMultiFactorResolver:mfaResolver];
+        
+    }
   return @{
       @"code": code,
       @"message": message,
       @"nativeErrorMessage": nativeErrorMessage,
       @"authCredential" : authCredentialDict != nil ? (id) authCredentialDict : [NSNull null],
+      @"resolver" : mfaResolverDict != nil ? (id) mfaResolverDict : [NSNull null]
   };
 }
 
@@ -1194,6 +1379,11 @@ RCT_EXPORT_METHOD(useEmulator:
 }
 
 - (NSDictionary *)firebaseUserToDict:(FIRUser *)user {
+    NSMutableArray *factors = [NSMutableArray array];
+    for (FIRMultiFactorInfo *factor in user.multiFactor.enrolledFactors) {
+        [factors addObject:[self multiFactorInfoToDict:factor]];
+    }
+
   return @{
       keyDisplayName: user.displayName ? (id) user.displayName : [NSNull null],
       keyEmail: user.email ? (id) user.email : [NSNull null],
@@ -1211,7 +1401,8 @@ RCT_EXPORT_METHOD(useEmulator:
       keyProviderId: [user.providerID lowercaseString],
       @"refreshToken": user.refreshToken,
       @"tenantId": user.tenantID ? (id) user.tenantID : [NSNull null],
-      keyUid: user.uid
+      keyUid: user.uid,
+      @"multiFactorEnrolledFactors": factors
   };
 }
 
@@ -1258,6 +1449,39 @@ RCT_EXPORT_METHOD(useEmulator:
   }
 
   return settings;
+}
+
+- (NSDictionary*) convertMultiFactorResolver:(FIRMultiFactorResolver*)multiFactorResolver {
+    
+    NSMutableArray *hints = [NSMutableArray array];
+    for (FIRMultiFactorInfo *hint in multiFactorResolver.hints) {
+        [hints addObject:[self multiFactorInfoToDict:hint]];
+        [mfaResolvers setObject:multiFactorResolver forKey:hint.UID];
+    }
+    
+    return @{
+        @"hints":hints
+    };
+}
+
+- (NSDictionary*) multiFactorInfoToDict:(FIRMultiFactorInfo *)hint {
+    
+    
+    if ([hint.factorID  isEqual: @"1"]) { // Firebase currently has only this type of hint
+        FIRPhoneMultiFactorInfo *phoneHint = (FIRPhoneMultiFactorInfo *) hint;
+        return @{
+            @"UID": phoneHint.UID,
+            @"phoneNumber": phoneHint.phoneNumber,
+            @"displayName": hint.displayName,
+        };
+    } else {
+        return @{
+            
+            @"UID": hint.UID,
+            @"displayName": hint.displayName,
+
+        };
+    }
 }
 
 @end
