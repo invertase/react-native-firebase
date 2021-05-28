@@ -55,7 +55,18 @@ apply plugin: 'com.google.firebase.crashlytics'
 // ..
 ```
 
-## 4. (Optional) Enable Crashlytics NDK reporting
+## 4. Add line for implementation
+
+Inside the `android/build.gradle` file, in the dependencies add the following implementations:
+
+```
+implementation 'com.google.firebase:firebase-crashlytics'
+implementation 'com.google.firebase:firebase-analytics'
+implementation 'com.google.firebase:firebase-iid:21.1.0'
+```
+
+
+## 5. (Optional) Enable Crashlytics NDK reporting
 
 Crashlytics NDK reporting allows you to capture Native Development Kit crashes, e.g. in React Native this will capture
 crashes originating from the Yoga layout engine.
@@ -81,7 +92,7 @@ android {
 }
 ```
 
-## 5. Rebuild the project
+## 6. Rebuild the project
 
 Once the above steps have been completed, rebuild your Android project:
 
