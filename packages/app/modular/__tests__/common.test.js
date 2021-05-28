@@ -62,24 +62,34 @@ describe('common', () => {
     });
   });
 
-  // describe('guard', () => {
-  //   test('it converts a generic error with a valid code to a FirebaseError', async () => {
-  //     const error = new Error('foo');
-  //     error.code = 'test/unknown';
+  describe('guard', () => {
+    test('it converts a generic error with a valid code to a FirebaseError', async () => {
+      const error = new Error('foo');
+      error.code = 'test/unknown';
 
-  //     const promise = new Promise((_, reject) => {
-  //       return reject(error);
-  //     });
+      const promise = new Promise((_, reject) => {
+        return reject(error);
+      });
 
-  //     expect.assertions(3);
+      expect.assertions(3);
 
-  //     return guard(promise).catch(e => {
-  //       expect(e).toBeInstanceOf(Error);
-  //       expect(e).toHaveProperty('code');
-  //       expect(e.code).toBe('test/unknown');
-  //     });
-  //   });
-  // });
+      return guard(promise).catch(e => {
+        expect(e).toBeInstanceOf(Error);
+        expect(e).toHaveProperty('code');
+        expect(e.code).toBe('test/unknown');
+      });
+    });
+
+    test('throws an error with a non string based code', async () => {
+      const error = new Error('foo');
+
+      const promise = new Promise(async (_, reject) => {
+        return reject(error);
+      });
+
+      await expect(() => guard(promise)).rejects.toThrow();
+    });
+  });
 
   describe('ArgumentError', () => {
     test('it creates an argument property', () => {

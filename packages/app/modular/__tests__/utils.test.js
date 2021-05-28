@@ -5,7 +5,9 @@ import {
   promptForPlayServices,
   makePlayServicesAvailable,
   resolutionForPlayServices,
+  isFirebaseError,
 } from '../src';
+import { FirebaseError } from '../src/internal';
 import * as impl from '../src/utils/impl';
 
 jest.mock('../src/utils/impl');
@@ -60,6 +62,14 @@ describe('utils', () => {
       expect(res).toBe('foo');
       expect(impl.resolutionForPlayServices.mock.calls).toHaveLength(1);
       expect(impl.resolutionForPlayServices.mock.calls[0][0]).toBeUndefined();
+    });
+  });
+
+  describe('isFirebaseError', () => {
+    test('it returns true if firebase error', async () => {
+      const error = new FirebaseError(new Error(), 'example', 'example_code');
+
+      expect(isFirebaseError(error)).toBeTruthy();
     });
   });
 });

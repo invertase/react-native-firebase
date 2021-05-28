@@ -11,6 +11,8 @@ import {
   isInteger,
   isBoolean,
   isOptionalBoolean,
+  isOptionalNumber,
+  isPositiveNumber,
   isArray,
   isUndefined,
   isAlphaNumericUnderscore,
@@ -114,6 +116,7 @@ describe('guards', () => {
     test('it checks against an string value', () => {
       expect(isOptionalString(undefined)).toBe(true);
       expect(isOptionalString(123)).toBe(false);
+      expect(isOptionalBoolean(123.456)).toBe(false);
       expect(isOptionalString('foo')).toBe(true);
       expect(isOptionalString([])).toBe(false);
       expect(isOptionalString(null)).toBe(true);
@@ -186,6 +189,36 @@ describe('guards', () => {
       expect(isOptionalBoolean(async () => {})).toBe(false);
       expect(isOptionalBoolean(true)).toBe(true);
       expect(isOptionalBoolean(false)).toBe(true);
+    });
+  });
+
+  describe('isOptionalNumber', () => {
+    test('it checks against a numeric value', () => {
+      expect(isOptionalNumber(undefined)).toBe(true);
+      expect(isOptionalNumber(123)).toBe(true);
+      expect(isOptionalBoolean(123.456)).toBe(false);
+      expect(isOptionalNumber('foo')).toBe(false);
+      expect(isOptionalNumber([])).toBe(false);
+      expect(isOptionalNumber(null)).toBe(true);
+      expect(isOptionalNumber({})).toBe(false);
+      expect(isOptionalNumber(new Date())).toBe(false);
+      expect(isOptionalNumber(() => {})).toBe(false);
+      expect(isOptionalNumber(async () => {})).toBe(false);
+    });
+  });
+
+  describe('isPositiveNumber', () => {
+    test('it checks against a numeric value', () => {
+      expect(isPositiveNumber(undefined)).toBe(false);
+      expect(isPositiveNumber(123)).toBe(true);
+      expect(isOptionalBoolean(123.456)).toBe(false);
+      expect(isPositiveNumber('foo')).toBe(false);
+      expect(isPositiveNumber([])).toBe(false);
+      expect(isPositiveNumber(null)).toBe(false);
+      expect(isPositiveNumber({})).toBe(false);
+      expect(isPositiveNumber(new Date())).toBe(false);
+      expect(isPositiveNumber(() => {})).toBe(false);
+      expect(isPositiveNumber(async () => {})).toBe(false);
     });
   });
 

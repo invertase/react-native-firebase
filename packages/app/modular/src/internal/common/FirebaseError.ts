@@ -34,7 +34,7 @@ export async function guard<T = unknown>(
   convert?: (code: string) => string,
 ): Promise<T> {
   try {
-    return promise.then(res => res);
+    return await promise.then(res => res);
   } catch (error) {
     if (isString(error?.code) && error.code.includes('/')) {
       const [module, code] = error.code.split('/');
