@@ -181,7 +181,7 @@ export function ref(
 
   if (urlOrPath) {
     if (_path.startsWith('gs://') || _path.startsWith('http')) {
-      if (!isStorageService(storageOrRef) || !isStorageReference(storageOrRef)) {
+      if (!isStorageService(storageOrRef) && !isStorageReference(storageOrRef)) {
         throw new ArgumentError(
           'storageOrRef',
           'Expected either a StorageService or StorageReference instance',
@@ -203,15 +203,15 @@ export function ref(
       } else {
         const parts = partsFromGsUrl(_path);
 
-        if (!parts) {
+        if (parts?.path === '/') {
           throw new ArgumentError(
             'url',
             `Unable to parse provided URL, ensure it's a valid Google Storage url`,
           );
         }
 
-        _bucket = parts.bucket;
-        _path = parts.path;
+        _bucket = parts?.bucket ?? '';
+        _path = parts?.path ?? '';
       }
     } else {
       if (!isStorageService(storageOrRef)) {

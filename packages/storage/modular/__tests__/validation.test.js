@@ -16,7 +16,6 @@ describe('validation', () => {
     });
 
     it('returns false when not a storage service', async () => {
-      const ref = createStorageService('foo');
       const result = validation.isStorageService({});
 
       expect(result).toBeFalsy();
