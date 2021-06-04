@@ -89,4 +89,24 @@ describe('validation', () => {
       expect(result.customMetadata).toEqual({});
     });
   });
+
+  describe('toFullMetadata', () => {
+    it('returns full metatdata', async () => {
+      const ref = createStorageService('foo');
+      const result = validation.toFullMetadata({ customMetadata: { foo: 'bar' } }, ref);
+
+      expect(result.customMetadata.foo).toBe('bar');
+      expect(result.ref.app).toBe('foo');
+    });
+  });
+
+  describe('toUploadResult', () => {
+    it('returns uploaded result metadata', async () => {
+      const ref = createStorageService('foo');
+      const result = validation.toUploadResult(ref, { customMetadata: { foo: 'bar' } });
+
+      expect(result.metadata.customMetadata.foo).toBe('bar');
+      expect(result.ref.app).toBe('foo');
+    });
+  });
 });
