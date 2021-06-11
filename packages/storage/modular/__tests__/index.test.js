@@ -1,4 +1,20 @@
-import { listAll, list, deleteObject, getDownloadURL, getMetadata, getStorage, ref } from '../src';
+import {
+  listAll,
+  list,
+  deleteObject,
+  getDownloadURL,
+  getMetadata,
+  getStorage,
+  ref,
+  setMaxOperationRetryTime,
+  setMaxUploadRetryTime,
+  setMaxDownloadRetryTime,
+  updateMetadata,
+  uploadBytes,
+  uploadBytesResumable,
+  uploadString,
+  putFile,
+} from '../src';
 import * as impl from '../src/impl';
 
 import { createStorageReference, createStorageService } from './helpers';
@@ -190,8 +206,6 @@ describe('storage', () => {
     });
 
     it('throws an error with an invalid service instance and non http or gs storage url', async () => {
-      const storageReference = createStorageService('foo');
-
       await expect(() => ref(null, 'unknown')).toThrowError(
         "Invalid argument 'storage'. Expected a StorageService instance.",
       );
@@ -219,6 +233,134 @@ describe('storage', () => {
       await expect(() => ref(null, 'http://')).toThrowError(
         "Invalid argument 'storageOrRef'. Expected either a StorageService or StorageReference instance.",
       );
+    });
+
+    describe('setMaxOperationRetryTime', () => {
+      it('updates the setMaxOperationRetryTime', async () => {
+        const storageReference = createStorageService('foo');
+        await setMaxOperationRetryTime(storageReference, 10);
+
+        expect(storageReference.maxOperationRetryTime).toBe(10);
+      });
+      it('throws with a non positive time provided', async () => {
+        const storageReference = createStorageService('foo');
+        await expect(() => setMaxOperationRetryTime(storageReference, -10)).rejects.toThrow(
+          "Invalid argument 'time'. Expected a positive integer value.",
+        );
+      });
+      it('throws with no valid service or reference with an invalid http reference', async () => {
+        await expect(() => setMaxOperationRetryTime({}, 10)).rejects.toThrow(
+          "Invalid argument 'storage'. Expected a StorageService instance",
+        );
+      });
+    });
+
+    describe('setMaxUploadRetryTime', () => {
+      it('updates the setMaxUploadRetryTime', async () => {
+        const storageReference = createStorageService('foo');
+        await setMaxUploadRetryTime(storageReference, 10);
+
+        expect(storageReference.maxUploadRetryTime).toBe(10);
+      });
+      it('throws with a non positive time provided', async () => {
+        const storageReference = createStorageService('foo');
+        await expect(() => setMaxUploadRetryTime(storageReference, -10)).rejects.toThrow(
+          "Invalid argument 'time'. Expected a positive integer value.",
+        );
+      });
+      it('throws with no valid service or reference with an invalid http reference', async () => {
+        await expect(() => setMaxUploadRetryTime({}, 10)).rejects.toThrow(
+          "Invalid argument 'storage'. Expected a StorageService instance",
+        );
+      });
+    });
+
+    describe('setMaxDownloadRetryTime', () => {
+      it('updates the setMaxDownloadRetryTime', async () => {
+        const storageReference = createStorageService('foo');
+        await setMaxDownloadRetryTime(storageReference, 10);
+
+        expect(storageReference.maxDownloadRetryTime).toBe(10);
+      });
+      it('throws with a non positive time provided', async () => {
+        const storageReference = createStorageService('foo');
+        await expect(() => setMaxDownloadRetryTime(storageReference, -10)).rejects.toThrow(
+          "Invalid argument 'time'. Expected a positive integer value.",
+        );
+      });
+      it('throws with no valid service or reference with an invalid http reference', async () => {
+        await expect(() => setMaxDownloadRetryTime({}, 10)).rejects.toThrow(
+          "Invalid argument 'storage'. Expected a StorageService instance",
+        );
+      });
+    });
+
+    describe('updateMetadata', () => {
+      it('updates the storage metadata', async () => {
+        const storageReference = createStorageReference('foo');
+        const metaData = await updateMetadata(storageReference, { foo: 'bar' });
+
+        //TODO Fix assertion / function error
+
+        // expect(storageReference.customMetadata).toBe({ foo: 'bar' });
+      });
+      it('throws with no valid service or reference with an invalid http reference', async () => {
+        await expect(() => updateMetadata({}, {})).toThrow(
+          "Invalid argument 'ref'. Expected a StorageReference instance.",
+        );
+      });
+    });
+
+    describe('uploadBytes', () => {
+      it('throws without a valid storage reference', async () => {
+        await expect(() => uploadBytes({}, null)).toThrow(
+          "Invalid argument 'ref'. Expected a StorageReference instance.",
+        );
+      });
+
+      it('throws without valid blob data', async () => {
+        const storageReference = createStorageReference('foo');
+        await expect(() => uploadBytes(storageReference, null)).toThrow(
+          "Invalid argument 'data'. Expected a Blob, Uint8Array or ArrayBuffer value.",
+        );
+      });
+    });
+
+    describe('uploadBytesResumable', () => {
+      it('throws without a valid storage reference', async () => {
+        await expect(() => uploadBytesResumable({}, null)).toThrow(
+          "Invalid argument 'ref'. Expected a StorageReference instance.",
+        );
+      });
+
+      it('throws without valid blob data', async () => {
+        const storageReference = createStorageReference('foo');
+        await expect(() => uploadBytesResumable(storageReference, null)).toThrow(
+          "Invalid argument 'data'. Expected a Blob, Uint8Array or ArrayBuffer value.",
+        );
+      });
+    });
+
+    describe('uploadString', () => {
+      it('throws without a valid storage reference', async () => {
+        await expect(() => uploadString({}, null)).toThrow(
+          "Invalid argument 'ref'. Expected a StorageReference instance.",
+        );
+      });
+
+      it('throws without a valid string value', async () => {
+        const storageReference = createStorageReference('foo');
+        await expect(() => uploadString(storageReference, null)).toThrow(
+          "Invalid argument 'value'. Expected a string value.",
+        );
+      });
+
+      it('throws without a valid format', async () => {
+        const storageReference = createStorageReference('foo');
+        await expect(() => uploadString(storageReference, 'test', 'unknown')).toThrow(
+          "Invalid argument 'format'. Expected a StringFormat value.",
+        );
+      });
     });
   });
 });

@@ -100,6 +100,7 @@ export async function updateMetadata(
   metadata: SettableMetadata,
 ): Promise<FullMetadata> {
   const result = await delegate.updateMetadata(getStorageReference(ref), metadata);
+
   return toFullMetadata(result);
 }
 

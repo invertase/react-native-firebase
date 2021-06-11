@@ -17,15 +17,16 @@ export function createStorageRef() {
 }
 
 export function createStorageService(storage, options = { bucket: '' }) {
-  return new StorageServiceImpl(storage || createStorageServiceImpl(), options);
+  return new StorageServiceImpl(storage, options);
+  // return new StorageServiceImpl(storage || createStorageServiceImpl(), options);
 }
 
-export function createStorageServiceImpl() {
-  return {
-    app: { name: 'myApp' },
-    maxOperationRetryTime: 1,
-    maxDownloadRetryTime: 1,
-    maxUploadRetryTime: 1,
-    bucket: 'test_bucket',
-  };
-}
+// export function createStorageServiceImpl() {
+//   return {
+//     app: { name: 'myApp' },
+//     maxOperationRetryTime: 1,
+//     maxDownloadRetryTime: 1,
+//     maxUploadRetryTime: 1,
+//     bucket: 'test_bucket',
+//   };
+// }

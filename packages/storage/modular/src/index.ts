@@ -347,7 +347,7 @@ export function uploadBytes(
     throw new ArgumentError('ref', 'Expected a StorageReference instance');
   }
 
-  if (!(data instanceof Blob) || !(data instanceof Uint8Array) || !(data instanceof ArrayBuffer)) {
+  if (!(data instanceof Blob) && !(data instanceof Uint8Array) && !(data instanceof ArrayBuffer)) {
     throw new ArgumentError('data', 'Expected a Blob, Uint8Array or ArrayBuffer value');
   }
 
