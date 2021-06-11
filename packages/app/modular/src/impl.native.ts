@@ -1,6 +1,6 @@
 import { defaultAppName, Mutable } from './internal';
 import { FirebaseApp, FirebaseAppConfig, FirebaseOptions } from './types';
-import { defaultAppNotInitialized, duplicateApp, noApp } from './errors';
+import { defaultAppNotInitialized, noApp } from './errors';
 import FirebaseAppImpl from './implementations/firebaseApp';
 import { getNativeModule } from './internal/native/module.native';
 
