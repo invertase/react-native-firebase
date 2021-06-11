@@ -62,14 +62,14 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "8.0.0"
+      "firebase": "8.1.1"
     },
     "android": {
       "minSdk": 16,
       "targetSdk": 30,
       "compileSdk": 30,
       "buildTools": "30.0.2",
-      "firebase": "28.0.1",
+      "firebase": "28.1.0",
       "playServicesAuth": "19.0.0"
     }
   }
