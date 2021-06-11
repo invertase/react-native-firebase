@@ -1,8 +1,8 @@
 ---
 title: Release notes
 description: View the latest release notes for React Native Firebase
-next: /typescript
-previous: /migrating-to-v6
+next: /migrating-to-v6
+previous: /typescript
 ---
 
 Starting from version `10.0.0`, React Native Firebase packages share a single common version, with aggregated release notes available:
