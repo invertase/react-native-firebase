@@ -20,6 +20,12 @@ yarn add @react-native-firebase/crashlytics
 
 # If you're developing your app using iOS, run this command
 cd ios/ && pod install
+
+# Add app/build.gradle
+apply plugin: 'com.google.firebase.crashlytics'
+
+#Add project build.gradle
+classpath 'com.google.firebase:firebase-crashlytics-gradle:2.1.1'
 ```
 
 Once installed, you must complete the following additional setup steps for Android:
