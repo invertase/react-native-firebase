@@ -171,17 +171,7 @@ In case any errors occur, the module provides support for identifying what speci
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#error-codes_3).
 
 ## Authenticate with backend server
-To authenticate with the backend server, the user token should be used. This value can be fetched by using the getIdToken method as shown in the following snippet. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users), the user's UID per se should not be used for purposes of authentication. 
-```
-     import auth from '@react-native-firebase/auth';
-     const user = auth().currentUser;
-     user
-        .getIdToken()
-        .then(token =>
-          console.log('uid token is ', token),
-        ); 
-```
-
+The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://rnfirebase.io/reference/auth/user#getIdToken) method as shown in the following snippet. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication. 
 
 ## Signing out
 
