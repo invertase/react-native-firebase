@@ -7,3 +7,4 @@ docs
 packages/template/project/**
 app.playground.js
 type-test.ts
+packages/**/modular/dist/**
