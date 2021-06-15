@@ -171,7 +171,8 @@ In case any errors occur, the module provides support for identifying what speci
 to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#error-codes_3).
 
 ## Authenticate with backend server
-The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://rnfirebase.io/reference/auth/user#getIdToken) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication. 
+
+The user's token should be used for authentication with your backend systems. The token is fetched with the [getIdToken](https://rnfirebase.io/reference/auth/user#getIdToken) method. As mentioned in the [Firebase documentation](https://firebase.google.com/docs/auth/web/manage-users#get_a_users_profile), the uid should not be used for authentication.
 
 ## Signing out
 
