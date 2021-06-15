@@ -164,7 +164,7 @@ Your application code can then handle messages as you see fit; updating local ca
 or updating UI. The possibilities are endless!
 
 ## Signing out users 
-Firebase Cloud Messaging tokens are associated with the instance of the installed app. So reinstalling the app and logging back in with the same user will generate a fresh token. 
+Firebase Cloud Messaging tokens are associated with the instance of the installed app. By default, only token expiration or uninstalling/reinstalling the app will generate a fresh token.
 
 Similarly, when one user logs out and another logs in on the same app on the same device, the same FCM token will be used for both users. So if the use case involves users logging in and out on the app, the tokens should be cycled in concert. 
 
