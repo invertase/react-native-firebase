@@ -166,7 +166,7 @@ or updating UI. The possibilities are endless!
 ## Signing out users 
 Firebase Cloud Messaging tokens are associated with the instance of the installed app. By default, only token expiration or uninstalling/reinstalling the app will generate a fresh token.
 
-Similarly, when one user logs out and another logs in on the same app on the same device, the same FCM token will be used for both users. So if the use case involves users logging in and out on the app, the tokens should be cycled in concert. 
+This means that by default, if your app has users and you allow them to log out and log in on the same app on the same device, the same FCM token will be used for both users. Usually this is not what you want, so you must take care to cycle the FCM token at the same time you handle user logout/login.
 
 To log a user out, these two methods should be called back-to-back, waiting for promise resolution of course
 
