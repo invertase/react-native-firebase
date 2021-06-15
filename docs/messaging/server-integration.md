@@ -163,6 +163,20 @@ function App() {
 Your application code can then handle messages as you see fit; updating local cache, displaying a [notification](/messaging/notifications)
 or updating UI. The possibilities are endless!
 
+## Signing out users 
+Firebase Cloud Messaging tokens are associated with the instance of the installed app. So reinstalling the app and logging back in with the same user will generate a fresh token. 
+
+Similarly, when one user logs out and another logs in on the same app on the same device, the same FCM token will be used for both users. So if the use case involves users logging in and out on the app, the tokens should be cycled in concert. 
+
+To log a user out, these two methods should be called back-to-back, waiting for promise resolution of course
+
+https://rnfirebase.io/reference/messaging#deleteToken
+
+https://rnfirebase.io/reference/messaging#getToken
+
+Do note that when a token is deleted by calling the `deleteToken` method, it is gone forever. 
+
+
 # Send messages to topics
 
 When devices [subscribe to topics](/messaging/usage#topics), you can send messages without specifying/storing any device
