@@ -53,6 +53,7 @@ firebase
 Firebase
 firebase-ios-sdk
 Firestore
+getIdToken
 GDPR
 globals
 Gradle
@@ -143,6 +144,7 @@ timezones
 triaging
 TypeDoc
 UI
+uid
 uncomment
 unhandled
 unsubscriber
