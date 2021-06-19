@@ -74,6 +74,8 @@ android {
 
             firebaseCrashlytics {
                 nativeSymbolUploadEnabled true
+                strippedNativeLibsDir "libs"
+                unstrippedNativeLibsDir "libs"
             }
             // ...
         }
