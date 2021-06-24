@@ -81,7 +81,7 @@ with the new authentication state of the user.
 
 ## Facebook
 
-Facebook provide an [official React Native library](https://github.com/facebook/react-native-fbsdk) which wraps around
+There is a [community-supported React Native library](https://github.com/thebergamo/react-native-fbsdk-next) which wraps around
 the native Facebook SDKs to enable Facebook sign-in.
 
 Before getting started, ensure you have installed the library, [configured your Android & iOS applications](https://developers.facebook.com/docs/android/getting-started/) and
