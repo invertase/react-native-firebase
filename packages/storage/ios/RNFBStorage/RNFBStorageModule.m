@@ -61,13 +61,13 @@ RCT_EXPORT_MODULE();
 }
 
 - (void)dealloc {
-  for (NSString *key in PENDING_TASKS) {
+  for (NSString *key in [PENDING_TASKS allKeys]) {
     [PENDING_TASKS removeObjectForKey:key];
   }
 }
 
 - (void)invalidate {
-  for (NSString *key in PENDING_TASKS) {
+  for (NSString *key in [PENDING_TASKS allKeys]) {
     [PENDING_TASKS removeObjectForKey:key];
   }
 }
