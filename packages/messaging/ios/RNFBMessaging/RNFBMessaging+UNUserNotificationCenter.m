@@ -98,6 +98,7 @@ struct {
     // if there is an actionIdentifier on this notification, also add that in.
     [mergedDict setObject:response.actionIdentifier forKey:@"actionIdentifier"];
 
+    // send payload to JS space
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:mergedDict];
     _initialNotification = notificationDict;
   }
