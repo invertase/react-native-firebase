@@ -88,7 +88,17 @@ struct {
   NSDictionary *remoteNotification = response.notification.request.content.userInfo;
   if (remoteNotification[@"gcm.message_id"]) {
     NSDictionary *notificationDict = [RNFBMessagingSerializer remoteMessageUserInfoToDict:remoteNotification];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:notificationDict];
+
+    // create a merged dictionary that will hold the serialized userInfo data, as well as any actionIdentifier
+    NSMutableDictionary * mergedDict = [NSMutableDictionary dictionary];
+
+    // copy the values of notificationDict into mergedDict
+    [mergedDict addEntriesFromDictionary:notificationDict];
+
+    // if there is an actionIdentifier on this notification, also add that in.
+    [mergedDict setObject:response.actionIdentifier forKey:@"actionIdentifier"];
+
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_notification_opened" body:mergedDict];
     _initialNotification = notificationDict;
   }
 
