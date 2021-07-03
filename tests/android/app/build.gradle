@@ -83,6 +83,10 @@ android {
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
       proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
       signingConfig signingConfigs.release
+      firebaseCrashlytics {
+        nativeSymbolUploadEnabled true
+          unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
+      }
     }
   }
 
