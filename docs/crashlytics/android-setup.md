@@ -70,10 +70,11 @@ android {
         release {
             /* Add the firebaseCrashlytics extension (by default,
             * it's disabled to improve build speeds) and set
-            * nativeSymbolUploadEnabled to true. */
+            * nativeSymbolUploadEnabled to true along with a pointer to native libs. */
 
             firebaseCrashlytics {
                 nativeSymbolUploadEnabled true
+                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
             }
             // ...
         }
