@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Android Tests applies changes to app/build.gradle 1`] = `
+exports[`Config Plugin Android Tests applies changes to app/build.gradle 1`] = `
 "/* Example build.gradle file from https://github.com/expo/expo/blob/6ab0274b5cb9a9c223e0d453787a522b438b4fcb/templates/expo-template-bare-minimum/android/app/build.gradle */
 
 apply plugin: \\"com.android.application\\"
@@ -123,7 +123,7 @@ apply from: file(\\"../../node_modules/@react-native-community/cli-platform-andr
 apply plugin: 'com.google.gms.google-services'"
 `;
 
-exports[`Android Tests applies changes to project build.gradle 1`] = `
+exports[`Config Plugin Android Tests applies changes to project build.gradle 1`] = `
 "// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {

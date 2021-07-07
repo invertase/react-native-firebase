@@ -24,9 +24,9 @@ interface PluginProps {
 }
 
 /**
- * A config plugin for configuring `react-native-firebase`
+ * A config plugin for configuring `@react-native-firebase/app`
  */
-const withRnFirebase: ConfigPlugin<PluginProps> = (
+const withRnFirebaseApp: ConfigPlugin<PluginProps> = (
   config,
   { androidGoogleServicesPath, iosGoogleServicesPath } = {},
 ) => {
@@ -59,11 +59,5 @@ const withRnFirebase: ConfigPlugin<PluginProps> = (
   ]);
 };
 
-let plugin: ConfigPlugin<PluginProps>;
-try {
-  const pak = require('@react-native-firebase/app/package.json');
-  plugin = createRunOncePlugin(withRnFirebase, pak.name, pak.version);
-} catch (e) {
-  plugin = withRnFirebase;
-}
-export default plugin;
+const pak = require('@react-native-firebase/app/package.json');
+export default createRunOncePlugin(withRnFirebaseApp, pak.name, pak.version);

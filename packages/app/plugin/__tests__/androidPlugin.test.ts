@@ -4,7 +4,7 @@ import path from 'path';
 import { applyPlugin } from '../src/android/applyPlugin';
 import { setBuildscriptDependency } from '../src/android/buildscriptDependency';
 
-describe('Android Tests', function () {
+describe('Config Plugin Android Tests', function () {
   let appBuildGradle: string;
   let projectBuildGradle: string;
 

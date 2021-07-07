@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`iOS Tests tests changes made to AppDelegate.m 1`] = `
+exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m 1`] = `
 "#import \\"AppDelegate.h\\"
 @import Firebase;
 
