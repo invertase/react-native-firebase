@@ -176,9 +176,6 @@
           notificationIOS[@"subtitleLocArgs"] = apsAlertDict[@"subtitle-loc-args"];
         }
       }
-
-      notification[@"ios"] = notificationIOS;
-      message[@"notification"] = notification;
     }
 
     // message.notification.ios.sound
@@ -208,10 +205,13 @@
         // message.notification.ios.sound
         notificationIOS[@"sound"] = notificationIOSSound;
       }
-
-      notification[@"ios"] = notificationIOS;
-      message[@"notification"] = notification;
     }
+  }
+  if ([notificationIOS count] > 0) {
+    notification[@"ios"] = notificationIOS;
+  }
+  if ([notification count] > 0) {
+    message[@"notification"] = notification;
   }
 
   return message;
