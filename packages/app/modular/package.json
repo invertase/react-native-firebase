@@ -10,6 +10,7 @@
     "build": "rimraf dist && tsc",
     "build:version": "node ./scripts/genversion-ios && node ./scripts/genversion-android",
     "build:clean": "rimraf android/build && rimraf ios/build",
+    "docs": "typedoc --hideBreadcrumbs --namedAnchors --hideInPageTOC --publicPath /reference/app/",
     "prepare": "npm run build",
     "test": "jest"
   },

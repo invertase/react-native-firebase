@@ -6,29 +6,35 @@ Represents the process of uploading an object. Allows you to monitor and manage 
 
 ### snapshot
 
-• `Readonly` **snapshot**: [*UploadTaskSnapshot*](/reference/storage/interfaces/uploadtasksnapshot.md)
+• `Readonly` **snapshot**: [`UploadTaskSnapshot`](/reference/storage/interfaces/uploadtasksnapshot.md)
 
 A snapshot of the current task state.
 
-Defined in: [packages/storage/modular/src/types.ts:74](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L74)
+#### Defined in
+
+[packages/storage/modular/src/types.ts:74](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L74)
 
 ## Methods
 
 ### cancel
 
-▸ **cancel**(): *Promise*<boolean\>
+▸ **cancel**(): `Promise`<`boolean`\>
 
 Cancels a running task. Has no effect on a complete or failed task.
 
-**Returns:** *Promise*<boolean\>
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:78](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L78)
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:78](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L78)
 
 ___
 
 ### catch
 
-▸ **catch**(`onRejected?`: (`error`: *any*) => *unknown*): *Promise*<unknown\>
+▸ **catch**(`onRejected?`): `Promise`<`unknown`\>
 
 Called if the upload task fails.
 
@@ -36,17 +42,21 @@ Called if the upload task fails.
 
 | Name | Type |
 | :------ | :------ |
-| `onRejected?` | (`error`: *any*) => *unknown* |
+| `onRejected?` | (`error`: `any`) => `unknown` |
 
-**Returns:** *Promise*<unknown\>
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:110](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L110)
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:110](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L110)
 
 ___
 
 ### on
 
-▸ **on**(`event`: ``"state_changed"``, `observer?`: (`snapshot`: [*UploadTaskSnapshot*](/reference/storage/interfaces/uploadtasksnapshot.md)) => *unknown*, `error?`: (`error`: *any*) => *unknown*, `complete?`: () => *unknown*): *function*
+▸ **on**(`event`, `observer?`, `error?`, `complete?`): () => `void`
 
 Listens for events on this task.
 
@@ -57,43 +67,61 @@ In addition, when you add your callbacks, you get a function back. You can call 
 | Name | Type |
 | :------ | :------ |
 | `event` | ``"state_changed"`` |
-| `observer?` | (`snapshot`: [*UploadTaskSnapshot*](/reference/storage/interfaces/uploadtasksnapshot.md)) => *unknown* |
-| `error?` | (`error`: *any*) => *unknown* |
-| `complete?` | () => *unknown* |
+| `observer?` | (`snapshot`: [`UploadTaskSnapshot`](/reference/storage/interfaces/uploadtasksnapshot.md)) => `unknown` |
+| `error?` | (`error`: `any`) => `unknown` |
+| `complete?` | () => `unknown` |
 
-**Returns:** () => *void*
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:95](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L95)
+`fn`
+
+▸ (): `void`
+
+##### Returns
+
+`void`
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:95](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L95)
 
 ___
 
 ### pause
 
-▸ **pause**(): *Promise*<boolean\>
+▸ **pause**(): `Promise`<`boolean`\>
 
 Pauses a currently running task. Has no effect on a paused or failed task.
 
-**Returns:** *Promise*<boolean\>
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:86](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L86)
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:86](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L86)
 
 ___
 
 ### resume
 
-▸ **resume**(): *Promise*<boolean\>
+▸ **resume**(): `Promise`<`boolean`\>
 
 Resumes a paused task. Has no effect on a currently running or failed task.
 
-**Returns:** *Promise*<boolean\>
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:82](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L82)
+`Promise`<`boolean`\>
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:82](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L82)
 
 ___
 
 ### then
 
-▸ **then**(`onFulfilled?`: (`snapshot`: [*UploadTaskSnapshot*](/reference/storage/interfaces/uploadtasksnapshot.md)) => *unknown*): *Promise*<unknown\>
+▸ **then**(`onFulfilled?`): `Promise`<`unknown`\>
 
 This object behaves like a Promise, and resolves with its snapshot data when the upload completes.
 
@@ -101,8 +129,12 @@ This object behaves like a Promise, and resolves with its snapshot data when the
 
 | Name | Type |
 | :------ | :------ |
-| `onFulfilled?` | (`snapshot`: [*UploadTaskSnapshot*](/reference/storage/interfaces/uploadtasksnapshot.md)) => *unknown* |
+| `onFulfilled?` | (`snapshot`: [`UploadTaskSnapshot`](/reference/storage/interfaces/uploadtasksnapshot.md)) => `unknown` |
 
-**Returns:** *Promise*<unknown\>
+#### Returns
 
-Defined in: [packages/storage/modular/src/types.ts:105](https://github.com/invertase/react-native-firebase/blob/87c11716/packages/storage/modular/src/types.ts#L105)
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[packages/storage/modular/src/types.ts:105](https://github.com/invertase/react-native-firebase/blob/3eaa35e5/packages/storage/modular/src/types.ts#L105)

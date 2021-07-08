@@ -2,215 +2,285 @@
 
 ## Hierarchy
 
-- *FullMetadata*
+- `FullMetadata`
 
-  ↳ **FullMetadata**
+  ↳ **`FullMetadata`**
 
 ## Properties
 
 ### bucket
 
-• **bucket**: *string*
+• **bucket**: `string`
 
 The bucket this object is contained in.
 
-Inherited from: web.FullMetadata.bucket
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:43
+web.FullMetadata.bucket
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:43
 
 ___
 
 ### cacheControl
 
-• `Optional` **cacheControl**: *string*
+• `Optional` **cacheControl**: `string`
 
 Served as the 'Cache-Control' header on object download.
 
-Inherited from: web.FullMetadata.cacheControl
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:216
+web.FullMetadata.cacheControl
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:216
 
 ___
 
 ### contentDisposition
 
-• `Optional` **contentDisposition**: *string*
+• `Optional` **contentDisposition**: `string`
 
 Served as the 'Content-Disposition' header on object download.
 
-Inherited from: web.FullMetadata.contentDisposition
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:220
+web.FullMetadata.contentDisposition
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:220
 
 ___
 
 ### contentEncoding
 
-• `Optional` **contentEncoding**: *string*
+• `Optional` **contentEncoding**: `string`
 
 Served as the 'Content-Encoding' header on object download.
 
-Inherited from: web.FullMetadata.contentEncoding
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:224
+web.FullMetadata.contentEncoding
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:224
 
 ___
 
 ### contentLanguage
 
-• `Optional` **contentLanguage**: *string*
+• `Optional` **contentLanguage**: `string`
 
 Served as the 'Content-Language' header on object download.
 
-Inherited from: web.FullMetadata.contentLanguage
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:228
+web.FullMetadata.contentLanguage
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:228
 
 ___
 
 ### contentType
 
-• `Optional` **contentType**: *string*
+• `Optional` **contentType**: `string`
 
 Served as the 'Content-Type' header on object download.
 
-Inherited from: web.FullMetadata.contentType
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:232
+web.FullMetadata.contentType
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:232
 
 ___
 
 ### customMetadata
 
-• `Optional` **customMetadata**: *object*
+• `Optional` **customMetadata**: `Object`
 
 Additional user-defined custom metadata.
 
-#### Type declaration
+#### Index signature
 
-Inherited from: web.FullMetadata.customMetadata
+▪ [key: `string`]: `string`
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:236
+#### Inherited from
+
+web.FullMetadata.customMetadata
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:236
 
 ___
 
 ### downloadTokens
 
-• **downloadTokens**: *undefined* \| *string*[]
+• **downloadTokens**: `undefined` \| `string`[]
 
 Tokens to allow access to the downloatd URL.
 
-Inherited from: web.FullMetadata.downloadTokens
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:78
+web.FullMetadata.downloadTokens
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:78
 
 ___
 
 ### fullPath
 
-• **fullPath**: *string*
+• **fullPath**: `string`
 
 The full path of this object.
 
-Inherited from: web.FullMetadata.fullPath
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:47
+web.FullMetadata.fullPath
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:47
 
 ___
 
 ### generation
 
-• **generation**: *string*
+• **generation**: `string`
 
 The object's generation.
 [https://cloud.google.com/storage/docs/generations-preconditions](https://cloud.google.com/storage/docs/generations-preconditions)
 
-Inherited from: web.FullMetadata.generation
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:52
+web.FullMetadata.generation
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:52
 
 ___
 
 ### md5Hash
 
-• `Optional` **md5Hash**: *string*
+• `Optional` **md5Hash**: `string`
 
 A Base64-encoded MD5 hash of the object being uploaded.
 
-Inherited from: web.FullMetadata.md5Hash
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:414
+web.FullMetadata.md5Hash
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:414
 
 ___
 
 ### metageneration
 
-• **metageneration**: *string*
+• **metageneration**: `string`
 
 The object's metageneration.
 [https://cloud.google.com/storage/docs/generations-preconditions](https://cloud.google.com/storage/docs/generations-preconditions)
 
-Inherited from: web.FullMetadata.metageneration
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:57
+web.FullMetadata.metageneration
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:57
 
 ___
 
 ### name
 
-• **name**: *string*
+• **name**: `string`
 
 The short name of this object, which is the last component of the full path.
 For example, if fullPath is 'full/path/image.png', name is 'image.png'.
 
-Inherited from: web.FullMetadata.name
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:62
+web.FullMetadata.name
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:62
 
 ___
 
 ### ref
 
-• `Optional` **ref**: StorageReference
+• `Optional` **ref**: `StorageReference`
 
 `StorageReference` associated with this upload.
 
-Inherited from: web.FullMetadata.ref
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:82
+web.FullMetadata.ref
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:82
 
 ___
 
 ### size
 
-• **size**: *number*
+• **size**: `number`
 
 The size of this object, in bytes.
 
-Inherited from: web.FullMetadata.size
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:66
+web.FullMetadata.size
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:66
 
 ___
 
 ### timeCreated
 
-• **timeCreated**: *string*
+• **timeCreated**: `string`
 
 A date string representing when this object was created.
 
-Inherited from: web.FullMetadata.timeCreated
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:70
+web.FullMetadata.timeCreated
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:70
 
 ___
 
 ### updated
 
-• **updated**: *string*
+• **updated**: `string`
 
 A date string representing when this object was last updated.
 
-Inherited from: web.FullMetadata.updated
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:74
+web.FullMetadata.updated
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:74

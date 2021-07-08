@@ -48,7 +48,7 @@ type PageProps = {
 };
 
 const modules = {
-  // app: 'App',
+  app: 'App',
   storage: 'Storage',
 };
 

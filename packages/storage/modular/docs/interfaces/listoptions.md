@@ -2,32 +2,40 @@
 
 ## Hierarchy
 
-- *ListOptions*
+- `ListOptions`
 
-  ↳ **ListOptions**
+  ↳ **`ListOptions`**
 
 ## Properties
 
 ### maxResults
 
-• `Optional` **maxResults**: ``null`` \| *number*
+• `Optional` **maxResults**: ``null`` \| `number`
 
 If set, limits the total number of `prefixes` and `items` to return.
 The default and maximum maxResults is 1000.
 
-Inherited from: web.ListOptions.maxResults
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:161
+web.ListOptions.maxResults
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:161
 
 ___
 
 ### pageToken
 
-• `Optional` **pageToken**: ``null`` \| *string*
+• `Optional` **pageToken**: ``null`` \| `string`
 
 The `nextPageToken` from a previous call to `list()`. If provided,
 listing is resumed from the previous position.
 
-Inherited from: web.ListOptions.pageToken
+#### Inherited from
 
-Defined in: node_modules/@firebase/storage/exp/dist/storage-public.d.ts:166
+web.ListOptions.pageToken
+
+#### Defined in
+
+node_modules/@firebase/storage/exp/dist/storage-public.d.ts:166
