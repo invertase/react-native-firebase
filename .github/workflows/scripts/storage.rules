@@ -1,0 +1,50 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth!=null;
+    }
+
+    match /no_access.png {
+        allow read, write;
+    }
+    
+  	match /not.jpg {
+      allow read, write: if false;
+    }
+  	match /smallFileTest.png {
+    	allow read;
+    }
+    match /largeFileTest.png {
+    	allow read;
+    }
+    match /1mbTestFile.gif {
+    	allow read;
+    }
+    match /ok.jpeg {
+      allow read;
+    }
+    match /iDoNotExist.jpeg {
+    	allow read, write;
+    }
+    match /deleteMe.jpeg {
+      allow read, write;
+    }
+    match /uploadOk.jpeg {
+      allow write;
+    }
+    match /uploadNope.jpeg {
+      allow read, write: if false;
+    }
+    match /writeOnly.jpeg {
+      allow write: if true;
+      allow read: if false;
+    }
+    match /antirez.png {
+      allow read, write;
+    }
+    match /test_massive_image.jpg {
+    	allow read, write;
+    }
+  }
+}

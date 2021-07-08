@@ -9,15 +9,13 @@ import {
   getStorage,
   getDownloadURL,
   uploadBytesResumable,
-  getStorageReference,
   setMaxOperationRetryTime,
-  setMaxDownloadRetryTime,
   setMaxUploadRetryTime,
   updateMetadata,
   uploadBytes,
-  uploadTask,
   uploadString,
   putFile,
+  useStorageEmulator,
 } from '../src';
 
 async function create(name) {
@@ -40,6 +38,9 @@ describe('storage', () => {
   beforeEach(async () => {
     await create('foo');
     app = getApp('foo');
+
+    storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
+    useStorageEmulator(storage, 'localhost', 9199);
   });
 
   afterEach(async () => {
@@ -48,7 +49,6 @@ describe('storage', () => {
 
   describe('getStorage', () => {
     it('returns a storage implementation', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/1mbTestFile.gif');
 
       expect(reference.name).toBe('1mbTestFile.gif');
@@ -63,7 +63,6 @@ describe('storage', () => {
   });
   describe('getMetadata', () => {
     test('it gets Metadata for an an app', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/1mbTestFile.gif');
 
       const metaData = await getMetadata(reference);
@@ -75,7 +74,6 @@ describe('storage', () => {
 
   describe('getDownloadURL', () => {
     test('it gets getDownloadURL for an an app', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/1mbTestFile.gif');
 
       const downLoadUrl = await getDownloadURL(reference);
@@ -88,7 +86,6 @@ describe('storage', () => {
 
   describe('listAll', () => {
     test('it returns a list of storage references', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/list');
 
       const result = await listAll(reference);
@@ -98,20 +95,7 @@ describe('storage', () => {
   });
 
   describe('uploadTask', () => {
-    it('successfully uploads', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
-      const reference = ref(storage, '/uploadOk.jpeg');
-
-      var testBlob = new Blob(['test text'], { type: 'text/plain' });
-      const uploadTask = uploadBytesResumable(reference, testBlob);
-
-      return uploadTask.then(snapshot => {
-        expect(snapshot.state).toBe('success');
-      });
-    });
-
     it('successfully cancels an upload', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/uploadOk.jpeg');
 
       var testBlob = new Blob(['test text'], { type: 'text/plain' });
@@ -152,10 +136,20 @@ describe('storage', () => {
         );
       });
     });
+
+    it('successfully uploads', async () => {
+      const reference = ref(storage, '/uploadOk.jpeg');
+
+      var testBlob = new Blob(['test text'], { type: 'text/plain' });
+      const uploadTask = uploadBytesResumable(reference, testBlob);
+
+      return uploadTask.then(snapshot => {
+        expect(snapshot.state).toBe('success');
+      });
+    });
   });
 
   it('successfully pauses and resumes an upload', async () => {
-    const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
     const reference = ref(storage, '/uploadOk.jpeg');
 
     var testBlob = new Blob(['test text'], { type: 'text/plain' });
@@ -205,7 +199,6 @@ describe('storage', () => {
   });
 
   it('should have access to the snapshot values outside of the Task', async function () {
-    const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
     const reference = ref(storage, '/uploadOk.jpeg');
 
     var testBlob = new Blob(['test text'], { type: 'text/plain' });
@@ -217,7 +210,6 @@ describe('storage', () => {
   });
 
   it('supports thenable .catch()', async function () {
-    const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
     const reference = ref(storage, '/uploadOk.jpeg');
 
     var testBlob = new Blob(['test text'], { type: 'text/plain' });
@@ -231,7 +223,6 @@ describe('storage', () => {
   });
 
   it('can access snapshot properties', async function () {
-    const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
     const reference = ref(storage, '/uploadOk.jpeg');
 
     var testBlob = new Blob(['test text'], { type: 'text/plain' });
@@ -246,7 +237,6 @@ describe('storage', () => {
 
   describe('convertListResult', () => {
     it('successfully converts a list result', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/list');
       const result = await list(reference, { maxResults: 2 });
 
@@ -256,25 +246,24 @@ describe('storage', () => {
 
   describe('setMaxOperationRetryTime', () => {
     it('successfully sets maxOperationRetryTime', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       await setMaxOperationRetryTime(storage, 50);
+      const updatedStorage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
 
-      expect(storage.maxOperationRetryTime).toBe(50);
+      expect(updatedStorage.maxOperationRetryTime).toBe(50);
     });
   });
 
   describe('setMaxUploadRetryTime', () => {
     it('successfully sets maxUploadRetryTime', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       await setMaxUploadRetryTime(storage, 50);
+      const updatedStorage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
 
-      expect(storage.maxUploadRetryTime).toBe(50);
+      expect(updatedStorage.maxUploadRetryTime).toBe(50);
     });
   });
 
   describe('updateMetadata', () => {
     it('successfully updates metadata', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/uploadOk.jpeg');
 
       const updated = await updateMetadata(reference, { customMetadata: { foo: 'bar' } });
@@ -285,7 +274,6 @@ describe('storage', () => {
 
   describe('uploadBytes', () => {
     it('successfully uploads', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/uploadOk.jpeg');
 
       var blob = new Blob(['test text'], { type: 'text/plain' });
@@ -300,7 +288,6 @@ describe('storage', () => {
 
   describe('uploadString', () => {
     it('successfully uploads a string', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/playground/put-string-example.txt');
 
       const { metadata } = await uploadString(reference, 'example');
@@ -311,25 +298,10 @@ describe('storage', () => {
 
   describe('putFile', () => {
     it('throws without a valid storage reference', async () => {
-      const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
       const reference = ref(storage, '/uploadOk.jpeg');
       await expect(() => putFile(reference, '/test')).rejects.toThrow(
         'putFile is not supported on the web. Please use uploadBytes instead, passing a File instance',
       );
     });
   });
-
-  // describe('useStorageEmulator', () => {
-  //   it('successfully uses custom host and ports', async () => {
-  //     const storage = getStorage(app, 'gs://react-native-firebase-testing.appspot.com');
-
-  //     const reference = ref(storage, '/1mbTestFile.gif');
-  //     reference.storage.host = 'localhost';
-  //     reference.storage.port = 3000;
-
-  //     console.log('ref >>> ', reference);
-
-  //     const downLoadUrl = await getDownloadURL(reference);
-  //   });
-  // });
 });
