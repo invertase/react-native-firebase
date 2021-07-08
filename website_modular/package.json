@@ -17,7 +17,7 @@
     "jsdom": "^16.5.3",
     "medium-zoom": "^1.0.6",
     "minimatch": "^3.0.4",
-    "next": "10.2.0",
+    "next": "11.0.1",
     "prism-react-renderer": "^1.2.0",
     "prismjs": "^1.23.0",
     "react": "17.0.2",
@@ -37,7 +37,7 @@
     "@types/jsdom": "^16.2.10",
     "@types/sanitize-html": "^2.3.1",
     "autoprefixer": "^10.2.5",
-    "postcss": "^8.2.14",
-    "tailwindcss": "^2.1.2"
+    "postcss": "^8.3.5",
+    "tailwindcss": "^2.2.4"
   }
 }
