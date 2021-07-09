@@ -28,8 +28,8 @@ export default function Slug({
       </Head>
       <Layout sidebar={sidebar} toc={toc}>
         {!!title && (
-          <div className="mb-8 pb-8 border-b">
-            <h2 className="inline-block text-4xl font-extrabold text-gray-900 tracking-tight">
+          <div className="pb-8 mb-8 border-b">
+            <h2 className="inline-block text-4xl font-extrabold tracking-tight text-gray-900">
               {title}
             </h2>
             {!!description && <p className="mt-3 text-lg text-gray-500">{description}</p>}
