@@ -43,17 +43,19 @@ export default function Slug({
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // Get all markdown files from the docs directory
-  const paths = listFiles(root, ['**/*.md']).map(path => {
-    // Remove the full path and .md extension
-    let slug = path.replace(root, '').replace('.md', '');
+  const paths = listFiles(root, ['**/*.md'])
+    .map(path => {
+      // Remove the full path and .md extension
+      let slug = path.replace(root, '').replace('.md', '');
 
-    // Remove any `index` paths
-    if (slug.endsWith('/index')) {
-      slug = slug.replace('/index', '');
-    }
+      // Remove any `index` paths
+      if (slug.endsWith('/index')) {
+        slug = slug.replace('/index', '');
+      }
 
-    return slug;
-  });
+      return slug;
+    })
+    .filter(($, i) => $.length !== 0);
 
   return {
     paths,
@@ -95,15 +97,16 @@ export const getStaticProps: GetStaticProps<PageProps> = async context => {
   // Extract any frontmatter from the content
   const { content, data } = matter(file);
 
+  // TODO Causes an error when building
   // Redirect the user if it exists in frontmatter
-  if (data.redirect) {
-    return {
-      redirect: {
-        destination: data.redirect,
-        permanent: false,
-      },
-    };
-  }
+  // if (data.redirect) {
+  //   return {
+  //     redirect: {
+  //       destination: data.redirect,
+  //       permanent: false,
+  //     },
+  //   };
+  // }
 
   // Serialize the markdown content via MDX
   const { html, toc } = unify(content);
