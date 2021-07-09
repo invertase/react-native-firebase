@@ -37,6 +37,7 @@
     "@types/jsdom": "^16.2.10",
     "@types/sanitize-html": "^2.3.1",
     "autoprefixer": "^10.2.5",
+    "eslint-config-next": "^11.0.1",
     "postcss": "^8.3.5",
     "tailwindcss": "^2.2.4"
   }
