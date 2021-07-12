@@ -11,7 +11,7 @@ export const withApplyCrashlyticsPlugin: ConfigPlugin = config => {
       config.modResults.contents = applyPlugin(config.modResults.contents);
     } else {
       WarningAggregator.addWarningAndroid(
-        'android-google-services',
+        'react-native-firebase-crashlytics',
         `Cannot automatically configure app build.gradle if it's not groovy`,
       );
     }

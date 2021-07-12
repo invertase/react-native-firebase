@@ -11,7 +11,7 @@ export const withBuildscriptDependency: ConfigPlugin = config => {
       config.modResults.contents = setBuildscriptDependency(config.modResults.contents);
     } else {
       WarningAggregator.addWarningAndroid(
-        'android-google-services',
+        'react-native-firebase-crashlytics',
         `Cannot automatically configure project build.gradle if it's not groovy`,
       );
     }
