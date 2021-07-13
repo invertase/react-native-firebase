@@ -17,6 +17,6 @@ if [[ "$VERCEL_GIT_COMMIT_REF" == "@invertase/next"  ]] ; then
 
 else
   # Don't build
-  echo "🛑 - Build cancelled"
+  echo "🛑 - This is not a build of @invertase/next build cancelled"
   exit 0;
 fi
