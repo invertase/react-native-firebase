@@ -12,7 +12,7 @@ echo "VERCEL_GIT_COMMIT_REF: $VERCEL_GIT_COMMIT_REF"
 
 if [[ "$VERCEL_GIT_COMMIT_REF" == "@invertase/next"  ]] ; then
   # Proceed with the build
-    echo "✅ - Build can proceed"
+    echo "✅ - Detected this is a build of @invertase/next - build can proceed"
   exit 1;
 
 else
