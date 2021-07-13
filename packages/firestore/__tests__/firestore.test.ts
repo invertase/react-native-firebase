@@ -112,6 +112,18 @@ describe('Storage', function () {
         return expect(e.message).toContain("ignoreUndefinedProperties' must be a boolean value.");
       }
     });
+
+    it("throws if serverTimestampBehavior is not one of 'estimate', 'previous', 'none'", async function () {
+      try {
+        // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
+        await firestore().settings({ serverTimestampBehavior: 'bogus' });
+        return Promise.reject(new Error('Should throw'));
+      } catch (e) {
+        return expect(e.message).toContain(
+          "serverTimestampBehavior' must be one of 'estimate', 'previous', 'none'",
+        );
+      }
+    });
   });
 
   describe('runTransaction()', function () {
