@@ -8,4 +8,12 @@ public class ReactNativeFirebaseCrashlyticsNativeHelper {
     FirebaseCrashlytics.getInstance().recordException(throwable);
   }
 
+  public static void log(String message) {
+    FirebaseCrashlytics.getInstance().log(message);
+  }
+
+  public static void setCustomKey(String key, String value) {
+    FirebaseCrashlytics.getInstance().setCustomKey(key, value);
+  }
+
 }
