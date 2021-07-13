@@ -136,7 +136,8 @@ RCT_EXPORT_METHOD(documentGet:
     if (error) {
       return [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot];
+      NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+      NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot appName:appName];
       resolve(serialized);
     }
   }];
@@ -259,7 +260,8 @@ RCT_EXPORT_METHOD(documentBatch:
 - (void)sendSnapshotEvent:(FIRApp *)firApp
                listenerId:(nonnull NSNumber *)listenerId
                  snapshot:(FIRDocumentSnapshot *)snapshot {
-  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot];
+  NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
+  NSDictionary *serialized = [RNFBFirestoreSerialize documentSnapshotToDictionary:snapshot appName:appName];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_DOCUMENT_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
       @"listenerId": listenerId,

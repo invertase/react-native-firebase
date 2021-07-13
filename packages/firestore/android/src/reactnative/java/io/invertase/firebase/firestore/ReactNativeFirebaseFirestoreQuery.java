@@ -37,14 +37,17 @@ import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
 
 public class ReactNativeFirebaseFirestoreQuery {
+  String appName;
   Query query;
 
   ReactNativeFirebaseFirestoreQuery(
+    String appName,
     Query query,
     ReadableArray filters,
     ReadableArray orders,
     ReadableMap options
   ) {
+    this.appName = appName;
     this.query = query;
     applyFilters(filters);
     applyOrders(orders);
@@ -54,7 +57,7 @@ public class ReactNativeFirebaseFirestoreQuery {
   public Task<WritableMap> get(Executor executor, Source source) {
     return Tasks.call(executor, () -> {
       QuerySnapshot querySnapshot = Tasks.await(query.get(source));
-      return snapshotToWritableMap("get", querySnapshot, null);
+      return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
     });
   }
 
