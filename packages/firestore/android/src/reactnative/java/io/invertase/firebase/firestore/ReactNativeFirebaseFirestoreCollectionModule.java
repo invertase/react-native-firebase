@@ -66,6 +66,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
 
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     ReactNativeFirebaseFirestoreQuery firestoreQuery = new ReactNativeFirebaseFirestoreQuery(
+      appName,
       getQueryForFirestore(firebaseFirestore, path, type),
       filters,
       orders,
@@ -128,6 +129,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   ) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     ReactNativeFirebaseFirestoreQuery query = new ReactNativeFirebaseFirestoreQuery(
+      appName,
       getQueryForFirestore(firebaseFirestore, path, type),
       filters,
       orders,
@@ -160,7 +162,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   private void sendOnSnapshotEvent(String appName, int listenerId, QuerySnapshot querySnapshot, MetadataChanges metadataChanges) {
-    Tasks.call(getTransactionalExecutor(Integer.toString(listenerId)), () -> snapshotToWritableMap("onSnapshot", querySnapshot, metadataChanges)).addOnCompleteListener(task -> {
+    Tasks.call(getTransactionalExecutor(Integer.toString(listenerId)), () -> snapshotToWritableMap(appName, "onSnapshot", querySnapshot, metadataChanges)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         WritableMap body = Arguments.createMap();
         body.putMap("snapshot", task.getResult());

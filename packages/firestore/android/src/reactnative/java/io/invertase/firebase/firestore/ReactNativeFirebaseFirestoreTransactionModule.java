@@ -72,7 +72,7 @@ public class ReactNativeFirebaseFirestoreTransactionModule extends ReactNativeFi
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks
-      .call(getTransactionalExecutor(), () -> snapshotToWritableMap(transactionHandler.getDocument(documentReference)))
+      .call(getTransactionalExecutor(), () -> snapshotToWritableMap(appName, transactionHandler.getDocument(documentReference)))
       .addOnCompleteListener(task -> {
         if (task.isSuccessful()) {
           promise.resolve(task.getResult());
