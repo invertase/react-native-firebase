@@ -197,4 +197,76 @@ describe('firestore()', function () {
       should(timedOutWithNetworkEnabled).equal(false);
     });
   });
+
+  describe('settings', function () {
+    describe('serverTimestampBehavior', function () {
+      it("handles 'estimate'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'estimate' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const promise = new Promise((resolve, reject) => {
+          const subscription = ref.onSnapshot(snapshot => {
+            should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+            subscription();
+            resolve();
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+      it("handles 'previous'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'previous' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const promise = new Promise((resolve, reject) => {
+          let counter = 0;
+          let previous = null;
+          const subscription = ref.onSnapshot(snapshot => {
+            switch (counter++) {
+              case 0:
+                break;
+              case 1:
+                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                break;
+              case 2:
+                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(true);
+                break;
+              case 3:
+                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(false);
+                subscription();
+                resolve();
+                break;
+            }
+            previous = snapshot;
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await new Promise(resolve => setTimeout(resolve, 1));
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+      it("handles 'none'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'none' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const promise = new Promise((resolve, reject) => {
+          const subscription = ref.onSnapshot(snapshot => {
+            should(snapshot.get('timestamp')).equal(null);
+            subscription();
+            resolve();
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+    });
+  });
 });
