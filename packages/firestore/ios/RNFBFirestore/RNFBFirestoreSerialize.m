@@ -17,6 +17,8 @@
  */
 
 #import "RNFBFirestoreSerialize.h"
+#import "RNFBFirestoreCommon.h"
+#import "RNFBPreferences.h"
 
 @implementation RNFBFirestoreSerialize
 
@@ -61,7 +63,8 @@ enum TYPE_MAP {
 + (NSDictionary *)querySnapshotToDictionary
     :(NSString *)source
                                    snapshot:(FIRQuerySnapshot *)snapshot
-                     includeMetadataChanges:(BOOL)includeMetadataChanges {
+                     includeMetadataChanges:(BOOL)includeMetadataChanges 
+                     appName:(NSString *)appName {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *snapshotMap = [[NSMutableDictionary alloc] init];
 
@@ -78,7 +81,7 @@ enum TYPE_MAP {
     // indicating the data does not include these changes
     snapshotMap[@"excludesMetadataChanges"] = @(true);
     for (FIRDocumentChange *documentChange in documentChangesList) {
-      [changes addObject:[self documentChangeToDictionary:documentChange isMetadataChange:false]];
+      [changes addObject:[self documentChangeToDictionary:documentChange isMetadataChange:false appName:appName]];
     }
   } else {
     // If listening to metadata changes, get the changes list with document changes array.
@@ -109,7 +112,7 @@ enum TYPE_MAP {
         isMetadataChange = YES;
       }
 
-      [changes addObject:[self documentChangeToDictionary:documentMetadataChange isMetadataChange:isMetadataChange]];
+      [changes addObject:[self documentChangeToDictionary:documentMetadataChange isMetadataChange:isMetadataChange appName:appName]];
     }
   }
 
@@ -119,7 +122,7 @@ enum TYPE_MAP {
   //set documents
   NSMutableArray *documents = [[NSMutableArray alloc] init];
   for (FIRDocumentSnapshot *documentSnapshot in documentSnapshots) {
-    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot]];
+    [documents addObject:[self documentSnapshotToDictionary:documentSnapshot appName:appName]];
   }
   snapshotMap[KEY_DOCUMENTS] = documents;
 
@@ -134,7 +137,8 @@ enum TYPE_MAP {
 
 + (NSDictionary *)documentChangeToDictionary
     :(FIRDocumentChange *)documentChange
-                            isMetadataChange:(BOOL)isMetadataChange {
+                            isMetadataChange:(BOOL)isMetadataChange 
+                            appName:(NSString *)appName {
   NSMutableDictionary *changeMap = [[NSMutableDictionary alloc] init];
   changeMap[@"isMetadataChange"] = @(isMetadataChange);
 
@@ -146,7 +150,7 @@ enum TYPE_MAP {
     changeMap[KEY_DOC_CHANGE_TYPE] = CHANGE_REMOVED;
   }
 
-  changeMap[KEY_DOC_CHANGE_DOCUMENT] = [self documentSnapshotToDictionary:documentChange.document];
+  changeMap[KEY_DOC_CHANGE_DOCUMENT] = [self documentSnapshotToDictionary:documentChange.document appName:appName];
 
   // Note the Firestore C++ SDK here returns a maxed UInt that is != NSUIntegerMax, so we make one ourselves so we can
   // convert to -1 for JS land
@@ -167,7 +171,7 @@ enum TYPE_MAP {
 }
 
 // Native DocumentSnapshot -> NSDictionary (for JS)
-+ (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot {
++ (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot appName:(NSString *)appName {
   NSMutableArray *metadata = [[NSMutableArray alloc] init];
   NSMutableDictionary *documentMap = [[NSMutableDictionary alloc] init];
 
@@ -180,7 +184,21 @@ enum TYPE_MAP {
   documentMap[KEY_EXISTS] = @(snapshot.exists);
 
   if (snapshot.exists) {
-    documentMap[KEY_DATA] = [self serializeDictionary:snapshot.data];
+    NSString *key = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+    NSString *behavior = [[RNFBPreferences shared] getStringValue:key defaultValue:@"none"];
+
+    FIRServerTimestampBehavior serverTimestampBehavior;
+
+    if ([behavior isEqualToString:@"estimate"]) {
+      serverTimestampBehavior = FIRServerTimestampBehaviorEstimate;
+    } else if ([behavior isEqualToString:@"previous"]) {
+      serverTimestampBehavior = FIRServerTimestampBehaviorPrevious;
+    } else {
+      serverTimestampBehavior = FIRServerTimestampBehaviorNone;
+    }
+
+    NSDictionary *data = [snapshot dataWithServerTimestampBehavior:serverTimestampBehavior];
+    documentMap[KEY_DATA] = [self serializeDictionary:data];
   }
 
   return documentMap;
