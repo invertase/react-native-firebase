@@ -263,12 +263,7 @@ class DatabaseSyncTree {
 
     if (once) {
       const subscription = SharedEventEmitter.addListener(eventRegistrationKey, event => {
-        const wrappedListener = this._onOnceRemoveRegistration(
-          eventRegistrationKey,
-          listener,
-          event,
-        );
-        wrappedListener(event);
+        this._onOnceRemoveRegistration(eventRegistrationKey, listener)(event);
         subscription.remove();
       });
     } else {
