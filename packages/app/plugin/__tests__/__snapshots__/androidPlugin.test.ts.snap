@@ -1,0 +1,167 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Config Plugin Android Tests applies changes to app/build.gradle 1`] = `
+"/* Example build.gradle file from https://github.com/expo/expo/blob/6ab0274b5cb9a9c223e0d453787a522b438b4fcb/templates/expo-template-bare-minimum/android/app/build.gradle */
+
+apply plugin: \\"com.android.application\\"
+
+import com.android.build.OutputFile
+
+
+project.ext.react = [
+    enableHermes: false
+]
+
+apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
+apply from: \\"../../node_modules/react-native/react.gradle\\"
+apply from: \\"../../node_modules/expo-constants/scripts/get-app-config-android.gradle\\"
+apply from: \\"../../node_modules/expo-updates/scripts/create-manifest-android.gradle\\"
+
+def enableSeparateBuildPerCPUArchitecture = false
+
+def enableProguardInReleaseBuilds = false
+
+def jscFlavor = 'org.webkit:android-jsc:+'
+
+def enableHermes = project.ext.react.get(\\"enableHermes\\", false);
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        applicationId \\"com.helloworld\\"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName \\"1.0\\"
+    }
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+        }
+    }
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            // Caution! In production, you need to generate your own keystore file.
+            // see https://reactnative.dev/docs/signed-apk-android.
+            signingConfig signingConfigs.debug
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile(\\"proguard-android.txt\\"), \\"proguard-rules.pro\\"
+        }
+    }
+
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+            // https://developer.android.com/studio/build/configure-apk-splits.html
+            def versionCodes = [\\"armeabi-v7a\\": 1, \\"x86\\": 2, \\"arm64-v8a\\": 3, \\"x86_64\\": 4]
+            def abi = output.getFilter(OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride =
+                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+            }
+
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: \\"libs\\", include: [\\"*.jar\\"])
+    //noinspection GradleDynamicVersion
+    implementation \\"com.facebook.react:react-native:+\\"  // From node_modules
+    implementation \\"androidx.swiperefreshlayout:swiperefreshlayout:1.0.0\\"
+    debugImplementation(\\"com.facebook.flipper:flipper:\${FLIPPER_VERSION}\\") {
+      exclude group:'com.facebook.fbjni'
+    }
+    debugImplementation(\\"com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}\\") {
+        exclude group:'com.facebook.flipper'
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
+    }
+    debugImplementation(\\"com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}\\") {
+        exclude group:'com.facebook.flipper'
+    }
+    addUnimodulesDependencies()
+
+    if (enableHermes) {
+        def hermesPath = \\"../../node_modules/hermes-engine/android/\\";
+        debugImplementation files(hermesPath + \\"hermes-debug.aar\\")
+        releaseImplementation files(hermesPath + \\"hermes-release.aar\\")
+    } else {
+        implementation jscFlavor
+    }
+}
+
+// Run this once to be able to run the application with BUCK
+// puts all compile dependencies into folder libs for BUCK to use
+task copyDownloadableDepsToLibs(type: Copy) {
+    from configurations.compile
+    into 'libs'
+}
+
+apply from: file(\\"../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle\\"); applyNativeModulesAppBuildGradle(project)
+
+apply plugin: 'com.google.gms.google-services'"
+`;
+
+exports[`Config Plugin Android Tests applies changes to project build.gradle 1`] = `
+"// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+        buildToolsVersion = \\"29.0.3\\"
+        minSdkVersion = 21
+        compileSdkVersion = 30
+        targetSdkVersion = 30
+    }
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.google.gms:google-services:4.3.8'
+        classpath(\\"com.android.tools.build:gradle:4.1.0\\")
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url(\\"$rootDir/../node_modules/react-native/android\\")
+        }
+        maven {
+            // Android JSC is installed from npm
+            url(\\"$rootDir/../node_modules/jsc-android/dist\\")
+        }
+
+        google()
+        jcenter()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+"
+`;

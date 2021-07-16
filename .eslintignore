@@ -1,5 +1,6 @@
 src/version.js
 packages/**/node_modules/**
+packages/**/plugin/build/**
 node_modules
 scripts/
 coverage

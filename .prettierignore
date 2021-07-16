@@ -1,5 +1,6 @@
 package.json
 packages/**/node_modules/**
+packages/**/plugin/build/**
 tests/node_modules/**
 tests/app.playground.js
 tests/app.smartreply.js
