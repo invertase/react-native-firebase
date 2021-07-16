@@ -108,7 +108,7 @@ describe('database().ref().on()', function () {
   });
 
   // the cancelCallback is never called for ref.on but ref.once works?
-  xit('should cancel when something goes wrong', async function () {
+  it('should cancel when something goes wrong', async function () {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
     const ref = firebase.database().ref('nope');
