@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/dynamic-links",
-  "version": "12.1.0",
+  "version": "12.2.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Dynamic Links",
   "main": "lib/index.js",
@@ -23,7 +23,7 @@
     "dynamic link"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "12.1.0"
+    "@react-native-firebase/app": "12.2.0"
   },
   "publishConfig": {
     "access": "public"
