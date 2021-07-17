@@ -247,7 +247,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws when nested undefined value provided and ignored undefined is false', async function () {
+    it('throws when nested undefined object value provided and ignored undefined is false', async function () {
       await firebase.firestore().settings({ ignoreUndefinedProperties: false });
       const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
       try {
@@ -261,6 +261,38 @@ describe('Storage', function () {
       } catch (e) {
         return expect(e.message).toEqual('Unsupported field value: undefined');
       }
+    });
+
+    it('throws when nested undefined array value provided and ignored undefined is false', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: false });
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+      try {
+        await docRef.set({
+          myArray: [{ name: 'Tim', location: { state: undefined, country: 'United Kingdom' } }],
+        });
+        return Promise.reject(new Error('Expected set() to throw'));
+      } catch (e) {
+        return expect(e.message).toEqual('Unsupported field value: undefined');
+      }
+    });
+
+    it('does not throw when nested undefined array value provided and ignore undefined is true', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+      await docRef.set({
+        myArray: [{ name: 'Tim', location: { state: undefined, country: 'United Kingdom' } }],
+      });
+    });
+
+    it('does not throw when nested undefined object value provided and ignore undefined is true', async function () {
+      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+      await docRef.set({
+        field1: 1,
+        field2: {
+          shouldNotWork: undefined,
+        },
+      });
     });
   });
 });
