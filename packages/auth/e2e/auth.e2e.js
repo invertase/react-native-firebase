@@ -1092,4 +1092,30 @@ describe('auth()', function () {
     //   userCredential.user.tenantId.should.equal('userTestTenantId');
     // });
   });
+
+  describe('sendEmailVerification()', () => {
+    it('should reject if dynamic links has not been configured with action codes config', async () => {
+      const actionCodeSettings = {
+        handleCodeInApp: true,
+        url: 'http://localhost:3030/email',
+      };
+
+      const random = Utils.randString(12, '#aA');
+      const email = `${random}@${random}.com`;
+      const pass = random;
+
+      const { user } = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+
+      try {
+        await user.sendEmailVerification(actionCodeSettings);
+        return Promise.reject(new Error('Expected an error with incorrect action codes config'));
+      } catch (e) {
+        /* Update error message */
+        e.message.should.containEql("'options' expected an object value");
+        return Promise.resolve();
+      }
+
+      return user.delete();
+    });
+  });
 });
