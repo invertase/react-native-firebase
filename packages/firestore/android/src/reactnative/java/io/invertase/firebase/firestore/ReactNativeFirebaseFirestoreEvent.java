@@ -23,6 +23,7 @@ import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
 
+  static final String SNAPSHOTS_IN_SYNC_EVENT = "firestore_snapshots_in_sync_event";
   static final String COLLECTION_EVENT_SYNC = "firestore_collection_sync_event";
   static final String DOCUMENT_EVENT_SYNC = "firestore_document_sync_event";
   static final String TRANSACTION_EVENT_SYNC = "firestore_transaction_event";
