@@ -156,4 +156,86 @@ describe('firestore.doc().set()', function () {
     snapshot2.data().should.eql(jet.contextify(merged));
     await ref.delete();
   });
+
+  it('throws when nested undefined array value provided and ignored undefined is false', async function () {
+    await firebase.firestore().settings({ ignoreUndefinedProperties: false });
+    const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+    try {
+      await docRef.set({
+        myArray: [{ name: 'Tim', location: { state: undefined, country: 'United Kingdom' } }],
+      });
+      return Promise.reject(new Error('Expected set() to throw'));
+    } catch (error) {
+      error.message.should.containEql('Unsupported field value: undefined');
+    }
+  });
+
+  it('accepts undefined nested array values if ignoreUndefined is true', async function () {
+    await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+    const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+    await docRef.set({
+      myArray: [{ name: 'Tim', location: { state: undefined, country: 'United Kingdom' } }],
+    });
+  });
+
+  it('does not throw when nested undefined object value provided and ignore undefined is true', async function () {
+    await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+    const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
+    await docRef.set({
+      field1: 1,
+      field2: {
+        shouldNotWork: undefined,
+      },
+    });
+  });
+
+  it('filters out undefined properties when setting enabled', async function () {
+    await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+
+    const docRef = firebase.firestore().doc(`${COLLECTION}/ignoreUndefinedTrueProp`);
+    await docRef.set({
+      field1: 1,
+      field2: undefined,
+    });
+
+    const snap = await docRef.get();
+    const snapData = snap.data();
+    if (!snapData) {
+      return Promise.reject(new Error('Snapshot not saved'));
+    }
+
+    snapData.field1.should.eql(1);
+    snapData.hasOwnProperty('field2').should.eql(false);
+  });
+
+  it('filters out nested undefined properties when setting enabled', async function () {
+    await firebase.firestore().settings({ ignoreUndefinedProperties: true });
+
+    const docRef = firebase.firestore().doc(`${COLLECTION}/ignoreUndefinedTrueNestedProp`);
+    await docRef.set({
+      field1: 1,
+      field2: {
+        shouldBeMissing: undefined,
+      },
+      field3: [
+        {
+          shouldBeHere: 'Here',
+          shouldBeMissing: undefined,
+        },
+      ],
+    });
+
+    const snap = await docRef.get();
+    const snapData = snap.data();
+    if (!snapData) {
+      return Promise.reject(new Error('Snapshot not saved'));
+    }
+
+    snapData.field1.should.eql(1);
+    snapData.hasOwnProperty('field2').should.eql(true);
+    snapData.field2.hasOwnProperty('shouldBeMissing').should.eql(false);
+    snapData.hasOwnProperty('field3').should.eql(true);
+    snapData.field3[0].shouldBeHere.should.eql('Here');
+    snapData.field3[0].hasOwnProperty('shouldBeMissing').should.eql(false);
+  });
 });
