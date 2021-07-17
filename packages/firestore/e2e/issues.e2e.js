@@ -91,5 +91,10 @@ describe('firestore()', function () {
         }
       });
     });
+
+    it('issue 5225 - app reloads successfully', async function () {
+      // Reload causes the TaskExecutor to shut down, make sure it does not error
+      await device.reloadReactNative();
+    });
   });
 });

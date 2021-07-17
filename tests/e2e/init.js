@@ -50,6 +50,13 @@ beforeEach(async function beforeEach() {
   }
 });
 
+// Make sure we the app is still visible (that is, no redbox) after each test
+afterEach(async function afterEach() {
+  await waitFor(element(by.id('welcome')).atIndex(0)) // the testID for the Root View in app.js
+    .toBeVisible()
+    .withTimeout(20000); // If app reloads, it takes some time to re-display
+});
+
 after(async function () {
   console.log(' ✨ Tests Complete ✨ ');
   const isAndroid = detox.device.getPlatform() === 'android';
