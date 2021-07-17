@@ -47,6 +47,7 @@ jest.doMock('react-native', () => {
         },
         RNFBFirestoreModule: {
           settings: jest.fn(),
+          documentSet: jest.fn(),
         },
         RNFBPerfModule: {},
         RNFBStorageModule: {
