@@ -37,50 +37,6 @@ describe('firestore()', function () {
 
   describe('collection()', function () {});
 
-  describe('doc()', function () {
-    it('filters out undefined properties when setting enabled', async function () {
-      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
-
-      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-      await docRef.set({
-        field1: 1,
-        field2: undefined,
-      });
-
-      const snap = await docRef.get();
-      const snapData = snap.data();
-      if (!snapData) {
-        return Promise.reject(new Error('Snapshot not saved'));
-      }
-
-      snapData.field1.should.eql(1);
-      snapData.hasOwnProperty('field2').should.eql(false);
-    });
-
-    it('filters out nested undefined properties when setting enabled', async function () {
-      await firebase.firestore().settings({ ignoreUndefinedProperties: true });
-
-      const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
-      await docRef.set({
-        field1: 1,
-        field2: {
-          shouldBeMissing: undefined,
-        },
-      });
-
-      const snap = await docRef.get();
-      const snapData = snap.data();
-      if (!snapData) {
-        return Promise.reject(new Error('Snapshot not saved'));
-      }
-
-      snapData.field1.should.eql(1);
-      snapData.hasOwnProperty('field2').should.eql(true);
-
-      snapData.field2.hasOwnProperty('shouldBeMissing').should.eql(false);
-    });
-  });
-
   describe('collectionGroup()', function () {
     it('performs a collection group query', async function () {
       const docRef1 = firebase.firestore().doc(`${COLLECTION}/collectionGroup1`);
