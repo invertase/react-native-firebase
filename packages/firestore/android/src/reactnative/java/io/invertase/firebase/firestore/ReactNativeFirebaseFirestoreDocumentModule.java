@@ -131,7 +131,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
     Tasks.call(getExecutor(), () -> {
       DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
-      return snapshotToWritableMap(documentSnapshot);
+      return snapshotToWritableMap(appName, documentSnapshot);
     }).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         promise.resolve(task.getResult());
@@ -261,7 +261,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
   }
 
   private void sendOnSnapshotEvent(String appName, int listenerId, DocumentSnapshot documentSnapshot) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap(documentSnapshot)).addOnCompleteListener(task -> {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot)).addOnCompleteListener(task -> {
       if (task.isSuccessful()) {
         WritableMap body = Arguments.createMap();
         body.putMap("snapshot", task.getResult());

@@ -23,6 +23,7 @@ NSString *const FIRESTORE_CACHE_SIZE = @"firebase_firestore_cache_size";
 NSString *const FIRESTORE_HOST = @"firebase_firestore_host";
 NSString *const FIRESTORE_PERSISTENCE = @"firebase_firestore_persistence";
 NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
+NSString *const FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR = @"firebase_firestore_server_timestamp_behavior";
 
 NSMutableDictionary * instanceCache;
 

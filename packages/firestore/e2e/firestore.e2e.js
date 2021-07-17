@@ -241,4 +241,69 @@ describe('firestore()', function () {
       should(timedOutWithNetworkEnabled).equal(false);
     });
   });
+
+  describe('settings', function () {
+    describe('serverTimestampBehavior', function () {
+      it("handles 'estimate'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'estimate' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const promise = new Promise((resolve, reject) => {
+          const subscription = ref.onSnapshot(snapshot => {
+            snapshot.get('timestamp').should.be.an.instanceOf(firebase.firestore.Timestamp);
+            subscription();
+            resolve();
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+      it("handles 'previous'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'none' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const values = [];
+        const promise = new Promise((resolve, reject) => {
+          const subscription = ref.onSnapshot(snapshot => {
+            values.push(snapshot.get('timestamp'));
+            if (values.length !== 3) {
+              return;
+            }
+
+            const current = values.pop();
+            const actual = values.pop();
+
+            actual.should.be.an.instanceOf(firebase.firestore.Timestamp);
+            current.should.be.an.instanceOf(firebase.firestore.Timestamp);
+            subscription();
+            resolve();
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await new Promise(resolve => setTimeout(resolve, 1));
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+      it("handles 'none'", async function () {
+        firebase.firestore().settings({ serverTimestampBehavior: 'none' });
+        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+
+        const promise = new Promise((resolve, reject) => {
+          const subscription = ref.onSnapshot(snapshot => {
+            snapshot.get('timestamp').should.equal(null);
+            subscription();
+            resolve();
+          }, reject);
+        });
+
+        await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await promise;
+        await ref.delete();
+      });
+    });
+  });
 });
