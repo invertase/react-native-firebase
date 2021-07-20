@@ -73,9 +73,9 @@
       "compileSdk": 30,
       "buildTools": "30.0.2",
       "firebase": "28.2.1",
-      "firebaseCrashlytics": "2.7.1",
-      "firebasePerf": "1.4.0",
-      "gmsGoogleServices": "4.3.8",
+      "firebaseCrashlyticsGradle": "2.7.1",
+      "firebasePerfGradle": "1.4.0",
+      "gmsGoogleServicesGradle": "4.3.8",
       "playServicesAuth": "19.0.0"
     }
   }
