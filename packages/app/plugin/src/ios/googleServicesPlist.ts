@@ -1,9 +1,4 @@
-import { ConfigPlugin, withXcodeProject, XcodeProject } from '@expo/config-plugins';
-import { getSourceRoot } from '@expo/config-plugins/build/ios/Paths';
-import {
-  addResourceFileToGroup,
-  getProjectName,
-} from '@expo/config-plugins/build/ios/utils/Xcodeproj';
+import { ConfigPlugin, IOSConfig, withXcodeProject, XcodeProject } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
@@ -43,13 +38,13 @@ export function setGoogleServicesFile({
 
   fs.copyFileSync(
     googleServiceFilePath,
-    path.join(getSourceRoot(projectRoot), 'GoogleService-Info.plist'),
+    path.join(IOSConfig.Paths.getSourceRoot(projectRoot), 'GoogleService-Info.plist'),
   );
 
-  const projectName = getProjectName(projectRoot);
+  const projectName = IOSConfig.XcodeUtils.getProjectName(projectRoot);
   const plistFilePath = `${projectName}/GoogleService-Info.plist`;
   if (!project.hasFile(plistFilePath)) {
-    project = addResourceFileToGroup({
+    project = IOSConfig.XcodeUtils.addResourceFileToGroup({
       filepath: plistFilePath,
       groupName: projectName,
       project,
