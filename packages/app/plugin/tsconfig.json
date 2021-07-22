@@ -1,0 +1,9 @@
+{
+  "extends": "@tsconfig/node12/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "declaration": true
+  },
+  "include": ["./src"]
+}
