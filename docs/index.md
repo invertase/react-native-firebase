@@ -257,4 +257,24 @@ $RNFirebaseAsStaticFramework = true
 
 ### Expo
 
-Expo does not support integration with native modules via its ["Managed workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#managed-workflow). Integration is only possible when used with the ["Bare workflow"](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/#bare-workflow).
+> React Native Firebase cannot be used in the "Expo Go" app because [it requires custom native code](https://docs.expo.io/workflow/customizing/).
+
+Integration with Expo is possible in bare workflow and [custom managed workflow](https://docs.expo.io/workflow/customizing/) via [config plugins](https://docs.expo.io/guides/config-plugins/).
+
+#### Installation
+
+After installing the `@react-native-firebase/app` NPM package, add the [config plugin](https://docs.expo.io/guides/config-plugins/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    "plugins": ["@react-native-firebase/app"]
+  }
+}
+```
+
+Next, rebuild your app as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide.
+
+Analogous steps are required for other React Native Firebase modules, which require custom native installation steps. Modules without native steps required will work out of the box.
+
+> Not all React Native Firebase modules have Expo config plugins provided yet. Currently supported modules are `app`, `perf` and `crashlytics`.

@@ -26,6 +26,8 @@ Once installed, you must complete the following additional setup steps for Andro
 
 - [Android Additional Setup](/crashlytics/android-setup).
 
+If you're using Expo, you should add the [config plugin](https://docs.expo.io/guides/config-plugins/) instead to your app config. It handles the installation steps for you. For more details, view the [Getting Started](/#expo) documentation.
+
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
 
