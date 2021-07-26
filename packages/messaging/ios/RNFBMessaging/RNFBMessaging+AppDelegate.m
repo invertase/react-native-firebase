@@ -68,7 +68,7 @@
   });
 }
 
-// used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
+// used to signal that a javascript handler for background messages is set
 - (void)signalBackgroundMessageHandlerSet {
   RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
   [sharedInstance.conditionBackgroundMessageHandlerSet lock];
