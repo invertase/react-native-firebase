@@ -89,17 +89,13 @@ RCT_EXPORT_METHOD(setAutoInitEnabled:
   return resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(backgroundMessageHandlerSet:
-  (RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(signalBackgroundMessageHandlerSet) {
+  NSLog(@"signalBackgroundMessageHandlerSet called");
   @try {
-    [[RNFBMessagingAppDelegate sharedInstance] setBackgroundMessageHandlerSet];
+    [[RNFBMessagingAppDelegate sharedInstance] signalBackgroundMessageHandlerSet];
   } @catch (NSException *exception) {
-    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+    NSLog(@"signalBackgroundMessageHandlerSet failed");
   }
-
-  return resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(getToken:

@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)observe;
 
-- (void)setBackgroundMessageHandlerSet;
+- (void)signalBackgroundMessageHandlerSet;
 
 - (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject;
 
