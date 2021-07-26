@@ -89,6 +89,19 @@ RCT_EXPORT_METHOD(setAutoInitEnabled:
   return resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(backgroundMessageHandlerSet:
+  (RCTPromiseResolveBlock) resolve
+    :(RCTPromiseRejectBlock) reject
+) {
+  @try {
+    [[RNFBMessagingAppDelegate sharedInstance] setBackgroundMessageHandlerSet];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
+}
+
 RCT_EXPORT_METHOD(getToken:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject

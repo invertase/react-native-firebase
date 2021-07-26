@@ -67,6 +67,13 @@
 }
 
 // used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
+- (void)setBackgroundMessageHandlerSet {
+  [self.conditionBackgroundMessageHandlerSet lock];
+  self.backgroundMessageHandlerSet = true;
+  [self.conditionBackgroundMessageHandlerSet unlock];
+}
+
+// used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
 - (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject {
   _registerPromiseResolver = resolve;
   _registerPromiseRejecter = reject;
@@ -129,13 +136,14 @@
         }
       });
 
-      // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
-      // TODO   so we just delay sending the event for a few seconds as a workaround
-      // TODO   most likely Remote Debugging causing bridge to be invalidated
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
-      });
-    } else {
+      [self.conditionBackgroundMessageHandlerSet lock];
+        while (!self.backgroundMessageHandlerSet)
+          [self.conditionBackgroundMessageHandlerSet wait];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+        });
+      [self.conditionBackgroundMessageHandlerSet unlock];
+  } else {
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       completionHandler(UIBackgroundFetchResultNoData);
     }
