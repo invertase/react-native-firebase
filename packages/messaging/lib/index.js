@@ -32,7 +32,6 @@ import {
 import { AppRegistry } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
-import NativeLog from 'react-native-native-log';
 
 const statics = {
   AuthorizationStatus: {
@@ -301,9 +300,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     backgroundMessageHandler = handler;
     if (isIOS) {
-      NativeLog.log(`setBackgroundMessageHandler before signalBackgroundMessageHandlerSet`);
       this.native.signalBackgroundMessageHandlerSet();
-      NativeLog.log(`setBackgroundMessageHandler after signalBackgroundMessageHandlerSet`);
     }
   }
 

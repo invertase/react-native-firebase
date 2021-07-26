@@ -11472,11 +11472,6 @@ react-native-codegen@^0.0.6:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
-react-native-native-log@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/react-native-native-log/-/react-native-native-log-0.1.3.tgz#db155a9a35ebbeb9702af0d35eea6c3fdcb1f1ce"
-  integrity sha512-8ZX1x4BkTViTKFSJfzd/AlWBHrF7GHCYQVl8VT/1wpsPsg6OL+yJ3ID6MmeLUkJj3VVeMWX7pJPQt28rZBE8oA==
-
 react-native-port-patcher@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/react-native-port-patcher/-/react-native-port-patcher-1.0.4.tgz#a73d7d6323acce14e841256fda6136a64790c81e"
