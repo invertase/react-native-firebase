@@ -90,11 +90,11 @@ RCT_EXPORT_METHOD(setAutoInitEnabled:
 }
 
 RCT_EXPORT_METHOD(signalBackgroundMessageHandlerSet) {
-  NSLog(@"signalBackgroundMessageHandlerSet called");
+  DLog(@"signalBackgroundMessageHandlerSet called");
   @try {
     [[RNFBMessagingAppDelegate sharedInstance] signalBackgroundMessageHandlerSet];
   } @catch (NSException *exception) {
-    NSLog(@"signalBackgroundMessageHandlerSet failed");
+    ELog(@"signalBackgroundMessageHandlerSet failed");
   }
 }
 

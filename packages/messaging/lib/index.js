@@ -288,8 +288,10 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   /**
-   * Called when a message is received while the app is in the background. An app is considered to be in the background if no active window is displayed.
-   * @param {*} handler called with message payload that contains the notification payload that is represented with firebase.messaging.NotificationPayload and the data payload that contains an arbitrary number of key-value pairs sent by developers through the Send API
+   * Set a handler that will be called when a message is received while the app is in the background.
+   * Should be called before the app is registered in `AppRegistry`, for example in `index.js`.
+   * An app is considered to be in the background if no active window is displayed.
+   * @param handler called with an argument of type messaging.RemoteMessage that must be async and return a Promise
    */
   setBackgroundMessageHandler(handler) {
     if (!isFunction(handler)) {

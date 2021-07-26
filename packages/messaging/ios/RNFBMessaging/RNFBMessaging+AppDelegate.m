@@ -72,7 +72,7 @@
 - (void)signalBackgroundMessageHandlerSet {
   RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
   [sharedInstance.conditionBackgroundMessageHandlerSet lock];
-  NSLog(@"signalBackgroundMessageHandlerSet sharedInstance.backgroundMessageHandlerSet was %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+  DLog(@"signalBackgroundMessageHandlerSet sharedInstance.backgroundMessageHandlerSet was %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
   sharedInstance.backgroundMessageHandlerSet = YES;
   [sharedInstance.conditionBackgroundMessageHandlerSet broadcast];
   [sharedInstance.conditionBackgroundMessageHandlerSet unlock];  
@@ -114,7 +114,7 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   #if __has_include(<FirebaseAuth/FirebaseAuth.h>)
   if ([[FIRAuth auth] canHandleNotification:userInfo]) {
-    NSLog(@"didReceiveRemoteNotification Firebase Auth handeled the notification");
+    DLog(@"didReceiveRemoteNotification Firebase Auth handeled the notification");
     completionHandler(UIBackgroundFetchResultNoData);
     return;
   }
@@ -123,7 +123,7 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RNFBMessagingDidReceiveRemoteNotification" object:userInfo];
     
   if (userInfo[@"gcm.message_id"]) {
-    NSLog(@"didReceiveRemoteNotification gcm.message_id was present %@", userInfo);
+    DLog(@"didReceiveRemoteNotification gcm.message_id was present %@", userInfo);
 
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       // If app is in background state, register background task to guarantee async queues aren't frozen.
@@ -146,13 +146,13 @@
 
       RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
       [sharedInstance.conditionBackgroundMessageHandlerSet lock];
-        NSLog(@"didReceiveRemoteNotification sharedInstance.backgroundMessageHandlerSet = %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+        DLog(@"didReceiveRemoteNotification sharedInstance.backgroundMessageHandlerSet = %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
         if (sharedInstance.backgroundMessageHandlerSet) {
           // Normal path, backgroundMessageHandlerSet has already been set, queue the notification for immediate delivery
           dispatch_async(dispatch_get_main_queue(), ^{
             [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
           });
-          NSLog(@"didReceiveRemoteNotification without waiting for backgroundMessageHandlerSet to be set");
+          DLog(@"didReceiveRemoteNotification without waiting for backgroundMessageHandlerSet to be set");
         } else {
           // This spin needs to be on a background/concurrent queue to await the setup of backgroundMessageHandlerSet and not block the main thread
           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -162,19 +162,19 @@
             // Spin/wait until backgroundMessageHandlerSet
             // NB it is possible while this closure was being scheduled that backgroundMessageHandlerSet is already set and this loop is skipped
             while (!sharedInstance.backgroundMessageHandlerSet) {
-              NSLog(@"didReceiveRemoteNotification waiting for sharedInstance.backgroundMessageHandlerSet %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+              DLog(@"didReceiveRemoteNotification waiting for sharedInstance.backgroundMessageHandlerSet %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
               [sharedInstance.conditionBackgroundMessageHandlerSet wait];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
               [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
             });
-            NSLog(@"didReceiveRemoteNotification after waiting for backgroundMessageHandlerSet");
+            DLog(@"didReceiveRemoteNotification after waiting for backgroundMessageHandlerSet");
             [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
           });
         }
       [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
   } else {
-      NSLog(@"didReceiveRemoteNotification while app was in foreground");
+      DLog(@"didReceiveRemoteNotification while app was in foreground");
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       completionHandler(UIBackgroundFetchResultNoData);
     }
