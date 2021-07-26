@@ -208,7 +208,7 @@ describe('messaging()', function () {
       }
     });
 
-    android.it('receives messages when the app is in the background', async function () {
+    android.it('receives messages when the app is in the background', async () => {
       // This is slow and thus flaky in CI. It runs locally though.
       if (global.isCI) {
         return;
