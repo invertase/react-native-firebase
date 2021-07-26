@@ -111,6 +111,11 @@ The device state and message contents determines which handler will be called:
   as low priority and will ignore it (i.e. no event will be sent). You can however increase the priority by setting the `priority` to `high` (Android) and
   `content-available` to `true` (iOS) properties on the payload.
 
+- On iOS in cases where the message is data-only and the device is in the background or quit, the message will be delayed 8 seconds
+  from the time it arrives on the device until the background message handler registered with setBackgroundMessageHandler is invoked
+  to allow for the applications javascript to be loaded and ready to run [Issue 4144]
+  (https://github.com/invertase/react-native-firebase/pull/4144).
+
 To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/concept-options).
 
 ### Notifications
