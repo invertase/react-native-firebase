@@ -128,6 +128,7 @@ SDK.
 SDKs
 SDKs.
 serverless
+setBackgroundMessageHandler
 SHA1
 SHA-256
 SIGABRT
