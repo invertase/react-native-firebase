@@ -146,6 +146,7 @@
 
       RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
       [sharedInstance.conditionBackgroundMessageHandlerSet lock];
+      @try {
         DLog(@"didReceiveRemoteNotification sharedInstance.backgroundMessageHandlerSet = %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
         if (sharedInstance.backgroundMessageHandlerSet) {
           // Normal path, backgroundMessageHandlerSet has already been set, queue the notification for immediate delivery
@@ -158,21 +159,29 @@
           dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             // Reaquire the lock in this new closure
             [sharedInstance.conditionBackgroundMessageHandlerSet lock];
-
-            // Spin/wait until backgroundMessageHandlerSet
-            // NB it is possible while this closure was being scheduled that backgroundMessageHandlerSet is already set and this loop is skipped
-            while (!sharedInstance.backgroundMessageHandlerSet) {
-              DLog(@"didReceiveRemoteNotification waiting for sharedInstance.backgroundMessageHandlerSet %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
-              [sharedInstance.conditionBackgroundMessageHandlerSet wait];
+            @try {
+              // Spin/wait until backgroundMessageHandlerSet
+              // NB it is possible while this closure was being scheduled that backgroundMessageHandlerSet is already set and this loop is skipped
+              while (!sharedInstance.backgroundMessageHandlerSet) {
+                DLog(@"didReceiveRemoteNotification waiting for sharedInstance.backgroundMessageHandlerSet %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+                if(![sharedInstance.conditionBackgroundMessageHandlerSet waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:25]]) {
+                  // If after 25 seconds the client hasn't called backgroundMessageHandlerSet, give up on this notification
+                  ELog(@"didReceiveRemoteNotification timed out waiting for sharedInstance.backgroundMessageHandlerSet");
+                  return;
+                }
+              }
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+              });
+              DLog(@"didReceiveRemoteNotification after waiting for backgroundMessageHandlerSet");
+            } @finally {
+              [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
-              [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
-            });
-            DLog(@"didReceiveRemoteNotification after waiting for backgroundMessageHandlerSet");
-            [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
           });
         }
-      [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
+      } @finally {
+        [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
+      }
   } else {
       DLog(@"didReceiveRemoteNotification while app was in foreground");
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
