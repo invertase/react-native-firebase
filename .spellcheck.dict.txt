@@ -64,6 +64,7 @@ HTTP
 HTTPS
 IDFA
 installable
+IntelliSense
 Interstitials
 interstitials
 Invertase

@@ -5,6 +5,8 @@ description: Additional Android steps for Crashlytics integration
 
 > If you're migrating from Fabric, make sure you remove the `fabric.properties` file from your Android project. If you do not do this you will not receive crash reports on the Firebase console.
 
+> If you're using Expo, make sure to add the `@react-native-firebase/crashlytics` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
+
 # Adding Firebase Crashlytics Gradle Tools
 
 These steps are required, if you do not add these your app will most likely crash at startup with the following Error:
