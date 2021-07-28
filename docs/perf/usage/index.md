@@ -27,6 +27,8 @@ you can follow the manual installation steps for [iOS](/perf/usage/installation/
 
 ## Add the Performance Monitoring Plugin
 
+> If you're using Expo, make sure to add the `@react-native-firebase/perf` config plugin to your `app.json` or `app.config.js`. It handles the below installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
+
 On Android, you need to install the Google Performance Monitoring Plugin which enables automatic
 HTTPS network request monitoring.
 

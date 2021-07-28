@@ -26,6 +26,8 @@ Once installed, you must complete the following additional setup steps for Andro
 
 - [Android Additional Setup](/crashlytics/android-setup).
 
+> If you're using Expo, make sure to add the `@react-native-firebase/crashlytics` config plugin to your `app.json` or `app.config.js`. It handles the Android installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section.
+
 If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/crashlytics/usage/installation/ios) and [Android](/crashlytics/usage/installation/android).
 
