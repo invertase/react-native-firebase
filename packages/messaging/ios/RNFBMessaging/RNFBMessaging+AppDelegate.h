@@ -25,10 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property _Nullable RCTPromiseRejectBlock registerPromiseRejecter;
 @property _Nullable RCTPromiseResolveBlock registerPromiseResolver;
+@property (nonatomic, strong) NSCondition *conditionBackgroundMessageHandlerSet;
+@property (nonatomic) BOOL backgroundMessageHandlerSet;
+
 
 + (_Nonnull instancetype)sharedInstance;
 
 - (void)observe;
+
+- (void)signalBackgroundMessageHandlerSet;
 
 - (void)setPromiseResolve:(RCTPromiseResolveBlock)resolve andPromiseReject:(RCTPromiseRejectBlock)reject;
 

@@ -33,6 +33,8 @@
   __strong static RNFBMessagingAppDelegate *sharedInstance;
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBMessagingAppDelegate alloc] init];
+    sharedInstance.conditionBackgroundMessageHandlerSet = [[NSCondition alloc] init];
+    sharedInstance.backgroundMessageHandlerSet = NO;
   });
   return sharedInstance;
 }
@@ -64,6 +66,16 @@
       );
     }
   });
+}
+
+// used to signal that a javascript handler for background messages is set
+- (void)signalBackgroundMessageHandlerSet {
+  RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
+  [sharedInstance.conditionBackgroundMessageHandlerSet lock];
+  DLog(@"signalBackgroundMessageHandlerSet sharedInstance.backgroundMessageHandlerSet was %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+  sharedInstance.backgroundMessageHandlerSet = YES;
+  [sharedInstance.conditionBackgroundMessageHandlerSet broadcast];
+  [sharedInstance.conditionBackgroundMessageHandlerSet unlock];  
 }
 
 // used to temporarily store a promise instance to resolve calls to `registerForRemoteNotifications`
@@ -102,6 +114,7 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   #if __has_include(<FirebaseAuth/FirebaseAuth.h>)
   if ([[FIRAuth auth] canHandleNotification:userInfo]) {
+    DLog(@"didReceiveRemoteNotification Firebase Auth handeled the notification");
     completionHandler(UIBackgroundFetchResultNoData);
     return;
   }
@@ -110,6 +123,8 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:@"RNFBMessagingDidReceiveRemoteNotification" object:userInfo];
     
   if (userInfo[@"gcm.message_id"]) {
+    DLog(@"didReceiveRemoteNotification gcm.message_id was present %@", userInfo);
+
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       // If app is in background state, register background task to guarantee async queues aren't frozen.
       UIBackgroundTaskIdentifier __block backgroundTaskId = [application beginBackgroundTaskWithExpirationHandler:^{
@@ -129,13 +144,46 @@
         }
       });
 
-      // TODO investigate later - RN bridge gets invalidated at start when in background and a new bridge created - losing all events
-      // TODO   so we just delay sending the event for a few seconds as a workaround
-      // TODO   most likely Remote Debugging causing bridge to be invalidated
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
-      });
-    } else {
+      RNFBMessagingAppDelegate *sharedInstance = [RNFBMessagingAppDelegate sharedInstance];
+      [sharedInstance.conditionBackgroundMessageHandlerSet lock];
+      @try {
+        DLog(@"didReceiveRemoteNotification sharedInstance.backgroundMessageHandlerSet = %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+        if (sharedInstance.backgroundMessageHandlerSet) {
+          // Normal path, backgroundMessageHandlerSet has already been set, queue the notification for immediate delivery
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+          });
+          DLog(@"didReceiveRemoteNotification without waiting for backgroundMessageHandlerSet to be set");
+        } else {
+          // This spin needs to be on a background/concurrent queue to await the setup of backgroundMessageHandlerSet and not block the main thread
+          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            // Reaquire the lock in this new closure
+            [sharedInstance.conditionBackgroundMessageHandlerSet lock];
+            @try {
+              // Spin/wait until backgroundMessageHandlerSet
+              // NB it is possible while this closure was being scheduled that backgroundMessageHandlerSet is already set and this loop is skipped
+              while (!sharedInstance.backgroundMessageHandlerSet) {
+                DLog(@"didReceiveRemoteNotification waiting for sharedInstance.backgroundMessageHandlerSet %@", sharedInstance.backgroundMessageHandlerSet ? @"YES" : @"NO");
+                if(![sharedInstance.conditionBackgroundMessageHandlerSet waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:25]]) {
+                  // If after 25 seconds the client hasn't called backgroundMessageHandlerSet, give up on this notification
+                  ELog(@"didReceiveRemoteNotification timed out waiting for sharedInstance.backgroundMessageHandlerSet");
+                  return;
+                }
+              }
+              dispatch_async(dispatch_get_main_queue(), ^{
+                [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received_background" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+              });
+              DLog(@"didReceiveRemoteNotification after waiting for backgroundMessageHandlerSet");
+            } @finally {
+              [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
+            }
+          });
+        }
+      } @finally {
+        [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
+      }
+  } else {
+      DLog(@"didReceiveRemoteNotification while app was in foreground");
       [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received" body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       completionHandler(UIBackgroundFetchResultNoData);
     }
