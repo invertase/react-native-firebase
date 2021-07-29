@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.4.0](https://github.com/invertase/react-native-firebase/compare/v12.3.0...v12.4.0) (2021-07-29)
+
+
+### Performance Improvements
+
+* **messaging, ios:** Improve time to delivery of background messages on iOS ([#5547](https://github.com/invertase/react-native-firebase/issues/5547)) ([f4168b1](https://github.com/invertase/react-native-firebase/commit/f4168b154d6194cbc87e03d91787e59c8d97ea10))
+
+
+
+
+
 # [12.3.0](https://github.com/invertase/react-native-firebase/compare/v12.2.0...v12.3.0) (2021-07-21)
 
 **Note:** Version bump only for package react-native-firebase-tests
