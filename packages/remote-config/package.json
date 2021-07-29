@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/remote-config",
-  "version": "12.3.0",
+  "version": "12.4.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration with Remote Config, allowing you to change the appearance and/or functionality of your app without requiring an app update.",
   "main": "lib/index.js",
@@ -24,8 +24,8 @@
     "remote-config"
   ],
   "peerDependencies": {
-    "@react-native-firebase/analytics": "12.3.0",
-    "@react-native-firebase/app": "12.3.0"
+    "@react-native-firebase/analytics": "12.4.0",
+    "@react-native-firebase/app": "12.4.0"
   },
   "publishConfig": {
     "access": "public"
