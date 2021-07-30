@@ -100,6 +100,11 @@ RCT_EXPORT_METHOD(settings:
     [[RNFBPreferences shared] setBooleanValue:sslKey boolValue:[settings[@"ssl"] boolValue]];
   }
 
+  if (settings[@"serverTimestampBehavior"]) {
+    NSString *key = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+    [[RNFBPreferences shared] setStringValue:key stringValue:settings[@"serverTimestampBehavior"]];
+  }
+
   resolve([NSNull null]);
 }
 

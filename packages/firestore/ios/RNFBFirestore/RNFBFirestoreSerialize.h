@@ -21,11 +21,11 @@
 
 @interface RNFBFirestoreSerialize : NSObject
 
-+ (NSDictionary *)querySnapshotToDictionary:(NSString *)source snapshot:(FIRQuerySnapshot *)snapshot includeMetadataChanges:(BOOL)includeMetadataChanges;
++ (NSDictionary *)querySnapshotToDictionary:(NSString *)source snapshot:(FIRQuerySnapshot *)snapshot includeMetadataChanges:(BOOL)includeMetadataChanges appName:(NSString *)appName;
 
-+ (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange isMetadataChange:(BOOL)isMetadataChange;
++ (NSDictionary *)documentChangeToDictionary:(FIRDocumentChange *)documentChange isMetadataChange:(BOOL)isMetadataChange appName:(NSString *)appName;
 
-+ (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot;
++ (NSDictionary *)documentSnapshotToDictionary:(FIRDocumentSnapshot *)snapshot appName:(NSString *)appName;
 
 + (NSDictionary *)serializeDictionary:(NSDictionary *)dictionary;
 

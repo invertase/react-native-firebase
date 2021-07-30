@@ -148,7 +148,8 @@ RCT_EXPORT_METHOD(collectionGet:
     if (error) {
       return [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
-      NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"get" snapshot:snapshot includeMetadataChanges:false];
+      NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+      NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"get" snapshot:snapshot includeMetadataChanges:false appName:appName];
       resolve(serialized);
     }
   }];
@@ -158,7 +159,8 @@ RCT_EXPORT_METHOD(collectionGet:
                listenerId:(nonnull NSNumber *)listenerId
                  snapshot:(FIRQuerySnapshot *)snapshot
    includeMetadataChanges:(BOOL)includeMetadataChanges {
-  NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"onSnapshot" snapshot:snapshot includeMetadataChanges:includeMetadataChanges];
+  NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firApp.name];
+  NSDictionary *serialized = [RNFBFirestoreSerialize querySnapshotToDictionary:@"onSnapshot" snapshot:snapshot includeMetadataChanges:includeMetadataChanges appName:appName];
   [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_FIRESTORE_COLLECTION_SYNC body:@{
       @"appName": [RNFBSharedUtils getAppJavaScriptName:firApp.name],
       @"listenerId": listenerId,

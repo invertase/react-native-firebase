@@ -19,7 +19,10 @@ package io.invertase.firebase.firestore;
 
 
 import com.facebook.react.bridge.Promise;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import io.invertase.firebase.common.UniversalFirebasePreferences;
 
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
@@ -38,5 +41,21 @@ class ReactNativeFirebaseFirestoreCommon {
     } else {
       rejectPromiseWithExceptionMap(promise, exception);
     }
+  }
+
+  static DocumentSnapshot.ServerTimestampBehavior getServerTimestampBehavior(String appName) {
+    UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
+    String key = UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + appName;
+    String behavior = preferences.getStringValue(key, "none");
+
+    if ("estimate".equals(behavior)) {
+      return DocumentSnapshot.ServerTimestampBehavior.ESTIMATE;
+    }
+
+    if ("previous".equals(behavior)) {
+      return DocumentSnapshot.ServerTimestampBehavior.PREVIOUS;
+    }
+
+    return DocumentSnapshot.ServerTimestampBehavior.NONE;
   }
 }

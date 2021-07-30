@@ -75,6 +75,12 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
           UniversalFirebaseFirestoreStatics.FIRESTORE_SSL + "_" + appName, (boolean) settings.get("ssl"));
       }
 
+      // settings.serverTimestampBehavior
+      if (settings.containsKey("serverTimestampBehavior")) {
+        UniversalFirebasePreferences.getSharedInstance().setStringValue(
+          UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + appName, (String) settings.get("serverTimestampBehavior"));
+      }
+
       return null;
     });
   }
