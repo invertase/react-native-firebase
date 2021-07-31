@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: "com.google.firebase.firebase-perf"
+apply plugin: 'com.google.firebase.firebase-perf'
 
 import com.android.build.OutputFile
 
@@ -10,7 +10,7 @@ project.ext.react = [
 ]
 
 // up to mono root
-apply from: "../../node_modules/react-native/react.gradle"
+apply from: '../../node_modules/react-native/react.gradle'
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -41,14 +41,14 @@ android {
   compileSdkVersion rootProject.ext.compileSdkVersion
   aaptOptions {
     // https://firebase.google.com/docs/ml/android/use-custom-models#local_model
-    noCompress "tflite"
+    noCompress 'tflite'
   }
   defaultConfig {
-    applicationId "com.invertase.testing"
+    applicationId 'com.invertase.testing'
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
-    versionName "1.0"
+    versionName '1.0'
 
     // detox
     testBuildType System.getProperty('testBuildType', 'debug')
@@ -60,16 +60,16 @@ android {
       reset()
       enable enableSeparateBuildPerCPUArchitecture
       universalApk false  // If true, also generate a universal APK
-      include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+      include 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
     }
   }
 
   signingConfigs {
     release {
-      storeFile file("keystore.jks")
-      storePassword "12345678"
-      keyAlias "key0"
-      keyPassword "12345678"
+      storeFile file('keystore.jks')
+      storePassword '12345678'
+      keyAlias 'key0'
+      keyPassword '12345678'
     }
   }
 
@@ -80,7 +80,7 @@ android {
     }
     release {
       minifyEnabled true
-      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
       signingConfig signingConfigs.release
       firebaseCrashlytics {
@@ -106,7 +106,7 @@ android {
     variant.outputs.each { output ->
       // For each separate APK per architecture, set a unique version code as described here:
       // https://developer.android.com/studio/build/configure-apk-splits.html
-      def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+      def versionCodes = ['armeabi-v7a': 1, 'x86': 2, 'arm64-v8a': 3, 'x86_64': 4]
       def abi = output.getFilter(OutputFile.ABI)
       if (abi != null) {  // null for the universal-debug, universal-release variants
         output.versionCodeOverride =
@@ -139,7 +139,7 @@ dependencies {
   /* ------------------------
    *  TESTING SDKS/LIBRARIES
    * ------------------------ */
-    androidTestImplementation(project(path: ":detox"))
+    androidTestImplementation(project(path: ':detox'))
 }
 
 apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)
