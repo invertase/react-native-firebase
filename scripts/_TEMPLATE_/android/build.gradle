@@ -4,12 +4,12 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:4.1.3'
+      classpath("com.android.tools.build:gradle:7.0.0")
   }
 }
 
 plugins {
-  id "io.invertase.gradle.build" version "1.4"
+  id "io.invertase.gradle.build" version "1.5"
 }
 
 project.ext {
@@ -21,11 +21,11 @@ project.ext {
         compileSdk: 30,
         // optional as gradle.buildTools comes with one by default
         // overriding here though to match the version RN uses
-        buildTools: "30.0.2"
+        buildTools: "31.0.0"
       ],
 
       firebase          : [
-        bom: "26.8.0"
+        bom: "28.3.0"
       ],
     ],
   ])

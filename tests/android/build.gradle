@@ -32,7 +32,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.3.8' // https://developers.google.com/android/guides/google-services-plugin
-    classpath 'com.android.tools.build:gradle:4.2.1'
+    classpath 'com.android.tools.build:gradle:7.0.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath 'com.google.firebase:perf-plugin:1.4.0'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
