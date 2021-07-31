@@ -64,13 +64,13 @@ allprojects {
 
 // collect all our modules for reporting
 subprojects.forEach { project ->
-  if (project.name.contains("react-native-firebase")) {
+  if (project.name.contains('react-native-firebase')) {
     rootProject.ext.firebaseModulePaths << project.projectDir
   }
 }
 
 subprojects {
-  task listAllDependencies(type: DependencyReportTask) {}
+  task listAllDependencies(type: DependencyReportTask) { }
 
   // Force all subprojects to use one and only one set of versions
   ext {
@@ -80,8 +80,8 @@ subprojects {
     targetSdk = rootProject.ext.targetSdkVersion
   }
   afterEvaluate { project ->
-    if (!project.name.equalsIgnoreCase("app")
-      && project.hasProperty("android")) {
+    if (!project.name.equalsIgnoreCase('app')
+      && project.hasProperty('android')) {
       android {
         compileSdkVersion compileSdk
         buildToolsVersion buildTools
@@ -90,10 +90,10 @@ subprojects {
           targetSdkVersion targetSdk
         }
       }
-    }
+      }
 
     // Configure testing settings - if set in module build.gradle files they affect library consumers
-    if (project.name.contains("react-native-firebase")
+    if (project.name.contains('react-native-firebase')
       && project.hasProperty('android')) {
       android {
         // Instrument all our modules for coverage generation
@@ -115,6 +115,6 @@ subprojects {
           htmlReport true
         }
       }
-    }
+      }
   }
 }
