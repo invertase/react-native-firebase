@@ -20,18 +20,34 @@ method the Analytics library provides:
 import analytics from '@react-native-firebase/analytics';
 import { NavigationContainer } from '@react-navigation/native';
 
-<NavigationContainer
-  ref={navigationRef}
-  onStateChange={async (state) => {
-    const previousRouteName = routeNameRef.current;
-    const currentRouteName = getActiveRouteName(state);
+const App = () => {
+  const routeNameRef = React.useRef();
+  const navigationRef = React.useRef();
+  return (
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      onStateChange={async () => {
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
-    if (previousRouteName !== currentRouteName) {
-      await analytics().logScreenView({
-        screen_name: currentRouteName,
-        screen_class: currentRouteName,
-      });
-    }
+        if (previousRouteName !== currentRouteName) {
+          await analytics().logScreenView({
+            screen_name: currentRouteName,
+            screen_class: currentRouteName,
+          });
+        }
+        routeNameRef.current = currentRouteName;
+      }}
+    >
+      ...
+    </NavigationContainer>
+  );
+};
+
+export default App;
 ```
 
 For a full working example, view the [Screen tracking for analytics](https://reactnavigation.org/docs/screen-tracking/)
