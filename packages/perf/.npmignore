@@ -28,6 +28,11 @@ android/.idea/scopes/scope_settings.xml
 android/.idea/vcs.xml
 android/*.iml
 
+# Expo config plugin
+plugin/src/
+plugin/__tests__/
+plugin/tsconfig.json
+
 # Xcode
 *.pbxuser
 *.mode1v3
