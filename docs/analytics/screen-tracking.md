@@ -24,28 +24,28 @@ const App = () => {
   const routeNameRef = React.useRef();
   const navigationRef = React.useRef();
   return (
-        <NavigationContainer
-          ref={navigationRef}
-          onReady={() => {
-            routeNameRef.current = navigationRef.current.getCurrentRoute().name
-          }}
-          onStateChange={async () => {
-            const previousRouteName = routeNameRef.current;
-            const currentRouteName = navigationRef.current.getCurrentRoute().name
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        routeNameRef.current = navigationRef.current.getCurrentRoute().name;
+      }}
+      onStateChange={async () => {
+        const previousRouteName = routeNameRef.current;
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
 
-            if (previousRouteName !== currentRouteName) {
-              await analytics().logScreenView({
-                screen_name: currentRouteName,
-                screen_class: currentRouteName,
-              });
-            }
-            routeNameRef.current = currentRouteName;
-          }
-        }>
-        ...
-      </NavigationContainer>
-  )
-}
+        if (previousRouteName !== currentRouteName) {
+          await analytics().logScreenView({
+            screen_name: currentRouteName,
+            screen_class: currentRouteName,
+          });
+        }
+        routeNameRef.current = currentRouteName;
+      }}
+    >
+      ...
+    </NavigationContainer>
+  );
+};
 
 export default App;
 ```
