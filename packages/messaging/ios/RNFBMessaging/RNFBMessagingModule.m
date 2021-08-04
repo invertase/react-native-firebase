@@ -125,7 +125,7 @@ RCT_EXPORT_METHOD(deleteToken:
   (RCTPromiseResolveBlock) resolve
     :(RCTPromiseRejectBlock) reject
 ) {
-  [[FIRMessaging messaging] deleteTokenWithCompletion:^(NSError *_Nullable error) {
+  [[FIRInstallations installations] deleteWithCompletion:^(NSError * _Nullable error) {
     if (error) {
       [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
     } else {
