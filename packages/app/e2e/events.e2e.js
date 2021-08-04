@@ -58,12 +58,8 @@ describe('Core -> EventEmitter', function () {
     });
 
     it('queues events before a js listener is registered', async function () {
-      const {
-        eventsPing,
-        eventsNotifyReady,
-        eventsGetListeners,
-        eventsRemoveListener,
-      } = NativeModules.RNFBAppModule;
+      const { eventsPing, eventsNotifyReady, eventsGetListeners, eventsRemoveListener } =
+        NativeModules.RNFBAppModule;
       await eventsNotifyReady(true);
       const { resolve, promise } = Promise.defer();
       const emitter = NativeEventEmitter;

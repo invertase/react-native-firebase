@@ -147,7 +147,7 @@ function ReferenceTemplate({ location, data }: Props) {
 
 // query($id: String!, $next: String!, $previous: String!) {
 export const pageQuery = graphql`
-  query($id: String!, $next: String!, $previous: String!) {
+  query ($id: String!, $next: String!, $previous: String!) {
     allJsonConfig {
       nodes {
         id
