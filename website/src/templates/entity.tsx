@@ -153,7 +153,7 @@ function EntityTemplate({ location, data, pageContext }: Props): JSX.Element | n
 }
 
 export const pageQuery = graphql`
-  query($id: String!) {
+  query ($id: String!) {
     module(entities: { elemMatch: { id: { eq: $id } } }) {
       module
 
