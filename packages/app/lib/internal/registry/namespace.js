@@ -71,9 +71,8 @@ function getOrCreateModuleForApp(app, moduleNamespace) {
     MODULE_GETTER_FOR_APP[app.name] = {};
   }
 
-  const { hasCustomUrlOrRegionSupport, hasMultiAppSupport, ModuleClass } = NAMESPACE_REGISTRY[
-    moduleNamespace
-  ];
+  const { hasCustomUrlOrRegionSupport, hasMultiAppSupport, ModuleClass } =
+    NAMESPACE_REGISTRY[moduleNamespace];
 
   // modules such as analytics only run on the default app
   if (!hasMultiAppSupport && app.name !== DEFAULT_APP_NAME) {

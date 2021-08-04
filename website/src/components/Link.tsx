@@ -39,10 +39,9 @@ const Link = ({
   partiallyActiveClass = false,
   ...other
 }: Props): JSX.Element => {
-  function shouldHaveActiveClass({
-    isCurrent,
-    isPartiallyCurrent,
-  }: LinkGetProps): { className?: string } {
+  function shouldHaveActiveClass({ isCurrent, isPartiallyCurrent }: LinkGetProps): {
+    className?: string;
+  } {
     if (activeClass && isCurrent) return { className: 'active' };
     if (partiallyActiveClass && isPartiallyCurrent) return { className: 'active' };
     return {};

@@ -28,16 +28,8 @@ export default function build(dynamicLinksParams) {
     throw new Error("'dynamicLinksParams' must be an object.");
   }
 
-  const {
-    link,
-    domainUriPrefix,
-    android,
-    analytics,
-    ios,
-    itunes,
-    navigation,
-    social,
-  } = dynamicLinksParams;
+  const { link, domainUriPrefix, android, analytics, ios, itunes, navigation, social } =
+    dynamicLinksParams;
 
   if (!link) {
     throw new Error("missing required 'link' property.");

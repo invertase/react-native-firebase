@@ -53,12 +53,8 @@ It is useful to know if the Android device has play services available, and what
 import { utils } from '@react-native-firebase/app';
 
 async function checkPlayServicesExample() {
-  const {
-    status,
-    isAvailable,
-    hasResolution,
-    isUserResolvableError,
-  } = utils().playServicesAvailability;
+  const { status, isAvailable, hasResolution, isUserResolvableError } =
+    utils().playServicesAvailability;
   // all good and valid \o/
   if (isAvailable) return Promise.resolve();
   // if the user can resolve the issue i.e by updating play services
