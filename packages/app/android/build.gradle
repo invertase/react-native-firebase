@@ -77,6 +77,7 @@ repositories {
 }
 
 dependencies {
+  api 'com.facebook.react:react-native:+'
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
@@ -87,4 +88,3 @@ apply from: file("./firebase-json.gradle")
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()
-ReactNative.module.applyReactNativeDependency("api")

@@ -96,4 +96,3 @@ dependencies {
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
 ReactNative.module.applyAndroidVersions()
-ReactNative.module.applyReactNativeDependency("api")
