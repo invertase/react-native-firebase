@@ -102,8 +102,8 @@ jobs:
       - name: Pod Install
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 2
-          retry_wait_seconds: 60
+          timeout_minutes: 10
+          retry_wait_seconds: 30
           max_attempts: 3
           command: yarn tests:ios:pod:install
 
