@@ -78,14 +78,16 @@ jobs:
           mkdir patches || true
           for PACKAGE in $PACKAGE_LIST; do
             echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
-            yarn add @react-native-firebase/$PACKAGE
-            pushd node_modules/@react-native-firebase
-            tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
-            mv $PACKAGE/package.json package/
-            \rm -fr $PACKAGE
-            mv package $PACKAGE
-            popd
-            npx patch-package @react-native-firebase/$PACKAGE || true
+            yarn add @react-native-firebase/$PACKAGE || true
+            if [ -d node_modules/@react-native-firebase/$PACKAGE ]; then
+              pushd node_modules/@react-native-firebase
+              tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
+              mv $PACKAGE/package.json package/
+              \rm -fr $PACKAGE
+              mv package $PACKAGE
+              popd
+              npx patch-package @react-native-firebase/$PACKAGE || true
+            fi
           done
           ls -la $HOME/template/patches
         shell: bash
@@ -95,9 +97,9 @@ jobs:
         with:
           name: patches
           path: ~/template/patches/
-  
+
       # create a comment on the PR and any related issues with a direct link to the archive,
-      # a call for testers, and perhaps a paste-able set of commands to install them 
+      # a call for testers, and perhaps a paste-able set of commands to install them
       # (mkdir patches, curl -o etc, npx patch-package)
       # You need an artifact id to get a download link for it.
       # You need a workflow run id to get an artifact id.
