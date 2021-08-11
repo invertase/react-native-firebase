@@ -35,6 +35,7 @@ import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
+import { Platform } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -44,7 +45,11 @@ const firestore = firebase.firestore();
 firestore.settings({ host: 'localhost:8080', ssl: false, persistence: true });
 
 firebase.auth().useEmulator('http://localhost:9099');
-firebase.database().useEmulator('localhost', 9000);
+// Database emulator cannot handle App Check on Android yet
+// https://github.com/firebase/firebase-tools/issues/3663
+if (Platform.OS === 'ios') {
+  firebase.database().useEmulator('localhost', 9000);
+}
 firebase.storage().useEmulator('localhost', 9199);
 
 function Root() {
