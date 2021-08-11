@@ -2,7 +2,7 @@ import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 
 import { DEFAULT_TARGET_PATH } from './constants';
 import path from 'path';
-import fs from 'fs/promises';
+import fs from 'fs';
 
 /**
  * Copy `google-services.json`
@@ -24,7 +24,7 @@ export const withCopyAndroidGoogleServices: ConfigPlugin = config => {
       const destPath = path.resolve(config.modRequest.platformProjectRoot, DEFAULT_TARGET_PATH);
 
       try {
-        await fs.copyFile(srcPath, destPath);
+        await fs.promises.copyFile(srcPath, destPath);
       } catch (e) {
         throw new Error(
           `Cannot copy google-services.json, because the file ${srcPath} doesn't exist. Please provide a valid path in \`app.json\`.`,
