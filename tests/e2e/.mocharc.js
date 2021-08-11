@@ -5,7 +5,7 @@ module.exports = {
   timeout: 720000,
   reporter: 'spec',
   slow: 2000,
-  retries: 2,
+  retries: 4,
   bail: true,
   exit: true,
   recursive: true,
