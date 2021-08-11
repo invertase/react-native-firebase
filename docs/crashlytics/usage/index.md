@@ -258,7 +258,7 @@ In case you need to log non-fatal (handled) exceptions on the native side (e.g f
 ### Android
 
 ```java
-import io.invertbase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
 //...
 
 try {
