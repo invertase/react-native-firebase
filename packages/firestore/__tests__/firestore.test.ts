@@ -144,7 +144,7 @@ describe('Storage', function () {
       expect(query.constructor.name).toEqual('FirestoreQuery');
     });
 
-    it('throws if id is not a string', function () {
+    it('throws if id is not a string', async function () {
       try {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().collectionGroup(123);
@@ -154,7 +154,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if id is empty', function () {
+    it('throws if id is empty', async function () {
       try {
         firebase.firestore().collectionGroup('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -163,7 +163,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if id contains forward-slash', function () {
+    it('throws if id contains forward-slash', async function () {
       try {
         firebase.firestore().collectionGroup(`someCollection/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -174,7 +174,7 @@ describe('Storage', function () {
   });
 
   describe('collection()', function () {
-    it('throws if path is not a string', function () {
+    it('throws if path is not a string', async function () {
       try {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().collection(123);
@@ -184,7 +184,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if path is empty string', function () {
+    it('throws if path is empty string', async function () {
       try {
         firebase.firestore().collection('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -193,7 +193,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if path does not point to a collection', function () {
+    it('throws if path does not point to a collection', async function () {
       try {
         firebase.firestore().collection(`firestore/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -202,7 +202,7 @@ describe('Storage', function () {
       }
     });
 
-    it('returns a new CollectionReference', function () {
+    it('returns a new CollectionReference', async function () {
       const collectionReference = firebase.firestore().collection('firestore');
       expect(collectionReference.constructor.name).toEqual('FirestoreCollectionReference');
       expect(collectionReference.path).toEqual('firestore');
@@ -210,7 +210,7 @@ describe('Storage', function () {
   });
 
   describe('doc()', function () {
-    it('throws if path is not a string', function () {
+    it('throws if path is not a string', async function () {
       try {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().doc(123);
@@ -220,7 +220,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if path is empty string', function () {
+    it('throws if path is empty string', async function () {
       try {
         firebase.firestore().doc('');
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -229,7 +229,7 @@ describe('Storage', function () {
       }
     });
 
-    it('throws if path does not point to a document', function () {
+    it('throws if path does not point to a document', async function () {
       try {
         firebase.firestore().doc(`${COLLECTION}/bar/baz`);
         return Promise.reject(new Error('Did not throw an Error.'));
@@ -238,7 +238,7 @@ describe('Storage', function () {
       }
     });
 
-    it('returns a new DocumentReference', function () {
+    it('returns a new DocumentReference', async function () {
       const docRef = firebase.firestore().doc(`${COLLECTION}/bar`);
       expect(docRef.constructor.name).toEqual('FirestoreDocumentReference');
       expect(docRef.path).toEqual(`${COLLECTION}/bar`);

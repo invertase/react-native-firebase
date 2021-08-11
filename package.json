@@ -44,14 +44,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
-    "@babel/preset-env": "7.14.9",
+    "@babel/preset-env": "7.15.0",
     "@octokit/core": "^3.5.1",
     "@tsconfig/node12": "^1.0.9",
-    "@types/jest": "^26.0.24",
-    "@types/react": "^17.0.15",
-    "@types/react-native": "^0.64.12",
-    "@typescript-eslint/eslint-plugin": "^4.29.0",
-    "@typescript-eslint/parser": "^4.29.0",
+    "@types/jest": "^27.0.0",
+    "@types/react": "^17.0.17",
+    "@types/react-native": "^0.64.13",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
     "babel-jest": "^27.0.6",
     "codecov": "^3.8.3",
     "conventional-changelog-cli": "^2.0.34",
@@ -72,7 +72,7 @@
     "typescript": "^4.3.5"
   },
   "resolutions": {
-    "@types/react": "^17.0.15"
+    "@types/react": "^17.0.17"
   },
   "workspaces": {
     "packages": [
