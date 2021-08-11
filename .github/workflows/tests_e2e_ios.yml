@@ -168,9 +168,7 @@ jobs:
 
       - name: Detox Test
         timeout-minutes: 10
-        run: |
-          cd tests
-          ./node_modules/.bin/nyc ./node_modules/.bin/detox test --debug-synchronization 200 --configuration ios.sim.debug
+        run: yarn tests:ios:test-cover
 
       - name: Compress Simulator Log
         if: always()
