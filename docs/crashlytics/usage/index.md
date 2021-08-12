@@ -258,6 +258,9 @@ In case you need to log non-fatal (handled) exceptions on the native side (e.g f
 ### Android
 
 ```java
+import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsNativeHelper;
+//...
+
 try {
   //...
 } catch (Exception e) {
@@ -269,6 +272,9 @@ try {
 ### iOS
 
 ```objectivec
+#import <RNFBCrashlytics/RNFBCrashlyticsNativeHelper.h>
+//...
+
 @try {
   //...
 } @catch (NSException *exception) {
