@@ -442,7 +442,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                               dynamicLinkToWritableMap(
                                   pendingDynamicLinkData.getLink().toString(),
                                   pendingDynamicLinkData.getMinimumAppVersion(),
-                                  Arguments.makeNativeMap(pendingDynamicLinkData.getUtmParameters()));
+                                  Arguments.makeNativeMap(pendingDynamicLinkData.getUtmParameters())));
                 }
               } else {
                 Log.e(
