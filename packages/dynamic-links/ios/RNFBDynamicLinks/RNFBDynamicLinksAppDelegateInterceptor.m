@@ -16,8 +16,8 @@
  */
 
 #import "RNFBDynamicLinksAppDelegateInterceptor.h"
-#import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
 
 @implementation RNFBDynamicLinksAppDelegateInterceptor
 
@@ -47,9 +47,9 @@
 }
 
 - (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation {
+              openURL:(NSURL *)url
+    sourceApplication:(NSString *)sourceApplication
+           annotation:(id)annotation {
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
 
   if (!dynamicLink) {
@@ -65,10 +65,14 @@
       _initialLinkUrl = dynamicLink.url.absoluteString;
       _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
     }
-    [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
-        @"url": dynamicLink.url.absoluteString,
-        @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
-    }];
+    [[RNFBRCTEventEmitter shared]
+        sendEventWithName:LINK_RECEIVED_EVENT
+                     body:@{
+                       @"url" : dynamicLink.url.absoluteString,
+                       @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
+                           ? [NSNull null]
+                           : dynamicLink.minimumAppVersion,
+                     }];
   }
 
   // results of this are ORed and NO doesn't affect other delegate interceptors' result
@@ -77,7 +81,9 @@
 
 #pragma mark - User Activities overridden handler methods
 
-- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+- (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+      restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
   __block BOOL retried = NO;
 
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
@@ -86,27 +92,40 @@
         _initialLinkUrl = dynamicLink.url.absoluteString;
         _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
       }
-      [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
-          @"url": dynamicLink.url.absoluteString,
-          @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
-      }];
+      [[RNFBRCTEventEmitter shared]
+          sendEventWithName:LINK_RECEIVED_EVENT
+                       body:@{
+                         @"url" : dynamicLink.url.absoluteString,
+                         @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
+                             ? [NSNull null]
+                             : dynamicLink.minimumAppVersion,
+                       }];
     }
 
-    // Per Apple Tech Support, a network failure could occur when returning from background on iOS 12.
-    // https://github.com/AFNetworking/AFNetworking/issues/4279#issuecomment-447108981
-    // So we'll retry the request once
-    if (error && !retried && [NSPOSIXErrorDomain isEqualToString:error.domain] && error.code == 53) {
+    // Per Apple Tech Support, a network failure could occur when returning from background on
+    // iOS 12. https://github.com/AFNetworking/AFNetworking/issues/4279#issuecomment-447108981 So
+    // we'll retry the request once
+    if (error && !retried && [NSPOSIXErrorDomain isEqualToString:error.domain] &&
+        error.code == 53) {
       retried = YES;
-      [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+      [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                               completion:completion];
     }
 
-    // TODO: We could send this to JS and maybe have a onDynamicLinkError listener but there's also a good chance the
-    // TODO: `userActivity.webpageURL` might not be for a Firebase dynamic link, which needs consideration - so we'll
-    // TODO: log this for now, logging will get picked up by Crashlytics automatically if its integrated.
-    if (error) NSLog(@"RNFBDynamicLinks: Unknown error occurred when attempting to handle a universal link: %@", error);
+    // TODO: We could send this to JS and maybe have a onDynamicLinkError listener but there's also
+    // a good chance the
+    // TODO: `userActivity.webpageURL` might not be for a Firebase dynamic link, which needs
+    // consideration - so we'll
+    // TODO: log this for now, logging will get picked up by Crashlytics automatically if its
+    // integrated.
+    if (error)
+      NSLog(@"RNFBDynamicLinks: Unknown error occurred when attempting to handle a universal link: "
+            @"%@",
+            error);
   };
 
-  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                           completion:completion];
 
   // results of this are ORed and NO doesn't affect other delegate interceptors' result
   return NO;

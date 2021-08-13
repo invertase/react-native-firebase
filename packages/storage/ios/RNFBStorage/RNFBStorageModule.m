@@ -15,13 +15,13 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTUtils.h>
 
-#import "RNFBStorageModule.h"
 #import "RNFBRCTEventEmitter.h"
-#import "RNFBStorageCommon.h"
 #import "RNFBSharedUtils.h"
+#import "RNFBStorageCommon.h"
+#import "RNFBStorageModule.h"
 
 static NSString *const RNFB_STORAGE_EVENT = @"storage_event";
 static NSString *const RNFB_STORAGE_STATE_CHANGED = @"state_changed";
@@ -78,12 +78,11 @@ RCT_EXPORT_MODULE();
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
  */
-RCT_EXPORT_METHOD(delete:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(delete
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [storageReference deleteWithCompletion:^(NSError *_Nullable error) {
@@ -98,12 +97,11 @@ RCT_EXPORT_METHOD(delete:
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getDownloadURL
  */
-RCT_EXPORT_METHOD(getDownloadURL:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(getDownloadURL
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [storageReference downloadURLWithCompletion:^(NSURL *_Nullable URL, NSError *_Nullable error) {
@@ -118,58 +116,55 @@ RCT_EXPORT_METHOD(getDownloadURL:
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
  */
-RCT_EXPORT_METHOD(getMetadata:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(getMetadata
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
-  [storageReference metadataWithCompletion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
-    if (error != nil) {
-      [self promiseRejectStorageException:reject error:error];
-    } else {
-      resolve([RNFBStorageCommon metadataToDict:metadata]);
-    }
-  }];
+  [storageReference
+      metadataWithCompletion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
+        if (error != nil) {
+          [self promiseRejectStorageException:reject error:error];
+        } else {
+          resolve([RNFBStorageCommon metadataToDict:metadata]);
+        }
+      }];
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
  */
-RCT_EXPORT_METHOD(updateMetadata:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (NSDictionary *) metadata
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(updateMetadata
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (NSDictionary *)metadata
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
 
-  [storageReference updateMetadata:storageMetadata completion:^(
-      FIRStorageMetadata *_Nullable metadata,
-      NSError *_Nullable error
-  ) {
-    if (error != nil) {
-      [self promiseRejectStorageException:reject error:error];
-    } else {
-      resolve([RNFBStorageCommon metadataToDict:metadata]);
-    }
-  }];
+  [storageReference
+      updateMetadata:storageMetadata
+          completion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
+            if (error != nil) {
+              [self promiseRejectStorageException:reject error:error];
+            } else {
+              resolve([RNFBStorageCommon metadataToDict:metadata]);
+            }
+          }];
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
  */
-RCT_EXPORT_METHOD(list:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (NSDictionary *) listOptions
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(list
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (NSDictionary *)listOptions
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   long maxResults = [listOptions[@"maxResults"] longValue];
 
@@ -184,21 +179,22 @@ RCT_EXPORT_METHOD(list:
 
   if (listOptions[@"pageToken"]) {
     NSString *pageToken = listOptions[@"pageToken"];
-    [storageReference listWithMaxResults:(int64_t) maxResults pageToken:pageToken completion:completionBlock];
+    [storageReference listWithMaxResults:(int64_t)maxResults
+                               pageToken:pageToken
+                              completion:completionBlock];
   } else {
-    [storageReference listWithMaxResults:(int64_t) maxResults completion:completionBlock];
+    [storageReference listWithMaxResults:(int64_t)maxResults completion:completionBlock];
   }
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
  */
-RCT_EXPORT_METHOD(listAll:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(listAll
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   __block bool alreadyCompleted = false;
@@ -222,43 +218,43 @@ RCT_EXPORT_METHOD(listAll:
 }
 
 /**
- * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
+ * @url
+ * https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxDownloadRetryTime
  */
-RCT_EXPORT_METHOD(setMaxDownloadRetryTime:
-  (FIRApp *) firebaseApp
-    : (nonnull NSNumber *) milliseconds
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(setMaxDownloadRetryTime
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSNumber *)milliseconds
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   maxDownloadRetryTime = [milliseconds doubleValue] / 1000;
-  [[FIRStorage storageForApp:firebaseApp] setMaxDownloadRetryTime:[milliseconds doubleValue] / 1000];
+  [[FIRStorage storageForApp:firebaseApp]
+      setMaxDownloadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
 
-
 /**
- * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
+ * @url
+ * https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxOperationRetryTime
  */
-RCT_EXPORT_METHOD(setMaxOperationRetryTime:
-  (FIRApp *) firebaseApp
-    : (nonnull  NSNumber *) milliseconds
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(setMaxOperationRetryTime
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSNumber *)milliseconds
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   maxOperationRetryTime = [milliseconds doubleValue] / 1000;
-  [[FIRStorage storageForApp:firebaseApp] setMaxOperationRetryTime:[milliseconds doubleValue] / 1000];
+  [[FIRStorage storageForApp:firebaseApp]
+      setMaxOperationRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#setMaxUploadRetryTime
  */
-RCT_EXPORT_METHOD(setMaxUploadRetryTime:
-  (FIRApp *) firebaseApp
-    : (nonnull NSNumber *) milliseconds
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(setMaxUploadRetryTime
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSNumber *)milliseconds
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   maxUploadRetryTime = [milliseconds doubleValue] / 1000;
   [[FIRStorage storageForApp:firebaseApp] setMaxUploadRetryTime:[milliseconds doubleValue] / 1000];
   resolve([NSNull null]);
@@ -267,14 +263,13 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#downloadFile
  */
-RCT_EXPORT_METHOD(writeToFile:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (NSString *) localFilePath
-    : (nonnull NSNumber *) taskId
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(writeToFile
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (NSString *)localFilePath
+                  : (nonnull NSNumber *)taskId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
   NSURL *localFile = [NSURL fileURLWithPath:localFilePath];
 
@@ -286,175 +281,225 @@ RCT_EXPORT_METHOD(writeToFile:
   PENDING_TASKS[taskId] = downloadTask;
 
   // download started or resumed
-  [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-  }];
+  [downloadTask
+      observeStatus:FIRStorageTaskStatusResume
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // download paused
-  [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-  }];
+  [downloadTask
+      observeStatus:FIRStorageTaskStatusPause
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // download reported progress
-  [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-  }];
+  [downloadTask
+      observeStatus:FIRStorageTaskStatusProgress
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // download completed successfully
-  [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
-    [PENDING_TASKS removeObjectForKey:taskId];
+  [downloadTask
+      observeStatus:FIRStorageTaskStatusSuccess
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              [PENDING_TASKS removeObjectForKey:taskId];
 
-    // state_changed
-    NSDictionary *stateChangedEventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *stateChangedEvent =
-        [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
+              // state_changed
+              NSDictionary *stateChangedEventBody =
+                  [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *stateChangedEvent =
+                  [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                         body:stateChangedEvent];
 
-    // download_success
-    NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_DOWNLOAD_SUCCESS appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-    resolve(eventBody);
-  }];
+              // download_success
+              NSDictionary *eventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_DOWNLOAD_SUCCESS
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+              resolve(eventBody);
+            }];
 
   // download task failed
-  [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
-    [PENDING_TASKS removeObjectForKey:taskId];
+  [downloadTask
+      observeStatus:FIRStorageTaskStatusFailure
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              [PENDING_TASKS removeObjectForKey:taskId];
 
-    // state_changed
-    NSDictionary *stateChangedEventBody = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary *stateChangedEvent =
-        [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
+              // state_changed
+              NSDictionary *stateChangedEventBody =
+                  [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *stateChangedEvent =
+                  [RNFBStorageCommon getStorageEventDictionary:stateChangedEventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                         body:stateChangedEvent];
 
-    // download_failed
-    NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
-    NSDictionary
-        *eventBody = [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error taskSnapshotDict:taskSnapshotDict];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_DOWNLOAD_FAILURE appName:firebaseApp.name taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+              // download_failed
+              NSMutableDictionary *taskSnapshotDict =
+                  [RNFBStorageCommon getDownloadTaskAsDictionary:snapshot];
+              NSDictionary *eventBody = [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error
+                                                                 taskSnapshotDict:taskSnapshotDict];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_DOWNLOAD_FAILURE
+                                                       appName:firebaseApp.name
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
-    [self promiseRejectStorageException:reject error:snapshot.error];
-  }];
+              [self promiseRejectStorageException:reject error:snapshot.error];
+            }];
 }
-
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  */
-RCT_EXPORT_METHOD(putFile:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (NSString *) localFilePath
-    : (NSDictionary *) metadata
-    : (nonnull NSNumber *) taskId
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(putFile
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (NSString *)localFilePath
+                  : (NSDictionary *)metadata
+                  : (nonnull NSNumber *)taskId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
-  [RNFBStorageCommon NSURLForLocalFilePath:localFilePath completion:^(
-      NSArray *errorCodeMessageArray,
-      NSURL *temporaryFileUrl,
-      NSString *contentType
-  ) {
-    if (errorCodeMessageArray != nil) {
-      // state_changed
-      NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getUploadTaskAsDictionary:nil];
-      NSDictionary *eventBody =
-          [RNFBStorageCommon buildErrorSnapshotDictFromCodeAndMessage:errorCodeMessageArray taskSnapshotDict:taskSnapshotDict];
-      NSDictionary *stateChangedEvent =
-          [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:[[[storageReference storage] app] name] taskId:taskId];
-      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
+  [RNFBStorageCommon
+      NSURLForLocalFilePath:localFilePath
+                 completion:^(NSArray *errorCodeMessageArray, NSURL *temporaryFileUrl,
+                              NSString *contentType) {
+                   if (errorCodeMessageArray != nil) {
+                     // state_changed
+                     NSMutableDictionary *taskSnapshotDict =
+                         [RNFBStorageCommon getUploadTaskAsDictionary:nil];
+                     NSDictionary *eventBody = [RNFBStorageCommon
+                         buildErrorSnapshotDictFromCodeAndMessage:errorCodeMessageArray
+                                                 taskSnapshotDict:taskSnapshotDict];
+                     NSDictionary *stateChangedEvent = [RNFBStorageCommon
+                         getStorageEventDictionary:eventBody
+                                 internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                           appName:[[[storageReference storage] app] name]
+                                            taskId:taskId];
+                     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                                body:stateChangedEvent];
 
-      // upload_failed
-      NSDictionary *event =
-          [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_UPLOAD_FAILURE appName:[[[storageReference storage] app] name] taskId:taskId];
-      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+                     // upload_failed
+                     NSDictionary *event = [RNFBStorageCommon
+                         getStorageEventDictionary:eventBody
+                                 internalEventName:RNFB_STORAGE_UPLOAD_FAILURE
+                                           appName:[[[storageReference storage] app] name]
+                                            taskId:taskId];
+                     [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": errorCodeMessageArray[0],
-          @"message": errorCodeMessageArray[1],
-      }];
-      return;
-    }
+                     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                                       userInfo:(NSMutableDictionary *)@{
+                                                         @"code" : errorCodeMessageArray[0],
+                                                         @"message" : errorCodeMessageArray[1],
+                                                       }];
+                     return;
+                   }
 
-    storageMetadata.contentType = contentType;
+                   storageMetadata.contentType = contentType;
 
-    if ([storageMetadata valueForKey:@"contentType"] == nil) {
-      storageMetadata.contentType = [RNFBStorageCommon mimeTypeForPath:localFilePath];
-    }
+                   if ([storageMetadata valueForKey:@"contentType"] == nil) {
+                     storageMetadata.contentType =
+                         [RNFBStorageCommon mimeTypeForPath:localFilePath];
+                   }
 
-    __block FIRStorageUploadTask *uploadTask;
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      uploadTask = [storageReference putFile:temporaryFileUrl metadata:storageMetadata];
-    });
+                   __block FIRStorageUploadTask *uploadTask;
+                   RCTUnsafeExecuteOnMainQueueSync(^{
+                     uploadTask = [storageReference putFile:temporaryFileUrl
+                                                   metadata:storageMetadata];
+                   });
 
-    [self addUploadTaskObservers:uploadTask appDisplayName:[[[storageReference storage] app] name] taskId:taskId resolver:resolve rejecter:reject];
-  }];
+                   [self addUploadTaskObservers:uploadTask
+                                 appDisplayName:[[[storageReference storage] app] name]
+                                         taskId:taskId
+                                       resolver:resolve
+                                       rejecter:reject];
+                 }];
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
  */
-RCT_EXPORT_METHOD(putString:
-  (FIRApp *) firebaseApp
-    : (NSString *) url
-    : (NSString *) string
-    : (NSString *) format
-    : (NSDictionary *) metadata
-    : (nonnull NSNumber *) taskId
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
+RCT_EXPORT_METHOD(putString
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)url
+                  : (NSString *)string
+                  : (NSString *)format
+                  : (NSDictionary *)metadata
+                  : (nonnull NSNumber *)taskId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   __block FIRStorageUploadTask *uploadTask;
   RCTUnsafeExecuteOnMainQueueSync(^{
-    uploadTask =
-        [storageReference putData:[RNFBStorageCommon NSDataFromUploadString:string format:format] metadata:storageMetadata];
+    uploadTask = [storageReference putData:[RNFBStorageCommon NSDataFromUploadString:string
+                                                                              format:format]
+                                  metadata:storageMetadata];
   });
 
-  [self addUploadTaskObservers:uploadTask appDisplayName:[[[storageReference storage] app] name] taskId:taskId resolver:resolve rejecter:reject];
+  [self addUploadTaskObservers:uploadTask
+                appDisplayName:[[[storageReference storage] app] name]
+                        taskId:taskId
+                      resolver:resolve
+                      rejecter:reject];
 }
 
 /**
  * @url https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
  */
-RCT_EXPORT_METHOD(useEmulator:
-  (FIRApp *) firebaseApp
-    :(nonnull NSString *)host
-    :(NSInteger)port
-) {
+RCT_EXPORT_METHOD(useEmulator
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSString *)host
+                  : (NSInteger)port) {
   emulatorHost = host;
   emulatorPort = port;
-  [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost: host port: port];
+  [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost:host port:port];
 }
 
 /**
  * @url N/A - RNFB Specific
  */
-RCT_EXPORT_METHOD(setTaskStatus:
-  (FIRApp *) firebaseApp
-    : (nonnull NSNumber *) taskId
-    : (nonnull NSNumber *) status
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock) reject
-) {
-
+RCT_EXPORT_METHOD(setTaskStatus
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSNumber *)taskId
+                  : (nonnull NSNumber *)status
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   id task = PENDING_TASKS[taskId];
   if (task == nil) {
     resolve(@(NO));
@@ -479,78 +524,114 @@ RCT_EXPORT_METHOD(setTaskStatus:
 #pragma mark -
 #pragma mark Firebase Storage Internals
 
-- (void)addUploadTaskObservers:(FIRStorageUploadTask *)uploadTask appDisplayName:(NSString *)appDisplayName taskId:(NSNumber *)taskId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+- (void)addUploadTaskObservers:(FIRStorageUploadTask *)uploadTask
+                appDisplayName:(NSString *)appDisplayName
+                        taskId:(NSNumber *)taskId
+                      resolver:(RCTPromiseResolveBlock)resolve
+                      rejecter:(RCTPromiseRejectBlock)reject {
   PENDING_TASKS[taskId] = uploadTask;
 
   // upload started or resumed
-  [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-  }];
+  [uploadTask
+      observeStatus:FIRStorageTaskStatusResume
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:appDisplayName
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // upload paused
-  [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-
-  }];
+  [uploadTask
+      observeStatus:FIRStorageTaskStatusPause
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:appDisplayName
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // upload reported progress
-  [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
-    NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
-  }];
+  [uploadTask
+      observeStatus:FIRStorageTaskStatusProgress
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:appDisplayName
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+            }];
 
   // upload completed successfully
-  [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
-    [PENDING_TASKS removeObjectForKey:taskId];
+  [uploadTask observeStatus:FIRStorageTaskStatusSuccess
+                    handler:^(FIRStorageTaskSnapshot *snapshot) {
+                      [PENDING_TASKS removeObjectForKey:taskId];
 
-    NSDictionary *eventBody = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+                      NSDictionary *eventBody =
+                          [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
 
-    // state_changed
-    NSDictionary *stateChangeEvent =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangeEvent];
+                      // state_changed
+                      NSDictionary *stateChangeEvent =
+                          [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                                     internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                               appName:appDisplayName
+                                                                taskId:taskId];
+                      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                                 body:stateChangeEvent];
 
-    // upload_success
-    NSDictionary *uploadSuccessEvent =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_UPLOAD_SUCCESS appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:uploadSuccessEvent];
-    resolve(eventBody);
-  }];
+                      // upload_success
+                      NSDictionary *uploadSuccessEvent =
+                          [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                                     internalEventName:RNFB_STORAGE_UPLOAD_SUCCESS
+                                                               appName:appDisplayName
+                                                                taskId:taskId];
+                      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                                 body:uploadSuccessEvent];
+                      resolve(eventBody);
+                    }];
 
-  [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
-    [PENDING_TASKS removeObjectForKey:taskId];
+  [uploadTask
+      observeStatus:FIRStorageTaskStatusFailure
+            handler:^(FIRStorageTaskSnapshot *snapshot) {
+              [PENDING_TASKS removeObjectForKey:taskId];
 
-    // state_changed
-    NSMutableDictionary *taskSnapshotDict = [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
-    NSDictionary *stateChangedEvtBody =
-        [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error taskSnapshotDict:taskSnapshotDict];
-    NSDictionary *stateChangedEvent =
-        [RNFBStorageCommon getStorageEventDictionary:stateChangedEvtBody internalEventName:RNFB_STORAGE_STATE_CHANGED appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:stateChangedEvent];
+              // state_changed
+              NSMutableDictionary *taskSnapshotDict =
+                  [RNFBStorageCommon getUploadTaskAsDictionary:snapshot];
+              NSDictionary *stateChangedEvtBody =
+                  [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error
+                                           taskSnapshotDict:taskSnapshotDict];
+              NSDictionary *stateChangedEvent =
+                  [RNFBStorageCommon getStorageEventDictionary:stateChangedEvtBody
+                                             internalEventName:RNFB_STORAGE_STATE_CHANGED
+                                                       appName:appDisplayName
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT
+                                                         body:stateChangedEvent];
 
-    // upload_failed
-    NSDictionary
-        *eventBody = [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error taskSnapshotDict:taskSnapshotDict];
-    NSDictionary *event =
-        [RNFBStorageCommon getStorageEventDictionary:eventBody internalEventName:RNFB_STORAGE_UPLOAD_FAILURE appName:appDisplayName taskId:taskId];
-    [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
+              // upload_failed
+              NSDictionary *eventBody = [RNFBStorageCommon buildErrorSnapshotDict:snapshot.error
+                                                                 taskSnapshotDict:taskSnapshotDict];
+              NSDictionary *event =
+                  [RNFBStorageCommon getStorageEventDictionary:eventBody
+                                             internalEventName:RNFB_STORAGE_UPLOAD_FAILURE
+                                                       appName:appDisplayName
+                                                        taskId:taskId];
+              [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_STORAGE_EVENT body:event];
 
-    [self promiseRejectStorageException:reject error:snapshot.error];
-  }];
+              [self promiseRejectStorageException:reject error:snapshot.error];
+            }];
 }
 
-- (FIRStorageReference *)getReferenceFromUrl:
-  (NSString *)url 
-    app : (FIRApp *)firebaseApp
- {
+- (FIRStorageReference *)getReferenceFromUrl:(NSString *)url app:(FIRApp *)firebaseApp {
   FIRStorage *storage;
   NSString *pathWithBucketName = [url substringWithRange:NSMakeRange(5, [url length] - 5)];
   NSString *bucket = url;
@@ -575,10 +656,11 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
 - (void)promiseRejectStorageException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSArray *codeAndMessage = [RNFBStorageCommon getErrorCodeMessage:error];
-  [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-      @"code": (NSString *) codeAndMessage[0],
-      @"message": (NSString *) codeAndMessage[1],
-  }];
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : (NSString *)codeAndMessage[0],
+                                      @"message" : (NSString *)codeAndMessage[1],
+                                    }];
 }
 
 - (NSDictionary *)constantsToExport {
@@ -586,9 +668,11 @@ RCT_EXPORT_METHOD(setTaskStatus:
 
   if ([[[FIRApp allApps] allKeys] count] > 0) {
     FIRStorage *storageInstance = [FIRStorage storage];
-    constants[@"maxDownloadRetryTime"] = @((NSInteger) [storageInstance maxDownloadRetryTime] * 1000);
-    constants[@"maxOperationRetryTime"] = @((NSInteger) [storageInstance maxOperationRetryTime] * 1000);
-    constants[@"maxUploadRetryTime"] = @((NSInteger) [storageInstance maxUploadRetryTime] * 1000);
+    constants[@"maxDownloadRetryTime"] =
+        @((NSInteger)[storageInstance maxDownloadRetryTime] * 1000);
+    constants[@"maxOperationRetryTime"] =
+        @((NSInteger)[storageInstance maxOperationRetryTime] * 1000);
+    constants[@"maxUploadRetryTime"] = @((NSInteger)[storageInstance maxUploadRetryTime] * 1000);
   }
 
   return constants;

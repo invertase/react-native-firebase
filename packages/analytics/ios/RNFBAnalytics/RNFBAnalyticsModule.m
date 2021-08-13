@@ -15,165 +15,147 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTUtils.h>
 
-#import "RNFBAnalyticsModule.h"
 #import <RNFBApp/RNFBSharedUtils.h>
-
+#import "RNFBAnalyticsModule.h"
 
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
 
-  RCT_EXPORT_MODULE();
+RCT_EXPORT_MODULE();
 
-  - (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
-  }
+- (dispatch_queue_t)methodQueue {
+  return dispatch_get_main_queue();
+}
 
 #pragma mark -
 #pragma mark Firebase Analytics Methods
 
-  RCT_EXPORT_METHOD(logEvent:
-    (NSString *) name
-        params:
-        (NSDictionary *) params
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-
-    return resolve([NSNull null]);
+RCT_EXPORT_METHOD(logEvent
+                  : (NSString *)name params
+                  : (NSDictionary *)params resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
 
-  RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled:
-    (BOOL) enabled
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
+  return resolve([NSNull null]);
+}
 
-    return resolve([NSNull null]);
+RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled
+                  : (BOOL)enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
 
-  RCT_EXPORT_METHOD(setUserId:
-    (NSString *) id
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics setUserID:id];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-    return resolve([NSNull null]);
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setUserId
+                  : (NSString *)id resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics setUserID:id];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setUserProperty
+                  : (NSString *)name value
+                  : (NSString *)value resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics setUserPropertyString:value forName:name];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setUserProperties
+                  : (NSDictionary *)properties resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+      [FIRAnalytics setUserPropertyString:value forName:key];
+    }];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(resetAnalyticsData
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics resetAnalyticsData];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(setSessionTimeoutDuration
+                  : (double)milliseconds resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  // Do nothing - this only exists in android
+  return resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(getAppInstanceId
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  return resolve([FIRAnalytics appInstanceID]);
+}
+
+RCT_EXPORT_METHOD(setDefaultEventParameters
+                  : (NSDictionary *)params resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
 
-  RCT_EXPORT_METHOD(setUserProperty:
-    (NSString *) name
-        value:
-        (NSString *) value
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics setUserPropertyString:value forName:name];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-    return resolve([NSNull null]);
-  }
-
-  RCT_EXPORT_METHOD(setUserProperties:
-    (NSDictionary *) properties
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-        [FIRAnalytics setUserPropertyString:value forName:key];
-      }];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-    return resolve([NSNull null]);
-  }
-
-  RCT_EXPORT_METHOD(resetAnalyticsData:
-    (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics resetAnalyticsData];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-    return resolve([NSNull null]);
-  }
-
-  RCT_EXPORT_METHOD(setSessionTimeoutDuration:
-    (double) milliseconds
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    // Do nothing - this only exists in android
-    return resolve([NSNull null]);
-  }
-
-  RCT_EXPORT_METHOD(getAppInstanceId:
-  (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-      return resolve([FIRAnalytics appInstanceID]);
-  }
-
-  RCT_EXPORT_METHOD(setDefaultEventParameters:
-        (NSDictionary *) params
-        resolver:
-        (RCTPromiseResolveBlock) resolve
-        rejecter:
-        (RCTPromiseRejectBlock) reject) {
-    @try {
-      [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
-    } @catch (NSException *exception) {
-      return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
-    }
-
-    return resolve([NSNull null]);
-  }
+  return resolve([NSNull null]);
+}
 
 #pragma mark -
 #pragma mark Private methods
 
-  - (NSDictionary *)cleanJavascriptParams:(NSDictionary *)params {
-    NSMutableDictionary *newParams = [params mutableCopy];
-    if (newParams[kFIRParameterItems]) {
-      NSMutableArray *newItems = [NSMutableArray array];
-      [(NSArray *)newParams[kFIRParameterItems] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSMutableDictionary *item = [obj mutableCopy];
-        if (item[kFIRParameterQuantity]) {
-          item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
-        }
-        [newItems addObject:[item copy]];
-      }];
-      newParams[kFIRParameterItems] = [newItems copy];
-    }
-    return [newParams copy];
+- (NSDictionary *)cleanJavascriptParams:(NSDictionary *)params {
+  NSMutableDictionary *newParams = [params mutableCopy];
+  if (newParams[kFIRParameterItems]) {
+    NSMutableArray *newItems = [NSMutableArray array];
+    [(NSArray *)newParams[kFIRParameterItems]
+        enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+          NSMutableDictionary *item = [obj mutableCopy];
+          if (item[kFIRParameterQuantity]) {
+            item[kFIRParameterQuantity] = @([item[kFIRParameterQuantity] integerValue]);
+          }
+          [newItems addObject:[item copy]];
+        }];
+    newParams[kFIRParameterItems] = [newItems copy];
   }
+  return [newParams copy];
+}
 
 @end

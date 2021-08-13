@@ -24,10 +24,8 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import androidx.annotation.Nullable;
-
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class ReactNativeFirebaseInitProvider extends ContentProvider {
   @Override
@@ -52,8 +50,7 @@ public class ReactNativeFirebaseInitProvider extends ContentProvider {
   @Nullable
   @Override
   public Cursor query(
-    Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder
-  ) {
+      Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
     return null;
   }
 

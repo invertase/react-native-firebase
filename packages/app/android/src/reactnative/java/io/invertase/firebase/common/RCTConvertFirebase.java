@@ -19,23 +19,18 @@ package io.invertase.firebase.common;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
-/**
- * Utilities to convert to and from React Native bridge formats.
- */
+/** Utilities to convert to and from React Native bridge formats. */
 public class RCTConvertFirebase {
   private static String TAG = "RCTConvertFirebase";
 
@@ -72,10 +67,7 @@ public class RCTConvertFirebase {
   }
 
   public static FirebaseApp readableMapToFirebaseApp(
-    ReadableMap options,
-    ReadableMap appConfig,
-    Context context
-  ) {
+      ReadableMap options, ReadableMap appConfig, Context context) {
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
     String name = appConfig.getString("name");
@@ -101,15 +93,13 @@ public class RCTConvertFirebase {
 
     if (appConfig.hasKey("automaticDataCollectionEnabled")) {
       firebaseApp.setDataCollectionDefaultEnabled(
-        appConfig.getBoolean("automaticDataCollectionEnabled")
-      );
+          appConfig.getBoolean("automaticDataCollectionEnabled"));
     }
 
     if (appConfig.hasKey("automaticResourceManagement")) {
       // https://developers.google.com/android/reference/com/google/firebase/FirebaseApp.html#setAutomaticResourceManagementEnabled(boolean)
       firebaseApp.setAutomaticResourceManagementEnabled(
-        appConfig.getBoolean("automaticResourceManagement")
-      );
+          appConfig.getBoolean("automaticResourceManagement"));
     }
 
     return firebaseApp;
@@ -118,9 +108,9 @@ public class RCTConvertFirebase {
   /**
    * Takes a value and calls the appropriate setter for its type on the target map + key
    *
-   * @param key   String key to set on target map
+   * @param key String key to set on target map
    * @param value Object value to set on target map
-   * @param map   WritableMap target map to write the value to
+   * @param map WritableMap target map to write the value to
    */
   @SuppressWarnings("unchecked")
   public static WritableMap mapPutValue(String key, @Nullable Object value, WritableMap map) {

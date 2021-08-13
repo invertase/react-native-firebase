@@ -15,12 +15,11 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTUtils.h>
 
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseReferenceModule.h"
-
 
 @implementation RNFBDatabaseReferenceModule
 #pragma mark -
@@ -35,103 +34,109 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(set:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (NSDictionary *) props
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(set
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (NSDictionary *)props
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference setValue:[props valueForKey:@"value"] withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+  [firDatabaseReference setValue:[props valueForKey:@"value"]
+             withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+               if (error != nil) {
+                 [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+               } else {
+                 resolve([NSNull null]);
+               }
+             }];
 }
 
-RCT_EXPORT_METHOD(update:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (NSDictionary *) props
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(update
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (NSDictionary *)props
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference updateChildValues:[props valueForKey:@"values"] withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+  [firDatabaseReference updateChildValues:[props valueForKey:@"values"]
+                      withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+                        if (error != nil) {
+                          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+                        } else {
+                          resolve([NSNull null]);
+                        }
+                      }];
 }
 
-RCT_EXPORT_METHOD(setWithPriority:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (NSDictionary *) props
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(setWithPriority
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (NSDictionary *)props
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference setValue:[props valueForKey:@"value"] andPriority:[props valueForKey:@"priority"] withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+  [firDatabaseReference setValue:[props valueForKey:@"value"]
+                     andPriority:[props valueForKey:@"priority"]
+             withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+               if (error != nil) {
+                 [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+               } else {
+                 resolve([NSNull null]);
+               }
+             }];
 }
 
-RCT_EXPORT_METHOD(remove:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(remove
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference removeValueWithCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+  [firDatabaseReference
+      removeValueWithCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+        if (error != nil) {
+          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+        } else {
+          resolve([NSNull null]);
+        }
+      }];
 }
 
-RCT_EXPORT_METHOD(setPriority:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (NSDictionary *) props
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(setPriority
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (NSDictionary *)props
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-  FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
-  [firDatabaseReference setPriority:[props valueForKey:@"priority"] withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+  [firDatabaseReference setPriority:[props valueForKey:@"priority"]
+                withCompletionBlock:^(NSError *error, FIRDatabaseReference *ref) {
+                  if (error != nil) {
+                    [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+                  } else {
+                    resolve([NSNull null]);
+                  }
+                }];
 }
 
 @end

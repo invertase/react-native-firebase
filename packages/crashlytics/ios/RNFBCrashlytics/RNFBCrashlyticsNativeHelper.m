@@ -16,8 +16,8 @@
  *
  */
 
-#import <Firebase/Firebase.h>
 #import "RNFBCrashlyticsNativeHelper.h"
+#import <Firebase/Firebase.h>
 
 @implementation RNFBCrashlyticsNativeHelper
 

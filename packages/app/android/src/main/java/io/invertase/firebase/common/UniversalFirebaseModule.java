@@ -18,12 +18,9 @@ package io.invertase.firebase.common;
  */
 
 import android.content.Context;
-import io.invertase.firebase.common.TaskExecutorService;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 public class UniversalFirebaseModule {

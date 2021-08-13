@@ -15,8 +15,8 @@
  *
  */
 
-#import <React/RCTConvert.h>
 #import <FirebaseCore/FirebaseCore.h>
+#import <React/RCTConvert.h>
 
 @interface RCTConvert (FIROptions)
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions;

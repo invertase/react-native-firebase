@@ -17,14 +17,13 @@ package io.invertase.firebase.database;
  *
  */
 
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.OnDisconnect;
 import io.invertase.firebase.common.UniversalFirebaseModule;
-
 import java.util.Map;
-
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFirebaseModule {
 
@@ -33,30 +32,20 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
   }
 
   Task<Void> onDisconnectCancel(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .onDisconnect()
-      .cancel();
+    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().cancel();
   }
 
   Task<Void> onDisconnectRemove(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .onDisconnect()
-      .removeValue();
+    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().removeValue();
   }
 
   Task<Void> onDisconnectSet(String appName, String dbURL, String path, Object value) {
-    return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .onDisconnect()
-      .setValue(value);
+    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().setValue(value);
   }
 
-  Task<Void> onDisconnectSetWithPriority(String appName, String dbURL, String path, Object value, Object priority) {
-    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .onDisconnect();
+  Task<Void> onDisconnectSetWithPriority(
+      String appName, String dbURL, String path, Object value, Object priority) {
+    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
 
     if (priority instanceof String) {
       return onDisconnect.setValue(value, (String) priority);
@@ -65,10 +54,11 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
     }
   }
 
-  Task<Void> onDisconnectUpdate(String appName, String dbURL, String path, Map<String, Object> values) {
+  Task<Void> onDisconnectUpdate(
+      String appName, String dbURL, String path, Map<String, Object> values) {
     return getDatabaseForApp(appName, dbURL)
-      .getReference(path)
-      .onDisconnect()
-      .updateChildren(values);
+        .getReference(path)
+        .onDisconnect()
+        .updateChildren(values);
   }
 }

@@ -17,20 +17,18 @@ package io.invertase.firebase.storage;
  *
  */
 
-import android.util.Log;
-import android.util.SparseArray;
-
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-
-import javax.annotation.Nullable;
-
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.CODE_CANCELLED;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_CANCELLED;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.STATUS_ERROR;
 import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getExceptionCodeAndMessage;
+
+import android.util.Log;
+import android.util.SparseArray;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import javax.annotation.Nullable;
 
 class ReactNativeFirebaseStorageTask {
   static final String KEY_STATE = "state";
@@ -41,7 +39,8 @@ class ReactNativeFirebaseStorageTask {
   private static final String KEY_CODE = "code";
   private static final String KEY_MESSAGE = "message";
   private static final String KEY_NATIVE_ERROR_MESSAGE = "nativeErrorMessage";
-  private static final SparseArray<ReactNativeFirebaseStorageTask> PENDING_TASKS = new SparseArray<>();
+  private static final SparseArray<ReactNativeFirebaseStorageTask> PENDING_TASKS =
+      new SparseArray<>();
   private static final String TAG = "RNFBStorageTask";
   int taskId;
   String appName;
@@ -96,7 +95,8 @@ class ReactNativeFirebaseStorageTask {
     return snapshot;
   }
 
-  static WritableMap buildErrorSnapshotMap(@Nullable Exception exception, WritableMap taskMap, boolean skipCancelled) {
+  static WritableMap buildErrorSnapshotMap(
+      @Nullable Exception exception, WritableMap taskMap, boolean skipCancelled) {
     WritableMap errorMap = Arguments.createMap();
     String[] exceptionCodeAndMessage = getExceptionCodeAndMessage(exception);
     if (skipCancelled && exceptionCodeAndMessage[0].equals(CODE_CANCELLED)) return null;

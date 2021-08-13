@@ -15,15 +15,14 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import "RNFBFirestoreModule.h"
+#import <React/RCTUtils.h>
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
 
 @implementation RNFBFirestoreModule
 #pragma mark -
 #pragma mark Module Setup
-
 
 RCT_EXPORT_MODULE();
 
@@ -38,51 +37,49 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
-RCT_EXPORT_METHOD(setLogLevel:
-  (FIRLoggerLevel) loggerLevel
-) {
+RCT_EXPORT_METHOD(setLogLevel : (FIRLoggerLevel)loggerLevel) {
   [[FIRConfiguration sharedInstance] setLoggerLevel:loggerLevel];
 }
 
-RCT_EXPORT_METHOD(disableNetwork:
-  (FIRApp *) firebaseApp
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] disableNetworkWithCompletion:^(NSError *error) {
-    if (error) {
-      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-    } else {
-      resolve(nil);
-    }
-  }];
+RCT_EXPORT_METHOD(disableNetwork
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+      disableNetworkWithCompletion:^(NSError *error) {
+        if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+        } else {
+          resolve(nil);
+        }
+      }];
 }
 
-RCT_EXPORT_METHOD(enableNetwork:
-  (FIRApp *) firebaseApp
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] enableNetworkWithCompletion:^(NSError *error) {
-    if (error) {
-      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-    } else {
-      resolve(nil);
-    }
-  }];
+RCT_EXPORT_METHOD(enableNetwork
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+      enableNetworkWithCompletion:^(NSError *error) {
+        if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+        } else {
+          resolve(nil);
+        }
+      }];
 }
 
-RCT_EXPORT_METHOD(settings:
-  (FIRApp *) firebaseApp
-    :(NSDictionary *)settings
-    :(RCTPromiseResolveBlock)resolve
-    :(RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(settings
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)settings
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
 
   if (settings[@"cacheSizeBytes"]) {
     NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
-    [[RNFBPreferences shared] setIntegerValue:cacheKey integerValue:[settings[@"cacheSizeBytes"] integerValue]];
+    [[RNFBPreferences shared] setIntegerValue:cacheKey
+                                 integerValue:[settings[@"cacheSizeBytes"] integerValue]];
   }
 
   if (settings[@"host"]) {
@@ -92,7 +89,8 @@ RCT_EXPORT_METHOD(settings:
 
   if (settings[@"persistence"]) {
     NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
-    [[RNFBPreferences shared] setBooleanValue:persistenceKey boolValue:[settings[@"persistence"] boolValue]];
+    [[RNFBPreferences shared] setBooleanValue:persistenceKey
+                                    boolValue:[settings[@"persistence"] boolValue]];
   }
 
   if (settings[@"ssl"]) {
@@ -101,57 +99,56 @@ RCT_EXPORT_METHOD(settings:
   }
 
   if (settings[@"serverTimestampBehavior"]) {
-    NSString *key = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
+    NSString *key =
+        [NSString stringWithFormat:@"%@_%@", FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR, appName];
     [[RNFBPreferences shared] setStringValue:key stringValue:settings[@"serverTimestampBehavior"]];
   }
 
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(clearPersistence:
-  (FIRApp *) firebaseApp
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] clearPersistenceWithCompletion:^(NSError *error) {
+RCT_EXPORT_METHOD(clearPersistence
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+      clearPersistenceWithCompletion:^(NSError *error) {
+        if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+        } else {
+          resolve(nil);
+        }
+      }];
+}
+
+RCT_EXPORT_METHOD(waitForPendingWrites
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+      waitForPendingWritesWithCompletion:^(NSError *error) {
+        if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+        } else {
+          resolve(nil);
+        }
+      }];
+}
+
+RCT_EXPORT_METHOD(terminate
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+
+  [instance terminateWithCompletion:^(NSError *error) {
     if (error) {
       [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
     } else {
+      [instanceCache removeObjectForKey:[firebaseApp name]];
       resolve(nil);
     }
   }];
 }
-
-RCT_EXPORT_METHOD(waitForPendingWrites:
-  (FIRApp *) firebaseApp
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
-  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp] waitForPendingWritesWithCompletion:^(NSError *error) {
-    if (error) {
-      [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-    } else {
-      resolve(nil);
-    }
-  }];
-}
-
-RCT_EXPORT_METHOD(terminate:
-  (FIRApp *) firebaseApp
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
-    FIRFirestore *instance = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
-    
-    [instance terminateWithCompletion:^(NSError *error) {
-      if (error) {
-        [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-      } else {
-        [instanceCache removeObjectForKey: [firebaseApp name]];
-        resolve(nil);
-      }
-    }];
-}
-
 
 @end

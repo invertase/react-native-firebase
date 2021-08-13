@@ -29,6 +29,6 @@
   }
 }
 
-RCT_CUSTOM_CONVERTER(FIRLoggerLevel, FIRLoggerLevel, [self convertStringLogLevel:[self NSString:json]]);
+RCT_CUSTOM_CONVERTER(FIRLoggerLevel, FIRLoggerLevel,
+                     [self convertStringLogLevel:[self NSString:json]]);
 @end
-

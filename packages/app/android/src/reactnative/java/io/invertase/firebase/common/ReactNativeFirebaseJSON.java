@@ -19,14 +19,11 @@ package io.invertase.firebase.common;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-
+import io.invertase.firebase.BuildConfig;
+import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import io.invertase.firebase.BuildConfig;
 
 public class ReactNativeFirebaseJSON {
   private static ReactNativeFirebaseJSON sharedInstance = new ReactNativeFirebaseJSON();
@@ -74,18 +71,17 @@ public class ReactNativeFirebaseJSON {
     ArrayList<String> result = new ArrayList<String>();
     if (jsonObject == null) return result;
 
-    try {      
+    try {
       JSONArray array = jsonObject.optJSONArray(key);
       if (array != null) {
         for (int i = 0; i < array.length(); i++) {
           result.add(array.getString(i));
         }
       }
-    }
-    catch (JSONException e) {
+    } catch (JSONException e) {
       // do nothing
     }
-    
+
     return result;
   }
 

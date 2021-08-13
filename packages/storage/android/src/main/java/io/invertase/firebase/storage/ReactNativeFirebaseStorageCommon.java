@@ -17,13 +17,13 @@ package io.invertase.firebase.storage;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
@@ -34,17 +34,12 @@ import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
-
+import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import io.invertase.firebase.common.SharedUtils;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
-import io.invertase.firebase.app.ReactNativeFirebaseApp;
-import io.invertase.firebase.common.SharedUtils;
-
-import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
 
 class ReactNativeFirebaseStorageCommon {
   static final String STATUS_CANCELLED = "cancelled";
@@ -79,9 +74,7 @@ class ReactNativeFirebaseStorageCommon {
   private static final String CODE_NON_MATCHING_CHECKSUM = "non-matching-checksum";
   static final String CODE_CANCELLED = "cancelled";
 
-  /**
-   * Returns the task status as string
-   */
+  /** Returns the task status as string */
   static String getTaskStatus(@Nullable StorageTask<?> task) {
     if (task == null) return STATUS_UNKNOWN;
     if (task.isInProgress()) {
@@ -99,9 +92,7 @@ class ReactNativeFirebaseStorageCommon {
     }
   }
 
-  /**
-   * Converts a RN ReadableMap into a StorageMetadata instance
-   */
+  /** Converts a RN ReadableMap into a StorageMetadata instance */
   static StorageMetadata buildMetadataFromMap(ReadableMap metadataMap, @Nullable Uri file) {
     StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
 
@@ -144,7 +135,8 @@ class ReactNativeFirebaseStorageCommon {
 
       if (mimeType == null) {
         String fileExt = MimeTypeMap.getFileExtensionFromUrl(file.toString());
-        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt.toLowerCase(Locale.ROOT));
+        mimeType =
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExt.toLowerCase(Locale.ROOT));
       }
 
       if (mimeType != null) {
@@ -165,17 +157,22 @@ class ReactNativeFirebaseStorageCommon {
     metadata.putString(KEY_FULL_PATH, storageMetadata.getPath());
     metadata.putString(KEY_NAME, storageMetadata.getName());
     metadata.putDouble(KEY_SIZE, storageMetadata.getSizeBytes());
-    metadata.putString(KEY_TIME_CREATED, SharedUtils.timestampToUTC(storageMetadata.getCreationTimeMillis() / 1000));
-    metadata.putString(KEY_UPDATED, SharedUtils.timestampToUTC(storageMetadata.getUpdatedTimeMillis() / 1000));
+    metadata.putString(
+        KEY_TIME_CREATED,
+        SharedUtils.timestampToUTC(storageMetadata.getCreationTimeMillis() / 1000));
+    metadata.putString(
+        KEY_UPDATED, SharedUtils.timestampToUTC(storageMetadata.getUpdatedTimeMillis() / 1000));
     metadata.putString(KEY_MD5_HASH, storageMetadata.getMd5Hash());
 
-    if (storageMetadata.getCacheControl() != null && storageMetadata.getCacheControl().length() > 0)  {
+    if (storageMetadata.getCacheControl() != null
+        && storageMetadata.getCacheControl().length() > 0) {
       metadata.putString(KEY_CACHE_CONTROL, storageMetadata.getCacheControl());
     } else {
       metadata.putNull(KEY_CACHE_CONTROL);
     }
 
-    if (storageMetadata.getContentLanguage() != null && storageMetadata.getContentLanguage().length() > 0)  {
+    if (storageMetadata.getContentLanguage() != null
+        && storageMetadata.getContentLanguage().length() > 0) {
       metadata.putString(KEY_CONTENT_LANG, storageMetadata.getContentLanguage());
     } else {
       metadata.putNull(KEY_CONTENT_LANG);
@@ -255,11 +252,15 @@ class ReactNativeFirebaseStorageCommon {
             break;
           case StorageException.ERROR_RETRY_LIMIT_EXCEEDED:
             code = CODE_RETRY_LIMIT_EXCEEDED;
-            message = "The maximum time limit on an operation (upload, download, delete, etc.) has been exceeded.";
+            message =
+                "The maximum time limit on an operation (upload, download, delete, etc.) has been"
+                    + " exceeded.";
             break;
           case StorageException.ERROR_INVALID_CHECKSUM:
             code = CODE_NON_MATCHING_CHECKSUM;
-            message = "File on the client does not match the checksum of the file received by the server.";
+            message =
+                "File on the client does not match the checksum of the file received by the"
+                    + " server.";
             break;
           case StorageException.ERROR_CANCELED:
             code = CODE_CANCELLED;
@@ -267,21 +268,21 @@ class ReactNativeFirebaseStorageCommon {
             break;
         }
 
-       if (code.equals(STATUS_UNKNOWN) && throwable != null) {
-         if (throwable.getMessage().contains("No such file or directory")) {
-           code = CODE_FILE_NOT_FOUND;
-           message = "The local file specified does not exist on the device.";
-         } else if (throwable.getMessage().contains("Not Found.  Could not get object")) {
-           code = CODE_OBJECT_NOT_FOUND;
-           message = "No object exists at the desired reference.";
-         } else {
-           message = throwable.getMessage();
-         }
-       }
+        if (code.equals(STATUS_UNKNOWN) && throwable != null) {
+          if (throwable.getMessage().contains("No such file or directory")) {
+            code = CODE_FILE_NOT_FOUND;
+            message = "The local file specified does not exist on the device.";
+          } else if (throwable.getMessage().contains("Not Found.  Could not get object")) {
+            code = CODE_OBJECT_NOT_FOUND;
+            message = "No object exists at the desired reference.";
+          } else {
+            message = throwable.getMessage();
+          }
+        }
       }
     }
 
-    return new String[]{code, message};
+    return new String[] {code, message};
   }
 
   static void promiseRejectStorageException(Promise promise, @Nullable Exception exception) {
@@ -289,9 +290,7 @@ class ReactNativeFirebaseStorageCommon {
     rejectPromiseWithCodeAndMessage(promise, codeAndMessage[0], codeAndMessage[1]);
   }
 
-  /**
-   * Check if we can write to storage, usually false if no permission set on manifest
-   */
+  /** Check if we can write to storage, usually false if no permission set on manifest */
   static boolean isExternalStorageWritable() {
     boolean mExternalStorageAvailable;
     boolean mExternalStorageWritable;
@@ -312,5 +311,4 @@ class ReactNativeFirebaseStorageCommon {
 
     return mExternalStorageAvailable && mExternalStorageWritable;
   }
-
 }

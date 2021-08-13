@@ -17,4 +17,4 @@
 
 #import <Foundation/Foundation.h>
 
-extern const NSString * RNFBVersionString;
+extern const NSString* RNFBVersionString;

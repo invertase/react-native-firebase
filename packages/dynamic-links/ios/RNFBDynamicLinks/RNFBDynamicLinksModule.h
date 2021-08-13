@@ -15,12 +15,12 @@
  *
  */
 
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
-#import <React/RCTUtils.h>
-#import <React/RCTEventEmitter.h>
 #import <Firebase/Firebase.h>
+#import <Foundation/Foundation.h>
 #import <RNFBApp/RNFBSharedUtils.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
+#import <React/RCTUtils.h>
 
 // can't access self.bridge.launchOptions without RCTEventEmitter
 @interface RNFBDynamicLinksModule : RCTEventEmitter <RCTBridgeModule>

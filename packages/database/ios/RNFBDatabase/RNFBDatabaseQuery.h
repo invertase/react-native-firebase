@@ -15,21 +15,21 @@
  *
  */
 
-
-#import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
 @interface RNFBDatabaseQuery : NSObject
 @property FIRDatabaseQuery *query;
 @property NSMutableDictionary *listeners;
 
-- (RNFBDatabaseQuery *)initWithReferenceAndModifiers:(FIRDatabaseReference *)reference modifiers:(NSArray *)modifiers;
+- (RNFBDatabaseQuery *)initWithReferenceAndModifiers:(FIRDatabaseReference *)reference
+                                           modifiers:(NSArray *)modifiers;
 
 - (BOOL)hasEventListener:(NSString *)eventRegistrationKey;
 
 - (BOOL)hasListeners;
 
-- (void)addEventListener:(NSString *)eventRegistrationKey :(FIRDatabaseHandle)listener;
+- (void)addEventListener:(NSString *)eventRegistrationKey:(FIRDatabaseHandle)listener;
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey;
 

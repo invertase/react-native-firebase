@@ -29,7 +29,8 @@
 
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBJSON alloc] init];
-    NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
+    NSString *__nullable firebaseJsonRaw =
+        [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
 
     if (firebaseJsonRaw == nil) {
       sharedInstance.firebaseJson = [NSDictionary dictionary];
@@ -44,7 +45,9 @@
     }
 
     NSError *jsonError = nil;
-    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:data
+                                                               options:0
+                                                                 error:&jsonError];
     if (jsonError != nil) {
       sharedInstance.firebaseJson = [NSDictionary dictionary];
       return;
@@ -61,15 +64,13 @@
 }
 
 - (BOOL)getBooleanValue:(NSString *)key defaultValue:(BOOL)defaultValue {
-  if ([_firebaseJson valueForKey:key] == nil)
-    return defaultValue;
+  if ([_firebaseJson valueForKey:key] == nil) return defaultValue;
   NSNumber *boolean = [_firebaseJson valueForKey:key];
   return [boolean boolValue];
 }
 
 - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue {
-  if ([_firebaseJson valueForKey:key] == nil)
-    return defaultValue;
+  if ([_firebaseJson valueForKey:key] == nil) return defaultValue;
   NSString *string = [_firebaseJson valueForKey:key];
   return string;
 }
@@ -79,12 +80,14 @@
 }
 
 - (NSString *)getRawJSON {
-  NSString *__nullable firebaseJsonRaw = [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
+  NSString *__nullable firebaseJsonRaw =
+      [[NSBundle mainBundle].infoDictionary valueForKey:@"firebase_json_raw"];
   if (firebaseJsonRaw == nil) {
     return @"{}";
   }
-  
+
   NSData *data = [[NSData alloc] initWithBase64EncodedString:firebaseJsonRaw options:0];
-  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];;
+  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  ;
 }
 @end

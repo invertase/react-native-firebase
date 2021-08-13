@@ -17,6 +17,11 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
+import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
+
 import android.util.SparseArray;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Task;
@@ -24,21 +29,14 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.*;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.rejectPromiseFirestoreException;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
-import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getDocumentForFirestore;
-import static io.invertase.firebase.firestore.UniversalFirebaseFirestoreCommon.getFirestoreForApp;
-
 public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "FirestoreDocument";
   private static SparseArray<ListenerRegistration> documentSnapshotListeners = new SparseArray<>();
-
 
   ReactNativeFirebaseFirestoreDocumentModule(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
@@ -58,11 +56,7 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
 
   @ReactMethod
   public void documentOnSnapshot(
-    String appName,
-    String path,
-    int listenerId,
-    ReadableMap listenerOptions
-  ) {
+      String appName, String path, int listenerId, ReadableMap listenerOptions) {
     if (documentSnapshotListeners.get(listenerId) != null) {
       return;
     }
@@ -70,32 +64,32 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
-    final EventListener<DocumentSnapshot> listener = (documentSnapshot, exception) -> {
-      if (exception != null) {
-        ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
-        if (listenerRegistration != null) {
-          listenerRegistration.remove();
-          documentSnapshotListeners.remove(listenerId);
-        }
-        sendOnSnapshotError(appName, listenerId, exception);
-      } else {
-        sendOnSnapshotEvent(appName, listenerId, documentSnapshot);
-      }
-    };
+    final EventListener<DocumentSnapshot> listener =
+        (documentSnapshot, exception) -> {
+          if (exception != null) {
+            ListenerRegistration listenerRegistration = documentSnapshotListeners.get(listenerId);
+            if (listenerRegistration != null) {
+              listenerRegistration.remove();
+              documentSnapshotListeners.remove(listenerId);
+            }
+            sendOnSnapshotError(appName, listenerId, exception);
+          } else {
+            sendOnSnapshotEvent(appName, listenerId, documentSnapshot);
+          }
+        };
 
     MetadataChanges metadataChanges;
 
-    if (listenerOptions != null && listenerOptions.hasKey("includeMetadataChanges")
-      && listenerOptions.getBoolean("includeMetadataChanges")) {
+    if (listenerOptions != null
+        && listenerOptions.hasKey("includeMetadataChanges")
+        && listenerOptions.getBoolean("includeMetadataChanges")) {
       metadataChanges = MetadataChanges.INCLUDE;
     } else {
       metadataChanges = MetadataChanges.EXCLUDE;
     }
 
-    ListenerRegistration listenerRegistration = documentReference.addSnapshotListener(
-      metadataChanges,
-      listener
-    );
+    ListenerRegistration listenerRegistration =
+        documentReference.addSnapshotListener(metadataChanges, listener);
 
     documentSnapshotListeners.put(listenerId, listenerRegistration);
   }
@@ -129,63 +123,75 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
       source = Source.DEFAULT;
     }
 
-    Tasks.call(getExecutor(), () -> {
-      DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
-      return snapshotToWritableMap(appName, documentSnapshot);
-    }).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseFirestoreException(promise, task.getException());
-      }
-    });
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              DocumentSnapshot documentSnapshot = Tasks.await(documentReference.get(source));
+              return snapshotToWritableMap(appName, documentSnapshot);
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void documentDelete(String appName, String path, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
-    Tasks.call(getTransactionalExecutor(), documentReference::delete).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(null);
-      } else {
-        rejectPromiseFirestoreException(promise, task.getException());
-      }
-    });
+    Tasks.call(getTransactionalExecutor(), documentReference::delete)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
-  public void documentSet(String appName, String path, ReadableMap data, ReadableMap options, Promise promise) {
+  public void documentSet(
+      String appName, String path, ReadableMap data, ReadableMap options, Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
+    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
+        .continueWithTask(
+            getTransactionalExecutor(),
+            task -> {
+              Task<Void> setTask;
+              Map<String, Object> settableData = Objects.requireNonNull(task.getResult());
 
-    Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data)).continueWithTask(getTransactionalExecutor(), task -> {
-      Task<Void> setTask;
-      Map<String, Object> settableData = Objects.requireNonNull(task.getResult());
+              if (options.hasKey("merge") && options.getBoolean("merge")) {
+                setTask = documentReference.set(settableData, SetOptions.merge());
+              } else if (options.hasKey("mergeFields")) {
+                List<String> fields = new ArrayList<>();
 
-      if (options.hasKey("merge") && options.getBoolean("merge")) {
-        setTask = documentReference.set(settableData, SetOptions.merge());
-      } else if (options.hasKey("mergeFields")) {
-        List<String> fields = new ArrayList<>();
+                for (Object object :
+                    Objects.requireNonNull(options.getArray("mergeFields")).toArrayList()) {
+                  fields.add((String) object);
+                }
 
-        for (Object object : Objects.requireNonNull(options.getArray("mergeFields")).toArrayList()) {
-          fields.add((String) object);
-        }
+                setTask = documentReference.set(settableData, SetOptions.mergeFields(fields));
+              } else {
+                setTask = documentReference.set(settableData);
+              }
 
-        setTask = documentReference.set(settableData, SetOptions.mergeFields(fields));
-      } else {
-        setTask = documentReference.set(settableData);
-      }
-
-      return setTask;
-    }).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(null);
-      } else {
-        rejectPromiseFirestoreException(promise, task.getException());
-      }
-    });
+              return setTask;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
@@ -194,14 +200,17 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
 
     Tasks.call(getTransactionalExecutor(), () -> parseReadableMap(firebaseFirestore, data))
-      .continueWithTask(getTransactionalExecutor(), task -> documentReference.update(Objects.requireNonNull(task.getResult())))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(null);
-        } else {
-          rejectPromiseFirestoreException(promise, task.getException());
-        }
-      });
+        .continueWithTask(
+            getTransactionalExecutor(),
+            task -> documentReference.update(Objects.requireNonNull(task.getResult())))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
@@ -209,75 +218,91 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
 
     Tasks.call(getTransactionalExecutor(), () -> parseDocumentBatches(firebaseFirestore, writes))
-      .continueWithTask(getTransactionalExecutor(), task -> {
-        WriteBatch batch = firebaseFirestore.batch();
-        List<Object> writesArray = task.getResult();
+        .continueWithTask(
+            getTransactionalExecutor(),
+            task -> {
+              WriteBatch batch = firebaseFirestore.batch();
+              List<Object> writesArray = task.getResult();
 
-        for (Object w : writesArray) {
-          Map<String, Object> write = (Map) w;
-          String type = (String) write.get("type");
-          String path = (String) write.get("path");
-          Map<String, Object> data = (Map) write.get("data");
+              for (Object w : writesArray) {
+                Map<String, Object> write = (Map) w;
+                String type = (String) write.get("type");
+                String path = (String) write.get("path");
+                Map<String, Object> data = (Map) write.get("data");
 
-          DocumentReference documentReference = getDocumentForFirestore(firebaseFirestore, path);
+                DocumentReference documentReference =
+                    getDocumentForFirestore(firebaseFirestore, path);
 
-          switch (Objects.requireNonNull(type)) {
-            case "DELETE":
-              batch = batch.delete(documentReference);
-              break;
-            case "UPDATE":
-              batch = batch.update(documentReference, Objects.requireNonNull(data));
-              break;
-            case "SET":
-              Map<String, Object> options = (Map) write.get("options");
+                switch (Objects.requireNonNull(type)) {
+                  case "DELETE":
+                    batch = batch.delete(documentReference);
+                    break;
+                  case "UPDATE":
+                    batch = batch.update(documentReference, Objects.requireNonNull(data));
+                    break;
+                  case "SET":
+                    Map<String, Object> options = (Map) write.get("options");
 
-              if (Objects.requireNonNull(options).containsKey("merge") && (boolean) options.get("merge")) {
-                batch = batch.set(documentReference, Objects.requireNonNull(data), SetOptions.merge());
-              } else if (options.containsKey("mergeFields")) {
-                List<String> fields = new ArrayList<>();
+                    if (Objects.requireNonNull(options).containsKey("merge")
+                        && (boolean) options.get("merge")) {
+                      batch =
+                          batch.set(
+                              documentReference, Objects.requireNonNull(data), SetOptions.merge());
+                    } else if (options.containsKey("mergeFields")) {
+                      List<String> fields = new ArrayList<>();
 
-                for (Object object : Objects.requireNonNull((List) options.get("mergeFields"))) {
-                  fields.add((String) object);
+                      for (Object object :
+                          Objects.requireNonNull((List) options.get("mergeFields"))) {
+                        fields.add((String) object);
+                      }
+
+                      batch =
+                          batch.set(
+                              documentReference,
+                              Objects.requireNonNull(data),
+                              SetOptions.mergeFields(fields));
+                    } else {
+                      batch = batch.set(documentReference, Objects.requireNonNull(data));
+                    }
+
+                    break;
                 }
-
-                batch = batch.set(documentReference, Objects.requireNonNull(data), SetOptions.mergeFields(fields));
-              } else {
-                batch = batch.set(documentReference, Objects.requireNonNull(data));
               }
 
-              break;
-          }
-        }
-
-        return batch.commit();
-      })
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(null);
-        } else {
-          rejectPromiseFirestoreException(promise, task.getException());
-        }
-      });
+              return batch.commit();
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
-  private void sendOnSnapshotEvent(String appName, int listenerId, DocumentSnapshot documentSnapshot) {
-    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot)).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        WritableMap body = Arguments.createMap();
-        body.putMap("snapshot", task.getResult());
+  private void sendOnSnapshotEvent(
+      String appName, int listenerId, DocumentSnapshot documentSnapshot) {
+    Tasks.call(getExecutor(), () -> snapshotToWritableMap(appName, documentSnapshot))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                WritableMap body = Arguments.createMap();
+                body.putMap("snapshot", task.getResult());
 
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+                ReactNativeFirebaseEventEmitter emitter =
+                    ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-        emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-          ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
-          body,
-          appName,
-          listenerId
-        ));
-      } else {
-        sendOnSnapshotError(appName, listenerId, task.getException());
-      }
-    });
+                emitter.sendEvent(
+                    new ReactNativeFirebaseFirestoreEvent(
+                        ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
+                        body,
+                        appName,
+                        listenerId));
+              } else {
+                sendOnSnapshotError(appName, listenerId, task.getException());
+              }
+            });
   }
 
   private void sendOnSnapshotError(String appName, int listenerId, Exception exception) {
@@ -285,7 +310,9 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     WritableMap error = Arguments.createMap();
 
     if (exception instanceof FirebaseFirestoreException) {
-      UniversalFirebaseFirestoreException firestoreException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
+      UniversalFirebaseFirestoreException firestoreException =
+          new UniversalFirebaseFirestoreException(
+              (FirebaseFirestoreException) exception, exception.getCause());
       error.putString("code", firestoreException.getCode());
       error.putString("message", firestoreException.getMessage());
     } else {
@@ -296,12 +323,8 @@ public class ReactNativeFirebaseFirestoreDocumentModule extends ReactNativeFireb
     body.putMap("error", error);
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
 
-    emitter.sendEvent(new ReactNativeFirebaseFirestoreEvent(
-      ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC,
-      body,
-      appName,
-      listenerId
-    ));
+    emitter.sendEvent(
+        new ReactNativeFirebaseFirestoreEvent(
+            ReactNativeFirebaseFirestoreEvent.DOCUMENT_EVENT_SYNC, body, appName, listenerId));
   }
 }
-

@@ -22,7 +22,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -53,25 +52,19 @@ class ReactNativeFirebaseFirestoreTransactionHandler {
    * -------------
    */
 
-  /**
-   * Abort the currently in progress transaction if any.
-   */
+  /** Abort the currently in progress transaction if any. */
   void abort() {
     aborted = true;
     safeUnlock();
   }
 
-  /**
-   * Reset handler state - clears command buffer + updates to new Transaction instance
-   */
+  /** Reset handler state - clears command buffer + updates to new Transaction instance */
   void resetState(Transaction firestoreTransaction) {
     this.commandBuffer = null;
     this.firestoreTransaction = firestoreTransaction;
   }
 
-  /**
-   * Signal that the transaction buffer has been received and needs to be processed.
-   */
+  /** Signal that the transaction buffer has been received and needs to be processed. */
   void signalBufferReceived(ReadableArray buffer) {
     lock.lock();
 
@@ -83,9 +76,7 @@ class ReactNativeFirebaseFirestoreTransactionHandler {
     }
   }
 
-  /**
-   * Wait for signalBufferReceived to signal condition
-   */
+  /** Wait for signalBufferReceived to signal condition */
   void await() {
     lock.lock();
 
@@ -102,9 +93,7 @@ class ReactNativeFirebaseFirestoreTransactionHandler {
     }
   }
 
-  /**
-   * Get the current pending command buffer.
-   */
+  /** Get the current pending command buffer. */
   ReadableArray getCommandBuffer() {
     return commandBuffer;
   }
@@ -117,10 +106,9 @@ class ReactNativeFirebaseFirestoreTransactionHandler {
     return appName;
   }
 
-  /**
-   * Get and resolve a DocumentSnapshot from transaction.get(ref);
-   */
-  DocumentSnapshot getDocument(DocumentReference documentReference) throws FirebaseFirestoreException {
+  /** Get and resolve a DocumentSnapshot from transaction.get(ref); */
+  DocumentSnapshot getDocument(DocumentReference documentReference)
+      throws FirebaseFirestoreException {
     updateInternalTimeout();
     return firestoreTransaction.get(documentReference);
   }
