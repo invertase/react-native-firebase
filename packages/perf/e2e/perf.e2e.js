@@ -15,24 +15,23 @@
  *
  */
 
-android.describe('perf()', () => {
+describe('perf()', function () {
   describe('setPerformanceCollectionEnabled()', function () {
-    // TODO sometimes android launches with isPerformanceCollectionEnabled = false
-    xit('true', async function () {
-      should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
+    // These depend on `tests/firebase.json` having `perf_auto_collection_enabled` set to false the first time
+    // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
+    afterEach(async function () {
+      await firebase.perf().setPerformanceCollectionEnabled(false);
+    });
+
+    it('true', async function () {
+      should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
       await firebase.perf().setPerformanceCollectionEnabled(true);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
-      await Utils.sleep(2000);
     });
 
     it('false', async function () {
-      await device.launchApp();
       await firebase.perf().setPerformanceCollectionEnabled(false);
       should.equal(firebase.perf().isPerformanceCollectionEnabled, false);
-      await Utils.sleep(1500);
-      await firebase.perf().setPerformanceCollectionEnabled(true);
-      should.equal(firebase.perf().isPerformanceCollectionEnabled, true);
-      await Utils.sleep(1500);
     });
   });
 
