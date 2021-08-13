@@ -108,7 +108,7 @@
                          @"utmParameters": dynamicLink.utmParametersDictionary == nil
                              ? @{}
                              : dynamicLink.utmParametersDictionary,
-                         }];
+                       }];
     }
 
     // Per Apple Tech Support, a network failure could occur when returning from background on
