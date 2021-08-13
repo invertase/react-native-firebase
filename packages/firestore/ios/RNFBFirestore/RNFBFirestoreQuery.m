@@ -52,8 +52,8 @@
 - (void)applyFilters {
   for (NSDictionary *filter in _filters) {
     NSArray *fieldPathArray = filter[@"fieldPath"];
-    FIRFieldPath* fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
-    NSString *operator = filter[@"operator"];
+    FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
+    NSString *operator= filter[@"operator"];
     id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:filter[@"value"]];
 
     if ([operator isEqualToString:@"EQUAL"]) {
@@ -94,18 +94,20 @@
   if (_options[@"limit"]) {
     _query = [_query queryLimitedTo:[_options[@"limit"] intValue]];
   }
-    
+
   if (_options[@"limitToLast"]) {
     _query = [_query queryLimitedToLast:[_options[@"limitToLast"] intValue]];
   }
 
   if (_options[@"startAt"]) {
-    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore array:_options[@"startAt"]];
+    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore
+                                                        array:_options[@"startAt"]];
     _query = [_query queryStartingAtValues:fieldList];
   }
 
   if (_options[@"startAfter"]) {
-    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore array:_options[@"startAfter"]];
+    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore
+                                                        array:_options[@"startAfter"]];
     _query = [_query queryStartingAfterValues:fieldList];
   }
 
@@ -115,7 +117,8 @@
   }
 
   if (_options[@"endBefore"]) {
-    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore array:_options[@"endBefore"]];
+    NSArray *fieldList = [RNFBFirestoreSerialize parseNSArray:_firestore
+                                                        array:_options[@"endBefore"]];
     _query = [_query queryEndingBeforeValues:fieldList];
   }
 }

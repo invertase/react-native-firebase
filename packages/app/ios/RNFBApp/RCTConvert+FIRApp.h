@@ -15,8 +15,8 @@
  *
  */
 
-#import <React/RCTConvert.h>
 #import <FirebaseCore/FirebaseCore.h>
+#import <React/RCTConvert.h>
 
 @interface RCTConvert (FIRApp)
 + (FIRApp *)firAppFromString:(NSString *)appName;

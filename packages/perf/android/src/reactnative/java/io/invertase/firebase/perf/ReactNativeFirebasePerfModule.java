@@ -22,10 +22,8 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-
-import java.util.Map;
-
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import java.util.Map;
 
 public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Perf";
@@ -44,72 +42,77 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void setPerformanceCollectionEnabled(Boolean enabled, Promise promise) {
-    module.setPerformanceCollectionEnabled(enabled).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .setPerformanceCollectionEnabled(enabled)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void startTrace(int id, String identifier, Promise promise) {
-    module.startTrace(id, identifier).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .startTrace(id, identifier)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void stopTrace(int id, ReadableMap traceData, Promise promise) {
     module
-      .stopTrace(
-        id,
-        Arguments.toBundle(traceData.getMap("metrics")),
-        Arguments.toBundle(traceData.getMap("attributes"))
-      )
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+        .stopTrace(
+            id,
+            Arguments.toBundle(traceData.getMap("metrics")),
+            Arguments.toBundle(traceData.getMap("attributes")))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
-
 
   @ReactMethod
   public void startHttpMetric(int id, String url, String httpMethod, Promise promise) {
-    module.startHttpMetric(id, url, httpMethod).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(task.getResult());
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .startHttpMetric(id, url, httpMethod)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void stopHttpMetric(int id, ReadableMap metricData, Promise promise) {
     module
-      .stopHttpMetric(
-        id,
-        Arguments.toBundle(metricData),
-        Arguments.toBundle(metricData.getMap("attributes"))
-      )
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+        .stopHttpMetric(
+            id, Arguments.toBundle(metricData), Arguments.toBundle(metricData.getMap("attributes")))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
-
 
   @Override
   public Map<String, Object> getConstants() {

@@ -17,18 +17,17 @@ package io.invertase.firebase.database;
  *
  */
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
+
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.ReadableArray;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 
 public class ReactNativeFirebaseDatabaseQuery {
 
@@ -129,10 +128,7 @@ public class ReactNativeFirebaseDatabaseQuery {
     }
   }
 
-  /**
-   * Iterates over all current event listeners on the current query and
-   * removes each one
-   */
+  /** Iterates over all current event listeners on the current query and removes each one */
   public void removeAllEventListeners() {
     if (hasListeners()) {
       Iterator valueIterator = valueEventListeners.entrySet().iterator();
@@ -162,8 +158,8 @@ public class ReactNativeFirebaseDatabaseQuery {
    * @return
    */
   public Boolean hasEventListener(String eventRegistrationKey) {
-    return valueEventListeners.containsKey(eventRegistrationKey) || childEventListeners.containsKey(
-      eventRegistrationKey);
+    return valueEventListeners.containsKey(eventRegistrationKey)
+        || childEventListeners.containsKey(eventRegistrationKey);
   }
 
   /**
@@ -225,7 +221,8 @@ public class ReactNativeFirebaseDatabaseQuery {
     String key = (String) modifier.get("key");
 
     // Note: equalTo() is handled in JS land by setting startAt() & endAt() to the same
-    // value (see https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L570)
+    // value (see
+    // https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L570)
     if ("endAt".equals(name)) {
       applyEndAtFilter(key, valueType, modifier);
     } else if ("startAt".equals(name)) {

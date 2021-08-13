@@ -15,12 +15,12 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTUtils.h>
 
-#import "RNFBRCTEventEmitter.h"
 #import "RNFBDatabaseCommon.h"
 #import "RNFBDatabaseTransactionModule.h"
+#import "RNFBRCTEventEmitter.h"
 #import "RNFBSharedUtils.h"
 
 static __strong NSMutableDictionary *transactions;
@@ -41,7 +41,8 @@ RCT_EXPORT_MODULE();
     transactions = [[NSMutableDictionary alloc] init];
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "BridgeCastIssues"
-    _transactionQueue = dispatch_queue_create("io.invertase.react-native-firebase.database.transactions", DISPATCH_QUEUE_CONCURRENT);
+    _transactionQueue = dispatch_queue_create(
+        "io.invertase.react-native-firebase.database.transactions", DISPATCH_QUEUE_CONCURRENT);
 #pragma clang diagnostic pop
   }
   return self;
@@ -50,13 +51,12 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(transactionStart:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSString *) path
-    : (nonnull NSNumber *) transactionId
-    : (BOOL) applyLocally
-) {
+RCT_EXPORT_METHOD(transactionStart
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (nonnull NSNumber *)transactionId
+                  : (BOOL)applyLocally) {
   dispatch_async(_transactionQueue, ^{
     NSMutableDictionary *transactionState = [NSMutableDictionary new];
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
@@ -65,20 +65,23 @@ RCT_EXPORT_METHOD(transactionStart:
     transactionState[@"semaphore"] = sema;
 #pragma clang diagnostic pop
     FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
-    FIRDatabaseReference *firDatabaseReference = [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+    FIRDatabaseReference *firDatabaseReference =
+        [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
     id runTransactionBlock = ^FIRTransactionResult *(FIRMutableData *currentData) {
       dispatch_barrier_async(_transactionQueue, ^{
         [transactions setValue:transactionState forKey:[transactionId stringValue]];
 
-        [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT body:@{
-            @"appName": [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
-            @"id": transactionId,
-            @"body": @{
-                @"type": @"update",
-                @"value": currentData.value,
-            }
-        }];
+        [[RNFBRCTEventEmitter shared]
+            sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT
+                         body:@{
+                           @"appName" : [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
+                           @"id" : transactionId,
+                           @"body" : @{
+                             @"type" : @"update",
+                             @"value" : currentData.value,
+                           }
+                         }];
       });
 
       // wait for the js event handler to call tryCommitTransaction
@@ -111,31 +114,34 @@ RCT_EXPORT_METHOD(transactionStart:
         NSArray *codeAndMessage = [RNFBDatabaseCommon getCodeAndMessage:error];
         resultMap[@"type"] = @"error";
         resultMap[@"error"] = @{
-            @"code": codeAndMessage[0],
-            @"message": codeAndMessage[1],
+          @"code" : codeAndMessage[0],
+          @"message" : codeAndMessage[1],
         };
       } else {
         resultMap[@"type"] = @"complete";
         resultMap[@"snapshot"] = [RNFBDatabaseCommon snapshotToDictionary:dataSnapshot];
       }
 
-      [[RNFBRCTEventEmitter shared] sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT body:@{
-          @"id": transactionId,
-          @"appName": [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
-          @"body": resultMap,
-      }];
+      [[RNFBRCTEventEmitter shared]
+          sendEventWithName:RNFB_DATABASE_TRANSACTION_EVENT
+                       body:@{
+                         @"id" : transactionId,
+                         @"appName" : [RNFBSharedUtils getAppJavaScriptName:firDatabase.app.name],
+                         @"body" : resultMap,
+                       }];
     };
 
-    [firDatabaseReference runTransactionBlock:runTransactionBlock andCompletionBlock:andCompletionBlock withLocalEvents:applyLocally];
+    [firDatabaseReference runTransactionBlock:runTransactionBlock
+                           andCompletionBlock:andCompletionBlock
+                              withLocalEvents:applyLocally];
   });
 }
 
-RCT_EXPORT_METHOD(transactionTryCommit:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (nonnull NSNumber *) transactionId
-    : (NSDictionary *) updates
-) {
+RCT_EXPORT_METHOD(transactionTryCommit
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (nonnull NSNumber *)transactionId
+                  : (NSDictionary *)updates) {
   __block NSMutableDictionary *transactionState;
 
   dispatch_sync(_transactionQueue, ^{
@@ -146,7 +152,6 @@ RCT_EXPORT_METHOD(transactionTryCommit:
     NSLog(@"tryCommitTransaction for unknown ID %@", transactionId);
     return;
   }
-
 
   BOOL abort = [[updates valueForKey:@"abort"] boolValue];
 

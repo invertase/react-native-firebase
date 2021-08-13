@@ -15,8 +15,8 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <FirebaseCore/FIRLibrary.h>
+#import <Foundation/Foundation.h>
 
 @interface RNFBCrashlyticsInitProvider : NSObject <FIRLibrary>
 

@@ -17,6 +17,9 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
@@ -26,27 +29,22 @@ import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
-import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
-
 public class ReactNativeFirebaseFirestoreQuery {
   String appName;
   Query query;
 
   ReactNativeFirebaseFirestoreQuery(
-    String appName,
-    Query query,
-    ReadableArray filters,
-    ReadableArray orders,
-    ReadableMap options
-  ) {
+      String appName,
+      Query query,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options) {
     this.appName = appName;
     this.query = query;
     applyFilters(filters);
@@ -55,10 +53,12 @@ public class ReactNativeFirebaseFirestoreQuery {
   }
 
   public Task<WritableMap> get(Executor executor, Source source) {
-    return Tasks.call(executor, () -> {
-      QuerySnapshot querySnapshot = Tasks.await(query.get(source));
-      return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
-    });
+    return Tasks.call(
+        executor,
+        () -> {
+          QuerySnapshot querySnapshot = Tasks.await(query.get(source));
+          return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
+        });
   }
 
   private void applyFilters(ReadableArray filters) {
@@ -81,28 +81,43 @@ public class ReactNativeFirebaseFirestoreQuery {
           query = query.whereNotEqualTo(Objects.requireNonNull(fieldPath), value);
           break;
         case "GREATER_THAN":
-          query = query.whereGreaterThan(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+          query =
+              query.whereGreaterThan(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
         case "GREATER_THAN_OR_EQUAL":
-          query = query.whereGreaterThanOrEqualTo(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+          query =
+              query.whereGreaterThanOrEqualTo(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
         case "LESS_THAN":
-          query = query.whereLessThan(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+          query =
+              query.whereLessThan(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
         case "LESS_THAN_OR_EQUAL":
-          query = query.whereLessThanOrEqualTo(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+          query =
+              query.whereLessThanOrEqualTo(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
         case "ARRAY_CONTAINS":
-          query = query.whereArrayContains(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+          query =
+              query.whereArrayContains(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
           break;
         case "ARRAY_CONTAINS_ANY":
-          query = query.whereArrayContainsAny(Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+          query =
+              query.whereArrayContainsAny(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
           break;
         case "IN":
-          query = query.whereIn(Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+          query =
+              query.whereIn(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
           break;
         case "NOT_IN":
-          query = query.whereNotIn(Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+          query =
+              query.whereNotIn(
+                  Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
           break;
       }
     }
@@ -133,12 +148,14 @@ public class ReactNativeFirebaseFirestoreQuery {
     }
 
     if (options.hasKey("startAt")) {
-      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("startAt"));
+      List<Object> fieldList =
+          parseReadableArray(query.getFirestore(), options.getArray("startAt"));
       query = query.startAt(Objects.requireNonNull(fieldList.toArray()));
     }
 
     if (options.hasKey("startAfter")) {
-      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("startAfter"));
+      List<Object> fieldList =
+          parseReadableArray(query.getFirestore(), options.getArray("startAfter"));
       query = query.startAfter(Objects.requireNonNull(fieldList.toArray()));
     }
 
@@ -148,7 +165,8 @@ public class ReactNativeFirebaseFirestoreQuery {
     }
 
     if (options.hasKey("endBefore")) {
-      List<Object> fieldList = parseReadableArray(query.getFirestore(), options.getArray("endBefore"));
+      List<Object> fieldList =
+          parseReadableArray(query.getFirestore(), options.getArray("endBefore"));
       query = query.endBefore(Objects.requireNonNull(fieldList.toArray()));
     }
   }

@@ -17,22 +17,20 @@ package io.invertase.firebase.database;
  *
  */
 
+import static io.invertase.firebase.common.RCTConvertFirebase.mapPutValue;
+import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.castValue;
+import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
 
 import com.facebook.react.bridge.*;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.MutableData;
-
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static io.invertase.firebase.common.RCTConvertFirebase.mapPutValue;
-import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
-import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.castValue;
-import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.snapshotToMap;
+import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseDatabaseTransactionHandler {
   private final ReentrantLock lock;
@@ -69,7 +67,8 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
 
     try {
       if (signalled) {
-        throw new IllegalStateException("This transactionUpdateHandler has already been signalled.");
+        throw new IllegalStateException(
+            "This transactionUpdateHandler has already been signalled.");
       }
 
       signalled = true;
@@ -82,9 +81,7 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     }
   }
 
-  /**
-   * Wait for signalUpdateReceived to signal condition
-   */
+  /** Wait for signalUpdateReceived to signal condition */
   void await() throws InterruptedException {
     lock.lock();
     signalled = false;
@@ -137,12 +134,8 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     return updatesMap;
   }
 
-
   WritableMap createResultMap(
-    @Nullable DatabaseError error,
-    boolean committed,
-    DataSnapshot snapshot
-  ) {
+      @Nullable DatabaseError error, boolean committed, DataSnapshot snapshot) {
     WritableMap resultMap = Arguments.createMap();
 
     resultMap.putBoolean("timeout", timeout);
@@ -152,11 +145,9 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
     if (error != null || timeout || interrupted) {
       resultMap.putString("type", "error");
       if (error != null) {
-        UniversalDatabaseException databaseException = new UniversalDatabaseException(
-          error.getCode(),
-          error.getMessage(),
-          error.toException()
-        );
+        UniversalDatabaseException databaseException =
+            new UniversalDatabaseException(
+                error.getCode(), error.getMessage(), error.toException());
 
         WritableMap errorMap = Arguments.createMap();
         errorMap.putString("code", databaseException.getCode());
@@ -167,9 +158,9 @@ public class ReactNativeFirebaseDatabaseTransactionHandler {
         WritableMap timeoutError = Arguments.createMap();
         timeoutError.putString("code", "database/internal-timeout");
         timeoutError.putString(
-          "message",
-          "A timeout occurred whilst waiting for React Native JavaScript thread to send transaction updates."
-        );
+            "message",
+            "A timeout occurred whilst waiting for React Native JavaScript thread to send"
+                + " transaction updates.");
         resultMap.putMap("error", timeoutError);
       }
     } else {

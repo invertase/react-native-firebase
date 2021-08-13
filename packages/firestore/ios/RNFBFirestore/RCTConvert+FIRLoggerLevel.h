@@ -15,8 +15,8 @@
  *
  */
 
-#import <React/RCTConvert.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTConvert.h>
 
 @interface RCTConvert (FIRLoggerLevel)
 + (FIRLoggerLevel)convertStringLogLevel:(NSString *)rawString;

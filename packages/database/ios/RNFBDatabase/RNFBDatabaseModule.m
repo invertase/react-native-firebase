@@ -15,11 +15,11 @@
  *
  */
 
-#import <React/RCTUtils.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTUtils.h>
 
-#import "RNFBDatabaseModule.h"
 #import "RNFBDatabaseCommon.h"
+#import "RNFBDatabaseModule.h"
 #import "RNFBPreferences.h"
 
 @implementation RNFBDatabaseModule
@@ -32,60 +32,51 @@ RCT_EXPORT_MODULE();
   return [RNFBDatabaseCommon getDispatchQueue];
 }
 
-
 #pragma mark -
 #pragma mark Firebase Database
 
-RCT_EXPORT_METHOD(goOnline:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(goOnline
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOnline];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(goOffline:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (RCTPromiseResolveBlock) resolve
-    : (RCTPromiseRejectBlock)reject
-) {
+RCT_EXPORT_METHOD(goOffline
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] goOffline];
   resolve([NSNull null]);
 }
 
-RCT_EXPORT_METHOD(useEmulator:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    :(nonnull NSString *)host
-    :(NSInteger)port
-) {
-  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost: host port: port];
+RCT_EXPORT_METHOD(useEmulator
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (nonnull NSString *)host
+                  : (NSInteger)port) {
+  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost:host
+                                                                                 port:port];
 }
 
-RCT_EXPORT_METHOD(setPersistenceEnabled:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (BOOL) enabled
-) {
+RCT_EXPORT_METHOD(setPersistenceEnabled
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (BOOL)enabled) {
   [[RNFBPreferences shared] setBooleanValue:DATABASE_PERSISTENCE_ENABLED boolValue:enabled];
 }
 
-RCT_EXPORT_METHOD(setLoggingEnabled:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (BOOL) enabled
-) {
+RCT_EXPORT_METHOD(setLoggingEnabled : (FIRApp *)firebaseApp : (NSString *)dbURL : (BOOL)enabled) {
   [[RNFBPreferences shared] setBooleanValue:DATABASE_LOGGING_ENABLED boolValue:enabled];
 }
 
-RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes:
-  (FIRApp *) firebaseApp
-    : (NSString *) dbURL
-    : (NSInteger *) bytes
-) {
+RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSInteger *)bytes) {
   [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE integerValue:bytes];
 }
 

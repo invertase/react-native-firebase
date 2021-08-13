@@ -17,7 +17,6 @@ package io.invertase.firebase.database;
  *
  */
 
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import io.invertase.firebase.interfaces.NativeEvent;
@@ -36,11 +35,7 @@ public class ReactNativeFirebaseTransactionEvent implements NativeEvent {
   private int id;
 
   ReactNativeFirebaseTransactionEvent(
-    String eventName,
-    WritableMap eventBody,
-    String appName,
-    int id
-  ) {
+      String eventName, WritableMap eventBody, String appName, int id) {
     this.eventName = eventName;
     this.eventBody = eventBody;
     this.appName = appName;

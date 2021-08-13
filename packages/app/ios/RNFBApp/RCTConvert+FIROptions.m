@@ -20,7 +20,9 @@
 @implementation RCTConvert (FIROptions)
 
 + (FIROptions *)convertRawOptions:(NSDictionary *)rawOptions {
-  FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"] GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
+  FIROptions *firOptions =
+      [[FIROptions alloc] initWithGoogleAppID:[rawOptions valueForKey:@"appId"]
+                                  GCMSenderID:[rawOptions valueForKey:@"messagingSenderId"]];
   firOptions.APIKey = [rawOptions valueForKey:@"apiKey"];
   firOptions.projectID = [rawOptions valueForKey:@"projectId"];
   firOptions.clientID = [rawOptions valueForKey:@"clientId"];

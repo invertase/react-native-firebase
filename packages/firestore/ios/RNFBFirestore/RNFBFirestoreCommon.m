@@ -16,86 +16,93 @@
  */
 
 #import "RNFBFirestoreCommon.h"
-#import "RNFBPreferences.h"
 #import <RNFBApp/RNFBSharedUtils.h>
+#import "RNFBPreferences.h"
 
 NSString *const FIRESTORE_CACHE_SIZE = @"firebase_firestore_cache_size";
 NSString *const FIRESTORE_HOST = @"firebase_firestore_host";
 NSString *const FIRESTORE_PERSISTENCE = @"firebase_firestore_persistence";
 NSString *const FIRESTORE_SSL = @"firebase_firestore_ssl";
-NSString *const FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR = @"firebase_firestore_server_timestamp_behavior";
+NSString *const FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR =
+    @"firebase_firestore_server_timestamp_behavior";
 
-NSMutableDictionary * instanceCache;
+NSMutableDictionary *instanceCache;
 
 @implementation RNFBFirestoreCommon
 + (FIRFirestore *)getFirestoreForApp:(FIRApp *)app {
-    if(instanceCache == nil){
-      instanceCache = [[NSMutableDictionary alloc] init];
-    }
-    
-    FIRFirestore * cachedInstance = instanceCache[[app name]];
-    
-    if(cachedInstance){
-      return cachedInstance;
-    }
+  if (instanceCache == nil) {
+    instanceCache = [[NSMutableDictionary alloc] init];
+  }
 
-    FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
-  
-    [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
-    
-    instanceCache[[app name]] = instance;
-    
-    return instance;
+  FIRFirestore *cachedInstance = instanceCache[[app name]];
+
+  if (cachedInstance) {
+    return cachedInstance;
+  }
+
+  FIRFirestore *instance = [FIRFirestore firestoreForApp:app];
+
+  [self setFirestoreSettings:instance appName:[RNFBSharedUtils getAppJavaScriptName:app.name]];
+
+  instanceCache[[app name]] = instance;
+
+  return instance;
 }
 
 + (dispatch_queue_t)getFirestoreQueue {
   static dispatch_queue_t firestoreQueue;
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    firestoreQueue = dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
+    firestoreQueue =
+        dispatch_queue_create("io.invertase.firebase.firestore", DISPATCH_QUEUE_SERIAL);
   });
   return firestoreQueue;
 }
 
 + (void)setFirestoreSettings:(FIRFirestore *)firestore appName:(NSString *)appName {
-    FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
-    RNFBPreferences *preferences = [RNFBPreferences shared];
+  FIRFirestoreSettings *firestoreSettings = [[FIRFirestoreSettings alloc] init];
+  RNFBPreferences *preferences = [RNFBPreferences shared];
 
-    firestoreSettings.dispatchQueue = [self getFirestoreQueue];
+  firestoreSettings.dispatchQueue = [self getFirestoreQueue];
 
-    NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
-    NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
+  NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
+  NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
 
-    if (size == (NSInteger *) -1) {
-      firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
-    } else if (size == 0) {
-      firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
-    } else {
-      firestoreSettings.cacheSizeBytes = (int64_t) size;
-    }
+  if (size == (NSInteger *)-1) {
+    firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
+  } else if (size == 0) {
+    firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
+  } else {
+    firestoreSettings.cacheSizeBytes = (int64_t)size;
+  }
 
-    NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
-    firestoreSettings.host = [preferences getStringValue:hostKey defaultValue:firestore.settings.host];
+  NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];
+  firestoreSettings.host = [preferences getStringValue:hostKey
+                                          defaultValue:firestore.settings.host];
 
-    NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
-    firestoreSettings.persistenceEnabled = (BOOL) [preferences getBooleanValue:persistenceKey defaultValue:firestore.settings.persistenceEnabled];
+  NSString *persistenceKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_PERSISTENCE, appName];
+  firestoreSettings.persistenceEnabled =
+      (BOOL)[preferences getBooleanValue:persistenceKey
+                            defaultValue:firestore.settings.persistenceEnabled];
 
-    NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
-    firestoreSettings.sslEnabled = (BOOL) [preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
+  NSString *sslKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_SSL, appName];
+  firestoreSettings.sslEnabled =
+      (BOOL)[preferences getBooleanValue:sslKey defaultValue:firestore.settings.sslEnabled];
 
-    firestore.settings = firestoreSettings;
+  firestore.settings = firestoreSettings;
 
-    [preferences remove:cacheKey];
-    [preferences remove:hostKey];
-    [preferences remove:persistenceKey];
-    [preferences remove:sslKey];
+  [preferences remove:cacheKey];
+  [preferences remove:hostKey];
+  [preferences remove:persistenceKey];
+  [preferences remove:sslKey];
 }
 
-+ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path; {
-  return [firestore documentWithPath:path];
-}
++ (FIRDocumentReference *)getDocumentForFirestore:(FIRFirestore *)firestore path:(NSString *)path;
+{ return [firestore documentWithPath:path]; }
 
-+ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore path:(NSString *)path type:(NSString *)type {
++ (FIRQuery *)getQueryForFirestore:(FIRFirestore *)firestore
+                              path:(NSString *)path
+                              type:(NSString *)type {
   if ([type isEqualToString:@"collectionGroup"]) {
     return [firestore collectionGroupWithID:path];
   }
@@ -105,17 +112,18 @@ NSMutableDictionary * instanceCache;
 
 + (void)promiseRejectFirestoreException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSArray *codeAndMessage = [self getCodeAndMessage:error];
-  [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-      @"code": (NSString *) codeAndMessage[0],
-      @"message": (NSString *) codeAndMessage[1],
-  }];
+  [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                    userInfo:(NSMutableDictionary *)@{
+                                      @"code" : (NSString *)codeAndMessage[0],
+                                      @"message" : (NSString *)codeAndMessage[1],
+                                    }];
 }
 
 + (NSArray *)getCodeAndMessage:(NSError *)error {
   NSString *code = @"unknown";
 
   if (error == nil) {
-    return @[code, @"An unknown error has occurred."];
+    return @[ code, @"An unknown error has occurred." ];
   }
 
   NSString *message;
@@ -123,7 +131,8 @@ NSMutableDictionary * instanceCache;
   switch (error.code) {
     case FIRFirestoreErrorCodeAborted:
       code = @"aborted";
-      message = @"The operation was aborted, typically due to a concurrency issue like transaction aborts, etc.";
+      message = @"The operation was aborted, typically due to a concurrency issue like transaction "
+                @"aborts, etc.";
       break;
     case FIRFirestoreErrorCodeAlreadyExists:
       code = @"already-exists";
@@ -139,23 +148,31 @@ NSMutableDictionary * instanceCache;
       break;
     case FIRFirestoreErrorCodeDeadlineExceeded:
       code = @"deadline-exceeded";
-      message = @"Deadline expired before operation could complete. For operations that change the state of the system, this error may be returned even if the operation has completed successfully. For example, a successful response from a server could have been delayed long enough for the deadline to expire.";
+      message = @"Deadline expired before operation could complete. For operations that change the "
+                @"state of the system, this error may be returned even if the operation has "
+                @"completed successfully. For example, a successful response from a server could "
+                @"have been delayed long enough for the deadline to expire.";
       break;
     case FIRFirestoreErrorCodeFailedPrecondition:
       code = @"failed-precondition";
       if ([error.localizedDescription containsString:@"query requires an index"]) {
         message = error.localizedDescription;
       } else {
-        message = @"Operation was rejected because the system is not in a state required for the operation's execution. Ensure your query has been indexed via the Firebase console.";
+        message =
+            @"Operation was rejected because the system is not in a state required for the "
+            @"operation's execution. Ensure your query has been indexed via the Firebase console.";
       }
       break;
     case FIRFirestoreErrorCodeInternal:
       code = @"internal";
-      message = @"Internal errors. Means some invariants expected by underlying system has been broken. If you see one of these errors, something is very broken.";
+      message = @"Internal errors. Means some invariants expected by underlying system has been "
+                @"broken. If you see one of these errors, something is very broken.";
       break;
     case FIRFirestoreErrorCodeInvalidArgument:
       code = @"invalid-argument";
-      message = @"Client specified an invalid argument. Note that this differs from failed-precondition. invalid-argument indicates arguments that are problematic regardless of the state of the system (e.g., an invalid field name).";
+      message = @"Client specified an invalid argument. Note that this differs from "
+                @"failed-precondition. invalid-argument indicates arguments that are problematic "
+                @"regardless of the state of the system (e.g., an invalid field name).";
       break;
     case FIRFirestoreErrorCodeNotFound:
       code = @"not-found";
@@ -171,7 +188,8 @@ NSMutableDictionary * instanceCache;
       break;
     case FIRFirestoreErrorCodeResourceExhausted:
       code = @"resource-exhausted";
-      message = @"Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space.";
+      message = @"Some resource has been exhausted, perhaps a per-user quota, or perhaps the "
+                @"entire file system is out of space.";
       break;
     case FIRFirestoreErrorCodeUnauthenticated:
       code = @"unauthenticated";
@@ -179,7 +197,8 @@ NSMutableDictionary * instanceCache;
       break;
     case FIRFirestoreErrorCodeUnavailable:
       code = @"unavailable";
-      message = @"The service is currently unavailable. This is a most likely a transient condition and may be corrected by retrying with a backoff.";
+      message = @"The service is currently unavailable. This is a most likely a transient "
+                @"condition and may be corrected by retrying with a backoff.";
       break;
     case FIRFirestoreErrorCodeUnimplemented:
       code = @"unimplemented";
@@ -195,7 +214,7 @@ NSMutableDictionary * instanceCache;
       break;
   }
 
-  return @[code, message];
+  return @[ code, message ];
 }
 
 @end

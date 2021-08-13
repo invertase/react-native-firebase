@@ -21,25 +21,19 @@ import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-
+import com.facebook.react.bridge.*;
+import io.invertase.firebase.interfaces.ContextProvider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import com.facebook.react.bridge.*;
-
-import io.invertase.firebase.interfaces.ContextProvider;
-import io.invertase.firebase.common.TaskExecutorService;
-
-public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implements ContextProvider {
+public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule
+    implements ContextProvider {
   private final TaskExecutorService executorService;
 
   private String moduleName;
 
-  public ReactNativeFirebaseModule(
-    ReactApplicationContext reactContext,
-    String moduleName
-  ) {
+  public ReactNativeFirebaseModule(ReactApplicationContext reactContext, String moduleName) {
     super(reactContext);
     this.moduleName = moduleName;
     this.executorService = new TaskExecutorService(getName());
@@ -57,11 +51,7 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule implem
   }
 
   public static void rejectPromiseWithCodeAndMessage(
-    Promise promise,
-    String code,
-    String message,
-    String nativeErrorMessage
-  ) {
+      Promise promise, String code, String message, String nativeErrorMessage) {
     WritableMap userInfoMap = Arguments.createMap();
     userInfoMap.putString("code", code);
     userInfoMap.putString("message", message);

@@ -30,11 +30,11 @@ import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-
-import javax.annotation.Nullable;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseModule implements ActivityEventListener, LifecycleEventListener {
+public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseModule
+    implements ActivityEventListener, LifecycleEventListener {
   private static final String TAG = "DynamicLinks";
   private static final String SHORT_LINK_TYPE_SHORT = "SHORT";
   private static final String SHORT_LINK_TYPE_UNGUESSABLE = "UNGUESSABLE";
@@ -42,13 +42,11 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private String initialLinkUrl = null;
   private int initialLinkMinimumVersion = 0;
 
-  /**
-   * Ensures calls to getInitialLink only tries to retrieve the link from getDynamicLink once.
-   */
+  /** Ensures calls to getInitialLink only tries to retrieve the link from getDynamicLink once. */
   private boolean gotInitialLink = false;
   /**
-   * Used by getInitialLink to check if the activity has been resumed.
-   * "host" refers to the host activity, in terms of {@link LifeCycleEventListener#onHostResume()}
+   * Used by getInitialLink to check if the activity has been resumed. "host" refers to the host
+   * activity, in terms of {@link LifeCycleEventListener#onHostResume()}
    */
   private boolean hostResumed = false;
   /**
@@ -57,8 +55,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
    */
   private boolean launchedFromHistory = false;
   /**
-   * Holds the Promise that was passed to getInitialLink
-   * if getInitialLink was called before {@link com.facebook.react.common.LifecycleState#RESUMED} Lifecycle state.
+   * Holds the Promise that was passed to getInitialLink if getInitialLink was called before {@link
+   * com.facebook.react.common.LifecycleState#RESUMED} Lifecycle state.
    */
   private Promise initialPromise = null;
 
@@ -77,51 +75,64 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @ReactMethod
   public void buildLink(ReadableMap dynamicLinkMap, Promise promise) {
-    Tasks
-      .call(getExecutor(), () -> createDynamicLinkBuilder(dynamicLinkMap).buildDynamicLink().getUri().toString())
-      .addOnCompleteListener(getExecutor(), (task) -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          Log.e(TAG, "RNFB: Unknown error while building Dynamic Link ", task.getException());
-          rejectPromiseWithCodeAndMessage(promise, "build-failed", task.getException().getMessage());
-        }
-      });
+    Tasks.call(
+            getExecutor(),
+            () -> createDynamicLinkBuilder(dynamicLinkMap).buildDynamicLink().getUri().toString())
+        .addOnCompleteListener(
+            getExecutor(),
+            (task) -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                Log.e(TAG, "RNFB: Unknown error while building Dynamic Link ", task.getException());
+                rejectPromiseWithCodeAndMessage(
+                    promise, "build-failed", task.getException().getMessage());
+              }
+            });
   }
 
   @ReactMethod
   public void buildShortLink(ReadableMap dynamicLinkMap, String shortLinkType, Promise promise) {
-    Tasks
-      .call(getExecutor(), () -> {
-        DynamicLink.Builder builder = createDynamicLinkBuilder(dynamicLinkMap);
-        if (SHORT_LINK_TYPE_SHORT.equals(shortLinkType)) {
-          return Tasks.await(builder.buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT));
-        }
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              DynamicLink.Builder builder = createDynamicLinkBuilder(dynamicLinkMap);
+              if (SHORT_LINK_TYPE_SHORT.equals(shortLinkType)) {
+                return Tasks.await(builder.buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT));
+              }
 
-        if (SHORT_LINK_TYPE_UNGUESSABLE.equals(shortLinkType)) {
-          return Tasks.await(builder.buildShortDynamicLink(ShortDynamicLink.Suffix.UNGUESSABLE));
-        }
+              if (SHORT_LINK_TYPE_UNGUESSABLE.equals(shortLinkType)) {
+                return Tasks.await(
+                    builder.buildShortDynamicLink(ShortDynamicLink.Suffix.UNGUESSABLE));
+              }
 
-        return Tasks.await(builder.buildShortDynamicLink());
-      })
-      .addOnCompleteListener(getExecutor(), (task) -> {
-        if (task.isSuccessful()) {
-          // TODO implement after v6
-          // WritableMap shortLinkMap = Arguments.createMap();
-          // WritableArray shortLinkWarnings = Arguments.createArray();
-          // List<? extends ShortDynamicLink.Warning> warningsList = task.getResult().getWarnings();
-          // for (ShortDynamicLink.Warning warning : warningsList) {
-          //   shortLinkWarnings.pushString(warning.getMessage());
-          // }
-          // shortLinkMap.putArray("warnings", shortLinkWarnings);
-          // shortLinkMap.putString("link", task.getResult().getShortLink().toString());
+              return Tasks.await(builder.buildShortDynamicLink());
+            })
+        .addOnCompleteListener(
+            getExecutor(),
+            (task) -> {
+              if (task.isSuccessful()) {
+                // TODO implement after v6
+                // WritableMap shortLinkMap = Arguments.createMap();
+                // WritableArray shortLinkWarnings = Arguments.createArray();
+                // List<? extends ShortDynamicLink.Warning> warningsList =
+                // task.getResult().getWarnings();
+                // for (ShortDynamicLink.Warning warning : warningsList) {
+                //   shortLinkWarnings.pushString(warning.getMessage());
+                // }
+                // shortLinkMap.putArray("warnings", shortLinkWarnings);
+                // shortLinkMap.putString("link", task.getResult().getShortLink().toString());
 
-          promise.resolve(task.getResult().getShortLink().toString());
-        } else {
-          Log.e(TAG, "RNFB: Unknown error while building Dynamic Link " + task.getException().getMessage());
-          rejectPromiseWithCodeAndMessage(promise, "build-failed", task.getException().getMessage());
-        }
-      });
+                promise.resolve(task.getResult().getShortLink().toString());
+              } else {
+                Log.e(
+                    TAG,
+                    "RNFB: Unknown error while building Dynamic Link "
+                        + task.getException().getMessage());
+                rejectPromiseWithCodeAndMessage(
+                    promise, "build-failed", task.getException().getMessage());
+              }
+            });
   }
 
   @ReactMethod
@@ -151,56 +162,68 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
     Intent currentIntent = currentActivity.getIntent();
     // Verify if the app was resumed from the Overview (history) screen.
-    launchedFromHistory = (currentIntent != null) && ((currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0);
+    launchedFromHistory =
+        (currentIntent != null)
+            && ((currentIntent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) != 0);
 
-    FirebaseDynamicLinks.getInstance().getDynamicLink(currentIntent)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          // Flag that the getDynamicLink() completed successfully,
-          // preventing future calls to from receiving the link, as if the link had been cleared.
-          gotInitialLink = true;
-          PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(currentIntent)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                // Flag that the getDynamicLink() completed successfully,
+                // preventing future calls to from receiving the link, as if the link had been
+                // cleared.
+                gotInitialLink = true;
+                PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
 
-          if (pendingDynamicLinkData != null) {
-            initialLinkUrl = pendingDynamicLinkData.getLink().toString();
-            initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
-          }
+                if (pendingDynamicLinkData != null) {
+                  initialLinkUrl = pendingDynamicLinkData.getLink().toString();
+                  initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
+                }
 
-          // Guard against the scenario where the app was launched using a dynamic link,
-          // then, the app was backgrounded using the Back button, and resumed from the Overview (screen).
-          if (initialLinkUrl != null && !launchedFromHistory) {
-            promise.resolve(dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
-          } else {
-            promise.resolve(null);
-          }
-        } else {
-          rejectPromiseWithCodeAndMessage(promise, "initial-link-error", task.getException().getMessage());
-        }
-      });
+                // Guard against the scenario where the app was launched using a dynamic link,
+                // then, the app was backgrounded using the Back button, and resumed from the
+                // Overview (screen).
+                if (initialLinkUrl != null && !launchedFromHistory) {
+                  promise.resolve(
+                      dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion));
+                } else {
+                  promise.resolve(null);
+                }
+              } else {
+                rejectPromiseWithCodeAndMessage(
+                    promise, "initial-link-error", task.getException().getMessage());
+              }
+            });
   }
 
   @ReactMethod
   public void resolveLink(String link, Promise promise) {
     try {
       FirebaseDynamicLinks.getInstance()
-        .getDynamicLink(Uri.parse(link))
-        .addOnCompleteListener(task -> {
-          if (task.isSuccessful()) {
-            PendingDynamicLinkData linkData = task.getResult();
-            // Note: link == null if link invalid, isSuccessful is only false on processing error
-            if (linkData != null && linkData.getLink() != null && linkData.getLink().toString() != null) {
-              String linkUrl = linkData.getLink().toString();
-              int linkMinimumVersion = linkData.getMinimumAppVersion();
-              promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion));
-            } else {
-              rejectPromiseWithCodeAndMessage(promise, "not-found", "Dynamic link not found");
-            }
-          } else {
-            rejectPromiseWithCodeAndMessage(promise, "resolve-link-error", task.getException().getMessage());
-          }
-        });
-    }
-    catch (Exception e) {
+          .getDynamicLink(Uri.parse(link))
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  PendingDynamicLinkData linkData = task.getResult();
+                  // Note: link == null if link invalid, isSuccessful is only false on processing
+                  // error
+                  if (linkData != null
+                      && linkData.getLink() != null
+                      && linkData.getLink().toString() != null) {
+                    String linkUrl = linkData.getLink().toString();
+                    int linkMinimumVersion = linkData.getMinimumAppVersion();
+                    promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion));
+                  } else {
+                    rejectPromiseWithCodeAndMessage(promise, "not-found", "Dynamic link not found");
+                  }
+                } else {
+                  rejectPromiseWithCodeAndMessage(
+                      promise, "resolve-link-error", task.getException().getMessage());
+                }
+              });
+    } catch (Exception e) {
       // This would be very unexpected, but crashing is even less expected
       rejectPromiseWithCodeAndMessage(promise, "resolve-link-error", "Unknown resolve failure");
     }
@@ -254,11 +277,10 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   }
 
   private void buildAnalyticsParameters(
-    @Nullable ReadableMap analyticsMap,
-    DynamicLink.Builder builder
-  ) {
+      @Nullable ReadableMap analyticsMap, DynamicLink.Builder builder) {
     if (analyticsMap == null) return;
-    DynamicLink.GoogleAnalyticsParameters.Builder analyticsBuilder = new DynamicLink.GoogleAnalyticsParameters.Builder();
+    DynamicLink.GoogleAnalyticsParameters.Builder analyticsBuilder =
+        new DynamicLink.GoogleAnalyticsParameters.Builder();
 
     if (analyticsMap.hasKey("campaign")) {
       analyticsBuilder.setCampaign(analyticsMap.getString("campaign"));
@@ -284,13 +306,11 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   }
 
   private void buildAndroidParameters(
-    @Nullable ReadableMap androidMap,
-    DynamicLink.Builder builder
-  ) {
+      @Nullable ReadableMap androidMap, DynamicLink.Builder builder) {
     if (androidMap == null) return;
-    DynamicLink.AndroidParameters.Builder androidBuilder = new DynamicLink.AndroidParameters.Builder(
-      Objects.requireNonNull(androidMap.getString("packageName"))
-    );
+    DynamicLink.AndroidParameters.Builder androidBuilder =
+        new DynamicLink.AndroidParameters.Builder(
+            Objects.requireNonNull(androidMap.getString("packageName")));
 
     if (androidMap.hasKey("fallbackUrl")) {
       androidBuilder.setFallbackUrl(Uri.parse(androidMap.getString("fallbackUrl")));
@@ -298,10 +318,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
     if (androidMap.hasKey("minimumVersion")) {
       androidBuilder.setMinimumVersion(
-        Integer.parseInt(
-          Objects.requireNonNull(androidMap.getString("minimumVersion"))
-        )
-      );
+          Integer.parseInt(Objects.requireNonNull(androidMap.getString("minimumVersion"))));
     }
 
     builder.setAndroidParameters(androidBuilder.build());
@@ -310,9 +327,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   private void buildIosParameters(@Nullable ReadableMap iosMap, DynamicLink.Builder builder) {
     if (iosMap == null) return;
 
-    DynamicLink.IosParameters.Builder iosBuilder = new DynamicLink.IosParameters.Builder(
-      Objects.requireNonNull(iosMap.getString("bundleId"))
-    );
+    DynamicLink.IosParameters.Builder iosBuilder =
+        new DynamicLink.IosParameters.Builder(Objects.requireNonNull(iosMap.getString("bundleId")));
 
     if (iosMap.hasKey("appStoreId")) {
       iosBuilder.setAppStoreId(iosMap.getString("appStoreId"));
@@ -341,12 +357,10 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
     builder.setIosParameters(iosBuilder.build());
   }
 
-  private void buildItunesParameters(
-    @Nullable ReadableMap iTunesMap,
-    DynamicLink.Builder builder
-  ) {
+  private void buildItunesParameters(@Nullable ReadableMap iTunesMap, DynamicLink.Builder builder) {
     if (iTunesMap == null) return;
-    DynamicLink.ItunesConnectAnalyticsParameters.Builder iTunesBuilder = new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
+    DynamicLink.ItunesConnectAnalyticsParameters.Builder iTunesBuilder =
+        new DynamicLink.ItunesConnectAnalyticsParameters.Builder();
 
     if (iTunesMap.hasKey("affiliateToken")) {
       iTunesBuilder.setAffiliateToken(iTunesMap.getString("affiliateToken"));
@@ -364,27 +378,22 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
   }
 
   private void buildNavigationParameters(
-    @Nullable ReadableMap navigationMap,
-    DynamicLink.Builder builder
-  ) {
+      @Nullable ReadableMap navigationMap, DynamicLink.Builder builder) {
     if (navigationMap == null) return;
-    DynamicLink.NavigationInfoParameters.Builder navigationBuilder = new DynamicLink.NavigationInfoParameters.Builder();
+    DynamicLink.NavigationInfoParameters.Builder navigationBuilder =
+        new DynamicLink.NavigationInfoParameters.Builder();
 
     if (navigationMap.hasKey("forcedRedirectEnabled")) {
-      navigationBuilder.setForcedRedirectEnabled(
-        navigationMap.getBoolean("forcedRedirectEnabled")
-      );
+      navigationBuilder.setForcedRedirectEnabled(navigationMap.getBoolean("forcedRedirectEnabled"));
     }
 
     builder.setNavigationInfoParameters(navigationBuilder.build());
   }
 
-  private void buildSocialParameters(
-    @Nullable ReadableMap socialMap,
-    DynamicLink.Builder builder
-  ) {
+  private void buildSocialParameters(@Nullable ReadableMap socialMap, DynamicLink.Builder builder) {
     if (socialMap == null) return;
-    DynamicLink.SocialMetaTagParameters.Builder socialBuilder = new DynamicLink.SocialMetaTagParameters.Builder();
+    DynamicLink.SocialMetaTagParameters.Builder socialBuilder =
+        new DynamicLink.SocialMetaTagParameters.Builder();
 
     if (socialMap.hasKey("descriptionText")) {
       socialBuilder.setDescription(socialMap.getString("descriptionText"));
@@ -413,25 +422,32 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   @Override
   public void onNewIntent(Intent intent) {
-    FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
-          if (pendingDynamicLinkData != null) {
-            ReactNativeFirebaseEventEmitter.getSharedInstance().sendEvent(new ReactNativeFirebaseEvent(
-              "dynamic_links_link_received",
-              dynamicLinkToWritableMap(pendingDynamicLinkData.getLink().toString(), pendingDynamicLinkData.getMinimumAppVersion())
-            ));
-          }
-        } else {
-          Log.e(TAG, "RNFB: An unknown exception occurred calling getDynamicLink", task.getException());
-        }
-      });
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(intent)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
+                if (pendingDynamicLinkData != null) {
+                  ReactNativeFirebaseEventEmitter.getSharedInstance()
+                      .sendEvent(
+                          new ReactNativeFirebaseEvent(
+                              "dynamic_links_link_received",
+                              dynamicLinkToWritableMap(
+                                  pendingDynamicLinkData.getLink().toString(),
+                                  pendingDynamicLinkData.getMinimumAppVersion())));
+                }
+              } else {
+                Log.e(
+                    TAG,
+                    "RNFB: An unknown exception occurred calling getDynamicLink",
+                    task.getException());
+              }
+            });
   }
 
   @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-  }
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {}
 
   @Override
   public void onHostResume() {

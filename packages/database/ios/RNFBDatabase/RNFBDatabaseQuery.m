@@ -20,9 +20,7 @@
 
 @implementation RNFBDatabaseQuery
 
-
-- (RNFBDatabaseQuery *)initWithReferenceAndModifiers
-    :(FIRDatabaseReference *)reference
+- (RNFBDatabaseQuery *)initWithReferenceAndModifiers:(FIRDatabaseReference *)reference
                                            modifiers:(NSArray *)modifiers {
   self = [super init];
 
@@ -34,8 +32,7 @@
   return self;
 }
 
-- (FIRDatabaseQuery *)buildQueryWithModifiers
-    :(FIRDatabaseReference *)reference
+- (FIRDatabaseQuery *)buildQueryWithModifiers:(FIRDatabaseReference *)reference
                                     modifiers:(NSArray *)modifiers {
   FIRDatabaseQuery *query = reference;
 
@@ -115,8 +112,7 @@
   }
 }
 
-- (void)addEventListener:(NSString *)eventRegistrationKey
-    :(FIRDatabaseHandle)listener {
+- (void)addEventListener:(NSString *)eventRegistrationKey:(FIRDatabaseHandle)listener {
   _listeners[eventRegistrationKey] = @(listener);
 }
 
@@ -125,7 +121,6 @@
   if (handle) {
     [_query removeObserverWithHandle:handle];
     [_listeners removeObjectForKey:eventRegistrationKey];
-
   }
 }
 
