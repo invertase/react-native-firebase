@@ -35,13 +35,8 @@ public class ReactNativeFirebaseFirestoreEvent implements NativeEvent {
   private String appName;
   private int listenerId;
 
-
   ReactNativeFirebaseFirestoreEvent(
-    String eventName,
-    WritableMap eventBody,
-    String appName,
-    int listenerId
-  ) {
+      String eventName, WritableMap eventBody, String appName, int listenerId) {
     this.eventName = eventName;
     this.eventBody = eventBody;
     this.appName = appName;

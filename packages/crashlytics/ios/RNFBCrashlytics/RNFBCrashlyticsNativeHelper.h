@@ -18,9 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RNFBCrashlyticsNativeHelper : NSObject 
+@interface RNFBCrashlyticsNativeHelper : NSObject
 
 + (void)recordNativeError:(NSError *)error;
 
 @end
-

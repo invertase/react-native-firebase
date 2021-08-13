@@ -15,23 +15,23 @@
  *
  */
 
-
-#import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
+#import <React/RCTBridgeModule.h>
 
 @interface RNFBDatabaseCommon : NSObject
 
-+ (FIRDatabase *)getDatabaseForApp
-    :(FIRApp *)firebaseApp
-                             dbURL:(NSString *)dbURL;
++ (FIRDatabase *)getDatabaseForApp:(FIRApp *)firebaseApp dbURL:(NSString *)dbURL;
 
 + (dispatch_queue_t)getDispatchQueue;
 
 + (void)setDatabaseConfig:(FIRDatabase *)firDatabase dbURL:(NSString *)dbURL;
 
-+ (FIRDatabaseReference *)getReferenceForDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
++ (FIRDatabaseReference *)getReferenceForDatabase:(FIRDatabase *)firebaseDatabase
+                                             path:(NSString *)path;
 
-+ (FIRDatabaseReference *)getReferenceForDatabase:(NSString *)key firebaseDatabase:(FIRDatabase *)firebaseDatabase path:(NSString *)path;
++ (FIRDatabaseReference *)getReferenceForDatabase:(NSString *)key
+                                 firebaseDatabase:(FIRDatabase *)firebaseDatabase
+                                             path:(NSString *)path;
 
 + (void)removeReferenceByKey:(NSString *)key;
 
@@ -41,7 +41,8 @@
 
 + (int)getEventTypeFromName:(NSString *)name;
 
-+ (NSDictionary *)snapshotWithPreviousChildToDictionary:(FIRDataSnapshot *)snapshot previousChildName:(NSString *)previousChildName;
++ (NSDictionary *)snapshotWithPreviousChildToDictionary:(FIRDataSnapshot *)snapshot
+                                      previousChildName:(NSString *)previousChildName;
 
 + (NSDictionary *)snapshotToDictionary:(FIRDataSnapshot *)dataSnapshot;
 

@@ -2,14 +2,14 @@ package io.invertase.firebase.messaging;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 
 public class ReactNativeFirebaseMessagingService extends FirebaseMessagingService {
   @Override
   public void onSendError(String messageId, Exception sendError) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.sendEvent(ReactNativeFirebaseMessagingSerializer.messageSendErrorToEvent(messageId, sendError));
+    emitter.sendEvent(
+        ReactNativeFirebaseMessagingSerializer.messageSendErrorToEvent(messageId, sendError));
   }
 
   @Override

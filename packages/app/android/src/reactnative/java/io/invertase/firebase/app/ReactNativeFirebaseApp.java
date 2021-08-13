@@ -19,7 +19,6 @@ package io.invertase.firebase.app;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 

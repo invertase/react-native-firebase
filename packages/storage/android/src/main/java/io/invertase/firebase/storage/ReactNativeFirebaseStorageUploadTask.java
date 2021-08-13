@@ -17,10 +17,14 @@ package io.invertase.firebase.storage;
  *
  */
 
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getTaskStatus;
+import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.promiseRejectStorageException;
+
 import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
@@ -28,28 +32,17 @@ import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-
-import java.util.concurrent.ExecutorService;
-
-import javax.annotation.Nullable;
-
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.SharedUtils;
-
-import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.buildMetadataFromMap;
-import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getMetadataAsMap;
-import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.getTaskStatus;
-import static io.invertase.firebase.storage.ReactNativeFirebaseStorageCommon.promiseRejectStorageException;
+import java.util.concurrent.ExecutorService;
+import javax.annotation.Nullable;
 
 class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTask {
   private static final String TAG = "RNFBStorageUpload";
   private UploadTask uploadTask;
 
   ReactNativeFirebaseStorageUploadTask(
-    int taskId,
-    StorageReference storageReference,
-    String appName
-  ) {
+      int taskId, StorageReference storageReference, String appName) {
     super(taskId, storageReference, appName);
   }
 
@@ -86,109 +79,112 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
   }
 
   private void addEventListeners(ExecutorService executor) {
-    uploadTask.addOnProgressListener(executor, taskSnapshotRaw -> {
-      Log.d(TAG, "onProgress " + storageReference.toString());
-      WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
-    });
+    uploadTask.addOnProgressListener(
+        executor,
+        taskSnapshotRaw -> {
+          Log.d(TAG, "onProgress " + storageReference.toString());
+          WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
+          ReactNativeFirebaseEventEmitter.getSharedInstance()
+              .sendEvent(
+                  new ReactNativeFirebaseStorageEvent(
+                      taskSnapshot,
+                      ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+                      appName,
+                      taskId));
+        });
 
-    uploadTask.addOnCanceledListener(executor, () -> {
-      Log.d(TAG, "onCancelled " + storageReference.toString());
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          buildCancelledSnapshotMap(buildUploadSnapshotMap(uploadTask.getSnapshot())),
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
-    });
+    uploadTask.addOnCanceledListener(
+        executor,
+        () -> {
+          Log.d(TAG, "onCancelled " + storageReference.toString());
+          ReactNativeFirebaseEventEmitter.getSharedInstance()
+              .sendEvent(
+                  new ReactNativeFirebaseStorageEvent(
+                      buildCancelledSnapshotMap(buildUploadSnapshotMap(uploadTask.getSnapshot())),
+                      ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+                      appName,
+                      taskId));
+        });
 
-    uploadTask.addOnPausedListener(executor, taskSnapshotRaw -> {
-      Log.d(TAG, "onPaused " + storageReference.toString());
-      WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
-      ReactNativeFirebaseEventEmitter
-        .getSharedInstance()
-        .sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshot,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
-    });
+    uploadTask.addOnPausedListener(
+        executor,
+        taskSnapshotRaw -> {
+          Log.d(TAG, "onPaused " + storageReference.toString());
+          WritableMap taskSnapshot = buildUploadSnapshotMap(taskSnapshotRaw);
+          ReactNativeFirebaseEventEmitter.getSharedInstance()
+              .sendEvent(
+                  new ReactNativeFirebaseStorageEvent(
+                      taskSnapshot,
+                      ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+                      appName,
+                      taskId));
+        });
   }
 
   void addOnCompleteListener(ExecutorService executor, Promise promise) {
-    uploadTask.addOnCompleteListener(executor, task -> {
-      destroyTask();
+    uploadTask.addOnCompleteListener(
+        executor,
+        task -> {
+          destroyTask();
 
-      if (task.isSuccessful()) {
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
+          if (task.isSuccessful()) {
+            ReactNativeFirebaseEventEmitter emitter =
+                ReactNativeFirebaseEventEmitter.getSharedInstance();
+            WritableMap taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
 
-        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshotMap,
-          ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-          appName,
-          taskId
-        ));
+            emitter.sendEvent(
+                new ReactNativeFirebaseStorageEvent(
+                    taskSnapshotMap,
+                    ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+                    appName,
+                    taskId));
 
-        // re-creating WritableMap as they can only be consumed once, so another one is required
-        taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
-        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          taskSnapshotMap,
-          ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
-          appName,
-          taskId
-        ));
+            // re-creating WritableMap as they can only be consumed once, so another one is required
+            taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
+            emitter.sendEvent(
+                new ReactNativeFirebaseStorageEvent(
+                    taskSnapshotMap,
+                    ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_SUCCESS,
+                    appName,
+                    taskId));
 
-        taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
-        promise.resolve(taskSnapshotMap);
-      } else {
-        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-        WritableMap errorSnapshot = buildErrorSnapshotMap(
-          task.getException(),
-          buildUploadSnapshotMap(uploadTask.getSnapshot()),
-          true
-        );
+            taskSnapshotMap = buildUploadSnapshotMap(task.getResult());
+            promise.resolve(taskSnapshotMap);
+          } else {
+            ReactNativeFirebaseEventEmitter emitter =
+                ReactNativeFirebaseEventEmitter.getSharedInstance();
+            WritableMap errorSnapshot =
+                buildErrorSnapshotMap(
+                    task.getException(), buildUploadSnapshotMap(uploadTask.getSnapshot()), true);
 
-        // we force it to be null if Error code is 'cancelled' to match ios & web sdk behaviour
-        // we only send a 'cancelled' state changed event and ignore the 'error' state_changed event
-        if (errorSnapshot != null) {
-          emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-            errorSnapshot,
-            ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
-            appName,
-            taskId
-          ));
-        }
+            // we force it to be null if Error code is 'cancelled' to match ios & web sdk behaviour
+            // we only send a 'cancelled' state changed event and ignore the 'error' state_changed
+            // event
+            if (errorSnapshot != null) {
+              emitter.sendEvent(
+                  new ReactNativeFirebaseStorageEvent(
+                      errorSnapshot,
+                      ReactNativeFirebaseStorageEvent.EVENT_STATE_CHANGED,
+                      appName,
+                      taskId));
+            }
 
-        emitter.sendEvent(new ReactNativeFirebaseStorageEvent(
-          buildErrorSnapshotMap(
-            task.getException(),
-            buildUploadSnapshotMap(uploadTask.getSnapshot()),
-            false
-          ),
-          ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
-          appName,
-          taskId
-        ));
+            emitter.sendEvent(
+                new ReactNativeFirebaseStorageEvent(
+                    buildErrorSnapshotMap(
+                        task.getException(),
+                        buildUploadSnapshotMap(uploadTask.getSnapshot()),
+                        false),
+                    ReactNativeFirebaseStorageEvent.EVENT_UPLOAD_FAILURE,
+                    appName,
+                    taskId));
 
-        promiseRejectStorageException(promise, task.getException());
-      }
-    });
+            promiseRejectStorageException(promise, task.getException());
+          }
+        });
   }
 
-  /**
-   * Put String or Data from JavaScript
-   */
+  /** Put String or Data from JavaScript */
   void begin(ExecutorService executor, String string, String format, ReadableMap metadataMap) {
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
     uploadTask = storageReference.putBytes(uploadStringToByteArray(string, format), metadata);
@@ -196,9 +192,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
     addEventListeners(executor);
   }
 
-  /**
-   * Put File from JavaScript
-   */
+  /** Put File from JavaScript */
   void begin(ExecutorService executor, String localFilePath, ReadableMap metadataMap) {
     Uri fileUri = SharedUtils.getUri(localFilePath);
     StorageMetadata metadata = buildMetadataFromMap(metadataMap, fileUri);

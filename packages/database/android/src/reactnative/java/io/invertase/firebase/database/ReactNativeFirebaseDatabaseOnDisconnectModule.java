@@ -17,15 +17,14 @@ package io.invertase.firebase.database;
  *
  */
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-
 import java.util.Map;
-
-import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
 public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "DatabaseOnDisconnect";
@@ -38,62 +37,77 @@ public class ReactNativeFirebaseDatabaseOnDisconnectModule extends ReactNativeFi
 
   @ReactMethod
   public void onDisconnectCancel(String app, String dbURL, String path, Promise promise) {
-    module.onDisconnectCancel(app, dbURL, path)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+    module
+        .onDisconnectCancel(app, dbURL, path)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void onDisconnectRemove(String app, String dbURL, String path, Promise promise) {
-    module.onDisconnectRemove(app, dbURL, path)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+    module
+        .onDisconnectRemove(app, dbURL, path)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
-  public void onDisconnectSet(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    module.onDisconnectSet(app, dbURL, path, toHashMap(props).get("value"))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+  public void onDisconnectSet(
+      String app, String dbURL, String path, ReadableMap props, Promise promise) {
+    module
+        .onDisconnectSet(app, dbURL, path, toHashMap(props).get("value"))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
-  public void onDisconnectSetWithPriority(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    module.onDisconnectSetWithPriority(app, dbURL, path, toHashMap(props).get("value"), toHashMap(props).get("priority"))
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+  public void onDisconnectSetWithPriority(
+      String app, String dbURL, String path, ReadableMap props, Promise promise) {
+    module
+        .onDisconnectSetWithPriority(
+            app, dbURL, path, toHashMap(props).get("value"), toHashMap(props).get("priority"))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
-  public void onDisconnectUpdate(String app, String dbURL, String path, ReadableMap props, Promise promise) {
-    @SuppressWarnings("unchecked") Map<String, Object> values = (Map<String, Object>) toHashMap(props).get("values");
-    module.onDisconnectUpdate(app, dbURL, path, values)
-      .addOnCompleteListener(task -> {
-        if (task.isSuccessful()) {
-          promise.resolve(task.getResult());
-        } else {
-          rejectPromiseWithExceptionMap(promise, task.getException());
-        }
-      });
+  public void onDisconnectUpdate(
+      String app, String dbURL, String path, ReadableMap props, Promise promise) {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> values = (Map<String, Object>) toHashMap(props).get("values");
+    module
+        .onDisconnectUpdate(app, dbURL, path, values)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 }

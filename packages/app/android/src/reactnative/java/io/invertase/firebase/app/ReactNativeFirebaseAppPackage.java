@@ -22,11 +22,10 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import io.invertase.firebase.utils.ReactNativeFirebaseUtilsModule;
-
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 public class ReactNativeFirebaseAppPackage implements ReactPackage {

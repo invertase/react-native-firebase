@@ -19,22 +19,20 @@ package io.invertase.firebase.common;
 
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.MainThread;
 import android.util.Log;
-
+import androidx.annotation.MainThread;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
+import io.invertase.firebase.interfaces.NativeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import io.invertase.firebase.interfaces.NativeEvent;
-
 public class ReactNativeFirebaseEventEmitter {
-  private static ReactNativeFirebaseEventEmitter sharedInstance = new ReactNativeFirebaseEventEmitter();
+  private static ReactNativeFirebaseEventEmitter sharedInstance =
+      new ReactNativeFirebaseEventEmitter();
   private final List<NativeEvent> queuedEvents = new ArrayList<>();
   private final Handler handler = new Handler(Looper.getMainLooper());
   private final HashMap<String, Integer> jsListeners = new HashMap<>();
@@ -47,27 +45,30 @@ public class ReactNativeFirebaseEventEmitter {
   }
 
   public void attachReactContext(final ReactContext reactContext) {
-    handler.post(() -> {
-      ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
-      sendQueuedEvents();
-    });
+    handler.post(
+        () -> {
+          ReactNativeFirebaseEventEmitter.this.reactContext = reactContext;
+          sendQueuedEvents();
+        });
   }
 
   public void notifyJsReady(Boolean ready) {
-    handler.post(() -> {
-      jsReady = ready;
-      sendQueuedEvents();
-    });
+    handler.post(
+        () -> {
+          jsReady = ready;
+          sendQueuedEvents();
+        });
   }
 
   public void sendEvent(final NativeEvent event) {
-    handler.post(() -> {
-      synchronized (jsListeners) {
-        if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
-          queuedEvents.add(event);
-        }
-      }
-    });
+    handler.post(
+        () -> {
+          synchronized (jsListeners) {
+            if (!jsListeners.containsKey(event.getEventName()) || !emit(event)) {
+              queuedEvents.add(event);
+            }
+          }
+        });
   }
 
   public void addListener(String eventName) {
@@ -137,9 +138,9 @@ public class ReactNativeFirebaseEventEmitter {
     }
 
     try {
-      reactContext.getJSModule(
-        DeviceEventManagerModule.RCTDeviceEventEmitter.class
-      ).emit("rnfb_" + event.getEventName(), event.getEventBody());
+      reactContext
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit("rnfb_" + event.getEventName(), event.getEventBody());
     } catch (Exception e) {
       Log.wtf("RNFB_EMITTER", "Error sending Event " + event.getEventName(), e);
       return false;

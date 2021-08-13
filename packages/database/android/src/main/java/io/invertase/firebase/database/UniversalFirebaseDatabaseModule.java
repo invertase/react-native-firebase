@@ -17,12 +17,12 @@ package io.invertase.firebase.database;
  *
  */
 
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import io.invertase.firebase.common.UniversalFirebaseModule;
-
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
 
 public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
 
@@ -31,16 +31,18 @@ public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
   }
 
   Task<Void> goOnline(String appName, String dbURL) {
-    return Tasks.call(() -> {
-      getDatabaseForApp(appName, dbURL).goOnline();
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          getDatabaseForApp(appName, dbURL).goOnline();
+          return null;
+        });
   }
 
   Task<Void> goOffline(String appName, String dbURL) {
-    return Tasks.call(() -> {
-      getDatabaseForApp(appName, dbURL).goOffline();
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          getDatabaseForApp(appName, dbURL).goOffline();
+          return null;
+        });
   }
 }

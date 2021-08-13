@@ -22,7 +22,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.inappmessaging.FirebaseInAppMessaging;
 import io.invertase.firebase.common.UniversalFirebaseModule;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,37 +32,38 @@ public class UniversalFirebaseFiamModule extends UniversalFirebaseModule {
   }
 
   Task<Void> setAutomaticDataCollectionEnabled(Boolean enabled) {
-    return Tasks.call(() -> {
-      FirebaseInAppMessaging.getInstance().setAutomaticDataCollectionEnabled(enabled);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseInAppMessaging.getInstance().setAutomaticDataCollectionEnabled(enabled);
+          return null;
+        });
   }
 
   Task<Void> setMessagesDisplaySuppressed(Boolean enabled) {
-    return Tasks.call(() -> {
-      FirebaseInAppMessaging.getInstance().setMessagesSuppressed(enabled);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseInAppMessaging.getInstance().setMessagesSuppressed(enabled);
+          return null;
+        });
   }
 
   Task<Void> triggerEvent(String eventId) {
-    return Tasks.call(() -> {
-      FirebaseInAppMessaging.getInstance().triggerEvent(eventId);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseInAppMessaging.getInstance().triggerEvent(eventId);
+          return null;
+        });
   }
 
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put(
-      "isMessagesDisplaySuppressed",
-      FirebaseInAppMessaging.getInstance().areMessagesSuppressed()
-    );
+        "isMessagesDisplaySuppressed",
+        FirebaseInAppMessaging.getInstance().areMessagesSuppressed());
     constants.put(
-      "isAutomaticDataCollectionEnabled",
-      FirebaseInAppMessaging.getInstance().isAutomaticDataCollectionEnabled()
-    );
+        "isAutomaticDataCollectionEnabled",
+        FirebaseInAppMessaging.getInstance().isAutomaticDataCollectionEnabled());
     return constants;
   }
 }

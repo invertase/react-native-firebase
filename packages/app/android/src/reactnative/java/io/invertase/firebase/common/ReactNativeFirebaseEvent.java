@@ -18,7 +18,6 @@ package io.invertase.firebase.common;
  */
 
 import com.facebook.react.bridge.WritableMap;
-
 import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseEvent implements NativeEvent {

@@ -15,15 +15,15 @@
  *
  */
 #import <Firebase/Firebase.h>
-#import <React/RCTRootView.h>
-#import <React/RCTConvert.h>
-#import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <RNFBApp/RNFBJSON.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <React/RCTConvert.h>
+#import <React/RCTRootView.h>
 
 #import "RNFBMessaging+AppDelegate.h"
+#import "RNFBMessaging+FIRMessagingDelegate.h"
 #import "RNFBMessaging+NSNotificationCenter.h"
 #import "RNFBMessaging+UNUserNotificationCenter.h"
-#import "RNFBMessaging+FIRMessagingDelegate.h"
 
 @implementation RNFBMessagingNSNotificationCenter
 @synthesize isHeadless;
@@ -45,16 +45,23 @@
     // Application
     // JS -> `getInitialNotification`
     // ObjC -> Initialize other delegates & observers
-    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidFinishLaunchingNotification:) name:UIApplicationDidFinishLaunchingNotification object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:strongSelf
+           selector:@selector(application_onDidFinishLaunchingNotification:)
+               name:UIApplicationDidFinishLaunchingNotification
+             object:nil];
 
     // Application
     // ObjC - > Mutates the root React components initialProps to toggle `isHeadless` state
-    [[NSNotificationCenter defaultCenter] addObserver:strongSelf selector:@selector(application_onDidEnterForeground) name:UIApplicationWillEnterForegroundNotification object:nil];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:strongSelf
+                                             selector:@selector(application_onDidEnterForeground)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
   });
 }
 
-// start observing immediately on class load - specifically for UIApplicationDidFinishLaunchingNotification
+// start observing immediately on class load - specifically for
+// UIApplicationDidFinishLaunchingNotification
 + (void)load {
   [[self sharedInstance] observe];
 }
@@ -70,86 +77,96 @@
   [[RNFBMessagingFIRMessagingDelegate sharedInstance] observe];
 
   RCTRootView *rctRootView;
-  if (
-    [UIApplication sharedApplication].delegate != nil &&
-    [UIApplication sharedApplication].delegate.window != nil &&
-    [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
-    [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
-    [[UIApplication sharedApplication].delegate.window.rootViewController.view isKindOfClass:[RCTRootView class]]
-  ) {
-    rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
+  if ([UIApplication sharedApplication].delegate != nil &&
+      [UIApplication sharedApplication].delegate.window != nil &&
+      [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
+      [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
+      [[UIApplication sharedApplication].delegate.window.rootViewController.view
+          isKindOfClass:[RCTRootView class]]) {
+    rctRootView =
+        (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
   }
-  
-  #if !(TARGET_IPHONE_SIMULATOR)
-  if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages" defaultValue:YES]) {
+
+#if !(TARGET_IPHONE_SIMULATOR)
+  if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages"
+                            defaultValue:YES]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
   }
-  #endif
+#endif
 
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
       if (rctRootView != nil) {
         isHeadless = YES;
-        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
+        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
+                                                     ? [rctRootView.appProperties mutableCopy]
+                                                     : [NSMutableDictionary dictionary];
+        if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
+            [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(NO)])]) {
           appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
           rctRootView.appProperties = appPropertiesDict;
         }
       }
-      
-      #if !(TARGET_IPHONE_SIMULATOR)
-      // When an app launches in the background (BG mode) and is launched with the notification launch option the app delegate method
-      // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless registerForRemoteNotifications
-      // was called early during app initialization - we call it here in this scenario as the user can only call this via JS, at which point
-      // it'd be too late resulting in the app being terminated.
-      // called irregardless of `messaging_ios_auto_register_for_remote_messages` as this is most likely an app launching
+
+#if !(TARGET_IPHONE_SIMULATOR)
+      // When an app launches in the background (BG mode) and is launched with the notification
+      // launch option the app delegate method
+      // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless
+      // registerForRemoteNotifications was called early during app initialization - we call it here
+      // in this scenario as the user can only call this via JS, at which point it'd be too late
+      // resulting in the app being terminated. called irregardless of
+      // `messaging_ios_auto_register_for_remote_messages` as this is most likely an app launching
       // as a result of a remote notification - so has been registered previously
       [[UIApplication sharedApplication] registerForRemoteNotifications];
-      #endif
+#endif
     } else {
       if (rctRootView != nil) {
         isHeadless = NO;
-        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-        if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+        NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
+                                                     ? [rctRootView.appProperties mutableCopy]
+                                                     : [NSMutableDictionary dictionary];
+        if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
+            [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
           appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
           rctRootView.appProperties = appPropertiesDict;
         }
-        
       }
     }
   } else {
     if (rctRootView != nil) {
       isHeadless = NO;
-      NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil ? [rctRootView.appProperties mutableCopy] : [NSMutableDictionary dictionary];
-      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+      NSMutableDictionary *appPropertiesDict = rctRootView.appProperties != nil
+                                                   ? [rctRootView.appProperties mutableCopy]
+                                                   : [NSMutableDictionary dictionary];
+      if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
+          [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
         appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
         rctRootView.appProperties = appPropertiesDict;
       }
-      
     }
   }
 }
 
 - (void)application_onDidEnterForeground {
-  if (
-    [UIApplication sharedApplication].delegate != nil &&
-    [UIApplication sharedApplication].delegate.window != nil &&
-    [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
-    [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
-    [[UIApplication sharedApplication].delegate.window.rootViewController.view isKindOfClass:[RCTRootView class]]
-  ) {
-    RCTRootView *rctRootView = (RCTRootView *) [UIApplication sharedApplication].delegate.window.rootViewController.view;
+  if ([UIApplication sharedApplication].delegate != nil &&
+      [UIApplication sharedApplication].delegate.window != nil &&
+      [UIApplication sharedApplication].delegate.window.rootViewController != nil &&
+      [UIApplication sharedApplication].delegate.window.rootViewController.view != nil &&
+      [[UIApplication sharedApplication].delegate.window.rootViewController.view
+          isKindOfClass:[RCTRootView class]]) {
+    RCTRootView *rctRootView =
+        (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
 
     if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
       isHeadless = NO;
-      if([appPropertiesDict objectForKey:@"isHeadless"] != nil && [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
+      if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
+          [appPropertiesDict[@"isHeadless"] isEqual:@([RCTConvert BOOL:@(YES)])]) {
         appPropertiesDict[@"isHeadless"] = @([RCTConvert BOOL:@(isHeadless)]);
         rctRootView.appProperties = appPropertiesDict;
       }
     }
   }
 }
-
 
 @end

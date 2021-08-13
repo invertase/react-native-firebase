@@ -17,5 +17,4 @@
 
 @interface RNFBMLCommon : NSObject
 
-
 @end

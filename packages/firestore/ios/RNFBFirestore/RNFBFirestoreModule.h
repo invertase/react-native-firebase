@@ -15,8 +15,8 @@
  *
  */
 
-#import <Foundation/Foundation.h>
 #import <Firebase/Firebase.h>
+#import <Foundation/Foundation.h>
 #import <RNFBApp/RNFBSharedUtils.h>
 #import <React/RCTBridgeModule.h>
 
