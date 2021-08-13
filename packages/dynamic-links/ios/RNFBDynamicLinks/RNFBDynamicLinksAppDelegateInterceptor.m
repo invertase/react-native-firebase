@@ -28,6 +28,7 @@
     sharedInstance = [[RNFBDynamicLinksAppDelegateInterceptor alloc] init];
     sharedInstance.initialLinkUrl = nil;
     sharedInstance.initialLinkMinimumAppVersion = nil;
+    sharedInstance.initialLinkUtmParametersDictionary = @{};
     [GULAppDelegateSwizzler proxyOriginalDelegate];
     [GULAppDelegateSwizzler registerAppDelegateInterceptor:sharedInstance];
   });
@@ -64,10 +65,12 @@
     if (_initialLinkUrl == nil) {
       _initialLinkUrl = dynamicLink.url.absoluteString;
       _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
+      _initialLinkUtmParametersDictionary = dynamicLink.utmParametersDictionary;
     }
     [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
         @"url": dynamicLink.url.absoluteString,
         @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+        @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{} : dynamicLink.utmParametersDictionary,
     }];
   }
 
@@ -85,10 +88,12 @@
       if (_initialLinkUrl == nil) {
         _initialLinkUrl = dynamicLink.url.absoluteString;
         _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
+        _initialLinkUtmParametersDictionary = dynamicLink.utmParametersDictionary;
       }
       [[RNFBRCTEventEmitter shared] sendEventWithName:LINK_RECEIVED_EVENT body:@{
           @"url": dynamicLink.url.absoluteString,
           @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+          @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{} : dynamicLink.utmParametersDictionary,
       }];
     }
 

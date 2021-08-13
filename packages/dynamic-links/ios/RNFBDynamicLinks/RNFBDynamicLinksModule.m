@@ -129,11 +129,13 @@ RCT_EXPORT_METHOD(getInitialLink:
       resolve(@{
           @"url": dynamicLink.url.absoluteString,
           @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+          @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{} : dynamicLink.utmParametersDictionary,
       });
     } else if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
       resolve(@{
           @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
           @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+          @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary == nil ? @{} : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
       });
     } else {
       resolve([NSNull null]);
@@ -151,11 +153,13 @@ RCT_EXPORT_METHOD(getInitialLink:
         resolve(@{
             @"url": dynamicLink.url.absoluteString,
             @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+            @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{} : dynamicLink.utmParametersDictionary,
         });
       } else if (!error && [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
         resolve(@{
             @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
             @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+            @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary == nil ? @{} : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
         });
       } else if (error) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
@@ -176,6 +180,7 @@ RCT_EXPORT_METHOD(getInitialLink:
     resolve(@{
         @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
         @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+        @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary == nil ? @{} : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
     });
   } else {
     resolve([NSNull null]);
@@ -192,6 +197,7 @@ RCT_EXPORT_METHOD(resolveLink:
         resolve(@{
             @"url": dynamicLink.url.absoluteString,
             @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+            @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{} : dynamicLink.utmParametersDictionary,
         });
     } else if (!error || (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {
       [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
