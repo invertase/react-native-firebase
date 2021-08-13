@@ -15,10 +15,10 @@
  *
  */
 
-#import <objc/runtime.h>
-#import <objc/message.h>
-#import <RNFBApp/RNFBRCTEventEmitter.h>
 #import <GoogleUtilities/GULAppDelegateSwizzler.h>
+#import <RNFBApp/RNFBRCTEventEmitter.h>
+#import <objc/message.h>
+#import <objc/runtime.h>
 
 #import "RNFBMessaging+FIRMessagingDelegate.h"
 #import "RNFBMessagingSerializer.h"
@@ -48,19 +48,22 @@
 
 // JS -> `onTokenRefresh`
 - (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken {
-  if (fcmToken == nil) { // Don't crash when the token is reset
+  if (fcmToken == nil) {  // Don't crash when the token is reset
     return;
   }
-  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh" body:@{
-      @"token": fcmToken
-  }];
+  [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_token_refresh"
+                                             body:@{@"token" : fcmToken}];
 
   // If the users AppDelegate implements messaging:didReceiveRegistrationToken: then call it
   SEL messaging_didReceiveRegistrationTokenSelector =
       NSSelectorFromString(@"messaging:didReceiveRegistrationToken:");
-  if ([[GULAppDelegateSwizzler sharedApplication].delegate respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
-    void (*usersDidReceiveRegistrationTokenIMP)(id, SEL, FIRMessaging *, NSString *) = (typeof(usersDidReceiveRegistrationTokenIMP)) &objc_msgSend;
-    usersDidReceiveRegistrationTokenIMP([GULAppDelegateSwizzler sharedApplication].delegate, messaging_didReceiveRegistrationTokenSelector, messaging, fcmToken);
+  if ([[GULAppDelegateSwizzler sharedApplication].delegate
+          respondsToSelector:messaging_didReceiveRegistrationTokenSelector]) {
+    void (*usersDidReceiveRegistrationTokenIMP)(id, SEL, FIRMessaging *, NSString *) =
+        (typeof(usersDidReceiveRegistrationTokenIMP)) & objc_msgSend;
+    usersDidReceiveRegistrationTokenIMP([GULAppDelegateSwizzler sharedApplication].delegate,
+                                        messaging_didReceiveRegistrationTokenSelector, messaging,
+                                        fcmToken);
   }
 }
 

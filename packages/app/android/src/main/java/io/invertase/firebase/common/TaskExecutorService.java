@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.SynchronousQueue;
 
 public class TaskExecutorService {
   private static final String MAXIMUM_POOL_SIZE_KEY = "android_task_executor_maximum_pool_size";
@@ -60,7 +60,7 @@ public class TaskExecutorService {
 
   public ExecutorService getExecutor(boolean isTransactional, String identifier) {
     String executorName = getExecutorName(isTransactional, identifier);
-    synchronized(executors) {
+    synchronized (executors) {
       ExecutorService existingExecutor = executors.get(executorName);
       if (existingExecutor == null) {
         ExecutorService newExecutor = getNewExecutor(isTransactional);
@@ -75,19 +75,22 @@ public class TaskExecutorService {
     if (isTransactional) {
       return Executors.newSingleThreadExecutor();
     } else {
-      ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(0, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS, new SynchronousQueue<>());
+      ThreadPoolExecutor threadPoolExecutor =
+          new ThreadPoolExecutor(
+              0, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS, new SynchronousQueue<>());
       threadPoolExecutor.setRejectedExecutionHandler(executeInFallback);
       return threadPoolExecutor;
     }
   }
 
-  private final RejectedExecutionHandler executeInFallback = (r, executor) -> {
-    if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
-      return;
-    }
-    ExecutorService fallbackExecutor = getTransactionalExecutor();
-    fallbackExecutor.execute(r);
-  };
+  private final RejectedExecutionHandler executeInFallback =
+      (r, executor) -> {
+        if (executor.isShutdown() || executor.isTerminated() || executor.isTerminating()) {
+          return;
+        }
+        ExecutorService fallbackExecutor = getTransactionalExecutor();
+        fallbackExecutor.execute(r);
+      };
 
   public String getExecutorName(boolean isTransactional, String identifier) {
     if (isTransactional) {
@@ -97,7 +100,7 @@ public class TaskExecutorService {
   }
 
   public void shutdown() {
-    synchronized(executors) {
+    synchronized (executors) {
       List<String> existingExecutorNames = new ArrayList<>(executors.keySet());
       for (String executorName : existingExecutorNames) {
         if (!executorName.startsWith(name)) {
@@ -110,7 +113,7 @@ public class TaskExecutorService {
   }
 
   public void removeExecutor(String executorName) {
-    synchronized(executors) {
+    synchronized (executors) {
       ExecutorService existingExecutor = executors.get(executorName);
       if (existingExecutor != null) {
         existingExecutor.shutdownNow();

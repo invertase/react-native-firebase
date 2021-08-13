@@ -15,7 +15,6 @@
  *
  */
 
-
 #import "RNFBDynamicLinksModule.h"
 #import "RNFBDynamicLinksAppDelegateInterceptor.h"
 
@@ -45,49 +44,53 @@ RCT_EXPORT_MODULE();
   return self;
 }
 
-RCT_EXPORT_METHOD(buildLink:
-  (NSDictionary *) dynamicLinkDict
-    :(RCTPromiseResolveBlock)resolve
-    :(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(buildLink
+                  : (NSDictionary *)dynamicLinkDict
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDynamicLinkComponents *linkComponents;
 
   @try {
     linkComponents = [self createDynamicLinkComponents:dynamicLinkDict];
   } @catch (NSException *exception) {
     DLog(@"Building dynamic link failed %@", exception);
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"build-failed",
-        @"message": [exception description],
-    }];
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"build-failed",
+                                        @"message" : [exception description],
+                                      }];
     return;
   }
 
   if (!linkComponents || !linkComponents.url) {
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"build-failed",
-        @"message": @"Failed to build dynamic link for unknown reason",
-    }];
+    [RNFBSharedUtils
+        rejectPromiseWithUserInfo:reject
+                         userInfo:(NSMutableDictionary *)@{
+                           @"code" : @"build-failed",
+                           @"message" : @"Failed to build dynamic link for unknown reason",
+                         }];
     return;
   }
 
   resolve(linkComponents.url.absoluteString);
 }
 
-RCT_EXPORT_METHOD(buildShortLink:
-  (NSDictionary *) dynamicLinkDict
-    :(NSString *)shortLinkType
-    :(RCTPromiseResolveBlock)resolve
-    :(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(buildShortLink
+                  : (NSDictionary *)dynamicLinkDict
+                  : (NSString *)shortLinkType
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   FIRDynamicLinkComponents *linkComponents;
 
   @try {
     linkComponents = [self createDynamicLinkComponents:dynamicLinkDict];
   } @catch (NSException *exception) {
     DLog(@"Building short dynamic link failed %@", exception);
-    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-        @"code": @"build-failed",
-        @"message": [exception description],
-    }];
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"build-failed",
+                                        @"message" : [exception description],
+                                      }];
     return;
   }
 
@@ -102,13 +105,15 @@ RCT_EXPORT_METHOD(buildShortLink:
   }
   linkComponents.options = componentsOptions;
 
-  [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings, NSError *_Nullable error) {
+  [linkComponents shortenWithCompletion:^(NSURL *_Nullable shortURL, NSArray *_Nullable warnings,
+                                          NSError *_Nullable error) {
     if (error) {
       DLog(@"Building short dynamic link failed %@", error);
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": @"build-failed",
-          @"message": [error localizedDescription],
-      }];
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                        userInfo:(NSMutableDictionary *)@{
+                                          @"code" : @"build-failed",
+                                          @"message" : [error localizedDescription],
+                                        }];
     } else {
       resolve(shortURL.absoluteString);
     }
@@ -116,24 +121,29 @@ RCT_EXPORT_METHOD(buildShortLink:
 }
 
 // TODO refactor to reduce duplication
-RCT_EXPORT_METHOD(getInitialLink:
-  (RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getInitialLink
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   NSDictionary *launchOptions = self.bridge.launchOptions;
 
   if (launchOptions[UIApplicationLaunchOptionsURLKey]) {
-    NSURL *url = (NSURL *) launchOptions[UIApplicationLaunchOptionsURLKey];
-    FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
+    NSURL *url = (NSURL *)launchOptions[UIApplicationLaunchOptionsURLKey];
+    FIRDynamicLink *dynamicLink =
+        [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
 
     if (dynamicLink && dynamicLink.url) {
       resolve(@{
-          @"url": dynamicLink.url.absoluteString,
-          @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+        @"url" : dynamicLink.url.absoluteString,
+        @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil ? [NSNull null]
+                                                                    : dynamicLink.minimumAppVersion,
       });
     } else if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
       resolve(@{
-          @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
-          @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+        @"url" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+        @"minimumAppVersion" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                    .initialLinkMinimumAppVersion == nil
+            ? [NSNull null]
+            : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
       });
     } else {
       resolve([NSNull null]);
@@ -142,76 +152,97 @@ RCT_EXPORT_METHOD(getInitialLink:
     return;
   }
 
-  NSDictionary *userActivityDict = launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
-  if (userActivityDict && [userActivityDict[UIApplicationLaunchOptionsUserActivityTypeKey] isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-    NSUserActivity *userActivity = (NSUserActivity *) userActivityDict[@"UIApplicationLaunchOptionsUserActivityKey"];
+  NSDictionary *userActivityDict =
+      launchOptions[UIApplicationLaunchOptionsUserActivityDictionaryKey];
+  if (userActivityDict && [userActivityDict[UIApplicationLaunchOptionsUserActivityTypeKey]
+                              isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+    NSUserActivity *userActivity =
+        (NSUserActivity *)userActivityDict[@"UIApplicationLaunchOptionsUserActivityKey"];
 
     id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
       if (!error && dynamicLink && dynamicLink.url) {
         resolve(@{
-            @"url": dynamicLink.url.absoluteString,
-            @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
+          @"url" : dynamicLink.url.absoluteString,
+          @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
+              ? [NSNull null]
+              : dynamicLink.minimumAppVersion,
         });
-      } else if (!error && [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
+      } else if (!error &&
+                 [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
         resolve(@{
-            @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
-            @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+          @"url" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+          @"minimumAppVersion" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                      .initialLinkMinimumAppVersion == nil
+              ? [NSNull null]
+              : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                    .initialLinkMinimumAppVersion,
         });
       } else if (error) {
-        [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-            @"code": @"initial-link-error",
-            @"message": [error localizedDescription],
-        }];
+        [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                          userInfo:(NSMutableDictionary *)@{
+                                            @"code" : @"initial-link-error",
+                                            @"message" : [error localizedDescription],
+                                          }];
       } else {
         resolve([NSNull null]);
       }
     };
 
-    [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL completion:completion];
+    [[FIRDynamicLinks dynamicLinks] handleUniversalLink:userActivity.webpageURL
+                                             completion:completion];
 
     return;
   }
 
   if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
     resolve(@{
-        @"url": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
-        @"minimumAppVersion": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion == nil ? [NSNull null] : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+      @"url" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl,
+      @"minimumAppVersion" : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                  .initialLinkMinimumAppVersion == nil
+          ? [NSNull null]
+          : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
     });
   } else {
     resolve([NSNull null]);
   }
 }
 
-RCT_EXPORT_METHOD(resolveLink:
-  (NSString *) link
-    :(RCTPromiseResolveBlock) resolve
-    :(RCTPromiseRejectBlock) reject)
-{
+RCT_EXPORT_METHOD(resolveLink
+                  : (NSString *)link
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
-        resolve(@{
-            @"url": dynamicLink.url.absoluteString,
-            @"minimumAppVersion": dynamicLink.minimumAppVersion == nil ? [NSNull null] : dynamicLink.minimumAppVersion,
-        });
-    } else if (!error || (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": @"not-found",
-          @"message": @"Dynamic link not found"
-      }];
+      resolve(@{
+        @"url" : dynamicLink.url.absoluteString,
+        @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil ? [NSNull null]
+                                                                    : dynamicLink.minimumAppVersion,
+      });
+    } else if (!error ||
+               (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                        userInfo:(NSMutableDictionary *)@{
+                                          @"code" : @"not-found",
+                                          @"message" : @"Dynamic link not found"
+                                        }];
     } else {
-      [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:(NSMutableDictionary *) @{
-          @"code": @"resolve-link-error",
-          @"message":[error localizedDescription]
-      }];
+      [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                        userInfo:(NSMutableDictionary *)@{
+                                          @"code" : @"resolve-link-error",
+                                          @"message" : [error localizedDescription]
+                                        }];
     }
   };
 
-  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:[NSURL URLWithString:link] completion:completion];
+  [[FIRDynamicLinks dynamicLinks] handleUniversalLink:[NSURL URLWithString:link]
+                                           completion:completion];
 }
 
 - (FIRDynamicLinkComponents *)createDynamicLinkComponents:(NSDictionary *)dynamicLinkDict {
   NSURL *link = [NSURL URLWithString:dynamicLinkDict[@"link"]];
-  FIRDynamicLinkComponents *linkComponents = [FIRDynamicLinkComponents componentsWithLink:link domainURIPrefix:dynamicLinkDict[@"domainUriPrefix"]];
+  FIRDynamicLinkComponents *linkComponents =
+      [FIRDynamicLinkComponents componentsWithLink:link
+                                   domainURIPrefix:dynamicLinkDict[@"domainUriPrefix"]];
 
   [self buildAnalyticsParameters:dynamicLinkDict[@"analytics"] components:linkComponents];
   [self buildAndroidParameters:dynamicLinkDict[@"android"] components:linkComponents];
@@ -223,11 +254,12 @@ RCT_EXPORT_METHOD(resolveLink:
   return linkComponents;
 }
 
-
-- (void)buildAnalyticsParameters:(NSDictionary *)analyticsDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildAnalyticsParameters:(NSDictionary *)analyticsDict
+                      components:(FIRDynamicLinkComponents *)linkComponents {
   if (analyticsDict == nil) return;
 
-  FIRDynamicLinkGoogleAnalyticsParameters *analyticsParams = [FIRDynamicLinkGoogleAnalyticsParameters parameters];
+  FIRDynamicLinkGoogleAnalyticsParameters *analyticsParams =
+      [FIRDynamicLinkGoogleAnalyticsParameters parameters];
 
   if (analyticsDict[@"campaign"]) {
     analyticsParams.campaign = analyticsDict[@"campaign"];
@@ -252,10 +284,12 @@ RCT_EXPORT_METHOD(resolveLink:
   linkComponents.analyticsParameters = analyticsParams;
 }
 
-- (void)buildAndroidParameters:(NSDictionary *)androidDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildAndroidParameters:(NSDictionary *)androidDict
+                    components:(FIRDynamicLinkComponents *)linkComponents {
   if (androidDict == nil) return;
 
-  FIRDynamicLinkAndroidParameters *androidParams = [FIRDynamicLinkAndroidParameters parametersWithPackageName:androidDict[@"packageName"]];
+  FIRDynamicLinkAndroidParameters *androidParams =
+      [FIRDynamicLinkAndroidParameters parametersWithPackageName:androidDict[@"packageName"]];
 
   if (androidDict[@"fallbackUrl"]) {
     androidParams.fallbackURL = [NSURL URLWithString:androidDict[@"fallbackUrl"]];
@@ -268,10 +302,12 @@ RCT_EXPORT_METHOD(resolveLink:
   linkComponents.androidParameters = androidParams;
 }
 
-- (void)buildIosParameters:(NSDictionary *)iosDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildIosParameters:(NSDictionary *)iosDict
+                components:(FIRDynamicLinkComponents *)linkComponents {
   if (iosDict == nil) return;
 
-  FIRDynamicLinkIOSParameters *iOSParams = [FIRDynamicLinkIOSParameters parametersWithBundleID:iosDict[@"bundleId"]];
+  FIRDynamicLinkIOSParameters *iOSParams =
+      [FIRDynamicLinkIOSParameters parametersWithBundleID:iosDict[@"bundleId"]];
 
   if (iosDict[@"appStoreId"]) {
     iOSParams.appStoreID = iosDict[@"appStoreId"];
@@ -300,10 +336,12 @@ RCT_EXPORT_METHOD(resolveLink:
   linkComponents.iOSParameters = iOSParams;
 }
 
-- (void)buildItunesParameters:(NSDictionary *)itunesDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildItunesParameters:(NSDictionary *)itunesDict
+                   components:(FIRDynamicLinkComponents *)linkComponents {
   if (itunesDict == nil) return;
 
-  FIRDynamicLinkItunesConnectAnalyticsParameters *itunesParams = [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
+  FIRDynamicLinkItunesConnectAnalyticsParameters *itunesParams =
+      [FIRDynamicLinkItunesConnectAnalyticsParameters parameters];
 
   if (itunesDict[@"affiliateToken"]) {
     itunesParams.affiliateToken = itunesDict[@"affiliateToken"];
@@ -320,10 +358,12 @@ RCT_EXPORT_METHOD(resolveLink:
   linkComponents.iTunesConnectParameters = itunesParams;
 }
 
-- (void)buildNavigationParameters:(NSDictionary *)navigationDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildNavigationParameters:(NSDictionary *)navigationDict
+                       components:(FIRDynamicLinkComponents *)linkComponents {
   if (navigationDict == nil) return;
 
-  FIRDynamicLinkNavigationInfoParameters *navigationParams = [FIRDynamicLinkNavigationInfoParameters parameters];
+  FIRDynamicLinkNavigationInfoParameters *navigationParams =
+      [FIRDynamicLinkNavigationInfoParameters parameters];
 
   if (navigationDict[@"forcedRedirectEnabled"]) {
     navigationParams.forcedRedirectEnabled = [navigationDict[@"forcedRedirectEnabled"] boolValue];
@@ -332,10 +372,12 @@ RCT_EXPORT_METHOD(resolveLink:
   linkComponents.navigationInfoParameters = navigationParams;
 }
 
-- (void)buildSocialParameters:(NSDictionary *)socialDict components:(FIRDynamicLinkComponents *)linkComponents {
+- (void)buildSocialParameters:(NSDictionary *)socialDict
+                   components:(FIRDynamicLinkComponents *)linkComponents {
   if (socialDict == nil) return;
 
-  FIRDynamicLinkSocialMetaTagParameters *socialParams = [FIRDynamicLinkSocialMetaTagParameters parameters];
+  FIRDynamicLinkSocialMetaTagParameters *socialParams =
+      [FIRDynamicLinkSocialMetaTagParameters parameters];
   if (socialDict[@"descriptionText"]) {
     socialParams.descriptionText = socialDict[@"descriptionText"];
   }
@@ -350,7 +392,6 @@ RCT_EXPORT_METHOD(resolveLink:
 
   linkComponents.socialMetaTagParameters = socialParams;
 }
-
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[];

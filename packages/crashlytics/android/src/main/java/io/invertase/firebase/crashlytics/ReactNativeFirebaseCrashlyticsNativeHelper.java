@@ -15,5 +15,4 @@ public class ReactNativeFirebaseCrashlyticsNativeHelper {
   public static void setCustomKey(String key, String value) {
     FirebaseCrashlytics.getInstance().setCustomKey(key, value);
   }
-
 }

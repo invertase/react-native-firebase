@@ -37,22 +37,24 @@
 
 + (NSData *)NSDataFromUploadString:(NSString *)string format:(NSString *)format;
 
-+ (void)NSURLForLocalFilePath:(NSString *)localFilePath completion:(void (^)(
-    NSArray *errorCodeMessageArray,
-    NSURL *temporaryFileUrl,
-    NSString *contentType
-))completion;
++ (void)NSURLForLocalFilePath:(NSString *)localFilePath
+                   completion:(void (^)(NSArray *errorCodeMessageArray, NSURL *temporaryFileUrl,
+                                        NSString *contentType))completion;
 
-+ (void)downloadAsset:(PHAsset *)asset toURL:(NSURL *)url completion:(void (^)(
-    NSArray *errorCodeMessageArray,
-    NSString *contentType
-))completion;
++ (void)downloadAsset:(PHAsset *)asset
+                toURL:(NSURL *)url
+           completion:(void (^)(NSArray *errorCodeMessageArray, NSString *contentType))completion;
 
-+ (NSDictionary *)getStorageEventDictionary:(NSDictionary *)eventBody internalEventName:(NSString *)internalEventName appName:(NSString *)appName taskId:(NSNumber *)taskId;
++ (NSDictionary *)getStorageEventDictionary:(NSDictionary *)eventBody
+                          internalEventName:(NSString *)internalEventName
+                                    appName:(NSString *)appName
+                                     taskId:(NSNumber *)taskId;
 
-+ (NSDictionary *)buildErrorSnapshotDict:(NSError *)error taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict;
++ (NSDictionary *)buildErrorSnapshotDict:(NSError *)error
+                        taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict;
 
-+ (NSDictionary *)buildErrorSnapshotDictFromCodeAndMessage:(NSArray *)codeAndMessage taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict;
++ (NSDictionary *)buildErrorSnapshotDictFromCodeAndMessage:(NSArray *)codeAndMessage
+                                          taskSnapshotDict:(NSMutableDictionary *)taskSnapshotDict;
 
 + (NSMutableDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task;
 
@@ -65,4 +67,3 @@
 + (NSArray *)getErrorCodeMessage:(NSError *)error;
 
 @end
-

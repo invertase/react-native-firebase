@@ -19,8 +19,6 @@ package io.invertase.firebase.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 
 public class UniversalFirebasePreferences {
@@ -76,15 +74,15 @@ public class UniversalFirebasePreferences {
     getPreferences().edit().clear().apply();
   }
 
-  public SharedPreferences.Editor remove(String key){
+  public SharedPreferences.Editor remove(String key) {
     return getPreferences().edit().remove(key);
   }
 
   private SharedPreferences getPreferences() {
     if (preferences == null) {
-      preferences = ReactNativeFirebaseApp
-        .getApplicationContext()
-        .getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+      preferences =
+          ReactNativeFirebaseApp.getApplicationContext()
+              .getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
     return preferences;
   }

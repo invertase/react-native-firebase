@@ -17,27 +17,32 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
+import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
 
 import com.facebook.react.bridge.Promise;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-
 import io.invertase.firebase.common.UniversalFirebasePreferences;
-
-import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithCodeAndMessage;
-import static io.invertase.firebase.common.ReactNativeFirebaseModule.rejectPromiseWithExceptionMap;
 
 class ReactNativeFirebaseFirestoreCommon {
   static void rejectPromiseFirestoreException(Promise promise, Exception exception) {
     if (exception instanceof FirebaseFirestoreException) {
-      UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException((FirebaseFirestoreException) exception, exception.getCause());
-      rejectPromiseWithCodeAndMessage(promise, universalException.getCode(), universalException.getMessage());
-    } else if (exception.getCause() != null && exception.getCause() instanceof FirebaseFirestoreException) {
-      UniversalFirebaseFirestoreException universalException = new UniversalFirebaseFirestoreException(
-        (FirebaseFirestoreException) exception.getCause(),
-        exception.getCause().getCause() != null ? exception.getCause().getCause() : exception.getCause()
-      );
-      rejectPromiseWithCodeAndMessage(promise, universalException.getCode(), universalException.getMessage());
+      UniversalFirebaseFirestoreException universalException =
+          new UniversalFirebaseFirestoreException(
+              (FirebaseFirestoreException) exception, exception.getCause());
+      rejectPromiseWithCodeAndMessage(
+          promise, universalException.getCode(), universalException.getMessage());
+    } else if (exception.getCause() != null
+        && exception.getCause() instanceof FirebaseFirestoreException) {
+      UniversalFirebaseFirestoreException universalException =
+          new UniversalFirebaseFirestoreException(
+              (FirebaseFirestoreException) exception.getCause(),
+              exception.getCause().getCause() != null
+                  ? exception.getCause().getCause()
+                  : exception.getCause());
+      rejectPromiseWithCodeAndMessage(
+          promise, universalException.getCode(), universalException.getMessage());
     } else {
       rejectPromiseWithExceptionMap(promise, exception);
     }
@@ -45,7 +50,8 @@ class ReactNativeFirebaseFirestoreCommon {
 
   static DocumentSnapshot.ServerTimestampBehavior getServerTimestampBehavior(String appName) {
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
-    String key = UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + appName;
+    String key =
+        UniversalFirebaseFirestoreStatics.FIRESTORE_SERVER_TIMESTAMP_BEHAVIOR + "_" + appName;
     String behavior = preferences.getStringValue(key, "none");
 
     if ("estimate".equals(behavior)) {

@@ -17,19 +17,13 @@ package io.invertase.firebase.analytics;
  *
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.analytics.FirebaseAnalytics;
-
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import io.invertase.firebase.common.UniversalFirebaseModule;
+import java.util.Set;
 
 @SuppressWarnings("WeakerAccess")
 public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
@@ -39,24 +33,27 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
   }
 
   Task<Void> logEvent(String name, Bundle parameters) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).logEvent(name, parameters);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).logEvent(name, parameters);
+          return null;
+        });
   }
 
   Task<Void> setAnalyticsCollectionEnabled(Boolean enabled) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).setAnalyticsCollectionEnabled(enabled);
+          return null;
+        });
   }
 
   Task<Void> setSessionTimeoutDuration(long milliseconds) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration(milliseconds);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).setSessionTimeoutDuration(milliseconds);
+          return null;
+        });
   }
 
   Task<String> getAppInstanceId() {
@@ -64,43 +61,48 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
   }
 
   Task<Void> setUserId(String id) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setUserId(id);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).setUserId(id);
+          return null;
+        });
   }
 
   Task<Void> setUserProperty(String name, String value) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).setUserProperty(name, value);
+          return null;
+        });
   }
 
   Task<Void> setUserProperties(Bundle properties) {
-    return Tasks.call(() -> {
-      Set<String> bundleKeys = properties.keySet();
-      FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+    return Tasks.call(
+        () -> {
+          Set<String> bundleKeys = properties.keySet();
+          FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
-      for (String bundleKey : bundleKeys) {
-        firebaseAnalytics.setUserProperty(bundleKey, (String) properties.get(bundleKey));
-      }
+          for (String bundleKey : bundleKeys) {
+            firebaseAnalytics.setUserProperty(bundleKey, (String) properties.get(bundleKey));
+          }
 
-      return null;
-    });
+          return null;
+        });
   }
 
   Task<Void> resetAnalyticsData() {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).resetAnalyticsData();
+          return null;
+        });
   }
 
   Task<Void> setDefaultEventParameters(Bundle parameters) {
-    return Tasks.call(() -> {
-      FirebaseAnalytics.getInstance(getContext()).setDefaultEventParameters(parameters);
-      return null;
-    });
+    return Tasks.call(
+        () -> {
+          FirebaseAnalytics.getInstance(getContext()).setDefaultEventParameters(parameters);
+          return null;
+        });
   }
 }

@@ -22,7 +22,6 @@ import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Logger;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
-
 import java.util.HashMap;
 
 public class UniversalFirebaseDatabaseCommon {
@@ -48,27 +47,27 @@ public class UniversalFirebaseDatabaseCommon {
 
     HashMap emulatorConfig = getEmulatorConfig(appName, dbURL);
     if (emulatorConfig != null) {
-      firebaseDatabase.useEmulator((String)emulatorConfig.get("host"), (Integer)emulatorConfig.get("port"));
+      firebaseDatabase.useEmulator(
+          (String) emulatorConfig.get("host"), (Integer) emulatorConfig.get("port"));
     }
 
     return firebaseDatabase;
   }
 
-  private static void setDatabaseConfig(FirebaseDatabase firebaseDatabase, String appName, String dbURL) {
+  private static void setDatabaseConfig(
+      FirebaseDatabase firebaseDatabase, String appName, String dbURL) {
     String lockKey = appName + dbURL;
     if (configSettingsLock.containsKey(lockKey)) return;
 
     UniversalFirebasePreferences preferences = UniversalFirebasePreferences.getSharedInstance();
 
     try {
-      boolean persistenceEnabled = preferences.getBooleanValue(
-        UniversalDatabaseStatics.DATABASE_PERSISTENCE_ENABLED, false
-      );
+      boolean persistenceEnabled =
+          preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_PERSISTENCE_ENABLED, false);
       firebaseDatabase.setPersistenceEnabled(persistenceEnabled);
 
-      boolean loggingEnabled = preferences.getBooleanValue(
-        UniversalDatabaseStatics.DATABASE_LOGGING_ENABLED, false
-      );
+      boolean loggingEnabled =
+          preferences.getBooleanValue(UniversalDatabaseStatics.DATABASE_LOGGING_ENABLED, false);
 
       if (loggingEnabled) {
         firebaseDatabase.setLogLevel(Logger.Level.DEBUG);
@@ -77,12 +76,14 @@ public class UniversalFirebaseDatabaseCommon {
       }
 
       if (preferences.contains(UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE)) {
-        firebaseDatabase.setPersistenceCacheSizeBytes(preferences.getLongValue(
-          UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE, 10485760L)
-        );
+        firebaseDatabase.setPersistenceCacheSizeBytes(
+            preferences.getLongValue(
+                UniversalDatabaseStatics.DATABASE_PERSISTENCE_CACHE_SIZE, 10485760L));
       }
     } catch (DatabaseException exception) {
-      if (!exception.getMessage().contains("must be made before any other usage of FirebaseDatabase")) {
+      if (!exception
+          .getMessage()
+          .contains("must be made before any other usage of FirebaseDatabase")) {
         throw exception;
       }
     }

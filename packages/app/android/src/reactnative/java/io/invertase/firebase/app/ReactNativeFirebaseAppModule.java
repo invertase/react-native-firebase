@@ -23,12 +23,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import io.invertase.firebase.common.RCTConvertFirebase;
 import io.invertase.firebase.common.ReactNativeFirebaseEvent;
 import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
@@ -36,6 +30,10 @@ import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   private static final String TAG = "App";
@@ -52,10 +50,8 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void initializeApp(ReadableMap options, ReadableMap appConfig, Promise promise) {
-    FirebaseApp firebaseApp = RCTConvertFirebase.readableMapToFirebaseApp(
-      options, appConfig,
-      getContext()
-    );
+    FirebaseApp firebaseApp =
+        RCTConvertFirebase.readableMapToFirebaseApp(options, appConfig, getContext());
 
     WritableMap firebaseAppMap = RCTConvertFirebase.firebaseAppToWritableMap(firebaseApp);
     promise.resolve(firebaseAppMap);
@@ -93,10 +89,9 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void eventsPing(String eventName, ReadableMap eventBody, Promise promise) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
-    emitter.sendEvent(new ReactNativeFirebaseEvent(
-      eventName,
-      RCTConvertFirebase.readableMapToWritableMap(eventBody)
-    ));
+    emitter.sendEvent(
+        new ReactNativeFirebaseEvent(
+            eventName, RCTConvertFirebase.readableMapToWritableMap(eventBody)));
     promise.resolve(RCTConvertFirebase.readableMapToWritableMap(eventBody));
   }
 
@@ -112,34 +107,19 @@ public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
     emitter.removeListener(eventName, all);
   }
 
-  /**
-   * ------------------
-   *       META
-   * ------------------
-   */
-
+  /** ------------------ META ------------------ */
   @ReactMethod
   public void metaGetAll(Promise promise) {
     promise.resolve(ReactNativeFirebaseMeta.getSharedInstance().getAll());
   }
 
-  /**
-   * ------------------
-   *       JSON
-   * ------------------
-   */
-
+  /** ------------------ JSON ------------------ */
   @ReactMethod
   public void jsonGetAll(Promise promise) {
     promise.resolve(ReactNativeFirebaseJSON.getSharedInstance().getAll());
   }
 
-  /**
-   * ------------------
-   *    PREFERENCES
-   * ------------------
-   */
-
+  /** ------------------ PREFERENCES ------------------ */
   @ReactMethod
   public void preferencesSetBool(String key, boolean value, Promise promise) {
     ReactNativeFirebasePreferences.getSharedInstance().setBooleanValue(key, value);

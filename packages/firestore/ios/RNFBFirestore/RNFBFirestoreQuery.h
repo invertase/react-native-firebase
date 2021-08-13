@@ -16,9 +16,9 @@
  *
  */
 
-#import <React/RCTBridgeModule.h>
 #import <Firebase/Firebase.h>
 #import <RNFBFirestoreSerialize.h>
+#import <React/RCTBridgeModule.h>
 
 @interface RNFBFirestoreQuery : NSObject
 
@@ -30,6 +30,10 @@
 
 - (FIRQuery *)instance;
 
-- (id)initWithModifiers:(FIRFirestore *)firestore query:(FIRQuery *)query filters:(NSArray *)filters orders:(NSArray *)orders options:(NSDictionary *)options;
+- (id)initWithModifiers:(FIRFirestore *)firestore
+                  query:(FIRQuery *)query
+                filters:(NSArray *)filters
+                 orders:(NSArray *)orders
+                options:(NSDictionary *)options;
 
 @end

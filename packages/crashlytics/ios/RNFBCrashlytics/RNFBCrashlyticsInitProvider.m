@@ -15,46 +15,53 @@
  *
  */
 
-#import <FirebaseCore/FIRAppInternal.h>
-#import <Firebase/Firebase.h>
 #import "RNFBCrashlyticsInitProvider.h"
-#import "RNFBPreferences.h"
+#import <Firebase/Firebase.h>
+#import <FirebaseCore/FIRAppInternal.h>
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
-#import "RNFBVersion.h"
+#import "RNFBPreferences.h"
 #import "RNFBSharedUtils.h"
+#import "RNFBVersion.h"
 
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";
 NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_collection_enabled";
-NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED = @"crashlytics_is_error_generation_on_js_crash_enabled";
-NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED = @"crashlytics_javascript_exception_handler_chaining_enabled";
+NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED =
+    @"crashlytics_is_error_generation_on_js_crash_enabled";
+NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
+    @"crashlytics_javascript_exception_handler_chaining_enabled";
 
 @implementation RNFBCrashlyticsInitProvider
 
 + (void)load {
-  [FIRApp registerInternalLibrary:self withName:@"react-native-firebase-crashlytics" withVersion:RNFBVersionString];
+  [FIRApp registerInternalLibrary:self
+                         withName:@"react-native-firebase-crashlytics"
+                      withVersion:RNFBVersionString];
 }
 
 + (BOOL)isCrashlyticsCollectionEnabled {
   BOOL enabled;
 
   if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
-    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
+    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED
+                                           defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled via RNFBPreferences: %d", enabled);
   } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
+    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED
+                                    defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled via RNFBJSON: %d", enabled);
   } else {
     // Note that if we're here, and the key is not set on the app's bundle, we default to "YES"
     enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled via RNFBMeta: %d", enabled);
   }
-  
+
 #ifdef DEBUG
   if (![[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_DEBUG_ENABLED defaultValue:NO]) {
     enabled = NO;
   }
-  DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled after checking RNFBJSON %@: %d", KEY_CRASHLYTICS_DEBUG_ENABLED, enabled);
+  DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled after checking RNFBJSON %@: %d",
+       KEY_CRASHLYTICS_DEBUG_ENABLED, enabled);
 #endif
 
   DLog(@"RNFBCrashlyticsInit isCrashlyticsCollectionEnabled final value: %d", enabled);
@@ -66,14 +73,19 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED = 
   BOOL enabled;
 
   if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED]) {
-    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    enabled = [[RNFBPreferences shared]
+        getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED
+           defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isErrorGenerationOnJSCrashEnabled via RNFBPreferences: %d", enabled);
   } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    enabled =
+        [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED
+                              defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isErrorGenerationOnJSCrashEnabled via RNFBJSON: %d", enabled);
   } else {
     // Note that if we're here, and the key is not set on the app's bundle, we default to "YES"
-    enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED defaultValue:YES];
+    enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED
+                           defaultValue:YES];
     DLog(@"RNFBCrashlyticsInit isErrorGenerationOnJSCrashEnabled via RNFBMeta: %d", enabled);
   }
 
@@ -85,19 +97,35 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED = 
 + (BOOL)isCrashlyticsJavascriptExceptionHandlerChainingEnabled {
   BOOL enabled;
 
-  if ([[RNFBPreferences shared] contains:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED]) {
-    enabled = [[RNFBPreferences shared] getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED defaultValue:YES];
-    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBPreferences: %d", enabled);
-  } else if ([[RNFBJSON shared] contains:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED]) {
-    enabled = [[RNFBJSON shared] getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED defaultValue:YES];
-    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBJSON: %d", enabled);
+  if ([[RNFBPreferences shared]
+          contains:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED]) {
+    enabled = [[RNFBPreferences shared]
+        getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED
+           defaultValue:YES];
+    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via "
+         @"RNFBPreferences: %d",
+         enabled);
+  } else if ([[RNFBJSON shared]
+                 contains:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED]) {
+    enabled = [[RNFBJSON shared]
+        getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED
+           defaultValue:YES];
+    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via "
+         @"RNFBJSON: %d",
+         enabled);
   } else {
     // Note that if we're here, and the key is not set on the app's bundle, we default to "YES"
-    enabled = [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED defaultValue:YES];
-    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via RNFBMeta: %d", enabled);
+    enabled =
+        [RNFBMeta getBooleanValue:KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED
+                     defaultValue:YES];
+    DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled via "
+         @"RNFBMeta: %d",
+         enabled);
   }
 
-  DLog(@"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled final value: %d", enabled);
+  DLog(
+      @"RNFBCrashlyticsInit isCrashlyticsJavascriptExceptionHandlerChainingEnabled final value: %d",
+      enabled);
 
   return enabled;
 }
@@ -107,17 +135,21 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED = 
 }
 
 /*
- * configureWithApp is automatically invoked by Firebase as this app is a registered FIRLibrary with the SDK.
+ * configureWithApp is automatically invoked by Firebase as this app is a registered FIRLibrary with
+ * the SDK.
  *
- * At this point "configure" has already been called on the FIRApp instance. This behavior is meant to mirror
- * what is done in ReactNativeFirebaseCrashlyticsInitProvider.java
+ * At this point "configure" has already been called on the FIRApp instance. This behavior is meant
+ * to mirror what is done in ReactNativeFirebaseCrashlyticsInitProvider.java
  *
- * This pattern may not be supported long term https://github.com/firebase/firebase-ios-sdk/issues/2933
+ * This pattern may not be supported long term
+ * https://github.com/firebase/firebase-ios-sdk/issues/2933
  */
 + (void)configureWithApp:(FIRApp *)app {
-  // This setting is sticky. setCrashlyticsCollectionEnabled persists the setting to disk until it is explicitly set otherwise or the app is deleted.
-  // Jump to the setCrashlyticsCollectionEnabled definition to see implementation details.
-  [[FIRCrashlytics crashlytics] setCrashlyticsCollectionEnabled:self.isCrashlyticsCollectionEnabled];
+  // This setting is sticky. setCrashlyticsCollectionEnabled persists the setting to disk until it
+  // is explicitly set otherwise or the app is deleted. Jump to the setCrashlyticsCollectionEnabled
+  // definition to see implementation details.
+  [[FIRCrashlytics crashlytics]
+      setCrashlyticsCollectionEnabled:self.isCrashlyticsCollectionEnabled];
   DLog(@"RNFBCrashlyticsInit initialization successful");
 }
 

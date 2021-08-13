@@ -18,7 +18,6 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTEventEmitter.h>
 
-
 /**
  * Listeners for Firebase events and emits them to the JS layer
  */

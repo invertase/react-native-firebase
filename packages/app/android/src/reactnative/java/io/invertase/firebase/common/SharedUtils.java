@@ -27,14 +27,13 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.annotation.Nullable;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @SuppressWarnings({"unused", "JavaDoc", "WeakerAccess"})
 public class SharedUtils {
@@ -52,13 +51,13 @@ public class SharedUtils {
   private static final String REACT_NATIVE_CORE_PACKAGE = "com.facebook.react.bridge";
 
   public static int[] rectToIntArray(@Nullable Rect rect) {
-    if (rect == null || rect.isEmpty()) return new int[]{};
-    return new int[]{rect.left, rect.top, rect.right, rect.bottom};
+    if (rect == null || rect.isEmpty()) return new int[] {};
+    return new int[] {rect.left, rect.top, rect.right, rect.bottom};
   }
 
   public static int[] pointToIntArray(@Nullable Point point) {
-    if (point == null) return new int[]{};
-    return new int[]{point.x, point.y};
+    if (point == null) return new int[] {};
+    return new int[] {point.x, point.y};
   }
 
   public static List<int[]> pointsToIntsList(@Nullable Point[] points) {
@@ -72,9 +71,7 @@ public class SharedUtils {
     return pointsList;
   }
 
-  /**
-   * Create a Uri from the path, defaulting to file when there is no supplied scheme
-   */
+  /** Create a Uri from the path, defaulting to file when there is no supplied scheme */
   public static Uri getUri(String uri) {
     Uri parsed = Uri.parse(uri);
 
@@ -84,7 +81,6 @@ public class SharedUtils {
 
     return parsed;
   }
-
 
   public static WritableMap getExceptionMap(Exception exception) {
     WritableMap exceptionMap = Arguments.createMap();
@@ -104,14 +100,12 @@ public class SharedUtils {
     return format.format(millisTimestamp);
   }
 
-  /**
-   * send a JS event
-   **/
+  /** send a JS event */
   public static void sendEvent(final ReactContext context, final String eventName, Object body) {
     if (context != null) {
       context
-        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(eventName, body);
+          .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+          .emit(eventName, body);
     } else {
       Log.d(TAG, "Missing context - cannot send event!");
     }
@@ -125,16 +119,19 @@ public class SharedUtils {
    * @return boolean
    */
   public static boolean isAppInForeground(Context context) {
-    ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+    ActivityManager activityManager =
+        (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
     if (activityManager == null) return false;
 
-    List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+    List<ActivityManager.RunningAppProcessInfo> appProcesses =
+        activityManager.getRunningAppProcesses();
     if (appProcesses == null) return false;
 
     // Check if current activity is a background activity
     ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
     if (json.contains("android_background_activity_names")) {
-      ArrayList<String> backgroundActivities = json.getArrayValue("android_background_activity_names");
+      ArrayList<String> backgroundActivities =
+          json.getArrayValue("android_background_activity_names");
 
       if (backgroundActivities.size() != 0) {
         String currentActivity = "";
@@ -145,9 +142,10 @@ public class SharedUtils {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
               currentActivity = task.baseActivity.getShortClassName();
             } else {
-              currentActivity = task.origActivity != null ?
-                task.origActivity.getShortClassName() :
-                task.baseIntent.getComponent().getShortClassName();
+              currentActivity =
+                  task.origActivity != null
+                      ? task.origActivity.getShortClassName()
+                      : task.baseIntent.getComponent().getShortClassName();
             }
           }
         } else {
@@ -165,10 +163,8 @@ public class SharedUtils {
 
     final String packageName = context.getPackageName();
     for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
-      if (
-        appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-          && appProcess.processName.equals(packageName)
-      ) {
+      if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+          && appProcess.processName.equals(packageName)) {
         ReactContext reactContext;
 
         try {
@@ -186,9 +182,7 @@ public class SharedUtils {
   }
 
   public static int getResId(Context ctx, String resName) {
-    int resourceId = ctx
-      .getResources()
-      .getIdentifier(resName, "string", ctx.getPackageName());
+    int resourceId = ctx.getResources().getIdentifier(resName, "string", ctx.getPackageName());
 
     if (resourceId == 0) {
       Log.e(TAG, "resource " + resName + " could not be found");
@@ -245,10 +239,7 @@ public class SharedUtils {
     // ProGuard is surprisingly smart in this case and will keep a class if it detects a call to
     // Class.forName() with a static string. So instead we generate a quasi-dynamic string to
     // confuse it.
-    String fullName = new StringBuilder(packageName)
-      .append(".")
-      .append(className)
-      .toString();
+    String fullName = new StringBuilder(packageName).append(".").append(className).toString();
 
     try {
       Class.forName(fullName);
@@ -432,7 +423,6 @@ public class SharedUtils {
         }
     }
   }
-
 
   /**
    * Convert a ReadableMap to a WritableMap for the purposes of re-sending back to JS

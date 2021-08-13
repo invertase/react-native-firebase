@@ -17,9 +17,11 @@ package io.invertase.firebase.firestore;
  *
  */
 
+import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
+import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.getServerTimestampBehavior;
+
 import android.util.Base64;
 import android.util.Log;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -39,17 +41,12 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SnapshotMetadata;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
-
-import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreCommon.getServerTimestampBehavior;
-import static io.invertase.firebase.common.RCTConvertFirebase.toHashMap;
 
 // public access for native re-use in brownfield apps
 public class ReactNativeFirebaseFirestoreSerialize {
@@ -113,11 +110,13 @@ public class ReactNativeFirebaseFirestoreSerialize {
     documentMap.putString(KEY_PATH, documentSnapshot.getReference().getPath());
     documentMap.putBoolean(KEY_EXISTS, documentSnapshot.exists());
 
-    DocumentSnapshot.ServerTimestampBehavior timestampBehavior = getServerTimestampBehavior(appName);
+    DocumentSnapshot.ServerTimestampBehavior timestampBehavior =
+        getServerTimestampBehavior(appName);
 
     if (documentSnapshot.exists()) {
       if (documentSnapshot.getData(timestampBehavior) != null) {
-        documentMap.putMap(KEY_DATA, objectMapToWritable(documentSnapshot.getData(timestampBehavior)));
+        documentMap.putMap(
+            KEY_DATA, objectMapToWritable(documentSnapshot.getData(timestampBehavior)));
       }
     }
 
@@ -130,7 +129,11 @@ public class ReactNativeFirebaseFirestoreSerialize {
    * @param querySnapshot QuerySnapshot
    * @return WritableMap
    */
-  static WritableMap snapshotToWritableMap(String appName, String source, QuerySnapshot querySnapshot, @Nullable MetadataChanges metadataChanges) {
+  static WritableMap snapshotToWritableMap(
+      String appName,
+      String source,
+      QuerySnapshot querySnapshot,
+      @Nullable MetadataChanges metadataChanges) {
     WritableMap writableMap = Arguments.createMap();
     writableMap.putString("source", source);
 
@@ -143,14 +146,19 @@ public class ReactNativeFirebaseFirestoreSerialize {
       // If not listening to metadata changes, send the data back to JS land with a flag
       // indicating the data does not include these changes
       writableMap.putBoolean("excludesMetadataChanges", true);
-      writableMap.putArray(KEY_CHANGES, documentChangesToWritableArray(appName, documentChangesList, null));
+      writableMap.putArray(
+          KEY_CHANGES, documentChangesToWritableArray(appName, documentChangesList, null));
     } else {
       // If listening to metadata changes, get the changes list with document changes array.
       // To indicate whether a document change was because of metadata change, we check whether
       // its in the raw list by document key.
       writableMap.putBoolean("excludesMetadataChanges", false);
-      List<DocumentChange> documentMetadataChangesList = querySnapshot.getDocumentChanges(MetadataChanges.INCLUDE);
-      writableMap.putArray(KEY_CHANGES, documentChangesToWritableArray(appName, documentMetadataChangesList, documentChangesList));
+      List<DocumentChange> documentMetadataChangesList =
+          querySnapshot.getDocumentChanges(MetadataChanges.INCLUDE);
+      writableMap.putArray(
+          KEY_CHANGES,
+          documentChangesToWritableArray(
+              appName, documentMetadataChangesList, documentChangesList));
     }
 
     SnapshotMetadata snapshotMetadata = querySnapshot.getMetadata();
@@ -177,7 +185,10 @@ public class ReactNativeFirebaseFirestoreSerialize {
    * @param documentChanges List<DocumentChange>
    * @return WritableArray
    */
-  private static WritableArray documentChangesToWritableArray(String appName, List<DocumentChange> documentChanges, @Nullable List<DocumentChange> comparableDocumentChanges) {
+  private static WritableArray documentChangesToWritableArray(
+      String appName,
+      List<DocumentChange> documentChanges,
+      @Nullable List<DocumentChange> comparableDocumentChanges) {
     WritableArray documentChangesWritable = Arguments.createArray();
 
     boolean checkIfMetadataChange = comparableDocumentChanges != null;
@@ -186,7 +197,10 @@ public class ReactNativeFirebaseFirestoreSerialize {
       boolean isMetadataChange = false;
       if (checkIfMetadataChange) {
         int hashCode = documentChange.hashCode();
-        DocumentChange exists = Iterables.tryFind(comparableDocumentChanges, docChange -> docChange.hashCode() == hashCode).orNull();
+        DocumentChange exists =
+            Iterables.tryFind(
+                    comparableDocumentChanges, docChange -> docChange.hashCode() == hashCode)
+                .orNull();
 
         // Exists in docChanges with meta, but doesnt exist in docChanges without meta
         if (exists == null) {
@@ -194,7 +208,8 @@ public class ReactNativeFirebaseFirestoreSerialize {
         }
       }
 
-      documentChangesWritable.pushMap(documentChangeToWritableMap(appName, documentChange, isMetadataChange));
+      documentChangesWritable.pushMap(
+          documentChangeToWritableMap(appName, documentChange, isMetadataChange));
     }
 
     return documentChangesWritable;
@@ -206,7 +221,8 @@ public class ReactNativeFirebaseFirestoreSerialize {
    * @param documentChange DocumentChange
    * @return WritableMap
    */
-  private static WritableMap documentChangeToWritableMap(String appName, DocumentChange documentChange, boolean isMetadataChange) {
+  private static WritableMap documentChangeToWritableMap(
+      String appName, DocumentChange documentChange, boolean isMetadataChange) {
     WritableMap documentChangeMap = Arguments.createMap();
     documentChangeMap.putBoolean("isMetadataChange", isMetadataChange);
 
@@ -223,9 +239,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
     }
 
     documentChangeMap.putMap(
-      KEY_DOC_CHANGE_DOCUMENT,
-      snapshotToWritableMap(appName, documentChange.getDocument())
-    );
+        KEY_DOC_CHANGE_DOCUMENT, snapshotToWritableMap(appName, documentChange.getDocument()));
 
     documentChangeMap.putInt(KEY_DOC_CHANGE_NEW_INDEX, documentChange.getNewIndex());
     documentChangeMap.putInt(KEY_DOC_CHANGE_OLD_INDEX, documentChange.getOldIndex());
@@ -389,17 +403,15 @@ public class ReactNativeFirebaseFirestoreSerialize {
   }
 
   /**
-   * Converts a ReadableMap to a usable format for Firestore
-   * (public access for native re-use in brownfield apps)
+   * Converts a ReadableMap to a usable format for Firestore (public access for native re-use in
+   * brownfield apps)
    *
-   * @param firestore   FirebaseFirestore
+   * @param firestore FirebaseFirestore
    * @param readableMap ReadableMap
    * @return Map<>
    */
   public static Map<String, Object> parseReadableMap(
-    FirebaseFirestore firestore,
-    @Nullable ReadableMap readableMap
-  ) {
+      FirebaseFirestore firestore, @Nullable ReadableMap readableMap) {
     Map<String, Object> map = new HashMap<>();
     if (readableMap == null) return map;
 
@@ -415,14 +427,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
   /**
    * Convert a RN array to a valid Firestore array
    *
-   * @param firestore     FirebaseFirestore
+   * @param firestore FirebaseFirestore
    * @param readableArray ReadableArray
    * @return List<Object>
    */
   static List<Object> parseReadableArray(
-    FirebaseFirestore firestore,
-    @Nullable ReadableArray readableArray
-  ) {
+      FirebaseFirestore firestore, @Nullable ReadableArray readableArray) {
     List<Object> list = new ArrayList<>();
     if (readableArray == null) return list;
 
@@ -469,10 +479,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
         return firestore.document(Objects.requireNonNull(typeArray.getString(1)));
       case INT_GEOPOINT:
         ReadableArray geopointArray = typeArray.getArray(1);
-        return new GeoPoint(Objects.requireNonNull(geopointArray).getDouble(0), geopointArray.getDouble(1));
+        return new GeoPoint(
+            Objects.requireNonNull(geopointArray).getDouble(0), geopointArray.getDouble(1));
       case INT_TIMESTAMP:
         ReadableArray timestampArray = typeArray.getArray(1);
-        return new Timestamp((long) Objects.requireNonNull(timestampArray).getDouble(0), timestampArray.getInt(1));
+        return new Timestamp(
+            (long) Objects.requireNonNull(timestampArray).getDouble(0), timestampArray.getInt(1));
       case INT_BLOB:
         return Blob.fromBytes(Base64.decode(typeArray.getString(1), Base64.NO_WRAP));
       case INT_FIELDVALUE:
@@ -508,18 +520,15 @@ public class ReactNativeFirebaseFirestoreSerialize {
     }
   }
 
-
   /**
    * Parse JS batches array from batch().commit()
    *
-   * @param firestore     FirebaseFirestore
+   * @param firestore FirebaseFirestore
    * @param readableArray ReadableArray
    * @return List<Object>
    */
   static List<Object> parseDocumentBatches(
-    FirebaseFirestore firestore,
-    ReadableArray readableArray
-  ) {
+      FirebaseFirestore firestore, ReadableArray readableArray) {
     List<Object> writes = new ArrayList<>(readableArray.size());
 
     for (int i = 0; i < readableArray.size(); i++) {
@@ -534,10 +543,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
       }
 
       if (map.hasKey(KEY_OPTIONS)) {
-        write.put(
-          KEY_OPTIONS,
-          toHashMap(map.getMap(KEY_OPTIONS))
-        );
+        write.put(KEY_OPTIONS, toHashMap(map.getMap(KEY_OPTIONS)));
       }
 
       writes.add(write);

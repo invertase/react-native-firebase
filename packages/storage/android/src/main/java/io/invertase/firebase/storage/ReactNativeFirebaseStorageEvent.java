@@ -19,7 +19,6 @@ package io.invertase.firebase.storage;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-
 import io.invertase.firebase.interfaces.NativeEvent;
 
 public class ReactNativeFirebaseStorageEvent implements NativeEvent {
@@ -40,11 +39,7 @@ public class ReactNativeFirebaseStorageEvent implements NativeEvent {
   private String internalEventName;
 
   ReactNativeFirebaseStorageEvent(
-    WritableMap eventBody,
-    String internalEventName,
-    String appName,
-    int taskId
-  ) {
+      WritableMap eventBody, String internalEventName, String appName, int taskId) {
     this.eventBody = eventBody;
     this.internalEventName = internalEventName;
     this.appName = appName;

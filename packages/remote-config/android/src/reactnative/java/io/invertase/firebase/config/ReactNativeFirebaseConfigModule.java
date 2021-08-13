@@ -21,10 +21,9 @@ import com.facebook.react.bridge.*;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigFetchThrottledException;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
   private static final String SERVICE_NAME = "Config";
@@ -37,94 +36,119 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void activate(String appName, Promise promise) {
-    module.activate(appName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .activate(appName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void fetch(String appName, double expirationDurationSeconds, Promise promise) {
-    module.fetch(appName, (long) expirationDurationSeconds).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithConfigException(promise, task.getException());
-      }
-    });
+    module
+        .fetch(appName, (long) expirationDurationSeconds)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithConfigException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void fetchAndActivate(String appName, Promise promise) {
-    module.fetchAndActivate(appName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithConfigException(promise, task.getException());
-      }
-    });
+    module
+        .fetchAndActivate(appName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithConfigException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void reset(String appName, Promise promise) {
-    module.reset(appName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithConfigException(promise, task.getException());
-      }
-    });
+    module
+        .reset(appName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithConfigException(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void setConfigSettings(String appName, ReadableMap configSettings, Promise promise) {
-    module.setConfigSettings(appName, Arguments.toBundle(configSettings)).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .setConfigSettings(appName, Arguments.toBundle(configSettings))
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void setDefaults(String appName, ReadableMap defaults, Promise promise) {
-    module.setDefaults(appName, defaults.toHashMap()).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .setDefaults(appName, defaults.toHashMap())
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void setDefaultsFromResource(String appName, String resourceName, Promise promise) {
-    module.setDefaultsFromResource(appName, resourceName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(task.getResult()));
-      } else {
-        Exception exception = task.getException();
-        if (exception != null && exception.getMessage().equals("resource_not_found")) {
-          rejectPromiseWithCodeAndMessage(promise, "resource_not_found", "The specified resource name was not found.");
-        }
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .setDefaultsFromResource(appName, resourceName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(task.getResult()));
+              } else {
+                Exception exception = task.getException();
+                if (exception != null && exception.getMessage().equals("resource_not_found")) {
+                  rejectPromiseWithCodeAndMessage(
+                      promise, "resource_not_found", "The specified resource name was not found.");
+                }
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void ensureInitialized(String appName, Promise promise) {
-    module.ensureInitialized(appName).addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        promise.resolve(resultWithConstants(null));
-      } else {
-        rejectPromiseWithExceptionMap(promise, task.getException());
-      }
-    });
+    module
+        .ensureInitialized(appName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(resultWithConstants(null));
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   private WritableMap resultWithConstants(Object result) {
@@ -136,16 +160,24 @@ public class ReactNativeFirebaseConfigModule extends ReactNativeFirebaseModule {
 
   private void rejectPromiseWithConfigException(Promise promise, @Nullable Exception exception) {
     if (exception == null) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown",
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "unknown",
           "Operation cannot be completed successfully, due to an unknown error.");
       return;
     }
 
     if (exception.getCause() instanceof FirebaseRemoteConfigFetchThrottledException) {
-      rejectPromiseWithCodeAndMessage(promise, "throttled",
-          "fetch() operation cannot be completed successfully, due to throttling.", exception.getMessage());
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "throttled",
+          "fetch() operation cannot be completed successfully, due to throttling.",
+          exception.getMessage());
     } else {
-      rejectPromiseWithCodeAndMessage(promise, "failure", "fetch() operation cannot be completed successfully.",
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "failure",
+          "fetch() operation cannot be completed successfully.",
           exception.getMessage());
     }
   }

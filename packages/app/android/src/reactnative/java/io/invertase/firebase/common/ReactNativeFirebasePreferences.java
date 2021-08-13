@@ -19,17 +19,15 @@ package io.invertase.firebase.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
-
-import java.util.Map;
-
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
+import java.util.Map;
 
 public class ReactNativeFirebasePreferences {
   private static final String PREFERENCES_FILE = "io.invertase.firebase";
-  private static ReactNativeFirebasePreferences sharedInstance = new ReactNativeFirebasePreferences();
+  private static ReactNativeFirebasePreferences sharedInstance =
+      new ReactNativeFirebasePreferences();
   private SharedPreferences preferences;
 
   public static ReactNativeFirebasePreferences getSharedInstance() {
@@ -81,9 +79,9 @@ public class ReactNativeFirebasePreferences {
 
   private SharedPreferences getPreferences() {
     if (preferences == null) {
-      preferences = ReactNativeFirebaseApp
-        .getApplicationContext()
-        .getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
+      preferences =
+          ReactNativeFirebaseApp.getApplicationContext()
+              .getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
     return preferences;
   }
