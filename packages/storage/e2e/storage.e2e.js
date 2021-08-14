@@ -60,21 +60,25 @@ describe('storage()', function () {
     });
 
     // FIXME on android this is unathorized against emulator but works on iOS?
-    ios.it('uploads to a custom bucket when specified', async function () {
-      const jsonDerulo = JSON.stringify({ foo: 'bar' });
-      const bucket = 'gs://react-native-firebase-testing';
+    it('uploads to a custom bucket when specified', async function () {
+      if (device.getPlatform() === 'ios') {
+        const jsonDerulo = JSON.stringify({ foo: 'bar' });
+        const bucket = 'gs://react-native-firebase-testing';
 
-      const uploadTaskSnapshot = await firebase
-        .app()
-        .storage(bucket)
-        .ref(`${PATH}/putStringCustomBucket.json`)
-        .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
-          contentType: 'application/json',
-        });
+        const uploadTaskSnapshot = await firebase
+          .app()
+          .storage(bucket)
+          .ref(`${PATH}/putStringCustomBucket.json`)
+          .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
+            contentType: 'application/json',
+          });
 
-      uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
-      uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
-      uploadTaskSnapshot.metadata.should.be.an.Object();
+        uploadTaskSnapshot.state.should.eql(firebase.storage.TaskState.SUCCESS);
+        uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
+        uploadTaskSnapshot.metadata.should.be.an.Object();
+      } else {
+        this.skip();
+      }
     });
   });
 

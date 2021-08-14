@@ -96,75 +96,89 @@ describe('database().ref().transaction()', function () {
   });
 
   // FIXME flaky on android local against emulator?
-  ios.it('passes valid data through the callback', async function () {
-    const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
-    await ref.set(1);
+  it('passes valid data through the callback', async function () {
+    if (device.getPlatform() === 'ios') {
+      const ref = firebase.database().ref(`${TEST_PATH}/transactionCallback`);
+      await ref.set(1);
 
-    return new Promise((resolve, reject) => {
-      ref.transaction(
-        $ => {
-          return $ + 1;
-        },
-        (error, committed, snapshot) => {
-          if (error) {
-            return reject(error);
-          }
-
-          if (!committed) {
-            return reject(new Error('Transaction aborted when it should not have done'));
-          }
-
-          should.equal(snapshot.val(), 2);
-          return resolve();
-        },
-      );
-    });
-  });
-
-  // FIXME flaky on android local against emulator?
-  ios.it('throws when an error occurs', async function () {
-    const ref = firebase.database().ref('nope');
-
-    try {
-      await ref.transaction($ => {
-        return $ + 1;
-      });
-      return Promise.reject(new Error('Did not throw error.'));
-    } catch (error) {
-      error.message.should.containEql("Client doesn't have permission to access the desired data");
-      return Promise.resolve();
-    }
-  });
-
-  // FIXME flaky on android? works most of the time...
-  ios.it('passes error back to the callback', async function () {
-    const ref = firebase.database().ref('nope');
-
-    return new Promise((resolve, reject) => {
-      ref
-        .transaction(
+      return new Promise((resolve, reject) => {
+        ref.transaction(
           $ => {
             return $ + 1;
           },
           (error, committed, snapshot) => {
-            if (snapshot !== null) {
-              return reject(new Error('Snapshot should not be available'));
+            if (error) {
+              return reject(error);
             }
 
-            if (committed === true) {
-              return reject(new Error('Transaction should not have committed'));
+            if (!committed) {
+              return reject(new Error('Transaction aborted when it should not have done'));
             }
 
-            error.message.should.containEql(
-              "Client doesn't have permission to access the desired data",
-            );
+            should.equal(snapshot.val(), 2);
             return resolve();
           },
-        )
-        .catch(() => {
-          // catch unhandled rejection
+        );
+      });
+    } else {
+      this.skip();
+    }
+  });
+
+  // FIXME flaky on android local against emulator?
+  it('throws when an error occurs', async function () {
+    if (device.getPlatform() === 'ios') {
+      const ref = firebase.database().ref('nope');
+
+      try {
+        await ref.transaction($ => {
+          return $ + 1;
         });
-    });
+        return Promise.reject(new Error('Did not throw error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "Client doesn't have permission to access the desired data",
+        );
+        return Promise.resolve();
+      }
+    } else {
+      this.skip();
+    }
+  });
+
+  // FIXME flaky on android? works most of the time...
+  it('passes error back to the callback', async function () {
+    if (device.getPlatform() === 'ios') {
+      const ref = firebase.database().ref('nope');
+
+      return new Promise((resolve, reject) => {
+        ref
+          .transaction(
+            $ => {
+              return $ + 1;
+            },
+            (error, committed, snapshot) => {
+              if (snapshot !== null) {
+                return reject(new Error('Snapshot should not be available'));
+              }
+
+              if (committed === true) {
+                return reject(new Error('Transaction should not have committed'));
+              }
+
+              error.message.should.containEql(
+                "Client doesn't have permission to access the desired data",
+              );
+              return resolve();
+            },
+          )
+          .catch(() => {
+            // catch unhandled rejection
+          });
+      });
+    } else {
+      this.skip();
+    }
   });
 
   it('sets a value if one does not exist', async function () {

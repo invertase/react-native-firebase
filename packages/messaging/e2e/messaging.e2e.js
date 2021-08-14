@@ -92,8 +92,12 @@ describe('messaging()', function () {
   });
 
   describe('hasPermission', function () {
-    android.it('returns true android (default)', async () => {
-      should.equal(await firebase.messaging().hasPermission(), true);
+    it('returns true android (default)', async function () {
+      if (device.getPlatform() === 'android') {
+        should.equal(await firebase.messaging().hasPermission(), true);
+      } else {
+        this.skip();
+      }
     });
     it('returns -1 on ios (default)', async function () {
       if (device.getPlatform() === 'ios') {
@@ -103,14 +107,22 @@ describe('messaging()', function () {
   });
 
   describe('requestPermission', function () {
-    android.it('resolves 1 on android', async () => {
-      should.equal(await firebase.messaging().requestPermission(), 1);
+    it('resolves 1 on android', async function () {
+      if (device.getPlatform() === 'android') {
+        should.equal(await firebase.messaging().requestPermission(), 1);
+      } else {
+        this.skip();
+      }
     });
   });
 
   describe('getAPNSToken', function () {
-    android.it('resolves null on android', async () => {
-      should.equal(await firebase.messaging().getAPNSToken(), null);
+    it('resolves null on android', async function () {
+      if (device.getPlatform() === 'android') {
+        should.equal(await firebase.messaging().getAPNSToken(), null);
+      } else {
+        this.skip();
+      }
     });
     it('resolves null on ios if using simulator', async function () {
       if (device.getPlatform() === 'ios') {
@@ -236,30 +248,31 @@ describe('messaging()', function () {
       }
     });
 
-    android.it('receives messages when the app is in the background', async () => {
-      // This is slow and thus flaky in CI. It runs locally though.
-      if (global.isCI) {
-        return;
-      }
-      const spy = sinon.spy();
-      const token = await firebase.messaging().getToken();
-      firebase.messaging().setBackgroundMessageHandler(remoteMessage => {
-        spy(remoteMessage);
-        return Promise.resolve();
-      });
+    it('receives messages when the app is in the background', async function () {
+      // This is slow and thus flaky in CI. It runs locally on android though.
+      if (device.getPlatform() === 'android' && !global.isCI) {
+        const spy = sinon.spy();
+        const token = await firebase.messaging().getToken();
+        firebase.messaging().setBackgroundMessageHandler(remoteMessage => {
+          spy(remoteMessage);
+          return Promise.resolve();
+        });
 
-      await device.sendToHome();
-      await TestsAPI.messaging().sendToDevice(token, {
-        data: {
-          foo: 'bar',
-          doop: 'boop',
-        },
-      });
-      await Utils.spyToBeCalledOnceAsync(spy);
-      await device.launchApp({ newInstance: false });
-      spy.firstCall.args[0].should.be.an.Object();
-      spy.firstCall.args[0].data.should.be.an.Object();
-      spy.firstCall.args[0].data.foo.should.eql('bar');
+        await device.sendToHome();
+        await TestsAPI.messaging().sendToDevice(token, {
+          data: {
+            foo: 'bar',
+            doop: 'boop',
+          },
+        });
+        await Utils.spyToBeCalledOnceAsync(spy);
+        await device.launchApp({ newInstance: false });
+        spy.firstCall.args[0].should.be.an.Object();
+        spy.firstCall.args[0].data.should.be.an.Object();
+        spy.firstCall.args[0].data.foo.should.eql('bar');
+      } else {
+        this.skip();
+      }
     });
   });
 

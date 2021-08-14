@@ -389,22 +389,26 @@ describe('remoteConfig()', function () {
   });
 
   describe('reset()', function () {
-    android.it('resets all activated, fetched and default config', async () => {
-      await firebase.remoteConfig().setDefaults({
-        some_key: 'I do not exist',
-      });
+    it('resets all activated, fetched and default config', async function () {
+      if (device.getPlatform() === 'android') {
+        await firebase.remoteConfig().setDefaults({
+          some_key: 'I do not exist',
+        });
 
-      const config = firebase.remoteConfig().getAll();
+        const config = firebase.remoteConfig().getAll();
 
-      const remoteProps = ['some_key'];
+        const remoteProps = ['some_key'];
 
-      config.should.have.keys(...remoteProps);
+        config.should.have.keys(...remoteProps);
 
-      await firebase.remoteConfig().reset();
+        await firebase.remoteConfig().reset();
 
-      const configRetrieveAgain = firebase.remoteConfig().getAll();
+        const configRetrieveAgain = firebase.remoteConfig().getAll();
 
-      should(configRetrieveAgain).not.have.properties(remoteProps);
+        should(configRetrieveAgain).not.have.properties(remoteProps);
+      } else {
+        this.skip();
+      }
     });
 
     it('returns a "null" value as reset() API is not supported on iOS', async function () {
