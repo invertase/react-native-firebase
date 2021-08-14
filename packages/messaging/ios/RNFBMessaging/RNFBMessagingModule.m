@@ -247,6 +247,7 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
   if (@available(iOS 10.0, *)) {
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
       resolve(@([RCTConvert BOOL:@(YES)]));
+      return;
     } else {
       [[RNFBMessagingAppDelegate sharedInstance] setPromiseResolve:resolve andPromiseReject:reject];
     }
