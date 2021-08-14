@@ -19,10 +19,10 @@
 
     "perf_auto_collection_enabled": false,
 
+    "in_app_messaging_auto_collection_enabled": false,
+
     "android_task_executor_maximum_pool_size": 10,
     "android_task_executor_keep_alive_seconds": 3,
-
-    "TODO_in_app_messaging_auto_collection_enabled": true,
 
     "rnfirebase_json_testing_string": "abc",
     "rnfirebase_json_testing_boolean_false": false,

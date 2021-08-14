@@ -63,9 +63,22 @@ project.ext {
   ])
 }
 
+apply from: file('./../../app/android/firebase-json.gradle')
+
+def autoInitEnabled = 'true'
+
+if (rootProject.ext && rootProject.ext.firebaseJson) {
+  if (rootProject.ext.firebaseJson.isFlagEnabled('in_app_messaging_auto_collection_enabled', true) == false) {
+    autoInitEnabled = 'false'
+  }
+}
+
 android {
   defaultConfig {
     multiDexEnabled true
+    manifestPlaceholders = [
+      firebaseJsonAutoInitEnabled: autoInitEnabled
+    ]
   }
   lintOptions {
     disable 'GradleCompatible'
