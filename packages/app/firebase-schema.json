@@ -29,10 +29,6 @@
           "description": "React Native Firebase supports Crashlytics NDK reporting which is enabled by default. This allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native. You can disable Crashlytics NDK in your firebase.json config.",
           "type": "boolean"
         },
-        "database_persistence_enabled": {
-          "description": "Set whether database persistence is enabled or disabled.\n This can be overridden in JavaScript, e.g. when requesting permission or on a condition.",
-          "type": "boolean"
-        },
         "in_app_messaging_auto_collection_enabled": {
           "description": "In App Messaging can be further configured to enable or disable automatic data collection for Firebase In-App Messaging. This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. This can be overridden in JavaScript.",
           "type": "boolean"
