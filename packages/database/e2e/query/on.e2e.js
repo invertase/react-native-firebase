@@ -131,58 +131,66 @@ describe('database().ref().on()', function () {
   });
 
   // FIXME super flaky on android emulator
-  ios.it('subscribe to child added events', async function () {
-    const successCallback = sinon.spy();
-    const cancelCallback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
+  it('subscribe to child added events', async function () {
+    if (device.getPlatform() === 'ios') {
+      const successCallback = sinon.spy();
+      const cancelCallback = sinon.spy();
+      const ref = firebase.database().ref(`${TEST_PATH}/childAdded`);
 
-    ref.on(
-      'child_added',
-      $ => {
-        successCallback($.val());
-      },
-      () => {
-        cancelCallback();
-      },
-    );
+      ref.on(
+        'child_added',
+        $ => {
+          successCallback($.val());
+        },
+        () => {
+          cancelCallback();
+        },
+      );
 
-    await ref.child('child1').set('foo');
-    await ref.child('child2').set('bar');
-    await Utils.spyToBeCalledTimesAsync(successCallback, 2);
-    ref.off('child_added');
-    successCallback.getCall(0).args[0].should.equal('foo');
-    successCallback.getCall(1).args[0].should.equal('bar');
-    cancelCallback.should.be.callCount(0);
+      await ref.child('child1').set('foo');
+      await ref.child('child2').set('bar');
+      await Utils.spyToBeCalledTimesAsync(successCallback, 2);
+      ref.off('child_added');
+      successCallback.getCall(0).args[0].should.equal('foo');
+      successCallback.getCall(1).args[0].should.equal('bar');
+      cancelCallback.should.be.callCount(0);
+    } else {
+      this.skip();
+    }
   });
 
   // FIXME super flaky on android emulator
-  ios.it('subscribe to child changed events', async function () {
-    const successCallback = sinon.spy();
-    const cancelCallback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
-    const child = ref.child('changeme');
-    await child.set('foo');
+  it('subscribe to child changed events', async function () {
+    if (device.getPlatform() === 'ios') {
+      const successCallback = sinon.spy();
+      const cancelCallback = sinon.spy();
+      const ref = firebase.database().ref(`${TEST_PATH}/childChanged`);
+      const child = ref.child('changeme');
+      await child.set('foo');
 
-    ref.on(
-      'child_changed',
-      $ => {
-        successCallback($.val());
-      },
-      () => {
-        cancelCallback();
-      },
-    );
+      ref.on(
+        'child_changed',
+        $ => {
+          successCallback($.val());
+        },
+        () => {
+          cancelCallback();
+        },
+      );
 
-    const value1 = Date.now();
-    const value2 = Date.now() + 123;
+      const value1 = Date.now();
+      const value2 = Date.now() + 123;
 
-    await child.set(value1);
-    await child.set(value2);
-    await Utils.spyToBeCalledTimesAsync(successCallback, 2);
-    ref.off('child_changed');
-    successCallback.getCall(0).args[0].should.equal(value1);
-    successCallback.getCall(1).args[0].should.equal(value2);
-    cancelCallback.should.be.callCount(0);
+      await child.set(value1);
+      await child.set(value2);
+      await Utils.spyToBeCalledTimesAsync(successCallback, 2);
+      ref.off('child_changed');
+      successCallback.getCall(0).args[0].should.equal(value1);
+      successCallback.getCall(1).args[0].should.equal(value2);
+      cancelCallback.should.be.callCount(0);
+    } else {
+      this.skip();
+    }
   });
 
   it('subscribe to child removed events', async function () {
