@@ -143,19 +143,23 @@ describe('database().ref().once()', function () {
   });
 
   // FIXME too flaky against android in CI
-  ios.it('resolves when a child is removed', async function () {
-    const callbackAdd = sinon.spy();
-    const callbackRemove = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
-    ref.once('child_added').then($ => callbackAdd($.val()));
-    const child = ref.child('removeme');
-    await child.set('foo');
-    await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
+  it('resolves when a child is removed', async function () {
+    if (device.getPlatform() === 'ios') {
+      const callbackAdd = sinon.spy();
+      const callbackRemove = sinon.spy();
+      const ref = firebase.database().ref(`${TEST_PATH}/childRemoved`);
+      ref.once('child_added').then($ => callbackAdd($.val()));
+      const child = ref.child('removeme');
+      await child.set('foo');
+      await Utils.spyToBeCalledOnceAsync(callbackAdd, 10000);
 
-    ref.once('child_removed').then($ => callbackRemove($.val()));
-    await child.remove();
-    await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
-    callbackRemove.should.be.calledWith('foo');
+      ref.once('child_removed').then($ => callbackRemove($.val()));
+      await child.remove();
+      await Utils.spyToBeCalledOnceAsync(callbackRemove, 10000);
+      callbackRemove.should.be.calledWith('foo');
+    } else {
+      this.skip();
+    }
   });
 
   // https://github.com/firebase/firebase-js-sdk/blob/6b53e0058483c9002d2fe56119f86fc9fb96b56c/packages/database/test/order_by.test.ts#L104

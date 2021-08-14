@@ -163,18 +163,22 @@ describe('storage() -> StorageReference', function () {
     });
 
     // Not throwing against the storage emulator on android?
-    ios.it('throws error if no read permission', async function () {
-      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
+    it('throws error if no read permission', async function () {
+      if (device.getPlatform() === 'ios') {
+        const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
 
-      try {
-        await storageReference.getDownloadURL();
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.code.should.equal('storage/unauthorized');
-        error.message.should.equal(
-          '[storage/unauthorized] User is not authorized to perform the desired action.',
-        );
-        return Promise.resolve();
+        try {
+          await storageReference.getDownloadURL();
+          return Promise.reject(new Error('Did not throw'));
+        } catch (error) {
+          error.code.should.equal('storage/unauthorized');
+          error.message.should.equal(
+            '[storage/unauthorized] User is not authorized to perform the desired action.',
+          );
+          return Promise.resolve();
+        }
+      } else {
+        this.skip();
       }
     });
   });
@@ -389,26 +393,30 @@ describe('storage() -> StorageReference', function () {
     });
 
     // FIXME not working against android on emulator? it returns the string 'null' for the cleared customMetadata value
-    ios.it('should set removed customMetadata properties to null', async function () {
-      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
-      const metadata = await storageReference.updateMetadata({
-        contentType: 'text/plain',
-        customMetadata: {
-          removeMe: 'please',
-        },
-      });
+    it('should set removed customMetadata properties to null', async function () {
+      if (device.getPlatform() === 'ios') {
+        const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
+        const metadata = await storageReference.updateMetadata({
+          contentType: 'text/plain',
+          customMetadata: {
+            removeMe: 'please',
+          },
+        });
 
-      metadata.customMetadata.removeMe.should.equal('please');
+        metadata.customMetadata.removeMe.should.equal('please');
 
-      const metadataAfterRemove = await storageReference.updateMetadata({
-        contentType: 'text/plain',
-        customMetadata: {
-          removeMe: null,
-        },
-      });
+        const metadataAfterRemove = await storageReference.updateMetadata({
+          contentType: 'text/plain',
+          customMetadata: {
+            removeMe: null,
+          },
+        });
 
-      // FIXME this is failing the part that fails
-      should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
+        // FIXME this is failing the part that fails
+        should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
+      } else {
+        this.skip();
+      }
     });
 
     it('should error if updateMetadata includes md5hash', async function () {
