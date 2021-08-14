@@ -1,2 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.invertase.firebase.fiam" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.invertase.firebase.fiam">
+
+  <application>
+    <meta-data android:name="in_app_messaging_auto_collection_enabled" android:value="${firebaseJsonAutoInitEnabled}"/>
+  </application>
+</manifest>

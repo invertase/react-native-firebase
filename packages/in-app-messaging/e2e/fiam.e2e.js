@@ -25,24 +25,21 @@ describe('inAppMessaging()', function () {
   });
 
   describe('setAutomaticDataCollectionEnabled()', function () {
+    // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
+    // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
+    afterEach(async function () {
+      await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
+    });
+
     it('true', async function () {
-      if (Platform.ios) {
-        // android has this as false when Perf tests run prior - internally all share the same flag on the native SDK
-        should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
-      }
+      should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
       await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
       should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
-      await Utils.sleep(2000);
     });
-    // TODO flakey on CI
-    xit('false', async function () {
-      await device.launchApp();
+
+    it('false', async function () {
       await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
       should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, false);
-      await Utils.sleep(1500);
-      await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(true);
-      should.equal(firebase.inAppMessaging().isAutomaticDataCollectionEnabled, true);
-      await Utils.sleep(1500);
     });
 
     it('errors if not boolean', async function () {
