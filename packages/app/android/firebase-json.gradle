@@ -1,29 +1,30 @@
+/* groovylint-disable CatchException, CompileStatic, DuplicateStringLiteral, JavaIoPackageAccess */
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 
-String fileName = "firebase.json"
-String jsonRoot = "react-native"
+String fileName = 'firebase.json'
+String jsonRoot = 'react-native'
 
 File jsonFile = null
 File parentDir = rootProject.projectDir
 
 for (int i = 0; i <= 3; i++) {
-  if (parentDir == null) break
+  if (parentDir == null) { break }
   parentDir = parentDir.parentFile
   if (parentDir != null) {
     jsonFile = new File(parentDir, fileName)
-    if (jsonFile.exists()) break
+    if (jsonFile.exists()) { break }
   }
 }
 
-if (jsonFile != null && jsonFile.exists()) {
-  rootProject.logger.info ":${project.name} firebase.json found at ${jsonFile.toString()}"
+if (jsonFile?.exists()) {
+  rootProject.logger.info ":${project.name} firebase.json found at ${jsonFile}"
   Object json = null
 
   try {
     json = new JsonSlurper().parseText(jsonFile.text)
   } catch (Exception ignored) {
-    rootProject.logger.warn ":${project.name} failed to parse firebase.json found at ${jsonFile.toString()}."
+    rootProject.logger.warn ":${project.name} failed to parse firebase.json found at ${jsonFile}."
     rootProject.logger.warn ignored.toString()
   }
 
@@ -33,19 +34,20 @@ if (jsonFile != null && jsonFile.exists()) {
     rootProject.ext.firebaseJson = [
       raw: json[jsonRoot],
       isFlagEnabled: { key, defaultValue ->
-        if (json[jsonRoot] == null || json[jsonRoot][key] == null) return defaultValue
-        return json[jsonRoot][key] == true ? true : false
+        if (json[jsonRoot] == null || json[jsonRoot][key] == null) { return defaultValue }
+        return json[jsonRoot][key] == true
       },
       getStringValue: { key, defaultValue ->
-        if (json[jsonRoot] == null) return defaultValue
+        if (json[jsonRoot] == null) { return defaultValue }
         return json[jsonRoot][key] ? json[jsonRoot][key] : defaultValue
       }
     ]
 
-    rootProject.logger.info ":${project.name} found react-native json root in firebase.json, creating firebase build config"
+    rootProject.logger
+      .info ":${project.name} found react-native json root in firebase.json, creating firebase build config"
     android {
       defaultConfig {
-        buildConfigField "String", "FIREBASE_JSON_RAW", jsonStr
+        buildConfigField 'String', 'FIREBASE_JSON_RAW', jsonStr
       }
     }
   } else {
@@ -53,7 +55,7 @@ if (jsonFile != null && jsonFile.exists()) {
     rootProject.logger.info ":${project.name} firebase.json found with no react-native config, skipping"
     android {
       defaultConfig {
-        buildConfigField "String", "FIREBASE_JSON_RAW", '"{}"'
+        buildConfigField 'String', 'FIREBASE_JSON_RAW', '"{}"'
       }
     }
   }
@@ -62,7 +64,7 @@ if (jsonFile != null && jsonFile.exists()) {
   rootProject.logger.info ":${project.name} no firebase.json found, skipping"
   android {
     defaultConfig {
-      buildConfigField "String", "FIREBASE_JSON_RAW", '"{}"'
+      buildConfigField 'String', 'FIREBASE_JSON_RAW', '"{}"'
     }
   }
 }
