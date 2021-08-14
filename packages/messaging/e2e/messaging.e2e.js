@@ -25,6 +25,12 @@ describe('messaging()', function () {
   });
 
   describe('setAutoInitEnabled()', function () {
+    // These depend on `tests/firebase.json` having `messaging_auto_init_enabled` set to false the first time
+    // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
+    afterEach(async function () {
+      await firebase.messaging().setAutoInitEnabled(false);
+    });
+
     it('throws if enabled is not a boolean', function () {
       try {
         firebase.messaging().setAutoInitEnabled(123);
@@ -36,30 +42,52 @@ describe('messaging()', function () {
     });
 
     it('sets the value', async function () {
-      should.equal(firebase.messaging().isAutoInitEnabled, true);
-      await firebase.messaging().setAutoInitEnabled(false);
       should.equal(firebase.messaging().isAutoInitEnabled, false);
-
-      // Set it back to the default value for future runs in re-use mode
       await firebase.messaging().setAutoInitEnabled(true);
       should.equal(firebase.messaging().isAutoInitEnabled, true);
+
+      // Set it back to the default value for future runs in re-use mode
+      await firebase.messaging().setAutoInitEnabled(false);
+      should.equal(firebase.messaging().isAutoInitEnabled, false);
     });
   });
 
   describe('isDeviceRegisteredForRemoteMessages', function () {
-    android.it('returns true on android', () => {
-      should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+    it('returns true on android', function () {
+      if (device.getPlatform() === 'android') {
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+      } else {
+        this.skip();
+      }
     });
-    it('defaults to false on ios before registering', function () {
+    it('defaults to false on ios before registering', async function () {
       if (device.getPlatform() === 'ios') {
         should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
+        await firebase.messaging().registerDeviceForRemoteMessages();
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+      } else {
+        this.skip();
       }
     });
   });
 
   describe('unregisterDeviceForRemoteMessages', function () {
-    android.it('resolves on android', async () => {
-      await firebase.messaging().unregisterDeviceForRemoteMessages();
+    it('resolves on android, remains registered', async function () {
+      if (device.getPlatform() === 'android') {
+        await firebase.messaging().unregisterDeviceForRemoteMessages();
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+      } else {
+        this.skip();
+      }
+    });
+    it('successfully unregisters on ios', async function () {
+      if (device.getPlatform() === 'ios') {
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
+        await firebase.messaging().unregisterDeviceForRemoteMessages();
+        should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
+      } else {
+        this.skip();
+      }
     });
   });
 
