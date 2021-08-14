@@ -9,11 +9,11 @@
     "crashlytics_is_error_generation_on_js_crash_enabled": true,
     "crashlytics_javascript_exception_handler_chaining_enabled": false,
 
-    "messaging_auto_init_enabled": true,
+    "messaging_auto_init_enabled": false,
     "messaging_android_headless_task_timeout": 30000,
     "messaging_android_notification_channel_id": "",
     "messaging_android_notification_color": "@color/hotpink",
-    "messaging_ios_auto_register_for_remote_messages": true,
+    "messaging_ios_auto_register_for_remote_messages": false,
 
     "analytics_auto_collection_enabled": true,
 
