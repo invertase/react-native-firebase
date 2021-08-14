@@ -110,6 +110,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_MESSAGING_AUTO_INIT")")
   fi
 
+  # config.in_app_messaging_auto_colllection_enabled
+  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "in_app_messaging_auto_collection_enabled")
+  if [[ $_FIAM_AUTO_INIT ]]; then
+    _PLIST_ENTRY_KEYS+=("FirebaseInAppMessagingAutomaticDataCollectionEnabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_FIAM_AUTO_INIT")")
+  fi
+
   # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful
   _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "crashlytics_disable_auto_disabler")
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
