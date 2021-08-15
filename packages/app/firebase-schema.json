@@ -9,6 +9,26 @@
           "description": "Disable or enable auto collection of analytics data.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. This can be overridden in JavaScript. \n Re-enable analytics data collection, e.g. once user has granted permission.",
           "type": "boolean"
         },
+        "analytics_collection_deactivated": {
+          "description": "If you need to deactivate Analytics collection permanently in a version of your app.\n This cannot be altered at runtime once set in the config.",
+          "type": "boolean"
+        },
+        "analytics_idfv_collection_enabled": {
+          "description": "If you wish to disable collection of the IDFV (Identifier for Vendor) in your iOS app.\n This cannot be altered at runtime once set in the config.",
+          "type": "boolean"
+        },
+        "google_analytics_adid_collection_enabled": {
+          "description": " If you wish to disable collection of the Advertising ID in your Android app.\n This cannot be altered at runtime once set in the config.",
+          "type": "boolean"
+        },
+        "google_analytics_ssaid_collection_enabled": {
+          "description": "If you wish to disable collection of SSAID (Settings.Secure.ANDROID_ID) in your Android app,.\n This cannot be altered at runtime once set in the config.",
+          "type": "boolean"
+        },
+        "analytics_default_allow_ad_personalization_signals": {
+          "description": "Configure whether a user's Analytics data may be used for personalized advertising in other products.\n If set, may be overridden at runtime by calling setUserProperty on the key 'allow_personalized_ads'",
+          "type": "boolean"
+        },
         "app_data_collection_default_enabled": {
           "description": "Whether automatic data collection is enabled for all products, unless overridden by product-specific data collection settings.\n Setting this to false is useful for opt-in-first data flows, for example when dealing with GDPR compliance. \nThis may be overridden dynamically in Javascript via automaticDataCollectionEnabled FirebaseAppConfig property.",
           "type": "boolean"
