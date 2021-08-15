@@ -136,6 +136,8 @@ RCT_EXPORT_METHOD(getInitialLink
         @"url" : dynamicLink.url.absoluteString,
         @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil ? [NSNull null]
                                                                     : dynamicLink.minimumAppVersion,
+        @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{}
+                                                                    : dynamicLink.utmParametersDictionary,
       });
     } else if ([RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
       resolve(@{
@@ -144,6 +146,10 @@ RCT_EXPORT_METHOD(getInitialLink
                     .initialLinkMinimumAppVersion == nil
             ? [NSNull null]
             : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+        @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                    .initialLinkUtmParametersDictionary == nil
+            ? @{}
+            : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
       });
     } else {
       resolve([NSNull null]);
@@ -166,6 +172,9 @@ RCT_EXPORT_METHOD(getInitialLink
           @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
               ? [NSNull null]
               : dynamicLink.minimumAppVersion,
+          @"utmParameters": dynamicLink.utmParametersDictionary == nil
+              ? @{}
+              : dynamicLink.utmParametersDictionary,
         });
       } else if (!error &&
                  [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUrl != nil) {
@@ -176,6 +185,10 @@ RCT_EXPORT_METHOD(getInitialLink
               ? [NSNull null]
               : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
                     .initialLinkMinimumAppVersion,
+          @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                      .initialLinkUtmParametersDictionary == nil
+              ? @{}
+              : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
         });
       } else if (error) {
         [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -201,6 +214,10 @@ RCT_EXPORT_METHOD(getInitialLink
                   .initialLinkMinimumAppVersion == nil
           ? [NSNull null]
           : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkMinimumAppVersion,
+      @"utmParameters": [RNFBDynamicLinksAppDelegateInterceptor sharedInstance]
+                  .initialLinkUtmParametersDictionary == nil
+          ? @{}
+          : [RNFBDynamicLinksAppDelegateInterceptor sharedInstance].initialLinkUtmParametersDictionary,
     });
   } else {
     resolve([NSNull null]);
@@ -217,6 +234,8 @@ RCT_EXPORT_METHOD(resolveLink
         @"url" : dynamicLink.url.absoluteString,
         @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil ? [NSNull null]
                                                                     : dynamicLink.minimumAppVersion,
+        @"utmParameters": dynamicLink.utmParametersDictionary == nil ? @{}
+                                                                    : dynamicLink.utmParametersDictionary,
       });
     } else if (!error ||
                (error && [error.localizedDescription containsString:@"dynamicLinks error 404"])) {

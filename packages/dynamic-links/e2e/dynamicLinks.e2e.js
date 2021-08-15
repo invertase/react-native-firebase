@@ -155,6 +155,7 @@ describe('dynamicLinks()', function () {
 
       dynamicLink.should.be.an.Object();
       dynamicLink.url.should.equal('https://rnfirebase.io');
+      dynamicLink.utmParameters.should.eql({});
     });
   });
 
@@ -172,6 +173,7 @@ describe('dynamicLinks()', function () {
 
       spy.getCall(0).args[0].should.be.an.Object();
       spy.getCall(0).args[0].url.should.equal('https://invertase.io/hire-us');
+      spy.getCall(0).args[0].utmParameters.should.eql({});
     });
   });
 });
