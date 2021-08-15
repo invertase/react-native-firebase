@@ -24,9 +24,13 @@ describe('auth()', function () {
     }
   });
 
-  // TODO(salakar): Detox on iOS crashing app on reloads
-  android.describe('firebase.auth().currentUser', () => {
+  describe('firebase.auth().currentUser', function () {
     it('exists after reload', async function () {
+      // Detox on iOS crashing app on reloads, documented
+      // https://github.com/wix/detox/blob/master/docs/APIRef.DeviceObjectAPI.md#devicereloadreactnative
+      if (device.getPlatform() === 'ios') {
+        this.skip();
+      }
       let currentUser;
       // before reload
       await firebase.auth().signInAnonymously();
