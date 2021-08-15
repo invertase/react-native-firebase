@@ -33,6 +33,9 @@ if (jsonFile?.exists()) {
 
     rootProject.ext.firebaseJson = [
       raw: json[jsonRoot],
+      isDefined: { key ->
+        return (json[jsonRoot] != null && json[jsonRoot][key] != null)
+      },
       isFlagEnabled: { key, defaultValue ->
         if (json[jsonRoot] == null || json[jsonRoot][key] == null) { return defaultValue }
         return json[jsonRoot][key] == true

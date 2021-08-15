@@ -86,6 +86,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
   _PLIST_ENTRY_TYPES+=("string")
   _PLIST_ENTRY_VALUES+=("$_JSON_OUTPUT_BASE64")
 
+  # config.app_data_collection_default_enabled
+  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "app_data_collection_default_enabled")
+  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then
+    _PLIST_ENTRY_KEYS+=("FirebaseDataCollectionDefaultEnabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_APP_DATA_COLLECTION_ENABLED")")
+  fi
+
   # config.analytics_auto_collection_enabled
   _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "analytics_auto_collection_enabled")
   if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then
@@ -93,7 +101,6 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_TYPES+=("bool")
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_AUTO_COLLECTION")")
   fi
-
   # config.perf_auto_collection_enabled
   _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_auto_collection_enabled")
   if [[ $_PERF_AUTO_COLLECTION ]]; then

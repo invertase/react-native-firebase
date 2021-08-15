@@ -2,6 +2,8 @@
   "react-native": {
     "android_background_activity_names": "NotActuallyAnActivity",
 
+    "app_data_collection_default_enabled": false,
+
     "app_check_token_auto_refresh": false,
 
     "crashlytics_ndk_enabled": true,
