@@ -51,9 +51,23 @@ project.ext {
   ])
 }
 
+apply from: file('./firebase-json.gradle')
+
+// If data collection isn't specifically disabled, default is enabled
+String dataCollectionDefaultEnabled = 'true'
+
+if (rootProject.ext && rootProject.ext.firebaseJson) {
+  if (rootProject.ext.firebaseJson.isFlagEnabled('app_data_collection_default_enabled', true) == false) {
+    dataCollectionDefaultEnabled = 'false'
+  }
+}
+
 android {
   defaultConfig {
     multiDexEnabled true
+    manifestPlaceholders = [
+      firebaseJsonDataCollectionDefaultEnabled: dataCollectionDefaultEnabled
+    ]
   }
   lintOptions {
     disable 'GradleCompatible'
@@ -81,8 +95,6 @@ dependencies {
   implementation "com.google.firebase:firebase-common"
   implementation "com.google.android.gms:play-services-auth:${ReactNative.ext.getVersion("play", "play-services-auth")}"
 }
-
-apply from: file("./firebase-json.gradle")
 
 ReactNative.shared.applyPackageVersion()
 ReactNative.shared.applyDefaultExcludes()
