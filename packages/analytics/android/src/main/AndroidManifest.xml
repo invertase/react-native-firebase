@@ -7,8 +7,10 @@
   <uses-permission android:name="android.permission.WAKE_LOCK" />
 
   <application>
-    <meta-data
-      android:name="firebase_analytics_collection_enabled"
-      android:value="${firebaseJsonAutoCollectionEnabled}"/>
+    <meta-data android:name="firebase_analytics_collection_enabled" android:value="${firebaseJsonAutoCollectionEnabled}"/>
+    <meta-data android:name="firebase_analytics_collection_deactivated" android:value="${firebaseJsonCollectionDeactivated}" />
+    <meta-data android:name="google_analytics_adid_collection_enabled" android:value="${firebaseJsonAdidEnabled}" />
+    <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="${firebaseJsonSsaidEnabled}" />
+    <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="${firebaseJsonPersonalizationEnabled}" />
   </application>
 </manifest>

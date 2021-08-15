@@ -20,6 +20,11 @@
     "messaging_ios_auto_register_for_remote_messages": false,
 
     "analytics_auto_collection_enabled": true,
+    "analytics_collection_deactivated": false,
+    "analytics_idfv_collection_enabled": false,
+    "google_analytics_adid_collection_enabled": true,
+    "google_analytics_ssaid_collection_enabled": true,
+    "analytics_default_allow_ad_personalization_signals": true,
 
     "perf_auto_collection_enabled": false,
 
