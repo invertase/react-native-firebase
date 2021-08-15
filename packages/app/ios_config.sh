@@ -134,6 +134,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_PERF_AUTO_COLLECTION")")
   fi
 
+  # config.perf_collection_deactivated
+  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_collection_deactivated")
+  if [[ $_PERF_DEACTIVATED ]]; then
+    _PLIST_ENTRY_KEYS+=("firebase_performance_collection_deactivated")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_PERF_DEACTIVATED")")
+  fi
+
   # config.messaging_auto_init_enabled
   _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "messaging_auto_init_enabled")
   if [[ $_MESSAGING_AUTO_INIT ]]; then
