@@ -1,3 +1,4 @@
+/* groovylint-disable DuplicateStringLiteral */
 import io.invertase.gradle.common.PackageJson
 
 buildscript {
@@ -65,6 +66,11 @@ project.ext {
 
 apply from: file('./../../app/android/firebase-json.gradle')
 
+String collectionDeactivated = 'false'
+String adidEnabled = 'true'
+String ssaidEnabled = 'true'
+String personalizationEnabled = 'true'
+
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
 
@@ -83,13 +89,30 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
       dataCollectionEnabled = 'false'
     }
   }
+
+  if (rnfbConfig.isFlagEnabled('analytics_collection_deactivated', false) == true) {
+    collectionDeactivated = 'true'
+  }
+  if (rnfbConfig.isFlagEnabled('google_analytics_adid_collection_enabled', true) == false) {
+    adidEnabled = 'false'
+  }
+  if (rnfbConfig.isFlagEnabled('google_analytics_ssaid_collection_enabled', true) == false) {
+    ssaidEnabled = 'false'
+  }
+  if (rnfbConfig.isFlagEnabled('analytics_default_allow_ad_personalization_signals', true) == false) {
+    personalizationEnabled = 'false'
+  }
 }
 
 android {
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
-      firebaseJsonAutoCollectionEnabled: dataCollectionEnabled
+      firebaseJsonAutoCollectionEnabled: dataCollectionEnabled,
+      firebaseJsonCollectionDeactivated: collectionDeactivated,
+      firebaseJsonAdidEnabled: adidEnabled,
+      firebaseJsonSsaidEnabled: ssaidEnabled,
+      firebaseJsonPersonalizationEnabled: personalizationEnabled
     ]
   }
   lintOptions {
