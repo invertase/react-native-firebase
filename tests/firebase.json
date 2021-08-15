@@ -27,6 +27,7 @@
     "analytics_default_allow_ad_personalization_signals": true,
 
     "perf_auto_collection_enabled": false,
+    "perf_collection_deactivated": false,
 
     "in_app_messaging_auto_collection_enabled": false,
 
