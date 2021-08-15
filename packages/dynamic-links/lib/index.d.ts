@@ -421,6 +421,13 @@ export namespace FirebaseDynamicLinksTypes {
      * On iOS this returns a string value representing the minimum app version (not the iOS system version).
      */
     minimumAppVersion: number | string | null;
+
+    /**
+     * The potential UTM parameters linked to this dynamic link
+     *
+     * It will only work for short links, not long links
+     */
+    utmParameters: Record<string, string>;
   }
 
   /**
