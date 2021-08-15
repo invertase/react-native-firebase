@@ -18,6 +18,23 @@
 const jwt = require('jsonwebtoken');
 
 describe('appCheck()', function () {
+  describe('config', function () {
+    // This depends on firebase.json containing a false value for token auto refresh, we
+    // verify here that it was carried in to the Info.plist correctly
+    // it relies on token auto refresh being left false for local tests where the app is reused, since it is persistent
+    // but in CI it's fresh every time and would be true if not overridden in Info.plist
+    it('should configure token auto refresh in Info.plist on ios', async function () {
+      if (device.getPlatform() === 'ios') {
+        const tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
+          '[DEFAULT]',
+        );
+        tokenRefresh.should.equal(false);
+      } else {
+        this.skip();
+      }
+    });
+  });
+
   describe('setTokenAutoRefresh())', function () {
     it('should set token refresh', function () {
       firebase.appCheck().setTokenAutoRefreshEnabled(false);
@@ -38,7 +55,7 @@ describe('appCheck()', function () {
   describe('activate())', function () {
     it('should activate with default provider and default token refresh', async function () {
       try {
-        await firebase.appCheck().activate('ignored', true);
+        await firebase.appCheck().activate('ignored', false);
       } catch (e) {
         return Promise.reject(e);
       }

@@ -58,6 +58,16 @@ RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
 }
 
+// Not present in JS or Android - it is iOS-specific so we only call this in testing - it is not in index.d.ts
+RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
+                  : (FIRApp *)firebaseApp
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
+  BOOL isTokenAutoRefreshEnabled = appCheck.isTokenAutoRefreshEnabled;
+  resolve([NSNumber numberWithBool:isTokenAutoRefreshEnabled]);
+}
+
 RCT_EXPORT_METHOD(getToken
                   : (FIRApp *)firebaseApp
                   : (BOOL)forceRefresh
@@ -96,9 +106,6 @@ RCT_EXPORT_METHOD(getToken
 // FIRAppCheckDebugProviderFactory *providerFactory =
 //       [[FIRAppCheckDebugProviderFactory alloc] init];
 // [FIRAppCheck setAppCheckProviderFactory:providerFactory];
-
-// - allow disable via firebase.json to override automatic data collection selection via
-// FirebaseAppCheckTokenAutoRefreshEnabled is the plist value to put to NO or YES
 
 // Write a custom provider factory, and allow the AppAttest provider
 
