@@ -118,6 +118,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_FIAM_AUTO_INIT")")
   fi
 
+  # config.app_check_token_auto_refresh
+  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "app_check_token_auto_refresh")
+  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then
+    _PLIST_ENTRY_KEYS+=("FirebaseAppCheckTokenAutoRefreshEnabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_APP_CHECK_TOKEN_AUTO_REFRESH")")
+  fi
+
   # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful
   _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "crashlytics_disable_auto_disabler")
   if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == "true" ]]; then
