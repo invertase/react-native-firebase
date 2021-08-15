@@ -17,7 +17,7 @@
 
 const aCoolUrl = 'https://invertase.io';
 
-android.describe('perf()', () => {
+describe('perf()', function () {
   describe('HttpMetric', function () {
     describe('start()', function () {
       it('correctly starts with internal flag ', async function () {
@@ -77,8 +77,8 @@ android.describe('perf()', () => {
       });
     });
 
-    // describe('removeAttribute()', async () => {
-    //   it('errors if not a string', async () => {
+    // describe('removeAttribute()', function () {
+    //   it('errors if not a string', async function () {
     //     const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
     //     try {
     //       httpMetric.putAttribute('inver', 'tase');
@@ -89,8 +89,8 @@ android.describe('perf()', () => {
     //       return Promise.resolve();
     //     }
     //   });
-    //
-    //   it('removes an attribute', async () => {
+
+    //   it('removes an attribute', async function () {
     //     const httpMetric = firebase.perf().newHttpMetric(aCoolUrl, 'GET');
     //     httpMetric.putAttribute('inver', 'tase');
     //     const value = httpMetric.getAttribute('inver');
