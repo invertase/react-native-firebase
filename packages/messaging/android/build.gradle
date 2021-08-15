@@ -63,27 +63,40 @@ project.ext {
   ])
 }
 
-apply from: file("./../../app/android/firebase-json.gradle")
+apply from: file('./../../app/android/firebase-json.gradle')
 
-def autoInitEnabled = "true"
-def notificationChannelId = ""
-def defaultNotificationColor = "@color/white";
-def notificationColor = defaultNotificationColor
+String notificationChannelId = ''
+String defaultNotificationColor = '@color/white'
+String notificationColor = defaultNotificationColor
 
+// If nothing is defined, data collection defaults to true
+String dataCollectionEnabled = 'true'
 
 if (rootProject.ext && rootProject.ext.firebaseJson) {
-  if (rootProject.ext.firebaseJson.isFlagEnabled("messaging_auto_init_enabled", true) == false) {
-    autoInitEnabled = "false"
+  /* groovylint-disable-next-line NoDef, VariableTypeRequired */
+  def rnfbConfig = rootProject.ext.firebaseJson
+  // If the SDK-wide data collection flag is defined and false, our default flips to false
+  if (rnfbConfig.isFlagEnabled('app_data_collection_default_enabled', true) == false) {
+    dataCollectionEnabled = 'false'
   }
-  notificationChannelId = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_channel_id", "")
-  notificationColor = rootProject.ext.firebaseJson.getStringValue("messaging_android_notification_color", defaultNotificationColor)
+  // If our specific collection flag is defined, it's status takes precedence
+  if (rnfbConfig.isDefined('messaging_auto_init_enabled')) {
+    if (rnfbConfig.isFlagEnabled('messaging_auto_init_enabled', true)) {
+      dataCollectionEnabled = 'true'
+    } else {
+      dataCollectionEnabled = 'false'
+    }
+  }
+
+  notificationChannelId = rnfbConfig.getStringValue('messaging_android_notification_channel_id', '')
+  notificationColor = rnfbConfig.getStringValue('messaging_android_notification_color', defaultNotificationColor)
 }
 
 android {
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
-      firebaseJsonAutoInitEnabled: autoInitEnabled,
+      firebaseJsonAutoInitEnabled: dataCollectionEnabled,
       firebaseJsonNotificationChannelId: notificationChannelId,
       firebaseJsonNotificationColor: notificationColor
     ]

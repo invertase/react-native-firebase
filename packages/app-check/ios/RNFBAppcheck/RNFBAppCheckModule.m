@@ -58,7 +58,8 @@ RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
 }
 
-// Not present in JS or Android - it is iOS-specific so we only call this in testing - it is not in index.d.ts
+// Not present in JS or Android - it is iOS-specific so we only call this in testing - it is not in
+// index.d.ts
 RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve rejecter

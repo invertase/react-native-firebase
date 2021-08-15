@@ -65,11 +65,23 @@ project.ext {
 
 apply from: file('./../../app/android/firebase-json.gradle')
 
-def autoInitEnabled = 'true'
+// If nothing is defined, data collection defaults to true
+String dataCollectionEnabled = 'true'
 
 if (rootProject.ext && rootProject.ext.firebaseJson) {
-  if (rootProject.ext.firebaseJson.isFlagEnabled('in_app_messaging_auto_collection_enabled', true) == false) {
-    autoInitEnabled = 'false'
+  /* groovylint-disable-next-line NoDef, VariableTypeRequired */
+  def rnfbConfig = rootProject.ext.firebaseJson
+  // If the SDK-wide data collection flag is defined and false, our default flips to false
+  if (rnfbConfig.isFlagEnabled('app_data_collection_default_enabled', true) == false) {
+    dataCollectionEnabled = 'false'
+  }
+  // If our specific collection flag is defined, it's status takes precedence
+  if (rnfbConfig.isDefined('in_app_messaging_auto_collection_enabled')) {
+    if (rnfbConfig.isFlagEnabled('in_app_messaging_auto_collection_enabled', true)) {
+      dataCollectionEnabled = 'true'
+    } else {
+      dataCollectionEnabled = 'false'
+    }
   }
 }
 
@@ -77,7 +89,7 @@ android {
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
-      firebaseJsonAutoInitEnabled: autoInitEnabled
+      firebaseJsonAutoInitEnabled: dataCollectionEnabled
     ]
   }
   lintOptions {
