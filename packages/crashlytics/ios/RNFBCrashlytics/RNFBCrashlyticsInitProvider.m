@@ -24,6 +24,7 @@
 #import "RNFBSharedUtils.h"
 #import "RNFBVersion.h"
 
+NSString *const KEY_APP_DATA_COLLECTION_DEFAULT_ENABLED = @"app_data_collection_default_enabled";
 NSString *const KEY_CRASHLYTICS_DEBUG_ENABLED = @"crashlytics_debug_enabled";
 NSString *const KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED = @"crashlytics_auto_collection_enabled";
 NSString *const KEY_CRASHLYTICS_IS_ERROR_GENERATION_ON_JS_CRASH_ENABLED =
@@ -50,8 +51,16 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
   }
 #endif
 
+  if ([RNFBSharedUtils configContains:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED]) {
+    return [RNFBSharedUtils getConfigBooleanValue:@"RNFBCrashlyticsInit"
+                                              key:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED
+                                     defaultValue:YES];
+  }
+  DLog(@"RNFBCrashlyticsInit specific key %@ not set, falling back to general key %@ with default "
+       @"%d if it does not exist.",
+       KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED, KEY_APP_DATA_COLLECTION_DEFAULT_ENABLED, YES);
   return [RNFBSharedUtils getConfigBooleanValue:@"RNFBCrashlyticsInit"
-                                            key:KEY_CRASHLYTICS_AUTO_COLLECTION_ENABLED
+                                            key:KEY_APP_DATA_COLLECTION_DEFAULT_ENABLED
                                    defaultValue:YES];
 }
 
