@@ -56,6 +56,10 @@ extern NSString *const DEFAULT_APP_NAME;
 
 + (NSString *)getISO8601String:(NSDate *)date;
 
++ (BOOL)configContains:(NSString *)key;
+
++ (BOOL)getConfigBooleanValue:(NSString *)tag key:(NSString *)key defaultValue:(BOOL)defaultValue;
+
 @end
 
 #endif
