@@ -36,7 +36,7 @@ NSString *const KEY_CRASHLYTICS_JAVASCRIPT_EXCEPTION_HANDLER_CHAINING_ENABLED =
 + (void)load {
   [FIRApp registerInternalLibrary:self
                          withName:@"react-native-firebase-crashlytics"
-                      withVersion:RNFBVersionString];
+                      withVersion:[RNFBVersionString copy]];
 }
 
 + (BOOL)isCrashlyticsCollectionEnabled {
