@@ -74,7 +74,7 @@
                        @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
                            ? [NSNull null]
                            : dynamicLink.minimumAppVersion,
-                       @"utmParameters": dynamicLink.utmParametersDictionary == nil
+                       @"utmParameters" : dynamicLink.utmParametersDictionary == nil
                            ? @{}
                            : dynamicLink.utmParametersDictionary,
                      }];
@@ -105,7 +105,7 @@
                          @"minimumAppVersion" : dynamicLink.minimumAppVersion == nil
                              ? [NSNull null]
                              : dynamicLink.minimumAppVersion,
-                         @"utmParameters": dynamicLink.utmParametersDictionary == nil
+                         @"utmParameters" : dynamicLink.utmParametersDictionary == nil
                              ? @{}
                              : dynamicLink.utmParametersDictionary,
                        }];

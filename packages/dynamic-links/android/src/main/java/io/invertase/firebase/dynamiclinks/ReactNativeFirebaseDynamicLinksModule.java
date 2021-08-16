@@ -182,7 +182,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                 if (pendingDynamicLinkData != null) {
                   initialLinkUrl = pendingDynamicLinkData.getLink().toString();
                   initialLinkMinimumVersion = pendingDynamicLinkData.getMinimumAppVersion();
-                  initialLinkUtmParameters = Arguments.makeNativeMap(pendingDynamicLinkData.getUtmParameters());
+                  initialLinkUtmParameters =
+                      Arguments.makeNativeMap(pendingDynamicLinkData.getUtmParameters());
                 }
 
                 // Guard against the scenario where the app was launched using a dynamic link,
@@ -190,7 +191,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                 // Overview (screen).
                 if (initialLinkUrl != null && !launchedFromHistory) {
                   promise.resolve(
-                      dynamicLinkToWritableMap(initialLinkUrl, initialLinkMinimumVersion, initialLinkUtmParameters));
+                      dynamicLinkToWritableMap(
+                          initialLinkUrl, initialLinkMinimumVersion, initialLinkUtmParameters));
                 } else {
                   promise.resolve(null);
                 }
@@ -218,7 +220,11 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                     String linkUrl = linkData.getLink().toString();
                     int linkMinimumVersion = linkData.getMinimumAppVersion();
                     Bundle linkUtmParameters = linkData.getUtmParameters();
-                    promise.resolve(dynamicLinkToWritableMap(linkUrl, linkMinimumVersion, Arguments.makeNativeMap(linkUtmParameters)));
+                    promise.resolve(
+                        dynamicLinkToWritableMap(
+                            linkUrl,
+                            linkMinimumVersion,
+                            Arguments.makeNativeMap(linkUtmParameters)));
                   } else {
                     rejectPromiseWithCodeAndMessage(promise, "not-found", "Dynamic link not found");
                   }
@@ -233,7 +239,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
     }
   }
 
-  private WritableMap dynamicLinkToWritableMap(String url, int minVersion, WritableMap utmParameters) {
+  private WritableMap dynamicLinkToWritableMap(
+      String url, int minVersion, WritableMap utmParameters) {
     WritableMap writableMap = Arguments.createMap();
 
     writableMap.putString("url", url);
@@ -442,7 +449,8 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                               dynamicLinkToWritableMap(
                                   pendingDynamicLinkData.getLink().toString(),
                                   pendingDynamicLinkData.getMinimumAppVersion(),
-                                  Arguments.makeNativeMap(pendingDynamicLinkData.getUtmParameters()))));
+                                  Arguments.makeNativeMap(
+                                      pendingDynamicLinkData.getUtmParameters()))));
                 }
               } else {
                 Log.e(
