@@ -15,16 +15,45 @@
  *
  */
 
+// This host is set up in Xcode/iOS applinks: + Android intent-filter + Firebase console Android test app SHA256
+const DYNAMIC_LINK_DOMAIN = 'https://reactnativefirebase.page.link';
+const LINK_TARGET_DOMAIN = 'https://reactnativefirebase.page.link'; // was https://invertase.io
+const TEST_LINK1_TARGET = `${LINK_TARGET_DOMAIN}/developers`;
+const TEST_LINK1 = `${DYNAMIC_LINK_DOMAIN}/?link=${TEST_LINK1_TARGET}&apn=com.invertase.testing`;
+const TEST_LINK2_TARGET = `${LINK_TARGET_DOMAIN}/contact`;
+const TEST_LINK2 = `${DYNAMIC_LINK_DOMAIN}/?link=${TEST_LINK2_TARGET}&apn=com.invertase.testing`;
+const TEST_LINK3_TARGET = `${LINK_TARGET_DOMAIN}/blog`;
+const TEST_LINK3 = `${DYNAMIC_LINK_DOMAIN}/?link=${TEST_LINK3_TARGET}&apn=com.invertase.testing`;
+
 const baseParams = {
-  link: 'https://invertase.io',
-  domainUriPrefix: 'https://reactnativefirebase.page.link',
+  link: TEST_LINK2_TARGET,
+  domainUriPrefix: DYNAMIC_LINK_DOMAIN,
 };
 
-const TEST_LINK =
-  'https://reactnativefirebase.page.link/?link=https://rnfirebase.io&apn=com.invertase.testing';
-const TEST_LINK2 =
-  'https://reactnativefirebase.page.link/?link=https://invertase.io/hire-us&apn=com.invertase.testing';
-const TEST_LINK3 = 'https://invertase.io';
+const getShortLink = async function (url, type) {
+  return await firebase.dynamicLinks().buildShortLink(
+    {
+      link: url,
+      domainUriPrefix: DYNAMIC_LINK_DOMAIN,
+      analytics: {
+        source: 'github',
+        medium: 'web',
+        campaign: 'prs-welcome',
+        content: 'fluff',
+        term: 'long',
+      },
+      ios: {
+        bundleId: 'io.invertase.testing',
+        minimumVersion: '123',
+      },
+      android: {
+        packageName: 'com.invertase.testing',
+        minimumVersion: '123', // the version code in tests/android/app/build.gradle must be higher!
+      },
+    },
+    type,
+  );
+};
 
 module.exports.baseParams = baseParams;
 
@@ -67,25 +96,17 @@ describe('dynamicLinks()', function () {
 
   describe('resolveLink()', function () {
     it('resolves a long link', async function () {
+      // TODO: flaky on android if link is used for open tests as well?
+      // https://github.com/firebase/firebase-android-sdk/issues/2909
       const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);
       link.should.be.an.Object();
-      link.url.should.equal('https://invertase.io/hire-us');
+      link.url.should.equal(TEST_LINK2_TARGET);
       should.equal(link.minimumAppVersion, null);
     });
 
     it('resolves a short link', async function () {
-      const shortLink = await firebase.dynamicLinks().buildShortLink(
-        {
-          ...baseParams,
-          ios: {
-            bundleId: 'io.invertase.testing',
-            minimumVersion: '123',
-          },
-          android: {
-            packageName: 'com.invertase.testing',
-            minimumVersion: '123',
-          },
-        },
+      const shortLink = await getShortLink(
+        TEST_LINK2_TARGET,
         firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
       );
       shortLink.should.be.String();
@@ -94,11 +115,16 @@ describe('dynamicLinks()', function () {
 
       const link = await firebase.dynamicLinks().resolveLink(shortLink);
       link.should.be.an.Object();
-      link.url.should.equal(baseParams.link);
+      link.url.should.equal(TEST_LINK2_TARGET);
       // TODO: harmonize the API so that minimumAppVersion is either a number or a string
       // it would be a breaking change in the API though
       // On Android it's a number and iOS a String, so parseInt is used to have a single test
       parseInt(link.minimumAppVersion, 10).should.equal(123);
+
+      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+      link.utmParameters.utm_source.should.equal('github');
+      link.utmParameters.utm_medium.should.equal('web');
+      link.utmParameters.utm_campaign.should.equal('prs-welcome');
     });
 
     it('throws on links that do not exist', async function () {
@@ -114,7 +140,7 @@ describe('dynamicLinks()', function () {
 
     it('throws on static links', async function () {
       try {
-        await firebase.dynamicLinks().resolveLink(TEST_LINK3);
+        await firebase.dynamicLinks().resolveLink(TEST_LINK2_TARGET);
         return Promise.reject(new Error('Did not throw Error.'));
       } catch (e) {
         e.message.should.containEql('Dynamic link not found');
@@ -145,35 +171,65 @@ describe('dynamicLinks()', function () {
     // });
   });
 
-  ios.describe('getInitialLink()', () => {
+  describe('getInitialLink()', function () {
     it('should return the dynamic link instance that launched the app', async function () {
-      await device.openURL({
-        url: TEST_LINK,
-      });
+      const shortLink = await getShortLink(
+        TEST_LINK3_TARGET,
+        firebase.dynamicLinks.ShortLinkType.SHORT,
+      );
+      if (device.getPlatform() === 'android') {
+        await device.launchApp({ newInstance: true, url: shortLink });
+      } else {
+        // #2660 - iOS getInitialLink fails, while Linking.getInitialLink() will return the link for resolution !?
+        // #2631 - on iOS getInitialLink will return same link: open app w/link (correct), background, open again (old link)
+        await device.openURL({ url: TEST_LINK3 });
+        // TODO: ios is not able to open short links on simulator?
+        // await device.openURL({ url: shortLink });
+      }
+      const link = await firebase.dynamicLinks().getInitialLink();
 
-      const dynamicLink = await firebase.dynamicLinks().getInitialLink();
-
-      dynamicLink.should.be.an.Object();
-      dynamicLink.url.should.equal('https://rnfirebase.io');
-      dynamicLink.utmParameters.should.eql({});
+      link.should.be.an.Object();
+      link.url.should.equal(TEST_LINK3_TARGET);
+      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+      // and they only come back when resolved from a short link, which is android only in testing
+      if (device.getPlatform() === 'android') {
+        link.utmParameters.utm_source.should.equal('github');
+        link.utmParameters.utm_medium.should.equal('web');
+        link.utmParameters.utm_campaign.should.equal('prs-welcome');
+      } else {
+        link.utmParameters.should.eql({});
+      }
     });
   });
 
-  ios.describe('onLink()', () => {
+  describe('onLink()', function () {
     it('should emit dynamic links', async function () {
+      const shortLink = await getShortLink(
+        TEST_LINK1_TARGET,
+        firebase.dynamicLinks.ShortLinkType.DEFAULT,
+      );
       const spy = sinon.spy();
-
       firebase.dynamicLinks().onLink(spy);
 
-      await device.openURL({
-        url: TEST_LINK2,
-      });
-
+      if (device.getPlatform() === 'android') {
+        await device.launchApp({ url: shortLink });
+      } else {
+        await device.openURL({ url: TEST_LINK1 });
+      }
       await Utils.spyToBeCalledOnceAsync(spy);
 
-      spy.getCall(0).args[0].should.be.an.Object();
-      spy.getCall(0).args[0].url.should.equal('https://invertase.io/hire-us');
-      spy.getCall(0).args[0].utmParameters.should.eql({});
+      const link = spy.getCall(0).args[0];
+      link.should.be.an.Object();
+      link.url.should.equal(TEST_LINK1_TARGET);
+      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+      // and they only come back when resolved from a short link, which is android only in testing
+      if (device.getPlatform() === 'android') {
+        link.utmParameters.utm_source.should.equal('github');
+        link.utmParameters.utm_medium.should.equal('web');
+        link.utmParameters.utm_campaign.should.equal('prs-welcome');
+      } else {
+        link.utmParameters.should.eql({});
+      }
     });
   });
 });
