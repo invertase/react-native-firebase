@@ -33,19 +33,21 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.invertase.testing</string>
+      <string>Firebase Deep Links</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>invertase</string>
+				<string>reactnativefirebase.page.link</string>
 			</array>
 		</dict>
 		<dict/>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>200</string>
 	<key>FirebaseDynamicLinksCustomDomains</key>
 	<array>
-		<string>https://invertase.io/hire-us</string>
+		<string>https://invertase.io/developers</string>
+		<string>https://invertase.io/contact</string>
+		<string>https://invertase.io/blog</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
