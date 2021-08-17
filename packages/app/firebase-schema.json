@@ -33,6 +33,10 @@
           "description": "Whether automatic data collection is enabled for all products, unless overridden by product-specific data collection settings.\n Setting this to false is useful for opt-in-first data flows, for example when dealing with GDPR compliance. \nThis may be overridden dynamically in Javascript via automaticDataCollectionEnabled FirebaseAppConfig property.",
           "type": "boolean"
         },
+        "app_log_level": {
+          "description": "Set the log level across all modules. Only applies to iOS currently. Can be 'error', 'warn', 'info', 'debug'.\n Logs messages at the configured level or lower.\n Note that if an app is running from AppStore, it will never log above info even if level is set to a higher (more verbose) setting",
+          "type": "string"
+        },
         "app_check_token_auto_refresh": {
           "description": "If this flag is disabled then Firebase App Check will not periodically auto-refresh the app check token.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance. \nIf unset it will default to the SDK-wide data collection default enabled setting. This may be overridden dynamically in Javascript.",
           "type": "boolean"

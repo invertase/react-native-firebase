@@ -58,6 +58,10 @@ RCT_EXPORT_MODULE();
       [FIRApp registerLibrary:@"react-native-firebase" withVersion:[RNFBVersionString copy]];
     });
 #endif
+    if ([[RNFBJSON shared] contains:@"app_log_level"]) {
+      NSString *logLevel = [[RNFBJSON shared] getStringValue:@"app_log_level" defaultValue:@"info"];
+      [self setLogLevel:logLevel];
+    }
   }
 
   return self;
@@ -189,6 +193,21 @@ RCT_EXPORT_METHOD(initializeApp
 
     resolve([RNFBSharedUtils firAppToDictionary:firApp]);
   });
+}
+
+RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {
+  int level = FIRLoggerLevelError;
+  if ([logLevel isEqualToString:@"verbose"]) {
+    level = FIRLoggerLevelDebug;
+  } else if ([logLevel isEqualToString:@"debug"]) {
+    level = FIRLoggerLevelDebug;
+  } else if ([logLevel isEqualToString:@"info"]) {
+    level = FIRLoggerLevelInfo;
+  } else if ([logLevel isEqualToString:@"warn"]) {
+    level = FIRLoggerLevelWarning;
+  }
+  DLog(@"RNFBSetLogLevel: setting level to %d from %@.", level, logLevel);
+  [[FIRConfiguration sharedInstance] setLoggerLevel:level];
 }
 
 RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled : (FIRApp *)firApp enabled : (BOOL)enabled) {

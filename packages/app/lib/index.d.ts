@@ -58,6 +58,8 @@ export namespace ReactNativeFirebase {
     readonly nativeErrorMessage: string;
   }
 
+  export type LogLevelString = 'debug' | 'verbose' | 'info' | 'warn' | 'error' | 'silent';
+
   export interface FirebaseAppOptions {
     /**
      * The Google App ID that is used to uniquely identify an instance of an app.
@@ -184,6 +186,19 @@ export namespace ReactNativeFirebase {
      * @param name The optional name of the app to return ('[DEFAULT]' if omitted)
      */
     app(name?: string): FirebaseApp;
+
+    /**
+     * Set the log level across all modules. Only applies to iOS currently, has no effect on Android.
+     * Should be one of 'error', 'warn', 'info', or 'debug'.
+     * Logs messages at the configured level or lower (less verbose / more important).
+     * Note that if an app is running from AppStore, it will never log above info even if
+     * level is set to a higher (more verbose) setting.
+     * Note that iOS is missing firebase-js-sdk log levels 'verbose' and 'silent'.
+     * 'verbose' if used will map to 'debug', 'silent' has no valid mapping and will return an error if used.
+     *
+     * @ios
+     */
+    setLogLevel(logLevel: LogLevelString): void;
 
     /**
      * A (read-only) array of all the initialized Apps.
