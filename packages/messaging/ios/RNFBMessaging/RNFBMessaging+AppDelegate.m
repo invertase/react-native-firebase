@@ -210,14 +210,15 @@
         [sharedInstance.conditionBackgroundMessageHandlerSet unlock];
       }
     } else {
-      // TODO: send an event to track notification has been delivered
-      // Only sends to react for data-only messages
+      // TODO: send an event to track notification has been delivered (possible needs a new event
+      // handler for `didReceiveRemoteNotification`) Only sends for data-only messages
       DLog(@"didReceiveRemoteNotification while app was in foreground");
       if (userInfo[@"aps"][@"alert"] == nil) {
-        DLog(@"didReceiveRemoteNotification send event for data-only message while app was in foreground");
+        DLog(@"didReceiveRemoteNotification send event for data-only message while app was in "
+             @"foreground");
         [[RNFBRCTEventEmitter shared]
             sendEventWithName:@"messaging_message_received"
-                        body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
+                         body:[RNFBMessagingSerializer remoteMessageUserInfoToDict:userInfo]];
       }
       completionHandler(UIBackgroundFetchResultNoData);
     }
