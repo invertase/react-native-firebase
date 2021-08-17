@@ -3,6 +3,7 @@
     "android_background_activity_names": "NotActuallyAnActivity",
 
     "app_data_collection_default_enabled": false,
+    "app_log_level": "debug",
 
     "app_check_token_auto_refresh": false,
 

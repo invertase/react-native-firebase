@@ -52,6 +52,20 @@ describe('firebase', function () {
     should.equal(firebase.app().automaticDataCollectionEnabled, false);
   });
 
+  it('should allow setting of log level', function () {
+    firebase.setLogLevel('error');
+    firebase.setLogLevel('verbose');
+  });
+
+  it('should error if logLevel is invalid', function () {
+    try {
+      firebase.setLogLevel('silent');
+      throw new Error('did not throw on invalid loglevel');
+    } catch (e) {
+      e.message.should.containEql('LogLevel must be one of');
+    }
+  });
+
   it('it should initialize dynamic apps', async function () {
     const appCount = firebase.apps.length;
     const name = `testscoreapp${FirebaseHelpers.id}`;
