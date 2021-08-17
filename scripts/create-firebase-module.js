@@ -101,13 +101,23 @@ inquirer
     console.log('1) ADD IT TO `KNOWN_NAMESPACES` in packages/app/lib/internal/constants.js');
     console.log('');
     console.log('2) ADD IT TO THE docs:');
-    console.log('  - in website/docs/sidebar.yaml');
+    console.log('  - in docs/<modulename>/index.md and usage/index.md');
+    console.log(
+      '  - in docs/<modules>/... find the prev next links where you slice in and fix them',
+    );
+    console.log('  - in docs/app/usage.md list of apps that are multi-app, if it is multi-app');
+    console.log('  - in docs/sidebar.yaml');
     console.log('  - in website/scripts/source-reference.js');
     console.log('  - in website/src/templates/utils.ts');
     console.log('');
     console.log('3) If the name has hyphens, carefully check:');
     console.log('  - package namespaces in java and package.json and index.d.ts');
     console.log('  - the @firebase tag in index.d.ts (creates docs site reference API links)');
+    console.log('');
+    console.log('4) Add the e2e tests:');
+    console.log('  - tests/e2e/.mocharc.js');
+    console.log('  - tests/package.json (and run yarn + yarn tests:pod:install)');
+    console.log('  - tests/app.js');
     console.log('');
   })
   .catch(console.error);
