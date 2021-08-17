@@ -24,6 +24,7 @@ module.exports = {
     '../packages/messaging/e2e/**/*.e2e.js',
     '../packages/ml/e2e/**/*.e2e.js',
     '../packages/in-app-messaging/e2e/**/*.e2e.js',
+    '../packages/installations/e2e/**/*.e2e.js',
     '../packages/remote-config/e2e/**/*.e2e.js',
     '../packages/storage/e2e/**/*.e2e.js',
   ],

@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,28 +15,10 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+#import <Foundation/Foundation.h>
 
-export const DEFAULT_APP_NAME = '[DEFAULT]';
+#import <React/RCTBridgeModule.h>
 
-export const KNOWN_NAMESPACES = [
-  'appCheck',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'inAppMessaging',
-  'installations',
-  'firestore',
-  'functions',
-  'indexing',
-  'storage',
-  'dynamicLinks',
-  'messaging',
-  'naturalLanguage',
-  'ml',
-  'notifications',
-  'perf',
-  'utils',
-];
+@interface RNFBInstallationsModule : NSObject <RCTBridgeModule>
+
+@end
