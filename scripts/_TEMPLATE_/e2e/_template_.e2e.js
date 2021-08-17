@@ -16,7 +16,6 @@
  */
 
 describe('_template_()', function () {
-  
   describe('aMethod()', function () {
     // TODO
   });
