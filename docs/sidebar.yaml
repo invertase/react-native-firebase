@@ -97,6 +97,10 @@
   - - - Usage
       - '/in-app-messaging/usage'
   - '//static.invertase.io/assets/firebase/in-app-messaging.svg'
+- - Installations
+  - - - Usage
+      - '/installations/usage'
+  - '//static.invertase.io/assets/social/firebase-logo.png'
 - - ML
   - - - Usage
       - '/ml/usage'

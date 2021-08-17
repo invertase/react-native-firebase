@@ -3,7 +3,7 @@ title: ML
 description: Installation and getting started with ML.
 icon: //static.invertase.io/assets/firebase/ml-kit.svg
 next: /remote-config/usage
-previous: /in-app-messaging/usage
+previous: /installations/usage
 ---
 
 # Installation

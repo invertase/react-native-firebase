@@ -55,6 +55,7 @@ Fastlane
 FCM
 firebase
 Firebase
+FirebaseApp
 firebase-ios-sdk
 Firestore
 getIdToken

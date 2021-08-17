@@ -47,6 +47,8 @@ function iconForModule(module: string): string {
       return '//static.invertase.io/assets/firebase/dynamic-links.svg';
     case 'in-app-messaging':
       return '//static.invertase.io/assets/firebase/in-app-messaging.svg';
+    case 'installations':
+      return '//static.invertase.io/assets/social/firebase-logo.png';
     case 'ml':
       return '//static.invertase.io/assets/firebase/ml-kit.svg';
     case 'remote-config':
