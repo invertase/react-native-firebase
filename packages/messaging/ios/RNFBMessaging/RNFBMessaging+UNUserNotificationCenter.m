@@ -75,14 +75,14 @@ struct {
   if (notification.request.content.userInfo[@"gcm.message_id"]) {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
 
-    // Don't send an event if contentAvailable is true - application:didReceiveRemoteNotification
-    // will send the event for us, we don't want to duplicate them
-    if (!notificationDict[@"contentAvailable"]) {
-      [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
+    // Always send an event to know there is an incoming message in the foreground
+    // Client app will have to display the notification as `UNNotificationPresentationOptionNone` is always sent
+    // to completion handler (see below)
+    [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
                                                  body:notificationDict];
-    }
 
-    // TODO in a later version allow customising completion options in JS code
+
+    // TODO in a later version allow customizing completion options in JS code
     completionHandler(UNNotificationPresentationOptionNone);
   }
 
