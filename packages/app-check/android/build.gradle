@@ -92,7 +92,7 @@ dependencies {
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion('firebase', 'bom')}")
   // These are beta, so they are not in the BoM yet. We have to specify the versions explicitly.
   implementation 'com.google.firebase:firebase-appcheck-safetynet:16.0.0-beta02'
-  debugImplementation 'com.google.firebase:firebase-appcheck-debug:16.0.0-beta02'
+  implementation 'com.google.firebase:firebase-appcheck-debug:16.0.0-beta02'
 }
 
 ReactNative.shared.applyPackageVersion()
