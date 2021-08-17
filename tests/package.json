@@ -18,6 +18,7 @@
     "@react-native-firebase/firestore": "12.6.1",
     "@react-native-firebase/functions": "12.6.1",
     "@react-native-firebase/in-app-messaging": "12.6.1",
+    "@react-native-firebase/installations": "12.6.1",
     "@react-native-firebase/messaging": "12.6.1",
     "@react-native-firebase/ml": "12.6.1",
     "@react-native-firebase/perf": "12.6.1",

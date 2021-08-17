@@ -165,6 +165,8 @@ function moduleNameToFullName(name) {
       return 'Instance ID';
     case 'in-app-messaging':
       return 'In-App Messaging';
+    case 'installations':
+      return 'Installations';
     case 'messaging':
       return 'Cloud Messaging';
     case 'ml':
