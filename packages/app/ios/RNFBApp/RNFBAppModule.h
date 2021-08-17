@@ -21,4 +21,6 @@
 
 @interface RNFBAppModule : NSObject <RCTBridgeModule>
 
+- (void)setLogLevel:(NSString *)logLevel;
+
 @end

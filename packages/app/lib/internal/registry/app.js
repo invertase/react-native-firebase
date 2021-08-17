@@ -15,7 +15,13 @@
  *
  */
 
-import { isNull, isObject, isString, isUndefined } from '@react-native-firebase/app/lib/common';
+import {
+  isIOS,
+  isNull,
+  isObject,
+  isString,
+  isUndefined,
+} from '@react-native-firebase/app/lib/common';
 import FirebaseApp from '../../FirebaseApp';
 import { DEFAULT_APP_NAME } from '../constants';
 import { getAppModule } from './nativeModule';
@@ -188,6 +194,16 @@ export function initializeApp(options = {}, configOrName) {
       // Now allow calling code to handle the initialization issue
       throw e;
     });
+}
+
+export function setLogLevel(logLevel) {
+  if (!['error', 'warn', 'info', 'debug', 'verbose'].includes(logLevel)) {
+    throw new Error('LogLevel must be one of "error", "warn", "info", "debug", "verbose"');
+  }
+
+  if (isIOS) {
+    getAppModule().setLogLevel(logLevel);
+  }
 }
 
 /**

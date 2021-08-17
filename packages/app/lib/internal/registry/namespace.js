@@ -20,7 +20,14 @@ import FirebaseApp from '../../FirebaseApp';
 import SDK_VERSION from '../../version';
 import { DEFAULT_APP_NAME, KNOWN_NAMESPACES } from '../constants';
 import FirebaseModule from '../FirebaseModule';
-import { getApp, getApps, initializeApp, setOnAppCreate, setOnAppDestroy } from './app';
+import {
+  getApp,
+  getApps,
+  initializeApp,
+  setLogLevel,
+  setOnAppCreate,
+  setOnAppDestroy,
+} from './app';
 
 // firebase.X
 let FIREBASE_ROOT = null;
@@ -231,6 +238,7 @@ export function createFirebaseRoot() {
       return getApps();
     },
     SDK_VERSION,
+    setLogLevel,
   };
 
   for (let i = 0; i < KNOWN_NAMESPACES.length; i++) {
