@@ -76,11 +76,10 @@ struct {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
 
     // Always send an event to know there is an incoming message in the foreground
-    // Client app will have to display the notification as `UNNotificationPresentationOptionNone` is always sent
-    // to completion handler (see below)
+    // Client app will have to display the notification as `UNNotificationPresentationOptionNone` is
+    // always sent to completion handler (see below)
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_message_received"
-                                                 body:notificationDict];
-
+                                               body:notificationDict];
 
     // TODO in a later version allow customizing completion options in JS code
     completionHandler(UNNotificationPresentationOptionNone);
