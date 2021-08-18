@@ -10,6 +10,7 @@
     "@react-native-firebase/analytics": "12.6.1",
     "@react-native-firebase/app": "12.6.1",
     "@react-native-firebase/app-check": "12.6.1",
+    "@react-native-firebase/app-distribution": "12.6.1",
     "@react-native-firebase/app-types": "6.7.2",
     "@react-native-firebase/auth": "12.6.1",
     "@react-native-firebase/crashlytics": "12.6.1",

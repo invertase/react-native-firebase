@@ -31,6 +31,7 @@ barcodes
 BUGFIX
 CarPlay
 Changelog
+checkForUpdate
 CLI
 CocoaPods
 codebase
@@ -44,6 +45,7 @@ Deprecations
 Detox
 DEVEX
 Diarmid
+Distribution
 DeviceCheck
 dropdown
 e2e
@@ -70,6 +72,7 @@ HTTP
 HTTPS
 IDFA
 installable
+integrations
 IntelliSense
 Interstitials
 interstitials
@@ -78,6 +81,7 @@ invertase
 iOS
 iOS13
 IPs
+isTesterSignedIn
 Javascript
 javascript
 JS
@@ -111,6 +115,7 @@ personalization
 Podfile
 plist
 pre-fetched
+pre-release
 pre-rendered
 preflight
 preloaded
@@ -141,6 +146,7 @@ setBackgroundMessageHandler
 SHA1
 SHA-256
 SIGABRT
+signInTester
 Siri
 SMS
 src
