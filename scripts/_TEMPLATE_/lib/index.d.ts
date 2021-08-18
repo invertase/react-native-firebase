@@ -56,6 +56,7 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
 export namespace Firebase_Template_Types {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {
     // firebase._template_.* static props go here
   }
@@ -103,8 +104,8 @@ export namespace Firebase_Template_Types {
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  _Template_.Module,
-  _Template_.Statics
+  Firebase_Template_Types.Module,
+  Firebase_Template_Types.Statics
 >;
 
 export const firebase: ReactNativeFirebase.Module & {
