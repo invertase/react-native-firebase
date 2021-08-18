@@ -1,3 +1,5 @@
+package io.invertase.firebase.appdistribution;
+
 /*
  * Copyright (c) 2016-present Invertase Limited & Contributors
  *
@@ -15,29 +17,13 @@
  *
  */
 
-export const APP_NATIVE_MODULE = 'RNFBAppModule';
+import com.facebook.react.bridge.*;
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
-export const DEFAULT_APP_NAME = '[DEFAULT]';
+public class ReactNativeFirebaseAppDistributionModule extends ReactNativeFirebaseModule {
+  private static final String TAG = "AppDistribution";
 
-export const KNOWN_NAMESPACES = [
-  'appCheck',
-  'appDistribution',
-  'auth',
-  'analytics',
-  'remoteConfig',
-  'crashlytics',
-  'database',
-  'inAppMessaging',
-  'installations',
-  'firestore',
-  'functions',
-  'indexing',
-  'storage',
-  'dynamicLinks',
-  'messaging',
-  'naturalLanguage',
-  'ml',
-  'notifications',
-  'perf',
-  'utils',
-];
+  ReactNativeFirebaseAppDistributionModule(ReactApplicationContext reactContext) {
+    super(reactContext, TAG);
+  }
+}

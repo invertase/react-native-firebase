@@ -359,6 +359,9 @@ PODS:
   - Firebase/AppCheck (8.6.0):
     - Firebase/CoreOnly
     - FirebaseAppCheck (~> 8.6.0-beta)
+  - Firebase/AppDistribution (8.6.0):
+    - Firebase/CoreOnly
+    - FirebaseAppDistribution (~> 8.6.0-beta)
   - Firebase/Auth (8.6.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 8.6.0)
@@ -424,6 +427,12 @@ PODS:
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - PromisesObjC (< 3.0, >= 1.2)
+  - FirebaseAppDistribution (8.6.0-beta):
+    - FirebaseCore (~> 8.0)
+    - FirebaseInstallations (~> 8.0)
+    - GoogleDataTransport (~> 9.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
+    - GoogleUtilities/UserDefaults (~> 7.4)
   - FirebaseAuth (8.6.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
@@ -844,6 +853,10 @@ PODS:
     - Firebase/AppCheck (= 8.6.0)
     - React-Core
     - RNFBApp
+  - RNFBAppDistribution (12.6.1):
+    - Firebase/AppDistribution (= 8.6.0)
+    - React-Core
+    - RNFBApp
   - RNFBAuth (12.6.1):
     - Firebase/Auth (= 8.6.0)
     - React-Core
@@ -932,6 +945,7 @@ DEPENDENCIES:
   - RNFBAnalytics (from `../../packages/analytics`)
   - RNFBApp (from `../../packages/app`)
   - RNFBAppCheck (from `../../packages/app-check`)
+  - RNFBAppDistribution (from `../../packages/app-distribution`)
   - RNFBAuth (from `../../packages/auth`)
   - RNFBCrashlytics (from `../../packages/crashlytics`)
   - RNFBDatabase (from `../../packages/database`)
@@ -956,6 +970,7 @@ SPEC REPOS:
     - FirebaseABTesting
     - FirebaseAnalytics
     - FirebaseAppCheck
+    - FirebaseAppDistribution
     - FirebaseAuth
     - FirebaseCore
     - FirebaseCoreDiagnostics
@@ -1043,6 +1058,8 @@ EXTERNAL SOURCES:
     :path: "../../packages/app"
   RNFBAppCheck:
     :path: "../../packages/app-check"
+  RNFBAppDistribution:
+    :path: "../../packages/app-distribution"
   RNFBAuth:
     :path: "../../packages/auth"
   RNFBCrashlytics:
@@ -1083,6 +1100,7 @@ SPEC CHECKSUMS:
   FirebaseABTesting: c3e48ebf5e7e5c674c5a131c68e941d7921d83dc
   FirebaseAnalytics: 8f32ae54ad42754f503354782575c4ddfc1425c3
   FirebaseAppCheck: 24bd8311c6dbfd1b03b1c7a3cb7d5a64dbc0cd4f
+  FirebaseAppDistribution: 91f5b721d665aa88dc8d98410eba1ee22b1691a9
   FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
   FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
   FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
@@ -1134,6 +1152,7 @@ SPEC CHECKSUMS:
   RNFBAnalytics: d52a31e8683fd1b6c5667580481676a751d52484
   RNFBApp: 884c958fe3256d2cb99cc92f54f00a319cc0aed6
   RNFBAppCheck: f315f2d159cc72657d0742d196c48ca490e4da17
+  RNFBAppDistribution: e2b4697101f15b28dfcec36c6d89c41fe4ce39f4
   RNFBAuth: b2ce9c35a5d86149e5aa77ef78392a4100fc676a
   RNFBCrashlytics: 149a89db16522c94d62b4ff3a065e040d3f58f0a
   RNFBDatabase: a172802ce1aba9219d1881126ef10687b1ed6c82

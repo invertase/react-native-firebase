@@ -20,6 +20,7 @@ import firebase from '@react-native-firebase/app';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/app-check';
+import '@react-native-firebase/app-distribution';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';

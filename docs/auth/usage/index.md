@@ -3,7 +3,7 @@ title: Authentication
 description: Installation and getting started with Authentication.
 icon: //static.invertase.io/assets/firebase/authentication.svg
 next: /auth/social-auth
-previous: /app-check/usage
+previous: /app-distribution/usage
 ---
 
 # Installation

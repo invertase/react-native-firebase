@@ -1,0 +1,30 @@
+{
+  "name": "@react-native-firebase/app-distribution",
+  "version": "12.6.1",
+  "author": "Invertase <oss@invertase.io> (http://invertase.io)",
+  "description": "React Native Firebase - App Distribution",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "genversion --semi lib/version.js",
+    "build:clean": "rimraf android/build && rimraf ios/build",
+    "prepare": "yarn run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/app-distribution"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "react",
+    "react-native",
+    "firebase",
+    "app-distribution"
+  ],
+  "peerDependencies": {
+    "@react-native-firebase/app": "12.6.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
