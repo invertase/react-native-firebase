@@ -147,6 +147,8 @@ function moduleNameToFullName(name) {
       return 'AdMob';
     case 'app-check':
       return 'App Check';
+    case 'app-distribution':
+      return 'App Distribution';
     case 'analytics':
       return 'Analytics';
     case 'auth':

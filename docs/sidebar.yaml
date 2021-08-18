@@ -27,6 +27,10 @@
   - - - Usage
       - '/app-check/usage'
   - '//static.invertase.io/assets/social/firebase-logo.png'
+- - App Distribution
+  - - - Usage
+      - '/app-distribution/usage'
+  - '/assets/docs/app-distribution/app-distribution.png'
 - - Authentication
   - - - Usage
       - '/auth/usage'
