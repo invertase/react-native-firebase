@@ -1411,12 +1411,12 @@ export namespace FirebaseFirestoreTypes {
      * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
      * "host" computer IP address for android emulators) to make the standard development experience easy.
      * If you want to use the emulator on a real android device, you will need to specify the actual host
-     * computer IP address.
+     * computer IP address. Use of this property for emulator connection is deprecated. Use useEmulator instead
      */
     host?: string;
 
     /**
-     * Whether to use SSL when connecting.
+     * Whether to use SSL when connecting. A true value is incompatible with the firestore emulator.
      */
     ssl?: boolean;
 
@@ -2064,6 +2064,21 @@ export namespace FirebaseFirestoreTypes {
      * ```
      */
     terminate(): Promise<void>;
+
+    /**
+     * Modify this Firestore instance to communicate with the Firebase Firestore emulator.
+     * This must be called before any other calls to Firebase Firestore to take effect.
+     * Do not use with production credentials as emulator traffic is not encrypted.
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
+     *
+     * @param host: emulator host (eg, 'localhost')
+     * @param port: emulator port (eg, 8080)
+     */
+    useEmulator(host: string, port: number): void;
   }
 }
 

@@ -102,6 +102,20 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void useEmulator(String appName, String host, int port, Promise promise) {
+    module
+        .useEmulator(appName, host, port)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void settings(String appName, ReadableMap settings, Promise promise) {
     module
         .settings(appName, toHashMap(settings))
