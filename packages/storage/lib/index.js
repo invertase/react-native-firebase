@@ -107,9 +107,11 @@ class FirebaseStorageModule extends FirebaseModule {
         );
       }
       ({ bucket, path } = parts);
+      bucket = `gs://${bucket}`;
     } else {
       ({ bucket, path } = getGsUrlParts(url));
     }
+    console.error(`Bucket parts are ${bucket} / ${path}`);
 
     const storageInstance = this.app.storage(bucket);
     return new StorageReference(storageInstance, path);

@@ -109,7 +109,7 @@ describe('storage()', function () {
     });
   });
 
-  describe('refFromURL', function () {
+  describe.only('refFromURL', function () {
     it('accepts a gs url', async function () {
       const url = 'gs://foo/bar/baz.png';
       const ref = firebase.storage().refFromURL(url);
@@ -132,6 +132,19 @@ describe('storage()', function () {
       ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
       ref.name.should.equal('1mbTestFile.gif');
       ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
+    });
+
+    it('handles complicated urls', async function () {
+      const url =
+        'https://storage.googleapis.com/react-native-firebase.appspot.com/pdf/4lqA70lYwfRgH1krOevw6mLMgPs2_162613790513241';
+      const ref = firebase.storage().refFromURL(url);
+      ref.bucket.should.equal('react-native-firebase.appspot.com');
+      ref.name.should.equal('pdf/4lqA70lYwfRgH1krOevw6mLMgPs2_162613790513241');
+      ref
+        .toString()
+        .should.equal(
+          'gs://react-native-firebase.appspot.com/pdf/4lqA70lYwfRgH1krOevw6mLMgPs2_162613790513241',
+        );
     });
 
     it('throws an error if https url could not be parsed', async function () {
