@@ -43,12 +43,25 @@ describe('appCheck()', function () {
   describe('getToken())', function () {
     it('token fetch attempt should work', async function () {
       // Our tests configure a debug provider with shared secret so we should get a valid token
-      const token = await firebase.appCheck().getToken(true);
+      const token = await firebase.appCheck().getToken();
       token.should.not.equal('');
       const decodedToken = jwt.decode(token);
       decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
       if (decodedToken.exp < Date.now()) {
         Promise.reject('Token already expired');
+      }
+
+      // Force refresh should get a different token?
+      // TODO iOS tokens are stale because of https://github.com/firebase/firebase-ios-sdk/issues/8544
+      if (device.getPlatform() === 'android') {
+        const token2 = await firebase.appCheck().getToken(true);
+        token2.should.not.equal('');
+        const decodedToken2 = jwt.decode(token2);
+        decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
+        if (decodedToken2.exp < Date.now()) {
+          Promise.reject('Token already expired');
+        }
+        (token === token2).should.be.false();
       }
     });
   });
