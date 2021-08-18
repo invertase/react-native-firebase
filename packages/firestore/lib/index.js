@@ -96,6 +96,24 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.terminate();
   }
 
+  useEmulator(host, port) {
+    if (!host || !isString(host) || !port || !isNumber(port)) {
+      throw new Error('firebase.firestore().useEmulator() takes a non-empty host and port');
+    }
+    let _host = host;
+    if (isAndroid && _host) {
+      if (_host === 'localhost' || _host === '127.0.0.1') {
+        _host = '10.0.2.2';
+        // eslint-disable-next-line no-console
+        console.log(
+          'Mapping firestore host to "10.0.2.2" for android emulators. Use real IP on real devices.',
+        );
+      }
+    }
+    this.native.useEmulator(_host, port);
+    return [_host, port]; // undocumented return, just used to unit test android host remapping
+  }
+
   collection(collectionPath) {
     if (!isString(collectionPath)) {
       throw new Error(
@@ -233,6 +251,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     }
 
     if (!isUndefined(settings.host)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'host in settings to connect with firestore emulator is deprecated. Use useEmulator instead.',
+      );
       if (!isString(settings.host)) {
         return Promise.reject(
           new Error("firebase.firestore().settings(*) 'settings.host' must be a string value."),

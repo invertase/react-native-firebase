@@ -43,6 +43,15 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
     return getFirestoreForApp(appName).enableNetwork();
   }
 
+  Task<Void> useEmulator(String appName, String host, int port) {
+    return Tasks.call(
+        getExecutor(),
+        () -> {
+          getFirestoreForApp(appName).useEmulator(host, port);
+          return null;
+        });
+  }
+
   Task<Void> settings(String appName, Map<String, Object> settings) {
     return Tasks.call(
         getExecutor(),

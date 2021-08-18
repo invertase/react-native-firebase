@@ -121,6 +121,19 @@ RCT_EXPORT_METHOD(clearPersistence
       }];
 }
 
+RCT_EXPORT_METHOD(useEmulator
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSString *)host
+                  : (NSInteger)port) {
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  [firestore useEmulatorWithHost:host port:port];
+
+  // It is not sufficient to just use emulator. You have toggle SSL off too.
+  FIRFirestoreSettings *settings = firestore.settings;
+  settings.sslEnabled = FALSE;
+  firestore.settings = settings;
+}
+
 RCT_EXPORT_METHOD(waitForPendingWrites
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
