@@ -128,8 +128,8 @@ export namespace FirebaseInstallationsTypes {
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<
-  Installations.Module,
-  Installations.Statics
+  FirebaseInstallationsTypes.Module,
+  FirebaseInstallationsTypes.Statics
 >;
 
 export const firebase: ReactNativeFirebase.Module & {
