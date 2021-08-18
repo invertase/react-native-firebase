@@ -75,7 +75,8 @@ RCT_EXPORT_METHOD(getToken
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
-  [appCheck tokenForcingRefresh:NO
+  [appCheck tokenForcingRefresh:NO  // TODO Cannot use forceRefresh argument, if we send 'YES' in
+                                    // https://github.com/firebase/firebase-ios-sdk/issues/8544
                      completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
                        if (error != nil) {
                          // Handle any errors if the token was not retrieved.

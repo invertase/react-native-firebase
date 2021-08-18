@@ -21,9 +21,14 @@
 
 ---
 
-AppCheck description.
+App Check works alongside other Firebase services to help protect your backend resources from abuse, such as billing fraud or phishing. With App Check, devices running your app will use an app or device attestation provider that attests to one or both of the following:
 
-[> Learn More](https://firebase.google.com/products/app-check/)
+- Requests originate from your authentic app
+- Requests originate from an authentic, untampered device
+
+This attestation is attached to every request your app makes to your Firebase backend resources.
+
+[> Learn More](https://firebase.google.com/docs/app-check/)
 
 ## Installation
 
@@ -35,9 +40,8 @@ yarn add @react-native-firebase/app-check
 
 ## Documentation
 
-- [Guides](#TODO)
-- [Installation](#TODO)
-- [Reference](#TODO)
+- [Guides](https://rnfirebase.io/app-check/usage/)
+- [Reference](https://rnfirebase.io/reference/app-check)
 
 ## License
 

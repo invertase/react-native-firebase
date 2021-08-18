@@ -40,16 +40,20 @@ class FirebaseAppCheckModule extends FirebaseModule {
   }
 
   getToken(forceRefresh) {
-    return this.native.getToken(forceRefresh);
+    if (!forceRefresh) {
+      return this.native.getToken(false);
+    } else {
+      return this.native.getToken(true);
+    }
   }
 
   onTokenChanged() {
     // iOS does not provide any native listening feature
     if (isIOS) {
-      return;
+      return () => {};
     }
     // TODO unimplemented on Android
-    return;
+    return () => {};
   }
 }
 
@@ -63,7 +67,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false, // TODO verify if this is interesting - token refresh listener perhaps?
+  nativeEvents: false, // TODO implement ['appcheck-token-changed'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAppCheckModule,
