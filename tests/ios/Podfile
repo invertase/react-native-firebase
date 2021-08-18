@@ -46,13 +46,6 @@ target 'testing' do
   post_install do |installer|
     react_native_post_install(installer)
 
-    # We support a smaller range of deployment than some libraries, eliminate related noise
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSMinimumDeployVersion
-      end
-    end
-
     # This is needed for Apple Silicon (M1) builds https://github.com/facebook/react-native/issues/31941
     installer.aggregate_targets.each do |aggregate_target|
       aggregate_target.user_project.native_targets.each do |target|

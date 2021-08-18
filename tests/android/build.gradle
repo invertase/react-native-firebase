@@ -43,7 +43,6 @@ allprojects {
   println "${project.name} ${projectDir} ${rootDir}"
 
   repositories {
-    google()
     mavenLocal()
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
@@ -57,8 +56,8 @@ allprojects {
     //   // Detox as an .aar file (we're going to use it as a compile dependency though, to patch it)
     //   url "$rootDir/../node_modules/detox/Detox-android"
     // }
+    google()
     mavenCentral()
-    jcenter() // com.facebook.yoa:proguard-annotations not published elsewhere yet, and react-native needs new flipper+fbjni-java-only
   }
 }
 
