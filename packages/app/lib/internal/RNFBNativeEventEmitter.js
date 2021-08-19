@@ -31,7 +31,31 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
       this.ready = true;
     }
     RNFBAppModule.eventsAddListener(eventType);
-    return super.addListener(`rnfb_${eventType}`, listener, context);
+
+    let subscription = super.addListener(`rnfb_${eventType}`, listener, context);
+
+    // React Native 0.65+ altered EventEmitter:
+    // - removeSubscription is gone
+    // - addListener returns an unsubscriber instead of a more complex object with eventType etc
+
+    // make sure eventType for backwards compatibility just in case
+    subscription.eventType = `rnfb_${eventType}`;
+
+    // New style is to return a remove function on the object, just in csae people call that,
+    // we will modify it to do our native unsubscription then call the original
+    let originalRemove = subscription.remove;
+    let newRemove = () => {
+      RNFBAppModule.eventsRemoveListener(eventType, false);
+      if (super.removeSubscription != null) {
+        // This is for RN <= 0.64 - 65 and greater no longer have removeSubscription
+        super.removeSubscription(subscription);
+      } else if (originalRemove != null) {
+        // This is for RN >= 0.65
+        originalRemove();
+      }
+    };
+    subscription.remove = newRemove;
+    return subscription;
   }
 
   removeAllListeners(eventType) {
@@ -39,9 +63,12 @@ class RNFBNativeEventEmitter extends NativeEventEmitter {
     super.removeAllListeners(`rnfb_${eventType}`);
   }
 
+  // This is likely no longer ever called, but it is here for backwards compatibility with RN <= 0.64
   removeSubscription(subscription) {
     RNFBAppModule.eventsRemoveListener(subscription.eventType.replace('rnfb_'), false);
-    super.removeSubscription(subscription);
+    if (super.removeSubscription) {
+      super.removeSubscription(subscription);
+    }
   }
 }
 
