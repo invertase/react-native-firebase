@@ -15,7 +15,7 @@ module, view the [Getting Started](/) documentation.
 # Install & setup the app module
 yarn add @react-native-firebase/app
 
-# Install the app-check module
+# Install the app-distribution module
 yarn add @react-native-firebase/app-distribution
 
 # If you're developing your app using iOS, run this command
