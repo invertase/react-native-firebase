@@ -209,10 +209,10 @@ export namespace FirebaseAnalyticsTypes {
     cp1?: string;
   }
 
-  /**
-   * Unsupported in "Enhanced Ecommerce reports":
-   * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-checkout_progress
-   */
+  //
+  // Unsupported in "Enhanced Ecommerce reports":
+  // https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-checkout_progress
+  //
   // export interface CheckoutProgressEventParameters {
   //   checkout_step: string;
   //   checkout_options: string;
