@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.invertase.firebase.analytics" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="io.invertase.firebase.analytics">
+<application>
+  <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+    <meta-data
+      android:name="com.google.firebase.components:io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsRegistrar"
+      android:value="com.google.firebase.components.ComponentRegistrar" />
+  </service>
+</application>
+</manifest>
