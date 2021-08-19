@@ -1,0 +1,14 @@
+import groovy.json.JsonSlurper
+
+def packageJson = new JsonSlurper().parseText((new File(project.projectDir.parentFile, 'package.json')).text)
+String moduleName = packageJson['name'].replaceAll('@','').replaceAll('\\/','-')
+String moduleVersion = packageJson['version']
+
+android {
+  defaultConfig {
+    // BuildConfig.MODULE_VERSION
+    buildConfigField 'String', 'MODULE_VERSION', "\"${moduleVersion}\""
+    // BuildConfig.MODULE_NAME
+    buildConfigField 'String', 'MODULE_NAME', "\"${moduleName}\""
+  }
+}

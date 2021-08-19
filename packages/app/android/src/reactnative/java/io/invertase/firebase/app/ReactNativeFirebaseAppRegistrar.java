@@ -21,6 +21,7 @@ import androidx.annotation.Keep;
 import com.google.firebase.components.Component;
 import com.google.firebase.components.ComponentRegistrar;
 import com.google.firebase.platforminfo.LibraryVersionComponent;
+import io.invertase.firebase.BuildConfig;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +30,6 @@ public class ReactNativeFirebaseAppRegistrar implements ComponentRegistrar {
   @Override
   public List<Component<?>> getComponents() {
     return Collections.singletonList(
-        LibraryVersionComponent.create(
-            "react-native-firebase", ReactNativeFirebaseVersion.VERSION));
+        LibraryVersionComponent.create(BuildConfig.MODULE_NAME, BuildConfig.MODULE_VERSION));
   }
 }
