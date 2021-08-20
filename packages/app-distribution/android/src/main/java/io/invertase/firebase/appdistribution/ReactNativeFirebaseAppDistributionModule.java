@@ -26,4 +26,28 @@ public class ReactNativeFirebaseAppDistributionModule extends ReactNativeFirebas
   ReactNativeFirebaseAppDistributionModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
+
+  @ReactMethod
+  public void isTesterSignedIn(Promise promise) {
+    rejectPromiseWithCodeAndMessage(
+        promise, "platform-unsupported", "Android is not supported for App Distribution");
+  }
+
+  @ReactMethod
+  public void signInTester(Promise promise) {
+    rejectPromiseWithCodeAndMessage(
+        promise, "platform-unsupported", "Android is not supported for App Distribution");
+  }
+
+  @ReactMethod
+  public void checkForUpdate(Promise promise) {
+    rejectPromiseWithCodeAndMessage(
+        promise, "platform-unsupported", "Android is not supported for App Distribution");
+  }
+
+  @ReactMethod
+  public void signOutTester(Promise promise) {
+    rejectPromiseWithCodeAndMessage(
+        promise, "platform-unsupported", "Android is not supported for App Distribution");
+  }
 }

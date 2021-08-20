@@ -16,6 +16,12 @@
  */
 
 describe('appDistribution()', function () {
+  describe('native module is loaded', function () {
+    it('checks native module load status', function () {
+      firebase.appDistribution().native;
+    });
+  });
+
   describe('isTesterSignedIn()', function () {
     it('checks if a tester is signed in', async function () {
       if (device.getPlatform() === 'ios') {
