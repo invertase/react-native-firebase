@@ -37,7 +37,13 @@ import version from './version';
 import * as structs from './structs';
 
 const ReservedEventNames = [
+  'ad_activeview',
+  'ad_click',
+  'ad_exposure',
+  'ad_impression',
+  'ad_query',
   'ad_reward',
+  'adunit_exposure',
   'app_background',
   'app_clear_data',
   // 'app_exception',
@@ -53,6 +59,7 @@ const ReservedEventNames = [
   'dynamic_link_first_open',
   'error',
   'first_open',
+  'first_visit',
   'in_app_purchase',
   'notification_dismiss',
   'notification_foreground',
