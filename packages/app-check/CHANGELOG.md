@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.7.2](https://github.com/invertase/react-native-firebase/compare/v12.7.1...v12.7.2) (2021-08-21)
+
+### Bug Fixes
+
+- **app-check, ios:** use RNFBAppCheck everywhere vs RNFBAppcheck ([2545349](https://github.com/invertase/react-native-firebase/commit/2545349177aac2fe99418c76ecd5901b5719b819))
+
 ## [12.7.1](https://github.com/invertase/react-native-firebase/compare/v12.7.0...v12.7.1) (2021-08-20)
 
 **Note:** Version bump only for package @react-native-firebase/app-check

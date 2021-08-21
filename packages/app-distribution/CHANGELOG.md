@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.7.2](https://github.com/invertase/react-native-firebase/compare/v12.7.1...v12.7.2) (2021-08-21)
+
+### Bug Fixes
+
+- **app-distribution, android:** export methods so module loads ([bc0ae4f](https://github.com/invertase/react-native-firebase/commit/bc0ae4f307d1e6e60bfdf871f85dd3fc796ad8c8))
+
 ## [12.7.1](https://github.com/invertase/react-native-firebase/compare/v12.7.0...v12.7.1) (2021-08-20)
 
 ### Bug Fixes
