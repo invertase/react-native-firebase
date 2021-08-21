@@ -129,7 +129,7 @@ functions: listProducts: http://localhost:5000/rnfirebase-demo/us-central1/listP
 In your terminal (or browser), access the endpoint provided. Our list of generated products is ready for use.
 
 ```
-curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET  http://localhost:5000/rnfirebase-demo/us-central1/listProducts
+curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X POST -d '{"data":{}}' http://localhost:5000/rnfirebase-demo/us-central1/listProducts
 ```
 
 ### Security
