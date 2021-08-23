@@ -34,11 +34,11 @@ Analytics collects usage and behavior data for your app. Its two primary concern
 
 <Youtube id="8iZpH7O6zXo" />
 
-Analytics automatically logs some [events](https://support.google.com/analytics/answer/9234069) and [user properties](https://support.google.com/analytics/answer/9268042); you don't need to add any code to enable them. However, Analytics also allows you to log [custom](#Custom-Events) or [predefined](#Predefined-Events) events within your app. How you can do this will be explained below.
+Analytics automatically logs some [events](https://support.google.com/analytics/answer/9234069) and [user properties](https://support.google.com/analytics/answer/9268042); you don't need to add any code to enable them. However, Analytics also allows you to log [custom](#custom-events) or [predefined](#predefined-events) events within your app. How you can do this will be explained below.
 
 # Usage
 
-Analytics offers a wealth of [Predefined Events](#Predefined-Events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#Custom-Events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
+Analytics offers a wealth of [Predefined Events](#predefined-events) to track user behavior. Analytics also offers folks the ability to log [Custom Events](#custom-events) . If you're already familiar with Google Analytics, this method is equivalent to using the event command in [gtag.js](https://developers.google.com/gtagjs/).
 
 ## Custom Events
 
