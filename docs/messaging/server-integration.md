@@ -169,7 +169,7 @@ Firebase Cloud Messaging tokens are associated with the instance of the installe
 
 This means that by default, if your app has users and you allow them to log out and log in on the same app on the same device, the same FCM token will be used for both users. Usually this is not what you want, so you must take care to cycle the FCM token at the same time you handle user logout/login.
 
-How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove ti, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
+How and when you invalidate a token and generate a new one will be specific to your project, but a common pattern is to delete the FCM token during logout and update your back end to remove it, then to fetch the FCM token during login and update your back end systems to associate the new token with the logged in user.
 
 <https://rnfirebase.io/reference/messaging#deleteToken>
 <https://rnfirebase.io/reference/messaging#getToken>
