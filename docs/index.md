@@ -281,8 +281,8 @@ The `app.json` for integration that included the optional crashlytics and perfor
       "googleServicesFile": "./GoogleService-Info.plist"
     },
     "plugins": [
-      "@react-native-firebase/app"
-      "@react-native-firebase/perf"
+      "@react-native-firebase/app",
+      "@react-native-firebase/perf",
       "@react-native-firebase/crashlytics"
     ]
   }
