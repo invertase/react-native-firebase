@@ -167,7 +167,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       promise.resolve(null);
       return;
     }
-    
+
     // Verify if the app was resumed from the Overview (history) screen.
     launchedFromHistory =
         (currentIntent != null)
