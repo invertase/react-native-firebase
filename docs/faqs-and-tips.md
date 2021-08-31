@@ -68,6 +68,7 @@ Sometimes, after step 3, you have to click inside a "Text color" field, but this
 When the app is closed/quit, this can happen even when you are getting notifications and even when you are able to invoke the app in a headless state.
 
 To fix this:
+
 1. You first need to send the payload with "content-available: 1" in the `apns` section of the message payload so the app gets invoked in a headless state.
 2. On the `index.js` page, if the app is invoked in headless mode, instead of returning null, return a simple component that does nothing and renders nothing. Otherwise, return the actual `App` component.
 
