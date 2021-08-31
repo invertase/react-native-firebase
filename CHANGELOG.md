@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [12.7.4](https://github.com/invertase/react-native-firebase/compare/v12.7.3...v12.7.4) (2021-08-31)
+
+
+### Bug Fixes
+
+* **app-distribution, ios:** avoid crash when releaseNotes is nil ([#5667](https://github.com/invertase/react-native-firebase/issues/5667)) ([41c0107](https://github.com/invertase/react-native-firebase/commit/41c0107dfcefb6989de08d534e5a8099482a420a))
+* **app-distribution, ios:** correct downloadURL usage for JS serialization ([#5668](https://github.com/invertase/react-native-firebase/issues/5668)) ([66d991c](https://github.com/invertase/react-native-firebase/commit/66d991ca4bb034d6a6a56028668be6eb002d4345))
+* **dynamic-links, android:** check for null currentIntent in getInitialLink to avoid crash ([#5662](https://github.com/invertase/react-native-firebase/issues/5662)) ([415c200](https://github.com/invertase/react-native-firebase/commit/415c200f0d0b0b9f7c6f8fffcb62d79b0973ba6f))
+
+
+
+
+
 ## [12.7.3](https://github.com/invertase/react-native-firebase/compare/v12.7.2...v12.7.3) (2021-08-24)
 
 
