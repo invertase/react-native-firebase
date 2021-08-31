@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(checkForUpdate
       @"buildVersion" : release.buildVersion,
       @"releaseNotes" : release.releaseNotes == nil ? [NSNull null] : release.releaseNotes,
       @"isExpired" : [NSNumber numberWithBool:release.isExpired],
-      @"downloadURL" : release.downloadURL
+      @"downloadURL" : release.downloadURL.absoluteString
     });
   }];
 }
