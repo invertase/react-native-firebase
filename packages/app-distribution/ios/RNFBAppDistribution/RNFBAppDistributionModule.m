@@ -96,12 +96,10 @@ RCT_EXPORT_METHOD(checkForUpdate
     resolve(@{
       @"displayVersion" : release.displayVersion,
       @"buildVersion" : release.buildVersion,
-      @"releaseNotes" : release.releaseNotes,
+      @"releaseNotes" : release.releaseNotes == nil ? [NSNull null] : release.releaseNotes,
       @"isExpired" : [NSNumber numberWithBool:release.isExpired],
       @"downloadURL" : release.downloadURL
     });
-
-    resolve([NSNull null]);  // FIXME read the result into a map and return it!
   }];
 }
 
