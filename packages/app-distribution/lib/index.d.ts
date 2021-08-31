@@ -71,9 +71,9 @@ export namespace FirebaseAppDistributionTypes {
     buildVersion: string;
 
     /**
-     * The release notes for this build.
+     * The release notes for this build, possibly null if no release notes were provided.
      */
-    releaseNotes: string;
+    releaseNotes: string | null;
 
     /**
      * The URL for the build.
