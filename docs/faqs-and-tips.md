@@ -63,6 +63,17 @@ Sometimes when building an in-app-message in the console, sending a test to a de
 
 Sometimes, after step 3, you have to click inside a "Text color" field, but this should enable the "Test on device" option. After that you add the device Install ID, make sure to quit the app before the actual test, and then I wait for the confirmation toast to open the app up again. As long as the ID is 100% correct, the test should work as intended.
 
+### On iOS, when the app is in quit state, the setBackgroundMessageHandler is never invoked even when I receive the notification. How can I fix this?
+
+When the app is closed/quit, this can happen even when you are getting notifications and even when you are able to invoke the app in a headless state.
+
+To fix this:
+
+1. You first need to send the payload with "content-available: 1" in the `apns` section of the message payload so the app gets invoked in a headless state.
+2. On the `index.js` page, if the app is invoked in headless mode, instead of returning null, return a simple component that does nothing and renders nothing. Otherwise, return the actual `App` component.
+
+To view the complete detail for this solution, please refer to this page: [#5656](https://github.com/invertase/react-native-firebase/issues/5656)
+
 # Tips
 
 - Whenever you face a strange issue (or an issue that causes build errors), there are two things you should always consider.
