@@ -1294,7 +1294,7 @@ export namespace FirebaseAuthTypes {
     onAuthStateChanged(listener: CallbackOrObserver<AuthListenerCallback>): () => void;
 
     /**
-     * Listen for changes in ID token.
+     * Listen for changes in ID token. (JWT token)
      * This method returns a unsubscribe function to stop listening to events.
      * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
      *
