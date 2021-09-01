@@ -1295,6 +1295,7 @@ export namespace FirebaseAuthTypes {
 
     /**
      * Listen for changes in ID token.
+     * ID token can be verified (if desired) using the [admin SDK or a 3rd party JWT library](https://firebase.google.com/docs/auth/admin/verify-id-tokens)
      * This method returns a unsubscribe function to stop listening to events.
      * Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
      *
