@@ -9,6 +9,9 @@ jest.doMock('react-native', () => {
       },
       NativeModules: {
         ...ReactNative.NativeModules,
+        RNFBAnalyticsModule: {
+          logEvent: jest.fn(),
+        },
         RNFBAppModule: {
           NATIVE_FIREBASE_APPS: [
             {

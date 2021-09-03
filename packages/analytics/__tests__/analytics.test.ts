@@ -130,14 +130,6 @@ describe('Analytics', function () {
       );
     });
 
-    it('errors if more than 25 params provided', function () {
-      expect(() =>
-        firebase.analytics().logEvent('invertase', Object.assign({}, new Array(26).fill(1))),
-      ).toThrowError(
-        "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
-      );
-    });
-
     describe('logScreenView()', function () {
       it('errors if param is not an object', function () {
         // @ts-ignore test
