@@ -642,7 +642,12 @@ export namespace FirebaseAnalyticsTypes {
    */
   export class Module extends FirebaseModule {
     /**
-     * Log a custom event with optional params.
+     * Log a custom event with optional params. Note that there are various limits that applied
+     * to event parameters (total parameter count, etc), but analytics applies the limits during
+     * cloud processing, the errors will not be seen as Promise rejections when you call logEvent.
+     * While integrating this API in your app you are strongly encouraged to enable
+     * [DebugView](https://firebase.google.com/docs/analytics/debugview) -
+     * any errors in your events will show up in the firebase web console with links to relevant documentation
      *
      * #### Example
      *

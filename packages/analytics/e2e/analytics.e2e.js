@@ -32,22 +32,6 @@ describe('analytics()', function () {
     });
   });
 
-  describe('setAnalyticsCollectionEnabled()', function () {
-    it('true', async function () {
-      await firebase.analytics().setAnalyticsCollectionEnabled(true);
-    });
-
-    it('false', async function () {
-      await firebase.analytics().setAnalyticsCollectionEnabled(false);
-    });
-  });
-
-  describe('resetAnalyticsData()', function () {
-    it('calls native fn without error', async function () {
-      await firebase.analytics().resetAnalyticsData();
-    });
-  });
-
   describe('setSessionTimeoutDuration()', function () {
     it('default duration', async function () {
       await firebase.analytics().setSessionTimeoutDuration();
@@ -430,6 +414,25 @@ describe('analytics()', function () {
 
     it('set default parameters', async function () {
       await firebase.analytics().setDefaultEventParameters({ number: 1, stringn: '123' });
+    });
+  });
+
+  // Test this one near end so all the previous hits are visible in DebugView is that is enabled
+  describe('resetAnalyticsData()', function () {
+    it('calls native fn without error', async function () {
+      await firebase.analytics().resetAnalyticsData();
+    });
+  });
+
+  // Test this last so it does not stop delivery to DebugView
+  describe('setAnalyticsCollectionEnabled()', function () {
+    it('false', async function () {
+      await firebase.analytics().setAnalyticsCollectionEnabled(false);
+    });
+
+    // Enable as the last action, so the rest of the hits are visible in DebugView if enabled
+    it('true', async function () {
+      await firebase.analytics().setAnalyticsCollectionEnabled(true);
     });
   });
 });
