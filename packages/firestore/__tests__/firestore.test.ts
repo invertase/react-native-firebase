@@ -24,7 +24,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings' must be an object");
       }
     });
@@ -34,7 +34,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings({ foo: 'bar' });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.foo' is not a valid settings field");
       }
     });
@@ -44,7 +44,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings({ cacheSizeBytes: 'foo' });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.cacheSizeBytes' must be a number value");
       }
     });
@@ -53,7 +53,7 @@ describe('Storage', function () {
       try {
         await firebase.firestore().settings({ cacheSizeBytes: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.cacheSizeBytes' the minimum cache size");
       }
     });
@@ -69,7 +69,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings({ host: 123 });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.host' must be a string value");
       }
     });
@@ -78,7 +78,7 @@ describe('Storage', function () {
       try {
         await firebase.firestore().settings({ host: '' });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.host' must not be an empty string");
       }
     });
@@ -88,7 +88,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings({ persistence: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.persistence' must be a boolean value");
       }
     });
@@ -98,7 +98,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().settings({ ssl: 'true' });
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'settings.ssl' must be a boolean value");
       }
     });
@@ -108,7 +108,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firestore().settings({ ignoreUndefinedProperties: 'bogus' });
         return Promise.reject(new Error('Should throw'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("ignoreUndefinedProperties' must be a boolean value.");
       }
     });
@@ -118,7 +118,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firestore().settings({ serverTimestampBehavior: 'bogus' });
         return Promise.reject(new Error('Should throw'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain(
           "serverTimestampBehavior' must be one of 'estimate', 'previous', 'none'",
         );
@@ -132,7 +132,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         await firebase.firestore().runTransaction('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'updateFunction' must be a function");
       }
     });
@@ -149,7 +149,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().collectionGroup(123);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionId' must be a string value");
       }
     });
@@ -158,7 +158,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().collectionGroup('');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionId' must be a non-empty string");
       }
     });
@@ -167,7 +167,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().collectionGroup(`someCollection/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionId' must not contain '/'");
       }
     });
@@ -179,7 +179,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().collection(123);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionPath' must be a string value");
       }
     });
@@ -188,7 +188,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().collection('');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionPath' must be a non-empty string");
       }
     });
@@ -197,7 +197,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().collection(`firestore/bar`);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'collectionPath' must point to a collection");
       }
     });
@@ -215,7 +215,7 @@ describe('Storage', function () {
         // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
         firebase.firestore().doc(123);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'documentPath' must be a string value");
       }
     });
@@ -224,7 +224,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().doc('');
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'documentPath' must be a non-empty string");
       }
     });
@@ -233,7 +233,7 @@ describe('Storage', function () {
       try {
         firebase.firestore().doc(`${COLLECTION}/bar/baz`);
         return Promise.reject(new Error('Did not throw an Error.'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toContain("'documentPath' must point to a document");
       }
     });
@@ -254,7 +254,7 @@ describe('Storage', function () {
         });
 
         return Promise.reject(new Error('Expected set() to throw'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toEqual('Unsupported field value: undefined');
       }
     });
@@ -270,7 +270,7 @@ describe('Storage', function () {
           },
         });
         return Promise.reject(new Error('Expected set() to throw'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toEqual('Unsupported field value: undefined');
       }
     });
@@ -283,7 +283,7 @@ describe('Storage', function () {
           myArray: [{ name: 'Tim', location: { state: undefined, country: 'United Kingdom' } }],
         });
         return Promise.reject(new Error('Expected set() to throw'));
-      } catch (e) {
+      } catch (e: any) {
         return expect(e.message).toEqual('Unsupported field value: undefined');
       }
     });
