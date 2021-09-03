@@ -31,11 +31,13 @@ You need to configure the following property as soon as possible in the startup 
 import '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 
-const db = firestore();
-
-// set the host property to connect to the emulator
+// set the host and the port property to connect to the emulator
 // set these before any read/write operations occur to ensure it doesn't affect your Cloud Firestore data!
-db.settings({ host: 'localhost:8080', ssl: false });
+if (__DEV__) {
+  firestore().useEmulator('localhost', 8080);
+}
+
+const db = firestore();
 ```
 
 # Clear locally stored emulator data
