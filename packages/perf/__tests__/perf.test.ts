@@ -32,7 +32,7 @@ describe('Performance Monitoring', function () {
         // @ts-ignore
         perf().newTrace(1337);
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual(
           "firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.",
         );
@@ -44,7 +44,7 @@ describe('Performance Monitoring', function () {
       try {
         perf().newTrace(new Array(101).fill('i').join(''));
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual(
           "firebase.perf().newTrace(*) 'identifier' must be a string with a maximum length of 100 characters.",
         );
@@ -70,7 +70,7 @@ describe('Performance Monitoring', function () {
         // @ts-ignore
         perf().newHttpMetric(1337, 7331);
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual("firebase.perf().newHttpMetric(*, _) 'url' must be a string.");
         return Promise.resolve();
       }
@@ -81,7 +81,7 @@ describe('Performance Monitoring', function () {
         // @ts-ignore
         perf().newHttpMetric('https://invertase.io', 1337);
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual(
           "firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE.",
         );
@@ -94,7 +94,7 @@ describe('Performance Monitoring', function () {
         // @ts-ignore
         perf().newHttpMetric('https://invertase.io', 'FIRE');
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual(
           "firebase.perf().newHttpMetric(_, *) 'httpMethod' must be one of CONNECT, DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, TRACE.",
         );
@@ -109,7 +109,7 @@ describe('Performance Monitoring', function () {
         // @ts-ignore
         firebase.perf().setPerformanceCollectionEnabled();
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toEqual(
           "firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.",
         );

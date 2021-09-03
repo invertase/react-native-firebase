@@ -39,7 +39,7 @@ describe('Analytics', function () {
         // @ts-ignore test
         firebase.app().analytics('foo', 'arg2');
         return Promise.reject(new Error('Did not throw'));
-      } catch (e) {
+      } catch (e: any) {
         e.message.should.containEql('does not support multiple Firebase Apps');
         return Promise.resolve();
       }
