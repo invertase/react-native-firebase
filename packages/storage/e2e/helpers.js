@@ -9,8 +9,11 @@ const WRITE_ONLY_NAME = 'writeOnly.txt';
 
 exports.seed = async function seed(path) {
   // Force the rules for the storage emulator to be what we expect
-  await testingUtils.loadStorageRules({
-    rules: `rules_version = '2';
+
+  testingUtils.initializeTestEnvironment({
+    projectId: 'react-native-firebase-testing',
+    storage: {
+      rules: `rules_version = '2';
       service firebase.storage {
         match /b/{bucket}/o {
           match /{document=**} {
@@ -27,6 +30,9 @@ exports.seed = async function seed(path) {
           }
         }
       }`,
+      host: 'localhost',
+      port: 9199,
+    },
   });
 
   return Promise.all([
