@@ -39,7 +39,10 @@ exports.seed = function seed(path) {
     firebase.database().ref(`${path}/types`).set(CONTENT.TYPES),
     firebase.database().ref(`${path}/query`).set(CONTENT.QUERY),
     // The database emulator does not load rules correctly. We force them pre-test.
-    testingUtils.loadDatabaseRules({ databaseName: DB_NAME, rules: DB_RULES }),
+    testingUtils.initializeTestEnvironment({
+      projectId: 'react-native-firebase-testing',
+      database: { databaseName: DB_NAME, rules: DB_RULES, host: 'localhost', port: 9000 },
+    }),
   ]);
 };
 
