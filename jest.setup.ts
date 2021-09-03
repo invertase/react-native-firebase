@@ -28,6 +28,7 @@ jest.doMock('react-native', () => {
           addListener: jest.fn(),
           eventsAddListener: jest.fn(),
           eventsNotifyReady: jest.fn(),
+          removeListeners: jest.fn(),
         },
         RNFBAuthModule: {
           APP_LANGUAGE: {
