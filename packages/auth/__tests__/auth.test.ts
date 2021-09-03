@@ -56,7 +56,7 @@ describe('Auth', function () {
       try {
         await firebase.app().auth().setTenantId(Object());
         return Promise.reject('It should throw an error');
-      } catch (e) {
+      } catch (e: any) {
         expect(e.message).toBe("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
         return Promise.resolve('Error catched');
       }
