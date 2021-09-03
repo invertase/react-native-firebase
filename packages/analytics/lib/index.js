@@ -94,13 +94,6 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       );
     }
 
-    // maximum number of allowed params check
-    if (params && Object.keys(params).length > 25) {
-      throw new Error(
-        "firebase.analytics().logEvent(_, *) 'params' maximum number of parameters exceeded (25).",
-      );
-    }
-
     return this.native.logEvent(name, params);
   }
 
