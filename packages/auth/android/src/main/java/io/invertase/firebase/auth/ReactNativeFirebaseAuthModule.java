@@ -1214,30 +1214,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                   } else {
                     Exception exception = task.getException();
                     Log.e(TAG, "link:onComplete:failure", exception);
-                    if (exception instanceof FirebaseAuthUserCollisionException) {
-                      FirebaseAuthUserCollisionException authUserCollisionException =
-                          (FirebaseAuthUserCollisionException) exception;
-                      AuthCredential updatedCredential =
-                          authUserCollisionException.getUpdatedCredential();
-                      try {
-                        firebaseAuth
-                            .signInWithCredential(updatedCredential)
-                            .addOnCompleteListener(
-                                getExecutor(),
-                                result -> {
-                                  if (result.isSuccessful()) {
-                                    promiseWithAuthResult(result.getResult(), promise);
-                                  } else {
-                                    promiseRejectAuthException(promise, exception);
-                                  }
-                                });
-                      } catch (Exception e) {
-                        // we the attempt to log in after the collision failed, reject back to JS
-                        promiseRejectAuthException(promise, exception);
-                      }
-                    } else {
-                      promiseRejectAuthException(promise, exception);
-                    }
+                    promiseRejectAuthException(promise, exception);
                   }
                 });
       } else {
