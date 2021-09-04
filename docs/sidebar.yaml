@@ -118,4 +118,6 @@
       - '/perf/usage'
     - - Axios Integration
       - '/perf/axios-integration'
+    - - KY Integration
+      - '/perf/ky-integration'
   - '//static.invertase.io/assets/firebase/performance-monitoring.svg'
