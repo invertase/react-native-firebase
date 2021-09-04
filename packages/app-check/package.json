@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-check",
-  "version": "12.7.4",
+  "version": "12.7.5",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Check",
   "main": "lib/index.js",
@@ -23,7 +23,7 @@
     "appCheck"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "12.7.4"
+    "@react-native-firebase/app": "12.7.5"
   },
   "publishConfig": {
     "access": "public"
