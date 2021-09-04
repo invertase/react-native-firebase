@@ -41,6 +41,7 @@ yarn add @react-native-firebase/perf
 ### Additional Topics
 
 - [Axios Integration](https://rnfirebase.io/perf/axios-integration)
+- [KY Integration](https://rnfirebase.io/perf/ky-integration)
 
 ## License
 
