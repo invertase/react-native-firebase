@@ -95,7 +95,7 @@ jobs:
           timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
-          command: cd tests/android && ./gradlew assembleDebug assembleAndroidTest lintDebug -DtestBuildType=debug -Dorg.gradle.daemon=false
+          command: yarn tests:android:build
 
       - name: Metro Bundler Cache
         uses: actions/cache@v2
