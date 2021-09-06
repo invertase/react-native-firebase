@@ -55,7 +55,7 @@ RCT_EXPORT_MODULE();
 #ifdef REGISTER_LIB
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-      [FIRApp registerLibrary:@"react-native-firebase" withVersion:[RNFBVersionString copy]];
+      [FIRApp registerLibrary:MODULE_NAME withVersion:MODULE_VERSION];
     });
 #endif
     if ([[RNFBJSON shared] contains:@"app_log_level"]) {

@@ -3,6 +3,9 @@ require './firebase_json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 
+module_name = package['name'].gsub('@','').gsub(/\//,'-')
+module_version = package['version']
+
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
   s.version             = package["version"]
@@ -36,4 +39,8 @@ Pod::Spec.new do |s|
   else
     s.static_framework = false
   end
+
+  s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => "MODULE_NAME=\\@\\\"#{module_name}\\\" MODULE_VERSION=\\@\\\"#{module_version}\\\"",
+  }
 end
