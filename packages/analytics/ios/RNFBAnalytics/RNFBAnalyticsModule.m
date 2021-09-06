@@ -21,6 +21,11 @@
 #import <RNFBApp/RNFBSharedUtils.h>
 #import "RNFBAnalyticsModule.h"
 
+#if __has_include(<FirebaseCore/FIRAppInternal.h>)
+#import <FirebaseCore/FIRAppInternal.h>
+#define REGISTER_LIB
+#endif
+
 @implementation RNFBAnalyticsModule
 #pragma mark -
 #pragma mark Module Setup
@@ -29,6 +34,18 @@ RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue {
   return dispatch_get_main_queue();
+}
+
+- (id)init {
+  if (self = [super init]) {
+#ifdef REGISTER_LIB
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+      [FIRApp registerLibrary:MODULE_NAME withVersion:MODULE_VERSION];
+    });
+#endif
+  }
+  return self;
 }
 
 #pragma mark -

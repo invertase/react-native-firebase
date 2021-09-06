@@ -9,6 +9,9 @@ if coreVersionDetected != coreVersionRequired
   Pod::UI.warn "NPM package '#{package['name']}' depends on '#{appPackage['name']}' v#{coreVersionRequired} but found v#{coreVersionDetected}, this might cause build issues or runtime crashes."
 end
 
+module_name = package['name'].gsub('@','').gsub(/\//,'-')
+module_version = package['version']
+
 Pod::Spec.new do |s|
   s.name                = "RNFBAnalytics"
   s.version             = package["version"]
@@ -55,4 +58,8 @@ Pod::Spec.new do |s|
   else
     s.static_framework = false
   end
+
+  s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => "MODULE_NAME=\\@\\\"#{module_name}\\\" MODULE_VERSION=\\@\\\"#{module_version}\\\"",
+  }
 end
