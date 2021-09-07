@@ -63,6 +63,7 @@ Firestore
 getIdToken
 GDPR
 GDPR-compliant
+github
 globals
 Gradle
 gradle
