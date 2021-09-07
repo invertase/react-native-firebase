@@ -112,7 +112,7 @@ The device state and message contents determines which handler will be called:
   `content-available` to `true` (iOS) properties on the payload.
 
 - On iOS in cases where the message is data-only and the device is in the background or quit, the message will be delayed
-  until the background message handler is registered with setBackgroundMessageHandler signalling the applications javascript
+  until the background message handler is registered via setBackgroundMessageHandler, signaling the application's javascript
   is loaded and ready to run.
 
 To learn more about how to send these options in your message payload, view the Firebase documentation for your [FCM API implementation](https://firebase.google.com/docs/cloud-messaging/concept-options).
