@@ -65,14 +65,14 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "8.6.0"
+      "firebase": "8.7.0"
     },
     "android": {
       "minSdk": 16,
       "targetSdk": 30,
       "compileSdk": 30,
       "buildTools": "30.0.2",
-      "firebase": "28.3.1",
+      "firebase": "28.4.1",
       "firebaseCrashlyticsGradle": "2.7.1",
       "firebasePerfGradle": "1.4.0",
       "gmsGoogleServicesGradle": "4.3.10",

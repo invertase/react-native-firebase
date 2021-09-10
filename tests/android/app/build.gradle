@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.google.firebase.appdistribution'
 
 import com.android.build.OutputFile
 
@@ -39,7 +40,7 @@ def useIntlJsc = false
 /**
  * Architectures to build native code for in debug.
  */
-def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
+def nativeArchitectures = project.getProperties().get('reactNativeDebugArchitectures')
 
 android {
   ndkVersion rootProject.ext.ndkVersion
