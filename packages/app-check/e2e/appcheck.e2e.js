@@ -52,17 +52,15 @@ describe('appCheck()', function () {
       }
 
       // Force refresh should get a different token?
-      // TODO iOS tokens are stale because of https://github.com/firebase/firebase-ios-sdk/issues/8544
-      if (device.getPlatform() === 'android') {
-        const token2 = await firebase.appCheck().getToken(true);
-        token2.should.not.equal('');
-        const decodedToken2 = jwt.decode(token2);
-        decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
-        if (decodedToken2.exp < Date.now()) {
-          Promise.reject('Token already expired');
-        }
-        (token === token2).should.be.false();
+      // TODO sometimes fails on android https://github.com/firebase/firebase-android-sdk/issues/2954
+      const token2 = await firebase.appCheck().getToken(true);
+      token2.should.not.equal('');
+      const decodedToken2 = jwt.decode(token2);
+      decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
+      if (decodedToken2.exp < Date.now()) {
+        Promise.reject('Token already expired');
       }
+      (token === token2).should.be.false();
     });
   });
   describe('activate())', function () {
