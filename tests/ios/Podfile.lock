@@ -1,350 +1,5 @@
 PODS:
-  - abseil/algorithm (0.20200225.0):
-    - abseil/algorithm/algorithm (= 0.20200225.0)
-    - abseil/algorithm/container (= 0.20200225.0)
-  - abseil/algorithm/algorithm (0.20200225.0):
-    - abseil/base/config
-  - abseil/algorithm/container (0.20200225.0):
-    - abseil/algorithm/algorithm
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-  - abseil/base (0.20200225.0):
-    - abseil/base/atomic_hook (= 0.20200225.0)
-    - abseil/base/base (= 0.20200225.0)
-    - abseil/base/base_internal (= 0.20200225.0)
-    - abseil/base/bits (= 0.20200225.0)
-    - abseil/base/config (= 0.20200225.0)
-    - abseil/base/core_headers (= 0.20200225.0)
-    - abseil/base/dynamic_annotations (= 0.20200225.0)
-    - abseil/base/endian (= 0.20200225.0)
-    - abseil/base/errno_saver (= 0.20200225.0)
-    - abseil/base/exponential_biased (= 0.20200225.0)
-    - abseil/base/log_severity (= 0.20200225.0)
-    - abseil/base/malloc_internal (= 0.20200225.0)
-    - abseil/base/periodic_sampler (= 0.20200225.0)
-    - abseil/base/pretty_function (= 0.20200225.0)
-    - abseil/base/raw_logging_internal (= 0.20200225.0)
-    - abseil/base/spinlock_wait (= 0.20200225.0)
-    - abseil/base/throw_delegate (= 0.20200225.0)
-  - abseil/base/atomic_hook (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/base/base (0.20200225.0):
-    - abseil/base/atomic_hook
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/log_severity
-    - abseil/base/raw_logging_internal
-    - abseil/base/spinlock_wait
-    - abseil/meta/type_traits
-  - abseil/base/base_internal (0.20200225.0):
-    - abseil/base/config
-    - abseil/meta/type_traits
-  - abseil/base/bits (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/base/config (0.20200225.0)
-  - abseil/base/core_headers (0.20200225.0):
-    - abseil/base/config
-  - abseil/base/dynamic_annotations (0.20200225.0)
-  - abseil/base/endian (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/base/errno_saver (0.20200225.0):
-    - abseil/base/config
-  - abseil/base/exponential_biased (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/base/log_severity (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/base/malloc_internal (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/raw_logging_internal
-  - abseil/base/periodic_sampler (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/base/exponential_biased
-  - abseil/base/pretty_function (0.20200225.0)
-  - abseil/base/raw_logging_internal (0.20200225.0):
-    - abseil/base/atomic_hook
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/log_severity
-  - abseil/base/spinlock_wait (0.20200225.0):
-    - abseil/base/base_internal
-    - abseil/base/core_headers
-    - abseil/base/errno_saver
-  - abseil/base/throw_delegate (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/raw_logging_internal
-  - abseil/container/common (0.20200225.0):
-    - abseil/meta/type_traits
-    - abseil/types/optional
-  - abseil/container/compressed_tuple (0.20200225.0):
-    - abseil/utility/utility
-  - abseil/container/container_memory (0.20200225.0):
-    - abseil/memory/memory
-    - abseil/utility/utility
-  - abseil/container/fixed_array (0.20200225.0):
-    - abseil/algorithm/algorithm
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/throw_delegate
-    - abseil/container/compressed_tuple
-    - abseil/memory/memory
-  - abseil/container/flat_hash_map (0.20200225.0):
-    - abseil/algorithm/container
-    - abseil/container/container_memory
-    - abseil/container/hash_function_defaults
-    - abseil/container/raw_hash_map
-    - abseil/memory/memory
-  - abseil/container/hash_function_defaults (0.20200225.0):
-    - abseil/base/config
-    - abseil/hash/hash
-    - abseil/strings/strings
-  - abseil/container/hash_policy_traits (0.20200225.0):
-    - abseil/meta/type_traits
-  - abseil/container/hashtable_debug_hooks (0.20200225.0):
-    - abseil/base/config
-  - abseil/container/hashtablez_sampler (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/core_headers
-    - abseil/base/exponential_biased
-    - abseil/container/have_sse
-    - abseil/debugging/stacktrace
-    - abseil/memory/memory
-    - abseil/synchronization/synchronization
-    - abseil/utility/utility
-  - abseil/container/have_sse (0.20200225.0)
-  - abseil/container/inlined_vector (0.20200225.0):
-    - abseil/algorithm/algorithm
-    - abseil/base/core_headers
-    - abseil/base/throw_delegate
-    - abseil/container/inlined_vector_internal
-    - abseil/memory/memory
-  - abseil/container/inlined_vector_internal (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/container/compressed_tuple
-    - abseil/memory/memory
-    - abseil/meta/type_traits
-    - abseil/types/span
-  - abseil/container/layout (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-    - abseil/strings/strings
-    - abseil/types/span
-    - abseil/utility/utility
-  - abseil/container/raw_hash_map (0.20200225.0):
-    - abseil/base/throw_delegate
-    - abseil/container/container_memory
-    - abseil/container/raw_hash_set
-  - abseil/container/raw_hash_set (0.20200225.0):
-    - abseil/base/bits
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/endian
-    - abseil/container/common
-    - abseil/container/compressed_tuple
-    - abseil/container/container_memory
-    - abseil/container/hash_policy_traits
-    - abseil/container/hashtable_debug_hooks
-    - abseil/container/hashtablez_sampler
-    - abseil/container/have_sse
-    - abseil/container/layout
-    - abseil/memory/memory
-    - abseil/meta/type_traits
-    - abseil/utility/utility
-  - abseil/debugging/debugging_internal (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/errno_saver
-    - abseil/base/raw_logging_internal
-  - abseil/debugging/demangle_internal (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/debugging/stacktrace (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/debugging/debugging_internal
-  - abseil/debugging/symbolize (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/malloc_internal
-    - abseil/base/raw_logging_internal
-    - abseil/debugging/debugging_internal
-    - abseil/debugging/demangle_internal
-  - abseil/hash/city (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/endian
-  - abseil/hash/hash (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/base/endian
-    - abseil/container/fixed_array
-    - abseil/hash/city
-    - abseil/meta/type_traits
-    - abseil/numeric/int128
-    - abseil/strings/strings
-    - abseil/types/optional
-    - abseil/types/variant
-    - abseil/utility/utility
-  - abseil/memory (0.20200225.0):
-    - abseil/memory/memory (= 0.20200225.0)
-  - abseil/memory/memory (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-  - abseil/meta (0.20200225.0):
-    - abseil/meta/type_traits (= 0.20200225.0)
-  - abseil/meta/type_traits (0.20200225.0):
-    - abseil/base/config
-  - abseil/numeric/int128 (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-  - abseil/strings/internal (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/endian
-    - abseil/base/raw_logging_internal
-    - abseil/meta/type_traits
-  - abseil/strings/str_format (0.20200225.0):
-    - abseil/strings/str_format_internal
-  - abseil/strings/str_format_internal (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-    - abseil/numeric/int128
-    - abseil/strings/strings
-    - abseil/types/span
-  - abseil/strings/strings (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/bits
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/endian
-    - abseil/base/raw_logging_internal
-    - abseil/base/throw_delegate
-    - abseil/memory/memory
-    - abseil/meta/type_traits
-    - abseil/numeric/int128
-    - abseil/strings/internal
-  - abseil/synchronization/graphcycles_internal (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/malloc_internal
-    - abseil/base/raw_logging_internal
-  - abseil/synchronization/kernel_timeout_internal (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/base/raw_logging_internal
-    - abseil/time/time
-  - abseil/synchronization/synchronization (0.20200225.0):
-    - abseil/base/atomic_hook
-    - abseil/base/base
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/base/dynamic_annotations
-    - abseil/base/malloc_internal
-    - abseil/base/raw_logging_internal
-    - abseil/debugging/stacktrace
-    - abseil/debugging/symbolize
-    - abseil/synchronization/graphcycles_internal
-    - abseil/synchronization/kernel_timeout_internal
-    - abseil/time/time
-  - abseil/time (0.20200225.0):
-    - abseil/time/internal (= 0.20200225.0)
-    - abseil/time/time (= 0.20200225.0)
-  - abseil/time/internal (0.20200225.0):
-    - abseil/time/internal/cctz (= 0.20200225.0)
-  - abseil/time/internal/cctz (0.20200225.0):
-    - abseil/time/internal/cctz/civil_time (= 0.20200225.0)
-    - abseil/time/internal/cctz/time_zone (= 0.20200225.0)
-  - abseil/time/internal/cctz/civil_time (0.20200225.0):
-    - abseil/base/config
-  - abseil/time/internal/cctz/time_zone (0.20200225.0):
-    - abseil/base/config
-    - abseil/time/internal/cctz/civil_time
-  - abseil/time/time (0.20200225.0):
-    - abseil/base/base
-    - abseil/base/core_headers
-    - abseil/base/raw_logging_internal
-    - abseil/numeric/int128
-    - abseil/strings/strings
-    - abseil/time/internal/cctz/civil_time
-    - abseil/time/internal/cctz/time_zone
-  - abseil/types (0.20200225.0):
-    - abseil/types/any (= 0.20200225.0)
-    - abseil/types/bad_any_cast (= 0.20200225.0)
-    - abseil/types/bad_any_cast_impl (= 0.20200225.0)
-    - abseil/types/bad_optional_access (= 0.20200225.0)
-    - abseil/types/bad_variant_access (= 0.20200225.0)
-    - abseil/types/compare (= 0.20200225.0)
-    - abseil/types/optional (= 0.20200225.0)
-    - abseil/types/span (= 0.20200225.0)
-    - abseil/types/variant (= 0.20200225.0)
-  - abseil/types/any (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-    - abseil/types/bad_any_cast
-    - abseil/utility/utility
-  - abseil/types/bad_any_cast (0.20200225.0):
-    - abseil/base/config
-    - abseil/types/bad_any_cast_impl
-  - abseil/types/bad_any_cast_impl (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/raw_logging_internal
-  - abseil/types/bad_optional_access (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/raw_logging_internal
-  - abseil/types/bad_variant_access (0.20200225.0):
-    - abseil/base/config
-    - abseil/base/raw_logging_internal
-  - abseil/types/compare (0.20200225.0):
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-  - abseil/types/optional (0.20200225.0):
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/memory/memory
-    - abseil/meta/type_traits
-    - abseil/types/bad_optional_access
-    - abseil/utility/utility
-  - abseil/types/span (0.20200225.0):
-    - abseil/algorithm/algorithm
-    - abseil/base/core_headers
-    - abseil/base/throw_delegate
-    - abseil/meta/type_traits
-  - abseil/types/variant (0.20200225.0):
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/base/core_headers
-    - abseil/meta/type_traits
-    - abseil/types/bad_variant_access
-    - abseil/utility/utility
-  - abseil/utility/utility (0.20200225.0):
-    - abseil/base/base_internal
-    - abseil/base/config
-    - abseil/meta/type_traits
   - boost (1.76.0)
-  - BoringSSL-GRPC (0.0.7):
-    - BoringSSL-GRPC/Implementation (= 0.0.7)
-    - BoringSSL-GRPC/Interface (= 0.0.7)
-  - BoringSSL-GRPC/Implementation (0.0.7):
-    - BoringSSL-GRPC/Interface (= 0.0.7)
-  - BoringSSL-GRPC/Interface (0.0.7)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.66.0-rc.1)
   - FBReactNativeSpec (0.66.0-rc.1):
@@ -354,59 +9,59 @@ PODS:
     - React-Core (= 0.66.0-rc.1)
     - React-jsi (= 0.66.0-rc.1)
     - ReactCommon/turbomodule/core (= 0.66.0-rc.1)
-  - Firebase/Analytics (8.6.0):
+  - Firebase/Analytics (8.7.0):
     - Firebase/Core
-  - Firebase/AppCheck (8.6.0):
+  - Firebase/AppCheck (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseAppCheck (~> 8.6.0-beta)
-  - Firebase/AppDistribution (8.6.0):
+    - FirebaseAppCheck (~> 8.7.0-beta)
+  - Firebase/AppDistribution (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseAppDistribution (~> 8.6.0-beta)
-  - Firebase/Auth (8.6.0):
+    - FirebaseAppDistribution (~> 8.7.0-beta)
+  - Firebase/Auth (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 8.6.0)
-  - Firebase/Core (8.6.0):
+    - FirebaseAuth (~> 8.7.0)
+  - Firebase/Core (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 8.6.0)
-  - Firebase/CoreOnly (8.6.0):
-    - FirebaseCore (= 8.6.0)
-  - Firebase/Crashlytics (8.6.0):
+    - FirebaseAnalytics (~> 8.7.0)
+  - Firebase/CoreOnly (8.7.0):
+    - FirebaseCore (= 8.7.0)
+  - Firebase/Crashlytics (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseCrashlytics (~> 8.6.0)
-  - Firebase/Database (8.6.0):
+    - FirebaseCrashlytics (~> 8.7.0)
+  - Firebase/Database (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseDatabase (~> 8.6.0)
-  - Firebase/DynamicLinks (8.6.0):
+    - FirebaseDatabase (~> 8.7.0)
+  - Firebase/DynamicLinks (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseDynamicLinks (~> 8.6.0)
-  - Firebase/Firestore (8.6.0):
+    - FirebaseDynamicLinks (~> 8.7.0)
+  - Firebase/Firestore (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (~> 8.6.0)
-  - Firebase/Functions (8.6.0):
+    - FirebaseFirestore (~> 8.7.0)
+  - Firebase/Functions (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseFunctions (~> 8.6.0)
-  - Firebase/InAppMessaging (8.6.0):
+    - FirebaseFunctions (~> 8.7.0)
+  - Firebase/InAppMessaging (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseInAppMessaging (~> 8.6.0-beta)
-  - Firebase/Installations (8.6.0):
+    - FirebaseInAppMessaging (~> 8.7.0-beta)
+  - Firebase/Installations (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseInstallations (~> 8.6.0)
-  - Firebase/Messaging (8.6.0):
+    - FirebaseInstallations (~> 8.7.0)
+  - Firebase/Messaging (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 8.6.0)
-  - Firebase/Performance (8.6.0):
+    - FirebaseMessaging (~> 8.7.0)
+  - Firebase/Performance (8.7.0):
     - Firebase/CoreOnly
-    - FirebasePerformance (~> 8.6.0)
-  - Firebase/RemoteConfig (8.6.0):
+    - FirebasePerformance (~> 8.7.0)
+  - Firebase/RemoteConfig (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseRemoteConfig (~> 8.6.0)
-  - Firebase/Storage (8.6.0):
+    - FirebaseRemoteConfig (~> 8.7.0)
+  - Firebase/Storage (8.7.0):
     - Firebase/CoreOnly
-    - FirebaseStorage (~> 8.6.0)
-  - FirebaseABTesting (8.6.0):
+    - FirebaseStorage (~> 8.7.0)
+  - FirebaseABTesting (8.7.0):
     - FirebaseCore (~> 8.0)
-  - FirebaseAnalytics (8.6.0):
-    - FirebaseAnalytics/AdIdSupport (= 8.6.0)
+  - FirebaseAnalytics (8.7.0):
+    - FirebaseAnalytics/AdIdSupport (= 8.7.0)
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
@@ -414,79 +69,73 @@ PODS:
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (8.6.0):
+  - FirebaseAnalytics/AdIdSupport (8.7.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
-    - GoogleAppMeasurement (= 8.6.0)
+    - GoogleAppMeasurement (= 8.7.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - FirebaseAppCheck (8.6.0-beta):
+  - FirebaseAppCheck (8.7.0-beta):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseAppDistribution (8.6.0-beta):
+  - FirebaseAppDistribution (8.7.0-beta):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
-  - FirebaseAuth (8.6.0):
+  - FirebaseAuth (8.7.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/Environment (~> 7.4)
     - GTMSessionFetcher/Core (~> 1.5)
-  - FirebaseCore (8.6.0):
+  - FirebaseCore (8.7.0):
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
-  - FirebaseCoreDiagnostics (8.6.0):
+  - FirebaseCoreDiagnostics (8.7.0):
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/Logger (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseCrashlytics (8.6.0):
+  - FirebaseCrashlytics (8.7.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
     - GoogleUtilities/Environment (~> 7.4)
     - nanopb (~> 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseDatabase (8.6.0):
+  - FirebaseDatabase (8.7.0):
     - FirebaseCore (~> 8.0)
     - leveldb-library (~> 1.22)
-  - FirebaseDynamicLinks (8.6.0):
+  - FirebaseDynamicLinks (8.7.0):
     - FirebaseCore (~> 8.0)
-  - FirebaseFirestore (8.6.0):
-    - abseil/algorithm (= 0.20200225.0)
-    - abseil/base (= 0.20200225.0)
-    - abseil/container/flat_hash_map (= 0.20200225.0)
-    - abseil/memory (= 0.20200225.0)
-    - abseil/meta (= 0.20200225.0)
-    - abseil/strings/strings (= 0.20200225.0)
-    - abseil/time (= 0.20200225.0)
-    - abseil/types (= 0.20200225.0)
-    - FirebaseCore (~> 8.0)
-    - "gRPC-C++ (~> 1.28.0)"
-    - leveldb-library (~> 1.22)
-    - nanopb (~> 2.30908.0)
-  - FirebaseFunctions (8.6.0):
+  - FirebaseFirestore (8.7.0):
+    - FirebaseFirestore/AutodetectLeveldb (= 8.7.0)
+  - FirebaseFirestore/AutodetectLeveldb (8.7.0):
+    - FirebaseFirestore/Base
+  - FirebaseFirestore/Base (8.7.0)
+  - FirebaseFirestore/WithoutLeveldb (8.7.0):
+    - FirebaseFirestore/Base
+  - FirebaseFunctions (8.7.0):
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
-  - FirebaseInAppMessaging (8.6.0-beta):
+  - FirebaseInAppMessaging (8.7.0-beta):
     - FirebaseABTesting (~> 8.0)
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (8.6.0):
+  - FirebaseInstallations (8.7.0):
     - FirebaseCore (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
     - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseMessaging (8.6.0):
+  - FirebaseMessaging (8.7.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleDataTransport (~> 9.0)
@@ -495,7 +144,7 @@ PODS:
     - GoogleUtilities/Reachability (~> 7.4)
     - GoogleUtilities/UserDefaults (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebasePerformance (8.6.1):
+  - FirebasePerformance (8.7.0):
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - FirebaseRemoteConfig (~> 8.0)
@@ -504,25 +153,25 @@ PODS:
     - GoogleUtilities/ISASwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - nanopb (~> 2.30908.0)
-  - FirebaseRemoteConfig (8.6.0):
+  - FirebaseRemoteConfig (8.7.0):
     - FirebaseABTesting (~> 8.0)
     - FirebaseCore (~> 8.0)
     - FirebaseInstallations (~> 8.0)
     - GoogleUtilities/Environment (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
-  - FirebaseStorage (8.6.0):
+  - FirebaseStorage (8.7.0):
     - FirebaseCore (~> 8.0)
     - GTMSessionFetcher/Core (~> 1.5)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - GoogleAppMeasurement (8.6.0):
-    - GoogleAppMeasurement/AdIdSupport (= 8.6.0)
+  - GoogleAppMeasurement (8.7.0):
+    - GoogleAppMeasurement/AdIdSupport (= 8.7.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
     - "GoogleUtilities/NSData+zlib (~> 7.4)"
     - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (8.6.0):
+  - GoogleAppMeasurement/AdIdSupport (8.7.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.4)
     - GoogleUtilities/MethodSwizzler (~> 7.4)
     - GoogleUtilities/Network (~> 7.4)
@@ -552,30 +201,6 @@ PODS:
     - GoogleUtilities/Logger
   - GoogleUtilities/UserDefaults (7.5.2):
     - GoogleUtilities/Logger
-  - "gRPC-C++ (1.28.2)":
-    - "gRPC-C++/Implementation (= 1.28.2)"
-    - "gRPC-C++/Interface (= 1.28.2)"
-  - "gRPC-C++/Implementation (1.28.2)":
-    - abseil/container/inlined_vector (= 0.20200225.0)
-    - abseil/memory/memory (= 0.20200225.0)
-    - abseil/strings/str_format (= 0.20200225.0)
-    - abseil/strings/strings (= 0.20200225.0)
-    - abseil/types/optional (= 0.20200225.0)
-    - "gRPC-C++/Interface (= 1.28.2)"
-    - gRPC-Core (= 1.28.2)
-  - "gRPC-C++/Interface (1.28.2)"
-  - gRPC-Core (1.28.2):
-    - gRPC-Core/Implementation (= 1.28.2)
-    - gRPC-Core/Interface (= 1.28.2)
-  - gRPC-Core/Implementation (1.28.2):
-    - abseil/container/inlined_vector (= 0.20200225.0)
-    - abseil/memory/memory (= 0.20200225.0)
-    - abseil/strings/str_format (= 0.20200225.0)
-    - abseil/strings/strings (= 0.20200225.0)
-    - abseil/types/optional (= 0.20200225.0)
-    - BoringSSL-GRPC (= 0.0.7)
-    - gRPC-Core/Interface (= 1.28.2)
-  - gRPC-Core/Interface (1.28.2)
   - GTMSessionFetcher/Core (1.7.0)
   - Jet (0.6.6-0):
     - React
@@ -849,71 +474,71 @@ PODS:
     - React-jsi (= 0.66.0-rc.1)
     - React-logger (= 0.66.0-rc.1)
     - React-perflogger (= 0.66.0-rc.1)
-  - RNFBAnalytics (12.7.4):
-    - Firebase/Analytics (= 8.6.0)
+  - RNFBAnalytics (12.7.5):
+    - Firebase/Analytics (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBApp (12.7.4):
-    - Firebase/CoreOnly (= 8.6.0)
+  - RNFBApp (12.7.5):
+    - Firebase/CoreOnly (= 8.7.0)
     - React-Core
-  - RNFBAppCheck (12.7.4):
-    - Firebase/AppCheck (= 8.6.0)
-    - React-Core
-    - RNFBApp
-  - RNFBAppDistribution (12.7.4):
-    - Firebase/AppDistribution (= 8.6.0)
+  - RNFBAppCheck (12.7.5):
+    - Firebase/AppCheck (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBAuth (12.7.4):
-    - Firebase/Auth (= 8.6.0)
+  - RNFBAppDistribution (12.7.5):
+    - Firebase/AppDistribution (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBCrashlytics (12.7.4):
-    - Firebase/Crashlytics (= 8.6.0)
+  - RNFBAuth (12.7.5):
+    - Firebase/Auth (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBDatabase (12.7.4):
-    - Firebase/Database (= 8.6.0)
+  - RNFBCrashlytics (12.7.5):
+    - Firebase/Crashlytics (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBDynamicLinks (12.7.4):
-    - Firebase/DynamicLinks (= 8.6.0)
+  - RNFBDatabase (12.7.5):
+    - Firebase/Database (= 8.7.0)
+    - React-Core
+    - RNFBApp
+  - RNFBDynamicLinks (12.7.5):
+    - Firebase/DynamicLinks (= 8.7.0)
     - GoogleUtilities/AppDelegateSwizzler
     - React-Core
     - RNFBApp
-  - RNFBFirestore (12.7.4):
-    - Firebase/Firestore (= 8.6.0)
+  - RNFBFirestore (12.7.5):
+    - Firebase/Firestore (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBFunctions (12.7.4):
-    - Firebase/Functions (= 8.6.0)
+  - RNFBFunctions (12.7.5):
+    - Firebase/Functions (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBInAppMessaging (12.7.4):
-    - Firebase/InAppMessaging (= 8.6.0)
+  - RNFBInAppMessaging (12.7.5):
+    - Firebase/InAppMessaging (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBInstallations (12.7.4):
-    - Firebase/Installations (= 8.6.0)
+  - RNFBInstallations (12.7.5):
+    - Firebase/Installations (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (12.7.4):
-    - Firebase/Messaging (= 8.6.0)
+  - RNFBMessaging (12.7.5):
+    - Firebase/Messaging (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBML (12.7.4):
+  - RNFBML (12.7.5):
     - React-Core
     - RNFBApp
-  - RNFBPerf (12.7.4):
-    - Firebase/Performance (= 8.6.0)
+  - RNFBPerf (12.7.5):
+    - Firebase/Performance (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBRemoteConfig (12.7.4):
-    - Firebase/RemoteConfig (= 8.6.0)
+  - RNFBRemoteConfig (12.7.5):
+    - Firebase/RemoteConfig (= 8.7.0)
     - React-Core
     - RNFBApp
-  - RNFBStorage (12.7.4):
-    - Firebase/Storage (= 8.6.0)
+  - RNFBStorage (12.7.5):
+    - Firebase/Storage (= 8.7.0)
     - React-Core
     - RNFBApp
   - Yoga (1.14.0)
@@ -923,6 +548,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
+  - FirebaseFirestore/WithoutLeveldb (from `https://github.com/invertase/firestore-ios-sdk-frameworks.git`, tag `8.7.0`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - Jet (from `../node_modules/jet/ios`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -972,8 +598,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - abseil
-    - BoringSSL-GRPC
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -985,7 +609,6 @@ SPEC REPOS:
     - FirebaseCrashlytics
     - FirebaseDatabase
     - FirebaseDynamicLinks
-    - FirebaseFirestore
     - FirebaseFunctions
     - FirebaseInAppMessaging
     - FirebaseInstallations
@@ -997,8 +620,6 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleUtilities
-    - "gRPC-C++"
-    - gRPC-Core
     - GTMSessionFetcher
     - leveldb-library
     - nanopb
@@ -1013,6 +634,9 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
+  FirebaseFirestore:
+    :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
+    :tag: 8.7.0
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   Jet:
@@ -1102,39 +726,40 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  FirebaseFirestore:
+    :git: https://github.com/invertase/firestore-ios-sdk-frameworks.git
+    :tag: 8.7.0
+
 SPEC CHECKSUMS:
-  abseil: 6c8eb7892aefa08d929b39f9bb108e5367e3228f
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   FBLazyVector: 4d9a15242af90ad4c538574f884aa197ab2cdc1d
   FBReactNativeSpec: 80a16687a08ac2498b89ad40d80537fc924970eb
-  Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
-  FirebaseABTesting: c3e48ebf5e7e5c674c5a131c68e941d7921d83dc
-  FirebaseAnalytics: 8f32ae54ad42754f503354782575c4ddfc1425c3
-  FirebaseAppCheck: 24bd8311c6dbfd1b03b1c7a3cb7d5a64dbc0cd4f
-  FirebaseAppDistribution: 91f5b721d665aa88dc8d98410eba1ee22b1691a9
-  FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
-  FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
-  FirebaseCoreDiagnostics: 3721920bde3a9a6d5aa093c1d25e9d3e47f694af
-  FirebaseCrashlytics: 58f8ecea7c799c61c50e8111d2e438424a8a1d2e
-  FirebaseDatabase: 917fbeed577a68eb1ba0eb48c52a3aa10ac13f92
-  FirebaseDynamicLinks: 406d67290fd123e133641f93a333b4957af22c09
-  FirebaseFirestore: 7b8bd72aff4d3ad91498343e81fdbaa994ce8abe
-  FirebaseFunctions: 7639390ac39a914ab7a137fd162956b99cba59a7
-  FirebaseInAppMessaging: a37656c9d9f7bd2354f431caa8218532bdef8384
-  FirebaseInstallations: 0ede6ffcd215b8f93c19d9b06c1c54e2d4107e98
-  FirebaseMessaging: ce0a5ee974f7bfe83b6cc5acce88c2d969e37c41
-  FirebasePerformance: 5177c87ffbb447f73aa96796e0573c3698238954
-  FirebaseRemoteConfig: 9ee4672d4eacf646256e26cfac61021b3a390ea4
-  FirebaseStorage: 2765944230981e63f8bd2938d9d5819158b7c34c
+  Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
+  FirebaseABTesting: 5a72ea0e88422f9e223614cb4016cafffb2af8d1
+  FirebaseAnalytics: 52768800c2add1d84b751420cb4caaf8195f2c41
+  FirebaseAppCheck: 1165576c9ad15d10d96637d9b2f678ed35dd9985
+  FirebaseAppDistribution: e1c746f591c659e18494352b2773688822d72dd3
+  FirebaseAuth: 2e7d029977648c67a5d51a263d4cbab76d34cf12
+  FirebaseCore: f4804c1d3f4bbbefc88904d15653038f2c99ddf7
+  FirebaseCoreDiagnostics: b63732f581a1c6a453ec7241f9ab60b3a5bd3450
+  FirebaseCrashlytics: 6fac03d1eef054833b71c929c93ab95c12989728
+  FirebaseDatabase: afc82291f9ed94ff949cec1b9505e8c3b944bc0f
+  FirebaseDynamicLinks: e3fd315f43196811df8eac95803f10ff47c3b026
+  FirebaseFirestore: aba4f6db8c545b0c77fbfbc3fb6a252e43f0f22b
+  FirebaseFunctions: 9b78e79a3de4ee00ca1af7fd8c5fd7ed76fbf702
+  FirebaseInAppMessaging: d1cff11faa69d294bef9c0773b91a6c84f771ac5
+  FirebaseInstallations: ede6fb72bb6337914e5888b399271259d0c4910c
+  FirebaseMessaging: 93227dd71d7888e200baef65043f81acb2b6596e
+  FirebasePerformance: a1a23adbc53917d7654c349d355371d5239cc340
+  FirebaseRemoteConfig: 34300dd83055c06e2768d0932dd8fb2c1575745f
+  FirebaseStorage: 2e6e58fe31fb0061fdce3f156d0ebc964e9de6ba
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 5337263514dd6f09803962437687240c5dc39aa4
-  GoogleAppMeasurement: 2c0c6e2a7ab3fe730ade6379f732bdefb46f50b0
+  GoogleAppMeasurement: 2be61ce546ad074dbe4dd545f222ac6033bb1d9e
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
-  "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
-  gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   Jet: 84fd0e2e9d49457fc04bc79b5d8857737a01c507
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
@@ -1164,25 +789,25 @@ SPEC CHECKSUMS:
   React-RCTVibration: e22c6ab90161c66794f596ca315b879daf8dda8f
   React-runtimeexecutor: d453001bf6f2db17f2921fa2a96042b4fd778be4
   ReactCommon: 834ee32fc9de8bd76ea230ddce827f6c7be11992
-  RNFBAnalytics: e3955c3037ab3b25380facb6d82cf56ad70c46c3
-  RNFBApp: 150a5a9f4b4cbadd7be07b08d524bd5cfba9fc7b
-  RNFBAppCheck: f703a771e3a65a0673c2d71742cf103bec03d188
-  RNFBAppDistribution: c517b243e2db8e27d96be4d485b6c61cc98fa2c2
-  RNFBAuth: 92b81be442a9fb244537fdcc9d790c5c87bd44a9
-  RNFBCrashlytics: 7c488e5e9021c6db87659192ae7b8dbe0129d3b8
-  RNFBDatabase: 9185c446122e446d7feaae90a69ea92bace3c416
-  RNFBDynamicLinks: 418ccfb5c07034587166fb9a4de8ab4fbea07d4f
-  RNFBFirestore: 63cc0324c3bc94a23bef1b2cd6aa1c72222de2a2
-  RNFBFunctions: d96c8e77bcbd2912d5bd21fa5f10008350942223
-  RNFBInAppMessaging: 0b734cab2c2978a23edd076a13844c307ff4bbaf
-  RNFBInstallations: b8dd7bd347f98e998f1433fc31fa24d2df3e2bf0
-  RNFBMessaging: 78808bc3dd8caedbbeeb770bbbe3ffd3ecd08df0
-  RNFBML: ffd6e3418ffa90176eabcba414048e516cebe1b4
-  RNFBPerf: 6682246b3067229c0248be4ca46279bf07fbbf92
-  RNFBRemoteConfig: 9917b788fd0f94f76d5cfee59ca7787191218106
-  RNFBStorage: 641efd08cceea48adbeafd7aec31be94d3ee4963
+  RNFBAnalytics: ee597416e42d72c22afaf4b01508fe247929cb6d
+  RNFBApp: 09f7853e63826dba596338769579db7ed877d3d2
+  RNFBAppCheck: d8d318fc78c9286ae982c2461678085b9c74c9a1
+  RNFBAppDistribution: 5f9cc35092d6b101643875f02a01bcf8421ff3ee
+  RNFBAuth: 12d27650adcd5b5adc4dc68348fdb65483aad1d7
+  RNFBCrashlytics: b8efb4096208bf516b7eebd28096da56fbf9683e
+  RNFBDatabase: 22a4e79ffeffab7f85c39e3d0db333cb39942cba
+  RNFBDynamicLinks: ff4416cb698f4e08c42954dfac1f2b2e97a2baf1
+  RNFBFirestore: 0d9af23b81a58bfaa8cd2e0eae6c52a2b26dff3e
+  RNFBFunctions: 4b0fa9afc877f85402a130d2c9d2bf756c5c7508
+  RNFBInAppMessaging: daf2587caaa35a1493646addcaf694843f3f586e
+  RNFBInstallations: 9dfccdc98dc3823ea4b622fb3095bd4de6a8a723
+  RNFBMessaging: 21414cb822b4288082320728b02cd949b9fd4acb
+  RNFBML: ffbefb5e55416f68cdc4ee3604af2255f555d0c9
+  RNFBPerf: e3e9f6de58c6e001b893a6ab895f50d3136101b6
+  RNFBRemoteConfig: 3d7db60f20e1caf6f75d38f74ff84c4b6e5d00ad
+  RNFBStorage: c9c7f8b4e46a06717430b6c9176d4d4137b961e5
   Yoga: 0b151c4ff6b3c093a118e99334061a88bdd315a3
 
-PODFILE CHECKSUM: e4b0d5e3b5409a41f94f129569649dbbceb930c1
+PODFILE CHECKSUM: 3a511a510d693f7a163c31647baf58a698d6f5f3
 
 COCOAPODS: 1.11.0
