@@ -11,7 +11,7 @@ React Native Firebase is the officially recommended collection of packages that 
 Before getting started, the documentation assumes you are able to create a project with React Native and that you have an active Firebase project.
 If you do not meet these prerequisites, follow the links below:
 
-- [Getting started with React Native](https://facebook.github.io/react-native/docs/getting-started.html)
+- [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
 ## Installation
