@@ -13,7 +13,7 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.1.0',
+      version: '17.0.20',
     },
   },
   rules: {
