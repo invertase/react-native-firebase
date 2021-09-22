@@ -56,10 +56,10 @@ android {
     versionCode 200
     versionName '1.0'
 
-    // detox
+    // detox items
     testBuildType System.getProperty('testBuildType', 'debug')
-    // detox
     testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    missingDimensionStrategy 'detox', 'full'
   }
   splits {
     abi {
