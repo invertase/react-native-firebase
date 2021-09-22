@@ -1,0 +1,53 @@
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java
+index 2407926..65d17d8 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java
+@@ -104,16 +104,19 @@ public class UIModuleIdlingResource extends DetoxBaseIdlingResource implements C
+             }
+ 
+             boolean isOperationQueueEmpty = (Boolean) Reflect.on(uiOperationQueue).call(METHOD_IS_EMPTY).get();
++            Log.d(LOG_TAG, "UIManagerModule queue status: runnables? / nonBatchesOps? / operationQueue? - " + runnablesAreEmpty + " / " + nonBatchesOpsEmpty + " / " + isOperationQueueEmpty);
+ 
+             if (runnablesAreEmpty && nonBatchesOpsEmpty && isOperationQueueEmpty) {
+                 notifyIdle();
+-                // Log.i(LOG_TAG, "UIManagerModule is idle.");
++                Log.i(LOG_TAG, "UIManagerModule is idle.");
+                 return true;
+             }
+ 
+             Log.i(LOG_TAG, "UIManagerModule is busy");
+-            Choreographer.getInstance().postFrameCallback(this);
+-            return false;
++            Log.w(LOG_TAG, "UIManagerModule is busy but damn the torpedoes!");
++            return true;
++            // Choreographer.getInstance().postFrameCallback(this);
++            // return false;
+         } catch (ReflectException e) {
+             Log.e(LOG_TAG, "Can't set up RN UIModule listener", e.getCause());
+         }
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index 70e7510..1aa2d33 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -20,13 +20,14 @@ class TimersIdlingResource @JvmOverloads constructor(
+     }
+ 
+     override fun checkIdle(): Boolean {
+-        return interrogationStrategy.isIdleNow().also { result ->
+-            if (result) {
+-                notifyIdle()
+-            } else {
+-                getChoreographer().postFrameCallback(this@TimersIdlingResource)
+-            }
+-        }
++        return true
++        // return interrogationStrategy.isIdleNow().also { result ->
++        //     if (result) {
++        //         notifyIdle()
++        //     } else {
++        //         getChoreographer().postFrameCallback(this@TimersIdlingResource)
++        //     }
++        // }
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {

@@ -28,6 +28,7 @@ config.configurations['android.emu.debug'].device.avdName =
 
 before(async function () {
   await detox.init(config);
+  await device.launchApp();
   await jet.init();
 });
 
