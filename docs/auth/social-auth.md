@@ -111,7 +111,7 @@ The `onFacebookButtonPress` can then be implemented as follows:
 
 ```js
 import auth from '@react-native-firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 async function onFacebookButtonPress() {
   // Attempt login with permissions
