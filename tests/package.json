@@ -33,7 +33,7 @@
     "@react-native-firebase/private-tests-helpers": "0.0.13",
     "a2a": "^0.2.0",
     "babel-plugin-istanbul": "^6.0.0",
-    "detox": "17.14.6",
+    "detox": "^18.22.0",
     "firebase": "^9.0.2",
     "firebase-tools": "^9.18.0",
     "jest-circus": "^27.2.0",
@@ -60,7 +60,8 @@
         "build": "xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11"
+          "type": "iPhone 11",
+          "os": "iOS 13.7"
         }
       },
       "ios.sim.release": {
