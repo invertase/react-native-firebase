@@ -112,9 +112,7 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
 ```
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   // Add me --- \/
-  if ([FIRApp defaultApp] == nil) {
-    [FIRApp configure];
-  }
+  [FIRApp configure];
   // Add me --- /\
   // ...
 }
