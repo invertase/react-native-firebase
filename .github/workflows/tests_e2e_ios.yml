@@ -22,8 +22,8 @@ on:
 jobs:
   ios:
     name: iOS
-    runs-on: macos-latest
-    # TODO matrix across APIs, at least 10 and 13 (lowest to highest)
+    runs-on: macos-11
+    # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
     timeout-minutes: 60
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -39,7 +39,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '12.5.1' # Use 12.5.1 specifically since Detox does not support iOS15 yet. Xcode 12.5.1 uses iOS 14.x
 
       - uses: actions/checkout@v2
         with:
