@@ -12,6 +12,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
-      - uses: amannn/action-semantic-pull-request@v3.4.0
+      - uses: amannn/action-semantic-pull-request@v3.4.2
         with:
           validateSingleCommit: true

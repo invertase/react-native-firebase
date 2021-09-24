@@ -60,8 +60,7 @@
         "build": "xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build -UseModernBuildSystem=YES",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11",
-          "os": "iOS 13.7"
+          "type": "iPhone 11"
         }
       },
       "ios.sim.release": {
