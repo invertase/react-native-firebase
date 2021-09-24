@@ -7494,10 +7494,10 @@ he@1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-hermes-engine@~0.8.0:
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.8.1.tgz#b6d0d70508ac5add2d198304502fb968cdecb8b2"
-  integrity sha512-as9Iccj/qrqqtDmfYUHbOIjt5xsQbUB6pjNIW3i1+RVr+pCAdz5S8/Jry778mz3rJWplYzHWdR1u1xQSYfBRYw==
+hermes-engine@~0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/hermes-engine/-/hermes-engine-0.9.0.tgz#84d9cfe84e8f6b1b2020d6e71b350cec84ed982f"
+  integrity sha512-r7U+Y4P2Qg/igFVZN+DpT7JFfXUn1MM4dFne8aW+cCrF6RRymof+VqrUHs1kl07j8h8V2CNesU19RKgWbr3qPw==
 
 hermes-parser@0.4.7:
   version "0.4.7"
@@ -11867,6 +11867,15 @@ react-native-codegen@^0.0.7:
     jscodeshift "^0.11.0"
     nullthrows "^1.1.1"
 
+react-native-codegen@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-codegen/-/react-native-codegen-0.0.8.tgz#b7796a54074139d956fff2862cf1285db43c891b"
+  integrity sha512-k/944+0XD+8l7zDaiKfYabyEKmAmyZgS1mj+4LcSRPyHnrjgCHKrh/Y6jM6kucQ6xU1+1uyMmF/dSkikxK8i+Q==
+  dependencies:
+    flow-parser "^0.121.0"
+    jscodeshift "^0.11.0"
+    nullthrows "^1.1.1"
+
 react-native-port-patcher@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/react-native-port-patcher/-/react-native-port-patcher-1.0.4.tgz#a73d7d6323acce14e841256fda6136a64790c81e"
@@ -11874,10 +11883,10 @@ react-native-port-patcher@^1.0.4:
   dependencies:
     command-line-args "^3.0.5"
 
-react-native@0.66.0-rc.1:
-  version "0.66.0-rc.1"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.66.0-rc.1.tgz#0df38ca2b4409d500615d97271042354ea20e475"
-  integrity sha512-FaXhSzFL7Re1RZAL9RLRVbrc1BXVe9qlPezUwzJBCTtkMnSInWiC2yIAoovhJeA+aRQg3IQbZ145sF5imWg0+w==
+react-native@0.66.0-rc.4:
+  version "0.66.0-rc.4"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.66.0-rc.4.tgz#04742298e073cfe79b58a19d931ac98caa0f9ff7"
+  integrity sha512-hPmmEA20mHISzMCMsrHH37Z65unBl3F1T/wn9bUvAbezROG8N5LcD9plx+DqHMlkakoqkXEIQVhxkyf67QdFdA==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^6.0.0"
@@ -11890,7 +11899,7 @@ react-native@0.66.0-rc.1:
     anser "^1.4.9"
     base64-js "^1.1.2"
     event-target-shim "^5.0.1"
-    hermes-engine "~0.8.0"
+    hermes-engine "~0.9.0"
     invariant "^2.2.4"
     jsc-android "^250230.2.1"
     metro-babel-register "0.66.2"
