@@ -22,7 +22,7 @@ on:
 jobs:
   android:
     name: Android
-    runs-on: macos-latest
+    runs-on: macos-11
     timeout-minutes: 70
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -40,13 +40,13 @@ jobs:
       # Set up tool versions
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: 14
 
       - name: Configure JDK 1.11
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '11' # ubuntu-latest is about to default to 11, force it everywhere
+          java-version: '11'
 
       # Set path variables needed for caches
       - name: Set workflow variables
