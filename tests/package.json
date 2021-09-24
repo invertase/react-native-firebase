@@ -26,7 +26,7 @@
     "@react-native-firebase/remote-config": "12.8.0",
     "@react-native-firebase/storage": "12.8.0",
     "react": "17.0.2",
-    "react-native": "0.66.0-rc.1"
+    "react-native": "0.66.0-rc.4"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.0",
@@ -44,7 +44,7 @@
     "mocha": "^9.1.1",
     "nyc": "^15.0.1",
     "patch-package": "^6.4.7",
-    "react-native-codegen": "^0.0.7",
+    "react-native-codegen": "^0.0.8",
     "react-native-port-patcher": "^1.0.4",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
