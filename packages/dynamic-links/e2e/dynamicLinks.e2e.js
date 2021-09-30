@@ -204,31 +204,36 @@ describe('dynamicLinks()', function () {
 
   describe('onLink()', function () {
     it('should emit dynamic links', async function () {
-      const shortLink = await getShortLink(
-        TEST_LINK1_TARGET,
-        firebase.dynamicLinks.ShortLinkType.DEFAULT,
-      );
-      const spy = sinon.spy();
-      firebase.dynamicLinks().onLink(spy);
+      // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
+      if (!isCI) {
+        const shortLink = await getShortLink(
+          TEST_LINK1_TARGET,
+          firebase.dynamicLinks.ShortLinkType.DEFAULT,
+        );
+        const spy = sinon.spy();
+        firebase.dynamicLinks().onLink(spy);
 
-      if (device.getPlatform() === 'android') {
-        await device.launchApp({ url: shortLink });
-      } else {
-        await device.openURL({ url: TEST_LINK1 });
-      }
-      await Utils.spyToBeCalledOnceAsync(spy);
+        if (device.getPlatform() === 'android') {
+          await device.launchApp({ url: shortLink });
+        } else {
+          await device.openURL({ url: TEST_LINK1 });
+        }
+        await Utils.spyToBeCalledOnceAsync(spy);
 
-      const link = spy.getCall(0).args[0];
-      link.should.be.an.Object();
-      link.url.should.equal(TEST_LINK1_TARGET);
-      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
-      // and they only come back when resolved from a short link, which is android only in testing
-      if (device.getPlatform() === 'android') {
-        link.utmParameters.utm_source.should.equal('github');
-        link.utmParameters.utm_medium.should.equal('web');
-        link.utmParameters.utm_campaign.should.equal('prs-welcome');
+        const link = spy.getCall(0).args[0];
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK1_TARGET);
+        // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+        // and they only come back when resolved from a short link, which is android only in testing
+        if (device.getPlatform() === 'android') {
+          link.utmParameters.utm_source.should.equal('github');
+          link.utmParameters.utm_medium.should.equal('web');
+          link.utmParameters.utm_campaign.should.equal('prs-welcome');
+        } else {
+          link.utmParameters.should.eql({});
+        }
       } else {
-        link.utmParameters.should.eql({});
+        this.skip();
       }
     });
   });
