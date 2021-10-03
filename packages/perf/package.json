@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/perf",
-  "version": "12.8.0",
+  "version": "12.9.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - React Native Firebase provides native integration with Performance Monitoring to gain insight into key performance characteristics within your React Native application.",
   "main": "lib/index.js",
@@ -29,7 +29,7 @@
     "performance monitoring"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "12.8.0"
+    "@react-native-firebase/app": "12.9.0"
   },
   "dependencies": {
     "@expo/config-plugins": "^3.1.0"
