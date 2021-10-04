@@ -169,12 +169,14 @@ If it's called too soon (e.g. within a class constructor or global scope), the n
 
 **Quick Tip:** On `Android` you can test receiving remote notifications on the emulator but on `iOS` you will need to use a real device as the iOS simulator does not support receiving remote notifications.
 
-# Notifee - Advanced Notifications
+# Advanced Local Notifications
 
 FCM provides support for displaying basic notifications to users with minimal integration required. If however you require
-more advanced notifications you need to integrate with a 3rd party local notifications package, such as [Notifee](https://notifee.app).
+more advanced notifications we recommend using our separate local notifications package '[Notifee](https://notifee.app)'.
 
-## Android Features
+> Notifee is free to use and fully open source.
+
+## Notifee - Android Features
 
 - [Advanced channel and group management](https://notifee.app/react-native/docs/android/channels).
 - Custom appearance with [HTML text styling](https://notifee.app/react-native/docs/android/appearance#text-styling), [custom icons](https://notifee.app/react-native/docs/android/appearance#icons), [badge support](https://notifee.app/react-native/docs/android/appearance#badges), [colors](https://notifee.app/react-native/docs/android/appearance#color) and more.
@@ -184,7 +186,7 @@ more advanced notifications you need to integrate with a 3rd party local notific
 - Support for built in styling; [Big Picture Style](https://notifee.app/react-native/docs/android/styles#big-picture), [Big Text Style](https://notifee.app/react-native/docs/android/styles#big-text), [Inbox Style](https://notifee.app/react-native/docs/android/styles#inbox) & [Messaging Style](https://notifee.app/react-native/docs/android/styles#messaging) notifications.
 - Adding [Progress Indicators](https://notifee.app/react-native/docs/android/progress-indicators) & [Timers](https://notifee.app/react-native/docs/android/timers) to your notification.
 
-## iOS Features
+## Notifee - iOS Features
 
 - Advanced [Permission](https://notifee.app/react-native/docs/ios/permissions) management.
 - Behavior management such as [custom sounds](https://notifee.app/react-native/docs/ios/behaviour#sound) and [critical notifications](https://notifee.app/react-native/docs/ios/behaviour#critical-notifications).
