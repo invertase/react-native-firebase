@@ -35,8 +35,8 @@ jobs:
       - name: Publish Packages
         run: |
           yarn logout
-          echo "@react-native-firebase:registry=http://registry.npmjs.org/" > ~/.npmrc
-          echo "registry=http://registry.npmjs.org/" >> ~/.npmrc
+          echo "@react-native-firebase:registry=https://registry.npmjs.org/" > ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
           npm whoami
           git diff --exit-code
