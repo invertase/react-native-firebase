@@ -17,6 +17,11 @@ export function modifyObjcAppDelegate(contents: string): string {
     );
   }
 
+  // To avoid potential issues with existing changes from older plugin versions
+  if (contents.includes(methodInvocationBlock)) {
+    return contents;
+  }
+
   // Add invocation
   return mergeContents({
     tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
