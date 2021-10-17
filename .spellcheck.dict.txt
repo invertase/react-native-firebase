@@ -145,6 +145,7 @@ SDKs.
 serverless
 setBackgroundMessageHandler
 SHA1
+SHA
 SHA-256
 SIGABRT
 signInTester
