@@ -56,7 +56,7 @@
     "react-native": "*"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.2",
+    "@expo/config-plugins": "^4.0.3",
     "opencollective-postinstall": "^2.0.1",
     "superstruct": "^0.6.2"
   },
