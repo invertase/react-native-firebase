@@ -5,13 +5,13 @@ buildscript {
   ext.targetSdkVersion = 30
   ext.ndkVersion = '21.4.7075529'
 
-  ext.kotlinVersion = '1.5.21' // https://kotlinlang.org/releases.html
+  ext.kotlinVersion = '1.5.31' // https://kotlinlang.org/releases.html
   ext.supportLibVersion = '1.6.0' // this maps to androidx.core https://developer.android.com/jetpack/androidx/releases/core
   ext.appCompatVersion = '1.3.1' // this maps to androidx.appcompat https://developer.android.com/jetpack/androidx/releases/appcompat
   ext.supportVersion = ext.supportLibVersion
   //noinspection GradleDependency  https://github.com/facebook/react-native/pull/30061
   // We will be able to bump to 2.3.0 with react-native 0.65.0+, fresco 2.4.0 is out maybe possible
-  ext.frescoVersion = '2.2.0' // https://github.com/facebook/fresco/releases
+  ext.frescoVersion = '2.6.0' // https://github.com/facebook/fresco/releases
   ext.fragmentVersion = '1.3.6' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.2.0' // https://developer.android.com/jetpack/androidx/releases/annotation
@@ -19,7 +19,7 @@ buildscript {
   ext.googlePlayServicesVersion = '17.6.0' // play-services-base
   ext.googlePlayServicesAuthVersion = '19.2.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
-  ext.mediaCompatVersion = '1.4.0' // https://developer.android.com/jetpack/androidx/releases/media
+  ext.mediaCompatVersion = '1.4.3' // https://developer.android.com/jetpack/androidx/releases/media
   ext.supportV4Version = '1.0.0' // https://developer.android.com/jetpack/androidx/releases/legacy androidx.legacy:legacy-support-v4
   ext.swiperefreshlayoutVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/swiperefreshlayout
 
@@ -32,7 +32,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.google.gms:google-services:4.3.10' // https://developers.google.com/android/guides/google-services-plugin
-    classpath 'com.android.tools.build:gradle:7.0.2'
+    classpath 'com.android.tools.build:gradle:7.0.3'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath 'com.google.firebase:perf-plugin:1.4.0'
     classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
@@ -44,7 +44,6 @@ allprojects {
   println "${project.name} ${projectDir} ${rootDir}"
 
   repositories {
-    mavenLocal()
     maven {
       // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
       url("$rootDir/../node_modules/react-native/android")
@@ -57,8 +56,15 @@ allprojects {
     //   // Detox as an .aar file (we're going to use it as a compile dependency though, to patch it)
     //   url "$rootDir/../node_modules/detox/Detox-android"
     // }
+    mavenCentral {
+      // We don't want to fetch react-native from Maven Central as there are
+      // older versions over there.
+      content {
+        excludeGroup "com.facebook.react"
+      }
+    }
     google()
-    mavenCentral()
+    maven { url 'https://www.jitpack.io' }
   }
 }
 
