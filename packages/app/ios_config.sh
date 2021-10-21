@@ -66,7 +66,7 @@ while true; do
   _CURRENT_SEARCH_DIR=$(dirname "$_CURRENT_SEARCH_DIR")
   if [[ "$_CURRENT_SEARCH_DIR" == "/" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;
   echo "info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file."
-  _SEARCH_RESULT=$(find "$_CURRENT_SEARCH_DIR" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | head -n 1)
+  _SEARCH_RESULT=$(find "$_CURRENT_SEARCH_DIR" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)
   if [[ ${_SEARCH_RESULT} ]]; then
     echo "info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT"
     break;
