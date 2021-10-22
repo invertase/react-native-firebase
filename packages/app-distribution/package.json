@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/app-distribution",
-  "version": "12.9.2",
+  "version": "12.9.3",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - App Distribution",
   "main": "lib/index.js",
@@ -22,7 +22,7 @@
     "app-distribution"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "12.9.2"
+    "@react-native-firebase/app": "12.9.3"
   },
   "publishConfig": {
     "access": "public"
