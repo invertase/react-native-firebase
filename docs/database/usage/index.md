@@ -50,6 +50,17 @@ import database from '@react-native-firebase/database';
 const reference = database().ref('/users/123');
 ```
 
+NOTE: To get a reference to a database other than an 'us-central1' default database, you must pass the database URL. You can find your Realtime Database URL in the Realtime Database section of the Firebase console.
+
+```js
+import { firebase } from '@react-native-firebase/database';
+
+const database = firebase
+  .app()
+  .database('https://<databaseName>.<region>.firebasedatabase.app/')
+  .ref('/users/123');
+```
+
 ## Reading data
 
 The Realtime Data provides the ability to read the value of a reference as a one-time read, or realtime changes to the node.
