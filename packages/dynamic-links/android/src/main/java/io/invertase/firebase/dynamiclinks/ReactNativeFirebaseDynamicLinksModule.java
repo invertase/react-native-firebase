@@ -42,7 +42,6 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
 
   private String initialLinkUrl = null;
   private int initialLinkMinimumVersion = 0;
-  private WritableMap initialLinkUtmParameters = new WritableNativeMap();
 
   /** Ensures calls to getInitialLink only tries to retrieve the link from getDynamicLink once. */
   private boolean gotInitialLink = false;
@@ -183,6 +182,7 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
                 // cleared.
                 gotInitialLink = true;
                 PendingDynamicLinkData pendingDynamicLinkData = task.getResult();
+                WritableMap initialLinkUtmParameters = new WritableNativeMap();
 
                 if (pendingDynamicLinkData != null) {
                   initialLinkUrl = pendingDynamicLinkData.getLink().toString();
