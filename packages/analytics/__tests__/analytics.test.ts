@@ -137,6 +137,13 @@ describe('Analytics', function () {
           'firebase.analytics().logScreenView(*):',
         );
       });
+      it('accepts arbitrary custom event parameters while rejecting defined parameters with wrong types', function () {
+        expect(() => firebase.analytics().logScreenView({ foo: 'bar' })).not.toThrow();
+        expect(() =>
+          // @ts-ignore test
+          firebase.analytics().logScreenView({ screen_name: 123, foo: 'bar' }),
+        ).toThrowError('firebase.analytics().logScreenView(*):');
+      });
     });
 
     describe('logAddPaymentInfo()', function () {
