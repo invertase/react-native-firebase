@@ -344,6 +344,10 @@ export namespace FirebaseAnalyticsTypes {
      * Current class associated with the view the user is currently viewing.
      */
     screen_class?: string;
+    /**
+     * Custom event parameters.
+     */
+    [key: string]: any;
   }
 
   export interface RefundEventParameters {
