@@ -32,7 +32,7 @@ const Item = struct({
   price: 'number?',
 });
 
-export const ScreenView = struct({
+export const ScreenView = struct.interface({
   screen_class: 'string?',
   screen_name: 'string?',
 });
