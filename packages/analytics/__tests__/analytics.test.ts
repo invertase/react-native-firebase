@@ -139,10 +139,10 @@ describe('Analytics', function () {
       });
       it('accepts arbitrary custom event parameters while rejecting defined parameters with wrong types', function () {
         expect(() => firebase.analytics().logScreenView({ foo: 'bar' })).not.toThrow();
-        // @ts-ignore test
-        expect(() => firebase.analytics().logScreenView({ screen_name: 123, foo: 'bar' })).toThrowError(
-          'firebase.analytics().logScreenView(*):',
-        );
+        expect(() =>
+          // @ts-ignore test
+          firebase.analytics().logScreenView({ screen_name: 123, foo: 'bar' }),
+        ).toThrowError('firebase.analytics().logScreenView(*):');
       });
     });
 
