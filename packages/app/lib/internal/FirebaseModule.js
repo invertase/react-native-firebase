@@ -36,6 +36,7 @@ export default class FirebaseModule {
     if (firebaseJson) {
       return firebaseJson;
     }
+    console.log(getAppModule().FIREBASE_RAW_JSON);
     firebaseJson = JSON.parse(getAppModule().FIREBASE_RAW_JSON);
     return firebaseJson;
   }
