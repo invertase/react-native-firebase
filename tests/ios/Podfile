@@ -56,5 +56,7 @@ target 'testing' do
       end
       aggregate_target.user_project.save
     end
+
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
