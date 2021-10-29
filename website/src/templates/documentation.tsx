@@ -66,7 +66,7 @@ function DocumentationTemplate({ location, data }: Props): JSX.Element {
         <div className="flex justify-end">
           <Link
             className="inline-flex items-center text-sm text-gray-600"
-            to={`https://github.com/invertase/react-native-firebase/blob/master/docs/${mdx.parent.relativePath}`}
+            to={`https://github.com/invertase/react-native-firebase/blob/main/docs/${mdx.parent.relativePath}`}
             target="_blank"
           >
             <>

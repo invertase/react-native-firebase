@@ -27,7 +27,7 @@ function Footer(): JSX.Element {
           <List
             items={[
               ['Repository', 'https://github.com/invertase/react-native-firebase'],
-              ['License', 'https://github.com/invertase/react-native-firebase/blob/master/LICENSE'],
+              ['License', 'https://github.com/invertase/react-native-firebase/blob/main/LICENSE'],
               ['Pull Requests', 'https://github.com/invertase/react-native-firebase/pulls'],
               [
                 'Contributors',

@@ -6,7 +6,7 @@ We welcome any type of contribution, not just code. You can help with;
 
 - **QA**: file bug reports, the more details you can give the better (e.g. platform versions, screenshots SDK versions & logs)
 - **Docs**: improve reference coverage, add more examples, fix typos or anything else you can spot.
-  - At the top of every page on our docs site you can click the `Edit Page` button to go to that pages markdown file or TypeScript definition file, or view the [documents](https://github.com/invertase/react-native-firebase/tree/master/docs) directly
+  - At the top of every page on our docs site you can click the `Edit Page` button to go to that pages markdown file or TypeScript definition file, or view the [documents](https://github.com/invertase/react-native-firebase/tree/main/docs) directly
 - **Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
 - **Code**: take a look at the [open issues](issues). Even if you can't write code, commenting on them, showing that you care about a given issue matters.
 
@@ -133,14 +133,14 @@ To run end-to-end tests for `iOS`, please run:
 - `yarn tests:emulator:start` - runs Firestore emulator for Firestore tests.
 - `yarn tests:ios:test` - runs tests using Detox library. Tests for each package can be found in the `e2e` directory (i.e. `[PACKAGE]/e2e/*.e2e.js`)
 
-See it's local testing guide [here](https://github.com/invertase/react-native-firebase/blob/master/tests/README.md) to get started
+See it's local testing guide [here](https://github.com/invertase/react-native-firebase/blob/main/tests/README.md) to get started
 with `e2e` testing this project.
 
 ---
 
 ## Submitting code for review
 
-All code changes should be submitted as a pull request to the master branch.
+All code changes should be submitted as a pull request to the main branch.
 
 The bigger the pull request, the longer it will take to review and merge. Try to break down large pull requests in smaller chunks that are easier to review and merge. It is also always helpful to have some context for your pull request. What was the purpose? Why does it matter to you? Tag in any linked issues.
 
@@ -164,7 +164,7 @@ See the [Conventional Commits](https://www.conventionalcommits.org/) specificati
 
 ### Code review process
 
-Pull Requests to master require two or more peer-review approvals and passing status checks before they can be merged.
+Pull Requests to main require two or more peer-review approvals and passing status checks before they can be merged.
 
 Reviews of Pull Requests are based on the following acceptance critical:
 
@@ -181,7 +181,7 @@ Reviews of Pull Requests are based on the following acceptance critical:
   - Other tests through Jest.
 - Do all CI checks pass.
 
-Once a PR is merged into master; new versions of the changed packages are automatically created and published to NPM.
+Once a PR is merged into main; new versions of the changed packages are automatically created and published to NPM.
 
 ## [No Brown M&M's](http://en.wikipedia.org/wiki/Van_Halen#Contract_riders)
 

@@ -95,4 +95,4 @@ Attempting to set `user` state to anything other than the `User` or `null` will 
 The full set of TypeScript definitions for each module can be found on the [`invertase/react-native-firebase`](https://github.com/invertase/react-native-firebase)
 repository within each package.
 
-For example, the `auth` module definitions are located at [`react-native-firebase/packages/auth/lib/index.d.ts`](https://github.com/invertase/react-native-firebase/blob/master/packages/auth/lib/index.d.ts).
+For example, the `auth` module definitions are located at [`react-native-firebase/packages/auth/lib/index.d.ts`](https://github.com/invertase/react-native-firebase/blob/main/packages/auth/lib/index.d.ts).
