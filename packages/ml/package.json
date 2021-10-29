@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/invertase/react-native-firebase/tree/master/packages/ml"
+    "url": "https://github.com/invertase/react-native-firebase/tree/main/packages/ml"
   },
   "license": "Apache-2.0",
   "keywords": [

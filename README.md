@@ -69,12 +69,12 @@ Looking for the Version 5 documentation? [View legacy documentation](https://v5.
 
 ## Contributing
 
-- [Overview](https://github.com/invertase/react-native-firebase/blob/master/CONTRIBUTING.md)
+- [Overview](https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md)
 - [Issues](https://github.com/invertase/react-native-firebase/issues)
 - [PRs](https://github.com/invertase/react-native-firebase/pulls)
 - [Documentation](https://rnfirebase.io)
-- [Community](https://github.com/invertase/react-native-firebase/blob/master/CONTRIBUTING.md)
-- [Code of Conduct](https://github.com/invertase/meta/blob/master/CODE_OF_CONDUCT.md)
+- [Community](https://github.com/invertase/react-native-firebase/blob/main/CONTRIBUTING.md)
+- [Code of Conduct](https://github.com/invertase/meta/blob/main/CODE_OF_CONDUCT.md)
 
 ## License
 

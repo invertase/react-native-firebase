@@ -222,7 +222,7 @@ public class ReactNativeFirebaseDatabaseQuery {
 
     // Note: equalTo() is handled in JS land by setting startAt() & endAt() to the same
     // value (see
-    // https://github.com/firebase/firebase-js-sdk/blob/master/packages/database/src/api/Query.ts#L570)
+    // https://github.com/firebase/firebase-js-sdk/blob/main/packages/database/src/api/Query.ts#L570)
     if ("endAt".equals(name)) {
       applyEndAtFilter(key, valueType, modifier);
     } else if ("startAt".equals(name)) {
