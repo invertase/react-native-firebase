@@ -26,7 +26,7 @@
     "@react-native-firebase/remote-config": "12.9.3",
     "@react-native-firebase/storage": "12.9.3",
     "react": "17.0.2",
-    "react-native": "0.67.0-rc.0"
+    "react-native": "0.67.0-rc.2"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.1",
