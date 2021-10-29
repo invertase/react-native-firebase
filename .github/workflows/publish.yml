@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   publish_npm:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: 'master'
+          ref: 'main'
           fetch-depth: 0
       - name: Yarn Install
         uses: nick-invision/retry@v2

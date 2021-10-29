@@ -22,7 +22,7 @@ Once authentication is successful, a Firebase credential can be used to sign the
 
 To get started, you must first install the [`react-native-apple-authentication`](https://github.com/invertase/react-native-apple-authentication)
 library. There are a number of [prerequisites](https://github.com/invertase/react-native-apple-authentication#prerequisites-to-using-this-library) to using the library, including
-[setting up your Apple Developer account](https://github.com/invertase/react-native-apple-authentication/blob/master/docs/INITIAL_SETUP.md) to enable Apple Sign-In.
+[setting up your Apple Developer account](https://github.com/invertase/react-native-apple-authentication/blob/main/docs/INITIAL_SETUP.md) to enable Apple Sign-In.
 
 Ensure the "Apple" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 

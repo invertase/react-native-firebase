@@ -438,7 +438,7 @@ On Android, any messages which display a [Notification](/messaging/notifications
 (such as the small icon, title etc). To provide a custom tint color, update the `messaging_android_notification_color` property
 with a Android color resource name.
 
-The library provides a set of [predefined colors](https://github.com/invertase/react-native-firebase/blob/master/packages/messaging/android/src/main/res/values/colors.xml) corresponding to the [HTML colors](https://www.w3schools.com/colors/colors_names.asp) for convenience, for example:
+The library provides a set of [predefined colors](https://github.com/invertase/react-native-firebase/blob/main/packages/messaging/android/src/main/res/values/colors.xml) corresponding to the [HTML colors](https://www.w3schools.com/colors/colors_names.asp) for convenience, for example:
 
 ```json
 // <projectRoot>/firebase.json
