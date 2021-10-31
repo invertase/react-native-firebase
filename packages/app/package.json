@@ -68,12 +68,12 @@
       "firebase": "8.9.0"
     },
     "android": {
-      "minSdk": 16,
-      "targetSdk": 30,
-      "compileSdk": 30,
-      "buildTools": "30.0.2",
-      "firebase": "28.4.2",
-      "firebaseCrashlyticsGradle": "2.7.1",
+      "minSdk": 21,
+      "targetSdk": 31,
+      "compileSdk": 31,
+      "buildTools": "30.0.3",
+      "firebase": "29.0.0",
+      "firebaseCrashlyticsGradle": "2.8.0",
       "firebasePerfGradle": "1.4.0",
       "gmsGoogleServicesGradle": "4.3.10",
       "playServicesAuth": "19.2.0"
