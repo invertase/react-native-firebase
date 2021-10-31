@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/installations",
-  "version": "12.9.3",
+  "version": "13.0.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Installations",
   "main": "lib/index.js",
@@ -22,7 +22,7 @@
     "installations"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "12.9.3"
+    "@react-native-firebase/app": "13.0.0"
   },
   "publishConfig": {
     "access": "public"
