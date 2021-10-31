@@ -11605,10 +11605,10 @@ react-native-port-patcher@^1.0.4:
   dependencies:
     command-line-args "^3.0.5"
 
-react-native@0.67.0-rc.0:
-  version "0.67.0-rc.0"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.67.0-rc.0.tgz#abcfeeb12c5d2a390bf731078342624e276d36fc"
-  integrity sha512-TG+jH3yD3oTxjFCL+etP4MQvkPBVUr9mCNkoccdkn6JLprXOIqNsG7XEvci+Bd3/7e37iJGoKUBMxfjI/ir9tw==
+react-native@0.67.0-rc.2:
+  version "0.67.0-rc.2"
+  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.67.0-rc.2.tgz#a0fd84881d56237b9c1b08b585f25d0b271a0713"
+  integrity sha512-JwVrFd1UvSMQtSO3x2hEr2ToIa/0uJOzJECbDpy6+c3xLh7LCKEq+E9lCPXRc1Cmz9kKZ3RQCsynRmZyCDAu5Q==
   dependencies:
     "@jest/create-cache-key-function" "^27.0.1"
     "@react-native-community/cli" "^6.0.0"
