@@ -264,6 +264,8 @@ React Native Firebase cannot be used in the "Expo Go" app, because [it requires 
 
 _If you're using [Bare Workflow](https://docs.expo.io/introduction/managed-vs-bare/#bare-workflow), please follow the above installation steps instead._
 
+The recommendation is to use a [custom development client](https://docs.expo.dev/clients/getting-started/). If starting a new app, you can run `npx create-react-native-app -t with-dev-client` to have this set up automatically. It will also allow you to use the Expo Application Service to test the android and iOS builds.
+
 After installing the `@react-native-firebase/app` NPM package, add the [config plugin](https://docs.expo.io/guides/config-plugins/) to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) array of your `app.json` or `app.config.js`.
 
 Also, you have to provide paths to the `google-services.json` and `GoogleService-Info.plist` files by specifying the [`expo.android.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile-1) and [`expo.ios.googleServicesFile`](https://docs.expo.io/versions/latest/config/app/#googleservicesfile) fields respectively.
@@ -288,7 +290,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 }
 ```
 
-Next, rebuild your app as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide.
+Next, you need to use the `expo prebuild --clean` command as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide to rebuild your app with the plugin changes. If this command isn't run, you'll encounter connection errors to Firebase.
 
 Config plugins are only required for React Native Firebase modules, which require custom native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. Packages without native steps required will work out of the box.
 
