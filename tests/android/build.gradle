@@ -1,8 +1,8 @@
 buildscript {
   ext.buildToolsVersion = '31.0.0'
   ext.minSdkVersion = 21
-  ext.compileSdkVersion = 30
-  ext.targetSdkVersion = 30
+  ext.compileSdkVersion = 31
+  ext.targetSdkVersion = 31
   ext.ndkVersion = '21.4.7075529'
 
   ext.kotlinVersion = '1.5.31' // https://kotlinlang.org/releases.html
