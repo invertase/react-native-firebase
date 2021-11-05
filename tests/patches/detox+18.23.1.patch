@@ -1,3 +1,24 @@
+diff --git a/node_modules/detox/android/detox/build.gradle b/node_modules/detox/android/detox/build.gradle
+index 8bef864..3689459 100644
+--- a/node_modules/detox/android/detox/build.gradle
++++ b/node_modules/detox/android/detox/build.gradle
+@@ -86,12 +86,12 @@ dependencies {
+     // Versions are in-sync with the 'androidx-test-1.2.0' release/tag of the android-test github repo,
+     // used by the Detox generator. See https://github.com/android/android-test/releases/tag/androidx-test-1.2.0
+     // Important: Should remain so when generator tag is replaced!
+-    api('androidx.test.espresso:espresso-core:3.3.0') { // Needed all across Detox but also makes Espresso seamlessly provided to Detox users with hybrid apps/E2E-tests.
++    api('androidx.test.espresso:espresso-core:3.4.0') { // Needed all across Detox but also makes Espresso seamlessly provided to Detox users with hybrid apps/E2E-tests.
+         exclude group: 'com.google.code.findbugs', module: 'jsr305'
+     }
+-    api 'androidx.test.espresso:espresso-web:3.3.0' // Web-View testing
+-    api 'androidx.test:rules:1.2.0' // Needed because of ActivityTestRule. Needed by users *and* internally used by Detox.
+-    api 'androidx.test.ext:junit:1.1.1' // Needed so as to seamlessly provide AndroidJUnit4 to Detox users. Depends on junit core.
++    api 'androidx.test.espresso:espresso-web:3.4.0' // Web-View testing
++    api 'androidx.test:rules:1.4.0' // Needed because of ActivityTestRule. Needed by users *and* internally used by Detox.
++    api 'androidx.test.ext:junit:1.1.3' // Needed so as to seamlessly provide AndroidJUnit4 to Detox users. Depends on junit core.
+ 
+     // Version is the latest; Cannot sync with the Github repo (e.g. android/android-test) because the androidx
+     // packaging version of associated classes is simply not there...
 diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java
 index 2407926..65d17d8 100644
 --- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/UIModuleIdlingResource.java
