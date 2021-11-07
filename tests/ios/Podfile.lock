@@ -584,7 +584,7 @@ PODS:
     - gRPC-Core/Interface (= 1.28.2)
   - gRPC-Core/Interface (1.28.2)
   - GTMSessionFetcher/Core (1.7.0)
-  - Jet (0.6.6-0):
+  - Jet (0.8.0):
     - React
   - leveldb-library (1.22.1)
   - nanopb (2.30908.0):
@@ -1143,7 +1143,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 13d8ccef97d5c3c441b7e3c529ef28ebee86fad2
   gRPC-Core: 4afa11bfbedf7cdecd04de535a9e046893404ed5
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
-  Jet: 84fd0e2e9d49457fc04bc79b5d8857737a01c507
+  Jet: 8b8c4620ed89e5ba53bfa36f2c11adaeac9d9c76
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
