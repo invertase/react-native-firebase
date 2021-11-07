@@ -8595,10 +8595,10 @@ jest@^27.3.1:
     import-local "^3.0.2"
     jest-cli "^27.3.1"
 
-jet@^0.6.6-0:
-  version "0.6.6-0"
-  resolved "https://registry.yarnpkg.com/jet/-/jet-0.6.6-0.tgz#11810b4ae0128d055da7a205dd01b610ed75b4bd"
-  integrity sha512-ncHEBmmn2Q21U6PfGoyG+N13Fdz+a67/hxFwtD0FyOOHbUPpSvcETUW4pG3F+BPuGgQjMYltWNeISJTzh1aTyw==
+jet@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/jet/-/jet-0.8.0.tgz#1fc2d5cd71d0d658fa4342a3b64cae4c2f1f7a93"
+  integrity sha512-3rrOQdx1Mws/JwF+MMnpmKZ1wC1v4tNueqW9xcRPh4f8LXLp5tUV5RjspFjsdd1S+R8dEp4RFiE0XkFMM3/OMw==
   dependencies:
     chalk "^4.0.0"
     error-stack-parser "^2.0.6"
