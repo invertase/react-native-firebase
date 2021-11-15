@@ -105,6 +105,10 @@
         "android_background_activity_names": {
           "description": "The names (as returned by `getShortClassName()` of Activities used outside the context of react native.\nThese are ignored when determining if the app is in foreground for purposes of calling javascript background handlers",
           "type": "array"
+        },
+        "android_bypass_emulator_url_remap": {
+          "description": "On android devices, the urls of firebase emulators will be remapped from localhost to 10.0.2.2. If you don't need this behaviour set this fleg to `true`.",
+          "type": "boolean"
         }
       }
     }
