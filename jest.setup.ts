@@ -28,7 +28,7 @@ jest.doMock('react-native', () => {
               options: {},
             },
           ],
-          FIREBASE_RAW_JSON: '{"asd": "Hello world"}',
+          FIREBASE_RAW_JSON: '{}',
           addListener: jest.fn(),
           eventsAddListener: jest.fn(),
           eventsNotifyReady: jest.fn(),
