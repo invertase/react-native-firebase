@@ -360,19 +360,22 @@ class FirebaseAuthModule extends FirebaseModule {
     }
 
     let _url = url;
-    if (isAndroid && _url) {
+    const androidBypassEmulatorUrlRemap =
+      typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
+      this.firebaseJson.android_bypass_emulator_url_remap;
+    if (!androidBypassEmulatorUrlRemap && isAndroid && _url) {
       if (_url.startsWith('http://localhost')) {
         _url = _url.replace('http://localhost', 'http://10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
-          'Mapping auth host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          'Mapping auth host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
       if (_url.startsWith('http://127.0.0.1')) {
         _url = _url.replace('http://127.0.0.1', 'http://10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
-          'Mapping auth host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          'Mapping auth host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }

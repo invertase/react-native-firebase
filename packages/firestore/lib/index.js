@@ -101,12 +101,15 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error('firebase.firestore().useEmulator() takes a non-empty host and port');
     }
     let _host = host;
-    if (isAndroid && _host) {
+    const androidBypassEmulatorUrlRemap =
+      typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
+      this.firebaseJson.android_bypass_emulator_url_remap;
+    if (!androidBypassEmulatorUrlRemap && isAndroid && _host) {
       if (_host === 'localhost' || _host === '127.0.0.1') {
         _host = '10.0.2.2';
         // eslint-disable-next-line no-console
         console.log(
-          'Mapping firestore host to "10.0.2.2" for android emulators. Use real IP on real devices.',
+          'Mapping firestore host to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }
