@@ -16,44 +16,6 @@
  */
 
 describe('remoteConfig()', function () {
-  describe('namespace', function () {
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.remoteConfig);
-      app.remoteConfig().app.should.equal(app);
-    });
-
-    it('supports multiple apps', async function () {
-      firebase.firestore().app.name.should.equal('[DEFAULT]');
-
-      firebase
-        .firestore(firebase.app('secondaryFromNative'))
-        .app.name.should.equal('secondaryFromNative');
-
-      firebase
-        .app('secondaryFromNative')
-        .remoteConfig()
-        .app.name.should.equal('secondaryFromNative');
-    });
-  });
-
-  describe('statics', function () {
-    it('LastFetchStatus', function () {
-      firebase.remoteConfig.LastFetchStatus.should.be.an.Object();
-      firebase.remoteConfig.LastFetchStatus.FAILURE.should.equal('failure');
-      firebase.remoteConfig.LastFetchStatus.SUCCESS.should.equal('success');
-      firebase.remoteConfig.LastFetchStatus.NO_FETCH_YET.should.equal('no_fetch_yet');
-      firebase.remoteConfig.LastFetchStatus.THROTTLED.should.equal('throttled');
-    });
-
-    it('ValueSource', function () {
-      firebase.remoteConfig.ValueSource.should.be.an.Object();
-      firebase.remoteConfig.ValueSource.REMOTE.should.equal('remote');
-      firebase.remoteConfig.ValueSource.STATIC.should.equal('static');
-      firebase.remoteConfig.ValueSource.DEFAULT.should.equal('default');
-    });
-  });
-
   describe('fetch()', function () {
     it('with expiration provided', async function () {
       const date = Date.now() - 30000;
@@ -72,15 +34,6 @@ describe('remoteConfig()', function () {
     });
     it('without expiration provided', function () {
       return firebase.remoteConfig().fetch();
-    });
-    it('it throws if expiration is not a number', function () {
-      try {
-        firebase.remoteConfig().fetch('foo');
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a number value');
-        return Promise.resolve();
-      }
     });
   });
 
@@ -114,49 +67,16 @@ describe('remoteConfig()', function () {
   });
 
   describe('setConfigSettings()', function () {
-    it('it throws if arg is not an object', async function () {
-      try {
-        firebase.remoteConfig().setConfigSettings('not an object');
-
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must set an object');
-        return Promise.resolve();
-      }
-    });
-
     it('minimumFetchIntervalMillis sets correctly', async function () {
       await firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 3000 });
 
       firebase.remoteConfig().settings.minimumFetchIntervalMillis.should.be.equal(3000);
     });
 
-    it('throws if minimumFetchIntervalMillis is not a number', async function () {
-      try {
-        firebase.remoteConfig().setConfigSettings({ minimumFetchIntervalMillis: 'potato' });
-
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a number type in milliseconds.');
-        return Promise.resolve();
-      }
-    });
-
     it('fetchTimeMillis sets correctly', async function () {
       await firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 3000 });
 
       firebase.remoteConfig().settings.fetchTimeMillis.should.be.equal(3000);
-    });
-
-    it('throws if fetchTimeMillis is not a number', function () {
-      try {
-        firebase.remoteConfig().setConfigSettings({ fetchTimeMillis: 'potato' });
-
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a number type in milliseconds.');
-        return Promise.resolve();
-      }
     });
   });
 
@@ -200,16 +120,6 @@ describe('remoteConfig()', function () {
       values.some_key.getSource().should.equal('default');
       values.some_key_1.getSource().should.equal('default');
       values.some_key_2.getSource().should.equal('default');
-    });
-
-    it('it throws if defaults object not provided', function () {
-      try {
-        firebase.remoteConfig().setDefaults('not an object');
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be an object.');
-        return Promise.resolve();
-      }
     });
   });
 
@@ -375,16 +285,6 @@ describe('remoteConfig()', function () {
       // TODO dasherize error namespace
       error.code.should.equal('remoteConfig/resource_not_found');
       error.message.should.containEql('was not found');
-    });
-
-    it('throws if resourceName is not a string', function () {
-      try {
-        firebase.remoteConfig().setDefaultsFromResource(1337);
-        return Promise.reject(new Error('Did not throw'));
-      } catch (error) {
-        error.message.should.containEql('must be a string value');
-        return Promise.resolve();
-      }
     });
   });
 
