@@ -58,6 +58,7 @@ class FirebaseConfigModule extends FirebaseModule {
       minimumFetchIntervalMillis: 43200000,
     };
     this._lastFetchTime = -1;
+    this._values = {};
   }
 
   getValue(key) {
@@ -89,9 +90,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   getAll() {
     const values = {};
-
     Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
-
     return values;
   }
 
