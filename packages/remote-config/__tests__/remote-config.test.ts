@@ -81,20 +81,6 @@ describe('remoteConfig()', function () {
     });
   });
 
-  // TODO set up a mock for getAll from issue 5854 and probe if result is empty
-  // describe('getAll() with remote', function () {
-  //   it('should return an object of all available values', function () {
-  //     const config = firebase.remoteConfig().getAll();
-  //     config.number.asNumber().should.equal(1337);
-  //     config.number.getSource().should.equal('remote');
-  //     // firebase console stores as a string
-  //     config.float.asNumber().should.equal(123.456);
-  //     config.float.getSource().should.equal('remote');
-  //     config.prefix_1.asNumber().should.equal(1);
-  //     config.prefix_1.getSource().should.equal('remote');
-  //   });
-  // });
-
   describe('setDefaults()', function () {
     it('it throws if defaults object not provided', function () {
       expect(() => {
@@ -110,6 +96,14 @@ describe('remoteConfig()', function () {
         // @ts-ignore - incorrect argument on purpose to check validation
         firebase.remoteConfig().setDefaultsFromResource(1337);
       }).toThrow('must be a string value');
+    });
+  });
+
+  describe('getAll() should not crash', function () {
+    it('should return an empty object pre-fetch, pre-defaults', function () {
+      const config = firebase.remoteConfig().getAll();
+      expect(config).toBeDefined();
+      expect(config).toEqual({});
     });
   });
 });
