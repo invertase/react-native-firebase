@@ -85,7 +85,7 @@ There is a [community-supported React Native library](https://github.com/theberg
 the native Facebook SDKs to enable Facebook sign-in.
 
 Before getting started, ensure you have installed the library, [configured your Android & iOS applications](https://developers.facebook.com/docs/android/getting-started/) and
-setup your [Facebook Developer Account](https://github.com/facebook/react-native-fbsdk#3-configure-projects)
+setup your [Facebook Developer Account](https://github.com/thebergamo/react-native-fbsdk-next#3-configure-projects)
 to enable Facebook Login.
 
 Ensure the "Facebook" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
@@ -141,10 +141,10 @@ with the new authentication state of the user.
 
 ## Twitter
 
-Using the external [`react-native-twitter-signin`](https://github.com/GoldenOwlAsia/react-native-twitter-signin) library,
+Using the external [`@react-native-twitter-signin/twitter-signin`](https://github.com/react-native-twitter-signin/twitter-signin) library,
 we can sign-in the user with Twitter and generate a credential which can be used to sign-in with Firebase.
 
-To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/GoldenOwlAsia/react-native-twitter-signin#prerequisites) list.
+To get started, install the library and ensure you have completed setup, following the required [prerequisites](https://github.com/react-native-twitter-signin/twitter-signin#prerequisites) list.
 
 Ensure the "Twitter" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
