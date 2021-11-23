@@ -22,7 +22,7 @@ yarn add @react-native-firebase/auth
 cd ios/ && pod install
 ```
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
+If you're using an older version of React Native without auto-linking support, or wish to integrate it into an existing project,
 you can follow the manual installation steps for [iOS](/auth/usage/installation/ios) and [Android](/auth/usage/installation/android).
 
 # What does it do
