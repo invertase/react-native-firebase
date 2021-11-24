@@ -26,7 +26,7 @@ library. There are a number of [prerequisites](https://github.com/invertase/reac
 
 Ensure the "Apple" sign-in provider is enabled on the [Firebase Console](https://console.firebase.google.com/project/_/authentication/providers).
 
-Once setup, we can trigger an initial request to allow user to sign in with their Apple account, using a pre-rendered
+Once setup, we can trigger an initial request to allow the user to sign in with their Apple account, using a pre-rendered
 button the `react-native-apple-authentication` library provides:
 
 ```jsx
