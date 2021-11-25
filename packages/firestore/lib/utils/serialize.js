@@ -16,7 +16,6 @@
  */
 
 import {
-  isAndroid,
   isArray,
   isBoolean,
   isDate,
@@ -139,10 +138,13 @@ export function generateNativeData(value, ignoreUndefined) {
   }
 
   if (isNumber(value)) {
-    if (isAndroid) {
-      return getTypeMapInt('number', value.toString());
+    // mirror the JS SDK's integer detection algorithm
+    // https://github.com/firebase/firebase-js-sdk/blob/086df7c7e0299cedd9f3cff9080f46ca25cab7cd/packages/firestore/src/remote/number_serializer.ts#L56
+    const isNegativeZero = value === 0 && 1 / value === -Infinity;
+    if (Number.isSafeInteger(value) && !isNegativeZero) {
+      return getTypeMapInt('integer', value);
     }
-    return getTypeMapInt('number', value);
+    return getTypeMapInt('double', value);
   }
 
   if (isString(value)) {
@@ -254,7 +256,8 @@ export function parseNativeData(firestore, nativeArray) {
       return true;
     case 'booleanFalse':
       return false;
-    case 'number':
+    case 'double':
+    case 'integer':
     case 'string':
       return value;
     case 'stringEmpty':
