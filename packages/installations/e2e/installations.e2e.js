@@ -39,7 +39,7 @@ describe('installations()', function () {
       decodedToken.fid.should.equal(id); // fid == firebase installations id
       decodedToken.projectNumber.should.equal(PROJECT_ID);
       if (decodedToken.exp < Date.now()) {
-        Promise.reject('Token already expired');
+        return Promise.reject('Token already expired');
       }
 
       const token2 = await firebase.installations().getToken(true);
@@ -49,7 +49,7 @@ describe('installations()', function () {
       decodedToken2.fid.should.equal(id);
       decodedToken2.projectNumber.should.equal(PROJECT_ID);
       if (decodedToken2.exp < Date.now()) {
-        Promise.reject('Token already expired');
+        return Promise.reject('Token already expired');
       }
       (token === token2).should.be.false();
     });
@@ -73,7 +73,7 @@ describe('installations()', function () {
       decodedToken.fid.should.equal(id2); // fid == firebase installations id
       decodedToken.projectNumber.should.equal(PROJECT_ID);
       if (decodedToken.exp < Date.now()) {
-        Promise.reject('Token already expired');
+        return Promise.reject('Token already expired');
       }
     });
   });
