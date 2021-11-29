@@ -21,7 +21,6 @@ import database from '@react-native-firebase/database';
 
 database().setPersistenceEnabled(true);
 
-
 AppRegistry.registerComponent('app', () => App);
 ```
 
