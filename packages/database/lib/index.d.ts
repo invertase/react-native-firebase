@@ -1217,7 +1217,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param enabled Whether persistence is enabled for the Database service.
      */
-    setPersistenceEnabled(enabled: boolean): Promise<void>;
+    setPersistenceEnabled(enabled: boolean): void;
 
     /**
      * Sets the native logging level for the database module. By default,
@@ -1237,7 +1237,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param enabled Whether debug logging is enabled.
      */
-    setLoggingEnabled(enabled: boolean): Promise<void>;
+    setLoggingEnabled(enabled: boolean): void;
 
     /**
      * By default Firebase Database will use up to 10MB of disk space to cache data. If the cache grows beyond this size,
@@ -1262,7 +1262,7 @@ export namespace FirebaseDatabaseTypes {
      *
      * @param bytes The new size of the cache in bytes.
      */
-    setPersistenceCacheSizeBytes(bytes: number): Promise<void>;
+    setPersistenceCacheSizeBytes(bytes: number): void;
 
     /**
      * Modify this Database instance to communicate with the Firebase Database emulator.
