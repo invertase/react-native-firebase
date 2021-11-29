@@ -1218,6 +1218,7 @@ export namespace FirebaseDatabaseTypes {
      * @param enabled Whether persistence is enabled for the Database service.
      */
     setPersistenceEnabled(enabled: boolean): void;
+    
 
     /**
      * Sets the native logging level for the database module. By default,
