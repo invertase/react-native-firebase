@@ -19,9 +19,7 @@ as early on in your application code as possible:
 import { AppRegistry } from 'react-native';
 import database from '@react-native-firebase/database';
 
-database()
-  .setPersistenceEnabled(true)
-  .then(() => console.log('Realtime Database persistence enabled'));
+database().setPersistenceEnabled(true);
 
 AppRegistry.registerComponent('app', () => App);
 ```
@@ -93,5 +91,5 @@ little or too much data, call the `setPersistenceCacheSizeBytes` method to updat
 ```js
 import database from '@react-native-firebase/database';
 
-await database().setPersistenceCacheSizeBytes(2000000); // 2MB
+database().setPersistenceCacheSizeBytes(2000000); // 2MB
 ```
