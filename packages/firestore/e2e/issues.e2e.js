@@ -18,7 +18,6 @@
 const COLLECTION = 'firestore';
 const { getE2eEmulatorHost } = require('@react-native-firebase/app/e2e/helpers');
 const jsFirebase = require('firebase/compat/app');
-const { wipe } = require('./helpers');
 require('firebase/compat/firestore');
 
 const testNumbers = {
