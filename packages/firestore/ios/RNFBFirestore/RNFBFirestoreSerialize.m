@@ -57,6 +57,7 @@ enum TYPE_MAP {
   INT_FIELDVALUE,
   INT_OBJECT,
   INT_INTEGER,
+  INT_NEGATIVE_ZERO,
   INT_UNKNOWN = -999,
 };
 
@@ -401,6 +402,8 @@ enum TYPE_MAP {
       return @(YES);
     case INT_BOOLEAN_FALSE:
       return @(NO);
+    case INT_NEGATIVE_ZERO:
+      return @(-0.0);
     case INT_INTEGER:
       return @([typeMap[1] longLongValue]);
     case INT_DOUBLE:

@@ -36,6 +36,7 @@ const MAP = {
   fieldvalue: 15,
   object: 16,
   integer: 17,
+  negativeZero: 18,
   unknown: -999,
 };
 

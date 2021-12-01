@@ -140,8 +140,10 @@ export function generateNativeData(value, ignoreUndefined) {
   if (isNumber(value)) {
     // mirror the JS SDK's integer detection algorithm
     // https://github.com/firebase/firebase-js-sdk/blob/086df7c7e0299cedd9f3cff9080f46ca25cab7cd/packages/firestore/src/remote/number_serializer.ts#L56
-    const isNegativeZero = value === 0 && 1 / value === -Infinity;
-    if (Number.isSafeInteger(value) && !isNegativeZero) {
+    if (value === 0 && 1 / value === -Infinity) {
+      return getTypeMapInt('negativeZero');
+    }
+    if (Number.isSafeInteger(value)) {
       return getTypeMapInt('integer', value);
     }
     return getTypeMapInt('double', value);
@@ -258,6 +260,7 @@ export function parseNativeData(firestore, nativeArray) {
       return false;
     case 'double':
     case 'integer':
+    case 'negativeZero':
     case 'string':
       return value;
     case 'stringEmpty':
