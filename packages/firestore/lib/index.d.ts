@@ -90,7 +90,7 @@ export namespace FirebaseFirestoreTypes {
    * A `DocumentData` object represents the data in a document.
    */
   export interface DocumentData {
-    [key: string]: any;
+    [key: string]: DocumentFieldType;
   }
 
   /**
