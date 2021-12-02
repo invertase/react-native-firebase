@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [13.1.0](https://github.com/invertase/react-native-firebase/compare/v13.0.1...v13.1.0) (2021-12-02)
+
+
+### Bug Fixes
+
+* **remote-config, getAll:** init with empty config ([232d860](https://github.com/invertase/react-native-firebase/commit/232d860831dd39b728e3a01471ec30e0c2701c5c)), closes [/github.com/firebase/firebase-js-sdk/blob/acc58102d4429ce0593ec22192e76018e9d16ed7/packages/remote-config/test/remote_config.test.ts#L333-L335](https://github.com//github.com/firebase/firebase-js-sdk/blob/acc58102d4429ce0593ec22192e76018e9d16ed7/packages/remote-config/test/remote_config.test.ts/issues/L333-L335) [#5854](https://github.com/invertase/react-native-firebase/issues/5854)
+
+
+### Features
+
+* **android, emulator:** add firebase.json config element to bypass localhost remap ([#5852](https://github.com/invertase/react-native-firebase/issues/5852)) ([ddf3f5f](https://github.com/invertase/react-native-firebase/commit/ddf3f5f43d2c8547879934c3169d3e01c0db44c0))
+* **sdks:** firebase-ios-sdk 8.10.0 / firebase-android-sdk 29.0.1 ([f6949c9](https://github.com/invertase/react-native-firebase/commit/f6949c9f3669df6d8b3f78bbee97bee2f36b7df3))
+
+
+
+
+
 ## [13.0.1](https://github.com/invertase/react-native-firebase/compare/v13.0.0...v13.0.1) (2021-11-05)
 
 
