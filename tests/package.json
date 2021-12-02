@@ -25,6 +25,7 @@
     "@react-native-firebase/perf": "13.0.1",
     "@react-native-firebase/remote-config": "13.0.1",
     "@react-native-firebase/storage": "13.0.1",
+    "postinstall-postinstall": "2.1.0",
     "react": "17.0.2",
     "react-native": "0.67.0-rc.2"
   },
