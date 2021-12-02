@@ -8,7 +8,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* **remote-config, getAll:** init with empty config ([232d860](https://github.com/invertase/react-native-firebase/commit/232d860831dd39b728e3a01471ec30e0c2701c5c)), closes [/github.com/firebase/firebase-js-sdk/blob/acc58102d4429ce0593ec22192e76018e9d16ed7/packages/remote-config/test/remote_config.test.ts#L333-L335](https://github.com//github.com/firebase/firebase-js-sdk/blob/acc58102d4429ce0593ec22192e76018e9d16ed7/packages/remote-config/test/remote_config.test.ts/issues/L333-L335) [#5854](https://github.com/invertase/react-native-firebase/issues/5854)
+* **remote-config, getAll:** init with empty config ([232d860](https://github.com/invertase/react-native-firebase/commit/232d860831dd39b728e3a01471ec30e0c2701c5c)), closes [#5854](https://github.com/invertase/react-native-firebase/issues/5854)
 
 
 ### Features
