@@ -15,7 +15,7 @@ then you have not correctly setup Crashlytics in your app (see [Usage](/crashlyt
 
 Upon running the first two examples under [usage](/crashlytics/usage), you will be shown a display similar to following image.
 ![](https://i.imgur.com/YIQ88ZF.png)
-In this example the [Crash Attributes](/crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](crashlytics/usage#error-reports) example three times, in addition to several miscellaneous exceptions that have occurred during the write-up.
+In this example the [Crash Attributes](/crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](/crashlytics/usage#error-reports) example three times, in addition to several miscellaneous exceptions that have occurred during the write-up.
 
 > If you are certain that your app has produced error reports, but none are visible, try restarting your app fully. Crashlytics only uploads reports upon launching the app.
 
