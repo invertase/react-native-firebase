@@ -11,11 +11,11 @@ Once you have Crashlytics up and running in your app, you can navigate to Crashl
 'Quality' and start reviewing the reports as they come in. If this page still tells you to setup, build or run your app
 then you have not correctly setup Crashlytics in your app (see [Usage](/crashlytics/usage)).
 
-> Keep in mind when testing out Crashlytics that Crashlytics is [disabled by default in debug mode](crashlytics/usage#crashlytics-in-debug-mode).
+> Keep in mind when testing out Crashlytics that Crashlytics is [disabled by default in debug mode](/crashlytics/usage#enable-debug-crash-logs). You may even find a more in-depth guide useful if you are really struggling with testing your crash report integration - we have [an in-depth article about configuring and testing Crashlytics to help you.](https://invertase.io/blog/react-native-firebase-crashlytics-configuration)
 
-Upon running the first two examples under [usage](crashlytics/usage), you will be shown a display similar to following image.
+Upon running the first two examples under [usage](/crashlytics/usage), you will be shown a display similar to following image.
 ![](https://i.imgur.com/YIQ88ZF.png)
-In this example the [Crash Attributes](crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](#error-reports) example three times, in addition to several miscellaneous exceptions that have occurred during the write-up.
+In this example the [Crash Attributes](/crashlytics/usage#crash-attributes) example was ran four times and the [Error Reports](/crashlytics/usage#error-reports) example three times, in addition to several miscellaneous exceptions that have occurred during the write-up.
 
 > If you are certain that your app has produced error reports, but none are visible, try restarting your app fully. Crashlytics only uploads reports upon launching the app.
 
