@@ -25,6 +25,10 @@ Phone auth requires app verification, and the automatic app verification process
 
 For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling any phone auth methods.
 
+# Android Setup
+
+Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
+
 # Sign-in
 
 The module provides a `signInWithPhoneNumber` method which accepts a phone number. Firebase sends an SMS message to the
