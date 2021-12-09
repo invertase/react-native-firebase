@@ -11,7 +11,7 @@ Once you have Crashlytics up and running in your app, you can navigate to Crashl
 'Quality' and start reviewing the reports as they come in. If this page still tells you to setup, build or run your app
 then you have not correctly setup Crashlytics in your app (see [Usage](/crashlytics/usage)).
 
-> Keep in mind when testing out Crashlytics that Crashlytics is [disabled by default in debug mode](/crashlytics/usage#enable-debug-crash-logs).
+> Keep in mind when testing out Crashlytics that Crashlytics is [disabled by default in debug mode](/crashlytics/usage#enable-debug-crash-logs). You may even find a more in-depth guide useful if you are really struggling with testing your crash report integration - we have (an article about configuring Crashlytics in that case.](https://invertase.io/blog/react-native-firebase-crashlytics-configuration)
 
 Upon running the first two examples under [usage](/crashlytics/usage), you will be shown a display similar to following image.
 ![](https://i.imgur.com/YIQ88ZF.png)
