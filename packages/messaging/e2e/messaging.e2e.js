@@ -142,7 +142,7 @@ describe('messaging()', function () {
 
   describe('getInitialNotification', function () {
     it('returns null when no initial notification', async function () {
-      should.equal(await firebase.messaging().getInitialNotification(), null);
+      should.strictEqual(await firebase.messaging().getInitialNotification(), null);
     });
   });
 
