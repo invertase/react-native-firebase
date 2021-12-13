@@ -107,33 +107,72 @@ describe('auth() => Phone', function () {
 
     it('successfully runs verification complete handler', async function () {
       const testPhone = getRandomPhoneNumber();
-      await firebase
-        .auth()
-        .verifyPhoneNumber(testPhone)
-        .then($ => $);
-
-      return Promise.resolve();
+      const thenCb = sinon.spy();
+      await firebase.auth().verifyPhoneNumber(testPhone).then(thenCb);
+      thenCb.should.be.calledOnce();
+      const successAuthSnapshot = thenCb.args[0][0];
+      if (device.getPlatform() === 'ios') {
+        successAuthSnapshot.state.should.equal('sent');
+      } else {
+        successAuthSnapshot.state.should.equal('timeout');
+      }
     });
 
-    it('successfully runs and adds emitters', async function () {
-      const testPhone = await getRandomPhoneNumber();
-      const obervserCb = () => {};
-      const errorCb = () => {};
-      const successCb = () => {
-        return Promise.resolve();
-      };
+    it('successfully runs and calls success callback', async function () {
+      const testPhone = getRandomPhoneNumber();
+      const successCb = sinon.spy();
+      const observerCb = sinon.spy();
+      const errorCb = sinon.spy();
 
       await firebase
         .auth()
         .verifyPhoneNumber(testPhone)
-        .on('state_changed', obervserCb, errorCb, successCb, () => {});
+        .on('state_changed', observerCb, errorCb, successCb);
+
+      await Utils.spyToBeCalledOnceAsync(successCb);
+      errorCb.should.be.callCount(0);
+      successCb.should.be.calledOnce();
+      let observerAuthSnapshot = observerCb.args[0][0];
+      const successAuthSnapshot = successCb.args[0][0];
+      successAuthSnapshot.verificationId.should.be.a.String();
+      if (device.getPlatform() === 'ios') {
+        observerCb.should.be.calledOnce();
+        successAuthSnapshot.state.should.equal('sent');
+      } else {
+        // android waits for SMS auto retrieval which does not work on an emulator
+        // it gets a sent and a timeout message on observer, just the timeout on success
+        observerCb.should.be.calledTwice();
+        observerAuthSnapshot = observerCb.args[1][0];
+        successAuthSnapshot.state.should.equal('timeout');
+      }
+      JSON.stringify(successAuthSnapshot).should.equal(JSON.stringify(observerAuthSnapshot));
+    });
+
+    // TODO determine why this is not stable on the emulator, is it also not stable on real device?
+    xit('successfully runs and calls error callback', async function () {
+      const successCb = sinon.spy();
+      const observerCb = sinon.spy();
+      const errorCb = sinon.spy();
+
+      await firebase
+        .auth()
+        .verifyPhoneNumber('notaphonenumber')
+        .on('state_changed', observerCb, errorCb, successCb);
+
+      await Utils.spyToBeCalledOnceAsync(errorCb);
+      errorCb.should.be.calledOnce();
+      observerCb.should.be.calledOnce();
+      // const observerEvent = observerCb.args[0][0];
+      successCb.should.be.callCount(0);
+      // const errorEvent = errorCb.args[0][0];
+      // errorEvent.error.should.containEql('auth/invalid-phone-number');
+      // JSON.stringify(errorEvent).should.equal(JSON.stringify(observerEvent));
     });
 
     it('catches an error and emits an error event', async function () {
-      return firebase
-        .auth()
-        .verifyPhoneNumber('test')
-        .catch(() => Promise.resolve());
+      const catchCb = sinon.spy();
+      await firebase.auth().verifyPhoneNumber('badphonenumber').catch(catchCb);
+      catchCb.should.be.calledOnce();
     });
   });
 });
