@@ -429,7 +429,7 @@ export namespace FirebaseFirestoreTypes {
      * @param data A map of the fields and values for the document.
      * @param options An object to configure the set behavior.
      */
-    set(data: T, options?: SetOptions): Promise<void>;
+    set(data: SetValue<T>, options?: SetOptions): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this `DocumentReference`. The update will fail
@@ -448,7 +448,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param data An object containing the fields and values with which to update the document. Fields can contain dots to reference nested fields within the document.
      */
-    update(data: Partial<{ [K in keyof T]: T[K] | FieldValue }>): Promise<void>;
+    update(data: Partial<SetValue<T>>): Promise<void>;
 
     /**
      * Updates fields in the document referred to by this DocumentReference. The update will fail if
@@ -2080,6 +2080,17 @@ export namespace FirebaseFirestoreTypes {
      */
     useEmulator(host: string, port: number): void;
   }
+
+  /**
+   * Utility type to allow FieldValue and to allow Date in place of Timestamp objects.
+   */
+  export type SetValue<T> = T extends Timestamp
+    ? Timestamp | Date // allow Date in place of Timestamp
+    : T extends object
+    ? {
+        [P in keyof T]: SetValue<T[P]> | FieldValue; // allow FieldValue in place of values
+      }
+    : T;
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStaticsAndApp<

@@ -1,4 +1,4 @@
-import firestore, { firebase } from '../lib';
+import firestore, { firebase, FirebaseFirestoreTypes } from '../lib';
 
 const COLLECTION = 'firestore';
 
@@ -304,6 +304,28 @@ describe('Storage', function () {
         field2: {
           shouldNotWork: undefined,
         },
+      });
+    });
+
+    it('does not throw when Date is provided instead of Timestamp', async function () {
+      type BarType = {
+        myDate: FirebaseFirestoreTypes.Timestamp;
+      };
+
+      const docRef = firebase.firestore().doc<BarType>(`${COLLECTION}/bar`);
+      await docRef.set({
+        myDate: new Date(),
+      });
+    });
+
+    it('does not throw when serverTimestamp is provided instead of Timestamp', async function () {
+      type BarType = {
+        myDate: FirebaseFirestoreTypes.Timestamp;
+      };
+
+      const docRef = firebase.firestore().doc<BarType>(`${COLLECTION}/bar`);
+      await docRef.set({
+        myDate: firestore.FieldValue.serverTimestamp(),
       });
     });
   });
