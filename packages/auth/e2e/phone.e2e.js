@@ -23,7 +23,7 @@ describe('auth() => Phone', function () {
 
   describe('signInWithPhoneNumber', function () {
     it('signs in with a valid code', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
       should.ok(confirmResult.verificationId.length, 'verificationId string should not be empty');
@@ -37,7 +37,7 @@ describe('auth() => Phone', function () {
     });
 
     it('errors on invalid code', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       confirmResult.verificationId.should.be.a.String();
       should.ok(confirmResult.verificationId.length, 'verificationId string should not be empty');
@@ -56,7 +56,7 @@ describe('auth() => Phone', function () {
 
   describe('verifyPhoneNumber', function () {
     it('successfully verifies', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
       await confirmResult.confirm(lastSmsCode);
@@ -64,7 +64,7 @@ describe('auth() => Phone', function () {
     });
 
     it('uses the autoVerifyTimeout when a non boolean autoVerifyTimeoutOrForceResend is provided', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       const confirmResult = await firebase.auth().signInWithPhoneNumber(testPhone);
       const lastSmsCode = await getLastSmsCode(testPhone);
       await confirmResult.confirm(lastSmsCode);
@@ -72,7 +72,7 @@ describe('auth() => Phone', function () {
     });
 
     it('throws an error with an invalid on event', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       try {
         await firebase
           .auth()
@@ -89,7 +89,7 @@ describe('auth() => Phone', function () {
     });
 
     it('throws an error with an invalid observer event', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       try {
         await firebase
           .auth()
@@ -106,7 +106,7 @@ describe('auth() => Phone', function () {
     });
 
     it('successfully runs verification complete handler', async function () {
-      const testPhone = await getRandomPhoneNumber();
+      const testPhone = getRandomPhoneNumber();
       await firebase
         .auth()
         .verifyPhoneNumber(testPhone)
