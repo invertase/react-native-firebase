@@ -18,7 +18,7 @@
 const COLLECTION = 'firestore';
 
 describe('firestore()', function () {
-  describe(COLLECTION, function () {
+  describe('issues', function () {
     before(async function () {
       await Promise.all([
         firebase.firestore().doc(`${COLLECTION}/wbXwyLJheRfYXXWlY46j`).set({ index: 2, number: 2 }),
