@@ -958,11 +958,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final String requestKey,
       final int timeout,
       final boolean forceResend) {
+    Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
+
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     final Activity activity = getCurrentActivity();
-
-    Log.d(TAG, "verifyPhoneNumber:" + phoneNumber);
 
     // reset force resending token if phone number changes
     if (!phoneNumber.equals(mLastPhoneNumber)) {
