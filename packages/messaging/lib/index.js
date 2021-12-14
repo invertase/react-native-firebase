@@ -122,7 +122,12 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   getInitialNotification() {
-    return this.native.getInitialNotification();
+    return this.native.getInitialNotification().then(value => {
+      if (value) {
+        return value;
+      }
+      return null;
+    });
   }
 
   getIsHeadless() {
