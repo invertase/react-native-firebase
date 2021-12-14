@@ -38,8 +38,10 @@ describe('installations()', function () {
       const decodedToken = jwt.decode(token);
       decodedToken.fid.should.equal(id); // fid == firebase installations id
       decodedToken.projectNumber.should.equal(PROJECT_ID);
-      if (decodedToken.exp < Date.now()) {
-        Promise.reject('Token already expired');
+
+      // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
+      if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
+        return Promise.reject(new Error('Token already expired: ' + JSON.stringify(decodedToken)));
       }
 
       const token2 = await firebase.installations().getToken(true);
@@ -48,8 +50,10 @@ describe('installations()', function () {
       const decodedToken2 = jwt.decode(token2);
       decodedToken2.fid.should.equal(id);
       decodedToken2.projectNumber.should.equal(PROJECT_ID);
-      if (decodedToken2.exp < Date.now()) {
-        Promise.reject('Token already expired');
+
+      // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
+      if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
+        return Promise.reject(new Error('Token already expired'));
       }
       (token === token2).should.be.false();
     });
@@ -71,9 +75,11 @@ describe('installations()', function () {
       const token = await firebase.installations().getToken(false);
       const decodedToken = jwt.decode(token);
       decodedToken.fid.should.equal(id2); // fid == firebase installations id
+
+      // token time is "Unix epoch time", which is in seconds vs javascript milliseconds
       decodedToken.projectNumber.should.equal(PROJECT_ID);
-      if (decodedToken.exp < Date.now()) {
-        Promise.reject('Token already expired');
+      if (decodedToken.exp < Math.round(new Date().getTime() / 1000)) {
+        return Promise.reject(new Error('Token already expired'));
       }
     });
   });
