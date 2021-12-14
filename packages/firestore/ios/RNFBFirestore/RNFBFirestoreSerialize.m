@@ -46,7 +46,7 @@ enum TYPE_MAP {
   INT_DOCUMENTID,
   INT_BOOLEAN_TRUE,
   INT_BOOLEAN_FALSE,
-  INT_NUMBER,
+  INT_DOUBLE,
   INT_STRING,
   INT_STRING_EMPTY,
   INT_ARRAY,
@@ -56,6 +56,8 @@ enum TYPE_MAP {
   INT_BLOB,
   INT_FIELDVALUE,
   INT_OBJECT,
+  INT_INTEGER,
+  INT_NEGATIVE_ZERO,
   INT_UNKNOWN = -999,
 };
 
@@ -336,7 +338,7 @@ enum TYPE_MAP {
     }
 
     // Number
-    typeArray[0] = @(INT_NUMBER);
+    typeArray[0] = @(INT_DOUBLE);
     typeArray[1] = value;
     return typeArray;
   }
@@ -400,7 +402,11 @@ enum TYPE_MAP {
       return @(YES);
     case INT_BOOLEAN_FALSE:
       return @(NO);
-    case INT_NUMBER:
+    case INT_NEGATIVE_ZERO:
+      return @(-0.0);
+    case INT_INTEGER:
+      return @([typeMap[1] longLongValue]);
+    case INT_DOUBLE:
       return @([typeMap[1] doubleValue]);
     case INT_STRING:
       return typeMap[1];

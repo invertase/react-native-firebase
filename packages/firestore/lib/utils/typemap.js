@@ -25,7 +25,7 @@ const MAP = {
   documentid: 4, // to native only
   booleanTrue: 5,
   booleanFalse: 6,
-  number: 7,
+  double: 7,
   string: 8,
   stringEmpty: 9,
   array: 10,
@@ -35,6 +35,8 @@ const MAP = {
   blob: 14,
   fieldvalue: 15,
   object: 16,
+  integer: 17,
+  negativeZero: 18,
   unknown: -999,
 };
 

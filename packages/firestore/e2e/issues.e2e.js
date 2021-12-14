@@ -16,6 +16,22 @@
  */
 
 const COLLECTION = 'firestore';
+const { getE2eEmulatorHost } = require('@react-native-firebase/app/e2e/helpers');
+const jsFirebase = require('firebase/compat/app');
+require('firebase/compat/firestore');
+
+const testNumbers = {
+  zero: 0, // int
+  negativeZero: -0, // double
+  half: 0.5, // double
+  unsafeInt: Number.MAX_SAFE_INTEGER + 1, // double
+  nagativeUnsafeInt: Number.MIN_SAFE_INTEGER - 1, // double
+  safeInt: Number.MAX_SAFE_INTEGER, // int
+  nagativeSafeInt: Number.MIN_SAFE_INTEGER, // int
+  inf: Infinity, // double
+  negativeInf: -Infinity, // double
+  // nan: NaN, // double -- where-in queries on NaN do not work
+};
 
 describe('firestore()', function () {
   describe('issues', function () {
@@ -90,6 +106,53 @@ describe('firestore()', function () {
           doc.id.should.equal('mr7MdAygvuheF6AUtWma');
         }
       });
+    });
+  });
+
+  describe('number type consistency', function () {
+    before(async function () {
+      jsFirebase.initializeApp(FirebaseHelpers.app.config());
+      jsFirebase.firestore().useEmulator(getE2eEmulatorHost(), 8080);
+
+      // Put one example of each number in our collection using JS SDK
+      await Promise.all(
+        Object.entries(testNumbers).map(([testName, testValue]) => {
+          return jsFirebase
+            .firestore()
+            .doc(`${COLLECTION}/numberTestsJS/cases/${testName}`)
+            .set({ number: testValue });
+        }),
+      );
+
+      // Put one example of each number in our collection using Native SDK
+      await Promise.all(
+        Object.entries(testNumbers).map(([testName, testValue]) => {
+          return firebase
+            .firestore()
+            .doc(`${COLLECTION}/numberTestsNative/cases/${testName}`)
+            .set({ number: testValue });
+        }),
+      );
+    });
+
+    it('types inserted by JS may be queried by native with filters', async function () {
+      const testValues = Object.values(testNumbers);
+      const ref = firebase
+        .firestore()
+        .collection(`${COLLECTION}/numberTestsJS/cases`)
+        .where('number', 'in', testValues);
+      typesSnap = await ref.get();
+      should.deepEqual(typesSnap.docs.map(d => d.id).sort(), Object.keys(testNumbers).sort());
+    });
+
+    it('types inserted by native may be queried by JS with filters', async function () {
+      const testValues = Object.values(testNumbers);
+      const ref = jsFirebase
+        .firestore()
+        .collection(`${COLLECTION}/numberTestsNative/cases`)
+        .where('number', 'in', testValues);
+      typesSnap = await ref.get();
+      should.deepEqual(typesSnap.docs.map(d => d.id).sort(), Object.keys(testNumbers).sort());
     });
   });
 });

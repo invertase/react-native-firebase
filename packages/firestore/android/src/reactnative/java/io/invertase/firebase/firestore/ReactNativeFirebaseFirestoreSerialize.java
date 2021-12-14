@@ -60,7 +60,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
   private static final int INT_DOCUMENTID = 4;
   private static final int INT_BOOLEAN_TRUE = 5;
   private static final int INT_BOOLEAN_FALSE = 6;
-  private static final int INT_NUMBER = 7;
+  private static final int INT_DOUBLE = 7;
   private static final int INT_STRING = 8;
   private static final int INT_STRING_EMPTY = 9;
   private static final int INT_ARRAY = 10;
@@ -70,6 +70,8 @@ public class ReactNativeFirebaseFirestoreSerialize {
   private static final int INT_BLOB = 14;
   private static final int INT_FIELDVALUE = 15;
   private static final int INT_OBJECT = 16;
+  private static final int INT_INTEGER = 17;
+  private static final int INT_NEGATIVE_ZERO = 18;
   private static final int INT_UNKNOWN = -999;
 
   // Keys
@@ -300,7 +302,7 @@ public class ReactNativeFirebaseFirestoreSerialize {
     }
 
     if (value instanceof Integer) {
-      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushInt(INT_DOUBLE);
       typeArray.pushDouble(((Integer) value).doubleValue());
       return typeArray;
     }
@@ -325,19 +327,19 @@ public class ReactNativeFirebaseFirestoreSerialize {
         return typeArray;
       }
 
-      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushInt(INT_DOUBLE);
       typeArray.pushDouble(doubleValue);
       return typeArray;
     }
 
     if (value instanceof Float) {
-      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushInt(INT_DOUBLE);
       typeArray.pushDouble(((Float) value).doubleValue());
       return typeArray;
     }
 
     if (value instanceof Long) {
-      typeArray.pushInt(INT_NUMBER);
+      typeArray.pushInt(INT_DOUBLE);
       typeArray.pushDouble(((Long) value).doubleValue());
       return typeArray;
     }
@@ -461,14 +463,12 @@ public class ReactNativeFirebaseFirestoreSerialize {
         return true;
       case INT_BOOLEAN_FALSE:
         return false;
-      case INT_NUMBER:
-        // https://github.com/invertase/react-native-firebase/issues/3004
-        // Number values come from JS as Strings on Android so we can check for floating points
-        String numberStringValue = Objects.requireNonNull(typeArray.getString(1));
-        if (numberStringValue.contains(".")) {
-          return Double.valueOf(numberStringValue);
-        }
-        return Long.valueOf(numberStringValue, 10);
+      case INT_NEGATIVE_ZERO:
+        return -0.0;
+      case INT_INTEGER:
+        return (long) typeArray.getDouble(1);
+      case INT_DOUBLE:
+        return typeArray.getDouble(1);
       case INT_STRING:
         return typeArray.getString(1);
       case INT_STRING_EMPTY:
