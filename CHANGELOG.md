@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.0.0](https://github.com/invertase/react-native-firebase/compare/v13.1.1...v14.0.0) (2021-12-14)
+
+
+* fix(firestore)!: fix Long/Double conversion issues #3004 (#5840) ([910d4e4](https://github.com/invertase/react-native-firebase/commit/910d4e420b62b5bcc67bbb1b77b9485ae2662119)), closes [#3004](https://github.com/invertase/react-native-firebase/issues/3004) [#5840](https://github.com/invertase/react-native-firebase/issues/5840) [#3004](https://github.com/invertase/react-native-firebase/issues/3004)
+
+
+### BREAKING CHANGES
+
+* Previous versions of firestore here incorrectly saved integers as doubles on iOS, so they did not show up in `where`/`in` queries. You had to save numbers as strings if you wanted `where`/`in` queries to work cross-platform. Number types will now be handled correctly. However, If you have integers saved (incorrectly!) as double (from previous versions) and you use where / in style queries on numbers, then the same document will no longer be found via .where. Mitigation could be to go through your whole DB and load and re-save the integers correctly, or alter queries. Please test your where / in queries that use number types if this affects you.
+
+
+
+
+
 ## [13.1.1](https://github.com/invertase/react-native-firebase/compare/v13.1.0...v13.1.1) (2021-12-14)
 
 
