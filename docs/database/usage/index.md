@@ -55,7 +55,7 @@ NOTE: To get a reference to a database other than an 'us-central1' default datab
 ```js
 import { firebase } from '@react-native-firebase/database';
 
-const database = firebase
+const reference = firebase
   .app()
   .database('https://<databaseName>.<region>.firebasedatabase.app/')
   .ref('/users/123');
