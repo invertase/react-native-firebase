@@ -101,6 +101,8 @@ cd react-native-firebase
 ```bash
 yarn
 yarn tests:ios:pod:install
+brew tap wix/brew
+brew install applesimutils xbeautify
 ```
 
 > Note that this project is a mono-repo, so you only need to install NPM dependencies once at the root of the project with `yarn`.
