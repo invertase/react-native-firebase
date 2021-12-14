@@ -50,7 +50,7 @@ import database from '@react-native-firebase/database';
 const reference = database().ref('/users/123');
 ```
 
-NOTE: To get a reference to a database other than an 'us-central1' default database, you must pass the database URL. You can find your Realtime Database URL in the Realtime Database section of the Firebase console. Additionally, if you installed your database and chose another Content Delivery Network (CDN), than the default 'us-central1', you have to use the reference below. Otherwise, the connection with the firebase real-time database will not work.  
+NOTE: To get a reference to a database other than an 'us-central1' default database, you must pass the database URL. You can find your Realtime Database URL in the Realtime Database section of the Firebase console.
 
 ```js
 import { firebase } from '@react-native-firebase/database';
