@@ -12,9 +12,28 @@ describe('Config Plugin iOS Tests', function () {
     expect(result).toMatchSnapshot();
   });
 
-  it('tests changes made to AppDelegate.m (SDK 43+)', async function () {
+  it('tests changes made to AppDelegate.m (SDK 43)', async function () {
     const appDelegate = await fs.readFile(
       path.join(__dirname, './fixtures/AppDelegate_bare_sdk43.m'),
+      {
+        encoding: 'utf8',
+      },
+    );
+    const result = modifyObjcAppDelegate(appDelegate);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('tests changes made to AppDelegate.m with Expo ReactDelegate support (SDK 44+)', async function () {
+    const appDelegate = await fs.readFile(path.join(__dirname, './fixtures/AppDelegate_sdk44.m'), {
+      encoding: 'utf8',
+    });
+    const result = modifyObjcAppDelegate(appDelegate);
+    expect(result).toMatchSnapshot();
+  });
+
+  it('tests changes made to AppDelegate.m with fallback regex (if the original one fails)', async function () {
+    const appDelegate = await fs.readFile(
+      path.join(__dirname, './fixtures/AppDelegate_fallback.m'),
       {
         encoding: 'utf8',
       },
