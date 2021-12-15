@@ -33,7 +33,7 @@ export function modifyObjcAppDelegate(contents: string): string {
   ) {
     WarningAggregator.addWarningIOS(
       '@react-native-firebase/app',
-      'The AppDelegate.m may be malfolmed. Skiping adding Firebase to it.',
+      'Unable to determine correct Firebase insertion point in AppDelegate.m. Skipping Firebase addition.',
     );
     return contents;
   }
