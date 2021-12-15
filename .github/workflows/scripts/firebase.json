@@ -3,6 +3,13 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "functions": {
+    "predeploy": [
+      "yarn",
+      "yarn --prefix \"$RESOURCE_DIR\" build"
+    ],
+    "source": "functions"
+  },
   "database": {
     "rules": "database.rules"
   },
@@ -18,6 +25,9 @@
     },
     "firestore": {
       "port": "8080"
+    },
+    "functions": {
+      "port": "5001"
     },
     "storage": {
       "port": "9199"

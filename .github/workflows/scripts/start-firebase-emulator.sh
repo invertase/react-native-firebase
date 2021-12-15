@@ -4,11 +4,14 @@ if ! [ -x "$(command -v firebase)" ]; then
   exit 1
 fi
 
-EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore,storage --project react-native-firebase-testing"
+EMU_START_COMMAND="firebase emulators:start --only auth,database,firestore,functions,storage --project react-native-firebase-testing"
 #EMU_START_COMMAND="sleep 120"
 MAX_RETRIES=3
 MAX_CHECKATTEMPTS=60
 CHECKATTEMPTS_WAIT=1
+
+# Make sure functions are ready to go
+pushd "$(dirname "$0")/functions" && yarn && yarn build && popd
 
 
 RETRIES=1
