@@ -15,7 +15,7 @@
  *
  */
 
-const { SAMPLE_DATA } = require('@react-native-firebase/private-tests-firebase-functions');
+const SAMPLE_DATA = require('../../../.github/workflows/scripts/functions/lib/sample-data').default;
 
 describe('functions()', function () {
   describe('namespace', function () {
