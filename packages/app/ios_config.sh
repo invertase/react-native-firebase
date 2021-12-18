@@ -126,6 +126,14 @@ if [[ ${_SEARCH_RESULT} ]]; then
     _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_PERSONALIZATION")")
   fi
 
+  # config.google_analytics_automatic_screen_reporting_enabled
+  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "google_analytics_automatic_screen_reporting_enabled")
+  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then
+    _PLIST_ENTRY_KEYS+=("FirebaseAutomaticScreenReportingEnabled")
+    _PLIST_ENTRY_TYPES+=("bool")
+    _PLIST_ENTRY_VALUES+=("$(jsonBoolToYesNo "$_ANALYTICS_AUTO_SCREEN_REPORTING")")
+  fi
+
   # config.perf_auto_collection_enabled
   _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue "$_JSON_OUTPUT_RAW" "perf_auto_collection_enabled")
   if [[ $_PERF_AUTO_COLLECTION ]]; then

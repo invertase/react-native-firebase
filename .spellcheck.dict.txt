@@ -138,6 +138,7 @@ RNFirebase
 SafetyNet
 Salakar
 scalable
+screenview
 scrollable
 SDK
 SDK.
@@ -163,6 +164,7 @@ timezones
 triaging
 TypeDoc
 UI
+UIViewController
 uid
 uncomment
 unhandled
