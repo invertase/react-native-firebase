@@ -25,6 +25,10 @@
           "description": "If you wish to disable collection of SSAID (Settings.Secure.ANDROID_ID) in your Android app,.\n This cannot be altered at runtime once set in the config.",
           "type": "boolean"
         },
+        "google_analytics_automatic_screen_reporting_enabled": {
+          "description": "If you wish to disable automatic screen reporting in your app.\n This cannot be altered at runtime once set in the config.",
+          "type": "boolean"
+        },
         "analytics_default_allow_ad_personalization_signals": {
           "description": "Configure whether a user's Analytics data may be used for personalized advertising in other products.\n If set, may be overridden at runtime by calling setUserProperty on the key 'allow_personalized_ads'",
           "type": "boolean"
@@ -54,7 +58,7 @@
           "type": "boolean"
         },
         "crashlytics_javascript_exception_handler_chaining_enabled": {
-          "description": "By default React Native Firebase Crashlytics will preserve existing global javascript-level uhandled exception handlers by reporting to Crashlytics then passing the exception on for further handling. This could lead to duplicate reports, for example a fatal javascript-level report and a fatal native level report for the same crash. Set to false to terminate error handling after logging the javascript-level crash.",
+          "description": "By default React Native Firebase Crashlytics will preserve existing global javascript-level unhandled exception handlers by reporting to Crashlytics then passing the exception on for further handling. This could lead to duplicate reports, for example a fatal javascript-level report and a fatal native level report for the same crash. Set to false to terminate error handling after logging the javascript-level crash.",
           "type": "boolean"
         },
         "crashlytics_ndk_enabled": {
