@@ -181,3 +181,17 @@ import { firebase } from '@react-native-firebase/analytics';
 // ...
 await firebase.analytics().setAnalyticsCollectionEnabled(true);
 ```
+
+## Disable screenview tracking
+
+Analytics automatically tracks some information about screens in your application, such as the class name of the UIViewController or Activity that is currently in focus.
+Automatic screenview reporting can be turned off/on through `google_analytics_automatic_screen_reporting_enabled` property of `firebase.json` file.
+
+```json
+// <project-root>/firebase.json
+{
+  "react-native": {
+    "google_analytics_automatic_screen_reporting_enabled": false
+  }
+}
+```

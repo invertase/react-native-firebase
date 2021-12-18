@@ -70,6 +70,7 @@ String collectionDeactivated = 'false'
 String adidEnabled = 'true'
 String ssaidEnabled = 'true'
 String personalizationEnabled = 'true'
+String automaticScreenReportingEnabled = 'true'
 
 // If nothing is defined, data collection defaults to true
 String dataCollectionEnabled = 'true'
@@ -102,6 +103,9 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
   if (rnfbConfig.isFlagEnabled('analytics_default_allow_ad_personalization_signals', true) == false) {
     personalizationEnabled = 'false'
   }
+  if (rnfbConfig.isFlagEnabled('google_analytics_automatic_screen_reporting_enabled', true) == false) {
+    automaticScreenReportingEnabled = 'false'
+  }
 }
 
 android {
@@ -112,7 +116,8 @@ android {
       firebaseJsonCollectionDeactivated: collectionDeactivated,
       firebaseJsonAdidEnabled: adidEnabled,
       firebaseJsonSsaidEnabled: ssaidEnabled,
-      firebaseJsonPersonalizationEnabled: personalizationEnabled
+      firebaseJsonPersonalizationEnabled: personalizationEnabled,
+      firebaseJsonAutomaticScreenReportingEnabled: automaticScreenReportingEnabled
     ]
   }
   lintOptions {
