@@ -56,4 +56,4 @@ for more information on ANR see the
 
 The support for ANR collection is added in the Android Crashlytics version
 [18.2.4](https://firebase.google.com/support/release-notes/android#crashlytics_v18-2-4)
-so that your react native application can collect ANR, make sure you are using at least version 13.0.1 of this librar
+so that your react native application can collect ANR, make sure you are using at least version 13.0.1 of this library
