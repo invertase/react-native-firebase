@@ -72,7 +72,7 @@
       "targetSdk": 31,
       "compileSdk": 31,
       "buildTools": "30.0.3",
-      "firebase": "29.0.2",
+      "firebase": "29.0.3",
       "firebaseCrashlyticsGradle": "2.8.1",
       "firebasePerfGradle": "1.4.0",
       "gmsGoogleServicesGradle": "4.3.10",
