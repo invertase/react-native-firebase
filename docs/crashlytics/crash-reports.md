@@ -50,11 +50,10 @@ issue, preventing this from happening.
 # Android ANR Collection Support
 
 The Firebase Team enabled the ability to collect
-Application Not Responding (ANR) issues that occur when the  UI thread of an Android app is blocked for too long,
+Application Not Responding (ANR) issues that occur when the UI thread of an Android app is blocked for too long,
 for more information on ANR see the
 [android developer documentation](https://developer.android.com/topic/performance/vitals/anr).
 
 The support for ANR collection is added in the Android Crashlytics version
 [18.2.4](https://firebase.google.com/support/release-notes/android#crashlytics_v18-2-4)
-so that your react native application can collect ANR, make sure you are using at least version 13.0.1 of this library
-
+so that your react native application can collect ANR, make sure you are using at least version 13.0.1 of this librar
