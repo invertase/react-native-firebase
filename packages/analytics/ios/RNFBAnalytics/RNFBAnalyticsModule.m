@@ -155,6 +155,10 @@ RCT_EXPORT_METHOD(setDefaultEventParameters
         }];
     newParams[kFIRParameterItems] = [newItems copy];
   }
+  NSNumber *extendSession = [newParams valueForKey:kFIRParameterExtendSession];
+  if ([extendSession isEqualToNumber:@1]) {
+    newParams[kFIRParameterExtendSession] = @YES;
+  }
   return [newParams copy];
 }
 
