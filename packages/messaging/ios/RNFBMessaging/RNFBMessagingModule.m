@@ -217,6 +217,10 @@ RCT_EXPORT_METHOD(requestPermission
       options |= UNAuthorizationOptionCarPlay;
     }
 
+    if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionProvidesAppNotificationSettings;
+    }
+
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     [center requestAuthorizationWithOptions:options
                           completionHandler:^(BOOL granted, NSError *_Nullable error) {

@@ -435,6 +435,15 @@ export namespace FirebaseMessagingTypes {
      * Defaults to true.
      */
     sound?: boolean;
+
+    /**
+     * Request permission to display a button for in-app notification settings.
+     *
+     * Default to false
+     *
+     * @platform ios iOS >= 12
+     */
+    providesAppNotificationSettings?: boolean;
   }
 
   /**

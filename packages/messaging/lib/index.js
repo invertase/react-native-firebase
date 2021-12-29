@@ -190,6 +190,7 @@ class FirebaseMessagingModule extends FirebaseModule {
       provisional: false,
       sound: true,
       criticalAlert: false,
+      providesAppNotificationSettings: false,
     };
 
     if (!permissions) {
