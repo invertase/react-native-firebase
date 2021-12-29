@@ -896,6 +896,17 @@ export namespace FirebaseMessagingTypes {
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void;
 
     /**
+     * Set a handler function which is called when the `${App Name} notifications settings`
+     * link in iOS settings is clicked.
+     *
+     * This method must be called **outside** of your application lifecycle, e.g. alongside your
+     * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
+     *
+     * @ios iOS >= 12
+     */
+    setOpenSettingsForNotificationsHandler(handler: (message: RemoteMessage) => any): void;
+
+    /**
      * Send a new `RemoteMessage` to the FCM server.
      *
      * The promise resolves when the message has been added to the internal queue. Use `onMessageSent()`
