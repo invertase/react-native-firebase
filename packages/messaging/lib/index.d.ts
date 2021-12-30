@@ -573,6 +573,8 @@ export namespace FirebaseMessagingTypes {
      *
      * See `setOpenSettingsForNotificationsHandler` to subscribe to when the notificiation is opened when the app
      * is in background state.
+     *
+     * @ios iOS >= 12
      */
     getDidOpenSettingsForNotification(): Promise<boolean>;
 
