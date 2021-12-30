@@ -33,6 +33,7 @@ struct {
   dispatch_once(&once, ^{
     sharedInstance = [[RNFBMessagingUNUserNotificationCenter alloc] init];
     sharedInstance.initialNotification = nil;
+    sharedInstance.didOpenSettingsForNotification = NO;
   });
   return sharedInstance;
 }
@@ -66,6 +67,15 @@ struct {
   }
 
   return nil;
+}
+
+- (NSNumber *)getDidOpenSettingsForNotification {
+  if (_didOpenSettingsForNotification != NO) {
+    _didOpenSettingsForNotification = NO;
+    return @YES;
+  }
+
+  return @NO;
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
@@ -126,6 +136,8 @@ struct {
     NSDictionary *notificationDict = [RNFBMessagingSerializer notificationToDict:notification];
     [[RNFBRCTEventEmitter shared] sendEventWithName:@"messaging_settings_for_notification_opened"
                                                body:notificationDict];
+
+    _didOpenSettingsForNotification = YES;
   }
 }
 

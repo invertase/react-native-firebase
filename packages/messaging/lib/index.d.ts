@@ -568,6 +568,15 @@ export namespace FirebaseMessagingTypes {
     getInitialNotification(): Promise<RemoteMessage | null>;
 
     /**
+     * When the app is opened from iOS notifications settings from a quit state,
+     * this method will return `true` or `false` if the app was opened via another method.
+     *
+     * See `setOpenSettingsForNotificationsHandler` to subscribe to when the notificiation is opened when the app
+     * is in background state.
+     */
+    getDidOpenSettingsForNotification(): Promise<boolean>;
+
+    /**
      * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
      * or scope to tailor tokens to your own use-case.
      *
