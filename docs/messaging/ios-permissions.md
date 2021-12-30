@@ -141,7 +141,7 @@ import messaging from '@react-native-firebase/messaging'
 ...
 
 messaging().setOpenSettingsForNotificationsHandler(async () => {
-    // Set persistent value
+    // Set persistent value, using the MMKV package just as an example of how you might do it
     MMKV.setBool(openSettingsForNotifications, true)
 })
 
