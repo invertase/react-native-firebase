@@ -332,9 +332,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   setOpenSettingsForNotificationsHandler(handler) {
     if (!isIOS) {
-      throw new Error(
-        'firebase.messaging().setOpenSettingsForNotificationsHandler() is only supported on iOS devices.',
-      );
+      return;
     }
 
     if (!isFunction(handler)) {
