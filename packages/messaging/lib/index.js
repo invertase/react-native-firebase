@@ -145,9 +145,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   getDidOpenSettingsForNotification() {
-    return this.native.getDidOpenSettingsForNotification().then(value => {
-      return value;
-    });
+    return this.native.getDidOpenSettingsForNotification().then(value => value);
   }
 
   getIsHeadless() {
