@@ -131,7 +131,7 @@ Devices on iOS 12+ can provide a button in iOS Notifications Settings _(at OS le
 await messaging().requestPermission({ providesAppNotificationSettings: true });
 ```
 
-2. Handle interaction when app is in background state (_eg: with MMKV or Recoil_):
+1. Handle interaction when app is in background state:
 
 ```typescript
 // index.js
@@ -141,6 +141,7 @@ import messaging from '@react-native-firebase/messaging'
 ...
 
 messaging().setOpenSettingsForNotificationsHandler(async () => {
+    // Set persistent value
     MMKV.setBool(openSettingsForNotifications, true)
 })
 
