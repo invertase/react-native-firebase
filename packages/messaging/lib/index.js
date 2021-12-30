@@ -145,6 +145,7 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   getDidOpenSettingsForNotification() {
+    if (!isIOS) return Promise.resolve(false);
     return this.native.getDidOpenSettingsForNotification().then(value => value);
   }
 
