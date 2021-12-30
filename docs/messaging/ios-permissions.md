@@ -121,18 +121,18 @@ await messaging().requestPermission({
 
 Users can then choose a permission option via the notification itself, and select whether they can continue to display quietly, display prominently or not at all.
 
-
 ### Handle button for in-app notifications settings
 
-Devices on iOS 12+ can provide a button in iOS Notifications Settings *(at OS level: `Settings -> [App name] -> Notifications`)* to redirect users to in-app notifications settings. 
-
+Devices on iOS 12+ can provide a button in iOS Notifications Settings _(at OS level: `Settings -> [App name] -> Notifications`)_ to redirect users to in-app notifications settings.
 
 1. Request `providesAppNotificationSettings` permissions:
+
 ```typescript
-await messaging().requestPermission({ providesAppNotificationSettings: true })
+await messaging().requestPermission({ providesAppNotificationSettings: true });
 ```
 
-2. Handle interaction when app is in background state (*eg: with MMKV or Recoil*):
+2. Handle interaction when app is in background state (_eg: with MMKV or Recoil_):
+
 ```typescript
 // index.js
 import { AppRegistry } from 'react-native'
@@ -166,6 +166,7 @@ const App = () => {
 ```
 
 3. Handle interaction when app is in quit state:
+
 ```typescript
 // App.tsx
 
