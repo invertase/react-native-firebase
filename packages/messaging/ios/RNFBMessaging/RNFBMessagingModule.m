@@ -81,7 +81,8 @@ RCT_EXPORT_METHOD(getInitialNotification
 RCT_EXPORT_METHOD(getDidOpenSettingsForNotification
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  resolve([[RNFBMessagingUNUserNotificationCenter sharedInstance] getDidOpenSettingsForNotification]);
+  resolve(
+      [[RNFBMessagingUNUserNotificationCenter sharedInstance] getDidOpenSettingsForNotification]);
 }
 
 RCT_EXPORT_METHOD(setAutoInitEnabled
