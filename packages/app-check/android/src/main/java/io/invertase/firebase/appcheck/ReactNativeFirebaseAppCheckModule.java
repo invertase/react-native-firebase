@@ -82,10 +82,8 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
             getExecutor(),
             (task) -> {
               if (task.isSuccessful()) {
-                String token = task.getResult().getToken();
-
                 WritableMap tokenResultMap = Arguments.createMap();
-                tokenResultMap.putString("token", tokne);
+                tokenResultMap.putString("token", task.getResult().getToken());
                 promise.resolve(tokenResultMap);
               } else {
                 Log.e(
