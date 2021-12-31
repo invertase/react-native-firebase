@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.2.0](https://github.com/invertase/react-native-firebase/compare/v14.1.0...v14.2.0) (2021-12-31)
+
+### Features
+
+- **messaging, ios:** add provideAppNotificationSettings iOS permission / handler ([#5972](https://github.com/invertase/react-native-firebase/issues/5972)) ([59cbe9f](https://github.com/invertase/react-native-firebase/commit/59cbe9f0feab5e70104725c2a764f4b6e3ec161c))
+
 # [14.1.0](https://github.com/invertase/react-native-firebase/compare/v14.0.1...v14.1.0) (2021-12-18)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

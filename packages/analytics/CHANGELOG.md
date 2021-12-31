@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.2.0](https://github.com/invertase/react-native-firebase/compare/v14.1.0...v14.2.0) (2021-12-31)
+
+### Bug Fixes
+
+- **analytics:** correct native types for extend_session parameter ([#5973](https://github.com/invertase/react-native-firebase/issues/5973)) ([23fdf61](https://github.com/invertase/react-native-firebase/commit/23fdf61a613c6cde6d5f3c807a7b13274fa3ab5a))
+
 # [14.1.0](https://github.com/invertase/react-native-firebase/compare/v14.0.1...v14.1.0) (2021-12-18)
 
 ### Features
