@@ -12,6 +12,14 @@ If you come across a discussion that results in great advice that can benefit ma
 
 # FAQs
 
+### Why `react-native-firebase` over `firebase-js-sdk`?
+
+This package wraps `firebase-android-sdk` and `firebase-ios-sdk` into a Javascript API for React Native projects, so the main benefits come with the access to native code.
+
+- There are more modules in the native SDKs than the web SDK because some things only make sense in a mobile / native context (Dynamic Links, App Distribution, Crashlytics), so you can actually do more, and some of it is important for example, making an app more viral with Dynamic Links or monitoring quality with Crashlytics
+
+- Some of the modules that are both in the web SDK and native SDK have a great deal more functionality when they can harness native APIs, like messaging (with background delivery that can start your app if not running), like App Check where you can tie the attestation to device-level providers, Storage where you can do background downloads, Performance where you can start measurements from boot, etc.
+
 ### I need help with [anything regarding <= v5 of React Native Firebase]. Where could I get help with that?
 
 React Native Firebase v5 is now deprecated and unsupported. There's been over a year's grace period provided to migrate to v6, so moving forward maintainers probably won't pay much attention to issues regarding v5. Understandably, upgrading to v6 can take some effort, but staying on v5 probably isn't a great choice for the long-term health of your project.
