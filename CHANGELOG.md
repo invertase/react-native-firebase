@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **app-check:** getToken returns `{token: string}` not `string` matching firebase-js-sdk ([#5979](https://github.com/invertase/react-native-firebase/issues/5979)) ([6a089f3](https://github.com/invertase/react-native-firebase/commit/6a089f310b0ce6170b1d02fe57a4feb3c114e8c6))
 
 
-
+**THIS IS A BREAKING CHANGE FOR APP CHECK RETURN VALUES** Please note that AppCheck is still a beta product thus it does not currently get a semantic versioning guarantee but, handling the change is easy - if you access the token via this API, you will now get an object and need to get the token property from inside it, vs the token coming back directly.
 
 
 # [14.2.0](https://github.com/invertase/react-native-firebase/compare/v14.1.0...v14.2.0) (2021-12-31)
