@@ -97,7 +97,7 @@ RCT_EXPORT_METHOD(getToken
                                                            }];
                          return;
                        }
-                       
+
                        NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
                        tokenResultDictionary[@"token"] = token.token;
                        resolve(tokenResultDictionary);
