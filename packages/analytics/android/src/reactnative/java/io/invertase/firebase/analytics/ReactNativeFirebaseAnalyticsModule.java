@@ -175,6 +175,10 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
         ((Bundle) item).putInt(FirebaseAnalytics.Param.QUANTITY, (int) number);
       }
     }
+    if (bundle.containsKey(FirebaseAnalytics.Param.EXTEND_SESSION)) {
+      double number = bundle.getDouble(FirebaseAnalytics.Param.EXTEND_SESSION);
+      bundle.putLong(FirebaseAnalytics.Param.EXTEND_SESSION, (long) number);
+    }
     return bundle;
   }
 }
