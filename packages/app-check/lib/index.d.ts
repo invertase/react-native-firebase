@@ -65,9 +65,18 @@ export namespace FirebaseAppCheckTypes {
     /**
      * Returns an AppCheck token.
      */
-    getToken(): Promise<string>;
+    getToken(): Promise<AppCheckToken>;
   }
 
+  /**
+   * Result returned by `getToken()`.
+   */
+  interface AppCheckTokenResult {
+    /**
+     * The token string in JWT format.
+     */
+    readonly token: string;
+  }
   /**
    * The token returned from an `AppCheckProvider`.
    */
@@ -148,7 +157,7 @@ export namespace FirebaseAppCheckTypes {
      * If false, the cached token is used if it exists and has not expired yet.
      * In most cases, false should be used. True should only be used if the server explicitly returns an error, indicating a revoked token.
      */
-    getToken(forceRefresh?: boolean): Promise<string>;
+    getToken(forceRefresh?: boolean): Promise<AppCheckTokenResult>;
 
     /**
      * Registers a listener to changes in the token state. There can be more
@@ -159,7 +168,7 @@ export namespace FirebaseAppCheckTypes {
      * @returns A function that unsubscribes this listener.
      */
     // TODO there is a great deal of Observer / PartialObserver typing to carry-in
-    // onTokenChanged(observer: PartialObserver<string>): () => void;
+    // onTokenChanged(observer: PartialObserver<AppCheckTokenResult>): () => void;
 
     /**
      * TODO implement token listener for android.
@@ -175,7 +184,7 @@ export namespace FirebaseAppCheckTypes {
      * @returns A function that unsubscribes this listener.
      */
     // onTokenChanged(
-    //   onNext: (tokenResult: string) => void,
+    //   onNext: (tokenResult: AppCheckTokenResult) => void,
     //   onError?: (error: Error) => void,
     //   onCompletion?: () => void,
     // ): () => void;
