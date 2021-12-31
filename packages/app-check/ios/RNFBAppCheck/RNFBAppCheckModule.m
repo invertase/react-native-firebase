@@ -98,7 +98,9 @@ RCT_EXPORT_METHOD(getToken
                          return;
                        }
 
-                       resolve(token.token);
+                       NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
+                       tokenResultDictionary[@"token"] = token.token;
+                       resolve(tokenResultDictionary);
                      }];
 }
 

@@ -43,7 +43,7 @@ describe('appCheck()', function () {
   describe('getToken())', function () {
     it('token fetch attempt should work', async function () {
       // Our tests configure a debug provider with shared secret so we should get a valid token
-      const token = await firebase.appCheck().getToken();
+      const { token } = await firebase.appCheck().getToken();
       token.should.not.equal('');
       const decodedToken = jwt.decode(token);
       decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
@@ -53,7 +53,7 @@ describe('appCheck()', function () {
 
       // Force refresh should get a different token?
       // TODO sometimes fails on android https://github.com/firebase/firebase-android-sdk/issues/2954
-      const token2 = await firebase.appCheck().getToken(true);
+      const { token: token2 } = await firebase.appCheck().getToken(true);
       token2.should.not.equal('');
       const decodedToken2 = jwt.decode(token2);
       decodedToken2.aud[1].should.equal('projects/react-native-firebase-testing');
