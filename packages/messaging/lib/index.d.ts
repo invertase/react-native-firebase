@@ -435,6 +435,15 @@ export namespace FirebaseMessagingTypes {
      * Defaults to true.
      */
     sound?: boolean;
+
+    /**
+     * Request permission to display a button for in-app notification settings.
+     *
+     * Default to false
+     *
+     * @platform ios iOS >= 12
+     */
+    providesAppNotificationSettings?: boolean;
   }
 
   /**
@@ -557,6 +566,17 @@ export namespace FirebaseMessagingTypes {
      * which is actively maintained and avoids these issues
      */
     getInitialNotification(): Promise<RemoteMessage | null>;
+
+    /**
+     * When the app is opened from iOS notifications settings from a quit state,
+     * this method will return `true` or `false` if the app was opened via another method.
+     *
+     * See `setOpenSettingsForNotificationsHandler` to subscribe to when the notificiation is opened when the app
+     * is in background state.
+     *
+     * @ios iOS >= 12
+     */
+    getDidOpenSettingsForNotification(): Promise<boolean>;
 
     /**
      * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
@@ -885,6 +905,17 @@ export namespace FirebaseMessagingTypes {
      *
      */
     setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void;
+
+    /**
+     * Set a handler function which is called when the `${App Name} notifications settings`
+     * link in iOS settings is clicked.
+     *
+     * This method must be called **outside** of your application lifecycle, e.g. alongside your
+     * `AppRegistry.registerComponent()` method call at the the entry point of your application code.
+     *
+     * @ios iOS >= 12
+     */
+    setOpenSettingsForNotificationsHandler(handler: (message: RemoteMessage) => any): void;
 
     /**
      * Send a new `RemoteMessage` to the FCM server.

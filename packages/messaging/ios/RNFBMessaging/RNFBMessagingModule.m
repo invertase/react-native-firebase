@@ -78,6 +78,13 @@ RCT_EXPORT_METHOD(getInitialNotification
   resolve([[RNFBMessagingUNUserNotificationCenter sharedInstance] getInitialNotification]);
 }
 
+RCT_EXPORT_METHOD(getDidOpenSettingsForNotification
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  resolve(
+      [[RNFBMessagingUNUserNotificationCenter sharedInstance] getDidOpenSettingsForNotification]);
+}
+
 RCT_EXPORT_METHOD(setAutoInitEnabled
                   : (BOOL)enabled
                   : (RCTPromiseResolveBlock)resolve
@@ -215,6 +222,10 @@ RCT_EXPORT_METHOD(requestPermission
 
     if ([permissions[@"carPlay"] isEqual:@(YES)]) {
       options |= UNAuthorizationOptionCarPlay;
+    }
+
+    if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
+      options |= UNAuthorizationOptionProvidesAppNotificationSettings;
     }
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];

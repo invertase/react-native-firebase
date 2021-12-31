@@ -54,14 +54,15 @@ await messaging().requestPermission({
 
 The full list of permission settings can be seen in the table below along with their default values:
 
-| Permission     | Default | Description                                                                                                                   |
-| -------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `alert`        | `true`  | Sets whether notifications can be displayed to the user on the device.                                                        |
-| `announcement` | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods.                                |
-| `badge`        | `true`  | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.           |
-| `carPlay`      | `true`  | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/).         |
-| `provisional`  | `false` | Sets whether provisional permissions are granted. See [Provisional permission](#provisional-permission) for more information. |
-| `sound`        | `true`  | Sets whether a sound will be played when a notification is displayed on the device.                                           |
+| Permission                        | Default | Description                                                                                                                   |
+| --------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `alert`                           | `true`  | Sets whether notifications can be displayed to the user on the device.                                                        |
+| `announcement`                    | `false` | If enabled, Siri will read the notification content out when devices are connected to AirPods.                                |
+| `badge`                           | `true`  | Sets whether a notification dot will appear next to the app icon on the device when there are unread notifications.           |
+| `carPlay`                         | `true`  | Sets whether notifications will appear when the device is connected to [CarPlay](https://www.apple.com/ios/carplay/).         |
+| `provisional`                     | `false` | Sets whether provisional permissions are granted. See [Provisional permission](#provisional-permission) for more information. |
+| `sound`                           | `true`  | Sets whether a sound will be played when a notification is displayed on the device.                                           |
+| `providesAppNotificationSettings` | `false` | Indicates the system to display a button for in-app notification settings.                                                    |
 
 The settings provided will be stored by the device and will be visible in the iOS Settings UI for your application.
 
@@ -119,3 +120,68 @@ await messaging().requestPermission({
 ```
 
 Users can then choose a permission option via the notification itself, and select whether they can continue to display quietly, display prominently or not at all.
+
+### Handle button for in-app notifications settings
+
+Devices on iOS 12+ can provide a button in iOS Notifications Settings _(at OS level: `Settings -> [App name] -> Notifications`)_ to redirect users to in-app notifications settings.
+
+1. Request `providesAppNotificationSettings` permissions:
+
+```typescript
+await messaging().requestPermission({ providesAppNotificationSettings: true });
+```
+
+2. Handle interaction when app is in background state:
+
+```typescript
+// index.js
+import { AppRegistry } from 'react-native'
+import messaging from '@react-native-firebase/messaging'
+
+...
+
+messaging().setOpenSettingsForNotificationsHandler(async () => {
+    // Set persistent value, using the MMKV package just as an example of how you might do it
+    MMKV.setBool(openSettingsForNotifications, true)
+})
+
+...
+
+AppRegistry.registerComponent(appName, () => App)
+```
+
+```typescript
+// App.tsx
+
+const App = () => {
+  const [openSettingsForNotifications] = useMMKVStorage('openSettingsForNotifications', MMKV, false)
+
+  useEffect(() => {
+    if (openSettingsForNotifications) {
+      navigate('NotificationsSettingsScreen')
+    }
+  }, [openSettingsForNotifications])
+
+  ...
+}
+```
+
+3. Handle interaction when app is in quit state:
+
+```typescript
+// App.tsx
+
+const App = () => {
+  useEffect(() => {
+        messaging()
+            .getDidOpenSettingsForNotification()
+            .then(async didOpenSettingsForNotification => {
+                if (didOpenSettingsForNotification) {
+                    navigate('NotificationsSettingsScreen')
+                }
+            })
+  }, [])
+
+    ...
+}
+```
