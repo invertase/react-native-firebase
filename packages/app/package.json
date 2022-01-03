@@ -68,7 +68,7 @@
       "firebase": "8.10.0"
     },
     "android": {
-      "minSdk": 21,
+      "minSdk": 19,
       "targetSdk": 31,
       "compileSdk": 31,
       "buildTools": "30.0.3",
