@@ -225,7 +225,9 @@ RCT_EXPORT_METHOD(requestPermission
     }
 
     if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
-      options |= UNAuthorizationOptionProvidesAppNotificationSettings;
+      if (@available(iOS 12, macOS 10.14, macCatalyst 13, tvOS 12, watchOS 5, *)) {
+        options |= UNAuthorizationOptionProvidesAppNotificationSettings;
+      }
     }
 
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
