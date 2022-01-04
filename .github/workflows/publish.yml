@@ -17,6 +17,9 @@ jobs:
         with:
           ref: 'main'
           fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
       - name: Yarn Install
         uses: nick-invision/retry@v2
         with:

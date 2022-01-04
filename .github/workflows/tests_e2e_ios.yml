@@ -35,7 +35,7 @@ jobs:
       # Set up tool versions
       - uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 16
 
       - uses: maxim-lobanov/setup-xcode@v1
 
