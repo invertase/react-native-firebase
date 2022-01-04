@@ -35,20 +35,22 @@ exports.seed = async function seed(path) {
     },
   });
 
-  return Promise.all([
+  try {
     // Add a write only file
-    firebase.storage().ref(WRITE_ONLY_NAME).putString('Write Only'),
+    await firebase.storage().ref(WRITE_ONLY_NAME).putString('Write Only');
 
     // Setup list items - Future.wait not working...
-    firebase
+    await firebase
       .storage()
       .ref(`${path}/list/file1.txt`)
-      .putString('File 1', 'raw', { contentType: 'text/plain' }),
-    firebase.storage().ref(`${path}/list/file2.txt`).putString('File 2'),
-    firebase.storage().ref(`${path}/list/file3.txt`).putString('File 3'),
-    firebase.storage().ref(`${path}/list/file4.txt`).putString('File 4'),
-    firebase.storage().ref(`${path}/list/nested/file5.txt`).putString('File 5'),
-  ]);
+      .putString('File 1', 'raw', { contentType: 'text/plain' });
+    await firebase.storage().ref(`${path}/list/file2.txt`).putString('File 2');
+    await firebase.storage().ref(`${path}/list/file3.txt`).putString('File 3');
+    await firebase.storage().ref(`${path}/list/file4.txt`).putString('File 4');
+    await firebase.storage().ref(`${path}/list/nested/file5.txt`).putString('File 5');
+  } catch (e) {
+    throw new Error('unable to seed storage service with test fixture: ' + e);
+  }
 };
 
 exports.wipe = function wipe(path) {
