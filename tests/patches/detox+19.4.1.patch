@@ -1,0 +1,95 @@
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+index ad3229f..c5e56e5 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/timers/TimersIdlingResource.kt
+@@ -25,13 +25,14 @@ class TimersIdlingResource @JvmOverloads constructor(
+     }
+ 
+     override fun checkIdle(): Boolean {
+-        return interrogationStrategy.isIdleNow().also { result ->
+-            if (result) {
+-                notifyIdle()
+-            } else {
+-                getChoreographer().postFrameCallback(this@TimersIdlingResource)
+-            }
+-        }
++        return true
++        // return interrogationStrategy.isIdleNow().also { result ->
++        //     if (result) {
++        //         notifyIdle()
++        //     } else {
++        //         getChoreographer().postFrameCallback(this@TimersIdlingResource)
++        //     }
++        // }
+     }
+ 
+     override fun doFrame(frameTimeNanos: Long) {
+diff --git a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/UIModuleIdlingResource.kt b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/UIModuleIdlingResource.kt
+index fb4b820..d2dc87d 100644
+--- a/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/UIModuleIdlingResource.kt
++++ b/node_modules/detox/android/detox/src/full/java/com/wix/detox/reactnative/idlingresources/uimodule/UIModuleIdlingResource.kt
+@@ -28,36 +28,39 @@ class UIModuleIdlingResource(private val reactContext: ReactContext)
+                 .build()
+ 
+     override fun checkIdle(): Boolean {
+-        try {
+-            if (!reactContext.hasActiveCatalystInstance()) {
+-                Log.e(LOG_TAG, "No active CatalystInstance. Should never see this.")
+-                return false
+-            }
++        // try {
++        //     if (!reactContext.hasActiveCatalystInstance()) {
++        //         Log.e(LOG_TAG, "No active CatalystInstance. Should never see this.")
++        //         return false
++        //     }
+ 
+-            if (RNHelpers.getNativeModule(reactContext, "com.facebook.react.uimanager.UIManagerModule") == null) {
+-                notifyIdle()
+-                return true
+-            }
++        //     if (RNHelpers.getNativeModule(reactContext, "com.facebook.react.uimanager.UIManagerModule") == null) {
++        //         notifyIdle()
++        //         return true
++        //     }
+ 
+-            val runnablesAreEmpty = uiManagerModuleReflected.isRunnablesListEmpty()
+-            val nonBatchesOpsEmpty = uiManagerModuleReflected.isNonBatchOpsEmpty()
+-            var operationQueueEmpty = uiManagerModuleReflected.isOperationQueueEmpty()
++        //     val runnablesAreEmpty = uiManagerModuleReflected.isRunnablesListEmpty()
++        //     val nonBatchesOpsEmpty = uiManagerModuleReflected.isNonBatchOpsEmpty()
++        //     var operationQueueEmpty = uiManagerModuleReflected.isOperationQueueEmpty()
+ 
+-            if (!operationQueueEmpty) {
+-                operationQueueEmpty = rn66workaround.isScarceUISwitchCommandStuckInQueue(uiManagerModuleReflected)
+-            }
++        //     if (!operationQueueEmpty) {
++        //         operationQueueEmpty = rn66workaround.isScarceUISwitchCommandStuckInQueue(uiManagerModuleReflected)
++        //     }
+ 
+-            if (runnablesAreEmpty && nonBatchesOpsEmpty && operationQueueEmpty) {
+-                notifyIdle()
+-                return true
+-            }
++        //     if (runnablesAreEmpty && nonBatchesOpsEmpty && operationQueueEmpty) {
++        //         notifyIdle()
++        //         return true
++        //     }
+ 
+-            Log.i(LOG_TAG, "UIManagerModule is busy")
+-            Choreographer.getInstance().postFrameCallback(this)
+-            return false
+-        } catch (e: ReflectException) {
+-            Log.e(LOG_TAG, "Can't set up RN UIModule listener", e.cause)
+-        }
++        //     Log.i(LOG_TAG, "UIManagerModule is busy")
++        //     Log.w(LOG_TAG, "UIManagerModule is busy but damn the torpedoes!");
++        //     notifyIdle()
++        //     return true;
++        //     // Choreographer.getInstance().postFrameCallback(this);
++        //     // return false;
++        // } catch (e: ReflectException) {
++        //     Log.e(LOG_TAG, "Can't set up RN UIModule listener", e.cause)
++        // }
+         notifyIdle()
+         return true
+     }
