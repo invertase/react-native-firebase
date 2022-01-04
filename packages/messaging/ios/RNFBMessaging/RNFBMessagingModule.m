@@ -225,7 +225,7 @@ RCT_EXPORT_METHOD(requestPermission
     }
 
     if ([permissions[@"providesAppNotificationSettings"] isEqual:@(YES)]) {
-      if (@available(iOS 12.0, *)) {
+      if (@available(iOS 12, macOS 10.14, macCatalyst 13, tvOS 12, watchOS 5, *)) {
         options |= UNAuthorizationOptionProvidesAppNotificationSettings;
       }
     }
