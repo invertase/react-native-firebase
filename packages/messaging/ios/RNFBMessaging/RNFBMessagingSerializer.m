@@ -63,7 +63,7 @@
     }
 
     // message.from
-    if ([key isEqualToString:@"from"]) {
+    if ([key isEqualToString:@"from"] || [key isEqualToString:@"google.c.sender.id"]) {
       message[@"from"] = userInfo[key];
       continue;
     }
