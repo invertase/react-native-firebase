@@ -71,7 +71,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
-          max-size: 400M
+          max-size: 750M
 
       - name: Yarn Install
         uses: nick-invision/retry@v2
