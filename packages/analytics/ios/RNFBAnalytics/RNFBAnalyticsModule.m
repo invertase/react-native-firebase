@@ -66,7 +66,7 @@ RCT_EXPORT_METHOD(setUserId
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    [FIRAnalytics setUserID:id];
+    [FIRAnalytics setUserID:[self convertNSNullToNil:id]];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(setUserProperty
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   @try {
-    [FIRAnalytics setUserPropertyString:value forName:name];
+    [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:name];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
   }
@@ -92,7 +92,7 @@ RCT_EXPORT_METHOD(setUserProperties
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
-      [FIRAnalytics setUserPropertyString:value forName:key];
+      [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:key];
     }];
   } @catch (NSException *exception) {
     return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
@@ -160,6 +160,12 @@ RCT_EXPORT_METHOD(setDefaultEventParameters
     newParams[kFIRParameterExtendSession] = @YES;
   }
   return [newParams copy];
+}
+
+/// Converts null values received over the bridge from NSNull to nil
+/// @param value Nullable string value
+- (NSString *)convertNSNullToNil:(NSString *)value {
+  return [value isEqual:[NSNull null]] ? nil : value;
 }
 
 @end
