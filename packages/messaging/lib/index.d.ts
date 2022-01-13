@@ -705,18 +705,18 @@ export namespace FirebaseMessagingTypes {
      * be received or sent.
      *
      * On iOS < 12, a modal will be shown to the user requesting messaging permissions for the app.
-     * Once handled, the promise will resolve with `true` if permission was granted.
+     * Once handled, the promise will resolve with `AuthorizationStatus.AUTHORIZED` if permission was granted.
      *
      * On iOS >= 12, the app will be granted [Provisional Authorization](http://iosbrain.com/blog/2018/07/05/new-in-ios-12-implementing-provisional-authorization-for-quiet-notifications-in-swift/),
-     * and will resolve `true`. The user will be able to receive FCM payloads and Notifications immediately;
+     * and will resolve `AuthorizationStatus.AUTHORIZED`. The user will be able to receive FCM payloads and Notifications immediately;
      * but notifications will be displayed silently. The user, through Notification Center, then has the option of upgrading your apps notifications to no longer be silent.
      *
-     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `true`.
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `AuthorizationStatus.AUTHORIZED`.
      *
      * #### Example
      *
      * ```js
-     * const permissionGranted = await firebase.messaging().requestPermission();
+     * const authorizationStatus = await firebase.messaging().requestPermission();
      * ```
      *
      * @ios
