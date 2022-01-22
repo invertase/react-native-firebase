@@ -22,6 +22,29 @@ yarn add @react-native-firebase/app-distribution
 cd ios/ && pod install
 ```
 
+## Add the App Distribution Plugin
+
+> This module does not handle Expo config plugins yet but does require a native integration similar to the perf module. If you want to add support for Expo to the App Distribution module we would welcome a PR!
+
+On Android, you need to install the Google App Distribution Plugin.
+
+Add the plugin to your `/android/build.gradle` file as a dependency:
+
+```groovy
+buildscript {
+    dependencies {
+        // ...
+        classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.0'
+    }
+```
+
+Apply the plugin via the `/android/app/build.gradle` file (at the top):
+
+```groovy
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.appdistribution'
+```
+
 # What does it do
 
 Firebase App Distribution gives a holistic view of your beta testing program across iOS and Android, providing you with valuable feedback before a new release is in production. You can send pre-release versions of your app using the console or your CI servers, and installing your app is easy for testers.
