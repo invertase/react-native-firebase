@@ -42,6 +42,7 @@ describe('appCheck()', function () {
   });
   describe('getToken())', function () {
     it('token fetch attempt should work', async function () {
+      await firebase.appCheck().activate('ignored', false);
       // Our tests configure a debug provider with shared secret so we should get a valid token
       const { token } = await firebase.appCheck().getToken();
       token.should.not.equal('');
@@ -69,24 +70,6 @@ describe('appCheck()', function () {
         await firebase.appCheck().activate('ignored', false);
       } catch (e) {
         return Promise.reject(e);
-      }
-    });
-    // Dynamic providers are not possible on iOS, so the debug provider is always working
-    it('token fetch attempt should work but fail attestation', async function () {
-      if (device.getPlatform() === 'android') {
-        try {
-          // Activating on Android clobbers the shared secret in the debug provider shared secret, should fail now
-          await firebase.appCheck().getToken(true);
-          return Promise.reject(
-            'Should have thrown after resetting shared secret on debug provider',
-          );
-        } catch (e) {
-          e.message.should.containEql('[appCheck/token-error]');
-          e.message.should.containEql('App attestation failed');
-          return Promise.resolve();
-        }
-      } else {
-        this.skip();
       }
     });
   });

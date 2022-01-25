@@ -23,10 +23,12 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.AppCheckProviderFactory;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
+import java.lang.reflect.*;
 
 public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule {
   private static final String TAG = "AppCheck";
@@ -51,7 +53,26 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
       }
 
       if (isDebuggable) {
-        firebaseAppCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance());
+
+        if (BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN != "null") {
+          // Get DebugAppCheckProviderFactory class
+          Class<DebugAppCheckProviderFactory> debugACFactoryClass =
+              DebugAppCheckProviderFactory.class;
+
+          // Get the (undocumented) constructor accepting a debug token as string
+          Class<?>[] argType = {String.class};
+          Constructor c = debugACFactoryClass.getDeclaredConstructor(argType);
+
+          // Create a object containing the constructor arguments
+          // and initialize a new instance.
+          Object[] cArgs = {BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN};
+          firebaseAppCheck.installAppCheckProviderFactory(
+              (AppCheckProviderFactory) c.newInstance(cArgs));
+        } else {
+          firebaseAppCheck.installAppCheckProviderFactory(
+              DebugAppCheckProviderFactory.getInstance());
+        }
+
       } else {
         firebaseAppCheck.installAppCheckProviderFactory(
             SafetyNetAppCheckProviderFactory.getInstance());
