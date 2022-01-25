@@ -84,11 +84,35 @@ If unset, the "tokenAutoRefreshEnabled" setting will defer to the app's "automat
 
 The [official documentation](https://firebase.google.com/docs/app-check/web/custom-resource) shows how to use `getToken` to access the current App Check token and then verify it in external services.
 
-## Testing Environments / CI
+## Manually Setting Up App Check Debug Token for Testing Environments / CI
+
+### on iOS
 
 App Check may be used in CI environments by following the upstream documentation to configure a debug token shared with your app in the CI environment.
 
-In certain react-native testing scenarios it may be difficult to access the shared secret, but the react-native-firebase testing app for e2e testing does successfully fetch App Check tokens via:
+In certain react-native testing scenarios it may be difficult to access the shared secret, but the react-native-firebase testing app for e2e testing does successfully fetch App Check tokens via setting an environment variable and initializing the debug provider before firebase configure in AppDelegate.m for iOS.
 
-- including the App Check debug test helper in the test app, along with a change to `DetoxTest` for Android
-- by setting an environment variable and initializing the debug provider before firebase configure in `AppDelegate.m` for iOS.
+### on Android
+
+When using a _release_ build, app-check only works when running on actual Android devices. When using a _debug_ build, you have two ways to run your application / tests with App Check support.
+
+#### A) When testing on an actual android device (debug build)
+
+1.  Start your application on the android device.
+2.  Use `$adb logcat | grep DebugAppCheckProvider` to grab your temporary secret from the android logs. The output should look lit this:
+
+        D DebugAppCheckProvider: Enter this debug secret into the allow list in
+        the Firebase Console for your project: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+
+3.  In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register the debug token you logged in the previous step.
+
+#### B) Specifying a generated `FIREBASE_APP_CHECK_DEBUG_TOKEN` -- building for CI/CD (debug build)
+
+When you want to test using an Android virtual device -or- when you prefer to (re)use a token of your choice -- e.g. when configuring a CI/CD pipeline -- use the following steps:
+
+1.  In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register a new debug token by clicking the _Add debug token_ button, then _Generate token_.
+2.  Pass the token you created in the previous step by supplying a `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable to the process that build your react-native android app. e.g.:
+
+        $  FIREBASE_APP_CHECK_DEBUG_TOKEN="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" react-native run-android
+
+Please note that once the android app has successfully passed the app-checks controls on the device, it will keep passing them, whether you rebuild without the secret token or not. To completely reset app-check, you must first uninstall, and then re-build / install.

@@ -66,6 +66,9 @@ project.ext {
 android {
   defaultConfig {
     multiDexEnabled true
+    // Here we add a build config field to allow devs to provide a
+    // FIREBASE_APP_CHECK_DEBUG_TOKEN to be used in debug mode.
+    buildConfigField "String", "FIREBASE_APP_CHECK_DEBUG_TOKEN", "\"${System.env.FIREBASE_APP_CHECK_DEBUG_TOKEN}\""
   }
   lintOptions {
     disable 'GradleCompatible'
