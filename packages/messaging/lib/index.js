@@ -41,6 +41,7 @@ const statics = {
     PROVISIONAL: 2,
   },
   NotificationAndroidPriority: {
+    PRIORITY_MIN: -2,
     PRIORITY_LOW: -1,
     PRIORITY_DEFAULT: 0,
     PRIORITY_HIGH: 1,
