@@ -66,7 +66,8 @@ As always; the first build for each platform will take a while. Subsequent build
 #### Android
 
 ```bash
-yarn tests:android:build
+yarn tests:android:build # If on linuxu or macOS, or...
+yarn tests:android:build:windows # If you are on windows
 ```
 
 #### iOS
@@ -87,8 +88,8 @@ With iOS Detox will start a simulator for you by default or run tests in an open
 For the Firestore emulator you need to install the tools and start the emulator:
 
 ```bash
-yarn tests:emulator:start # for linux/macOS-hosted development
-yarn tests:emulator:start-windows # if developing on windows
+yarn tests:emulator:start # for linux/macOS-hosted development, or...
+yarn tests:emulator:start:windows # if developing on windows
 ```
 
 ---
