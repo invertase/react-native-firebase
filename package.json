@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "version": "node ./scripts/version.js",
-    "prepare": "yarn run lerna:link && lerna run prepare --parallel",
+    "prepare": "yarn run lerna:link && lerna run prepare --parallel && cd .github/workflows/scripts/functions && yarn && yarn build",
     "build:all:clean": "lerna run build:clean",
     "build:all:build": "lerna run build",
     "lint": "yarn lint:js && yarn lint:android && yarn lint:ios:check",
