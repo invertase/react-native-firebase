@@ -64,7 +64,7 @@ async function onAppleButtonPress() {
 
   // Ensure Apple returned a user identityToken
   if (!appleAuthRequestResponse.identityToken) {
-    throw 'Apple Sign-In failed - no identify token returned';
+    throw new Error('Apple Sign-In failed - no identify token returned');
   }
 
   // Create a Firebase credential from the response
