@@ -65,12 +65,30 @@ describe('appCheck()', function () {
     });
   });
   describe('activate())', function () {
-    it('should activate with default provider and default token refresh', function () {
+    it('should activate with default provider and defined token refresh', function () {
       firebase
         .appCheck()
         .activate('ignored', false)
         .then(value => expect(value).toBe(undefined))
         .catch(e => new Error('app-check activate failed? ' + e));
+    });
+
+    it('should error if activate gets no parameters', async function () {
+      try {
+        firebase.appCheck().activate();
+        return Promise.reject(new Error('should have thrown an error'));
+      } catch (e) {
+        e.message.should.containEql('siteKeyOrProvider must be a string value');
+      }
+    });
+
+    it('should not error if activate called with no token refresh value', async function () {
+      try {
+        firebase.appCheck().activate('ignored');
+        return Promise.resolve(true);
+      } catch (e) {
+        return Promise.reject(new Error('should not have thrown an error - ' + e));
+      }
     });
   });
 });
