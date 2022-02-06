@@ -194,11 +194,16 @@ function firebaseRootModuleProxy(firebaseNamespace, moduleNamespace) {
     return getOrCreateModuleForRoot(moduleNamespace);
   }
 
+  moduleWithDashes = moduleNamespace
+    .split(/(?=[A-Z])/)
+    .join('-')
+    .toLowerCase();
+
   throw new Error(
     [
       `You attempted to use 'firebase.${moduleNamespace}' but this module could not be found.`,
       '',
-      `Ensure you have installed and imported the '@react-native-firebase/${moduleNamespace}' package.`,
+      `Ensure you have installed and imported the '@react-native-firebase/${moduleWithDashes}' package.`,
     ].join('\r\n'),
   );
 }
@@ -215,11 +220,16 @@ export function firebaseAppModuleProxy(app, moduleNamespace) {
     return getOrCreateModuleForApp(app, moduleNamespace);
   }
 
+  moduleWithDashes = moduleNamespace
+    .split(/(?=[A-Z])/)
+    .join('-')
+    .toLowerCase();
+
   throw new Error(
     [
       `You attempted to use "firebase.app('${app.name}').${moduleNamespace}" but this module could not be found.`,
       '',
-      `Ensure you have installed and imported the '@react-native-firebase/${moduleNamespace}' package.`,
+      `Ensure you have installed and imported the '@react-native-firebase/${moduleWithDashes}' package.`,
     ].join('\r\n'),
   );
 }
