@@ -15,7 +15,7 @@
  *
  */
 
-import { isIOS } from '@react-native-firebase/app/lib/common';
+import { isBoolean, isIOS, isString } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
   FirebaseModule,
@@ -32,6 +32,25 @@ const nativeModuleName = 'RNFBAppCheckModule';
 
 class FirebaseAppCheckModule extends FirebaseModule {
   activate(siteKeyOrProvider, isTokenAutoRefreshEnabled) {
+    if (!isString(siteKeyOrProvider)) {
+      throw new Error('siteKeyOrProvider must be a string value to match firebase-js-sdk API');
+    }
+
+    // If the caller did not specify token refresh, attempt to use app-check specific setting:
+    if (!isBoolean(isTokenAutoRefreshEnabled)) {
+      isTokenAutoRefreshEnabled = this.firebaseJson.app_check_token_auto_refresh;
+    }
+
+    // If that was not defined, attempt to use app-wide data collection setting per docs:
+    if (!isBoolean(isTokenAutoRefreshEnabled)) {
+      isTokenAutoRefreshEnabled = this.firebaseJson.app_data_collection_default_enabled;
+    }
+
+    // If that also was not defined, the default is documented as true.
+    if (!isBoolean(isTokenAutoRefreshEnabled)) {
+      isTokenAutoRefreshEnabled = true;
+    }
+
     return this.native.activate(siteKeyOrProvider, isTokenAutoRefreshEnabled);
   }
 
