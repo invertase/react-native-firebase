@@ -39,7 +39,9 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(activate
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)siteKeyOrProvider
-                  : (BOOL)isTokenAutoRefreshEnabled) {
+                  : (BOOL)isTokenAutoRefreshEnabled
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   // From SDK docs:
   // NOTE: Make sure to call this method before FirebaseApp.configure().
   // If this method is called after configuring Firebase, the changes will not take effect.
@@ -49,6 +51,7 @@ RCT_EXPORT_METHOD(activate
 
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
+  resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled

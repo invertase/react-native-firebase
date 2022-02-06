@@ -65,12 +65,12 @@ describe('appCheck()', function () {
     });
   });
   describe('activate())', function () {
-    it('should activate with default provider and default token refresh', async function () {
-      try {
-        await firebase.appCheck().activate('ignored', false);
-      } catch (e) {
-        return Promise.reject(e);
-      }
+    it('should activate with default provider and default token refresh', function () {
+      firebase
+        .appCheck()
+        .activate('ignored', false)
+        .then(value => expect(value).toBe(undefined))
+        .catch(e => new Error('app-check activate failed? ' + e));
     });
   });
 });
