@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native/scripts/find-node.sh b/node_modules/react-native/scripts/find-node.sh
-index 84e930a..b386939 100755
+index 5d6d2c4..326cb54 100755
 --- a/node_modules/react-native/scripts/find-node.sh
 +++ b/node_modules/react-native/scripts/find-node.sh
-@@ -8,45 +8,45 @@ set -e
+@@ -8,49 +8,49 @@ set -e
  
  # remove global prefix if it's already set
  # the running shell process will choose a node binary and a global package directory breaks version managers
@@ -17,12 +17,16 @@ index 84e930a..b386939 100755
 -# Define NVM_DIR and source the nvm.sh setup script
 -[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 -
+-# Source nvm with '--no-use' and then `nvm use` to respect .nvmrc
+-# See: https://github.com/nvm-sh/nvm/issues/2053
 -if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
 -  # shellcheck source=/dev/null
--  . "$HOME/.nvm/nvm.sh"
+-  . "$HOME/.nvm/nvm.sh" --no-use
+-  nvm use 2> /dev/null || nvm use default
 -elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
 -  # shellcheck source=/dev/null
--  . "$(brew --prefix nvm)/nvm.sh"
+-  . "$(brew --prefix nvm)/nvm.sh" --no-use
+-  nvm use 2> /dev/null || nvm use default
 -fi
 -
 -# Set up the nodenv node version manager if present
@@ -59,12 +63,16 @@ index 84e930a..b386939 100755
 +# # Define NVM_DIR and source the nvm.sh setup script
 +# [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 +
++# # Source nvm with '--no-use' and then `nvm use` to respect .nvmrc
++# # See: https://github.com/nvm-sh/nvm/issues/2053
 +# if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
 +#   # shellcheck source=/dev/null
-+#   . "$HOME/.nvm/nvm.sh"
++#   . "$HOME/.nvm/nvm.sh" --no-use
++#   nvm use 2> /dev/null || nvm use default
 +# elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
 +#   # shellcheck source=/dev/null
-+#   . "$(brew --prefix nvm)/nvm.sh"
++#   . "$(brew --prefix nvm)/nvm.sh" --no-use
++#   nvm use 2> /dev/null || nvm use default
 +# fi
 +
 +# # Set up the nodenv node version manager if present
