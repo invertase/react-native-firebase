@@ -157,7 +157,7 @@
     RCTRootView *rctRootView =
         (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
 
-    if (rctRootView.appProperties != nil && rctRootView.appProperties[@"isHeadless"] == @(YES)) {
+      if (rctRootView.appProperties != nil && [rctRootView.appProperties[@"isHeadless"]  isEqual: @(YES)]) {
       NSMutableDictionary *appPropertiesDict = [rctRootView.appProperties mutableCopy];
       isHeadless = NO;
       if ([appPropertiesDict objectForKey:@"isHeadless"] != nil &&
