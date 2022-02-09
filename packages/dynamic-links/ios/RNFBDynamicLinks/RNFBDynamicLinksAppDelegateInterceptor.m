@@ -111,7 +111,7 @@
                              ? @{}
                              : dynamicLink.utmParametersDictionary,
                        }];
-    }
+    };
 
     // Per Apple Tech Support, a network failure could occur when returning from background on
     // iOS 12. https://github.com/AFNetworking/AFNetworking/issues/4279#issuecomment-447108981 So
