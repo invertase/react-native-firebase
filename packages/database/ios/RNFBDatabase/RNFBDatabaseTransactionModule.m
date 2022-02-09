@@ -69,7 +69,7 @@ RCT_EXPORT_METHOD(transactionStart
         [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
 
     id runTransactionBlock = ^FIRTransactionResult *(FIRMutableData *currentData) {
-      dispatch_barrier_async(_transactionQueue, ^{
+      dispatch_barrier_async(self->_transactionQueue, ^{
         [transactions setValue:transactionState forKey:[transactionId stringValue]];
 
         [[RNFBRCTEventEmitter shared]
@@ -94,7 +94,7 @@ RCT_EXPORT_METHOD(transactionStart
       BOOL abort = [transactionState valueForKey:@"abort"] || timedout;
       id value = [transactionState valueForKey:@"value"];
 
-      dispatch_barrier_async(_transactionQueue, ^{
+      dispatch_barrier_async(self->_transactionQueue, ^{
         [transactions removeObjectForKey:[transactionId stringValue]];
       });
 

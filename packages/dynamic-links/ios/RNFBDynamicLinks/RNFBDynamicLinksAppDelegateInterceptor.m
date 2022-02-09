@@ -88,15 +88,17 @@
 
 - (BOOL)application:(UIApplication *)application
     continueUserActivity:(NSUserActivity *)userActivity
-      restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+      restorationHandler:
+          (void (^_Nonnull __strong)(NSArray<id<UIUserActivityRestoring>>
+                                         *_Nullable __strong restorableObjects))restorationHandler {
   __block BOOL retried = NO;
 
   id completion = ^(FIRDynamicLink *_Nullable dynamicLink, NSError *_Nullable error) {
     if (!error && dynamicLink && dynamicLink.url) {
-      if (_initialLinkUrl == nil) {
-        _initialLinkUrl = dynamicLink.url.absoluteString;
-        _initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
-        _initialLinkUtmParametersDictionary = dynamicLink.utmParametersDictionary;
+      if (self->_initialLinkUrl == nil) {
+        self->_initialLinkUrl = dynamicLink.url.absoluteString;
+        self->_initialLinkMinimumAppVersion = dynamicLink.minimumAppVersion;
+        self->_initialLinkUtmParametersDictionary = dynamicLink.utmParametersDictionary;
       }
       [[RNFBRCTEventEmitter shared]
           sendEventWithName:LINK_RECEIVED_EVENT
