@@ -66,14 +66,14 @@ NSMutableDictionary *instanceCache;
   firestoreSettings.dispatchQueue = [self getFirestoreQueue];
 
   NSString *cacheKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_CACHE_SIZE, appName];
-  NSInteger *size = [preferences getIntegerValue:cacheKey defaultValue:0];
+  NSInteger size = [preferences getIntegerValue:cacheKey defaultValue:0];
 
-  if (size == (NSInteger *)-1) {
+  if (size == -1) {
     firestoreSettings.cacheSizeBytes = kFIRFirestoreCacheSizeUnlimited;
   } else if (size == 0) {
     firestoreSettings.cacheSizeBytes = firestore.settings.cacheSizeBytes;
   } else {
-    firestoreSettings.cacheSizeBytes = (int64_t)size;
+    firestoreSettings.cacheSizeBytes = size;
   }
 
   NSString *hostKey = [NSString stringWithFormat:@"%@_%@", FIRESTORE_HOST, appName];

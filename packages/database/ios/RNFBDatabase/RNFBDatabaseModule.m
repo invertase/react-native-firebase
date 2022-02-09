@@ -76,8 +76,9 @@ RCT_EXPORT_METHOD(setLoggingEnabled : (FIRApp *)firebaseApp : (NSString *)dbURL 
 RCT_EXPORT_METHOD(setPersistenceCacheSizeBytes
                   : (FIRApp *)firebaseApp
                   : (NSString *)dbURL
-                  : (NSInteger *)bytes) {
-  [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE integerValue:bytes];
+                  : (NSNumber *_Nonnull)bytes) {
+  [[RNFBPreferences shared] setIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE
+                               integerValue:[bytes intValue]];
 }
 
 @end

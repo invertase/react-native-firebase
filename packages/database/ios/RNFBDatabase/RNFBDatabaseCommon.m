@@ -85,8 +85,8 @@ NSString *const DATABASE_PERSISTENCE_CACHE_SIZE = @"firebase_database_persistenc
 
     // Persistence cache size
     if ([preferences contains:DATABASE_PERSISTENCE_CACHE_SIZE]) {
-      NSInteger *cacheSizeBytes = [preferences getIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE
-                                                  defaultValue:(NSInteger *)10000000];
+      NSInteger cacheSizeBytes = [preferences getIntegerValue:DATABASE_PERSISTENCE_CACHE_SIZE
+                                                 defaultValue:10000000];
       [firDatabase setPersistenceCacheSizeBytes:(NSUInteger)cacheSizeBytes];
     }
 
