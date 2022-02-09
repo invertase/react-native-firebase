@@ -370,13 +370,12 @@
       @"totalBytes" : @(task.progress.totalUnitCount)
     } mutableCopy];
   } else {
-    return [@{@"bytesTransferred" : @(0), @"state" : [self getTaskStatus:nil], @"totalBytes" : @(0)}
+    return [@{@"bytesTransferred" : @(0), @"state" : [self getTaskStatus:FIRStorageTaskStatusUnknown], @"totalBytes" : @(0)}
         mutableCopy];
   }
 }
 
 + (NSString *)getTaskStatus:(FIRStorageTaskStatus)status {
-  if (status == nil) return @"unknown";
   if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
     return @"running";
   } else if (status == FIRStorageTaskStatusPause) {
