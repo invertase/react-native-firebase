@@ -626,6 +626,11 @@ RCT_EXPORT_METHOD(checkActionCode
                  case FIRActionCodeOperationEmailLink:
                    actionType = @"EMAIL_SIGNIN";
                    break;
+                 case FIRActionCodeOperationVerifyAndChangeEmail:
+                 case FIRActionCodeOperationRevertSecondFactorAddition:
+                 default:
+                   actionType = @"ERROR";
+                   break;
                }
 
                NSMutableDictionary *data = [NSMutableDictionary dictionary];
