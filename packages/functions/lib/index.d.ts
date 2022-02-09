@@ -356,9 +356,33 @@ export namespace FirebaseFunctionsTypes {
      * If you want to use the emulator on a real android device, you will need to specify the actual host
      * computer IP address.
      *
+     * @deprecated prefer useEmulator instead
      * @param origin url of the local emulator started via firebase tools "http://localhost:5001"
      */
     useFunctionsEmulator(origin: string): void;
+
+    /**
+     * Changes this instance to point to a Cloud Functions emulator running locally.
+     *
+     * See https://firebase.google.com/docs/functions/local-emulator
+     *
+     * #### Example
+     *
+     * ```js
+     * if (__DEV__) {
+     *   firebase.functions().useEmulator('localhost', 5001);
+     * }
+     * ```
+     *
+     * Note: on android, hosts 'localhost' and '127.0.0.1' are automatically remapped to '10.0.2.2' (the
+     * "host" computer IP address for android emulators) to make the standard development experience easy.
+     * If you want to use the emulator on a real android device, you will need to specify the actual host
+     * computer IP address.
+     *
+     * @param host hostname of the local emulator started via firebase tools, ex. "localhost"
+     * @param port port of the local emulator started via firebase tools, ex. 5001
+     */
+    useEmulator(host: string, port: number): void;
   }
 }
 

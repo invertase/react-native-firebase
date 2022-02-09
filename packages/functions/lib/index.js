@@ -56,7 +56,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._customUrlOrRegion = this._customUrlOrRegion || 'us-central1';
-    this._useFunctionsEmulatorOrigin = null;
+    this._useFunctionsEmulatorHost = null;
+    this._useFunctionsEmulatorPort = -1;
   }
 
   httpsCallable(name, options = {}) {
@@ -70,7 +71,8 @@ class FirebaseFunctionsModule extends FirebaseModule {
 
     return data => {
       const nativePromise = this.native.httpsCallable(
-        this._useFunctionsEmulatorOrigin,
+        this._useFunctionsEmulatorHost,
+        this._useFunctionsEmulatorPort,
         name,
         {
           data,
@@ -92,27 +94,41 @@ class FirebaseFunctionsModule extends FirebaseModule {
   }
 
   useFunctionsEmulator(origin) {
-    let _origin = origin;
+    [_, host, port] = /https?\:.*\/\/([^:]+):?(\d+)?/.exec(origin);
+    if (!port) {
+      port = 5001;
+    }
+    this.useEmulator(host, parseInt(port));
+  }
+
+  useEmulator(host, port) {
+    if (!isNumber(port)) {
+      throw new Error('useEmulator port parameter must be a number');
+    }
+
+    let _host = host;
+
     const androidBypassEmulatorUrlRemap =
       typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
       this.firebaseJson.android_bypass_emulator_url_remap;
-    if (!androidBypassEmulatorUrlRemap && isAndroid && _origin) {
-      if (_origin.startsWith('http://localhost')) {
-        _origin = _origin.replace('http://localhost', 'http://10.0.2.2');
+    if (!androidBypassEmulatorUrlRemap && isAndroid && _host) {
+      if (_host.startsWith('localhost')) {
+        _host = _host.replace('localhost', '10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
           'Mapping functions host "localhost" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
-      if (_origin.startsWith('http://127.0.0.1')) {
-        _origin = _origin.replace('http://127.0.0.1', 'http://10.0.2.2');
+      if (_host.startsWith('127.0.0.1')) {
+        _host = _host.replace('127.0.0.1', '10.0.2.2');
         // eslint-disable-next-line no-console
         console.log(
           'Mapping functions host "127.0.0.1" to "10.0.2.2" for android emulators. Use real IP on real devices. You can bypass this behaviour with "android_bypass_emulator_url_remap" flag.',
         );
       }
     }
-    this._useFunctionsEmulatorOrigin = _origin || null;
+    this._useFunctionsEmulatorHost = _host || null;
+    this._useFunctionsEmulatorPort = port || -1;
   }
 }
 
