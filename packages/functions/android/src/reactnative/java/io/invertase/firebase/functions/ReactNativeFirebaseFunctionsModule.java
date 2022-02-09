@@ -47,14 +47,15 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
   public void httpsCallable(
       String appName,
       String region,
-      String origin,
+      String host,
+      Integer port,
       String name,
       ReadableMap wrapper,
       ReadableMap options,
       Promise promise) {
     Task<Object> callMethodTask =
         module.httpsCallable(
-            appName, region, origin, name, wrapper.toHashMap().get(DATA_KEY), options);
+            appName, region, host, port, name, wrapper.toHashMap().get(DATA_KEY), options);
 
     // resolve
     callMethodTask.addOnSuccessListener(

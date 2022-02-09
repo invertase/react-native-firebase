@@ -39,7 +39,7 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
   }
 
   Task<Object> httpsCallable(
-      String appName, String region, String origin, String name, Object data, ReadableMap options) {
+      String appName, String region, String host, Integer port, String name, Object data, ReadableMap options) {
     return Tasks.call(
         getExecutor(),
         () -> {
@@ -52,8 +52,8 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
             httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
           }
 
-          if (origin != null) {
-            functionsInstance.useFunctionsEmulator(origin);
+          if (host != null) {
+            functionsInstance.useEmulator(host, port);
           }
 
           return Tasks.await(httpReference.call(data)).getData();
