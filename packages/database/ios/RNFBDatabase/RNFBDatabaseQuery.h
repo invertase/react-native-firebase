@@ -29,7 +29,7 @@
 
 - (BOOL)hasListeners;
 
-- (void)addEventListener:(NSString *)eventRegistrationKey:(FIRDatabaseHandle)listener;
+- (void)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle;
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey;
 

@@ -133,7 +133,7 @@ RCT_EXPORT_MODULE();
     FIRDatabaseHandle handle = [databaseQuery.query observeEventType:firDataEventType
                                       andPreviousSiblingKeyWithBlock:andPreviousSiblingKeyWithBlock
                                                      withCancelBlock:errorBlock];
-    [databaseQuery addEventListener:eventRegistrationKey:handle];
+    [databaseQuery addEventListener:eventRegistrationKey handle:handle];
   }
 }
 

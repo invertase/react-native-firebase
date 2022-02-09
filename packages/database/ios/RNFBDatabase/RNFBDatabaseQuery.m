@@ -112,8 +112,8 @@
   }
 }
 
-- (void)addEventListener:(NSString *)eventRegistrationKey:(FIRDatabaseHandle)listener {
-  _listeners[eventRegistrationKey] = @(listener);
+- (void)addEventListener:(NSString *)eventRegistrationKey handle:(FIRDatabaseHandle)handle {
+  _listeners[eventRegistrationKey] = @(handle);
 }
 
 - (void)removeEventListener:(NSString *)eventRegistrationKey {
