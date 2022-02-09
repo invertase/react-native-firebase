@@ -370,8 +370,11 @@
       @"totalBytes" : @(task.progress.totalUnitCount)
     } mutableCopy];
   } else {
-    return [@{@"bytesTransferred" : @(0), @"state" : [self getTaskStatus:FIRStorageTaskStatusUnknown], @"totalBytes" : @(0)}
-        mutableCopy];
+    return [@{
+      @"bytesTransferred" : @(0),
+      @"state" : [self getTaskStatus:FIRStorageTaskStatusUnknown],
+      @"totalBytes" : @(0)
+    } mutableCopy];
   }
 }
 
