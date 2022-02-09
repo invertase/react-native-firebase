@@ -19,6 +19,6 @@
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBMessagingModule : NSObject <RCTBridgeModule>
-+ (NSDictionary *)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
++ (NSDictionary *_Nonnull)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
                           withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
 @end
