@@ -19,15 +19,9 @@
 
 @interface RNFBStorageCommon : NSObject
 
-+ (BOOL)isRemoteAsset:(NSString *)localFilePath;
-
-+ (BOOL)unused_isHeic:(NSString *)localFilePath;
-
 + (NSDictionary *)metadataToDict:(FIRStorageMetadata *)metadata;
 
 + (NSDictionary *)listResultToDict:(FIRStorageListResult *)listResult;
-
-+ (PHAsset *)fetchAssetForPath:(NSString *)localFilePath;
 
 + (NSString *)utiToMimeType:(NSString *)dataUTI;
 
