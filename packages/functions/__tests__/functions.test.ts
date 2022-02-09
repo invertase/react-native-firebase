@@ -11,15 +11,15 @@ describe('Cloud Functions', function () {
 
   describe('useFunctionsEmulator()', function () {
     it('useFunctionsEmulator -> uses 10.0.2.2', function () {
-      functions().useFunctionsEmulator('http://localhost');
+      functions().useEmulator('localhost', 5001);
 
       // @ts-ignore
-      expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+      expect(functions()._useFunctionsEmulatorHost).toBe('10.0.2.2');
 
-      functions().useFunctionsEmulator('http://127.0.0.1');
+      functions().useEmulator('127.0.0.1', 5001);
 
       // @ts-ignore
-      expect(functions()._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+      expect(functions()._useFunctionsEmulatorHost).toBe('10.0.2.2');
     });
 
     it('prefers emulator to custom domain', function () {
@@ -30,7 +30,7 @@ describe('Cloud Functions', function () {
       functions.useFunctionsEmulator('http://10.0.2.2');
 
       // @ts-ignore
-      expect(functions._useFunctionsEmulatorOrigin).toBe('http://10.0.2.2');
+      expect(functions._useFunctionsEmulatorHost).toBe('10.0.2.2');
     });
   });
 

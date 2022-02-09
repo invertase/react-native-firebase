@@ -32,8 +32,9 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(httpsCallable
                   : (FIRApp *)firebaseApp customUrlOrRegion
-                  : (NSString *)customUrlOrRegion origin
-                  : (NSString *)origin name
+                  : (NSString *)customUrlOrRegion host
+                  : (NSString *)host port
+                  : (NSNumber *_Nonnull)port name
                   : (NSString *)name wrapper
                   : (NSDictionary *)wrapper options
                   : (NSDictionary *)options resolver
@@ -45,8 +46,8 @@ RCT_EXPORT_METHOD(httpsCallable
           ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
           : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
 
-  if (origin != nil) {
-    [functions useFunctionsEmulatorOrigin:origin];
+  if (host != nil) {
+    [functions useEmulatorWithHost:host port:[port intValue]];
   }
 
   FIRHTTPSCallable *callable = [functions HTTPSCallableWithName:name];

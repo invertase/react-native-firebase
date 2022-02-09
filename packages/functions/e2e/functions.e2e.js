@@ -69,18 +69,34 @@ describe('functions()', function () {
       const response = await functionRunner();
       response.data.should.equal('null');
     });
+  });
 
-    it('useFunctionsEmulator', async function () {
-      const region = 'europe-west2';
-      const fnName = 'invertaseReactNativeFirebaseFunctionsEmulator';
+  describe('emulator', function () {
+    it('configures functions emulator via deprecated method with no port', async function () {
+      const region = 'us-central1';
+      const fnName = 'helloWorld';
       const functions = firebase.app().functions(region);
-
-      functions.useFunctionsEmulator('http://api.rnfirebase.io');
-
+      functions.useFunctionsEmulator('http://localhost');
       const response = await functions.httpsCallable(fnName)();
+      response.data.should.equal('Hello from Firebase!');
+    });
 
-      response.data.region.should.equal(region);
-      response.data.fnName.should.equal(fnName);
+    it('configures functions emulator via deprecated method with port', async function () {
+      const region = 'us-central1';
+      const fnName = 'helloWorld';
+      const functions = firebase.app().functions(region);
+      functions.useFunctionsEmulator('http://localhost:5001');
+      const response = await functions.httpsCallable(fnName)();
+      response.data.should.equal('Hello from Firebase!');
+    });
+
+    it('configures functions emulator', async function () {
+      const region = 'us-central1';
+      const fnName = 'helloWorld';
+      const functions = firebase.app().functions(region);
+      functions.useEmulator('localhost', 5001);
+      const response = await functions.httpsCallable(fnName)();
+      response.data.should.equal('Hello from Firebase!');
     });
   });
 
