@@ -8,6 +8,9 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
+  "engines": {
+    "node": "16"
+  },
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^10.0.2",
