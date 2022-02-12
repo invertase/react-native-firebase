@@ -39,7 +39,13 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
   }
 
   Task<Object> httpsCallable(
-      String appName, String region, String host, Integer port, String name, Object data, ReadableMap options) {
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String name,
+      Object data,
+      ReadableMap options) {
     return Tasks.call(
         getExecutor(),
         () -> {
