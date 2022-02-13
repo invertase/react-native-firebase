@@ -28,10 +28,8 @@ export default class Settings {
   }
 
   set appVerificationDisabledForTesting(disabled) {
-    if (isIOS) {
-      this._appVerificationDisabledForTesting = disabled;
-      this._auth.native.setAppVerificationDisabledForTesting(disabled);
-    }
+    this._appVerificationDisabledForTesting = disabled;
+    this._auth.native.setAppVerificationDisabledForTesting(disabled);
   }
 
   setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode) {
