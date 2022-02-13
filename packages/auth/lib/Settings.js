@@ -15,7 +15,7 @@
  *
  */
 
-import { isAndroid, isIOS } from '@react-native-firebase/app/lib/common';
+import { isAndroid } from '@react-native-firebase/app/lib/common';
 
 export default class Settings {
   constructor(auth) {
@@ -28,10 +28,8 @@ export default class Settings {
   }
 
   set appVerificationDisabledForTesting(disabled) {
-    if (isIOS) {
-      this._appVerificationDisabledForTesting = disabled;
-      this._auth.native.setAppVerificationDisabledForTesting(disabled);
-    }
+    this._appVerificationDisabledForTesting = disabled;
+    this._auth.native.setAppVerificationDisabledForTesting(disabled);
   }
 
   setAutoRetrievedSmsCodeForPhoneNumber(phoneNumber, smsCode) {
