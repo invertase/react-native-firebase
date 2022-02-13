@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.4.0](https://github.com/invertase/react-native-firebase/compare/v14.3.3...v14.4.0) (2022-02-13)
+
+### Features
+
+- **auth, android:** implement disable app verification feature on android ([#6069](https://github.com/invertase/react-native-firebase/issues/6069)) ([48c7842](https://github.com/invertase/react-native-firebase/commit/48c7842124f901aeda991da3122016fd3fb42e03))
+
 ## [14.3.3](https://github.com/invertase/react-native-firebase/compare/v14.3.2...v14.3.3) (2022-02-12)
 
 **Note:** Version bump only for package @react-native-firebase/auth
