@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.5.0](https://github.com/invertase/react-native-firebase/compare/v14.4.0...v14.5.0) (2022-02-15)
+
+
+### Features
+
+* **auth, ios:** Add support for Facebook Limited Login ([#6073](https://github.com/invertase/react-native-firebase/issues/6073)) ([f681cc5](https://github.com/invertase/react-native-firebase/commit/f681cc5a5b493033faef1f6ea64d9f5a40e6d9d4))
+
+
+
+
+
 # [14.4.0](https://github.com/invertase/react-native-firebase/compare/v14.3.3...v14.4.0) (2022-02-13)
 
 
