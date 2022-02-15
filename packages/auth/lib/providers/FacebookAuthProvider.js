@@ -26,10 +26,10 @@ export default class FacebookAuthProvider {
     return providerId;
   }
 
-  static credential(token) {
+  static credential(token, secret = '') {
     return {
       token,
-      secret: '',
+      secret,
       providerId,
     };
   }
