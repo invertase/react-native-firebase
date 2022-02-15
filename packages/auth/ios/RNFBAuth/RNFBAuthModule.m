@@ -953,6 +953,11 @@ RCT_EXPORT_METHOD(useEmulator
     credential = credentials[authToken];
   } else if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRTwitterAuthProvider credentialWithToken:authToken secret:authTokenSecret];
+  } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame &&
+             ![authTokenSecret isEqualToString:@""]) {
+    credential = [FIROAuthProvider credentialWithProviderID:provider
+                                                    IDToken:authToken
+                                                   rawNonce:authTokenSecret];
   } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
     credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
   } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {

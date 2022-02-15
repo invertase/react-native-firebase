@@ -75,6 +75,17 @@ describe('auth() -> Providers', function () {
       });
     });
 
+    describe('credentialLimitedLogin', function () {
+      it('should return a credential object', function () {
+        const token = '123456';
+        const nonce = '654321';
+        const credential = firebase.auth.FacebookAuthProvider.credential(token, nonce);
+        credential.providerId.should.equal('facebook.com');
+        credential.token.should.equal(token);
+        credential.secret.should.equal(nonce);
+      });
+    });
+
     describe('PROVIDER_ID', function () {
       it('should return facebook.com', function () {
         firebase.auth.FacebookAuthProvider.PROVIDER_ID.should.equal('facebook.com');
