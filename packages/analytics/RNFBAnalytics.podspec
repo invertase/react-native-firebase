@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
   end
 
   # Firebase dependencies
-  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+  if defined?($RNFirebaseAnalyticsWithoutAdIdSupport) && ($RNFirebaseAnalyticsWithoutAdIdSupport == true)
     Pod::UI.puts "#{s.name}: Using Firebase/AnalyticsWithoutAdIdSupport pod in place of default Firebase/Analytics"
 
     # Releasing as non-breaking change as it is optional but it raises minimum requirements, validate just in case
