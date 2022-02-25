@@ -33,7 +33,7 @@ jobs:
           all_but_latest: true
 
       # Set up tool versions
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
