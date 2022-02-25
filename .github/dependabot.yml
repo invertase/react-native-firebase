@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: '/'
+    allow:
+      - dependency-type: 'production'
+    # Check the npm registry for updates every day (weekdays)
+    schedule:
+      interval: 'daily'
+    target-branch: dependency-updates
+    labels:
+      - 'dependencies'
+
+  - package-ecosystem: 'github-actions'
+    # Workflow files stored in the
+    # default location of `.github/workflows`
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    target-branch: dependency-updates
+    labels:
+      - 'dependencies'
