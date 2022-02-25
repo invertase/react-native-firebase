@@ -38,7 +38,7 @@ jobs:
           fetch-depth: 50
 
       # Set up tool versions
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
