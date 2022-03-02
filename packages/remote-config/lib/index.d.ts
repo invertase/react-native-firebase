@@ -252,7 +252,7 @@ export namespace FirebaseRemoteConfigTypes {
    *
    * ```js
    * await firebase.remoteConfig().setConfigSettings({
-   *    fetchTimeoutMillis: 6000,
+   *    fetchTimeMillis: 6000,
    * });
    * ```
    */
