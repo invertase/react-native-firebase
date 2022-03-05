@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.5.1](https://github.com/invertase/react-native-firebase/compare/v14.5.0...v14.5.1) (2022-03-05)
+
+### Bug Fixes
+
+- **analytics, ios:** handle RNFirebaseAnalyticsWithoutAdIdSupport == false Podfile case correctly ([#6078](https://github.com/invertase/react-native-firebase/issues/6078)) ([ca82e54](https://github.com/invertase/react-native-firebase/commit/ca82e544255f122478c1de5945138a60118e90d0))
+
 # [14.5.0](https://github.com/invertase/react-native-firebase/compare/v14.4.0...v14.5.0) (2022-02-15)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
