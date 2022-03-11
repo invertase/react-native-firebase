@@ -45,6 +45,7 @@
     "mocha": "^9.2.1",
     "nyc": "^15.0.1",
     "patch-package": "^6.4.7",
+    "pod-install": "^0.1.32",
     "react-native-codegen": "^0.0.13",
     "react-native-port-patcher": "^1.0.4",
     "should": "^13.2.3",
