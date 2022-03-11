@@ -11298,6 +11298,11 @@ plist@^3.0.2, plist@^3.0.4:
     base64-js "^1.5.1"
     xmlbuilder "^9.0.7"
 
+pod-install@^0.1.32:
+  version "0.1.32"
+  resolved "https://registry.yarnpkg.com/pod-install/-/pod-install-0.1.32.tgz#2cafa6c0f7428738a560e0495a02e1e5778a944d"
+  integrity sha512-o0qH9bcpzJW43d3pFQfs1+k7Su6oQGUugejmgg05X+i4fpFLPITsbOWzm5CHlWOc5RcSLOh0CzAbqni/k8cNeg==
+
 portfinder@^1.0.23:
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.28.tgz#67c4622852bd5374dd1dd900f779f53462fac778"

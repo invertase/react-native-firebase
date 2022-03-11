@@ -46,7 +46,7 @@
     "tests:ios:test-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 SIMCTL_CHILD_FIRAAppCheckDebugToken=\"698956B2-187B-49C6-9E25-C3F3530EEBAF\" yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
     "tests:ios:test-cover": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 SIMCTL_CHILD_FIRAAppCheckDebugToken=698956B2-187B-49C6-9E25-C3F3530EEBAF ./node_modules/.bin/nyc yarn detox test --configuration ios.sim.debug --loglevel warn",
     "tests:ios:test-cover-reuse": "cd tests && SIMCTL_CHILD_GULGeneratedClassDisposeDisabled=1 SIMCTL_CHILD_FIRAAppCheckDebugToken=698956B2-187B-49C6-9E25-C3F3530EEBAF node_modules/.bin/nyc yarn detox test --configuration ios.sim.debug --reuse --loglevel warn",
-    "tests:ios:pod:install": "cd tests && cd ios && rm -rf ReactNativeFirebaseDemo.xcworkspace && rm -f Podfile.lock && pod install --repo-update && cd ..",
+    "tests:ios:pod:install": "cd tests && rm -rf ios/ReactNativeFirebaseDemo.xcworkspace && yarn pod-install",
     "format:markdown": "prettier --write \"docs/**/*.md\""
   },
   "devDependencies": {
