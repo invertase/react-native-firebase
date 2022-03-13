@@ -20,7 +20,7 @@ const template = `/**
  *
  */
 
-#import "RCTVersion.h"
+#import <React/RCTVersion.h>
 
 // generated file - do not modify or commit
 NSString* const RNFBVersionString = @"VERSION";
