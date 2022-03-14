@@ -437,7 +437,7 @@ firestore().doc('users/ABC').update({
 Cloud Firestore also allows for storing arrays. To help manage the values with an array (adding or removing) the API
 exposes an `arrayUnion` and `arrayRemove` methods on the [`FieldValue`](/reference/firestore/fieldvalue) class.
 
-To add a new value to an array (if it does not exist):
+To add a new value to an array (if value does not exist, will not add duplicate values):
 
 ```js
 firestore()
@@ -447,7 +447,7 @@ firestore()
   });
 ```
 
-To remove a value from the array (if it exists):
+To remove a value from the array (if the value exists):
 
 ```js
 firestore()
