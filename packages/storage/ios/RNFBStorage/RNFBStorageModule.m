@@ -511,7 +511,11 @@ RCT_EXPORT_METHOD(setTaskStatus
       [task pause];
       break;
     case 1:
-      [task resume];
+      if ([task isKindOfClass:[FIRStorageDownloadTask class]]) {
+        [(FIRStorageDownloadTask *)task resume];
+      } else {
+        [(FIRStorageUploadTask *)task resume];
+      }
       break;
     case 2:
       [task cancel];
