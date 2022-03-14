@@ -403,7 +403,7 @@ PODS:
   - Firebase/Storage (8.12.1):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 8.12.0)
-  - FirebaseABTesting (8.12.0):
+  - FirebaseABTesting (8.13.0):
     - FirebaseCore (~> 8.0)
   - FirebaseAnalytics (8.12.0):
     - FirebaseAnalytics/AdIdSupport (= 8.12.0)
@@ -442,7 +442,7 @@ PODS:
     - FirebaseCoreDiagnostics (~> 8.0)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
-  - FirebaseCoreDiagnostics (8.12.0):
+  - FirebaseCoreDiagnostics (8.13.0):
     - GoogleDataTransport (~> 9.1)
     - GoogleUtilities/Environment (~> 7.7)
     - GoogleUtilities/Logger (~> 7.7)
@@ -1117,13 +1117,13 @@ SPEC CHECKSUMS:
   FBLazyVector: 808f741ddb0896a20e5b98cc665f5b3413b072e2
   FBReactNativeSpec: 94473205b8741b61402e8c51716dea34aa3f5b2f
   Firebase: 580d09e8edafc3073ebf09c03fd42e4d80d35fe9
-  FirebaseABTesting: 1b05c92327b3f0a9545cea3bab4d93e82550e29b
+  FirebaseABTesting: c390fb900b9dd6e9c04888e34dda8e9e84b07195
   FirebaseAnalytics: bd10d7706ba8d6e01ea2816f8fe9e9b881cb0918
   FirebaseAppCheck: b91624d3f8c262eae9bfc1486b640d8c13787abc
   FirebaseAppDistribution: d1cf955c7e2d08567646b3eb453309d4ae850b23
   FirebaseAuth: 5250d7bdba35e57cc34ec7ddc525f82b2757f2a0
   FirebaseCore: 8138de860a90ca7eec5e324da5788fb0ebf1d93c
-  FirebaseCoreDiagnostics: 3b40dfadef5b90433a60ae01f01e90fe87aa76aa
+  FirebaseCoreDiagnostics: c2836d254a8f0bbb4121ff18f2c2ea39d118fd08
   FirebaseCrashlytics: 7952ffd988006128325510664b99dc8ca5851dff
   FirebaseDatabase: f130b3d45b2a7a0b86059734d5bd67353df8d32f
   FirebaseDynamicLinks: 98a5f0fe542245a89ec55f646d2581298c29219d
