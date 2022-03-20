@@ -26,5 +26,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "plist": "^3.0.4"
   }
 }
