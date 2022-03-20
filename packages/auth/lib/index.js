@@ -381,7 +381,7 @@ class FirebaseAuthModule extends FirebaseModule {
     }
 
     // Native calls take the host and port split out
-    const hostPortRegex = /^http:\/\/([\w\d.]+):(\d+)$/;
+    const hostPortRegex = /^http:\/\/([\w\d-.]+):(\d+)$/;
     const urlMatches = _url.match(hostPortRegex);
     if (!urlMatches) {
       throw new Error('firebase.auth().useEmulator() unable to parse host and port from URL');
