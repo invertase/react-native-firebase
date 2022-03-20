@@ -25,6 +25,8 @@ Phone auth requires app verification, and the automatic app verification process
 
 For reliable automated testing, you may want to disable both automatic and fallback reCAPTCHA app verification for your app. To do this, [you may disable app verification in AuthSettings](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling any phone auth methods.
 
+> If you're using Expo, make sure to add the `@react-native-firebase/auth` config plugin to your `app.json` or `app.config.js`. It handles the iOS installation steps for you. For instructions on how to do that, view the [Expo](/#expo) installation section. (This is only required if you're both using Phone Auth and building for iOS, if you aren't doing both then there is no need for this.)
+
 # Android Setup
 
 Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
