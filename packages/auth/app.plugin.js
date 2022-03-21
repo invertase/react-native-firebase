@@ -3,7 +3,7 @@ const fs = require('fs');
 const { withInfoPlist } = require('@expo/config-plugins');
 const path = require('path');
 
-const withIosPhoneAuth = (config, id) => {
+const withIosPhoneAuth = (config) => {
   return withInfoPlist(config, config => {
     if (!config.ios?.googleServicesFile)
       throw new Error(
