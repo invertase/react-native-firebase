@@ -54,6 +54,7 @@ EEA
 Ehesp
 enum
 ESLint
+expo-dev-client
 Fastlane
 FCM
 firebase
