@@ -19,7 +19,8 @@ package io.invertase.firebase.database;
 
 import static io.invertase.firebase.common.RCTConvertFirebase.readableMapToWritableMap;
 import static io.invertase.firebase.database.ReactNativeFirebaseDatabaseCommon.*;
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.fireRef;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.turnOnFireCache;
 
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
@@ -371,6 +372,14 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
   }
 
   /**
+   * @param dbURL
+   */
+  @ReactMethod
+  public void turnOnFirePersistence(String dbURL) {
+    turnOnFireCache(dbURL);
+  }
+
+  /**
    * ref().once('*')
    *
    * @param app
@@ -388,7 +397,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       ReadableArray modifiers,
       String eventType,
       Promise promise) {
-    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, app);
 
     if (eventType.equals("value")) {
       addOnceValueEventListener(getDatabaseQueryInstance(reference, modifiers), promise);
@@ -412,7 +421,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     String eventType = Objects.requireNonNull(props.getString("eventType"));
     ReadableMap registration = Objects.requireNonNull(props.getMap("registration"));
 
-    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, app);
 
     if (eventType.equals("value")) {
       addValueEventListener(key, getDatabaseQueryInstance(key, reference, modifiers), registration);
@@ -456,7 +465,7 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
       ReadableArray modifiers,
       Boolean bool,
       Promise promise) {
-    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, app);
     getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(bool);
     promise.resolve(null);
   }

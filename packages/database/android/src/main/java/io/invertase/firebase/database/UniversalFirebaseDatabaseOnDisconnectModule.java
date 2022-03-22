@@ -17,7 +17,7 @@ package io.invertase.firebase.database;
  *
  */
 
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.fireDb;
 
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
@@ -32,20 +32,20 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
   }
 
   Task<Void> onDisconnectCancel(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().cancel();
+    return fireDb(appName, dbURL).getReference(path).onDisconnect().cancel();
   }
 
   Task<Void> onDisconnectRemove(String appName, String dbURL, String path) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().removeValue();
+    return fireDb(appName, dbURL).getReference(path).onDisconnect().removeValue();
   }
 
   Task<Void> onDisconnectSet(String appName, String dbURL, String path, Object value) {
-    return getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect().setValue(value);
+    return fireDb(appName, dbURL).getReference(path).onDisconnect().setValue(value);
   }
 
   Task<Void> onDisconnectSetWithPriority(
       String appName, String dbURL, String path, Object value, Object priority) {
-    OnDisconnect onDisconnect = getDatabaseForApp(appName, dbURL).getReference(path).onDisconnect();
+    OnDisconnect onDisconnect = fireDb(appName, dbURL).getReference(path).onDisconnect();
 
     if (priority instanceof String) {
       return onDisconnect.setValue(value, (String) priority);
@@ -56,7 +56,7 @@ public class UniversalFirebaseDatabaseOnDisconnectModule extends UniversalFireba
 
   Task<Void> onDisconnectUpdate(
       String appName, String dbURL, String path, Map<String, Object> values) {
-    return getDatabaseForApp(appName, dbURL)
+    return fireDb(appName, dbURL)
         .getReference(path)
         .onDisconnect()
         .updateChildren(values);

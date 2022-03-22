@@ -17,7 +17,7 @@ package io.invertase.firebase.database;
  *
  */
 
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.fireRef;
 
 import android.os.AsyncTask;
 import android.util.SparseArray;
@@ -44,7 +44,7 @@ public class ReactNativeFirebaseDatabaseTransactionModule extends ReactNativeFir
       String app, String dbURL, String path, int transactionId, Boolean applyLocally) {
     AsyncTask.execute(
         () -> {
-          DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+         DatabaseReference reference = fireRef(path, dbURL, app);
 
           reference.runTransaction(
               new Transaction.Handler() {

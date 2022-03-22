@@ -17,7 +17,7 @@ package io.invertase.firebase.database;
  *
  */
 
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.fireRef;
 
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
@@ -34,7 +34,7 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
 
   Task<Void> set(String appName, String dbURL, String path, Object value) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
-    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, appName);
 
     reference.setValue(
         value,
@@ -55,7 +55,7 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
 
   Task<Void> update(String appName, String dbURL, String path, Map<String, Object> value) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
-    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, appName);
 
     reference.updateChildren(
         value,
@@ -77,7 +77,7 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
   Task<Void> setWithPriority(
       String appName, String dbURL, String path, Object value, Object priority) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
-    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, appName);
 
     reference.setValue(
         value,
@@ -99,7 +99,7 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
 
   Task<Void> remove(String appName, String dbURL, String path) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
-    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, appName);
 
     reference.removeValue(
         (databaseError, databaseReference) -> {
@@ -119,7 +119,7 @@ public class UniversalFirebaseDatabaseReferenceModule extends UniversalFirebaseM
 
   Task<Void> setPriority(String appName, String dbURL, String path, Object priority) {
     TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
-    DatabaseReference reference = getDatabaseForApp(appName, dbURL).getReference(path);
+    DatabaseReference reference = fireRef(path, dbURL, appName);
 
     reference.setPriority(
         priority,

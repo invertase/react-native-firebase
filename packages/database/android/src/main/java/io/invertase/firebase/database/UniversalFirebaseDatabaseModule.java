@@ -17,7 +17,7 @@ package io.invertase.firebase.database;
  *
  */
 
-import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.getDatabaseForApp;
+import static io.invertase.firebase.database.UniversalFirebaseDatabaseCommon.fireDb;
 
 import android.content.Context;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +33,7 @@ public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
   Task<Void> goOnline(String appName, String dbURL) {
     return Tasks.call(
         () -> {
-          getDatabaseForApp(appName, dbURL).goOnline();
+          fireDb(appName, dbURL).goOnline();
           return null;
         });
   }
@@ -41,7 +41,7 @@ public class UniversalFirebaseDatabaseModule extends UniversalFirebaseModule {
   Task<Void> goOffline(String appName, String dbURL) {
     return Tasks.call(
         () -> {
-          getDatabaseForApp(appName, dbURL).goOffline();
+          fireDb(appName, dbURL).goOffline();
           return null;
         });
   }
