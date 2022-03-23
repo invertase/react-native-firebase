@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.6.0](https://github.com/invertase/react-native-firebase/compare/v14.5.1...v14.6.0) (2022-03-23)
+
+
+### Bug Fixes
+
+* **auth:** allow emulator hostnames to contain hyphens ([#6141](https://github.com/invertase/react-native-firebase/issues/6141)) ([98eb1ce](https://github.com/invertase/react-native-firebase/commit/98eb1ce3663bb0c0c507f7e8129ad094a53898b5))
+* **ios, expo:** use modern import style, required by Expo 44+ ([4060827](https://github.com/invertase/react-native-firebase/commit/4060827c318db8dcc2791bfe6635902a9c4e33bb))
+* **storage, ios:** fix build failure for catalyst compiles ([a6dd0cd](https://github.com/invertase/react-native-firebase/commit/a6dd0cdef3bb66701fec883d163d20f14d384f10))
+
+
+### Features
+
+* **sdks:** firebase-ios-sdk 8.13.0 ([95da53e](https://github.com/invertase/react-native-firebase/commit/95da53ef6cdd1b67ade4a53dbd8164bd906b9d53))
+
+
+
+
+
 ## [14.5.1](https://github.com/invertase/react-native-firebase/compare/v14.5.0...v14.5.1) (2022-03-05)
 
 

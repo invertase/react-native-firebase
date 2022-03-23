@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.6.0](https://github.com/invertase/react-native-firebase/compare/v14.5.1...v14.6.0) (2022-03-23)
+
+### Bug Fixes
+
+- **storage, ios:** fix build failure for catalyst compiles ([a6dd0cd](https://github.com/invertase/react-native-firebase/commit/a6dd0cdef3bb66701fec883d163d20f14d384f10))
+
 ## [14.5.1](https://github.com/invertase/react-native-firebase/compare/v14.5.0...v14.5.1) (2022-03-05)
 
 **Note:** Version bump only for package @react-native-firebase/storage
