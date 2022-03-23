@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.7.0](https://github.com/invertase/react-native-firebase/compare/v14.6.0...v14.7.0) (2022-03-23)
+
+
+### Features
+
+* **ios, sdk:** bump to firebase-ios-sdk 8.14.0 ([ba1ddb5](https://github.com/invertase/react-native-firebase/commit/ba1ddb5927f12f5f0abe8a4b23b3fd68fa8626bd))
+
+
+
+
+
 # [14.6.0](https://github.com/invertase/react-native-firebase/compare/v14.5.1...v14.6.0) (2022-03-23)
 
 
