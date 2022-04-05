@@ -107,7 +107,11 @@ RCT_EXPORT_METHOD(signalBackgroundMessageHandlerSet) {
   }
 }
 
-RCT_EXPORT_METHOD(getToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
+RCT_EXPORT_METHOD(getToken
+                  : (NSString *)appName
+                  : (NSString *)senderId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
 #if !(TARGET_IPHONE_SIMULATOR)
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils
@@ -123,23 +127,30 @@ RCT_EXPORT_METHOD(getToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseReject
 #endif
 
   [[FIRMessaging messaging]
-      tokenWithCompletion:^(NSString *_Nullable token, NSError *_Nullable error) {
-        if (error) {
-          [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-        } else {
-          resolve(token);
-        }
-      }];
+      retrieveFCMTokenForSenderID:senderId
+                       completion:^(NSString *_Nullable token, NSError *_Nullable error) {
+                         if (error) {
+                           [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
+                         } else {
+                           resolve(token);
+                         }
+                       }];
 }
 
-RCT_EXPORT_METHOD(deleteToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
-  [[FIRMessaging messaging] deleteTokenWithCompletion:^(NSError *_Nullable error) {
-    if (error) {
-      [RNFBSharedUtils rejectPromiseWithNSError:reject error:error];
-    } else {
-      resolve([NSNull null]);
-    }
-  }];
+RCT_EXPORT_METHOD(deleteToken
+                  : (NSString *)appName
+                  : (NSString *)senderId
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[FIRMessaging messaging] deleteFCMTokenForSenderID:senderId
+                                           completion:^(NSError *_Nullable error) {
+                                             if (error) {
+                                               [RNFBSharedUtils rejectPromiseWithNSError:reject
+                                                                                   error:error];
+                                             } else {
+                                               resolve([NSNull null]);
+                                             }
+                                           }];
 }
 
 RCT_EXPORT_METHOD(getAPNSToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
