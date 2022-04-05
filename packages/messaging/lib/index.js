@@ -23,6 +23,7 @@ import {
   isIOS,
   isObject,
   isString,
+  isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import {
   createModuleNamespace,
@@ -154,12 +155,34 @@ class FirebaseMessagingModule extends FirebaseModule {
     return this.native.getIsHeadless();
   }
 
-  getToken() {
-    return this.native.getToken();
+  getToken({ appName, senderId } = {}) {
+    if (!isUndefined(appName) && !isString(appName)) {
+      throw new Error("firebase.messaging().getToken(*) 'projectId' expected a string.");
+    }
+
+    if (!isUndefined(senderId) && !isString(senderId)) {
+      throw new Error("firebase.messaging().getToken(*) 'senderId' expected a string.");
+    }
+
+    return this.native.getToken(
+      appName || this.app.name,
+      senderId || this.app.options.messagingSenderId,
+    );
   }
 
-  deleteToken() {
-    return this.native.deleteToken();
+  deleteToken({ appName, senderId } = {}) {
+    if (!isUndefined(appName) && !isString(appName)) {
+      throw new Error("firebase.messaging().deleteToken(*) 'projectId' expected a string.");
+    }
+
+    if (!isUndefined(senderId) && !isString(senderId)) {
+      throw new Error("firebase.messaging().deleteToken(*) 'senderId' expected a string.");
+    }
+
+    return this.native.deleteToken(
+      appName || this.app.name,
+      senderId || this.app.options.messagingSenderId,
+    );
   }
 
   onMessage(listener) {

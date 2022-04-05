@@ -143,6 +143,25 @@ export namespace FirebaseMessagingTypes {
     threadId?: string;
   }
 
+  /**
+   * Options for `getToken()`, `deleteToken()`
+   */
+  export interface TokenOptions {
+    /**
+     * The app name of the FirebaseApp instance.
+     *
+     * @platform android Android
+     */
+    appName?: string;
+
+    /**
+     * The senderID for a particular Firebase project.
+     *
+     * @platform ios iOS
+     */
+    senderId?: string;
+  }
+
   export interface Notification {
     /**
      * The notification title.
@@ -579,8 +598,7 @@ export namespace FirebaseMessagingTypes {
     getDidOpenSettingsForNotification(): Promise<boolean>;
 
     /**
-     * Returns an FCM token for this device. Optionally you can specify a custom authorized entity
-     * or scope to tailor tokens to your own use-case.
+     * Returns an FCM token for this device. Optionally you can specify a custom options to your own use-case.
      *
      * It is recommended you call this method on app start and update your backend with the new token.
      *
@@ -602,8 +620,10 @@ export namespace FirebaseMessagingTypes {
      *     fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),
      *   });
      * ```
+     *
+     * @param options Options to override senderId (iOS) and projectId (Android).
      */
-    getToken(): Promise<string>;
+    getToken(options?: TokenOptions): Promise<string>;
 
     /**
      * Returns wether the root view is headless or not
@@ -623,8 +643,10 @@ export namespace FirebaseMessagingTypes {
      * ```js
      * await firebase.messaging().deleteToken();
      * ```
+     *
+     * @param options Options to override senderId (iOS) and projectId (Android).
      */
-    deleteToken(): Promise<void>;
+    deleteToken(options?: TokenOptions): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
