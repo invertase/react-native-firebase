@@ -22,7 +22,7 @@
 
 **React Native Firebase** is a collection of official React Native modules connecting you to Firebase services; each module is a light-weight JavaScript layer connecting you to the native Firebase SDKs for both iOS and Android.
 
-React Native Firebase is built with four key principals in mind;
+React Native Firebase is built with four key principles in mind;
 
 - 🧪 **Well tested**
   - every module is extensively tested to >95% coverage
