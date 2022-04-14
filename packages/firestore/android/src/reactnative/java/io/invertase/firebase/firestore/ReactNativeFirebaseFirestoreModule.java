@@ -46,6 +46,20 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void loadBundle(String appName, String bundle, Promise promise) {
+    module
+        .loadBundle(appName, bundle)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(null);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void clearPersistence(String appName, Promise promise) {
     module
         .clearPersistence(appName)
