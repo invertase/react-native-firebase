@@ -72,6 +72,7 @@
     "genversion": "^3.0.2",
     "google-java-format": "^1.0.1",
     "inquirer": "^8.2.0",
+    "isomorphic-fetch": "^3.0.0",
     "jest": "^27.5.1",
     "lerna": "4.0.0",
     "prettier": "^2.5.1",
