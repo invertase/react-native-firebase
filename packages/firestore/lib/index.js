@@ -84,6 +84,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
+  async loadBundle(bundle) {
+    await this.native.loadBundle(bundle);
+  }
+
   async clearPersistence() {
     await this.native.clearPersistence();
   }

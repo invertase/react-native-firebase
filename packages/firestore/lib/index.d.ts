@@ -2025,6 +2025,17 @@ export namespace FirebaseFirestoreTypes {
      */
     settings(settings: Settings): Promise<void>;
     /**
+     * Load the bundle contents into the Firestore SDK
+     *
+     * #### Example
+     *
+     * ```js
+     * const resp = await fetch('/createBundle');
+     * await firestore().loadBundle(resp.body);
+     * ```
+     */
+    loadBundle(bundle: string): Promise<void>;
+    /**
      * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
      * are made.
      *
