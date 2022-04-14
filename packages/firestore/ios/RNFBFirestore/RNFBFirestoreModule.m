@@ -107,6 +107,23 @@ RCT_EXPORT_METHOD(settings
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(loadBundle
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSString *)bundle
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSData* bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+   loadBundle:bundleData
+   completion:^(FIRLoadBundleTaskProgress *progress, NSError *error) {
+      if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+      } else {
+          resolve(nil);
+      }
+    }];
+}
+
 RCT_EXPORT_METHOD(clearPersistence
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
