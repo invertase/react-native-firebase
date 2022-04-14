@@ -18,14 +18,11 @@ const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'firestore-bundle-tests';
 
-describe('firestore().loadBundle()', function () {
+describe('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
   it('get query results from the bundle', function () {
-    const resp = await fetch(BUNDLE_URL);
-    await firebase.firestore().loadBundle(resp);
-
     // TODO: implement this
   });
 });

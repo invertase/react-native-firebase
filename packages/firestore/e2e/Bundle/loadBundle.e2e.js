@@ -15,14 +15,24 @@
  *
  */
 const { wipe } = require('../helpers');
+require('isomorphic-fetch');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 
 describe('firestore().loadBundle()', function () {
   before(function () {
     return wipe();
   });
-  it('loads the bundle contents', function () {
+  it('loads the bundle contents', async function () {
     const resp = await fetch(BUNDLE_URL);
-    await firebase.firestore().loadBundle(resp);
+    const bundleString = await resp.text();
+    await firebase.firestore().loadBundle(bundleString);
+  });
+  it('throws if invalid bundle', async function () {
+    try {
+      await firebase.firestore().loadBundle('not-a-bundle');
+    } catch (error) {
+      error.message.should.containEql('Client specified an invalid argument');
+      return Promise.resolve();
+    }
   });
 });
