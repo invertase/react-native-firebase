@@ -2031,7 +2031,8 @@ export namespace FirebaseFirestoreTypes {
      *
      * ```js
      * const resp = await fetch('/createBundle');
-     * await firestore().loadBundle(resp.body);
+     * const bundleString = await resp.text();
+     * await firestore().loadBundle(bundleString);
      * ```
      */
     loadBundle(bundle: string): Promise<void>;
