@@ -329,4 +329,46 @@ describe('Storage', function () {
       });
     });
   });
+
+  describe('loadBundle()', function () {
+    it('throws if bundle is not a string', async function () {
+      try {
+        // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
+        firebase.firestore().loadBundle(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (e: any) {
+        return expect(e.message).toContain("'bundle' must be a string value");
+      }
+    });
+
+    it('throws if bundle is empty string', async function () {
+      try {
+        firebase.firestore().loadBundle('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (e: any) {
+        return expect(e.message).toContain("'bundle' must be a non-empty string");
+      }
+    });
+  });
+
+  describe('namedQuery()', function () {
+    it('throws if queryName is not a string', async function () {
+      try {
+        // @ts-ignore the type is incorrect *on purpose* to test type checking in javascript
+        firebase.firestore().namedQuery(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (e: any) {
+        return expect(e.message).toContain("'queryName' must be a string value");
+      }
+    });
+
+    it('throws if queryName is empty string', async function () {
+      try {
+        firebase.firestore().namedQuery('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (e: any) {
+        return expect(e.message).toContain("'queryName' must be a non-empty string");
+      }
+    });
+  });
 });

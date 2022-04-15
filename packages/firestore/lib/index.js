@@ -85,10 +85,26 @@ class FirebaseFirestoreModule extends FirebaseModule {
   }
 
   async loadBundle(bundle) {
+    if (!isString(bundle)) {
+      throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a string value.");
+    }
+
+    if (bundle === '') {
+      throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a non-empty string.");
+    }
+
     await this.native.loadBundle(bundle);
   }
 
-  namedQuery(name) {
+  namedQuery(queryName) {
+    if (!isString(queryName)) {
+      throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a string value.");
+    }
+
+    if (queryName === '') {
+      throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
+    }
+
     return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), name);
   }
 
