@@ -29,6 +29,7 @@ import io.invertase.firebase.common.UniversalFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 import java.util.Map;
 import java.util.Objects;
+import java.nio.charset.StandardCharsets;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
@@ -106,7 +107,7 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
   }
 
   LoadBundleTask loadBundle(String appName, String bundle) {
-    byte[] bundleData = bundle.getBytes();
+    byte[] bundleData = bundle.getBytes(StandardCharsets.UTF_8);
     return getFirestoreForApp(appName).loadBundle(bundleData);
   }
 
