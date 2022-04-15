@@ -126,25 +126,9 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             queryTask -> {
               if (queryTask.isSuccessful()) {
                 Query query = queryTask.getResult();
-
-                // TODO: reduce duplication
-                Source source;
-
-                if (getOptions != null && getOptions.hasKey("source")) {
-                  String optionsSource = getOptions.getString("source");
-                  if ("server".equals(optionsSource)) {
-                    source = Source.SERVER;
-                  } else if ("cache".equals(optionsSource)) {
-                    source = Source.CACHE;
-                  } else {
-                    source = Source.DEFAULT;
-                  }
-                } else {
-                  source = Source.DEFAULT;
-                }
-
+                
                 new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options)
-                  .get(getExecutor(), source)
+                  .get(getExecutor(), getSource(getOptions))
                   .addOnCompleteListener(
                       getTask -> {
                         if (getTask.isSuccessful()) {
@@ -174,23 +158,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
 
-    Source source;
-
-    if (getOptions != null && getOptions.hasKey("source")) {
-      String optionsSource = getOptions.getString("source");
-      if ("server".equals(optionsSource)) {
-        source = Source.SERVER;
-      } else if ("cache".equals(optionsSource)) {
-        source = Source.CACHE;
-      } else {
-        source = Source.DEFAULT;
-      }
-    } else {
-      source = Source.DEFAULT;
-    }
-
     query
-        .get(getExecutor(), source)
+        .get(getExecutor(), getSource(getOptions))
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
@@ -251,5 +220,24 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
             ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC, body, appName, listenerId));
+  }
+
+  private Source getSource(ReadableMap getOptions) {
+    Source source;
+
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+
+    return source;
   }
 }
