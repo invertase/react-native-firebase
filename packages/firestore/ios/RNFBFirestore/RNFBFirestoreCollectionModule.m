@@ -119,6 +119,49 @@ RCT_EXPORT_METHOD(collectionOffSnapshot : (FIRApp *)firebaseApp : (nonnull NSNum
   }
 }
 
+RCT_EXPORT_METHOD(namedQueryGet
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)name
+                  : (NSString *)type
+                  : (NSArray *)filters
+                  : (NSArray *)orders
+                  : (NSDictionary *)options
+                  : (NSDictionary *)getOptions
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  [[FIRFirestore firestore] getQueryNamed:name
+                               completion:^(FIRQuery *query) {
+      if (query == nil) {
+          return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
+                                                                error:nil];
+      }
+      
+      RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                                                                   query:query
+                                                                                 filters:filters
+                                                                                  orders:orders
+                                                                                 options:options];
+
+      [[firestoreQuery instance]
+       getDocumentsWithSource:[self getSource:getOptions]
+                      completion:^(FIRQuerySnapshot *snapshot, NSError *error) {
+                        if (error) {
+                          return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
+                                                                                error:error];
+                        } else {
+                          NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
+                          NSDictionary *serialized =
+                              [RNFBFirestoreSerialize querySnapshotToDictionary:@"get"
+                                                                       snapshot:snapshot
+                                                         includeMetadataChanges:false
+                                                                        appName:appName];
+                          resolve(serialized);
+                        }
+                      }];
+  }];
+}
+
 RCT_EXPORT_METHOD(collectionGet
                   : (FIRApp *)firebaseApp
                   : (NSString *)path
@@ -138,22 +181,8 @@ RCT_EXPORT_METHOD(collectionGet
                                                                               orders:orders
                                                                              options:options];
 
-  FIRFirestoreSource source;
-
-  if (getOptions[@"source"]) {
-    if ([getOptions[@"source"] isEqualToString:@"server"]) {
-      source = FIRFirestoreSourceServer;
-    } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
-      source = FIRFirestoreSourceCache;
-    } else {
-      source = FIRFirestoreSourceDefault;
-    }
-  } else {
-    source = FIRFirestoreSourceDefault;
-  }
-
   [[firestoreQuery instance]
-      getDocumentsWithSource:source
+      getDocumentsWithSource:[self getSource:getOptions]
                   completion:^(FIRQuerySnapshot *snapshot, NSError *error) {
                     if (error) {
                       return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
@@ -207,6 +236,24 @@ RCT_EXPORT_METHOD(collectionGet
                        }
                      }
                    }];
+}
+
+- (FIRFirestoreSource)getSource:(NSDictionary *)getOptions {
+    FIRFirestoreSource source;
+
+    if (getOptions[@"source"]) {
+      if ([getOptions[@"source"] isEqualToString:@"server"]) {
+        source = FIRFirestoreSourceServer;
+      } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
+        source = FIRFirestoreSourceCache;
+      } else {
+        source = FIRFirestoreSourceDefault;
+      }
+    } else {
+      source = FIRFirestoreSourceDefault;
+    }
+    
+    return source;
 }
 
 @end
