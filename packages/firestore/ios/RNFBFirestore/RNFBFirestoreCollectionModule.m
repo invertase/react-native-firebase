@@ -61,6 +61,62 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Firestore Methods
 
+RCT_EXPORT_METHOD(namedQueryOnSnapshot
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)name
+                  : (NSString *)type
+                  : (NSArray *)filters
+                  : (NSArray *)orders
+                  : (NSDictionary *)options
+                  : (nonnull NSNumber *)listenerId
+                  : (NSDictionary *)listenerOptions) {
+  if (collectionSnapshotListeners[listenerId]) {
+    return;
+  }
+
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  [[FIRFirestore firestore] getQueryNamed:name
+                               completion:^(FIRQuery *query) {
+    if (query == nil) {
+        return;
+    }
+    
+    RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                                                                 query:query
+                                                                               filters:filters
+                                                                                orders:orders
+                                                                               options:options];
+
+    // TODO: reduce duplication
+    BOOL includeMetadataChanges = NO;
+    if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
+      includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
+    }
+
+    __weak RNFBFirestoreCollectionModule *weakSelf = self;
+    id listenerBlock = ^(FIRQuerySnapshot *snapshot, NSError *error) {
+      if (error) {
+        id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
+        if (listener) {
+          [listener remove];
+          [collectionSnapshotListeners removeObjectForKey:listenerId];
+        }
+        [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
+      } else {
+        [weakSelf sendSnapshotEvent:firebaseApp
+                         listenerId:listenerId
+                           snapshot:snapshot
+             includeMetadataChanges:includeMetadataChanges];
+      }
+    };
+
+    id<FIRListenerRegistration> listener = [[firestoreQuery instance]
+        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+                                             listener:listenerBlock];
+    collectionSnapshotListeners[listenerId] = listener;
+  }];
+}
+
 RCT_EXPORT_METHOD(collectionOnSnapshot
                   : (FIRApp *)firebaseApp
                   : (NSString *)path

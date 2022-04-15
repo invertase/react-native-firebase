@@ -18,7 +18,7 @@ const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'named-bundle-test';
 
-describe('firestore().namedQuery()', function () {
+describe.only('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
@@ -49,6 +49,18 @@ describe('firestore().namedQuery()', function () {
     const snapshot = await query.get();
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
     snapshot.size.should.equal(0);
+  });
+  it('calls onNext when successful', async function () {
+    const onNext = sinon.spy();
+    const onError = sinon.spy();
+    const unsub = firebase.firestore().namedQuery(QUERY_NAME).onSnapshot(onNext, onError);
+
+    await Utils.spyToBeCalledOnceAsync(onNext);
+
+    onNext.should.be.calledOnce();
+    onError.should.be.callCount(0);
+    onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+    unsub();
   });
   it('throws if invalid query name', async function () {
     await prepareBundle();

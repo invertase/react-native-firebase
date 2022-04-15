@@ -301,15 +301,27 @@ export default class FirestoreQuery {
       this._firestore.native.collectionOffSnapshot(listenerId);
     };
 
-    this._firestore.native.collectionOnSnapshot(
-      this._collectionPath.relativeName,
-      this._modifiers.type,
-      this._modifiers.filters,
-      this._modifiers.orders,
-      this._modifiers.options,
-      listenerId,
-      snapshotListenOptions,
-    );
+    if (!isUndefined(this._queryName)) {
+      this._firestore.native.namedQueryOnSnapshot(
+        this._queryName,
+        this._modifiers.type,
+        this._modifiers.filters,
+        this._modifiers.orders,
+        this._modifiers.options,
+        listenerId,
+        snapshotListenOptions,
+      );
+    } else {
+      this._firestore.native.collectionOnSnapshot(
+        this._collectionPath.relativeName,
+        this._modifiers.type,
+        this._modifiers.filters,
+        this._modifiers.orders,
+        this._modifiers.options,
+        listenerId,
+        snapshotListenOptions,
+      );
+    }
 
     return unsubscribe;
   }

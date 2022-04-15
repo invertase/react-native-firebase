@@ -51,6 +51,62 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
+  public void namedQueryOnSnapshot(
+      String appName,
+      String queryName,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      int listenerId,
+      ReadableMap listenerOptions) {
+    if (collectionSnapshotListeners.get(listenerId) != null) {
+      return;
+    }
+
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    firebaseFirestore
+        .getNamedQuery(queryName)
+        .addOnCompleteListener(
+            queryTask -> {
+              if (queryTask.isSuccessful()) {
+                Query query = queryTask.getResult();
+                ReactNativeFirebaseFirestoreQuery firestoreQuery = new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
+
+                // TODO: reduce duplication
+                MetadataChanges metadataChanges;
+
+                if (listenerOptions != null
+                    && listenerOptions.hasKey("includeMetadataChanges")
+                    && listenerOptions.getBoolean("includeMetadataChanges")) {
+                  metadataChanges = MetadataChanges.INCLUDE;
+                } else {
+                  metadataChanges = MetadataChanges.EXCLUDE;
+                }
+
+                final EventListener<QuerySnapshot> listener =
+                    (querySnapshot, exception) -> {
+                      if (exception != null) {
+                        ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
+                        if (listenerRegistration != null) {
+                          listenerRegistration.remove();
+                          collectionSnapshotListeners.remove(listenerId);
+                        }
+                        sendOnSnapshotError(appName, listenerId, exception);
+                      } else {
+                        sendOnSnapshotEvent(appName, listenerId, querySnapshot, metadataChanges);
+                      }
+                    };
+
+                ListenerRegistration listenerRegistration =
+                    firestoreQuery.query.addSnapshotListener(metadataChanges, listener);
+
+                collectionSnapshotListeners.put(listenerId, listenerRegistration);   
+              }
+            });
+  }
+
+  @ReactMethod
   public void collectionOnSnapshot(
       String appName,
       String path,
