@@ -18,7 +18,7 @@ const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'named-bundle-test';
 
-describe('firestore().namedQuery()', function () {
+describe.only('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
@@ -35,6 +35,18 @@ describe('firestore().namedQuery()', function () {
     snapshot.forEach(doc => {
       doc.data().number.should.equalOneOf(1, 2, 3);
     });
+  });
+  it('gets from named query with limit modification', async function () {
+    // loads bundle
+    const resp = await fetch(BUNDLE_URL);
+    const bundleString = await resp.text();
+    await firebase.firestore().loadBundle(bundleString);
+
+    // get named query
+    const query = firebase.firestore().namedQuery(QUERY_NAME);
+    const snapshot = await query.limit(1).get({ source: 'cache' });
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+    snapshot.size.should.equal(1);
   });
   it('throws if invalid query name', async function () {
     // loads bundle
