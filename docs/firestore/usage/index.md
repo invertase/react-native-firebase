@@ -592,3 +592,27 @@ async function bootstrap() {
   });
 }
 ```
+
+## Data bundles
+
+Cloud Firestore data bundles are static data files built by you from Cloud Firestore document and query snapshots,
+and published by you on a CDN, hosting service or other solution. Once a bundle is loaded, a client app can query documents
+from the local cache or the backend.
+
+To load data bundles, use the `loadBundle` and `namedQuery` methods:
+
+```js
+import firestore from '@react-native-firebase/firestore';
+
+// load the bundle contents
+const response = await fetch('https://api.example.com/bundle');
+const bundleString = await response.text();
+await firestore().loadBundle(bundleString);
+
+// query the results from the cache
+// note: omitting "source: cache" will query the Firestore backend
+const query = firestore().namedQuery('latest-stories-query');
+const snapshot = await query.get({ source: 'cache' });
+```
+
+You can build data bundles with the Admin SDK. For more information about building and serving data bundles, see Firebase Firestore documentation on [Data bundles](https://firebase.google.com/docs/firestore/bundles)
