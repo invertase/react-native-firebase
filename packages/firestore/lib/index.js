@@ -89,7 +89,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
   }
 
   namedQuery(name) {
-    return new FirestoreQuery(this, undefined, undefined, name);
+    return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), name);
   }
 
   async clearPersistence() {
@@ -172,6 +172,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       this,
       this._referencePath.child(collectionId),
       new FirestoreQueryModifiers().asCollectionGroupQuery(),
+      undefined,
     );
   }
 

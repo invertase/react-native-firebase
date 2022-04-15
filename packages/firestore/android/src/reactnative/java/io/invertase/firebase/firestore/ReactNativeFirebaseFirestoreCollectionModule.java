@@ -110,29 +110,51 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
-  public void namedQueryGet(String appName, String queryName, Promise promise) {
+  public void namedQueryGet(
+      String appName,
+      String queryName,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableMap getOptions,
+      Promise promise) {
     FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
     firebaseFirestore
         .getNamedQuery(queryName)
         .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                Query query = task.getResult();
-                ReadableArray emptyArray = Arguments.createArray();
-                ReadableMap emptyMap = Arguments.createMap();
-                ReactNativeFirebaseFirestoreQuery rnQuery = new ReactNativeFirebaseFirestoreQuery(appName, query, emptyArray, emptyArray, emptyMap);
-                rnQuery
-                  .get(getExecutor(), Source.CACHE)
+            queryTask -> {
+              if (queryTask.isSuccessful()) {
+                Query query = queryTask.getResult();
+
+                // TODO: reduce duplication
+                Source source;
+
+                if (getOptions != null && getOptions.hasKey("source")) {
+                  String optionsSource = getOptions.getString("source");
+                  if ("server".equals(optionsSource)) {
+                    source = Source.SERVER;
+                  } else if ("cache".equals(optionsSource)) {
+                    source = Source.CACHE;
+                  } else {
+                    source = Source.DEFAULT;
+                  }
+                } else {
+                  source = Source.DEFAULT;
+                }
+
+                new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options)
+                  .get(getExecutor(), source)
                   .addOnCompleteListener(
-                      task2 -> {
-                        if (task2.isSuccessful()) {
-                          promise.resolve(task2.getResult());
+                      getTask -> {
+                        if (getTask.isSuccessful()) {
+                          promise.resolve(getTask.getResult());
                         } else {
-                          rejectPromiseFirestoreException(promise, task2.getException());
+                          rejectPromiseFirestoreException(promise, getTask.getException());
                         }
                       });
               } else {
-                rejectPromiseFirestoreException(promise, task.getException());
+                rejectPromiseFirestoreException(promise, queryTask.getException());
               }
             });
   } 
