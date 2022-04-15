@@ -86,34 +86,10 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
                                                                                filters:filters
                                                                                 orders:orders
                                                                                options:options];
-
-    // TODO: reduce duplication
-    BOOL includeMetadataChanges = NO;
-    if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
-      includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
-    }
-
-    __weak RNFBFirestoreCollectionModule *weakSelf = self;
-    id listenerBlock = ^(FIRQuerySnapshot *snapshot, NSError *error) {
-      if (error) {
-        id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
-        if (listener) {
-          [listener remove];
-          [collectionSnapshotListeners removeObjectForKey:listenerId];
-        }
-        [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
-      } else {
-        [weakSelf sendSnapshotEvent:firebaseApp
-                         listenerId:listenerId
-                           snapshot:snapshot
-             includeMetadataChanges:includeMetadataChanges];
-      }
-    };
-
-    id<FIRListenerRegistration> listener = [[firestoreQuery instance]
-        addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
-                                             listener:listenerBlock];
-    collectionSnapshotListeners[listenerId] = listener;
+    [self handleQueryOnSnapshot:firebaseApp
+                 firestoreQuery:firestoreQuery
+                     listenerId:listenerId
+                listenerOptions:listenerOptions];
   }];
 }
 
@@ -138,33 +114,10 @@ RCT_EXPORT_METHOD(collectionOnSnapshot
                                                                              filters:filters
                                                                               orders:orders
                                                                              options:options];
-
-  BOOL includeMetadataChanges = NO;
-  if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
-    includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
-  }
-
-  __weak RNFBFirestoreCollectionModule *weakSelf = self;
-  id listenerBlock = ^(FIRQuerySnapshot *snapshot, NSError *error) {
-    if (error) {
-      id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
-      if (listener) {
-        [listener remove];
-        [collectionSnapshotListeners removeObjectForKey:listenerId];
-      }
-      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
-    } else {
-      [weakSelf sendSnapshotEvent:firebaseApp
-                       listenerId:listenerId
-                         snapshot:snapshot
-           includeMetadataChanges:includeMetadataChanges];
-    }
-  };
-
-  id<FIRListenerRegistration> listener = [[firestoreQuery instance]
-      addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
-                                           listener:listenerBlock];
-  collectionSnapshotListeners[listenerId] = listener;
+  [self handleQueryOnSnapshot:firebaseApp
+               firestoreQuery:firestoreQuery
+                   listenerId:listenerId
+              listenerOptions:listenerOptions];
 }
 
 RCT_EXPORT_METHOD(collectionOffSnapshot : (FIRApp *)firebaseApp : (nonnull NSNumber *)listenerId) {
@@ -198,23 +151,12 @@ RCT_EXPORT_METHOD(namedQueryGet
                                                                                  filters:filters
                                                                                   orders:orders
                                                                                  options:options];
-
-      [[firestoreQuery instance]
-       getDocumentsWithSource:[self getSource:getOptions]
-                      completion:^(FIRQuerySnapshot *snapshot, NSError *error) {
-                        if (error) {
-                          return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
-                                                                                error:error];
-                        } else {
-                          NSString *appName = [RNFBSharedUtils getAppJavaScriptName:firebaseApp.name];
-                          NSDictionary *serialized =
-                              [RNFBFirestoreSerialize querySnapshotToDictionary:@"get"
-                                                                       snapshot:snapshot
-                                                         includeMetadataChanges:false
-                                                                        appName:appName];
-                          resolve(serialized);
-                        }
-                      }];
+      FIRFirestoreSource source = [self getSource:getOptions];
+      [self handleQueryGet:firebaseApp
+            firestoreQuery:firestoreQuery
+                    source:source
+                   resolve:resolve
+                    reject:reject];
   }];
 }
 
@@ -236,9 +178,53 @@ RCT_EXPORT_METHOD(collectionGet
                                                                              filters:filters
                                                                               orders:orders
                                                                              options:options];
+  FIRFirestoreSource source = [self getSource:getOptions];
+  [self handleQueryGet:firebaseApp
+        firestoreQuery:firestoreQuery
+                source:source
+               resolve:resolve
+                reject:reject];
+}
 
+- (void)handleQueryOnSnapshot:(FIRApp *)firebaseApp
+               firestoreQuery:(RNFBFirestoreQuery *)firestoreQuery
+                   listenerId:(nonnull NSNumber *)listenerId
+              listenerOptions:(NSDictionary *)listenerOptions {
+  BOOL includeMetadataChanges = NO;
+  if (listenerOptions[KEY_INCLUDE_METADATA_CHANGES] != nil) {
+    includeMetadataChanges = [listenerOptions[KEY_INCLUDE_METADATA_CHANGES] boolValue];
+  }
+
+  __weak RNFBFirestoreCollectionModule *weakSelf = self;
+  id listenerBlock = ^(FIRQuerySnapshot *snapshot, NSError *error) {
+    if (error) {
+      id<FIRListenerRegistration> listener = collectionSnapshotListeners[listenerId];
+      if (listener) {
+        [listener remove];
+        [collectionSnapshotListeners removeObjectForKey:listenerId];
+      }
+      [weakSelf sendSnapshotError:firebaseApp listenerId:listenerId error:error];
+    } else {
+      [weakSelf sendSnapshotEvent:firebaseApp
+                       listenerId:listenerId
+                         snapshot:snapshot
+           includeMetadataChanges:includeMetadataChanges];
+    }
+  };
+
+  id<FIRListenerRegistration> listener = [[firestoreQuery instance]
+      addSnapshotListenerWithIncludeMetadataChanges:includeMetadataChanges
+                                           listener:listenerBlock];
+  collectionSnapshotListeners[listenerId] = listener;
+}
+
+- (void)handleQueryGet:(FIRApp *)firebaseApp
+        firestoreQuery:(RNFBFirestoreQuery *)firestoreQuery
+                source:(FIRFirestoreSource)source
+               resolve:(RCTPromiseResolveBlock)resolve
+                reject:(RCTPromiseRejectBlock)reject {
   [[firestoreQuery instance]
-      getDocumentsWithSource:[self getSource:getOptions]
+      getDocumentsWithSource:source
                   completion:^(FIRQuerySnapshot *snapshot, NSError *error) {
                     if (error) {
                       return [RNFBFirestoreCommon promiseRejectFirestoreException:reject

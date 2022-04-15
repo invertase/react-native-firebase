@@ -68,40 +68,12 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     firebaseFirestore
         .getNamedQuery(queryName)
         .addOnCompleteListener(
-            queryTask -> {
-              if (queryTask.isSuccessful()) {
-                Query query = queryTask.getResult();
+            task -> {
+              if (task.isSuccessful()) {
+                Query query = task.getResult();
                 ReactNativeFirebaseFirestoreQuery firestoreQuery = new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
 
-                // TODO: reduce duplication
-                MetadataChanges metadataChanges;
-
-                if (listenerOptions != null
-                    && listenerOptions.hasKey("includeMetadataChanges")
-                    && listenerOptions.getBoolean("includeMetadataChanges")) {
-                  metadataChanges = MetadataChanges.INCLUDE;
-                } else {
-                  metadataChanges = MetadataChanges.EXCLUDE;
-                }
-
-                final EventListener<QuerySnapshot> listener =
-                    (querySnapshot, exception) -> {
-                      if (exception != null) {
-                        ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
-                        if (listenerRegistration != null) {
-                          listenerRegistration.remove();
-                          collectionSnapshotListeners.remove(listenerId);
-                        }
-                        sendOnSnapshotError(appName, listenerId, exception);
-                      } else {
-                        sendOnSnapshotEvent(appName, listenerId, querySnapshot, metadataChanges);
-                      }
-                    };
-
-                ListenerRegistration listenerRegistration =
-                    firestoreQuery.query.addSnapshotListener(metadataChanges, listener);
-
-                collectionSnapshotListeners.put(listenerId, listenerRegistration);   
+                handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
               }
             });
   }
@@ -125,6 +97,67 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
 
+    handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+  }
+
+  @ReactMethod
+  public void collectionOffSnapshot(String appName, int listenerId) {
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+      collectionSnapshotListeners.remove(listenerId);
+      removeEventListeningExecutor(Integer.toString(listenerId));
+    }
+  }
+
+  @ReactMethod
+  public void namedQueryGet(
+      String appName,
+      String queryName,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableMap getOptions,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    firebaseFirestore
+        .getNamedQuery(queryName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Query query = task.getResult();
+                ReactNativeFirebaseFirestoreQuery firestoreQuery =
+                    new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
+                handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  } 
+
+  @ReactMethod
+  public void collectionGet(
+      String appName,
+      String path,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableMap getOptions,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+        new ReactNativeFirebaseFirestoreQuery(
+            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+    handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+  }
+
+  private void handleQueryOnSnapshot(
+      ReactNativeFirebaseFirestoreQuery query,
+      String appName,
+      int listenerId,
+      ReadableMap listenerOptions) {
     MetadataChanges metadataChanges;
 
     if (listenerOptions != null
@@ -155,75 +188,20 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     collectionSnapshotListeners.put(listenerId, listenerRegistration);
   }
 
-  @ReactMethod
-  public void collectionOffSnapshot(String appName, int listenerId) {
-    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-      collectionSnapshotListeners.remove(listenerId);
-      removeEventListeningExecutor(Integer.toString(listenerId));
-    }
-  }
-
-  @ReactMethod
-  public void namedQueryGet(
-      String appName,
-      String queryName,
-      String type,
-      ReadableArray filters,
-      ReadableArray orders,
-      ReadableMap options,
-      ReadableMap getOptions,
+  private void handleQueryGet(
+      ReactNativeFirebaseFirestoreQuery query,
+      Source source,
       Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-    firebaseFirestore
-        .getNamedQuery(queryName)
-        .addOnCompleteListener(
-            queryTask -> {
-              if (queryTask.isSuccessful()) {
-                Query query = queryTask.getResult();
-                
-                new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options)
-                  .get(getExecutor(), getSource(getOptions))
-                  .addOnCompleteListener(
-                      getTask -> {
-                        if (getTask.isSuccessful()) {
-                          promise.resolve(getTask.getResult());
-                        } else {
-                          rejectPromiseFirestoreException(promise, getTask.getException());
-                        }
-                      });
-              } else {
-                rejectPromiseFirestoreException(promise, queryTask.getException());
-              }
-            });
-  } 
-
-  @ReactMethod
-  public void collectionGet(
-      String appName,
-      String path,
-      String type,
-      ReadableArray filters,
-      ReadableArray orders,
-      ReadableMap options,
-      ReadableMap getOptions,
-      Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-    ReactNativeFirebaseFirestoreQuery query =
-        new ReactNativeFirebaseFirestoreQuery(
-            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
-
     query
-        .get(getExecutor(), getSource(getOptions))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                promise.resolve(task.getResult());
-              } else {
-                rejectPromiseFirestoreException(promise, task.getException());
-              }
-            });
+      .get(getExecutor(), source)
+      .addOnCompleteListener(
+          task -> {
+            if (task.isSuccessful()) {
+              promise.resolve(task.getResult());
+            } else {
+              rejectPromiseFirestoreException(promise, task.getException());
+            }
+          });
   }
 
   private void sendOnSnapshotEvent(
