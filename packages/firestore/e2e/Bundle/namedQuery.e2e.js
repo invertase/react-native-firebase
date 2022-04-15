@@ -18,7 +18,7 @@ const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'named-bundle-test';
 
-describe.only('firestore().namedQuery()', function () {
+describe('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
