@@ -2025,7 +2025,7 @@ export namespace FirebaseFirestoreTypes {
      */
     settings(settings: Settings): Promise<void>;
     /**
-     * Load the bundle contents into the Firestore SDK
+     * Loads a Firestore bundle into the local cache.
      *
      * #### Example
      *
@@ -2036,6 +2036,17 @@ export namespace FirebaseFirestoreTypes {
      * ```
      */
     loadBundle(bundle: string): Promise<void>;
+    /**
+     * Reads a Firestore Query from local cache, identified by the given name.
+     *
+     * #### Example
+     *
+     * ```js
+     * const query = firestore().namedQuery('latest-stories-query');
+     * const storiesSnap = await query.get({ source: 'cache' });
+     * ```
+     */
+    namedQuery<T extends DocumentData = DocumentData>(name: string): Query<T>;
     /**
      * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
      * are made.
