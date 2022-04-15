@@ -18,17 +18,17 @@ const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'named-bundle-test';
 
-describe.only('firestore().namedQuery()', function () {
+describe('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
-  it('gets from named query', async function () {
-    // loads bundle
+  async function prepareBundle() {
     const resp = await fetch(BUNDLE_URL);
     const bundleString = await resp.text();
     await firebase.firestore().loadBundle(bundleString);
-
-    // get named query
+  }
+  it('gets from named query', async function () {
+    await prepareBundle();
     const query = firebase.firestore().namedQuery(QUERY_NAME);
     const snapshot = await query.get({ source: 'cache' });
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
@@ -37,24 +37,21 @@ describe.only('firestore().namedQuery()', function () {
     });
   });
   it('gets from named query with limit modification', async function () {
-    // loads bundle
-    const resp = await fetch(BUNDLE_URL);
-    const bundleString = await resp.text();
-    await firebase.firestore().loadBundle(bundleString);
-
-    // get named query
+    await prepareBundle();
     const query = firebase.firestore().namedQuery(QUERY_NAME);
     const snapshot = await query.limit(1).get({ source: 'cache' });
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
     snapshot.size.should.equal(1);
   });
+  it('gets from firestore backend when omitting source: cache', async function () {
+    await prepareBundle();
+    const query = firebase.firestore().namedQuery(QUERY_NAME);
+    const snapshot = await query.get();
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+    snapshot.size.should.equal(0);
+  });
   it('throws if invalid query name', async function () {
-    // loads bundle
-    const resp = await fetch(BUNDLE_URL);
-    const bundleString = await resp.text();
-    await firebase.firestore().loadBundle(bundleString);
-
-    // get named query
+    await prepareBundle();
     const query = firebase.firestore().namedQuery('invalid-query');
     try {
       await query.get({ source: 'cache' });
