@@ -31,10 +31,11 @@ import { parseSnapshotArgs } from './utils';
 let _id = 0;
 
 export default class FirestoreQuery {
-  constructor(firestore, collectionPath, modifiers) {
+  constructor(firestore, collectionPath, modifiers, queryName) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
     this._modifiers = modifiers;
+    this._queryName = queryName;
   }
 
   get firestore() {
@@ -162,6 +163,12 @@ export default class FirestoreQuery {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.",
       );
+    }
+
+    if (options.source === 'cache' && !isUndefined(this._queryName)) {
+      return this._firestore.native
+        .namedQueryGet(this._queryName)
+        .then(data => new FirestoreQuerySnapshot(this._firestore, this, data));
     }
 
     this._modifiers.validatelimitToLast();

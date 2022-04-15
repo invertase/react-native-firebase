@@ -110,6 +110,34 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
+  public void namedQueryGet(String appName, String queryName, Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    firebaseFirestore
+        .getNamedQuery(queryName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Query query = task.getResult();
+                ReadableArray emptyArray = Arguments.createArray();
+                ReadableMap emptyMap = Arguments.createMap();
+                ReactNativeFirebaseFirestoreQuery rnQuery = new ReactNativeFirebaseFirestoreQuery(appName, query, emptyArray, emptyArray, emptyMap);
+                rnQuery
+                  .get(getExecutor(), Source.CACHE)
+                  .addOnCompleteListener(
+                      task2 -> {
+                        if (task2.isSuccessful()) {
+                          promise.resolve(task2.getResult());
+                        } else {
+                          rejectPromiseFirestoreException(promise, task2.getException());
+                        }
+                      });
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  } 
+
+  @ReactMethod
   public void collectionGet(
       String appName,
       String path,

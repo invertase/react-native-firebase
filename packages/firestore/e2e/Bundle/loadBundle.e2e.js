@@ -30,6 +30,7 @@ describe('firestore().loadBundle()', function () {
   it('throws if invalid bundle', async function () {
     try {
       await firebase.firestore().loadBundle('not-a-bundle');
+      return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
       // TODO: better error message
       // error.message.should.containEql('Client specified an invalid argument');

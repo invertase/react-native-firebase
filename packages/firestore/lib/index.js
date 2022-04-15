@@ -88,6 +88,10 @@ class FirebaseFirestoreModule extends FirebaseModule {
     await this.native.loadBundle(bundle);
   }
 
+  namedQuery(name) {
+    return new FirestoreQuery(this, undefined, undefined, name);
+  }
+
   async clearPersistence() {
     await this.native.clearPersistence();
   }

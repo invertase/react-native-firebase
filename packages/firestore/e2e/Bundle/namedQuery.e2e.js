@@ -16,13 +16,40 @@
  */
 const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
-const QUERY_NAME = 'firestore-bundle-tests';
+const QUERY_NAME = 'named-bundle-test';
 
 describe('firestore().namedQuery()', function () {
   before(function () {
     return wipe();
   });
-  it('get query results from the bundle', function () {
-    // TODO: implement this
+  it('gets from named query', async function () {
+    // loads bundle
+    const resp = await fetch(BUNDLE_URL);
+    const bundleString = await resp.text();
+    await firebase.firestore().loadBundle(bundleString);
+
+    // get named query
+    const query = firebase.firestore().namedQuery(QUERY_NAME);
+    const snapshot = await query.get({ source: 'cache' });
+    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+    snapshot.forEach(doc => {
+      doc.data().number.should.equalOneOf(1, 2, 3);
+    });
+  });
+  it('throws if invalid query name', async function () {
+    // loads bundle
+    const resp = await fetch(BUNDLE_URL);
+    const bundleString = await resp.text();
+    await firebase.firestore().loadBundle(bundleString);
+
+    // get named query
+    const query = firebase.firestore().namedQuery('invalid-query');
+    try {
+      await query.get({ source: 'cache' });
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      // TODO: better error message
+      return Promise.resolve();
+    }
   });
 });
