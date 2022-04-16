@@ -17,40 +17,50 @@
 const { wipe } = require('../helpers');
 const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
 const QUERY_NAME = 'named-bundle-test';
+const COLLECTION = 'firestore-bundle-tests';
 
 describe('firestore().namedQuery()', function () {
-  before(function () {
-    return wipe();
+  beforeEach(async function () {
+    return await wipe();
   });
   async function prepareBundle() {
     const resp = await fetch(BUNDLE_URL);
     const bundleString = await resp.text();
     await firebase.firestore().loadBundle(bundleString);
   }
-  it('gets from named query', async function () {
+  it('returns bundled QuerySnapshot', async function () {
     await prepareBundle();
     const query = firebase.firestore().namedQuery(QUERY_NAME);
     const snapshot = await query.get({ source: 'cache' });
+
     snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
-    snapshot.forEach(doc => {
+    snapshot.docs.forEach(doc => {
       doc.data().number.should.equalOneOf(1, 2, 3);
     });
   });
-  it('gets from named query with limit modification', async function () {
+  it('limits the number of documents in bundled QuerySnapshot', async function () {
     await prepareBundle();
     const query = firebase.firestore().namedQuery(QUERY_NAME);
     const snapshot = await query.limit(1).get({ source: 'cache' });
-    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
+
     snapshot.size.should.equal(1);
   });
-  it('gets from firestore backend when omitting source: cache', async function () {
+  it('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
     await prepareBundle();
+    const docRef = firebase.firestore().collection(COLLECTION).doc();
+    await docRef.set({ number: 4 });
+
     const query = firebase.firestore().namedQuery(QUERY_NAME);
     const snapshot = await query.get();
-    snapshot.constructor.name.should.eql('FirestoreQuerySnapshot');
-    snapshot.size.should.equal(0);
+
+    snapshot.size.should.equal(1);
+    snapshot.docs[0].data().number.should.eql(4);
   });
-  it('calls onNext when successful', async function () {
+  it('calls onNext with QuerySnapshot from firestore backend', async function () {
+    await prepareBundle();
+    const docRef = firebase.firestore().collection(COLLECTION).doc();
+    await docRef.set({ number: 5 });
+
     const onNext = sinon.spy();
     const onError = sinon.spy();
     const unsub = firebase.firestore().namedQuery(QUERY_NAME).onSnapshot(onNext, onError);
@@ -59,7 +69,7 @@ describe('firestore().namedQuery()', function () {
 
     onNext.should.be.calledOnce();
     onError.should.be.callCount(0);
-    onNext.args[0][0].constructor.name.should.eql('FirestoreQuerySnapshot');
+    onNext.args[0][0].docs[0].data().number.should.eql(5);
     unsub();
   });
   it('throws if invalid query name', async function () {
