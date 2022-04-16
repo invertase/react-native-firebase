@@ -71,9 +71,17 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             task -> {
               if (task.isSuccessful()) {
                 Query query = task.getResult();
-                ReactNativeFirebaseFirestoreQuery firestoreQuery = new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
-
-                handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+                if (query == null) {
+                  Exception exception = new NullPointerException(
+                      "Named query has not been found. Please check it has been loaded properly via loadBundle().");
+                  sendOnSnapshotError(appName, listenerId, exception);
+                } else {
+                  ReactNativeFirebaseFirestoreQuery firestoreQuery =
+                    new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
+                  handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+                }
+              } else {
+                sendOnSnapshotError(appName, listenerId, task.getException());
               }
             });
   }
@@ -127,9 +135,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
             task -> {
               if (task.isSuccessful()) {
                 Query query = task.getResult();
-                ReactNativeFirebaseFirestoreQuery firestoreQuery =
+                if (query == null) {
+                  Exception exception = new NullPointerException(
+                      "Named query has not been found. Please check it has been loaded properly via loadBundle().");
+                  rejectPromiseFirestoreException(promise, exception);
+                } else {
+                  ReactNativeFirebaseFirestoreQuery firestoreQuery =
                     new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
-                handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+                  handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+                }
               } else {
                 rejectPromiseFirestoreException(promise, task.getException());
               }
@@ -154,7 +168,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   private void handleQueryOnSnapshot(
-      ReactNativeFirebaseFirestoreQuery query,
+      ReactNativeFirebaseFirestoreQuery firestoreQuery,
       String appName,
       int listenerId,
       ReadableMap listenerOptions) {
@@ -189,10 +203,10 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   private void handleQueryGet(
-      ReactNativeFirebaseFirestoreQuery query,
+      ReactNativeFirebaseFirestoreQuery firestoreQuery,
       Source source,
       Promise promise) {
-    query
+    firestoreQuery
       .get(getExecutor(), source)
       .addOnCompleteListener(
           task -> {
@@ -245,7 +259,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       error.putString("message", firestoreException.getMessage());
     } else {
       error.putString("code", "unknown");
-      error.putString("message", "An unknown error occurred");
+      error.putString("message", "An unknown error occurred. Original error message: " + exception.getMessage());
     }
 
     body.putMap("error", error);

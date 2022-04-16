@@ -79,8 +79,21 @@ describe('firestore().namedQuery()', function () {
       await query.get({ source: 'cache' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      // TODO: better error message
+      error.message.should.containEql('Named query has not been found');
       return Promise.resolve();
     }
+  });
+  it('calls onError if invalid query name', async function () {
+    await prepareBundle();
+    const onNext = sinon.spy();
+    const onError = sinon.spy();
+    const unsub = firebase.firestore().namedQuery('invalid-query').onSnapshot(onNext, onError);
+
+    await Utils.spyToBeCalledOnceAsync(onError);
+
+    onNext.should.be.callCount(0);
+    onError.should.be.calledOnce();
+    onError.args[0][0].message.should.containEql('Named query has not been found');
+    unsub();
   });
 });
