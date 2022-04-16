@@ -79,7 +79,7 @@ describe('firestore().namedQuery()', function () {
       await query.get({ source: 'cache' });
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql('Named query has not been found');
+      error.message.should.containEql('unknown');
       return Promise.resolve();
     }
   });
@@ -93,7 +93,7 @@ describe('firestore().namedQuery()', function () {
 
     onNext.should.be.callCount(0);
     onError.should.be.calledOnce();
-    onError.args[0][0].message.should.containEql('Named query has not been found');
+    onError.args[0][0].message.should.containEql('unknown');
     unsub();
   });
 });

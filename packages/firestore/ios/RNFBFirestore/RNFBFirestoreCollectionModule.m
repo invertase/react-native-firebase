@@ -78,6 +78,7 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
   [[FIRFirestore firestore] getQueryNamed:name
                                completion:^(FIRQuery *query) {
     if (query == nil) {
+        [self sendSnapshotError:firebaseApp listenerId:listenerId error:nil];
         return;
     }
     
