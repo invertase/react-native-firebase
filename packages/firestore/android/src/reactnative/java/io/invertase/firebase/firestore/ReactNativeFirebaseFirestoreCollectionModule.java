@@ -72,9 +72,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
               if (task.isSuccessful()) {
                 Query query = task.getResult();
                 if (query == null) {
-                  Exception exception = new NullPointerException(
-                      "Named query has not been found. Please check it has been loaded properly via loadBundle().");
-                  sendOnSnapshotError(appName, listenerId, exception);
+                  sendOnSnapshotError(appName, listenerId, new NullPointerException());
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
                     new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
@@ -136,9 +134,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
               if (task.isSuccessful()) {
                 Query query = task.getResult();
                 if (query == null) {
-                  Exception exception = new NullPointerException(
-                      "Named query has not been found. Please check it has been loaded properly via loadBundle().");
-                  rejectPromiseFirestoreException(promise, exception);
+                  rejectPromiseFirestoreException(promise, new NullPointerException());
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
                     new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
@@ -259,7 +255,7 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
       error.putString("message", firestoreException.getMessage());
     } else {
       error.putString("code", "unknown");
-      error.putString("message", "An unknown error occurred. Original error message: " + exception.getMessage());
+      error.putString("message", "An unknown error occurred");
     }
 
     body.putMap("error", error);
