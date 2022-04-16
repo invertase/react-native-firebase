@@ -105,7 +105,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
     }
 
-    return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), name);
+    return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), queryName);
   }
 
   async clearPersistence() {
