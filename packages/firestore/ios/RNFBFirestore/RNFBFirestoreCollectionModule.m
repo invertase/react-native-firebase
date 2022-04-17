@@ -77,21 +77,24 @@ RCT_EXPORT_METHOD(namedQueryOnSnapshot
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
   [[FIRFirestore firestore] getQueryNamed:name
                                completion:^(FIRQuery *query) {
-    if (query == nil) {
-        [self sendSnapshotError:firebaseApp listenerId:listenerId error:nil];
-        return;
-    }
-    
-    RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
-                                                                                 query:query
-                                                                               filters:filters
-                                                                                orders:orders
-                                                                               options:options];
-    [self handleQueryOnSnapshot:firebaseApp
-                 firestoreQuery:firestoreQuery
-                     listenerId:listenerId
-                listenerOptions:listenerOptions];
-  }];
+                                 if (query == nil) {
+                                   [self sendSnapshotError:firebaseApp
+                                                listenerId:listenerId
+                                                     error:nil];
+                                   return;
+                                 }
+
+                                 RNFBFirestoreQuery *firestoreQuery =
+                                     [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                                                             query:query
+                                                                           filters:filters
+                                                                            orders:orders
+                                                                           options:options];
+                                 [self handleQueryOnSnapshot:firebaseApp
+                                              firestoreQuery:firestoreQuery
+                                                  listenerId:listenerId
+                                             listenerOptions:listenerOptions];
+                               }];
 }
 
 RCT_EXPORT_METHOD(collectionOnSnapshot
@@ -140,25 +143,26 @@ RCT_EXPORT_METHOD(namedQueryGet
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
-  [[FIRFirestore firestore] getQueryNamed:name
-                               completion:^(FIRQuery *query) {
-      if (query == nil) {
-          return [RNFBFirestoreCommon promiseRejectFirestoreException:reject
-                                                                error:nil];
-      }
-      
-      RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
-                                                                                   query:query
-                                                                                 filters:filters
-                                                                                  orders:orders
-                                                                                 options:options];
-      FIRFirestoreSource source = [self getSource:getOptions];
-      [self handleQueryGet:firebaseApp
-            firestoreQuery:firestoreQuery
-                    source:source
-                   resolve:resolve
-                    reject:reject];
-  }];
+  [[FIRFirestore firestore]
+      getQueryNamed:name
+         completion:^(FIRQuery *query) {
+           if (query == nil) {
+             return [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:nil];
+           }
+
+           RNFBFirestoreQuery *firestoreQuery =
+               [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                                       query:query
+                                                     filters:filters
+                                                      orders:orders
+                                                     options:options];
+           FIRFirestoreSource source = [self getSource:getOptions];
+           [self handleQueryGet:firebaseApp
+                 firestoreQuery:firestoreQuery
+                         source:source
+                        resolve:resolve
+                         reject:reject];
+         }];
 }
 
 RCT_EXPORT_METHOD(collectionGet
@@ -282,21 +286,21 @@ RCT_EXPORT_METHOD(collectionGet
 }
 
 - (FIRFirestoreSource)getSource:(NSDictionary *)getOptions {
-    FIRFirestoreSource source;
+  FIRFirestoreSource source;
 
-    if (getOptions[@"source"]) {
-      if ([getOptions[@"source"] isEqualToString:@"server"]) {
-        source = FIRFirestoreSourceServer;
-      } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
-        source = FIRFirestoreSourceCache;
-      } else {
-        source = FIRFirestoreSourceDefault;
-      }
+  if (getOptions[@"source"]) {
+    if ([getOptions[@"source"] isEqualToString:@"server"]) {
+      source = FIRFirestoreSourceServer;
+    } else if ([getOptions[@"source"] isEqualToString:@"cache"]) {
+      source = FIRFirestoreSourceCache;
     } else {
       source = FIRFirestoreSourceDefault;
     }
-    
-    return source;
+  } else {
+    source = FIRFirestoreSourceDefault;
+  }
+
+  return source;
 }
 
 @end

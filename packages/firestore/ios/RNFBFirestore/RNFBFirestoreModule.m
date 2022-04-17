@@ -112,36 +112,36 @@ RCT_EXPORT_METHOD(loadBundle
                   : (nonnull NSString *)bundle
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  NSData* bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
+  NSData *bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
   [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
-   loadBundle:bundleData
-   completion:^(FIRLoadBundleTaskProgress *progress, NSError *error) {
-      if (error) {
+      loadBundle:bundleData
+      completion:^(FIRLoadBundleTaskProgress *progress, NSError *error) {
+        if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
-      } else {
+        } else {
           NSMutableDictionary *progressMap = [[NSMutableDictionary alloc] init];
           progressMap[@"bytesLoaded"] = @(progress.bytesLoaded);
           progressMap[@"documentsLoaded"] = @(progress.documentsLoaded);
           progressMap[@"totalBytes"] = @(progress.totalBytes);
           progressMap[@"totalDocuments"] = @(progress.totalDocuments);
-          
+
           NSString *state;
           switch (progress.state) {
-              case FIRLoadBundleTaskStateError:
-                  state = @"Error";
-                  break;
-              case FIRLoadBundleTaskStateSuccess:
-                  state = @"Success";
-                  break;
-              case FIRLoadBundleTaskStateInProgress:
-                  state = @"Running";
-                  break;
+            case FIRLoadBundleTaskStateError:
+              state = @"Error";
+              break;
+            case FIRLoadBundleTaskStateSuccess:
+              state = @"Success";
+              break;
+            case FIRLoadBundleTaskStateInProgress:
+              state = @"Running";
+              break;
           }
           progressMap[@"taskState"] = state;
-          
+
           resolve(progressMap);
-      }
-    }];
+        }
+      }];
 }
 
 RCT_EXPORT_METHOD(clearPersistence
