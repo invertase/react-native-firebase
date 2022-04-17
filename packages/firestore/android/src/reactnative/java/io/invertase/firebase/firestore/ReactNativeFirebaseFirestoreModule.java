@@ -28,6 +28,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.LoadBundleTaskProgress;
+
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModule {
@@ -56,29 +57,7 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
             task -> {
               if (task.isSuccessful()) {
                 LoadBundleTaskProgress progress = task.getResult();
-
-                WritableMap writableMap = Arguments.createMap();
-                writableMap.putDouble("bytesLoaded", progress.getBytesLoaded());
-                writableMap.putInt("documentsLoaded", progress.getDocumentsLoaded());
-                writableMap.putDouble("totalBytes", progress.getTotalBytes());
-                writableMap.putInt("totalDocuments", progress.getTotalDocuments());
-
-                LoadBundleTaskProgress.TaskState taskState = progress.getTaskState();
-                String convertedState = "Running";
-                switch (taskState) {
-                  case RUNNING:
-                    convertedState = "Running";
-                    break;
-                  case SUCCESS:
-                    convertedState = "Success";
-                    break;
-                  case ERROR:
-                    convertedState = "Error";
-                    break;
-                }
-                writableMap.putString("taskState", convertedState);
-
-                promise.resolve(writableMap);
+                promise.resolve(taskProgressToWritableMap(progress));
               } else {
                 rejectPromiseFirestoreException(promise, task.getException());
               }
@@ -181,5 +160,29 @@ public class ReactNativeFirebaseFirestoreModule extends ReactNativeFirebaseModul
                 rejectPromiseFirestoreException(promise, task.getException());
               }
             });
+  }
+
+  private WritableMap taskProgressToWritableMap(LoadBundleTaskProgress progress) {
+    WritableMap writableMap = Arguments.createMap();
+    writableMap.putDouble("bytesLoaded", progress.getBytesLoaded());
+    writableMap.putInt("documentsLoaded", progress.getDocumentsLoaded());
+    writableMap.putDouble("totalBytes", progress.getTotalBytes());
+    writableMap.putInt("totalDocuments", progress.getTotalDocuments());
+
+    LoadBundleTaskProgress.TaskState taskState = progress.getTaskState();
+    String convertedState = "Running";
+    switch (taskState) {
+      case RUNNING:
+        convertedState = "Running";
+        break;
+      case SUCCESS:
+        convertedState = "Success";
+        break;
+      case ERROR:
+        convertedState = "Error";
+        break;
+    }
+    writableMap.putString("taskState", convertedState);
+    return writableMap;
   }
 }
