@@ -75,7 +75,8 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                   sendOnSnapshotError(appName, listenerId, new NullPointerException());
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
-                    new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
+                      new ReactNativeFirebaseFirestoreQuery(
+                          appName, query, filters, orders, options);
                   handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
                 }
               } else {
@@ -137,14 +138,15 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
                   rejectPromiseFirestoreException(promise, new NullPointerException());
                 } else {
                   ReactNativeFirebaseFirestoreQuery firestoreQuery =
-                    new ReactNativeFirebaseFirestoreQuery(appName, query, filters, orders, options);
+                      new ReactNativeFirebaseFirestoreQuery(
+                          appName, query, filters, orders, options);
                   handleQueryGet(firestoreQuery, getSource(getOptions), promise);
                 }
               } else {
                 rejectPromiseFirestoreException(promise, task.getException());
               }
             });
-  } 
+  }
 
   @ReactMethod
   public void collectionGet(
@@ -199,19 +201,17 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   private void handleQueryGet(
-      ReactNativeFirebaseFirestoreQuery firestoreQuery,
-      Source source,
-      Promise promise) {
+      ReactNativeFirebaseFirestoreQuery firestoreQuery, Source source, Promise promise) {
     firestoreQuery
-      .get(getExecutor(), source)
-      .addOnCompleteListener(
-          task -> {
-            if (task.isSuccessful()) {
-              promise.resolve(task.getResult());
-            } else {
-              rejectPromiseFirestoreException(promise, task.getException());
-            }
-          });
+        .get(getExecutor(), source)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
   }
 
   private void sendOnSnapshotEvent(
