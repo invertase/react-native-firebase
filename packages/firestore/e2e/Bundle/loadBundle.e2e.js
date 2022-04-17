@@ -25,7 +25,9 @@ describe('firestore().loadBundle()', function () {
   it('loads the bundle contents', async function () {
     const resp = await fetch(BUNDLE_URL);
     const bundleString = await resp.text();
-    await firebase.firestore().loadBundle(bundleString);
+    const progress = await firebase.firestore().loadBundle(bundleString);
+    progress.documentsLoaded.should.eql(6);
+    progress.taskState.should.eql('Success');
   });
   it('throws if invalid bundle', async function () {
     try {
