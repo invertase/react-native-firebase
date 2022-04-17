@@ -3,8 +3,8 @@ title: iOS Messaging Setup
 description: iOS requires additional configuration steps to be completed before you can receive messages.
 ---
 
-Integrating the Cloud Messaging module on iOS devices requires additional setup before you devices receive messages.
-There are also a number of prerequisites which are required to be able to enable messaging:
+Integrating the Cloud Messaging module on iOS devices requires additional setup before your devices receive messages.
+There are also a number of prerequisites which are required to enable messaging:
 
 - You must have an active [Apple Developer Account](https://developer.apple.com/membercenter/index.action).
 - You must have a physical iOS device to receive messages.
