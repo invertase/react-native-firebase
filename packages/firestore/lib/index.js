@@ -84,7 +84,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
-  async loadBundle(bundle) {
+  loadBundle(bundle) {
     if (!isString(bundle)) {
       throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a string value.");
     }
@@ -93,7 +93,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a non-empty string.");
     }
 
-    await this.native.loadBundle(bundle);
+    return this.native.loadBundle(bundle);
   }
 
   namedQuery(queryName) {

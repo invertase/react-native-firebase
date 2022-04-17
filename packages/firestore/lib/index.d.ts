@@ -1830,6 +1830,44 @@ export namespace FirebaseFirestoreTypes {
   }
 
   /**
+   * Represents the state of bundle loading tasks.
+   *
+   * Both 'Error' and 'Success' are sinking state: task will abort or complete and there will be no more
+   * updates after they are reported.
+   */
+  export type TaskState = 'Error' | 'Running' | 'Success';
+
+  /**
+   * Represents a progress update or a final state from loading bundles.
+   */
+  export interface LoadBundleTaskProgress {
+    /**
+     * How many bytes have been loaded.
+     */
+    bytesLoaded: number;
+
+    /**
+     * How many documents have been loaded.
+     */
+    documentsLoaded: number;
+
+    /**
+     * Current task state.
+     */
+    taskState: TaskState;
+
+    /**
+     * How many bytes are in the bundle being loaded.
+     */
+    totalBytes: number;
+
+    /**
+     * How many documents are in the bundle being loaded.
+     */
+    totalDocuments: number;
+  }
+
+  /**
    * `firebase.firestore.X`
    */
   export interface Statics {
@@ -2035,7 +2073,7 @@ export namespace FirebaseFirestoreTypes {
      * await firestore().loadBundle(bundleString);
      * ```
      */
-    loadBundle(bundle: string): Promise<void>;
+    loadBundle(bundle: string): Promise<LoadBundleTaskProgress>;
     /**
      * Reads a Firestore Query from local cache, identified by the given name.
      *
