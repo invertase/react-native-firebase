@@ -119,7 +119,27 @@ RCT_EXPORT_METHOD(loadBundle
       if (error) {
           [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
       } else {
-          resolve(nil);
+          NSMutableDictionary *progressMap = [[NSMutableDictionary alloc] init];
+          progressMap[@"bytesLoaded"] = @(progress.bytesLoaded);
+          progressMap[@"documentsLoaded"] = @(progress.documentsLoaded);
+          progressMap[@"totalBytes"] = @(progress.totalBytes);
+          progressMap[@"totalDocuments"] = @(progress.totalDocuments);
+          
+          NSString *state;
+          switch (progress.state) {
+              case FIRLoadBundleTaskStateError:
+                  state = @"Error";
+                  break;
+              case FIRLoadBundleTaskStateSuccess:
+                  state = @"Success";
+                  break;
+              case FIRLoadBundleTaskStateInProgress:
+                  state = @"Running";
+                  break;
+          }
+          progressMap[@"taskState"] = state;
+          
+          resolve(progressMap);
       }
     }];
 }
