@@ -14,20 +14,24 @@
  * limitations under the License.
  *
  */
-const { wipe } = require('../helpers');
-require('isomorphic-fetch');
-const BUNDLE_URL = 'https://api.rnfirebase.io/firestore/bundle';
+const { wipe, httpGet } = require('../helpers');
+const BUNDLE_HOST = 'api.rnfirebase.io';
+const BUNDLE_PATH = '/firestore/bundle';
+const COLLECTION = 'firestore-bundle-tests';
 
 describe('firestore().loadBundle()', function () {
   before(function () {
     return wipe();
   });
   it('loads the bundle contents', async function () {
-    const resp = await fetch(BUNDLE_URL);
-    const bundleString = await resp.text();
+    const bundleString = await httpGet(BUNDLE_HOST, BUNDLE_PATH);
     const progress = await firebase.firestore().loadBundle(bundleString);
-    progress.documentsLoaded.should.eql(6);
+    const query = firebase.firestore().collection(COLLECTION);
+    const snapshot = await query.get({ source: 'cache' });
+
     progress.taskState.should.eql('Success');
+    progress.documentsLoaded.should.eql(6);
+    snapshot.size.should.eql(6);
   });
   it('throws if invalid bundle', async function () {
     try {

@@ -52,3 +52,24 @@ exports.wipe = async function wipe(debug = false) {
     throw e;
   }
 };
+
+exports.httpGet = async function httpGet(host, path) {
+  const getOptions = {
+    host,
+    path,
+  };
+  return new Promise((resolve, reject) => {
+    const callback = function (response) {
+      let str = '';
+      response.on('data', function (chunk) {
+        str += chunk;
+      });
+      response.on('end', function () {
+        resolve(str);
+      });
+    };
+    const req = http.request(getOptions, callback);
+    req.on('error', error => reject(error));
+    req.end();
+  });
+};
