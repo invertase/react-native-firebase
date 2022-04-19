@@ -6,8 +6,13 @@ on:
       - edited
       - synchronize
 
+permissions:
+  contents: read
+
 jobs:
   main:
+    permissions:
+      contents: none
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
