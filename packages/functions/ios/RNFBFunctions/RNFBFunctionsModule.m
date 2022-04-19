@@ -62,8 +62,8 @@ RCT_EXPORT_METHOD(httpsCallable
                     NSObject *details = [NSNull null];
                     NSString *message = error.localizedDescription;
                     NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-                    if (error.domain == FIRFunctionsErrorDomain) {
-                      details = error.userInfo[FIRFunctionsErrorDetailsKey];
+                    if ([error.domain isEqual:@"com.firebase.functions"]) {
+                      details = error.userInfo[@"details"];
                       if (details == nil) {
                         details = [NSNull null];
                       }
