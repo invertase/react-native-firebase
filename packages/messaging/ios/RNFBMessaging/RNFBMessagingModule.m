@@ -257,7 +257,10 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
   resolve(@([RCTConvert BOOL:@(YES)]));
   return;
 #endif
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
   if (@available(iOS 10.0, *)) {
+#pragma pop
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
       resolve(@([RCTConvert BOOL:@(YES)]));
       return;
