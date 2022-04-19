@@ -38,19 +38,6 @@
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<NSString *, id> *)options {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  return [self application:app
-                   openURL:url
-         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]
-                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
-#pragma clang diagnostic pop
-}
-
-- (BOOL)application:(UIApplication *)application
-              openURL:(NSURL *)url
-    sourceApplication:(NSString *)sourceApplication
-           annotation:(id)annotation {
   FIRDynamicLink *dynamicLink = [[FIRDynamicLinks dynamicLinks] dynamicLinkFromCustomSchemeURL:url];
 
   if (!dynamicLink) {
