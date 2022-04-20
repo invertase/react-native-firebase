@@ -31,7 +31,7 @@ const App: () => Node = () => {
 
 Next, make a function called `LoadData` that fetches data from `Users` collection, and call it when a `Button` is pressed.
 
-If lastSanpshot is not assigned (meaning initial load), the function will fetch from the start.
+If lastDocument is not assigned (meaning initial load), the function will fetch from the start.
 After successful fetch from the collection, store the last snapshot data by `setLastDocument`.
 
 ```jsx
