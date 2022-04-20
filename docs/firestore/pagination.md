@@ -98,9 +98,7 @@ function MakeUserData(docs) {
 }
 ```
 
-Now, everytime you click the button, you will load the data from the `Users` collection.
-If the fetch succesfully completed, you will save the last snapshot and set the userdata component.
-Based on the last snapshot, `LoadData` will fetch the data accordingly.
+Now, every time the button is pressed, `Users` collection data will be fetched one page at a time.
 
 # Conclusion
 
