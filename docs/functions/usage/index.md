@@ -3,7 +3,7 @@ title: Cloud Functions
 description: Installation and getting started with Cloud Functions.
 icon: //static.invertase.io/assets/firebase/cloud-functions.svg
 next: /functions/writing-deploying-functions
-previous: /firestore/usage-with-flatlists
+previous: /firestore/pagination
 ---
 
 # Installation
