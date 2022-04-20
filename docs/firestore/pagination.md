@@ -78,7 +78,7 @@ const App: () => Node = () => {
 
 # `MakeUserData` function
 
-This is just an example function. You may change this functino into things that you need.
+This is just an example function, alter it to process the data to meet your requirements.
 In this specific example, it will replace the userData component with the new data fetched.
 
 ```js
