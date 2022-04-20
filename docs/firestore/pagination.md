@@ -5,8 +5,7 @@ next: /functions/usage
 previous: /firestore/usage-with-flatlists
 ---
 
-Pagination using cloud firestore can be done in various ways but here's the very basic way to do it.
-We are going to make the pagination using querying features provided by firestore.
+Pagination using cloud firestore may be done in various ways but here's a basic way to do it using the firestore query features:
 [`orderBy`, `limit`, `startAfter`]
 
 # Setup state
