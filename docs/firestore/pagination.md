@@ -10,8 +10,7 @@ Pagination using cloud firestore may be done in various ways but here's a basic 
 
 # Setup state
 
-First, setup a component which will display the list of data.
-The component will have 2 separate states; `last` and `userData`:
+First, create a list display component with 2 state items; `lastDocument` and `userData`:
 
 ```jsx
 import React, {useState} from 'react';
