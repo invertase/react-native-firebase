@@ -49,23 +49,14 @@ const App: () => Node = () => {
 
   function LoadData() {
     console.log('LOAD');
-    if (!lastSnapshot) {
-      userCollection
-        .orderBy('age') //sort the data
-        .limit(3) //get limited amount of data
+    let query = userCollection.orderBy('age'); // sort the data
+    if (lastSnapshot !== undefined) {
+      query = query..startAfter(lastSnapshot); // fetch data following the last document accessed
+    }
+    query.limit(3) // limit to your page size, 3 is just an example
         .get()
         .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]); //set up last snapshot for pagination
-          MakeUserData(querySnapshot.docs); //do what you need to do with the data
-        });
-    } else {
-      userCollection
-        .orderBy('age')
-        .startAfter(lastSnapshot) //fetch data that is placed after the last snapshot that we fetched before.
-        .limit(3)
-        .get()
-        .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
           MakeUserData(querySnapshot.docs);
         });
     }
