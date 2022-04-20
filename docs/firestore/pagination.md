@@ -13,9 +13,9 @@ Pagination using cloud firestore may be done in various ways but here's a basic 
 First, create a list display component with 2 state items; `lastDocument` and `userData`:
 
 ```jsx
-import React, {useState} from 'react';
-import type {Node} from 'react';
-import {Text, View, Button, Alert} from 'react-native';
+import React, { useState } from 'react';
+import type { Node } from 'react';
+import { Text, View, Button, Alert } from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -35,9 +35,9 @@ If lastDocument is not assigned (meaning initial load), the function will fetch 
 After successful fetch from the collection, store the last snapshot data by `setLastDocument`.
 
 ```jsx
-import React, {useState} from 'react';
-import type {Node} from 'react';
-import {Text, View, Button, Alert} from 'react-native';
+import React, { useState } from 'react';
+import type { Node } from 'react';
+import { Text, View, Button, Alert } from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -87,7 +87,7 @@ function MakeUserData(docs) {
   docs.forEach((doc, i) => {
     console.log(doc._data);
     let temp = (
-      <View key={i} style={{margin: 10}}>
+      <View key={i} style={{ margin: 10 }}>
         <Text>{doc._data.name}</Text>
         <Text>{doc._data.age}</Text>
       </View>
@@ -105,9 +105,9 @@ Now, every time the button is pressed, `Users` collection data will be fetched o
 Here's the full example code
 
 ```jsx
-import React, {useState} from 'react';
-import type {Node} from 'react';
-import {Text, View, Button, Alert} from 'react-native';
+import React, { useState } from 'react';
+import type { Node } from 'react';
+import { Text, View, Button, Alert } from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 
@@ -137,7 +137,7 @@ const App: () => Node = () => {
     docs.forEach((doc, i) => {
       console.log(doc._data);
       let temp = (
-        <View key={i} style={{margin: 10}}>
+        <View key={i} style={{ margin: 10 }}>
           <Text>{doc._data.name}</Text>
           <Text>{doc._data.age}</Text>
         </View>
