@@ -31,7 +31,7 @@ Ensure that all parts of step 1 and 2 from [the official firebase Android phone 
 
 # Expo Setup
 
-To use phone auth in an expo app, add the `@react-native-firebase/auth` config plug-in to your `app.json`. This is in addition to the `@react-native-firebase/app` plugin.
+To use phone auth in an expo app, add the `@react-native-firebase/auth` config plug-in to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) section of your `app.json`. This is in addition to the `@react-native-firebase/app` plugin.
 
 ```json
 {
