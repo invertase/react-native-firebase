@@ -5,14 +5,12 @@ next: /functions/usage
 previous: /firestore/usage-with-flatlists
 ---
 
-Pagination using cloud firestore can be done in various ways but here's the very basic way to do it.
-We are going to make the pagination using querying features provided by firestore.
+Pagination using cloud firestore may be done in various ways but here's a basic way to do it using the firestore query features:
 [`orderBy`, `limit`, `startAfter`]
 
 # Setup state
 
-First, setup a component which will display the list of data.
-The component will have 2 separate states; `last` and `userData`:
+First, create a list display component with 2 state items; `lastDocument` and `userData`:
 
 ```jsx
 import React, {useState} from 'react';
@@ -31,8 +29,7 @@ const App: () => Node = () => {
 
 # `LoadData` function
 
-Next, we'll make a function called `LoadData` that fetches data from `Users` collection.
-This function will be hooked with the `Button`.
+Next, make a function called `LoadData` that fetches data from `Users` collection, and call it when a `Button` is pressed.
 
 If lastSanpshot is not assigned (meaning initial load), the function will fetch from the start.
 After successful fetch from the collection, store the last snapshot data by `setLastSnapshot`.
