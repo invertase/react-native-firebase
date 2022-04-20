@@ -44,7 +44,7 @@ import firestore from '@react-native-firebase/firestore';
 const userCollection = firestore().collection('Users');
 
 const App: () => Node = () => {
-  const [lastSnapshot, setLastSnapshot] = useState(null);
+  const [lastDocument, setLastDocument] = useState();
   const [userData, setUserData] = useState([]);
 
   function LoadData() {
