@@ -29,8 +29,7 @@ const App: () => Node = () => {
 
 # `LoadData` function
 
-Next, we'll make a function called `LoadData` that fetches data from `Users` collection.
-This function will be hooked with the `Button`.
+Next, make a function called `LoadData` that fetches data from `Users` collection, and call it when a `Button` is pressed.
 
 If lastSanpshot is not assigned (meaning initial load), the function will fetch from the start.
 After successful fetch from the collection, store the last snapshot data by `setLastSnapshot`.
