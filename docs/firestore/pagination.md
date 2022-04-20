@@ -32,7 +32,7 @@ const App: () => Node = () => {
 Next, make a function called `LoadData` that fetches data from `Users` collection, and call it when a `Button` is pressed.
 
 If lastSanpshot is not assigned (meaning initial load), the function will fetch from the start.
-After successful fetch from the collection, store the last snapshot data by `setLastSnapshot`.
+After successful fetch from the collection, store the last snapshot data by `setLastDocument`.
 
 ```jsx
 import React, {useState} from 'react';
@@ -50,8 +50,8 @@ const App: () => Node = () => {
   function LoadData() {
     console.log('LOAD');
     let query = userCollection.orderBy('age'); // sort the data
-    if (lastSnapshot !== undefined) {
-      query = query..startAfter(lastSnapshot); // fetch data following the last document accessed
+    if (lastDocument !== undefined) {
+      query = query..startAfter(lastDocument); // fetch data following the last document accessed
     }
     query.limit(3) // limit to your page size, 3 is just an example
         .get()
@@ -114,28 +114,28 @@ import firestore from '@react-native-firebase/firestore';
 const userCollection = firestore().collection('Users');
 
 const App: () => Node = () => {
-  const [lastSnapshot, setLastSnapshot] = useState(null);
+  const [lastDocument, setLastDocument] = useState();
   const [userData, setUserData] = useState([]);
 
   function LoadData() {
     console.log('LOAD');
-    if (!lastSnapshot) {
+    if (!lastDocument) {
       userCollection
         .orderBy('age')
         .limit(3)
         .get()
         .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
           MakeUserData(querySnapshot.docs);
         });
     } else {
       userCollection
         .orderBy('age')
-        .startAfter(lastSnapshot)
+        .startAfter(lastDocument)
         .limit(3)
         .get()
         .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
           MakeUserData(querySnapshot.docs);
         });
     }
