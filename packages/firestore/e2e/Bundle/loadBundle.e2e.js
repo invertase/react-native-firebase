@@ -38,8 +38,11 @@ describe('firestore().loadBundle()', function () {
       await firebase.firestore().loadBundle('not-a-bundle');
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      // TODO: better error message
-      // error.message.should.containEql('Client specified an invalid argument');
+      /*
+       * Due to inconsistent error throws between Android and iOS Firebase SDK,
+       * it is not able to test a specific error message.
+       * Android SDK throws 'invalid-arguments', while iOS SDK throws 'unknown'
+       */
       return Promise.resolve();
     }
   });
