@@ -22,7 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 const userCollection = firestore().collection('Users');
 
 const App: () => Node = () => {
-  const [lastSnapshot, setLastSnapshot] = useState(null);
+  const [lastDocument, setLastDocument] = useState();
   const [userData, setUserData] = useState([]);
 };
 ```
@@ -44,28 +44,19 @@ import firestore from '@react-native-firebase/firestore';
 const userCollection = firestore().collection('Users');
 
 const App: () => Node = () => {
-  const [lastSnapshot, setLastSnapshot] = useState(null);
+  const [lastDocument, setLastDocument] = useState();
   const [userData, setUserData] = useState([]);
 
   function LoadData() {
     console.log('LOAD');
-    if (!lastSnapshot) {
-      userCollection
-        .orderBy('age') //sort the data
-        .limit(3) //get limited amount of data
+    let query = userCollection.orderBy('age'); // sort the data
+    if (lastSnapshot !== undefined) {
+      query = query..startAfter(lastSnapshot); // fetch data following the last document accessed
+    }
+    query.limit(3) // limit to your page size, 3 is just an example
         .get()
         .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]); //set up last snapshot for pagination
-          MakeUserData(querySnapshot.docs); //do what you need to do with the data
-        });
-    } else {
-      userCollection
-        .orderBy('age')
-        .startAfter(lastSnapshot) //fetch data that is placed after the last snapshot that we fetched before.
-        .limit(3)
-        .get()
-        .then(querySnapshot => {
-          setLastSnapshot(querySnapshot.docs[querySnapshot.docs.length - 1]);
+          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
           MakeUserData(querySnapshot.docs);
         });
     }
@@ -87,7 +78,7 @@ const App: () => Node = () => {
 
 # `MakeUserData` function
 
-This is just an example function. You may change this functino into things that you need.
+This is just an example function, alter it to process the data to meet your requirements.
 In this specific example, it will replace the userData component with the new data fetched.
 
 ```js
