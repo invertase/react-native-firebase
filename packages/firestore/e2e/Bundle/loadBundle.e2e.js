@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  */
-const { wipe, httpGet } = require('../helpers');
-const BUNDLE_HOST = 'api.rnfirebase.io';
-const BUNDLE_PATH = '/firestore/bundle';
+const { wipe, getBundle } = require('../helpers');
 const COLLECTION = 'firestore-bundle-tests';
 
 describe('firestore().loadBundle()', function () {
@@ -24,8 +22,8 @@ describe('firestore().loadBundle()', function () {
     return wipe();
   });
   it('loads the bundle contents', async function () {
-    const bundleString = await httpGet(BUNDLE_HOST, BUNDLE_PATH);
-    const progress = await firebase.firestore().loadBundle(bundleString);
+    const bundle = getBundle();
+    const progress = await firebase.firestore().loadBundle(bundle);
     const query = firebase.firestore().collection(COLLECTION);
     const snapshot = await query.get({ source: 'cache' });
 

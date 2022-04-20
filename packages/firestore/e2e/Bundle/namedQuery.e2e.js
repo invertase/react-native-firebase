@@ -14,9 +14,7 @@
  * limitations under the License.
  *
  */
-const { wipe, httpGet } = require('../helpers');
-const BUNDLE_HOST = 'api.rnfirebase.io';
-const BUNDLE_PATH = '/firestore/bundle';
+const { wipe, getBundle } = require('../helpers');
 const QUERY_NAME = 'named-bundle-test';
 const COLLECTION = 'firestore-bundle-tests';
 
@@ -25,8 +23,8 @@ describe('firestore().namedQuery()', function () {
     return await wipe();
   });
   async function prepareBundle() {
-    const bundleString = await httpGet(BUNDLE_HOST, BUNDLE_PATH);
-    await firebase.firestore().loadBundle(bundleString);
+    const bundle = getBundle();
+    await firebase.firestore().loadBundle(bundle);
   }
   it('returns bundled QuerySnapshot', async function () {
     await prepareBundle();
