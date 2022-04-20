@@ -62,6 +62,7 @@ Firebase
 FirebaseApp
 firebase-ios-sdk
 Firestore
+firestore
 getIdToken
 GDPR
 GDPR-compliant
@@ -89,6 +90,7 @@ Javascript
 javascript
 JS
 JSON
+lastDocument
 launchProperties
 learnt
 Lerna
@@ -171,6 +173,7 @@ uncomment
 unhandled
 unsubscriber
 untampered
+userData
 utils
 Utils
 v5

@@ -1,7 +1,7 @@
 ---
 title: Usage with FlatLists
 description: Using Cloud Firestore collections with FlatLists.
-next: /functions/usage
+next: /firestore/pagination
 previous: /firestore/emulator
 ---
 
