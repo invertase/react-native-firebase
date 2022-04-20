@@ -119,20 +119,11 @@ const App: () => Node = () => {
 
   function LoadData() {
     console.log('LOAD');
-    if (!lastDocument) {
-      userCollection
-        .orderBy('age')
-        .limit(3)
-        .get()
-        .then(querySnapshot => {
-          setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
-          MakeUserData(querySnapshot.docs);
-        });
-    } else {
-      userCollection
-        .orderBy('age')
-        .startAfter(lastDocument)
-        .limit(3)
+    let query = userCollection.orderBy('age'); // sort the data
+    if (lastDocument !== undefined) {
+      query = query..startAfter(lastDocument); // fetch data following the last document accessed
+    }
+    query.limit(3) // limit to your page size, 3 is just an example
         .get()
         .then(querySnapshot => {
           setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
