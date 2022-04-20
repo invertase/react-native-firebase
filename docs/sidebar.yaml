@@ -46,6 +46,8 @@
       - '/firestore/emulator'
     - - Usage with FlatLists
       - '/firestore/usage-with-flatlists'
+    - - Implementing Pagination
+      - '/firestore/pagination'
     - - Building a "TODO" app
       - 'https://invertase.io/blog/getting-started-with-cloud-firestore-on-react-native'
   - '//static.invertase.io/assets/firebase/cloud-firestore.svg'
