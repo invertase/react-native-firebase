@@ -720,6 +720,11 @@ export namespace FirebaseFirestoreTypes {
      * });
      * ```
      *
+     * Please be careful using this operator. If writes happen to the field *on the backend / out of your control* to this field
+     * in rapid succession - multiple writes in a second or two, *some increments will be lost*.
+     * This may be avoided by using the special increment field in a transaction.
+     * See https://github.com/invertase/react-native-firebase/discussions/5914
+     *
      * @param n The value to increment by.
      */
     static increment(n: number): FieldValue;
