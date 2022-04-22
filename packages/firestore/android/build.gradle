@@ -90,10 +90,7 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
-  // TODO - remove this once we have access to a BOM > 29.2.0
-  // See https://github.com/invertase/react-native-firebase/issues/6158
-  // See https://github.com/firebase/firebase-android-sdk/issues/3557
-  implementation "com.google.firebase:firebase-firestore:24.1.1"
+  implementation "com.google.firebase:firebase-firestore"
 }
 
 ReactNative.shared.applyPackageVersion()
