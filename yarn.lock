@@ -6623,10 +6623,17 @@ find-yarn-workspace-root@^2.0.0:
   dependencies:
     micromatch "^4.0.2"
 
-firebase-tools@10.2.2:
-  version "10.2.2"
-  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-10.2.2.tgz#1b6fba6726dd678adcc2f52634e4b9e2051f0fa2"
-  integrity sha512-KJ7C0HeZr01/uKSuU/pJ2ZUAm0OQvujkmdpKurkV4x/JQHh5MeZvCsPC+Zwn4uqTCaSpY1XZt3167c+jscgv7w==
+firebase-frameworks@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/firebase-frameworks/-/firebase-frameworks-0.3.0.tgz#45bb681c13bd8b5038e281d48d6337de81ce943b"
+  integrity sha512-Zxtx5WsD8ZZdItIeDjjpM+JgaIWDdwBujmLYLKf2Ou6onyRsd8bNRrnVsqrnq4S3FN9TcNYliXdwMu7AwYdW7Q==
+  dependencies:
+    tslib "^2.3.1"
+
+firebase-tools@10.7.1:
+  version "10.7.1"
+  resolved "https://registry.yarnpkg.com/firebase-tools/-/firebase-tools-10.7.1.tgz#9d08e2a79621638759fb2f6259439c37ebc3c5d6"
+  integrity sha512-anZw+bc7Lz8Zw90qGJz9PdmmZwzhqsMF5L6SRT5N/A5Wg0wpsLwYqXVZXIERWlqNjo0yeH2tVo2GfaQrchmbpA==
   dependencies:
     "@google-cloud/pubsub" "^2.18.4"
     abort-controller "^3.0.0"
@@ -6649,6 +6656,7 @@ firebase-tools@10.2.2:
     exit-code "^1.0.2"
     express "^4.16.4"
     filesize "^6.1.0"
+    firebase-frameworks "^0.3.0"
     fs-extra "^5.0.0"
     glob "^7.1.2"
     google-auth-library "^7.11.0"
@@ -13681,6 +13689,11 @@ tslib@^2.0.1, tslib@^2.1.0:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
   integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
+
+tslib@^2.3.1:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
+  integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
 tsutils@^3.21.0:
   version "3.21.0"

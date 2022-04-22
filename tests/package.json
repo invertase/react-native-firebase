@@ -36,7 +36,7 @@
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "^19.6.9",
     "firebase": "^9.8.1",
-    "firebase-tools": "10.2.2",
+    "firebase-tools": "10.7.1",
     "jest-circus": "^28.1.0",
     "jest-environment-node": "^28.1.0",
     "jet": "^0.8.0",
