@@ -612,7 +612,7 @@ describe('storage() -> StorageReference', function () {
       }
     });
 
-    it('allows valid metadata properties for upload', async function () {
+    xit('allows valid metadata properties for upload', async function () {
       const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
       await storageReference.put(new jet.context.window.ArrayBuffer(), {
         contentType: 'image/jpg',
