@@ -5,6 +5,7 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.google.firebase.appdistribution'
 
 import com.android.build.OutputFile
+import groovy.json.JsonSlurper
 
 project.ext.react = [
     enableHermes: false,
@@ -143,8 +144,9 @@ dependencies {
    * ------------------------ */
     androidTestImplementation(project(path: ':detox'))
 
-    // These are beta, so they are not in the BoM yet. We have to specify the versions explicitly.
-    androidTestImplementation 'com.google.firebase:firebase-appcheck-debug-testing:16.0.0-beta04'
+    def firebaseBomVersion = new JsonSlurper().parseText(new File('../../node_modules/@react-native-firebase/app/package.json').text).sdkVersions.android.firebase
+    androidTestImplementation platform("com.google.firebase:firebase-bom:${firebaseBomVersion}")
+    androidTestImplementation "com.google.firebase:firebase-appcheck-debug-testing"
 }
 
 apply from: file('../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle'); applyNativeModulesAppBuildGradle(project)
