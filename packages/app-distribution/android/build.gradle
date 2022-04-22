@@ -90,6 +90,8 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
+  // TODO remove the specific version once it is out of beta and participates in bom versioning
+  implementation 'com.google.firebase:firebase-appdistribution:16.0.0-beta02'
 }
 
 ReactNative.shared.applyPackageVersion()
