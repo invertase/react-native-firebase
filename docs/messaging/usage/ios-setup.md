@@ -1,6 +1,8 @@
 ---
 title: iOS Messaging Setup
 description: iOS requires additional configuration steps to be completed before you can receive messages.
+next: /messaging/ios-permissions
+previous: /messaging/usage
 ---
 
 Integrating the Cloud Messaging module on iOS devices requires additional setup before your devices receive messages.
