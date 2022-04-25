@@ -69,15 +69,15 @@ export function modifyObjcAppDelegate(contents: string): string {
 }
 
 export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegateProjectFile) {
-  const { language, path } = appDelegateFileInfo;
-  let contents = appDelegateFileInfo.contents;
+  const { language, path, contents } = appDelegateFileInfo;
+
   if (['objc', 'objcpp'].includes(language)) {
-    contents = modifyObjcAppDelegate(contents);
+    const newContents = modifyObjcAppDelegate(contents);
+    await fs.promises.writeFile(path, newContents);
   } else {
     // TODO: Support Swift
     throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
   }
-  await fs.promises.writeFile(path, contents);
 }
 
 export const withFirebaseAppDelegate: ConfigPlugin = config => {
