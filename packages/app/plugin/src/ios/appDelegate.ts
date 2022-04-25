@@ -1,4 +1,5 @@
 import { ConfigPlugin, IOSConfig, WarningAggregator, withDangerousMod } from '@expo/config-plugins';
+import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import { mergeContents } from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
 
@@ -67,22 +68,24 @@ export function modifyObjcAppDelegate(contents: string): string {
   }
 }
 
+export async function modifyAppDelegateAsync(appDelegateFileInfo: AppDelegateProjectFile) {
+  const { language, path } = appDelegateFileInfo;
+  let contents = appDelegateFileInfo.contents;
+  if (['objc', 'objcpp'].includes(language)) {
+    contents = modifyObjcAppDelegate(contents);
+  } else {
+    // TODO: Support Swift
+    throw new Error(`Cannot add Firebase code to AppDelegate of language "${language}"`);
+  }
+  await fs.promises.writeFile(path, contents);
+}
+
 export const withFirebaseAppDelegate: ConfigPlugin = config => {
   return withDangerousMod(config, [
     'ios',
     async config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-      let contents = await fs.promises.readFile(fileInfo.path, 'utf-8');
-      if (['objc', 'objcpp'].includes(fileInfo.language)) {
-        contents = modifyObjcAppDelegate(contents);
-      } else {
-        // TODO: Support Swift
-        throw new Error(
-          `Cannot add Firebase code to AppDelegate of language "${fileInfo.language}"`,
-        );
-      }
-      await fs.promises.writeFile(fileInfo.path, contents);
-
+      await modifyAppDelegateAsync(fileInfo);
       return config;
     },
   ]);
