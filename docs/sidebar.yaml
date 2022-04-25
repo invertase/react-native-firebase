@@ -60,6 +60,8 @@
 - - Cloud Messaging
   - - - Usage
       - '/messaging/usage'
+    - - iOS Project Setup
+      - '/messaging/usage/ios-setup'
     - - iOS Permissions
       - '/messaging/ios-permissions'
     - - Notifications

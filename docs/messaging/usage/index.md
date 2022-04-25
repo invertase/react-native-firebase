@@ -2,7 +2,7 @@
 title: Cloud Messaging
 description: Installation and getting started with Cloud Messaging.
 icon: //static.invertase.io/assets/firebase/cloud-messaging.svg
-next: /messaging/ios-permissions
+next: /messaging/usage/ios-setup
 previous: /functions/writing-deploying-functions
 ---
 

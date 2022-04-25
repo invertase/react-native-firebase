@@ -2,7 +2,7 @@
 title: iOS Permissions
 description: Request permissions from your users to allow notifications to be displayed.
 next: /messaging/notifications
-previous: /messaging/usage
+previous: /messaging/usage/ios-setup
 ---
 
 ## Understanding permissions
