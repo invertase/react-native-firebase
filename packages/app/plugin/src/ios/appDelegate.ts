@@ -73,7 +73,7 @@ export const withFirebaseAppDelegate: ConfigPlugin = config => {
     async config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = await fs.promises.readFile(fileInfo.path, 'utf-8');
-      if (fileInfo.language === 'objc') {
+      if (['objc', 'objcpp'].includes(fileInfo.language)) {
         contents = modifyObjcAppDelegate(contents);
       } else {
         // TODO: Support Swift
