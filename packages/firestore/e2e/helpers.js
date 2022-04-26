@@ -53,6 +53,9 @@ exports.wipe = async function wipe(debug = false) {
   }
 };
 
+exports.BUNDLE_QUERY_NAME = 'named-bundle-test';
+exports.BUNDLE_COLLECTION = 'firestore-bundle-tests';
+
 exports.getBundle = function getBundle() {
   // Original source: http://api.rnfirebase.io/firestore/bundle
   const content = `

@@ -14,23 +14,24 @@
  * limitations under the License.
  *
  */
-const { wipe, getBundle } = require('../helpers');
-const COLLECTION = 'firestore-bundle-tests';
+const { wipe, getBundle, BUNDLE_COLLECTION } = require('../helpers');
 
 describe('firestore().loadBundle()', function () {
-  before(function () {
-    return wipe();
+  before(async function () {
+    return await wipe();
   });
+
   it('loads the bundle contents', async function () {
     const bundle = getBundle();
     const progress = await firebase.firestore().loadBundle(bundle);
-    const query = firebase.firestore().collection(COLLECTION);
+    const query = firebase.firestore().collection(BUNDLE_COLLECTION);
     const snapshot = await query.get({ source: 'cache' });
 
     progress.taskState.should.eql('Success');
     progress.documentsLoaded.should.eql(6);
     snapshot.size.should.eql(6);
   });
+
   it('throws if invalid bundle', async function () {
     try {
       await firebase.firestore().loadBundle('not-a-bundle');
