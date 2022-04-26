@@ -615,4 +615,4 @@ const query = firestore().namedQuery('latest-stories-query');
 const snapshot = await query.get({ source: 'cache' });
 ```
 
-You can build data bundles with the Admin SDK. For more information about building and serving data bundles, see Firebase Firestore documentation on [Data bundles](https://firebase.google.com/docs/firestore/bundles)
+You can build data bundles with the Admin SDK. For more information about building and serving data bundles, see Firebase Firestore main documentation on [Data bundles](https://firebase.google.com/docs/firestore/bundles) as well as their "[Bundle Solutions](https://firebase.google.com/docs/firestore/solutions/serve-bundles)" page
