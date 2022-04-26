@@ -27,9 +27,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.LoadBundleTask;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
-import java.nio.charset.StandardCharsets;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
 
