@@ -107,6 +107,23 @@ RCT_EXPORT_METHOD(settings
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(loadBundle
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSString *)bundle
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSData *bundleData = [bundle dataUsingEncoding:NSUTF8StringEncoding];
+  [[RNFBFirestoreCommon getFirestoreForApp:firebaseApp]
+      loadBundle:bundleData
+      completion:^(FIRLoadBundleTaskProgress *progress, NSError *error) {
+        if (error) {
+          [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+        } else {
+          resolve([self taskProgressToDictionary:progress]);
+        }
+      }];
+}
+
 RCT_EXPORT_METHOD(clearPersistence
                   : (FIRApp *)firebaseApp
                   : (RCTPromiseResolveBlock)resolve
@@ -162,6 +179,29 @@ RCT_EXPORT_METHOD(terminate
       resolve(nil);
     }
   }];
+}
+
+- (NSMutableDictionary *)taskProgressToDictionary:(FIRLoadBundleTaskProgress *)progress {
+  NSMutableDictionary *progressMap = [[NSMutableDictionary alloc] init];
+  progressMap[@"bytesLoaded"] = @(progress.bytesLoaded);
+  progressMap[@"documentsLoaded"] = @(progress.documentsLoaded);
+  progressMap[@"totalBytes"] = @(progress.totalBytes);
+  progressMap[@"totalDocuments"] = @(progress.totalDocuments);
+
+  NSString *state;
+  switch (progress.state) {
+    case FIRLoadBundleTaskStateError:
+      state = @"Error";
+      break;
+    case FIRLoadBundleTaskStateSuccess:
+      state = @"Success";
+      break;
+    case FIRLoadBundleTaskStateInProgress:
+      state = @"Running";
+      break;
+  }
+  progressMap[@"taskState"] = state;
+  return progressMap;
 }
 
 @end

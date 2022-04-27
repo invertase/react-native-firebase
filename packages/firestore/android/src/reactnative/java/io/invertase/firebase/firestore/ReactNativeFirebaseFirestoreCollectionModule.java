@@ -51,6 +51,41 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
+  public void namedQueryOnSnapshot(
+      String appName,
+      String queryName,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      int listenerId,
+      ReadableMap listenerOptions) {
+    if (collectionSnapshotListeners.get(listenerId) != null) {
+      return;
+    }
+
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    firebaseFirestore
+        .getNamedQuery(queryName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Query query = task.getResult();
+                if (query == null) {
+                  sendOnSnapshotError(appName, listenerId, new NullPointerException());
+                } else {
+                  ReactNativeFirebaseFirestoreQuery firestoreQuery =
+                      new ReactNativeFirebaseFirestoreQuery(
+                          appName, query, filters, orders, options);
+                  handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+                }
+              } else {
+                sendOnSnapshotError(appName, listenerId, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void collectionOnSnapshot(
       String appName,
       String path,
@@ -69,6 +104,72 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
         new ReactNativeFirebaseFirestoreQuery(
             appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
 
+    handleQueryOnSnapshot(firestoreQuery, appName, listenerId, listenerOptions);
+  }
+
+  @ReactMethod
+  public void collectionOffSnapshot(String appName, int listenerId) {
+    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
+    if (listenerRegistration != null) {
+      listenerRegistration.remove();
+      collectionSnapshotListeners.remove(listenerId);
+      removeEventListeningExecutor(Integer.toString(listenerId));
+    }
+  }
+
+  @ReactMethod
+  public void namedQueryGet(
+      String appName,
+      String queryName,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableMap getOptions,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    firebaseFirestore
+        .getNamedQuery(queryName)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Query query = task.getResult();
+                if (query == null) {
+                  rejectPromiseFirestoreException(promise, new NullPointerException());
+                } else {
+                  ReactNativeFirebaseFirestoreQuery firestoreQuery =
+                      new ReactNativeFirebaseFirestoreQuery(
+                          appName, query, filters, orders, options);
+                  handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+                }
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
+  public void collectionGet(
+      String appName,
+      String path,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      ReadableMap getOptions,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+        new ReactNativeFirebaseFirestoreQuery(
+            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+    handleQueryGet(firestoreQuery, getSource(getOptions), promise);
+  }
+
+  private void handleQueryOnSnapshot(
+      ReactNativeFirebaseFirestoreQuery firestoreQuery,
+      String appName,
+      int listenerId,
+      ReadableMap listenerOptions) {
     MetadataChanges metadataChanges;
 
     if (listenerOptions != null
@@ -99,47 +200,9 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     collectionSnapshotListeners.put(listenerId, listenerRegistration);
   }
 
-  @ReactMethod
-  public void collectionOffSnapshot(String appName, int listenerId) {
-    ListenerRegistration listenerRegistration = collectionSnapshotListeners.get(listenerId);
-    if (listenerRegistration != null) {
-      listenerRegistration.remove();
-      collectionSnapshotListeners.remove(listenerId);
-      removeEventListeningExecutor(Integer.toString(listenerId));
-    }
-  }
-
-  @ReactMethod
-  public void collectionGet(
-      String appName,
-      String path,
-      String type,
-      ReadableArray filters,
-      ReadableArray orders,
-      ReadableMap options,
-      ReadableMap getOptions,
-      Promise promise) {
-    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
-    ReactNativeFirebaseFirestoreQuery query =
-        new ReactNativeFirebaseFirestoreQuery(
-            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
-
-    Source source;
-
-    if (getOptions != null && getOptions.hasKey("source")) {
-      String optionsSource = getOptions.getString("source");
-      if ("server".equals(optionsSource)) {
-        source = Source.SERVER;
-      } else if ("cache".equals(optionsSource)) {
-        source = Source.CACHE;
-      } else {
-        source = Source.DEFAULT;
-      }
-    } else {
-      source = Source.DEFAULT;
-    }
-
-    query
+  private void handleQueryGet(
+      ReactNativeFirebaseFirestoreQuery firestoreQuery, Source source, Promise promise) {
+    firestoreQuery
         .get(getExecutor(), source)
         .addOnCompleteListener(
             task -> {
@@ -201,5 +264,24 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
     emitter.sendEvent(
         new ReactNativeFirebaseFirestoreEvent(
             ReactNativeFirebaseFirestoreEvent.COLLECTION_EVENT_SYNC, body, appName, listenerId));
+  }
+
+  private Source getSource(ReadableMap getOptions) {
+    Source source;
+
+    if (getOptions != null && getOptions.hasKey("source")) {
+      String optionsSource = getOptions.getString("source");
+      if ("server".equals(optionsSource)) {
+        source = Source.SERVER;
+      } else if ("cache".equals(optionsSource)) {
+        source = Source.CACHE;
+      } else {
+        source = Source.DEFAULT;
+      }
+    } else {
+      source = Source.DEFAULT;
+    }
+
+    return source;
   }
 }

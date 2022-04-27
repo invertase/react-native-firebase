@@ -245,13 +245,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   /**
    * Disable app verification for the running of tests
+   *
    * @param appName
    * @param disabled
    * @param promise
    */
   @ReactMethod
   public void setAppVerificationDisabledForTesting(
-    String appName, boolean disabled, Promise promise) {
+      String appName, boolean disabled, Promise promise) {
     Log.d(TAG, "setAppVerificationDisabledForTesting");
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);

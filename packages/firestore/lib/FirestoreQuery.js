@@ -31,10 +31,11 @@ import { parseSnapshotArgs } from './utils';
 let _id = 0;
 
 export default class FirestoreQuery {
-  constructor(firestore, collectionPath, modifiers) {
+  constructor(firestore, collectionPath, modifiers, queryName) {
     this._firestore = firestore;
     this._collectionPath = collectionPath;
     this._modifiers = modifiers;
+    this._queryName = queryName;
   }
 
   get firestore() {
@@ -134,6 +135,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('endAt', docOrField, fields),
+      this._queryName,
     );
   }
 
@@ -142,6 +144,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('endBefore', docOrField, fields),
+      this._queryName,
     );
   }
 
@@ -162,6 +165,19 @@ export default class FirestoreQuery {
       throw new Error(
         "firebase.firestore().collection().get(*) 'options' GetOptions.source must be one of 'default', 'server' or 'cache'.",
       );
+    }
+
+    if (!isUndefined(this._queryName)) {
+      return this._firestore.native
+        .namedQueryGet(
+          this._queryName,
+          this._modifiers.type,
+          this._modifiers.filters,
+          this._modifiers.orders,
+          this._modifiers.options,
+          options,
+        )
+        .then(data => new FirestoreQuerySnapshot(this._firestore, this, data));
     }
 
     this._modifiers.validatelimitToLast();
@@ -219,7 +235,7 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limit(limit);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
   }
 
   limitToLast(limitToLast) {
@@ -231,7 +247,7 @@ export default class FirestoreQuery {
 
     const modifiers = this._modifiers._copy().limitToLast(limitToLast);
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
   }
 
   onSnapshot(...args) {
@@ -285,15 +301,27 @@ export default class FirestoreQuery {
       this._firestore.native.collectionOffSnapshot(listenerId);
     };
 
-    this._firestore.native.collectionOnSnapshot(
-      this._collectionPath.relativeName,
-      this._modifiers.type,
-      this._modifiers.filters,
-      this._modifiers.orders,
-      this._modifiers.options,
-      listenerId,
-      snapshotListenOptions,
-    );
+    if (!isUndefined(this._queryName)) {
+      this._firestore.native.namedQueryOnSnapshot(
+        this._queryName,
+        this._modifiers.type,
+        this._modifiers.filters,
+        this._modifiers.orders,
+        this._modifiers.options,
+        listenerId,
+        snapshotListenOptions,
+      );
+    } else {
+      this._firestore.native.collectionOnSnapshot(
+        this._collectionPath.relativeName,
+        this._modifiers.type,
+        this._modifiers.filters,
+        this._modifiers.orders,
+        this._modifiers.options,
+        listenerId,
+        snapshotListenOptions,
+      );
+    }
 
     return unsubscribe;
   }
@@ -343,7 +371,7 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().orderBy() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
   }
 
   startAfter(docOrField, ...fields) {
@@ -351,6 +379,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('startAfter', docOrField, fields),
+      this._queryName,
     );
   }
 
@@ -359,6 +388,7 @@ export default class FirestoreQuery {
       this._firestore,
       this._collectionPath,
       this._handleQueryCursor('startAt', docOrField, fields),
+      this._queryName,
     );
   }
 
@@ -421,6 +451,6 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().where() ${e.message}`);
     }
 
-    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers);
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
   }
 }
