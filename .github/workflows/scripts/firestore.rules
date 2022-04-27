@@ -4,6 +4,9 @@ service cloud.firestore {
   match /{document=**} {
       allow read, write: if false;
     }
+  match /firestore-bundle-tests/{document=**} {
+      allow read, write: if true;
+    }
   match /firestore/{document=**} {
       allow read, write: if true;
     } 

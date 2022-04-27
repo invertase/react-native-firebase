@@ -84,6 +84,30 @@ class FirebaseFirestoreModule extends FirebaseModule {
     return new FirestoreWriteBatch(this);
   }
 
+  loadBundle(bundle) {
+    if (!isString(bundle)) {
+      throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a string value.");
+    }
+
+    if (bundle === '') {
+      throw new Error("firebase.firestore().loadBundle(*) 'bundle' must be a non-empty string.");
+    }
+
+    return this.native.loadBundle(bundle);
+  }
+
+  namedQuery(queryName) {
+    if (!isString(queryName)) {
+      throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a string value.");
+    }
+
+    if (queryName === '') {
+      throw new Error("firebase.firestore().namedQuery(*) 'queryName' must be a non-empty string.");
+    }
+
+    return new FirestoreQuery(this, this._referencePath, new FirestoreQueryModifiers(), queryName);
+  }
+
   async clearPersistence() {
     await this.native.clearPersistence();
   }
@@ -164,6 +188,7 @@ class FirebaseFirestoreModule extends FirebaseModule {
       this,
       this._referencePath.child(collectionId),
       new FirestoreQueryModifiers().asCollectionGroupQuery(),
+      undefined,
     );
   }
 
