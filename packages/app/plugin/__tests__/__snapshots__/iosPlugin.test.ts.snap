@@ -6,7 +6,7 @@ exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m (SDK 43) 1`
 // creating a bare React Native app (without Expo)
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import Firebase;
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
