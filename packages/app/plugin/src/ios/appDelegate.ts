@@ -19,7 +19,7 @@ export function modifyObjcAppDelegate(contents: string): string {
     contents = contents.replace(
       /#import "AppDelegate.h"/g,
       `#import "AppDelegate.h"
-@import Firebase;`,
+#import <Firebase/Firebase.h>`,
     );
   }
 
