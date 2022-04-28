@@ -6,7 +6,7 @@ exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m (SDK 43) 1`
 // creating a bare React Native app (without Expo)
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -99,7 +99,7 @@ exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m with Expo R
 // It has the RCTBridge to be created by Expo ReactDelegate
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -189,7 +189,7 @@ exports[`Config Plugin iOS Tests tests changes made to AppDelegate.m with fallba
 // some parts omitted to be short
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -240,7 +240,7 @@ exports[`Config Plugin iOS Tests tests changes made to old AppDelegate.m (SDK 42
 // It expects the old react-native-unimodules architecture (UM* prefix)
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -351,7 +351,7 @@ exports[`Config Plugin iOS Tests works with AppDelegate.mm (RN 0.68+) 1`] = `
 // using React Native 0.68 and is written in Objective-C++
 
 #import \\"AppDelegate.h\\"
-@import Firebase;
+#import <Firebase/Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
