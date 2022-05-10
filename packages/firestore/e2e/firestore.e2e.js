@@ -246,7 +246,7 @@ describe('firestore()', function () {
         });
 
         await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        await new Promise(resolve => setTimeout(resolve, 1));
+        await new Promise(resolve => setTimeout(resolve, 100));
         await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         await promise;
         await ref.delete();
