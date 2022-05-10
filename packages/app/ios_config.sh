@@ -79,7 +79,8 @@ if [[ ${_SEARCH_RESULT} ]]; then
   _RN_ROOT_EXISTS=$(ruby -e "require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]" || echo '')
 
   if [[ ${_RN_ROOT_EXISTS} ]]; then
-    _JSON_OUTPUT_BASE64=$(python -c 'import json,sys,base64;print(base64.b64encode(json.dumps(json.loads(open('"'${_SEARCH_RESULT}'"').read())['${_JSON_ROOT}'])))' || echo "e30=")
+    if ! python3 --version >/dev/null 2>&1; then echo "python3 not found, firebase.json file processing error." && exit 1; fi
+    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('"'${_SEARCH_RESULT}'"', '"'rb'"').read())['${_JSON_ROOT}']), '"'utf-8'"')).decode())' || echo "e30=")
   fi
 
   _PLIST_ENTRY_KEYS+=("firebase_json_raw")
