@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.9.2](https://github.com/invertase/react-native-firebase/compare/v14.9.1...v14.9.2) (2022-05-10)
+
+
+### Bug Fixes
+
+* **ios, app:** macOS 12.3 removed python, use python3 ([1f609d3](https://github.com/invertase/react-native-firebase/commit/1f609d379117532d014bc44735827d38d79a36e9)), closes [#6226](https://github.com/invertase/react-native-firebase/issues/6226) [#6203](https://github.com/invertase/react-native-firebase/issues/6203)
+
+
+
+
+
 ## [14.9.1](https://github.com/invertase/react-native-firebase/compare/v14.9.0...v14.9.1) (2022-04-28)
 
 
