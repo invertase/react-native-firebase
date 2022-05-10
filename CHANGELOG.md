@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.9.3](https://github.com/invertase/react-native-firebase/compare/v14.9.2...v14.9.3) (2022-05-10)
+
+
+### Bug Fixes
+
+* **firestore, android:** temporarily use newer-than-bom firestore ([4e9ff20](https://github.com/invertase/react-native-firebase/commit/4e9ff20285891cdaa8645c5848dfe6511fe637c4)), closes [#6158](https://github.com/invertase/react-native-firebase/issues/6158)
+
+
+
+
+
 ## [14.9.2](https://github.com/invertase/react-native-firebase/compare/v14.9.1...v14.9.2) (2022-05-10)
 
 
