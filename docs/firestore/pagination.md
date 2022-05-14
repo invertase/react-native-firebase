@@ -51,7 +51,7 @@ const App: () => Node = () => {
     console.log('LOAD');
     let query = userCollection.orderBy('age'); // sort the data
     if (lastDocument !== undefined) {
-      query = query..startAfter(lastDocument); // fetch data following the last document accessed
+      query = query.startAfter(lastDocument); // fetch data following the last document accessed
     }
     query.limit(3) // limit to your page size, 3 is just an example
         .get()
@@ -121,7 +121,7 @@ const App: () => Node = () => {
     console.log('LOAD');
     let query = userCollection.orderBy('age'); // sort the data
     if (lastDocument !== undefined) {
-      query = query..startAfter(lastDocument); // fetch data following the last document accessed
+      query = query.startAfter(lastDocument); // fetch data following the last document accessed
     }
     query.limit(3) // limit to your page size, 3 is just an example
         .get()
