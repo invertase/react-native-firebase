@@ -26,7 +26,12 @@ export function setUrlTypesForCaptcha({
 }: {
   config: ExportedConfigWithProps<IOSConfig.InfoPlist>;
 }) {
-  const googleServicesFileRelativePath = config.ios.googleServicesFile;
+  const googleServicesFileRelativePath = config.ios?.googleServicesFile;
+  if (!googleServicesFileRelativePath) {
+    throw new Error(
+      `[@react-native-firebase/auth] Your app.json file is missing ios.googleServicesFile. Please add this field.`,
+    );
+  }
   const googleServiceFilePath = path.resolve(
     config.modRequest.projectRoot,
     googleServicesFileRelativePath,
@@ -34,7 +39,7 @@ export function setUrlTypesForCaptcha({
 
   if (!fs.existsSync(googleServiceFilePath)) {
     throw new Error(
-      `GoogleService-Info.plist doesn't exist in ${googleServiceFilePath}. Place it there or configure the path in app.json`,
+      `[@react-native-firebase/auth] GoogleService-Info.plist doesn't exist in ${googleServiceFilePath}. Place it there or configure the path in app.json`,
     );
   }
 
@@ -46,7 +51,7 @@ export function setUrlTypesForCaptcha({
     REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
   } catch {
     throw new Error(
-      '[@react-native-firebase/app] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
+      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
     );
   }
 
@@ -54,11 +59,11 @@ export function setUrlTypesForCaptcha({
     config.modResults = {};
   }
 
-  if (config.modResults.CFBundleURLTypes) {
+  if (!config.modResults.CFBundleURLTypes) {
     config.modResults.CFBundleURLTypes = [];
   }
 
-  const hasReverseClientId = config.modResults.CFBundleURLTypes.some(urlType =>
+  const hasReverseClientId = config.modResults.CFBundleURLTypes?.some(urlType =>
     urlType.CFBundleURLSchemes.includes(REVERSED_CLIENT_ID),
   );
 
