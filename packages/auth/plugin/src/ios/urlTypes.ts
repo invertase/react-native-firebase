@@ -21,6 +21,49 @@ export const withIosCaptchaUrlTypes: ConfigPlugin = config => {
   });
 };
 
+function getReversedClientId(googleServiceFilePath: string): string {
+  let REVERSED_CLIENT_ID: string;
+  try {
+    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+
+    const googleServiceJson = plist.parse(googleServicePlist) as { REVERSED_CLIENT_ID: string };
+    REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
+  } catch {
+    throw new Error(
+      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
+    );
+  }
+
+  return REVERSED_CLIENT_ID;
+}
+
+// add phone auth support by configuring recaptcha
+// https://github.com/invertase/react-native-firebase/pull/6167
+function addUriScheme(
+  config: ExportedConfigWithProps<IOSConfig.InfoPlist>,
+  reversedClientId: string,
+): ExportedConfigWithProps<IOSConfig.InfoPlist> {
+  if (!config.modResults) {
+    config.modResults = {};
+  }
+
+  if (!config.modResults.CFBundleURLTypes) {
+    config.modResults.CFBundleURLTypes = [];
+  }
+
+  const hasReverseClientId = config.modResults.CFBundleURLTypes?.some(urlType =>
+    urlType.CFBundleURLSchemes.includes(reversedClientId),
+  );
+
+  if (!hasReverseClientId) {
+    config.modResults.CFBundleURLTypes.push({
+      CFBundleURLSchemes: [reversedClientId],
+    });
+  }
+
+  return config;
+}
+
 export function setUrlTypesForCaptcha({
   config,
 }: {
@@ -43,34 +86,8 @@ export function setUrlTypesForCaptcha({
     );
   }
 
-  let REVERSED_CLIENT_ID: string;
-  try {
-    const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
+  const reversedClientId = getReversedClientId(googleServiceFilePath);
+  addUriScheme(config, reversedClientId);
 
-    const googleServiceJson = plist.parse(googleServicePlist) as { REVERSED_CLIENT_ID: string };
-    REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
-  } catch {
-    throw new Error(
-      '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
-    );
-  }
-
-  if (!config.modResults) {
-    config.modResults = {};
-  }
-
-  if (!config.modResults.CFBundleURLTypes) {
-    config.modResults.CFBundleURLTypes = [];
-  }
-
-  const hasReverseClientId = config.modResults.CFBundleURLTypes?.some(urlType =>
-    urlType.CFBundleURLSchemes.includes(REVERSED_CLIENT_ID),
-  );
-
-  if (!hasReverseClientId) {
-    config.modResults.CFBundleURLTypes.push({
-      CFBundleURLSchemes: [REVERSED_CLIENT_ID],
-    });
-  }
   return config;
 }
