@@ -24,6 +24,7 @@
     "auth"
   ],
   "dependencies": {
+    "plist": "^3.0.5",
     "@expo/config-plugins": "^4.0.18"
   },
   "peerDependencies": {
@@ -33,7 +34,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/plist": "^3.0.2",
-    "plist": "^3.0.5"
+    "@types/plist": "^3.0.2"
   }
 }
