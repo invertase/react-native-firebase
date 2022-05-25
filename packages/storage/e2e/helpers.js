@@ -10,7 +10,7 @@ const WRITE_ONLY_NAME = 'writeOnly.txt';
 exports.seed = async function seed(path) {
   // Force the rules for the storage emulator to be what we expect
 
-  testingUtils.initializeTestEnvironment({
+  await testingUtils.initializeTestEnvironment({
     projectId: 'react-native-firebase-testing',
     storage: {
       rules: `rules_version = '2';
