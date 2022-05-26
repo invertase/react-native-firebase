@@ -65,7 +65,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "8.15.0"
+      "firebase": "9.1.0"
     },
     "android": {
       "minSdk": 19,
