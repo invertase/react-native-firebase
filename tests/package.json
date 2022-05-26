@@ -39,7 +39,7 @@
     "firebase-tools": "11.0.1",
     "jest-circus": "^28.1.0",
     "jest-environment-node": "^28.1.0",
-    "jet": "^0.8.0",
+    "jet": "^0.8.1",
     "jsonwebtoken": "^8.5.1",
     "metro-react-native-babel-preset": "0.69.1",
     "mocha": "^10.0.0",
