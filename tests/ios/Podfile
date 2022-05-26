@@ -5,7 +5,7 @@ appPackage = JSON.parse(File.read(File.join('..', '..', 'node_modules', '@react-
 $FirebaseSDKVersion = appPackage['sdkVersions']['ios']['firebase']
 #$FirebaseSDKVersion = '8.0.0' # https://firebase.google.com/support/release-notes/ios
 Pod::UI.puts "react-native-firebase/tests: Using Firebase SDK version '#{$FirebaseSDKVersion}'"
-# $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
+$RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_frameworks!' below to test static frameworks)
 
 # Toggle this to true for the no-ad-tracking Analytics subspec. Useful at minimum for Kids category apps.
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
@@ -22,7 +22,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 target 'testing' do
   # set this and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
-  # use_frameworks!
+  use_frameworks!
 
   config = use_native_modules!
   use_react_native!(

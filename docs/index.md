@@ -77,7 +77,7 @@ apply plugin: 'com.google.gms.google-services' // <- Add this line
 
 ### 3. iOS Setup
 
-To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project.
+To allow the iOS app to securely connect to your Firebase project, a configuration file must be downloaded and added to your project, and you must enable frameworks in CocoaPods
 
 #### Generating iOS credentials
 
@@ -118,6 +118,18 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
   // ...
 }
 ```
+
+#### Altering CocoaPods to use frameworks
+
+Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks.
+
+Open the file `./ios/Podfile` and add this line inside your targets:
+
+```
+use_frameworks!
+```
+
+> Note `use_frameworks` [is _not_ compatible with Flipper, Hermes, React Native New Architecture or react-native 0.69.0](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). Community support to help fix `use_frameworks` support is welcome!
 
 ### 4. Autolinking & rebuilding
 
