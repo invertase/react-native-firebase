@@ -550,6 +550,15 @@ export namespace FirebaseDynamicLinksTypes {
     onLink(listener: (link: DynamicLink) => void): () => void;
 
     /**
+     * Perform built-in diagnostics on iOS. This is best performed on a real device running
+     * a build from Xcode so you may see the output easily. Alternatively it should be visible
+     * in Console.app with an iPhone plugged into a macOS computer
+     *
+     * NOTE: iOS only
+     */
+    performDiagnostics(): void;
+
+    /**
      * Resolve a given dynamic link (short or long) directly.
      *
      * This mimics the result of external link resolution, app open, and the DynamicLink you

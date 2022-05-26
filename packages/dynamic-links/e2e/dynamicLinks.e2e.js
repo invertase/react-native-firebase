@@ -237,4 +237,10 @@ describe('dynamicLinks()', function () {
       }
     });
   });
+
+  describe('performDiagnostics()', function () {
+    it('should perform diagnostics without error', async function () {
+      firebase.dynamicLinks().performDiagnostics();
+    });
+  });
 });
