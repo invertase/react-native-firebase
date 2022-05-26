@@ -17,7 +17,7 @@
 
 #import "RNFBCrashlyticsInitProvider.h"
 #import <Firebase/Firebase.h>
-#import <FirebaseCore/FIRAppInternal.h>
+#import <FirebaseCoreExtension/FIRAppInternal.h>
 #import "RNFBJSON.h"
 #import "RNFBMeta.h"
 #import "RNFBPreferences.h"
