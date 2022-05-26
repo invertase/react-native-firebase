@@ -20,6 +20,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { isIOS } from '@react-native-firebase/app/lib/common';
 import builder from './builder';
 import version from './version';
 
@@ -84,6 +85,14 @@ class FirebaseLinksModule extends FirebaseModule {
     return () => {
       subscription.remove();
     };
+  }
+
+  performDiagnostics() {
+    if (isIOS) {
+      return this.native.performDiagnostics();
+    }
+
+    Promise.resolve();
   }
 
   resolveLink(link) {

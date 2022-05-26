@@ -135,6 +135,8 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
 
 6. Make sure your [deep link parameter](https://firebase.google.com/docs/dynamic-links/create-manually?authuser=0#parameters) is properly URL-encoded, especially if it contains a query string.
 
+7. Try the `performDiagnostics` API on the Dynamic Links module, while running the app on a real device and watching output from either Xcode or Console app. You may search for "Links" and you will see the diagnostic output.
+
 ## Android Setup
 
 1. Create a SHA-256 fingerprint using these [instructions](https://developers.google.com/android/guides/client-auth) for your app, and add to your app in your Firebase console.

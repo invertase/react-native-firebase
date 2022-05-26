@@ -228,6 +228,8 @@ RCT_EXPORT_METHOD(getInitialLink
   }
 }
 
+RCT_EXPORT_METHOD(performDiagnostics) { [FIRDynamicLinks performDiagnosticsWithCompletion:nil]; }
+
 RCT_EXPORT_METHOD(resolveLink
                   : (NSString *)link
                   : (RCTPromiseResolveBlock)resolve
