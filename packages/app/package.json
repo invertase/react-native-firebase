@@ -72,11 +72,11 @@
       "targetSdk": 31,
       "compileSdk": 31,
       "buildTools": "30.0.3",
-      "firebase": "30.0.2",
-      "firebaseCrashlyticsGradle": "2.8.1",
+      "firebase": "30.1.0",
+      "firebaseCrashlyticsGradle": "2.9.0",
       "firebasePerfGradle": "1.4.1",
       "gmsGoogleServicesGradle": "4.3.10",
-      "playServicesAuth": "20.1.0"
+      "playServicesAuth": "20.2.0"
     }
   }
 }

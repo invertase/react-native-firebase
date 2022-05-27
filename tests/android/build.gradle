@@ -15,9 +15,9 @@ buildscript {
   ext.fragmentVersion = '1.4.0' // https://developer.android.com/jetpack/androidx/releases/fragment
   ext.vectordrawableVersion = '1.1.0' // https://developer.android.com/jetpack/androidx/releases/vectordrawable
   ext.androidxAnnotationVersion = '1.3.0' // https://developer.android.com/jetpack/androidx/releases/annotation
-  ext.googlePlayServicesLocationVersion = '18.0.0' // https://developers.google.com/android/guides/setup
-  ext.googlePlayServicesVersion = '18.0.0' // play-services-base
-  ext.googlePlayServicesAuthVersion = '20.0.0' // play-services-auth
+  ext.googlePlayServicesLocationVersion = '19.0.1' // https://developers.google.com/android/guides/setup
+  ext.googlePlayServicesVersion = '18.0.1' // play-services-base
+  ext.googlePlayServicesAuthVersion = '20.2.0' // play-services-auth
   ext.googlePlayServicesVisionVersion = '20.1.3' // play-services-vision
   ext.mediaCompatVersion = '1.4.3' // https://developer.android.com/jetpack/androidx/releases/media
   ext.supportV4Version = '1.0.0' // https://developer.android.com/jetpack/androidx/releases/legacy androidx.legacy:legacy-support-v4
@@ -35,8 +35,8 @@ buildscript {
     classpath 'com.android.tools.build:gradle:7.0.4'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     classpath 'com.google.firebase:perf-plugin:1.4.1'
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
-    classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.1'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.0'
+    classpath 'com.google.firebase:firebase-appdistribution-gradle:3.0.2'
   }
 }
 
