@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [14.11.0](https://github.com/invertase/react-native-firebase/compare/v14.10.1...v14.11.0) (2022-05-27)
+
+### Features
+
+- **android, sdk:** firebase-android-sdk 30.1.0 ([b0462d4](https://github.com/invertase/react-native-firebase/commit/b0462d4d34d1518a50daeca09288bf4aa0e0f695))
+
 ## [14.10.1](https://github.com/invertase/react-native-firebase/compare/v14.10.0...v14.10.1) (2022-05-26)
 
 **Note:** Version bump only for package @react-native-firebase/app-distribution
