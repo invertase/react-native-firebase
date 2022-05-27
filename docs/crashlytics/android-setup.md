@@ -40,7 +40,7 @@ buildscript {
   // ..
   dependencies {
     // ..
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.0'
   }
   // ..
 }
