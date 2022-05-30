@@ -43,11 +43,7 @@ jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 
-// Database emulator cannot handle App Check on Android yet
-// https://github.com/firebase/firebase-tools/issues/3663
-if (Platform.OS === 'ios') {
-  firebase.database().useEmulator('localhost', 9000);
-}
+firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');
 firebase.firestore().useEmulator('localhost', 8080);
 firebase.storage().useEmulator('localhost', 9199);
