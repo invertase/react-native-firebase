@@ -3,9 +3,9 @@ const testingUtils = require('@firebase/rules-unit-testing');
 // TODO make more unique?
 const ID = Date.now();
 
-const PATH_ROOT = 'react-native-tests';
+const PATH_ROOT = 'playground';
 const PATH = `${PATH_ROOT}/${ID}`;
-const WRITE_ONLY_NAME = 'writeOnly.txt';
+const WRITE_ONLY_NAME = 'writeOnly.jpeg';
 
 exports.seed = async function seed(path) {
   // Force the rules for the storage emulator to be what we expect
@@ -26,6 +26,10 @@ exports.seed = async function seed(path) {
           }
       
           match /${PATH_ROOT}/{document=**} {
+            allow read, write: if true;
+          }
+
+          match /react-native-firebase-testing/{document=**} {
             allow read, write: if true;
           }
         }

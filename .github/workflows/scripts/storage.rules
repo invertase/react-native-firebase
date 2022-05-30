@@ -5,12 +5,16 @@ service firebase.storage {
       allow read, write: if false;
     }
 
-    match /writeOnly.txt {
+    match /writeOnly.jpeg {
       allow read: if false;
       allow write: if true;
     }
 
-    match /react-native-tests/{document=**} {
+    match /playground/{document=**} {
+      allow read, write: if true;
+    }
+
+    match /react-native-firebase-testing/{document=**} {
       allow read, write: if true;
     }
   }
