@@ -4,7 +4,7 @@
 
   <application>
     <meta-data android:name="app_data_collection_default_enabled" android:value="${firebaseJsonDataCollectionDefaultEnabled}"/>
-    <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+    <service android:name="com.google.firebase.components.ComponentDiscoveryService" android:exported="false">
       <meta-data
         android:name="com.google.firebase.components:io.invertase.firebase.app.ReactNativeFirebaseAppRegistrar"
         android:value="com.google.firebase.components.ComponentRegistrar" />
