@@ -40,6 +40,7 @@ const ReservedEventNames = [
   'ad_activeview',
   'ad_click',
   'ad_exposure',  
+  
   // manual tracking on this reserved word is allowed https://github.com/invertase/react-native-firebase/issues/6307
   //'ad_impression',
   'ad_query',
