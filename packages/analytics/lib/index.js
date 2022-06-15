@@ -39,8 +39,9 @@ import * as structs from './structs';
 const ReservedEventNames = [
   'ad_activeview',
   'ad_click',
-  'ad_exposure',
-  'ad_impression',
+  'ad_exposure',  
+  // manual tracking on this reserved word is allowed https://github.com/invertase/react-native-firebase/issues/6307
+  //'ad_impression',
   'ad_query',
   'ad_reward',
   'adunit_exposure',
