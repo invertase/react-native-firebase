@@ -417,7 +417,11 @@
         code = @"invalid-device-file-path";
         message = @"The specified device file path is invalid or is restricted.";
       } else {
-        message = @"An unknown error has occurred.";
+        if (userInfo[@"ResponseBody"]) {
+          message = [NSString stringWithFormat:@"An unknown error has occurred. (underlying reason '%@')", userInfo[@"ResponseBody"]];
+        } else {
+          message = @"An unknown error has occurred.";
+        }
       }
       break;
     case FIRStorageErrorCodeObjectNotFound:
