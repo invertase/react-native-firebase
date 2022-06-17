@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="io.invertase.firebase">
 
   <application>
     <meta-data android:name="app_data_collection_default_enabled" android:value="${firebaseJsonDataCollectionDefaultEnabled}"/>
-    <service android:name="com.google.firebase.components.ComponentDiscoveryService">
+    <service
+      android:name="com.google.firebase.components.ComponentDiscoveryService"
+      android:directBootAware="true"
+      android:exported="false"
+      tools:targetApi="n"
+    >
       <meta-data
         android:name="com.google.firebase.components:io.invertase.firebase.app.ReactNativeFirebaseAppRegistrar"
         android:value="com.google.firebase.components.ComponentRegistrar" />
