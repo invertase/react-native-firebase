@@ -7,7 +7,8 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
   <application>
-    <service android:name=".ReactNativeFirebaseMessagingHeadlessService" />
+    <service android:name=".ReactNativeFirebaseMessagingHeadlessService"
+              android:exported="false" />
     <service android:name=".ReactNativeFirebaseMessagingService"
              android:exported="false">
       <intent-filter>
