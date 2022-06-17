@@ -40,7 +40,7 @@ const ReservedEventNames = [
   'ad_activeview',
   'ad_click',
   'ad_exposure',
-  'ad_impression',
+  // 'ad_impression', // manual ad_impression logging is allowed, See #6307
   'ad_query',
   'ad_reward',
   'adunit_exposure',
