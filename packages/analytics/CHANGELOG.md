@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
+
+### Bug Fixes
+
+- **analytics:** allow manual tracking of ad_impression ([931468a](https://github.com/invertase/react-native-firebase/commit/931468ac2380b8a3449456f941caaa7ca8902d5a)), closes [#6307](https://github.com/invertase/react-native-firebase/issues/6307) [#6312](https://github.com/invertase/react-native-firebase/issues/6312)
+
 # [14.11.0](https://github.com/invertase/react-native-firebase/compare/v14.10.1...v14.11.0) (2022-05-27)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
