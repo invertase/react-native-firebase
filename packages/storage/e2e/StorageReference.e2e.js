@@ -168,23 +168,18 @@ describe('storage() -> StorageReference', function () {
       }
     });
 
-    // Not throwing against the storage emulator on android?
     it('throws error if no read permission', async function () {
-      if (device.getPlatform() === 'ios') {
-        const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
+      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
 
-        try {
-          await storageReference.getDownloadURL();
-          return Promise.reject(new Error('Did not throw'));
-        } catch (error) {
-          error.code.should.equal('storage/unauthorized');
-          error.message.should.equal(
-            '[storage/unauthorized] User is not authorized to perform the desired action.',
-          );
-          return Promise.resolve();
-        }
-      } else {
-        this.skip();
+      try {
+        await storageReference.getDownloadURL();
+        return Promise.reject(new Error('Did not throw'));
+      } catch (error) {
+        error.code.should.equal('storage/unauthorized');
+        error.message.should.equal(
+          '[storage/unauthorized] User is not authorized to perform the desired action.',
+        );
+        return Promise.resolve();
       }
     });
   });
