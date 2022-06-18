@@ -143,17 +143,26 @@ RCT_EXPORT_METHOD(updateMetadata
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
-  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
 
-  [storageReference
-      updateMetadata:storageMetadata
-          completion:^(FIRStorageMetadata *_Nullable metadata, NSError *_Nullable error) {
-            if (error != nil) {
-              [self promiseRejectStorageException:reject error:error];
-            } else {
-              resolve([RNFBStorageCommon metadataToDict:metadata]);
-            }
-          }];
+  [storageReference metadataWithCompletion:^(FIRStorageMetadata *_Nullable fetchedMetadata,
+                                             NSError *_Nullable error) {
+    if (error != nil) {
+      [self promiseRejectStorageException:reject error:error];
+    } else {
+      FIRStorageMetadata *storageMetadata =
+          [RNFBStorageCommon buildMetadataFromMap:metadata existingMetadata:fetchedMetadata];
+
+      [storageReference updateMetadata:storageMetadata
+                            completion:^(FIRStorageMetadata *_Nullable updatedMetadata,
+                                         NSError *_Nullable error) {
+                              if (error != nil) {
+                                [self promiseRejectStorageException:reject error:error];
+                              } else {
+                                resolve([RNFBStorageCommon metadataToDict:updatedMetadata]);
+                              }
+                            }];
+    }
+  }];
 }
 
 /**
@@ -391,7 +400,8 @@ RCT_EXPORT_METHOD(putFile
                   : (nonnull NSNumber *)taskId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
+  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata
+                                                               existingMetadata:nil];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   [RNFBStorageCommon
@@ -462,7 +472,8 @@ RCT_EXPORT_METHOD(putString
                   : (nonnull NSNumber *)taskId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata];
+  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata
+                                                               existingMetadata:nil];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
 
   __block FIRStorageUploadTask *uploadTask;

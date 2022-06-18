@@ -56,7 +56,8 @@
 
 + (NSString *)getTaskStatus:(FIRStorageTaskStatus)status;
 
-+ (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata;
++ (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata
+                            existingMetadata:(FIRStorageMetadata *)existingMetadata;
 
 + (NSArray *)getErrorCodeMessage:(NSError *)error;
 
