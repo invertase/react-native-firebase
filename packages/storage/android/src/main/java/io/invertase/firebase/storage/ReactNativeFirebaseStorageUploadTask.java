@@ -186,7 +186,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
 
   /** Put String or Data from JavaScript */
   void begin(ExecutorService executor, String string, String format, ReadableMap metadataMap) {
-    StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
+    StorageMetadata metadata = buildMetadataFromMap(metadataMap, null, null);
     uploadTask = storageReference.putBytes(uploadStringToByteArray(string, format), metadata);
     setStorageTask(uploadTask);
     addEventListeners(executor);
@@ -195,7 +195,7 @@ class ReactNativeFirebaseStorageUploadTask extends ReactNativeFirebaseStorageTas
   /** Put File from JavaScript */
   void begin(ExecutorService executor, String localFilePath, ReadableMap metadataMap) {
     Uri fileUri = SharedUtils.getUri(localFilePath);
-    StorageMetadata metadata = buildMetadataFromMap(metadataMap, fileUri);
+    StorageMetadata metadata = buildMetadataFromMap(metadataMap, fileUri, null);
     uploadTask = storageReference.putFile(fileUri, metadata);
     setStorageTask(uploadTask);
     addEventListeners(executor);

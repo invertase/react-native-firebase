@@ -169,6 +169,24 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
+  // Useful for development / debugging
+  private void dumpMetadata(StorageMetadata metadata) {
+    System.err.println("STORAGE dumping metadata contents");
+    System.err.println("STORAGE - cacheControl " + metadata.getCacheControl());
+    System.err.println("STORAGE - contentDisposition " + metadata.getContentDisposition());
+    System.err.println("STORAGE - contentEncoding " + metadata.getContentEncoding());
+    System.err.println("STORAGE - contentLanguage " + metadata.getContentLanguage());
+    System.err.println("STORAGE - contentType " + metadata.getContentType());
+    for (String customKey : metadata.getCustomMetadataKeys()) {
+      System.err.println(
+          "STORAGE - customMetadata: '"
+              + customKey
+              + "' / '"
+              + metadata.getCustomMetadata(customKey)
+              + "'");
+    }
+  }
+
   /**
    * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#updateMetadata
    */
@@ -177,17 +195,35 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
       String appName, String url, ReadableMap metadataMap, final Promise promise) {
     try {
       StorageReference reference = getReferenceFromUrl(url, appName);
-      StorageMetadata metadata = buildMetadataFromMap(metadataMap, null);
 
       reference
-          .updateMetadata(metadata)
+          .getMetadata()
           .addOnCompleteListener(
               getExecutor(),
-              task -> {
-                if (task.isSuccessful()) {
-                  promise.resolve(getMetadataAsMap(task.getResult()));
+              getTask -> {
+                if (getTask.isSuccessful()) {
+
+                  // dumpMetadata(getTask.getResult());
+                  StorageMetadata metadata =
+                      buildMetadataFromMap(metadataMap, null, getTask.getResult());
+                  // dumpMetadata(metadata);
+
+                  reference
+                      .updateMetadata(metadata)
+                      .addOnCompleteListener(
+                          getExecutor(),
+                          updateTask -> {
+                            if (updateTask.isSuccessful()) {
+                              // dumpMetadata(updateTask.getResult());
+                              promise.resolve(getMetadataAsMap(updateTask.getResult()));
+                            } else {
+                              updateTask.getException().printStackTrace();
+                              promiseRejectStorageException(promise, updateTask.getException());
+                            }
+                          });
+
                 } else {
-                  promiseRejectStorageException(promise, task.getException());
+                  promiseRejectStorageException(promise, getTask.getException());
                 }
               });
     } catch (Exception e) {

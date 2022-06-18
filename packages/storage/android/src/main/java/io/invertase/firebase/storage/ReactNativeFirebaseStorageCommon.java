@@ -36,9 +36,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.firebase.common.SharedUtils;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 class ReactNativeFirebaseStorageCommon {
@@ -93,15 +93,40 @@ class ReactNativeFirebaseStorageCommon {
   }
 
   /** Converts a RN ReadableMap into a StorageMetadata instance */
-  static StorageMetadata buildMetadataFromMap(ReadableMap metadataMap, @Nullable Uri file) {
+  static StorageMetadata buildMetadataFromMap(
+      ReadableMap metadataMap, @Nullable Uri file, @Nullable StorageMetadata existingMetadata) {
     StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
 
     if (metadataMap != null) {
-      if (metadataMap.hasKey(KEY_CUSTOM_META)) {
-        ReadableMap customerMetaMap = Objects.requireNonNull(metadataMap.getMap(KEY_CUSTOM_META));
-        Map<String, Object> customMeta = customerMetaMap.toHashMap();
-        for (Map.Entry<String, Object> entry : customMeta.entrySet()) {
+      if (metadataMap.hasKey(KEY_CUSTOM_META) || (existingMetadata != null)) {
+
+        Map<String, Object> customMetadata = new HashMap<>();
+        ReadableMap freshCustomMetadata = metadataMap.getMap(KEY_CUSTOM_META);
+        Map<String, Object> existingCustomMetadata = new HashMap<>();
+
+        // Our baseline will be any existing custom metadata if it exists
+        if (existingMetadata != null) {
+          for (String existingKey : existingMetadata.getCustomMetadataKeys()) {
+            customMetadata.put(existingKey, existingMetadata.getCustomMetadata(existingKey));
+            existingCustomMetadata.put(
+                existingKey, existingMetadata.getCustomMetadata(existingKey));
+          }
+        }
+
+        // Clobber with any fresh custom metadata if it exists
+        if (freshCustomMetadata != null) {
+          customMetadata.putAll(freshCustomMetadata.toHashMap());
+        }
+
+        for (Map.Entry<String, Object> entry : customMetadata.entrySet()) {
           metadataBuilder.setCustomMetadata(entry.getKey(), (String) entry.getValue());
+
+          // API contract updates custom metadata as a group but android SDK has key granularity
+          // So if freshCustomMetadata exists, for any key that in our merged map but not in
+          // freshCustomMetadata, set to null to clear
+          if (freshCustomMetadata == null || !freshCustomMetadata.hasKey(entry.getKey())) {
+            metadataBuilder.setCustomMetadata(entry.getKey(), null);
+          }
         }
       }
 
@@ -167,20 +192,24 @@ class ReactNativeFirebaseStorageCommon {
     if (storageMetadata.getCacheControl() != null
         && storageMetadata.getCacheControl().length() > 0) {
       metadata.putString(KEY_CACHE_CONTROL, storageMetadata.getCacheControl());
-    } else {
-      metadata.putNull(KEY_CACHE_CONTROL);
     }
 
     if (storageMetadata.getContentLanguage() != null
         && storageMetadata.getContentLanguage().length() > 0) {
       metadata.putString(KEY_CONTENT_LANG, storageMetadata.getContentLanguage());
-    } else {
-      metadata.putNull(KEY_CONTENT_LANG);
     }
 
-    metadata.putString(KEY_CONTENT_DISPOSITION, storageMetadata.getContentDisposition());
-    metadata.putString(KEY_CONTENT_ENCODING, storageMetadata.getContentEncoding());
-    metadata.putString(KEY_CONTENT_TYPE, storageMetadata.getContentType());
+    if (storageMetadata.getContentDisposition() != null
+        && storageMetadata.getContentDisposition().length() > 0) {
+      metadata.putString(KEY_CONTENT_DISPOSITION, storageMetadata.getContentDisposition());
+    }
+    if (storageMetadata.getContentEncoding() != null
+        && storageMetadata.getContentEncoding().length() > 0) {
+      metadata.putString(KEY_CONTENT_ENCODING, storageMetadata.getContentEncoding());
+    }
+    if (storageMetadata.getContentType() != null && storageMetadata.getContentType().length() > 0) {
+      metadata.putString(KEY_CONTENT_TYPE, storageMetadata.getContentType());
+    }
 
     if (storageMetadata.getCustomMetadataKeys().size() > 0) {
       WritableMap customMetadata = Arguments.createMap();
@@ -188,8 +217,6 @@ class ReactNativeFirebaseStorageCommon {
         customMetadata.putString(key, storageMetadata.getCustomMetadata(key));
       }
       metadata.putMap(KEY_CUSTOM_META, customMetadata);
-    } else {
-      metadata.putNull(KEY_CUSTOM_META);
     }
 
     return metadata;

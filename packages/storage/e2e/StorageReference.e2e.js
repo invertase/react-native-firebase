@@ -353,75 +353,129 @@ describe('storage() -> StorageReference', function () {
 
   describe('updateMetadata', function () {
     it('should return the updated metadata for a file', async function () {
-      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
-      const metadata = await storageReference.updateMetadata({
-        contentType: 'image/jpeg',
-        cacheControl: 'true',
-        contentDisposition: 'disposed',
-        contentEncoding: 'encoded',
-        contentLanguage: 'martian',
+      const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
+      let metadata = await storageReference.updateMetadata({
+        cacheControl: 'cache-control',
+        contentDisposition: 'content-disposition',
+        contentEncoding: 'application/octet-stream',
+        contentLanguage: 'de',
+        contentType: 'content-type-a',
         customMetadata: {
-          hello: 'world',
+          a: 'b',
+          y: 'z',
         },
       });
 
-      metadata.customMetadata.hello.should.equal('world');
+      // Things that are set automagically for us
       metadata.generation.should.be.a.String();
-      metadata.fullPath.should.equal(WRITE_ONLY_NAME);
-      metadata.name.should.equal(WRITE_ONLY_NAME);
+      metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
+      if (device.getPlatform() === 'android') {
+        // FIXME on android file comes through as fully-qualified
+        // TODO log issue with firebase-tools repository
+        metadata.name.should.equal('file1.txt');
+      } else {
+        metadata.name.should.equal(`${PATH}/list/file1.txt`);
+      }
       metadata.size.should.be.a.Number();
       should.equal(metadata.size > 0, true);
       metadata.updated.should.be.a.String();
       metadata.timeCreated.should.be.a.String();
-      metadata.contentEncoding.should.be.a.String();
-      metadata.contentDisposition.should.be.a.String();
-      if (device.getPlatform() === 'android') {
-        // FIXME on iOS this is '' (empty) now different in firebase-tools 10.2.2?
-        metadata.contentType.should.equal('image/jpeg');
-      }
-      metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
       metadata.metageneration.should.be.a.String();
       metadata.md5Hash.should.be.a.String();
-      if (device.getPlatform() === 'android') {
-        // FIXME on iOS this comes back null ?
-        should.equal(metadata.cacheControl, 'true');
-      }
-      if (device.getPlatform() === 'android') {
-        // FIXME on iOS this comes back null ?
-        should.equal(metadata.contentLanguage, 'martian');
-      }
+      metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
+
+      // Things we just updated
+      metadata.cacheControl.should.equals('cache-control');
+      metadata.contentDisposition.should.equal('content-disposition');
+      metadata.contentEncoding.should.equal('application/octet-stream');
+      metadata.contentLanguage.should.equal('de');
+      metadata.contentType.should.equal('content-type-a');
       metadata.customMetadata.should.be.an.Object();
+      metadata.customMetadata.a.should.equal('b');
+      metadata.customMetadata.y.should.equal('z');
+      Object.keys(metadata.customMetadata).length.should.equal(2);
+
+      // Now let's make sure removing metadata works
+      metadata = await storageReference.updateMetadata({
+        contentType: null,
+        cacheControl: null,
+        contentDisposition: null,
+        contentEncoding: null,
+        contentLanguage: null,
+        customMetadata: null,
+      });
+
+      // Things that are set automagically for us and are not updatable
+      metadata.generation.should.be.a.String();
+      metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
+      if (device.getPlatform() === 'android') {
+        // FIXME on android file comes through as fully-qualified
+        // TODO log issue with firebase-tools repository
+        metadata.name.should.equal('file1.txt');
+      } else {
+        metadata.name.should.equal(`${PATH}/list/file1.txt`);
+      }
+      metadata.size.should.be.a.Number();
+      should.equal(metadata.size > 0, true);
+      metadata.updated.should.be.a.String();
+      metadata.timeCreated.should.be.a.String();
+      metadata.metageneration.should.be.a.String();
+      metadata.md5Hash.should.be.a.String();
+      metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
+
+      // Things that we may set (or remove)
+      // FIXME for storage emulator values are not cleared. Works against cloud
+      // TODO log issue with firebase-tools repository
+      // should.equal(metadata.cacheControl, undefined); // fails on android against storage emulator
+      // should.equal(metadata.contentDisposition, undefined); // fails on android against storage emulator
+      // should.equal(metadata.contentEncoding, 'identity'); // fails on android against storage emulator
+      // should.equal(metadata.contentLanguage, undefined); // fails on android against storage emulator
+      // should.equal(metadata.contentType, undefined); // fails on android against storage emulator
+      // should.equal(metadata.customMetadata, undefined); // fails on android against storage emulator
     });
 
-    // FIXME not working against android on emulator? it returns the string 'null' for the cleared customMetadata value
-    it('should set removed customMetadata properties to null', async function () {
-      if (device.getPlatform() === 'ios') {
-        const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
-        const metadata = await storageReference.updateMetadata({
-          contentType: 'text/plain',
-          customMetadata: {
-            removeMe: 'please',
-          },
-        });
+    it('should set update or remove customMetadata properties correctly', async function () {
+      const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
+      let metadata = await storageReference.updateMetadata({
+        contentType: 'application/octet-stream',
+        customMetadata: {
+          keepMe: 'please',
+          removeMeFirstTime: 'please',
+          removeMeSecondTime: 'please',
+        },
+      });
 
-        metadata.customMetadata.removeMe.should.equal('please');
+      Object.keys(metadata.customMetadata).length.should.equal(3);
+      metadata.customMetadata.keepMe.should.equal('please');
+      metadata.customMetadata.removeMeFirstTime.should.equal('please');
+      metadata.customMetadata.removeMeSecondTime.should.equal('please');
 
-        const metadataAfterRemove = await storageReference.updateMetadata({
-          contentType: 'text/plain',
-          customMetadata: {
-            removeMe: null,
-          },
-        });
+      metadata = await storageReference.updateMetadata({
+        contentType: 'application/octet-stream',
+        customMetadata: {
+          keepMe: 'please',
+          removeMeFirstTime: null,
+          removeMeSecondTime: 'please',
+        },
+      });
 
-        // FIXME this is failing the part that fails
-        should.equal(metadataAfterRemove.customMetadata.removeMe, undefined);
-      } else {
-        this.skip();
-      }
+      Object.keys(metadata.customMetadata).length.should.equal(2);
+      metadata.customMetadata.keepMe.should.equal('please');
+      metadata.customMetadata.removeMeSecondTime.should.equal('please');
+
+      metadata = await storageReference.updateMetadata({
+        contentType: 'application/octet-stream',
+        customMetadata: {
+          keepMe: 'please',
+        },
+      });
+
+      Object.keys(metadata.customMetadata).length.should.equal(1);
+      metadata.customMetadata.keepMe.should.equal('please');
     });
 
     it('should error if updateMetadata includes md5hash', async function () {
-      const storageReference = firebase.storage().ref(WRITE_ONLY_NAME);
+      const storageReference = firebase.storage().ref(`${PATH}/list/file1.txt`);
       try {
         await storageReference.updateMetadata({
           md5hash: '0xDEADBEEF',
@@ -549,8 +603,8 @@ describe('storage() -> StorageReference', function () {
         md5hash: '123412341234',
         cacheControl: 'true',
         contentDisposition: 'disposed',
-        contentEncoding: 'encoded',
-        contentLanguage: 'martian',
+        contentEncoding: 'application/octet-stream',
+        contentLanguage: 'de',
         customMetadata: {
           customMetadata1: 'metadata1value',
         },
@@ -605,6 +659,7 @@ describe('storage() -> StorageReference', function () {
       }
     });
 
+    // FIXME this works against the cloud on iOS but will actually crash the storage emulator
     xit('allows valid metadata properties for upload', async function () {
       const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
       await storageReference.put(new jet.context.window.ArrayBuffer(), {
@@ -612,8 +667,8 @@ describe('storage() -> StorageReference', function () {
         md5hash: '123412341234',
         cacheControl: 'true',
         contentDisposition: 'disposed',
-        contentEncoding: 'encoded',
-        contentLanguage: 'martian',
+        contentEncoding: 'application/octet-stream',
+        contentLanguage: 'de',
         customMetadata: {
           customMetadata1: 'metadata1value',
         },
