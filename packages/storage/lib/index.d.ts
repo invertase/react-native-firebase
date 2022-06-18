@@ -323,7 +323,7 @@ export namespace FirebaseStorageTypes {
     /**
      * Additional user-defined custom metadata for this storage object.
      *
-     * String values only are supported for custom metadata property values.
+     * All values must be strings. Set to null to delete all. Any keys ommitted during update will be removed.
      *
      * #### Example
      *
