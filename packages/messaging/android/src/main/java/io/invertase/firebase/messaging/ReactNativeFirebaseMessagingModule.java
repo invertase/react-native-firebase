@@ -122,7 +122,8 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void getToken(String appName, String senderId, Promise promise) {
-    FirebaseMessaging messagingInstance = FirebaseApp.getInstance(appName).get(FirebaseMessaging.class);
+    FirebaseMessaging messagingInstance =
+        FirebaseApp.getInstance(appName).get(FirebaseMessaging.class);
     Tasks.call(getExecutor(), () -> Tasks.await(messagingInstance.getToken()))
         .addOnCompleteListener(
             task -> {
@@ -136,7 +137,8 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
 
   @ReactMethod
   public void deleteToken(String appName, String senderId, Promise promise) {
-    FirebaseMessaging messagingInstance = FirebaseApp.getInstance(appName).get(FirebaseMessaging.class);
+    FirebaseMessaging messagingInstance =
+        FirebaseApp.getInstance(appName).get(FirebaseMessaging.class);
     Tasks.call(
             getExecutor(),
             () -> {
