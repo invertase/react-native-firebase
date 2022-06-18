@@ -88,9 +88,9 @@ export function validateMetadata(metadata, update = true) {
           `firebase.storage.SettableMetadata invalid property '${key}' should be a string or null value.`,
         );
       }
-    } else if (!isObject(value)) {
+    } else if (!isObject(value) && !isNull(value)) {
       throw new Error(
-        'firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values.',
+        'firebase.storage.SettableMetadata.customMetadata must be an object of keys and string values or null value.',
       );
     }
   }

@@ -392,9 +392,64 @@
   }
 }
 
-+ (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata {
-  FIRStorageMetadata *storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
-  storageMetadata.customMetadata = [metadata[@"customMetadata"] mutableCopy];
++ (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata
+                            existingMetadata:(nullable FIRStorageMetadata *)existingMetadata {
+  // If an existing metadata was passed in, modify it with our map, otherwise init a fresh copy
+  FIRStorageMetadata *storageMetadata = existingMetadata;
+  if (storageMetadata == nil) {
+    storageMetadata = [[FIRStorageMetadata alloc] init];
+  }
+
+  if (metadata[@"cacheControl"] == [NSNull null]) {
+    storageMetadata.cacheControl = nil;
+  } else {
+    storageMetadata.cacheControl = metadata[@"cacheControl"];
+  }
+
+  if (metadata[@"contentLanguage"] == [NSNull null]) {
+    storageMetadata.contentLanguage = nil;
+  } else {
+    storageMetadata.contentLanguage = metadata[@"contentLanguage"];
+  }
+
+  if (metadata[@"contentEncoding"] == [NSNull null]) {
+    storageMetadata.contentEncoding = nil;
+  } else {
+    storageMetadata.contentEncoding = metadata[@"contentEncoding"];
+  }
+
+  if (metadata[@"contentDisposition"] == [NSNull null]) {
+    storageMetadata.contentDisposition = nil;
+  } else {
+    storageMetadata.contentDisposition = metadata[@"contentDisposition"];
+  }
+
+  if (metadata[@"contentType"] == [NSNull null]) {
+    storageMetadata.contentType = nil;
+  } else {
+    storageMetadata.contentType = metadata[@"contentType"];
+  }
+
+  if (metadata[@"customMetadata"] == [NSNull null]) {
+    storageMetadata.customMetadata = @{};
+  } else {
+    NSMutableDictionary *customMetadata = [metadata[@"customMetadata"] mutableCopy];
+    for (NSString *key in customMetadata.allKeys) {
+      if (customMetadata[key] == [NSNull null] || customMetadata[key] == nil) {
+        [customMetadata removeObjectForKey:key];
+      }
+    }
+    storageMetadata.customMetadata = customMetadata;
+  }
+
+  // md5hash may be settable but is not update-able, so just test for existence and carry it in
+  // FIXME this will need a fix related to
+  // https://github.com/firebase/firebase-ios-sdk/issues/9849#issuecomment-1159292592 if
+  // (metadata[@"md5hash"]) {
+  //   NSLog(@"STORAGE md5hash was set");
+  //   storageMetadata.md5Hash = metadata[@"md5hash"];
+  // }
+
   return storageMetadata;
 }
 
@@ -418,7 +473,9 @@
         message = @"The specified device file path is invalid or is restricted.";
       } else {
         if (userInfo[@"ResponseBody"]) {
-          message = [NSString stringWithFormat:@"An unknown error has occurred. (underlying reason '%@')", userInfo[@"ResponseBody"]];
+          message =
+              [NSString stringWithFormat:@"An unknown error has occurred. (underlying reason '%@')",
+                                         userInfo[@"ResponseBody"]];
         } else {
           message = @"An unknown error has occurred.";
         }
