@@ -200,10 +200,7 @@ describe('storage() -> StorageReference', function () {
       metadata.timeCreated.should.be.a.String();
       metadata.contentEncoding.should.be.a.String();
       metadata.contentDisposition.should.be.a.String();
-      // if (device.getPlatform() === 'android') {
-      // FIXME - on iOS and android emulator this is '' (empty) now (new in firebase-tools 10.2.2 ?
-      //   metadata.contentType.should.equal('text/plain');
-      // }
+      metadata.contentType.should.equal('text/plain');
       metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
       metadata.metageneration.should.be.a.String();
       metadata.md5Hash.should.be.a.String();
