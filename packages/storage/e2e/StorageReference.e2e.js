@@ -18,6 +18,10 @@
 const { PATH, seed, WRITE_ONLY_NAME } = require('./helpers');
 
 describe('storage() -> StorageReference', function () {
+  before(async function () {
+    await seed(PATH);
+  });
+
   describe('toString()', function () {
     it('returns the correct bucket path to the file', function () {
       const app = firebase.app();
@@ -136,9 +140,6 @@ describe('storage() -> StorageReference', function () {
   });
 
   describe('getDownloadURL', function () {
-    before(async function () {
-      await seed(PATH);
-    });
     it('should return a download url for a file', async function () {
       // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
       if (!isCI) {
