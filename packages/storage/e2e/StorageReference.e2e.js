@@ -191,8 +191,11 @@ describe('storage() -> StorageReference', function () {
       metadata.generation.should.be.a.String();
       metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
       if (device.getPlatform() === 'android') {
-        // FIXME - iOS on emulator this is fullPath not name ?
         metadata.name.should.equal('file1.txt');
+      } else {
+        // FIXME on ios file comes through as fully-qualified
+        // https://github.com/firebase/firebase-ios-sdk/issues/9849#issuecomment-1159819958
+        metadata.name.should.equal(`${PATH}/list/file1.txt`);
       }
       metadata.size.should.be.a.Number();
       should.equal(metadata.size > 0, true);
@@ -204,6 +207,8 @@ describe('storage() -> StorageReference', function () {
       metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
       metadata.metageneration.should.be.a.String();
       metadata.md5Hash.should.be.a.String();
+      // TODO against cloud storage cacheControl comes back null/undefined by default. Emulator has a difference
+      // https://github.com/firebase/firebase-tools/issues/3398#issuecomment-1159821364
       should.equal(metadata.cacheControl, 'public, max-age=3600');
       should.equal(metadata.contentLanguage, null);
       should.equal(metadata.customMetadata, null);
@@ -370,10 +375,10 @@ describe('storage() -> StorageReference', function () {
       metadata.generation.should.be.a.String();
       metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
       if (device.getPlatform() === 'android') {
-        // FIXME on android file comes through as fully-qualified
-        // TODO log issue with firebase-tools repository
         metadata.name.should.equal('file1.txt');
       } else {
+        // FIXME on ios file comes through as fully-qualified
+        // https://github.com/firebase/firebase-ios-sdk/issues/9849#issuecomment-1159819958
         metadata.name.should.equal(`${PATH}/list/file1.txt`);
       }
       metadata.size.should.be.a.Number();
@@ -409,10 +414,10 @@ describe('storage() -> StorageReference', function () {
       metadata.generation.should.be.a.String();
       metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
       if (device.getPlatform() === 'android') {
-        // FIXME on android file comes through as fully-qualified
-        // TODO log issue with firebase-tools repository
         metadata.name.should.equal('file1.txt');
       } else {
+        // FIXME on ios file comes through as fully-qualified
+        // https://github.com/firebase/firebase-ios-sdk/issues/9849#issuecomment-1159819958
         metadata.name.should.equal(`${PATH}/list/file1.txt`);
       }
       metadata.size.should.be.a.Number();
@@ -425,7 +430,7 @@ describe('storage() -> StorageReference', function () {
 
       // Things that we may set (or remove)
       // FIXME for storage emulator values are not cleared. Works against cloud
-      // TODO log issue with firebase-tools repository
+      // https://github.com/firebase/firebase-tools/issues/3398#issuecomment-1159821364
       // should.equal(metadata.cacheControl, undefined); // fails on android against storage emulator
       // should.equal(metadata.contentDisposition, undefined); // fails on android against storage emulator
       // should.equal(metadata.contentEncoding, 'identity'); // fails on android against storage emulator
