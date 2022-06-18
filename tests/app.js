@@ -37,7 +37,6 @@ import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
-import { Platform } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
