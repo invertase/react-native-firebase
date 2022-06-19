@@ -173,130 +173,145 @@ describe('functions()', function () {
 
   describe('HttpsError', function () {
     it('errors return instance of HttpsError', async function () {
-      const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+      if (device.getPlatform() !== 'ios') {
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
 
-      try {
-        await functionRunner({});
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.equal(e.details, null);
-        e.code.should.equal('invalid-argument');
-        e.message.should.equal('Invalid test requested.');
+        try {
+          await functionRunner({});
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.equal(e.details, null);
+          e.code.should.equal('invalid-argument');
+          e.message.should.equal('Invalid test requested.');
+        }
+
+        return Promise.resolve();
+      } else {
+        // TODO waiting on firebase-ios-sdk > 9.1.0 - https://github.com/firebase/firebase-ios-sdk/pull/9862
+        this.skip();
       }
-
-      return Promise.resolve();
     });
 
     it('HttpsError.details -> allows returning complex data', async function () {
-      let type = 'deepObject';
-      let inputData = SAMPLE_DATA[type];
-      const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.deepEqual(e.details, inputData);
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-      }
+      if (device.getPlatform() !== 'ios') {
+        let type = 'deepObject';
+        let inputData = SAMPLE_DATA[type];
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.deepEqual(e.details, inputData);
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+        }
 
-      type = 'deepArray';
-      inputData = SAMPLE_DATA[type];
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.deepEqual(e.details, inputData);
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-      }
+        type = 'deepArray';
+        inputData = SAMPLE_DATA[type];
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.deepEqual(e.details, inputData);
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+        }
 
-      return Promise.resolve();
+        return Promise.resolve();
+      } else {
+        // TODO waiting on firebase-ios-sdk > 9.1.0 - https://github.com/firebase/firebase-ios-sdk/pull/9862
+        this.skip();
+      }
     });
 
     it('HttpsError.details -> allows returning primitives', async function () {
-      let type = 'number';
-      let inputData = SAMPLE_DATA[type];
-      const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-        should.deepEqual(e.details, inputData);
-      }
+      if (device.getPlatform() !== 'ios') {
+        let type = 'number';
+        let inputData = SAMPLE_DATA[type];
+        const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+          should.deepEqual(e.details, inputData);
+        }
 
-      type = 'string';
-      inputData = SAMPLE_DATA[type];
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.deepEqual(e.details, inputData);
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-      }
+        type = 'string';
+        inputData = SAMPLE_DATA[type];
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.deepEqual(e.details, inputData);
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+        }
 
-      type = 'boolean';
-      inputData = SAMPLE_DATA[type];
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.deepEqual(e.details, inputData);
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-      }
+        type = 'boolean';
+        inputData = SAMPLE_DATA[type];
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.deepEqual(e.details, inputData);
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+        }
 
-      type = 'null';
-      inputData = SAMPLE_DATA[type];
-      try {
-        await functionRunner({
-          type,
-          inputData,
-          asError: true,
-        });
-        return Promise.reject(new Error('Function did not reject with error.'));
-      } catch (e) {
-        should.deepEqual(e.details, inputData);
-        e.code.should.equal('cancelled');
-        e.message.should.equal(
-          'Response data was requested to be sent as part of an Error payload, so here we are!',
-        );
-      }
+        type = 'null';
+        inputData = SAMPLE_DATA[type];
+        try {
+          await functionRunner({
+            type,
+            inputData,
+            asError: true,
+          });
+          return Promise.reject(new Error('Function did not reject with error.'));
+        } catch (e) {
+          should.deepEqual(e.details, inputData);
+          e.code.should.equal('cancelled');
+          e.message.should.equal(
+            'Response data was requested to be sent as part of an Error payload, so here we are!',
+          );
+        }
 
-      return Promise.resolve();
+        return Promise.resolve();
+      } else {
+        // TODO waiting on firebase-ios-sdk > 9.1.0 - https://github.com/firebase/firebase-ios-sdk/pull/9862
+        this.skip();
+      }
     });
 
     it('HttpsCallableOptions.timeout will error when timeout is exceeded', async function () {
