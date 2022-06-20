@@ -19,7 +19,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
-1) ALL iOS: firebase-ios-sdk now requires `use_frameworks!` in your Podfile and Xcode 13.3+
+1) ALL iOS: firebase-ios-sdk now requires `use_frameworks!` in your Podfile and Xcode 13.3+. Note that
+use_frameworks is not yet compatible with Hermes, Flipper, React Native New Architecture, or react-native 0.69.0.
+Each of these is being worked on (follow [react-native 0.69 PR](https://github.com/facebook/react-native/pull/34011), [Hermes PR](https://github.com/facebook/react-native/pull/34030)) but for now you need react-native 0.68.2 or below, and you must disable hermes and flipper. **Expo users** should use [expo-build-properties](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/#pluginconfigtypeios) + Expo SDK45 to turn on use_frameworks in dynamic mode.
 
 2) Storage(customMetadata): android works like web+iOS now: customMetadata if passed in will be
 updated as a single atomic unit, all keys at once. Any key you want to keep in customMetadata
