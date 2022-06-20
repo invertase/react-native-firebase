@@ -19,15 +19,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
-* if your firebase functions return custom HttpsError instances, you must not upgrade yet,
-custom errors suffered a regression in firebase-ios-sdk 9.0.0 and 9.1.0. The next firebase-ios-sdk release
-fixes this regression, at which point you may safely use this release in combination with overriding the firebase-ios-sdk
-version in your Podfile
-* android works like web+iOS now: customMetadata if passed in will be
+1) ALL iOS: firebase-ios-sdk now requires `use_frameworks!` in your Podfile and Xcode 13.3+
+
+2) Storage(customMetadata): android works like web+iOS now: customMetadata if passed in will be
 updated as a single atomic unit, all keys at once. Any key you want to keep in customMetadata
 must be passed in during update; any missing keys will be removed. Set customMetadata to null
 in order to remove customMetadata entirely, omit it during update to leave it unchanged.
 
+3) Functions(custom errors): if your firebase functions return custom HttpsError instances, you must not upgrade yet,
+custom errors suffered a regression in firebase-ios-sdk 9.0.0 and 9.1.0. The next firebase-ios-sdk release
+fixes this regression, at which point you may safely use this release in combination with overriding the [firebase-ios-sdk
+version in your Podfile](https://rnfirebase.io/#ios)
+
+### Checklist
 
 
 
