@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.0.0](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v15.0.0) (2022-06-20)
+
+### Bug Fixes
+
+- **storage, ios:** correct storage metadata update / delete ([2dcb079](https://github.com/invertase/react-native-firebase/commit/2dcb0790c1812a33100cceea9dcb407d6a64cb87))
+- **storage, ios:** surface underlying reason for unknown errors if possible ([6cd53ea](https://github.com/invertase/react-native-firebase/commit/6cd53eaca16ef52c52a28a7b209a7c8313fef08b))
+
+- fix(storage, android)!: android now updates customMetadata as a group ([d602436](https://github.com/invertase/react-native-firebase/commit/d602436795bfb78f24bc69c42880133505738c00))
+
+### BREAKING CHANGES
+
+- android works like web+iOS now: customMetadata if passed in will be
+  updated as a single atomic unit, all keys at once. Any key you want to keep in customMetadata
+  must be passed in during update; any missing keys will be removed. Set customMetadata to null
+  in order to remove customMetadata entirely, omit it during update to leave it unchanged.
+
 ## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
 
 **Note:** Version bump only for package @react-native-firebase/storage

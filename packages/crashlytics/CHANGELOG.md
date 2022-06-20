@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.0.0](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v15.0.0) (2022-06-20)
+
+### Bug Fixes
+
+- **crashlytics, ios:** forward port to firebase-ios-sdk v9 header locations ([e5bd716](https://github.com/invertase/react-native-firebase/commit/e5bd7161c0d1142da184e0e676c8756e2ebebf90))
+
 ## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
