@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.0.0](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v15.0.0) (2022-06-20)
+
+
+### Bug Fixes
+
+* **crashlytics, ios:** forward port to firebase-ios-sdk v9 header locations ([e5bd716](https://github.com/invertase/react-native-firebase/commit/e5bd7161c0d1142da184e0e676c8756e2ebebf90))
+* **storage, ios:** correct storage metadata update / delete ([2dcb079](https://github.com/invertase/react-native-firebase/commit/2dcb0790c1812a33100cceea9dcb407d6a64cb87))
+* **storage, ios:** surface underlying reason for unknown errors if possible ([6cd53ea](https://github.com/invertase/react-native-firebase/commit/6cd53eaca16ef52c52a28a7b209a7c8313fef08b))
+
+
+* test(functions, ios)!: disable custom HttpsError testing ([a56dc9f](https://github.com/invertase/react-native-firebase/commit/a56dc9f5778219df056a38b9cade08f976f4ef24))
+* fix(storage, android)!: android now updates customMetadata as a group ([d602436](https://github.com/invertase/react-native-firebase/commit/d602436795bfb78f24bc69c42880133505738c00))
+
+
+### BREAKING CHANGES
+
+* if your firebase functions return custom HttpsError instances, you must not upgrade yet,
+custom errors suffered a regression in firebase-ios-sdk 9.0.0 and 9.1.0. The next firebase-ios-sdk release
+fixes this regression, at which point you may safely use this release in combination with overriding the firebase-ios-sdk
+version in your Podfile
+* android works like web+iOS now: customMetadata if passed in will be
+updated as a single atomic unit, all keys at once. Any key you want to keep in customMetadata
+must be passed in during update; any missing keys will be removed. Set customMetadata to null
+in order to remove customMetadata entirely, omit it during update to leave it unchanged.
+
+
+
+
+
 ## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
 
 
