@@ -138,6 +138,19 @@ RCT_EXPORT_METHOD(setDefaultEventParameters
   return resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
+                  : (NSString *)emailAddress resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics initiateOnDeviceConversionMeasurementWithEmailAddress:emailAddress];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
+}
+
 #pragma mark -
 #pragma mark Private methods
 

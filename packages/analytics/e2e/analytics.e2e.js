@@ -426,6 +426,15 @@ describe('analytics()', function () {
   });
 
   // Test this last so it does not stop delivery to DebugView
+  describe('initiateOnDeviceConversionMeasurementWithEmailAddress()', function () {
+    it('calls native API successfully', async function () {
+      await firebase
+        .analytics()
+        .initiateOnDeviceConversionMeasurementWithEmailAddress('conversionTest@example.com');
+    });
+  });
+
+  // Test this last so it does not stop delivery to DebugView
   describe('setAnalyticsCollectionEnabled()', function () {
     it('false', async function () {
       await firebase.analytics().setAnalyticsCollectionEnabled(false);

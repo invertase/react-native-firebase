@@ -1502,6 +1502,15 @@ export namespace FirebaseAnalyticsTypes {
      * will clear all parameters.
      */
     setDefaultEventParameters(params?: { [key: string]: any }): Promise<void>;
+
+    /**
+     * start privacy-sensitive on-device conversion management.
+     * This is iOS-only.
+     * This is a no-op if you do not include '#RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     *
+     * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
+     */
+    initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
   }
 }
 
