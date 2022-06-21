@@ -17,6 +17,7 @@
 
 import {
   isAlphaNumericUnderscore,
+  isIOS,
   isNull,
   isNumber,
   isObject,
@@ -675,6 +676,20 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     }
 
     return this.native.setDefaultEventParameters(params);
+  }
+
+  initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress) {
+    if (!isString(emailAddress)) {
+      throw new Error(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
+      );
+    }
+
+    if (!isIOS) {
+      return;
+    }
+
+    return this.native.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
   }
 }
 

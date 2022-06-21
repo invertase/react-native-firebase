@@ -75,6 +75,7 @@
     "jest": "^28.1.1",
     "lerna": "5.1.4",
     "prettier": "^2.7.1",
+    "regenerator-transform": "^0.15.0",
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "ts-jest": "^28.0.5",
