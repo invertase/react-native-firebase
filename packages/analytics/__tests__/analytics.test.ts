@@ -521,4 +521,15 @@ describe('Analytics', function () {
       );
     });
   });
+
+  describe('initiateOnDeviceConversionMeasurementWithEmailAddress()', function () {
+    it('throws if not a string', function () {
+      expect(() =>
+        // @ts-ignore
+        firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(true),
+      ).toThrowError(
+        "firebase.analytics().initiateOnDeviceConversionMeasurementWithEmailAddress(*) 'emailAddress' expected a string value.",
+      );
+    });
+  });
 });

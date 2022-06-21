@@ -49,6 +49,18 @@ Pod::Spec.new do |s|
     s.dependency          'Firebase/Analytics', firebase_sdk_version
   end
 
+  # Special pod for on-device conversion
+  if defined?($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion) && ($RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion == true)
+    Pod::UI.puts "#{s.name}: GoogleAppMeasurementOnDeviceConversion pod added"
+
+    # Releasing as non-breaking change as it is optional but it raises minimum requirements, validate just in case
+    if (Gem::Version.new(firebase_sdk_version) < Gem::Version.new("9.0.0"))
+      raise "GoogleAppMeasurementOnDeviceConversion requires firebase-ios-sdk 9.0.0 or greater."
+    end
+
+    s.dependency          'GoogleAppMeasurementOnDeviceConversion', firebase_sdk_version
+  end
+
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
     s.static_framework = $RNFirebaseAsStaticFramework

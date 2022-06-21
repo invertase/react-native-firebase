@@ -11,6 +11,9 @@ $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_framewor
 # See: https://firebase.google.com/support/release-notes/ios#analytics - requires firebase-ios-sdk 7.11.0+
 #$RNFirebaseAnalyticsWithoutAdIdSupport = true # toggle this to true for the no-ad-tracking Analytics subspec
 
+# Toggle this to true if you want to include support for on device conversion measurement APIs
+$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
+
 # Versions used below, for quick reference / outdated+upgrade checks
 $iOSMinimumDeployVersion = '11.0'
 
