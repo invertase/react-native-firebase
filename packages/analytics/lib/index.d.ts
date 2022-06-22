@@ -1506,7 +1506,7 @@ export namespace FirebaseAnalyticsTypes {
     /**
      * start privacy-sensitive on-device conversion management.
      * This is iOS-only.
-     * This is a no-op if you do not include '#RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+     * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
      *
      * @param emailAddress email address, properly formatted complete with domain name e.g, 'user@example.com'
      */
