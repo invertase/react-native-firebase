@@ -35,7 +35,6 @@ def firebaseBomVersion = appPackageJson['sdkVersions']['android']['firebase']
 def jsonMinSdk = appPackageJson['sdkVersions']['android']['minSdk']
 def jsonTargetSdk = appPackageJson['sdkVersions']['android']['targetSdk']
 def jsonCompileSdk = appPackageJson['sdkVersions']['android']['compileSdk']
-def jsonBuildTools = appPackageJson['sdkVersions']['android']['buildTools']
 def coreVersionDetected = appPackageJson['version']
 def coreVersionRequired = packageJson['peerDependencies'][appPackageJson['name']]
 // Only log after build completed so log warning appears at the end
@@ -52,9 +51,6 @@ project.ext {
         minSdk    : jsonMinSdk,
         targetSdk : jsonTargetSdk,
         compileSdk: jsonCompileSdk,
-        // optional as gradle.buildTools comes with one by default
-        // overriding here though to match the version RN uses
-        buildTools: jsonBuildTools
       ],
 
       firebase: [
