@@ -26,7 +26,6 @@ def playServicesAuthVersion = packageJson['sdkVersions']['android']['playService
 def jsonMinSdk = packageJson['sdkVersions']['android']['minSdk']
 def jsonTargetSdk = packageJson['sdkVersions']['android']['targetSdk']
 def jsonCompileSdk = packageJson['sdkVersions']['android']['compileSdk']
-def jsonBuildTools = packageJson['sdkVersions']['android']['buildTools']
 
 project.ext {
   set('react-native', [
@@ -35,9 +34,6 @@ project.ext {
         minSdk    : jsonMinSdk,
         targetSdk : jsonTargetSdk,
         compileSdk: jsonCompileSdk,
-        // optional as gradle.buildTools comes with one by default
-        // overriding here though to match the version RN uses
-        buildTools: jsonBuildTools
       ],
 
       firebase: [

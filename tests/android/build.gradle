@@ -1,5 +1,4 @@
 buildscript {
-  ext.buildToolsVersion = '31.0.0'
   ext.minSdkVersion = 21
   ext.compileSdkVersion = 31
   ext.targetSdkVersion = 31
@@ -81,7 +80,6 @@ subprojects {
   // Force all subprojects to use one and only one set of versions
   ext {
     compileSdk = rootProject.ext.compileSdkVersion
-    buildTools = rootProject.ext.buildToolsVersion
     minSdk = rootProject.ext.minSdkVersion
     targetSdk = rootProject.ext.targetSdkVersion
   }
@@ -90,7 +88,6 @@ subprojects {
       && project.hasProperty('android')) {
       android {
         compileSdkVersion compileSdk
-        buildToolsVersion buildTools
         defaultConfig {
           minSdkVersion minSdk
           targetSdkVersion targetSdk
@@ -121,6 +118,6 @@ subprojects {
           htmlReport true
         }
       }
-      }
+    }
   }
 }
