@@ -129,7 +129,15 @@ Open the file `./ios/Podfile` and add this line inside your targets:
 use_frameworks!
 ```
 
-> Note `use_frameworks` [is _not_ compatible with Flipper, Hermes, React Native New Architecture or react-native 0.69.0](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). Community support to help fix `use_frameworks` support is welcome!
+To use Static Frameworks on iOS, you also need to manually enable this for the project with the following global to the top of your `/ios/Podfile` file:
+
+```ruby
+$RNFirebaseAsStaticFramework = true
+```
+
+Expo users may use [expo-build-properties](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks`. We are unsure how Expo users add variables to a Podfile and may need a community contribution to the config-plugin here to do so, PRs welcome!
+
+> Note `use_frameworks` [is _not_ compatible with Flipper, Hermes, React Native New Architecture or react-native 0.69.0](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). There is already [a patch-package patch available for 0.69.0](https://github.com/mikehardy/rnfbdemo/blob/main/patches/react-native%2B0.69.0.patch) that makes it work with and without Hermes and it will be released with 0.69.1. Community support to help fix `use_frameworks` support for Hermes and New Architecture is welcome!
 
 ### 4. Autolinking & rebuilding
 
@@ -256,15 +264,6 @@ To increase throughput, you can tune the thread pool executor via `firebase.json
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `android_task_executor_maximum_pool_size`  | Maximum pool size of ThreadPoolExecutor. Defaults to `1`. Larger values typically improve performance when executing large numbers of asynchronous tasks, e.g. Firestore queries. Setting this value to `0` completely disables the pooled executor and all tasks execute in serial per module. |
 | `android_task_executor_keep_alive_seconds` | Keep-alive time of ThreadPoolExecutor, in seconds. Defaults to `3`. Excess threads in the pool executor will be terminated if they have been idle for more than the keep-alive time. This value doesn't have any effect when the maximum pool size is lower than `2`.                           |
-
-### Allow iOS Static Frameworks
-
-If you are using Static Frameworks on iOS, you need to manually enable this for the project. To enable Static Framework
-support, add the following global to the top of your `/ios/Podfile` file:
-
-```ruby
-$RNFirebaseAsStaticFramework = true
-```
 
 ### Expo
 
