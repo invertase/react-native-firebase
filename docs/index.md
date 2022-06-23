@@ -62,7 +62,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.3.10'
+    classpath 'com.google.gms:google-services:4.3.12'
     // Add me --- /\
   }
 }
@@ -212,7 +212,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "30.1.0"
+        bom           : "30.2.0"
       ],
     ],
   ])
@@ -227,7 +227,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '8.15.0'
+$FirebaseSDKVersion = '9.2.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
