@@ -319,7 +319,6 @@ If OFF, `setBackgroundMessageHandler` will not be triggered.
 
 <img src="https://user-images.githubusercontent.com/86952204/169194303-29c10a55-8412-4eb3-960f-35703d984484.png" width="200">
 
-
 ### Topics
 
 Topics are a mechanism which allow a device to subscribe and unsubscribe from named PubSub channels, all managed via FCM.
