@@ -311,6 +311,12 @@ messaging()
 
 On Android, the `isHeadless` prop will not exist.
 
+#### iOS Background Limitation
+
+On iOS devices, the user is able to toggle Background App Refresh in device's Settings. Furthermore, the Background App Refresh setting will automatically be off if the device is in low power mode.
+
+If the iOS Background App Refresh mode is off, your handler configured in `setBackgroundMessageHandler` will not be triggered.
+
 ### Topics
 
 Topics are a mechanism which allow a device to subscribe and unsubscribe from named PubSub channels, all managed via FCM.
