@@ -38,6 +38,7 @@ CocoaPods
 codebase
 config
 Config
+config-plugin
 crashlytics
 Crashlytics
 datastore
