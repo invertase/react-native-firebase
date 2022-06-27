@@ -59,6 +59,7 @@ This App Check module has built-in support for using the following services as a
 App Check currently works with the following Firebase products:
 
 - Realtime Database
+- Cloud Firestore
 - Cloud Storage
 - Cloud Functions (callable functions)
 
