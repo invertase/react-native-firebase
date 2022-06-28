@@ -36,6 +36,7 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   s.dependency          'Firebase/Crashlytics', firebase_sdk_version
+  s.dependency          'FirebaseCoreExtension', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
