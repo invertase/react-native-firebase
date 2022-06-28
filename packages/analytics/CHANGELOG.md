@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.1.0](https://github.com/invertase/react-native-firebase/compare/v15.0.0...v15.1.0) (2022-06-28)
+
+### Features
+
+- **analytics, ios:** implement on-device conversion ([a1df996](https://github.com/invertase/react-native-firebase/commit/a1df996b36f2b5eb68c6443c49c5185437573fba)), closes [/firebase.google.com/support/release-notes/ios#analytics_1](https://github.com//firebase.google.com/support/release-notes/ios/issues/analytics_1) [#6321](https://github.com/invertase/react-native-firebase/issues/6321)
+
 # [15.0.0](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v15.0.0) (2022-06-20)
 
 **Note:** Version bump only for package @react-native-firebase/analytics
