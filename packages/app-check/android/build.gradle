@@ -93,8 +93,8 @@ repositories {
 dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion('firebase', 'bom')}")
-  implementation "com.google.firebase:firebase-appcheck-safetynet"
-  implementation "com.google.firebase:firebase-appcheck-debug"
+  implementation 'com.google.firebase:firebase-appcheck-safetynet:16.0.0'
+  implementation 'com.google.firebase:firebase-appcheck-debug:16.0.0'
 }
 
 ReactNative.shared.applyPackageVersion()
