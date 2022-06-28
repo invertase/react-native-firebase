@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [15.1.1](https://github.com/invertase/react-native-firebase/compare/v15.1.0...v15.1.1) (2022-06-28)
+
+
+### Bug Fixes
+
+* **ios, crashlytics:** depend on FirebaseCoreExtension ([#6352](https://github.com/invertase/react-native-firebase/issues/6352)) ([ea0ffe0](https://github.com/invertase/react-native-firebase/commit/ea0ffe06e7c6182bf38b18e9d6ca00c388ec6893)), closes [/github.com/invertase/react-native-firebase/issues/6322#issuecomment-1168902482](https://github.com//github.com/invertase/react-native-firebase/issues/6322/issues/issuecomment-1168902482)
+
+
+
+
+
 # [15.1.0](https://github.com/invertase/react-native-firebase/compare/v15.0.0...v15.1.0) (2022-06-28)
 
 
