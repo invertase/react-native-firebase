@@ -44,8 +44,10 @@ Pod::Spec.new do |s|
 
     s.dependency          'Firebase/AnalyticsWithoutAdIdSupport', firebase_sdk_version
   else
-    Pod::UI.puts "#{s.name}: Using default Firebase/Analytics with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
-    Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
+    if !defined?($RNFirebaseAnalyticsWithoutAdIdSupport)
+      Pod::UI.puts "#{s.name}: Using default Firebase/Analytics with Ad Ids. May require App Tracking Transparency. Not allowed for Kids apps."
+      Pod::UI.puts "#{s.name}: You may set variable `$RNFirebaseAnalyticsWithoutAdIdSupport=true` in Podfile to use analytics without ad ids."
+    end
     s.dependency          'Firebase/Analytics', firebase_sdk_version
   end
 
