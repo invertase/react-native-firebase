@@ -25,7 +25,7 @@
   ],
   "dependencies": {
     "plist": "^3.0.5",
-    "@expo/config-plugins": "^4.0.18"
+    "@expo/config-plugins": "^4.1.4"
   },
   "peerDependencies": {
     "@react-native-firebase/app": "15.1.1"
