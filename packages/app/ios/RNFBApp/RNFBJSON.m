@@ -75,6 +75,12 @@
   return string;
 }
 
+- (NSArray *)getArrayValue:(NSString *)key defaultValue:(NSArray *)defaultValue {
+  if ([_firebaseJson valueForKey:key] == nil) return defaultValue;
+  NSArray *array = [_firebaseJson valueForKey:key];
+  return array;
+}
+
 - (NSDictionary *)getAll {
   return [[NSDictionary alloc] initWithDictionary:_firebaseJson copyItems:YES];
 }
