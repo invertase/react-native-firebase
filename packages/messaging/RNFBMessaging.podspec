@@ -28,6 +28,7 @@ Pod::Spec.new do |s|
   s.dependency          'React-Core'
   s.dependency          'RNFBApp'
 
+
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"
     firebase_sdk_version = $FirebaseSDKVersion
@@ -35,6 +36,7 @@ Pod::Spec.new do |s|
 
   # Firebase dependencies
   s.dependency          'Firebase/Messaging', firebase_sdk_version
+  s.dependency          'FirebaseCoreExtension', firebase_sdk_version
 
   if defined?($RNFirebaseAsStaticFramework)
     Pod::UI.puts "#{s.name}: Using overridden static_framework value of '#{$RNFirebaseAsStaticFramework}'"
