@@ -103,20 +103,28 @@ struct {
     presentationOptions |= UNNotificationPresentationOptionSound;
   }
 
-  if (alert) {
+  // if list or banner is true, ignore `alert` property
+  if (banner || list) {
+    if (banner) {
+      if (@available(iOS 14, *)) {
+        presentationOptions |= UNNotificationPresentationOptionBanner;
+      } else {
+        // for iOS 13 we need to set `alert`
+        presentationOptions |= UNNotificationPresentationOptionAlert;
+      }
+    }
+
+    if (list) {
+      if (@available(iOS 14, *)) {
+        presentationOptions |= UNNotificationPresentationOptionList;
+      } else {
+        // for iOS 13 we need to set `alert`
+        presentationOptions |= UNNotificationPresentationOptionAlert;
+      }
+    }
+  } else if (alert) {
+    // TODO: Remove `alert` once iOS 14 becomes the minimum deployment target
     presentationOptions |= UNNotificationPresentationOptionAlert;
-  }
-
-  if (list) {
-    if (@available(iOS 14, *)) {
-      presentationOptions |= UNNotificationPresentationOptionList;
-    }
-  }
-
-  if (banner) {
-    if (@available(iOS 14, *)) {
-      presentationOptions |= UNNotificationPresentationOptionBanner;
-    }
   }
 
   if (notification.request.content.userInfo[@"gcm.message_id"]) {
