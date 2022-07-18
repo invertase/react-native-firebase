@@ -95,7 +95,7 @@
           "type": "boolean"
         },
         "messaging_ios_foreground_presentation_options": {
-          "description": "",
+          "description": "On iOS, indicating how to present a notification in a foreground app.",
           "type": "array"
         },
         "perf_auto_collection_enabled": {
