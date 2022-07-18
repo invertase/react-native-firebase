@@ -9,6 +9,7 @@ APIs
 APIs.
 AppAttest
 AppCheck
+AppDelegate.m
 APNs
 AirPods
 async
