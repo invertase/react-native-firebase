@@ -26,7 +26,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProviderFactory;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
-import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.lang.reflect.*;
 
@@ -75,7 +75,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
 
       } else {
         firebaseAppCheck.installAppCheckProviderFactory(
-            SafetyNetAppCheckProviderFactory.getInstance());
+            PlayIntegrityAppCheckProviderFactory.getInstance());
       }
     } catch (Exception e) {
       rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", "unimplemented");
