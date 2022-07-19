@@ -395,13 +395,7 @@ Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documen
 // <projectRoot>/firebase.json
 {
   "react-native": {
-    "messaging_ios_foreground_presentation_options": [
-      "badge",
-      "sound",
-      "alert",
-      "list",
-      "banner"
-    ]
+    "messaging_ios_foreground_presentation_options": ["badge", "sound", "alert", "list", "banner"]
   }
 }
 ```
