@@ -173,7 +173,7 @@ If it's called too soon (e.g. within a class constructor or global scope), the n
 
 To send messages to a device, you would need the FCM token for it, which you can get using the `messaging().getToken()` method. An example is availbale on '[Notifee pages](https://notifee.app/react-native/docs/integrations/fcm)'.
 
-```jsx 
+```jsx
 await messaging().registerDeviceForRemoteMessages();
 const token = await messaging().getToken();
 // save the token to the db
