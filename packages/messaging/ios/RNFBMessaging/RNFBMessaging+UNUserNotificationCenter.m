@@ -83,9 +83,9 @@ struct {
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))completionHandler {
-
-  NSArray *presentationOptionsConfig = [[RNFBJSON shared] getArrayValue:@"messaging_ios_foreground_presentation_options"
-                                                           defaultValue:@[]];
+  NSArray *presentationOptionsConfig =
+      [[RNFBJSON shared] getArrayValue:@"messaging_ios_foreground_presentation_options"
+                          defaultValue:@[]];
 
   UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionNone;
 
