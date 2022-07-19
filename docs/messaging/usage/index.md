@@ -386,6 +386,20 @@ async function registerAppWithFCM() {
 }
 ```
 
+## Foreground Presentation Options (iOS)
+
+React Native Firebase Messaging configures how to present a notification in a foreground app.
+Refer to [UNNotificationPresentationOptions](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions) for the details.
+
+```json
+// <projectRoot>/firebase.json
+{
+  "react-native": {
+    "messaging_ios_foreground_presentation_options": ["badge", "sound", "list", "banner"]
+  }
+}
+```
+
 ## Auto initialization
 
 Firebase generates an Instance ID, which FCM uses to generate a registration token and which Analytics uses for data collection.

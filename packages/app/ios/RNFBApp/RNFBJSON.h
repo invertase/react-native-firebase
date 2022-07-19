@@ -25,6 +25,8 @@
 
 - (NSString *)getStringValue:(NSString *)key defaultValue:(NSString *)defaultValue;
 
+- (NSArray *)getArrayValue:(NSString *)key defaultValue:(NSArray *)defaultValue;
+
 - (NSDictionary *)getAll;
 
 - (NSString *)getRawJSON;
