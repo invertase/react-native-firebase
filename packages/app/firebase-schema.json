@@ -94,6 +94,10 @@
           "description": "Whether RNFirebase Messaging automatically calls `[[UIApplication sharedApplication] registerForRemoteNotifications];`\nautomatically on app launch (recommended) - defaults to true.\n If set to false; make sure to call `firebase.messaging().registerDeviceForRemoteMessages()`\nearly on in your app startup - otherwise you will NOT receive remote messages/notifications\nin your app.\n",
           "type": "boolean"
         },
+        "messaging_ios_foreground_presentation_options": {
+          "description": "On iOS, indicating how to present a notification in a foreground app.",
+          "type": "array"
+        },
         "perf_auto_collection_enabled": {
           "description": "Disable or enable auto collection of performance monitoring data collection.\n This is useful for opt-in-first data flows, for example when dealing with GDPR compliance.\nThis can be overridden in JavaScript.",
           "type": "boolean"
