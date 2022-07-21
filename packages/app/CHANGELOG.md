@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.2.0](https://github.com/invertase/react-native-firebase/compare/v15.1.1...v15.2.0) (2022-07-21)
+
+### Features
+
+- **ios, messaging:** Allow notifications in foreground on iOS, configure in firebase.json ([#6407](https://github.com/invertase/react-native-firebase/issues/6407)) ([71dee2b](https://github.com/invertase/react-native-firebase/commit/71dee2bac7a2ea58e51605a249cab7f1ac5fa7d7))
+- **sdks:** firebase-ios-sdk 9.3.0 / firebase-android-sdk 30.3.0 ([e03dcd1](https://github.com/invertase/react-native-firebase/commit/e03dcd19a530e178022aaebd3266e31e037c9550))
+
 ## [15.1.1](https://github.com/invertase/react-native-firebase/compare/v15.1.0...v15.1.1) (2022-06-28)
 
 **Note:** Version bump only for package @react-native-firebase/app
