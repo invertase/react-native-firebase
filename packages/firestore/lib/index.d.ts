@@ -808,6 +808,11 @@ export namespace FirebaseFirestoreTypes {
      * @param other The `GeoPoint` to compare against.
      */
     isEqual(other: GeoPoint): boolean;
+
+    /**
+     * Returns a JSON-serializable representation of this GeoPoint.
+     */
+    toJSON(): { latitude: number; longitude: number };
   }
 
   /**
