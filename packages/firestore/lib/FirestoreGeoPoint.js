@@ -66,4 +66,11 @@ export default class FirestoreGeoPoint {
 
     return this._latitude === other._latitude && this._longitude === other._longitude;
   }
+
+  toJSON() {
+    return {
+      latitude: this._latitude,
+      longitude: this._longitude,
+    };
+  }
 }
