@@ -110,7 +110,7 @@ describe('firestore.GeoPoint', function () {
   describe('toJSON()', function () {
     it('returns a json representation of the GeoPoint', function () {
       const geo = new firebase.firestore.GeoPoint(30, 35);
-      geo.toJSON().should.deepEqual({
+      geo.toJSON().should.eql({
         latitude: 30,
         longitude: 35,
       });
