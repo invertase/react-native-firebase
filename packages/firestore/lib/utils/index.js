@@ -91,7 +91,7 @@ export function parseSetOptions(options) {
       throw new Error("'options.merge' must be a boolean value.");
     }
 
-    out.merge = true;
+    out.merge = options.merge;
   }
 
   if (!isUndefined(options.mergeFields)) {
