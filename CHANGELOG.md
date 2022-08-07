@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.3.0](https://github.com/invertase/react-native-firebase/compare/v15.2.0...v15.3.0) (2022-08-07)
+
+
+### Bug Fixes
+
+* **app, sdk:** firebase-android-sdk 30.3.1 / firebase-ios-sdk 9.4.0 ([1fd7fc8](https://github.com/invertase/react-native-firebase/commit/1fd7fc837a31bad179ccf5d463c80f578d7cbd15)), closes [#6327](https://github.com/invertase/react-native-firebase/issues/6327)
+* **firestore:** merge option should not always be true if passed ([#6436](https://github.com/invertase/react-native-firebase/issues/6436)) ([85585da](https://github.com/invertase/react-native-firebase/commit/85585da91fc82308a44f52063ffb612d651db7c7))
+* **ios, messaging:** depend directly on FirebaseCoreExtension pod ([62ee54b](https://github.com/invertase/react-native-firebase/commit/62ee54b8a7d273430cbebf88af1d8a96fed6a6a6)), closes [#6403](https://github.com/invertase/react-native-firebase/issues/6403) [#6352](https://github.com/invertase/react-native-firebase/issues/6352)
+* **messaging, ios:** eliminate auth/messaging notification race ([#6455](https://github.com/invertase/react-native-firebase/issues/6455)) ([7183118](https://github.com/invertase/react-native-firebase/commit/71831188a4d90800cce424a5a3cfb29978391bd3))
+
+
+### Features
+
+* add GeoPoint toJSON() method ([b062e74](https://github.com/invertase/react-native-firebase/commit/b062e743303c1c98334ff1ce1a82df59e87eebc4))
+
+
+
+
+
 # [15.2.0](https://github.com/invertase/react-native-firebase/compare/v15.1.1...v15.2.0) (2022-07-21)
 
 

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.3.0](https://github.com/invertase/react-native-firebase/compare/v15.2.0...v15.3.0) (2022-08-07)
+
+### Bug Fixes
+
+- **ios, messaging:** depend directly on FirebaseCoreExtension pod ([62ee54b](https://github.com/invertase/react-native-firebase/commit/62ee54b8a7d273430cbebf88af1d8a96fed6a6a6)), closes [#6403](https://github.com/invertase/react-native-firebase/issues/6403) [#6352](https://github.com/invertase/react-native-firebase/issues/6352)
+- **messaging, ios:** eliminate auth/messaging notification race ([#6455](https://github.com/invertase/react-native-firebase/issues/6455)) ([7183118](https://github.com/invertase/react-native-firebase/commit/71831188a4d90800cce424a5a3cfb29978391bd3))
+
 # [15.2.0](https://github.com/invertase/react-native-firebase/compare/v15.1.1...v15.2.0) (2022-07-21)
 
 ### Features
