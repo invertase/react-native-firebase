@@ -664,8 +664,7 @@ describe('storage() -> StorageReference', function () {
       }
     });
 
-    // FIXME this works against the cloud on iOS but will actually crash the storage emulator
-    xit('allows valid metadata properties for upload', async function () {
+    it('allows valid metadata properties for upload', async function () {
       const storageReference = firebase.storage().ref(`${PATH}/metadataTest.jpeg`);
       await storageReference.put(new jet.context.window.ArrayBuffer(), {
         contentType: 'image/jpg',
