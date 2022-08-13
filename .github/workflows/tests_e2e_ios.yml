@@ -77,7 +77,7 @@ jobs:
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
-          max-size: 750M
+          max-size: 1G
 
       - name: Yarn Install
         uses: nick-invision/retry@v2
@@ -141,6 +141,7 @@ jobs:
           export CCACHE_FILECLONE=true
           export CCACHE_DEPEND=true
           export CCACHE_INODECACHE=true
+          export CCACHE_LIMIT_MULTIPLE=0.95
           ccache -s
           export SKIP_BUNDLING=1
           export RCT_NO_LAUNCH_PACKAGER=1
