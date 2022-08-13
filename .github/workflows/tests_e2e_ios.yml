@@ -62,7 +62,7 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
-          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('**/package.json') }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
       - uses: actions/cache@v2
@@ -105,7 +105,7 @@ jobs:
         id: pods-cache
         with:
           path: tests/ios/Pods
-          key: ${{ runner.os }}-pods-v2-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-v2-${{ hashFiles('tests/ios/Podfile.lock') }}
           restore-keys: ${{ runner.os }}-pods-v2
 
       - name: Pod Install
