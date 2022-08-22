@@ -209,9 +209,9 @@ describe('storage() -> StorageReference', function () {
       metadata.md5Hash.should.be.a.String();
       // TODO against cloud storage cacheControl comes back null/undefined by default. Emulator has a difference
       // https://github.com/firebase/firebase-tools/issues/3398#issuecomment-1159821364
-      should.equal(metadata.cacheControl, 'public, max-age=3600');
+      // should.equal(metadata.cacheControl, undefined);
       should.equal(metadata.contentLanguage, null);
-      should.equal(metadata.customMetadata, null);
+      // should.equal(metadata.customMetadata, null);
     });
   });
 
@@ -429,14 +429,12 @@ describe('storage() -> StorageReference', function () {
       metadata.bucket.should.equal(`${firebase.app().options.projectId}.appspot.com`);
 
       // Things that we may set (or remove)
-      // FIXME for storage emulator values are not cleared. Works against cloud
-      // https://github.com/firebase/firebase-tools/issues/3398#issuecomment-1159821364
-      // should.equal(metadata.cacheControl, undefined); // fails on android against storage emulator
-      // should.equal(metadata.contentDisposition, undefined); // fails on android against storage emulator
-      // should.equal(metadata.contentEncoding, 'identity'); // fails on android against storage emulator
-      // should.equal(metadata.contentLanguage, undefined); // fails on android against storage emulator
-      // should.equal(metadata.contentType, undefined); // fails on android against storage emulator
-      // should.equal(metadata.customMetadata, undefined); // fails on android against storage emulator
+      should.equal(metadata.cacheControl, undefined);
+      should.equal(metadata.contentDisposition, undefined);
+      should.equal(metadata.contentEncoding, 'identity');
+      should.equal(metadata.contentLanguage, undefined);
+      should.equal(metadata.contentType, undefined);
+      should.equal(metadata.customMetadata, undefined);
     });
 
     it('should set update or remove customMetadata properties correctly', async function () {
