@@ -148,7 +148,7 @@ Expo users may use [expo-build-properties](https://docs.expo.dev/versions/v45.0.
 ]
 ```
 
-> Note `use_frameworks` [is _not_ compatible with Flipper, Hermes, React Native New Architecture or react-native 0.69.0](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). There is already [a patch-package patch available for 0.69.0](https://github.com/mikehardy/rnfbdemo/blob/main/patches/react-native%2B0.69.0.patch) that makes it work with and without Hermes and it will be released with 0.69.1. Community support to help fix `use_frameworks` support for Hermes and New Architecture is welcome!
+> Note `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). A fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that makes it work with and without Hermes. To use it with Hermes make sure you have set static linkage with `use_frameworks! :linkage => :static`. To use without Flipper, comment out the `:flipper_configuration` line in your Podfile. Community support to help fix `use_frameworks` support for New Architecture is welcome!
 
 ### 4. Autolinking & rebuilding
 
