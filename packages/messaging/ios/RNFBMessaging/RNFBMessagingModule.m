@@ -320,12 +320,12 @@ RCT_EXPORT_METHOD(hasPermission : (RCTPromiseResolveBlock)resolve : (RCTPromiseR
               authorizedStatus = @2;
             }
           }
-        
-        if (@available(iOS 14.0, macCatalyst 14.0, *)) {
-          if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
-            authorizedStatus = @3;
+
+          if (@available(iOS 14.0, macCatalyst 14.0, *)) {
+            if (settings.authorizationStatus == UNAuthorizationStatusEphemeral) {
+              authorizedStatus = @3;
+            }
           }
-        }
 
           resolve(authorizedStatus);
         }];
