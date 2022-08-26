@@ -97,22 +97,6 @@ Example:
 
 If you don't add this, the dynamic link will invoke your app, but you cannot retrieve any deep link data you may need within your app, as the deep link will be completely ignored.
 
-## iOS Testing Your Dynamic Link
-
-To test your dynamic link, you will need to use a real device as it will not work on a simulator.
-
-### Application Is Installed On Device
-
-The iOS Notes app is a good place to paste your dynamic link and test it opens your app. It should work even if it is not a published app.
-
-### Application Is Not Installed On Device
-
-1. Switch the `App Store ID` in your Firebase Console project settings to a valid App Store ID e.g. iOS Notes App Store ID.
-
-2. Generate a new dynamic link and associate with your app.
-
-3. Paste the link in iOS Notes app. When you press, it should take you to the App Store for the ID you listed in your project settings. Just by making it to the App Store is good enough to indicate your dynamic link is working.
-
 ## iOS Troubleshooting
 
 1. Ensure you have the right URL in the Associated Domains in Xcode.
@@ -147,7 +131,23 @@ The iOS Notes app is a good place to paste your dynamic link and test it opens y
    do not proceed until you see this, it may take a while to register.
 3. Add your domains to the android/app/src/main/AndroidManifest.xml so that your app knows what links to open in the app. Refer to [the official docs](https://firebase.google.com/docs/dynamic-links/android/receive#add-an-intent-filter-for-deep-links) for example code.
 
-4. Test the dynamic link works via your emulator by pasting it into in a text message, notepad or email, and checking that it does open your application (ensure the app is installed on the emulator).
+## Testing Your Dynamic Link
+
+Simulate a user opening the link by pasting it into a text message, notepad or email, and pressing it.
+
+Alternatively, use the [uri-scheme](https://www.npmjs.com/package/uri-scheme) package.
+
+```bash
+npx uri-scheme open "https://xyz.page.link" --[ios|android]
+```
+
+### Application Is Not Installed On Device
+
+The link should take you to the App Store / Google Play, at which point you can abort and install the app manually instead.
+
+While this works on iOS even if the app is not published, testing on Android requires you to have published at least an _internal track_ version, to which the testing device also needs to have access to.
+
+The iOS Simulator throws an `address is invalid` error instead of opening the App Store, which you can safely ignore.
 
 ## Create a Link
 

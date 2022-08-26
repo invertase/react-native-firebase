@@ -183,6 +183,7 @@ unhandled
 UNNotificationPresentationOptions
 unsubscriber
 untampered
+uri-scheme
 userData
 utils
 Utils
