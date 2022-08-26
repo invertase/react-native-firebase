@@ -98,6 +98,7 @@ The value returned is a number value, which can be mapped to one of the followin
 - `0` = `messaging.AuthorizationStatus.DENIED`: The user has denied notification permissions.
 - `1` = `messaging.AuthorizationStatus.AUTHORIZED`: The user has accept the permission & it is enabled.
 - `2` = `messaging.AuthorizationStatus.PROVISIONAL`: [Provisional authorization](#provisional-authorization) has been granted.
+- `3` = `messaging.AuthorizationStatus.EPHEMERAL`: The app is authorized to create notifications for a limited amount of time. Used for app clips.
 
 To help improve the chances of the user granting your app permission, it is recommended that permission is requested at a time which makes
 sense during the flow of your application (e.g. starting a new chat), where the user would expect to receive such notifications.

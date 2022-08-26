@@ -40,6 +40,7 @@ const statics = {
     DENIED: 0,
     AUTHORIZED: 1,
     PROVISIONAL: 2,
+    EPHEMERAL: 3,
   },
   NotificationAndroidPriority: {
     PRIORITY_MIN: -2,
