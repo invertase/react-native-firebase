@@ -501,6 +501,13 @@ export namespace FirebaseMessagingTypes {
      * @platform ios iOS >= 12
      */
     PROVISIONAL = 2,
+
+    /**
+     * The app is authorized to create notifications for a limited amount of time.
+     * Used in App Clips.
+     * @platform ios iOS >= 14
+     */
+    EPHEMERAL = 3,
   }
 
   /**
