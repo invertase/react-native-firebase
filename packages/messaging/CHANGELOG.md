@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.4.0](https://github.com/invertase/react-native-firebase/compare/v15.3.0...v15.4.0) (2022-08-27)
+
+### Bug Fixes
+
+- **messaging, ios:** Support Ephemeral authorization state ([#6478](https://github.com/invertase/react-native-firebase/issues/6478)) ([795b684](https://github.com/invertase/react-native-firebase/commit/795b68472deb0089ac4ddf7270e361a2db1da351))
+
 # [15.3.0](https://github.com/invertase/react-native-firebase/compare/v15.2.0...v15.3.0) (2022-08-07)
 
 ### Bug Fixes
