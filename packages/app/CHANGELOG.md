@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.4.0](https://github.com/invertase/react-native-firebase/compare/v15.3.0...v15.4.0) (2022-08-27)
+
+### Bug Fixes
+
+- **app, android:** bump to firebase-android-sdk 30.3.2 ([ee394fe](https://github.com/invertase/react-native-firebase/commit/ee394fe1221fcb8effa4c87716d99c3f1d556d13))
+
+### Features
+
+- **app, ios:** bump firebase-ios-sdk to 9.5.0 ([feac7f8](https://github.com/invertase/react-native-firebase/commit/feac7f8c8b85c3cf87a34dc9a75ddb7b7b9c034b))
+
 # [15.3.0](https://github.com/invertase/react-native-firebase/compare/v15.2.0...v15.3.0) (2022-08-07)
 
 ### Bug Fixes
