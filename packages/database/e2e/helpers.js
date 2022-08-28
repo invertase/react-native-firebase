@@ -1,10 +1,7 @@
-const testingUtils = require('@firebase/rules-unit-testing');
-
 // TODO make more unique?
 const ID = Date.now();
 
 const PATH = `tests/${ID}`;
-const DB_NAME = 'react-native-firebase-testing';
 const DB_RULES = `{ "rules": {".read": false, ".write": false, "tests": {".read": true, ".write": true } } }`;
 
 const CONTENT = {
@@ -38,11 +35,6 @@ exports.seed = function seed(path) {
   return Promise.all([
     firebase.database().ref(`${path}/types`).set(CONTENT.TYPES),
     firebase.database().ref(`${path}/query`).set(CONTENT.QUERY),
-    // The database emulator does not load rules correctly. We force them pre-test.
-    testingUtils.initializeTestEnvironment({
-      projectId: 'react-native-firebase-testing',
-      database: { databaseName: DB_NAME, rules: DB_RULES, host: 'localhost', port: 9000 },
-    }),
   ]);
 };
 
