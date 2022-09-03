@@ -15,7 +15,7 @@ const fallbackInvocationLineMatcher =
 
 export function modifyObjcAppDelegate(contents: string): string {
   // Add import
-  if (!contents.includes('@import Firebase;')) {
+  if (!contents.includes('#import <Firebase/Firebase.h>')) {
     contents = contents.replace(
       /#import "AppDelegate.h"/g,
       `#import "AppDelegate.h"

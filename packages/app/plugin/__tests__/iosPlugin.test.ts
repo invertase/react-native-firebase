@@ -85,4 +85,22 @@ describe('Config Plugin iOS Tests', function () {
     await expect(modifyAppDelegateAsync(appDelegateFileInfo)).rejects.toThrow();
     expect(fs.writeFile).not.toHaveBeenCalled();
   });
+
+  it('does not add the firebase import multiple times', async function () {
+    const singleImport = '#import "AppDelegate.h"\n#import <Firebase/Firebase.h>';
+    const doubleImport = singleImport + '\n#import <Firebase/Firebase.h>';
+
+    const appDelegate = await fs.readFile(path.join(__dirname, './fixtures/AppDelegate_sdk45.mm'), {
+      encoding: 'utf8',
+    });
+    expect(appDelegate).not.toContain(singleImport);
+
+    const onceModifiedAppDelegate = modifyObjcAppDelegate(appDelegate);
+    expect(onceModifiedAppDelegate).toContain(singleImport);
+    expect(onceModifiedAppDelegate).not.toContain(doubleImport);
+
+    const twiceModifiedAppDelegate = modifyObjcAppDelegate(onceModifiedAppDelegate);
+    expect(twiceModifiedAppDelegate).toContain(singleImport);
+    expect(twiceModifiedAppDelegate).not.toContain(doubleImport);
+  });
 });
