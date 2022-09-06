@@ -221,10 +221,29 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
             });
   }
 
+  @ReactMethod
+  public void setDeliveryMetricsExportToBigQuery(Boolean enabled, Promise promise) {
+    Tasks.call(
+            getExecutor(),
+            () -> {
+              FirebaseMessaging.getInstance().setDeliveryMetricsExportToBigQuery(enabled);
+              return null;
+            })
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(FirebaseMessaging.getInstance().deliveryMetricsExportToBigQueryEnabled());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("isAutoInitEnabled", FirebaseMessaging.getInstance().isAutoInitEnabled());
+    constants.put("isDeliveryMetricsExportToBigQueryEnabled", FirebaseMessaging.getInstance().deliveryMetricsExportToBigQueryEnabled());
     return constants;
   }
 

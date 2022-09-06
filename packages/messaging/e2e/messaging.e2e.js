@@ -320,4 +320,30 @@ describe('messaging()', function () {
       }
     });
   });
+
+  describe('setDeliveryMetricsExportToBigQuery()', function () {
+    afterEach(async function () {
+      await firebase.messaging().setDeliveryMetricsExportToBigQuery(false);
+    });
+
+    it('throws if enabled is not a boolean', function () {
+      try {
+        firebase.messaging().setDeliveryMetricsExportToBigQuery(123);
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'enabled' expected a boolean value");
+        return Promise.resolve();
+      }
+    });
+
+    it('sets the value', async function () {
+      should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
+      await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
+      should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, true);
+
+      // Set it back to the default value for future runs in re-use mode
+      await firebase.messaging().setDeliveryMetricsExportToBigQuery(false);
+      should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
+    });
+  });
 });
