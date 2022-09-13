@@ -68,6 +68,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     super(...args);
     this._isAutoInitEnabled =
       this.native.isAutoInitEnabled != null ? this.native.isAutoInitEnabled : true;
+    this._isDeliveryMetricsExportToBigQueryEnabled =
+      this.native.isDeliveryMetricsExportToBigQueryEnabled != null
+        ? this.native.isDeliveryMetricsExportToBigQueryEnabled
+        : false;
     this._isRegisteredForRemoteNotifications =
       this.native.isRegisteredForRemoteNotifications != null
         ? this.native.isRegisteredForRemoteNotifications
@@ -125,6 +129,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     }
 
     return this._isRegisteredForRemoteNotifications;
+  }
+
+  get isDeliveryMetricsExportToBigQueryEnabled() {
+    return this._isDeliveryMetricsExportToBigQueryEnabled;
   }
 
   setAutoInitEnabled(enabled) {
@@ -428,6 +436,17 @@ class FirebaseMessagingModule extends FirebaseModule {
     console.warn(
       'firebase.messaging().usePublicVapidKey() is not supported on react-native-firebase.',
     );
+  }
+
+  setDeliveryMetricsExportToBigQuery(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error(
+        "firebase.messaging().setDeliveryMetricsExportToBigQuery(*) 'enabled' expected a boolean value.",
+      );
+    }
+
+    this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
+    return this.native.setDeliveryMetricsExportToBigQuery(enabled);
   }
 }
 

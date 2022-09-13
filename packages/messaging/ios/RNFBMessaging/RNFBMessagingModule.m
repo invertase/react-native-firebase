@@ -66,6 +66,8 @@ RCT_EXPORT_MODULE();
       @([RCTConvert BOOL:@([FIRMessaging messaging].autoInitEnabled)]);
   constants[@"isRegisteredForRemoteNotifications"] = @(
       [RCTConvert BOOL:@([[UIApplication sharedApplication] isRegisteredForRemoteNotifications])]);
+  constants[@"isDeliveryMetricsExportToBigQueryEnabled"] =
+      @([RCTConvert BOOL:@(_isDeliveryMetricsExportToBigQueryEnabled)]);
   return constants;
 }
 
@@ -367,6 +369,19 @@ RCT_EXPORT_METHOD(unsubscribeFromTopic
                                           resolve(nil);
                                         }
                                       }];
+}
+
+RCT_EXPORT_METHOD(setDeliveryMetricsExportToBigQuery
+                  : (BOOL)enabled
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    _isDeliveryMetricsExportToBigQueryEnabled = enabled;
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
 }
 
 @end
