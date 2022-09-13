@@ -1009,7 +1009,7 @@ export namespace FirebaseMessagingTypes {
      * await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
      * ```
      *
-     * @param enabled A boolean value to enable or disable exports message delivery metrics to BigQuery.
+     * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
      */
     setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
   }
