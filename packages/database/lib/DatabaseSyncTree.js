@@ -170,7 +170,7 @@ class DatabaseSyncTree {
         // ...react-native 0.70 now stores subscribers as a map of Sets by type in `_registry`
         const registrySubscriptionsSet = SharedEventEmitter._registry[registration];
         if (registrySubscriptionsSet) {
-          subscriptions = Array.from(registrySubscriptionsSet;
+          subscriptions = Array.from(registrySubscriptionsSet);
         }
       }
 
