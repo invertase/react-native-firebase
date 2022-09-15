@@ -161,7 +161,18 @@ class DatabaseSyncTree {
 
     for (let i = 0, len = registrations.length; i < len; i++) {
       const registration = registrations[i];
-      const subscriptions = SharedEventEmitter._subscriber.getSubscriptionsForType(registration);
+      let subscriptions;
+
+      // EventEmitter in react-native < 0.70 had a `_subscriber` property with a method for subscriptions by type...
+      if (SharedEventEmitter._subscriber) {
+        subscriptions = SharedEventEmitter._subscriber.getSubscriptionsForType(registration);
+      } else {
+        // ...react-native 0.70 now stores subscribers as a map of Sets by type in `_registry`
+        const registrySubscriptionsSet = SharedEventEmitter._registry[registration];
+        if (registrySubscriptionsSet) {
+          subscriptions = Array.from(registrySubscriptionsSet);
+        }
+      }
 
       if (subscriptions) {
         for (let j = 0, l = subscriptions.length; j < l; j++) {
