@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.5.0](https://github.com/invertase/react-native-firebase/compare/v15.4.0...v15.5.0) (2022-09-16)
+
+### Features
+
+- **android:** firebase-android-sdk 30.5.0 ([abe7620](https://github.com/invertase/react-native-firebase/commit/abe7620c35cd91bd105d64fa64777868a3482435))
+
 # [15.4.0](https://github.com/invertase/react-native-firebase/compare/v15.3.0...v15.4.0) (2022-08-27)
 
 **Note:** Version bump only for package @react-native-firebase/crashlytics
