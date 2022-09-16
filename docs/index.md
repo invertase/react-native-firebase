@@ -62,7 +62,7 @@ First, add the `google-services` plugin as a dependency inside of your `/android
 buildscript {
   dependencies {
     // ... other dependencies
-    classpath 'com.google.gms:google-services:4.3.13'
+    classpath 'com.google.gms:google-services:4.3.14'
     // Add me --- /\
   }
 }
@@ -215,14 +215,14 @@ project.ext {
       // Overriding Build/Android SDK Versions
       android : [
         minSdk    : 19,
-        targetSdk : 31,
-        compileSdk: 31,
+        targetSdk : 33,
+        compileSdk: 33,
       ],
 
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "30.3.2"
+        bom           : "30.5.0"
       ],
     ],
   ])
