@@ -69,13 +69,13 @@
     },
     "android": {
       "minSdk": 19,
-      "targetSdk": 31,
-      "compileSdk": 31,
-      "firebase": "30.3.2",
-      "firebaseCrashlyticsGradle": "2.9.1",
+      "targetSdk": 33,
+      "compileSdk": 33,
+      "firebase": "30.5.0",
+      "firebaseCrashlyticsGradle": "2.9.2",
       "firebasePerfGradle": "1.4.1",
-      "gmsGoogleServicesGradle": "4.3.13",
-      "playServicesAuth": "20.2.0"
+      "gmsGoogleServicesGradle": "4.3.14",
+      "playServicesAuth": "20.3.0"
     }
   }
 }
