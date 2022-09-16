@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.5.0](https://github.com/invertase/react-native-firebase/compare/v15.4.0...v15.5.0) (2022-09-16)
+
+
+### Bug Fixes
+
+* **database:** support new `EventEmitter.js` logic of RN 0.70.0 ([#6539](https://github.com/invertase/react-native-firebase/issues/6539)) ([3371727](https://github.com/invertase/react-native-firebase/commit/3371727dd23976ce769696c71865460740502d80))
+* **expo, ios:** expo plugin added import multiple times ([f10891a](https://github.com/invertase/react-native-firebase/commit/f10891a6d8079766374ceb7790a824d90306946a))
+
+
+### Features
+
+* **android:** firebase-android-sdk 30.5.0 ([abe7620](https://github.com/invertase/react-native-firebase/commit/abe7620c35cd91bd105d64fa64777868a3482435))
+* **ios:** bump firebase-ios-sdk to 9.6.0 ([0ad70a9](https://github.com/invertase/react-native-firebase/commit/0ad70a90e01ac37c3129a170ebff47738e551a18))
+
+
+
+
+
 # [15.4.0](https://github.com/invertase/react-native-firebase/compare/v15.3.0...v15.4.0) (2022-08-27)
 
 
