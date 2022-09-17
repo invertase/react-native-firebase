@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.6.0](https://github.com/invertase/react-native-firebase/compare/v15.5.0...v15.6.0) (2022-09-17)
+
+
+### Bug Fixes
+
+* **app, ios:** correctly handle firebase.json if it has UTF-8 ([4e3ac01](https://github.com/invertase/react-native-firebase/commit/4e3ac01c94389299dffc53e6d8480760f8b18033))
+* **auth, types:** verifyPasswordResetCode returns Promise<string> with email address ([#6537](https://github.com/invertase/react-native-firebase/issues/6537)) ([6f67c2c](https://github.com/invertase/react-native-firebase/commit/6f67c2c33bb9fa8b6c343aa9b3b7ca1dff34f2db))
+
+
+### Features
+
+* **messaging:** add support for setDeliveryMetricsExportToBigQuery ([#6529](https://github.com/invertase/react-native-firebase/issues/6529)) ([930abd6](https://github.com/invertase/react-native-firebase/commit/930abd6920f70c89bdc70a674ff93f080b3b968d))
+
+
+
+
+
 # [15.5.0](https://github.com/invertase/react-native-firebase/compare/v15.4.0...v15.5.0) (2022-09-16)
 
 

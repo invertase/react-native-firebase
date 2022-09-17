@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.6.0](https://github.com/invertase/react-native-firebase/compare/v15.5.0...v15.6.0) (2022-09-17)
+
+### Bug Fixes
+
+- **app, ios:** correctly handle firebase.json if it has UTF-8 ([4e3ac01](https://github.com/invertase/react-native-firebase/commit/4e3ac01c94389299dffc53e6d8480760f8b18033))
+
 # [15.5.0](https://github.com/invertase/react-native-firebase/compare/v15.4.0...v15.5.0) (2022-09-16)
 
 ### Bug Fixes

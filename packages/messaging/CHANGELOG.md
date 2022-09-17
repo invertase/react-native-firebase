@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.6.0](https://github.com/invertase/react-native-firebase/compare/v15.5.0...v15.6.0) (2022-09-17)
+
+### Features
+
+- **messaging:** add support for setDeliveryMetricsExportToBigQuery ([#6529](https://github.com/invertase/react-native-firebase/issues/6529)) ([930abd6](https://github.com/invertase/react-native-firebase/commit/930abd6920f70c89bdc70a674ff93f080b3b968d))
+
 # [15.5.0](https://github.com/invertase/react-native-firebase/compare/v15.4.0...v15.5.0) (2022-09-16)
 
 **Note:** Version bump only for package @react-native-firebase/messaging
