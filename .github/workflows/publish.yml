@@ -44,7 +44,7 @@ jobs:
           npm whoami
           git diff --exit-code
           yarn lerna changed
-          yarn lerna version --yes --force-publish=*
+          yarn lerna version --yes --force-publish=* --dist-tag v14
           yarn lerna publish from-package --yes
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
