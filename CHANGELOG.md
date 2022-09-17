@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.11.2](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v14.11.2) (2022-09-17)
+
+
+### Bug Fixes
+
+* **database:** support new `EventEmitter.js` logic of RN 0.70.0 ([#6539](https://github.com/invertase/react-native-firebase/issues/6539)) ([0c0075a](https://github.com/invertase/react-native-firebase/commit/0c0075ae5b7398e68b3d3f34c4cc3c328181cf42))
+* **storage, ios:** correct storage metadata update / delete ([2dcb079](https://github.com/invertase/react-native-firebase/commit/2dcb0790c1812a33100cceea9dcb407d6a64cb87))
+* **storage, ios:** surface underlying reason for unknown errors if possible ([6cd53ea](https://github.com/invertase/react-native-firebase/commit/6cd53eaca16ef52c52a28a7b209a7c8313fef08b))
+
+
+
+
+
 ## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
 
 

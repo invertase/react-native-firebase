@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [14.11.2](https://github.com/invertase/react-native-firebase/compare/v14.11.1...v14.11.2) (2022-09-17)
+
+**Note:** Version bump only for package @react-native-firebase/perf
+
 ## [14.11.1](https://github.com/invertase/react-native-firebase/compare/v14.11.0...v14.11.1) (2022-06-17)
 
 **Note:** Version bump only for package @react-native-firebase/perf
