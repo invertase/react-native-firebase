@@ -21,4 +21,6 @@
 @interface RNFBMessagingModule : NSObject <RCTBridgeModule>
 + (NSDictionary *_Nonnull)addCustomPropsToUserProps:(NSDictionary *_Nullable)userProps
                                   withLaunchOptions:(NSDictionary *_Nullable)launchOptions;
+@property BOOL isDeliveryMetricsExportToBigQueryEnabled;
+
 @end
