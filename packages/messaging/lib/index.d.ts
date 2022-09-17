@@ -995,6 +995,23 @@ export namespace FirebaseMessagingTypes {
      * @param topic The topic name.
      */
     unsubscribeFromTopic(topic: string): Promise<void>;
+
+    /**
+     * Sets whether message delivery metrics are exported to BigQuery is enabled or disabled.
+     *
+     * The value is false by default. Set this to true to allow exporting of message delivery metrics to BigQuery.
+     *
+     *
+     * #### Example
+     *
+     * ```js
+     * // Enable exports of message delivery metrics to BigQuery
+     * await firebase.messaging().setDeliveryMetricsExportToBigQuery(true);
+     * ```
+     *
+     * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
+     */
+    setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
   }
 }
 
