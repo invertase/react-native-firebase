@@ -40,7 +40,7 @@ function setPlistValue {
 
 function getFirebaseJsonKeyValue () {
   if [[ ${_RN_ROOT_EXISTS} ]]; then
-    ruby -e "require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']"
+    ruby -Ku -e "require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']"
   else
     echo ""
   fi;
@@ -76,7 +76,7 @@ done
 
 if [[ ${_SEARCH_RESULT} ]]; then
   _JSON_OUTPUT_RAW=$(cat "${_SEARCH_RESULT}")
-  _RN_ROOT_EXISTS=$(ruby -e "require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]" || echo '')
+  _RN_ROOT_EXISTS=$(ruby -Ku -e "require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]" || echo '')
 
   if [[ ${_RN_ROOT_EXISTS} ]]; then
     if ! python3 --version >/dev/null 2>&1; then echo "python3 not found, firebase.json file processing error." && exit 1; fi
