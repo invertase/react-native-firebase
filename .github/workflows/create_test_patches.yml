@@ -77,8 +77,8 @@ jobs:
           yarn add patch-package --save-dev
           mkdir patches || true
           for PACKAGE in $PACKAGE_LIST; do
-            echo "Installing package $PACKAGE into fresh template app, then clobbering with PR version"
-            yarn add @react-native-firebase/$PACKAGE || true
+            echo "Installing package v14 $PACKAGE into fresh template app, then clobbering with PR version"
+            yarn add @react-native-firebase/$PACKAGE@v14 || true
             if [ -d node_modules/@react-native-firebase/$PACKAGE ]; then
               pushd node_modules/@react-native-firebase
               tar -zxf $HOME/packages/react-native-firebase-${PACKAGE}-v*
