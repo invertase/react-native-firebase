@@ -1645,7 +1645,7 @@ export namespace FirebaseAuthTypes {
      * #### Example
      *
      * ```js
-     * await firebase.auth().verifyPasswordResetCode('ABCD');
+     * const verifiedEmail = await firebase.auth().verifyPasswordResetCode('ABCD');
      * ```
      *
      * @error auth/expired-action-code Thrown if the password reset code has expired.
@@ -1653,8 +1653,9 @@ export namespace FirebaseAuthTypes {
      * @error auth/user-disabled Thrown if the user corresponding to the given password reset code has been disabled.
      * @error auth/user-not-found Thrown if there is no user corresponding to the password reset code. This may have happened if the user was deleted between when the code was issued and when this method was called.
      * @param code A password reset code.
+     * @returns {string} The user's email address if valid
      */
-    verifyPasswordResetCode(code: string): Promise<void>;
+    verifyPasswordResetCode(code: string): Promise<string>;
     /**
      * Switch userAccessGroup and current user to the given accessGroup and the user stored in it.
      * Sign in a user with any sign in method, and the same current user is available in all
