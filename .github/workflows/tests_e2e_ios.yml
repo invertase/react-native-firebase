@@ -44,6 +44,8 @@ jobs:
           java-version: '11'
 
       - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 14
 
       - uses: actions/checkout@v2
         with:
