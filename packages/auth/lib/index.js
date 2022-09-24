@@ -34,6 +34,7 @@ import FacebookAuthProvider from './providers/FacebookAuthProvider';
 import GithubAuthProvider from './providers/GithubAuthProvider';
 import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
+import OIDCProvider from './providers/OIDCProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import AppleAuthProvider from './providers/AppleAuthProvider';
@@ -50,6 +51,7 @@ const statics = {
   TwitterAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
+  OIDCProvider,
   PhoneAuthState: {
     CODE_SENT: 'sent',
     AUTO_VERIFY_TIMEOUT: 'timeout',
