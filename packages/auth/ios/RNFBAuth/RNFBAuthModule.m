@@ -980,6 +980,10 @@ RCT_EXPORT_METHOD(useEmulator
     credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
                                                     IDToken:authToken
                                                 accessToken:authTokenSecret];
+  } else if ([provider hasPrefix:@"oidc."] ) {
+    credential = [FIROAuthProvider credentialWithProviderID:provider
+                                                    IDToken:authToken
+                                                   rawNonce:nil];
   } else {
     DLog(@"Provider not yet handled: %@", provider);
   }
