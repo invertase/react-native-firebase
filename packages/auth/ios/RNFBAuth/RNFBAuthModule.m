@@ -980,7 +980,7 @@ RCT_EXPORT_METHOD(useEmulator
     credential = [FIROAuthProvider credentialWithProviderID:@"oauth"
                                                     IDToken:authToken
                                                 accessToken:authTokenSecret];
-  } else if ([provider hasPrefix:@"oidc."] ) {
+  } else if ([provider hasPrefix:@"oidc."]) {
     credential = [FIROAuthProvider credentialWithProviderID:provider
                                                     IDToken:authToken
                                                    rawNonce:nil];
