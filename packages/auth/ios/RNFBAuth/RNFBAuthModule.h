@@ -82,4 +82,5 @@ NSString* const AuthErrorCode_toJSErrorCode[] = {
     [FIRAuthErrorCodeNullUser] = @"null-user",
     [FIRAuthErrorCodeKeychainError] = @"keychain-error",
     [FIRAuthErrorCodeInternalError] = @"internal-error",
-    [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt"};
+    [FIRAuthErrorCodeMalformedJWT] = @"malformed-jwt",
+    [FIRAuthErrorCodeSecondFactorRequired] = @"multi-factor-auth-required"};

@@ -35,11 +35,13 @@ import GithubAuthProvider from './providers/GithubAuthProvider';
 import GoogleAuthProvider from './providers/GoogleAuthProvider';
 import OAuthProvider from './providers/OAuthProvider';
 import PhoneAuthProvider from './providers/PhoneAuthProvider';
+import PhoneMultiFactorGenerator from './PhoneMultiFactorGenerator';
 import TwitterAuthProvider from './providers/TwitterAuthProvider';
 import AppleAuthProvider from './providers/AppleAuthProvider';
 import Settings from './Settings';
 import User from './User';
 import version from './version';
+import { getMultiFactorResolver } from './getMultiFactorResolver';
 
 const statics = {
   AppleAuthProvider,
@@ -49,6 +51,7 @@ const statics = {
   GithubAuthProvider,
   TwitterAuthProvider,
   FacebookAuthProvider,
+  PhoneMultiFactorGenerator,
   OAuthProvider,
   PhoneAuthState: {
     CODE_SENT: 'sent',
@@ -56,6 +59,7 @@ const statics = {
     AUTO_VERIFIED: 'verified',
     ERROR: 'error',
   },
+  getMultiFactorResolver,
 };
 
 const namespace = 'auth';
@@ -248,6 +252,18 @@ class FirebaseAuthModule extends FirebaseModule {
     }
 
     return new PhoneAuthListener(this, phoneNumber, _autoVerifyTimeout, _forceResend);
+  }
+
+  verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
+    return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
+  }
+
+  resolveMultiFactorSignIn(session, verificationId, verificationCode) {
+    return this.native
+      .resolveMultiFactorSignIn(session, verificationId, verificationCode)
+      .then(userCredential => {
+        return this._setUserCredential(userCredential);
+      });
   }
 
   createUserWithEmailAndPassword(email, password) {

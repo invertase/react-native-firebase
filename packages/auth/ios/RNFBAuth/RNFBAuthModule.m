@@ -31,6 +31,7 @@ static NSString *const keyAndroid = @"android";
 static NSString *const keyProfile = @"profile";
 static NSString *const keyNewUser = @"isNewUser";
 static NSString *const keyUsername = @"username";
+static NSString *const keyMultiFactor = @"multiFactor";
 static NSString *const keyPhotoUrl = @"photoURL";
 static NSString *const keyBundleId = @"bundleId";
 static NSString *const keyInstallApp = @"installApp";
@@ -52,6 +53,7 @@ static __strong NSMutableDictionary *authStateHandlers;
 static __strong NSMutableDictionary *idTokenHandlers;
 // Used for caching credentials between method calls.
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
+static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
 
 @implementation RNFBAuthModule
 #pragma mark -
@@ -70,6 +72,7 @@ RCT_EXPORT_MODULE();
     authStateHandlers = [[NSMutableDictionary alloc] init];
     idTokenHandlers = [[NSMutableDictionary alloc] init];
     credentials = [[NSMutableDictionary alloc] init];
+    cachedResolver = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -95,6 +98,7 @@ RCT_EXPORT_MODULE();
   [idTokenHandlers removeAllObjects];
 
   [credentials removeAllObjects];
+  [cachedResolver removeAllObjects];
 }
 
 #pragma mark -
@@ -732,12 +736,72 @@ RCT_EXPORT_METHOD(signInWithPhoneNumber
                }
              }];
 }
+RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)hintUid
+                  : (NSString *)sessionKey
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  if ([cachedResolver valueForKey:sessionKey] == nil) {
+    [RNFBSharedUtils
+        rejectPromiseWithUserInfo:reject
+                         userInfo:(NSMutableDictionary *)@{
+                           @"code" : @"invalid-multi-factor-session",
+                           @"message" : @"No resolver for session found. Is the session id correct?"
+                         }];
+    return;
+  }
+  FIRMultiFactorSession *session = cachedResolver[sessionKey].session;
+  NSPredicate *findByUid = [NSPredicate predicateWithFormat:@"UID == %@", hintUid];
+  FIRPhoneMultiFactorInfo *hint =
+      [[cachedResolver[sessionKey].hints filteredArrayUsingPredicate:findByUid] firstObject];
+
+  [FIRPhoneAuthProvider.provider
+      verifyPhoneNumberWithMultiFactorInfo:hint
+                                UIDelegate:nil
+                        multiFactorSession:session
+                                completion:^(NSString *_Nullable verificationID,
+                                             NSError *_Nullable error) {
+                                  if (error) {
+                                    [self promiseRejectAuthException:reject error:error];
+                                  } else {
+                                    resolve(verificationID);
+                                  }
+                                }];
+}
+
+RCT_EXPORT_METHOD(resolveMultiFactorSignIn
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)sessionKey
+                  : (NSString *)verificationId
+                  : (NSString *)verificationCode
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRPhoneAuthCredential *credential =
+      [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+          credentialWithVerificationID:verificationId
+                      verificationCode:verificationCode];
+  FIRMultiFactorAssertion *assertion =
+      [FIRPhoneMultiFactorGenerator assertionWithCredential:credential];
+  [cachedResolver[sessionKey] resolveSignInWithAssertion:assertion
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                } else {
+                                                  [self promiseWithAuthResult:resolve
+                                                                     rejecter:reject
+                                                                   authResult:authResult];
+                                                }
+                                              }];
+}
 
 RCT_EXPORT_METHOD(verifyPhoneNumber
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber
                   : (NSString *)requestKey) {
-  [[FIRPhoneAuthProvider providerWithAuth:[FIRAuth authWithApp:firebaseApp]]
+  [FIRPhoneAuthProvider.provider
       verifyPhoneNumber:phoneNumber
              UIDelegate:nil
              completion:^(NSString *_Nullable verificationID, NSError *_Nullable error) {
@@ -1015,8 +1079,42 @@ RCT_EXPORT_METHOD(useEmulator
   }
 }
 
+- (NSDictionary *)multiFactorResolverToDict:(FIRMultiFactorResolver *)resolver {
+  NSMutableArray *hintsOutput = [NSMutableArray array];
+  for (FIRPhoneMultiFactorInfo *hint in resolver.hints) {
+    NSString *enrollmentDate =
+        [[[NSISO8601DateFormatter alloc] init] stringFromDate:hint.enrollmentDate];
+
+    [hintsOutput addObject:@{
+      @"uid" : hint.UID,
+      @"factorId" : [self getJSFactorId:(hint.factorID)],
+      @"displayName" : hint.displayName,
+      @"enrollmentDate" : enrollmentDate,
+      @"phoneNumber" : hint.phoneNumber
+    }];
+  }
+
+  // Temporarily store the non-serializable session for later
+  NSString *sessionHash = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
+
+  return @{
+    @"hints" : hintsOutput,
+    @"session" : sessionHash,
+  };
+}
+
+- (NSString *)getJSFactorId:(NSString *)factorId {
+  if ([factorId isEqualToString:@"1"]) {
+    // Only phone is supported by the front-end so far
+    return @"phone";
+  }
+
+  return factorId;
+}
+
 - (void)promiseRejectAuthException:(RCTPromiseRejectBlock)reject error:(NSError *)error {
   NSDictionary *jsError = [self getJSError:(error)];
+
   [RNFBSharedUtils
       rejectPromiseWithUserInfo:reject
                        userInfo:(NSMutableDictionary *)@{
@@ -1024,6 +1122,7 @@ RCT_EXPORT_METHOD(useEmulator
                          @"message" : [jsError valueForKey:@"message"],
                          @"nativeErrorMessage" : [jsError valueForKey:@"nativeErrorMessage"],
                          @"authCredential" : [jsError valueForKey:@"authCredential"],
+                         @"resolver" : [jsError valueForKey:@"resolver"]
                        }];
 }
 
@@ -1057,6 +1156,9 @@ RCT_EXPORT_METHOD(useEmulator
     case FIRAuthErrorCodeRequiresRecentLogin:
       message = @"This operation is sensitive and requires recent authentication. Log in again "
                 @"before retrying this request.";
+      break;
+    case FIRAuthErrorCodeSecondFactorRequired:
+      message = @"Please complete a second factor challenge to finish signing into this account.";
       break;
     case FIRAuthErrorCodeAccountExistsWithDifferentCredential:
       message = @"An account already exists with the same email address but different sign-in "
@@ -1103,11 +1205,22 @@ RCT_EXPORT_METHOD(useEmulator
     authCredentialDict = [self authCredentialToDict:authCredential];
   }
 
+  NSDictionary *resolverDict = nil;
+  if ([error userInfo][FIRAuthErrorUserInfoMultiFactorResolverKey] != nil) {
+    FIRMultiFactorResolver *resolver =
+        (FIRMultiFactorResolver *)error.userInfo[FIRAuthErrorUserInfoMultiFactorResolverKey];
+    resolverDict = [self multiFactorResolverToDict:resolver];
+
+    NSString *sessionKey = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
+    cachedResolver[sessionKey] = resolver;
+  }
+
   return @{
     @"code" : code,
     @"message" : message,
     @"nativeErrorMessage" : nativeErrorMessage,
     @"authCredential" : authCredentialDict != nil ? (id)authCredentialDict : [NSNull null],
+    @"resolver" : resolverDict != nil ? (id)resolverDict : [NSNull null]
   };
 }
 
@@ -1246,7 +1359,8 @@ RCT_EXPORT_METHOD(useEmulator
     keyProviderId : [user.providerID lowercaseString],
     @"refreshToken" : user.refreshToken,
     @"tenantId" : user.tenantID ? (id)user.tenantID : [NSNull null],
-    keyUid : user.uid
+    keyUid : user.uid,
+    @"multiFactor" : user.multiFactor.enrolledFactors
   };
 }
 
