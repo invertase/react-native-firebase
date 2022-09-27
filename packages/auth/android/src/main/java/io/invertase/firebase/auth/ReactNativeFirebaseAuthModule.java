@@ -1306,6 +1306,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   /** Returns an instance of AuthCredential for the specified provider */
   private AuthCredential getCredentialForProvider(
       String provider, String authToken, String authSecret) {
+    if (provider.startsWith("oidc.")) {
+      return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
+    }
+
     switch (provider) {
       case "facebook.com":
         return FacebookAuthProvider.getCredential(authToken);

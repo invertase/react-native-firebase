@@ -17,9 +17,9 @@
 
 const providerId = 'oidc.';
 
-export default class OAuthProvider {
+export default class OIDCAuthProvider {
   constructor() {
-    throw new Error('`new OAuthProvider()` is not supported on the native Firebase SDKs.');
+    throw new Error('`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.');
   }
 
   static get PROVIDER_ID() {
