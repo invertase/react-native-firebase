@@ -22,13 +22,14 @@ import buildIos from './builders/ios';
 import buildItunes from './builders/itunes';
 import buildNavigation from './builders/navigation';
 import buildSocial from './builders/social';
+import buildOtherPlatform from './builders/otherPlatform';
 
 export default function build(dynamicLinksParams) {
   if (!isObject(dynamicLinksParams)) {
     throw new Error("'dynamicLinksParams' must be an object.");
   }
 
-  const { link, domainUriPrefix, android, analytics, ios, itunes, navigation, social } =
+  const { link, domainUriPrefix, android, analytics, ios, itunes, navigation, social, otherPlatform } =
     dynamicLinksParams;
 
   if (!link) {
@@ -86,6 +87,10 @@ export default function build(dynamicLinksParams) {
   if (social) {
     params.social = buildSocial(social);
   }
+
+	if (otherPlatform) {
+		params.otherPlatform = buildOtherPlatform(otherPlatform);
+	}
 
   return params;
 }
