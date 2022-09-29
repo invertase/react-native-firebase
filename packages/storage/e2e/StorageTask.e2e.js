@@ -15,7 +15,7 @@
  *
  */
 
-const { PATH, WRITE_ONLY_NAME } = require('./helpers');
+const { PATH, seed, WRITE_ONLY_NAME } = require('./helpers');
 
 function snapshotProperties(snapshot) {
   snapshot.should.have.property('state');
@@ -27,9 +27,9 @@ function snapshotProperties(snapshot) {
 }
 
 describe('storage() -> StorageTask', function () {
-  // before(async function () {
-  //   await seed(PATH);
-  // });
+  before(async function () {
+    await seed(PATH);
+  });
 
   describe('writeToFile()', function () {
     // TODO - followup - the storage emulator currently inverts not-found / permission error conditions
