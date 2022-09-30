@@ -24,7 +24,9 @@ describe('dynamicLinks() dynamicLinkParams.otherPlatform', function () {
       });
       return Promise.reject(new Error('Did not throw Error.'));
     } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.otherPlatform.fallbackUrl' must be a string");
+      e.message.should.containEql(
+        "'dynamicLinksParams.otherPlatform.fallbackUrl' must be a string",
+      );
       return Promise.resolve();
     }
   });
