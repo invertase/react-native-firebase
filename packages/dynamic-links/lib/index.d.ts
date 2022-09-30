@@ -302,32 +302,31 @@ export namespace FirebaseDynamicLinksTypes {
     title?: string;
   }
 
-	/**
-	 * The DynamicLinkOtherPlatformParameters interface provides functionality to
-	 * open a custom URL on platforms beside Android and iOS.  This is useful to
-	 * specify a different behavior on desktop, like displaying a full web page
-	 * of the app content/payload (as specified by param link) with another dynamic
-	 * link to install the app.
-	 *
-	 * #### Example
-	 *
- 	 * ```js
-	 *  const link = await firebase.dynamicLinks().buildLink({
-	 *    link: 'https://invertase.io',
-	 *    domainUriPrefix: 'https://xyz.page.link',
-	 *    otherPlatform: {
-	 *			fallbackUrl: 'https://www.google.com/',
-	 *   	}
-	 *  });
-	 * ```
-	 */
-	export interface DynamicLinkOtherPlatformParameters {
-		/**
-		 * The URL to open on desktop.
-		 */
-		fallbackUrl?: string;
-	}
-		 
+  /**
+   * The DynamicLinkOtherPlatformParameters interface provides functionality to
+   * open a custom URL on platforms beside Android and iOS.  This is useful to
+   * specify a different behavior on desktop, like displaying a full web page
+   * of the app content/payload (as specified by param link) with another dynamic
+   * link to install the app.
+   *
+   * #### Example
+   *
+   * ```js
+   *  const link = await firebase.dynamicLinks().buildLink({
+   *    link: 'https://invertase.io',
+   *    domainUriPrefix: 'https://xyz.page.link',
+   *    otherPlatform: {
+   *			fallbackUrl: 'https://www.google.com/',
+   *   	}
+   *  });
+   * ```
+   */
+  export interface DynamicLinkOtherPlatformParameters {
+    /**
+     * The URL to open on desktop.
+     */
+    fallbackUrl?: string;
+  }
 
   /**
    * The DynamicLinkParameters interface provides access to the Dynamic Link builder classes
@@ -387,10 +386,10 @@ export namespace FirebaseDynamicLinksTypes {
      */
     social?: DynamicLinkSocialParameters;
 
-		/**
- 		 * Access other platform specific link parameters.
- 		 */
- 		otherPlatform?: DynamicLinkOtherPlatformParameters
+    /**
+     * Access other platform specific link parameters.
+     */
+    otherPlatform?: DynamicLinkOtherPlatformParameters;
   }
 
   /**
