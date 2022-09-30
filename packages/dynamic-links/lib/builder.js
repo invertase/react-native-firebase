@@ -29,8 +29,17 @@ export default function build(dynamicLinksParams) {
     throw new Error("'dynamicLinksParams' must be an object.");
   }
 
-  const { link, domainUriPrefix, android, analytics, ios, itunes, navigation, social, otherPlatform } =
-    dynamicLinksParams;
+  const {
+    link,
+    domainUriPrefix,
+    android,
+    analytics,
+    ios,
+    itunes,
+    navigation,
+    social,
+    otherPlatform,
+  } = dynamicLinksParams;
 
   if (!link) {
     throw new Error("missing required 'link' property.");
@@ -88,9 +97,9 @@ export default function build(dynamicLinksParams) {
     params.social = buildSocial(social);
   }
 
-	if (otherPlatform) {
-		params.otherPlatform = buildOtherPlatform(otherPlatform);
-	}
+  if (otherPlatform) {
+    params.otherPlatform = buildOtherPlatform(otherPlatform);
+  }
 
   return params;
 }
