@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [15.7.0](https://github.com/invertase/react-native-firebase/compare/v15.6.0...v15.7.0) (2022-10-01)
+
+
+### Features
+
+* **dynamic-links:** support other platform parameters (OFL) ([2c5afba](https://github.com/invertase/react-native-firebase/commit/2c5afba180f9f407904a57b634caceb7a72e944c))
+
+
+
+
+
 # [15.6.0](https://github.com/invertase/react-native-firebase/compare/v15.5.0...v15.6.0) (2022-09-17)
 
 
