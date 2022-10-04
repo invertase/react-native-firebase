@@ -23,6 +23,7 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
+import ScreenTrace from './ScreenTrace';
 import version from './version';
 
 const statics = {};
@@ -78,6 +79,21 @@ class FirebasePerfModule extends FirebaseModule {
   startTrace(identifier) {
     const trace = this.newTrace(identifier);
     return trace.start().then(() => trace);
+  }
+
+  newScreenTrace(identifier) {
+    if (!isString(identifier) || identifier.length > 100) {
+      throw new Error(
+        "firebase.perf().newScreenTrace(*) 'identifier' must be a string with a maximum length of 100 characters.",
+      );
+    }
+
+    return new ScreenTrace(this.native, identifier);
+  }
+
+  startScreenTrace(identifier) {
+    const screenTrace = this.newScreenTrace(identifier);
+    return screenTrace.start().then(() => screenTrace);
   }
 
   newHttpMetric(url, httpMethod) {

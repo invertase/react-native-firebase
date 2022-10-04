@@ -212,6 +212,39 @@ export namespace FirebasePerformanceTypes {
   }
 
   /**
+   * ScreenTrace allows you to record a custom screen rendering trace of slow and frozen frames
+   *
+   * @platform ios iOS
+   */
+  export class ScreenTrace {
+    /**
+     * Starts a new screen trace. Does nothing if already started.
+     *
+     * #### Example
+     *
+     * ```js
+     * const trace = firebase.perf().newScreenTrace('FooScreen');
+     * await trace.start();
+     * ```
+     * @platform ios iOS
+     */
+    start(): Promise<null>;
+    /**
+     * Stops and sends the screen trace.
+     *
+     * #### Example
+     *
+     * ```js
+     * const trace = firebase.perf().newScreenTrace('FooScreen');
+     * await trace.start();
+     * await trace.stop();
+     * ```
+     * @platform ios iOS
+     */
+    stop(): Promise<null>;
+  }
+
+  /**
    * Metric used to collect data for network requests/responses. A new instance must be used for every request/response.
    */
   export class HttpMetric {
@@ -425,6 +458,35 @@ export namespace FirebasePerformanceTypes {
      * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
      */
     startTrace(identifier: string): Promise<Trace>;
+
+    /**
+     * Creates a ScreenTrace instance with the given identifier.
+     *
+     * #### Example
+     *
+     * ```js
+     * const trace = firebase.perf().newScreenTrace('FooScreen');
+     * await trace.start();
+     * ```
+     *
+     * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
+     */
+    newScreenTrace(identifier: string): ScreenTrace;
+
+    /**
+     * Creates a ScreenTrace instance with the given identifier and immediately starts it.
+     *
+     * #### Example
+     *
+     * ```js
+     * const trace = await firebase.perf().startScreenTrace('FooScreen');
+     * await trace.stop();
+     * ```
+     * @platform ios iOS
+     *
+     * @param identifier Name of the screen
+     */
+    startScreenTrace(identifier: string): Promise<ScreenTrace>;
 
     /**
      * Creates a HttpMetric instance for collecting network performance data for a single request/response
