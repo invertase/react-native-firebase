@@ -210,23 +210,6 @@ export namespace FirebaseAuthTypes {
    * firebase.auth.X
    */
   export interface Statics {
-    /**
-     * Try and obtain a #{@link MultiFactorResolver} instance based on an error.
-     * Returns null if no resolver object could be found.
-     *
-     * #### Example
-     *
-     * ```js
-     * const auth = firebase.auth();
-     * auth.signInWithEmailAndPassword(email, password).then((user) => {
-     *   // signed in
-     * }).catch((error) => {
-     *   if (error.code === 'auth/multi-factor-auth-required') {
-     *     const resolver = getMultiFactorResolver(auth, error);
-     *   }
-     * });
-     * ```
-     */
     getMultiFactorResolver: getMultiFactorResolver;
     /**
      * Email and password auth provider implementation.
@@ -458,6 +441,23 @@ export namespace FirebaseAuthTypes {
     resolveSignIn(assertion: MultiFactorAssertion): Promise<UserCredential>;
   }
 
+  /**
+   * Try and obtain a #{@link MultiFactorResolver} instance based on an error.
+   * Returns null if no resolver object could be found.
+   *
+   * #### Example
+   *
+   * ```js
+   * const auth = firebase.auth();
+   * auth.signInWithEmailAndPassword(email, password).then((user) => {
+   *   // signed in
+   * }).catch((error) => {
+   *   if (error.code === 'auth/multi-factor-auth-required') {
+   *     const resolver = getMultiFactorResolver(auth, error);
+   *   }
+   * });
+   * ```
+   */
   export type getMultiFactorResolver = (
     auth: FirebaseAuthTypes.Module,
     error: unknown,
