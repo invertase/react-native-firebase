@@ -15,6 +15,8 @@
  *
  */
 
+import { isIOS } from '@react-native-firebase/app/lib/common';
+
 let id = 0;
 
 export default class ScreenTrace {
@@ -27,6 +29,9 @@ export default class ScreenTrace {
   }
 
   start() {
+    if (isIOS) {
+      return Promise.reject(new Error('Custom screentraces are currently not supported on iOS.'));
+    }
     if (this._started) {
       return Promise.resolve(null);
     }
@@ -36,7 +41,7 @@ export default class ScreenTrace {
   }
 
   stop() {
-    if (this._stopped) {
+    if (!this._started || this._stopped) {
       return Promise.resolve(null);
     }
     this._stopped = true;

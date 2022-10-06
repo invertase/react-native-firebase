@@ -46,13 +46,16 @@ describe('perf()', function () {
     });
   });
 
+  // compat >= Android 9.0
   describe('startScreenTrace()', function () {
     it('resolves a started instance of a ScreenTrace', async function () {
-      const screenTrace = await firebase.perf().startScreenTrace('FooScreen');
-      screenTrace.constructor.name.should.be.equal('ScreenTrace');
-      screenTrace._identifier.should.equal('FooScreen');
-      await screenTrace.stop();
-      screenTrace._stopped.should.equal(true);
+      if (device.getPlatform() === 'android') {
+        const screenTrace = await firebase.perf().startScreenTrace('FooScreen');
+        screenTrace.constructor.name.should.be.equal('ScreenTrace');
+        screenTrace._identifier.should.equal('FooScreen');
+        await screenTrace.stop();
+        screenTrace._stopped.should.equal(true);
+      }
     });
   });
 });

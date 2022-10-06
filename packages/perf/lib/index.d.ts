@@ -214,7 +214,7 @@ export namespace FirebasePerformanceTypes {
   /**
    * ScreenTrace allows you to record a custom screen rendering trace of slow and frozen frames
    *
-   * @platform android Android
+   * @platform android Android >= 9.0.0
    */
   export class ScreenTrace {
     /**
@@ -226,7 +226,7 @@ export namespace FirebasePerformanceTypes {
      * const trace = firebase.perf().newScreenTrace('FooScreen');
      * await trace.start();
      * ```
-     * @platform android Android
+     * @platform android Android >= 9.0.0
      */
     start(): Promise<null>;
     /**
@@ -239,7 +239,7 @@ export namespace FirebasePerformanceTypes {
      * await trace.start();
      * await trace.stop();
      * ```
-     * @platform android Android
+     * @platform android Android >= 9.0.0
      */
     stop(): Promise<null>;
   }
@@ -482,7 +482,7 @@ export namespace FirebasePerformanceTypes {
      * const trace = await firebase.perf().startScreenTrace('FooScreen');
      * await trace.stop();
      * ```
-     * @platform android Android
+     * @platform android Android >= 9.0.0
      *
      * @param identifier Name of the screen
      */
