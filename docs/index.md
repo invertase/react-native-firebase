@@ -135,7 +135,13 @@ To use Static Frameworks on iOS, you also need to manually enable this for the p
 $RNFirebaseAsStaticFramework = true
 ```
 
-> Note `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). A fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that makes it work with and without Hermes. To use it with Hermes make sure you have set static linkage with `use_frameworks! :linkage => :static`. To use without Flipper, comment out the `:flipper_configuration` line in your Podfile. Community support to help fix `use_frameworks` support for New Architecture is welcome!
+> Notes: React-Native-Firebase uses `use_frameworks`, which has compatibility issues with Flipper, Hermes & Fabric.
+>
+> **Flipper:** `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). You need to disable Flipper by commenting out the `:flipper_configuration` line in your Podfile.
+>
+> **Hermes:** a fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that allows Hermes to work with `use_frameworks!`. To use `use_frameworks` with Hermes, make sure you have set static linkage with `use_frameworks! :linkage => :static`.
+>
+> **New Architecture:** Fabric is not compatible with `use_frameworks!`. Community support to help fix `use_frameworks` support for New Architecture is welcome!
 
 ### 4. Autolinking & rebuilding
 
