@@ -149,6 +149,36 @@ public class ReactNativeFirebaseFirestoreCollectionModule extends ReactNativeFir
   }
 
   @ReactMethod
+  public void collectionCount(
+      String appName,
+      String path,
+      String type,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options,
+      Promise promise) {
+    FirebaseFirestore firebaseFirestore = getFirestoreForApp(appName);
+    ReactNativeFirebaseFirestoreQuery firestoreQuery =
+        new ReactNativeFirebaseFirestoreQuery(
+            appName, getQueryForFirestore(firebaseFirestore, path, type), filters, orders, options);
+
+    AggregateQuery aggregateQuery = firestoreQuery.query.count();
+
+    aggregateQuery
+        .get(AggregateSource.SERVER)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                WritableMap result = Arguments.createMap();
+                result.putDouble("count", Long.valueOf(task.getResult().getCount()).doubleValue());
+                promise.resolve(result);
+              } else {
+                rejectPromiseFirestoreException(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void collectionGet(
       String appName,
       String path,

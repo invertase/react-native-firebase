@@ -841,10 +841,106 @@ export namespace FirebaseFirestoreTypes {
   }
 
   /**
+   * Represents an aggregation that can be performed by Firestore.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  export class AggregateField<T> {
+    /** A type string to uniquely identify instances of this class. */
+    type = 'AggregateField';
+  }
+
+  /**
+   * The union of all `AggregateField` types that are supported by Firestore.
+   */
+  export type AggregateFieldType = AggregateField<number>;
+
+  /**
+   * A type whose property values are all `AggregateField` objects.
+   */
+  export interface AggregateSpec {
+    [field: string]: AggregateFieldType;
+  }
+
+  /**
+   * A type whose keys are taken from an `AggregateSpec`, and whose values are the
+   * result of the aggregation performed by the corresponding `AggregateField`
+   * from the input `AggregateSpec`.
+   */
+  export type AggregateSpecData<T extends AggregateSpec> = {
+    [P in keyof T]: T[P] extends AggregateField<infer U> ? U : never;
+  };
+
+  /**
+   * The results of executing an aggregation query.
+   */
+  export interface AggregateQuerySnapshot<T extends AggregateSpec> {
+    /**
+     * The underlying query over which the aggregations recorded in this
+     * `AggregateQuerySnapshot` were performed.
+     */
+    get query(): Query<unknown>;
+
+    /**
+     * Returns the results of the aggregations performed over the underlying
+     * query.
+     *
+     * The keys of the returned object will be the same as those of the
+     * `AggregateSpec` object specified to the aggregation method, and the values
+     * will be the corresponding aggregation result.
+     *
+     * @returns The results of the aggregations performed over the underlying
+     * query.
+     */
+    data(): AggregateSpecData<T>;
+  }
+
+  /**
+   * The results of requesting an aggregated query.
+   */
+  export interface AggregateQuery<T extends AggregateSpec> {
+    /**
+     * The underlying query for this instance.
+     */
+    get query(): Query<unknown>;
+
+    /**
+     * Executes the query and returns the results as a AggregateQuerySnapshot.
+     *
+     *
+     * #### Example
+     *
+     * ```js
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .count()
+     *   .get();
+     * ```
+     *
+     * @param options An object to configure the get behavior.
+     */
+    get(): Promise<AggregateQuerySnapshot<T>>;
+  }
+
+  /**
    * A Query refers to a `Query` which you can read or listen to. You can also construct refined `Query` objects by
    * adding filters and ordering.
    */
   export interface Query<T extends DocumentData = DocumentData> {
+    /**
+     * Calculates the number of documents in the result set of the given query, without actually downloading
+     * the documents.
+     *
+     * Using this function to count the documents is efficient because only the final count, not the
+     * documents' data, is downloaded. This function can even count the documents if the result set
+     * would be prohibitively large to download entirely (e.g. thousands of documents).
+     *
+     * The result received from the server is presented, unaltered, without considering any local state.
+     * That is, documents in the local cache are not taken into consideration, neither are local
+     * modifications not yet synchronized with the server. Previously-downloaded results, if any,
+     *  are not used: every request using this source necessarily involves a round trip to the server.
+     */
+    count(): AggregateQuery<{ count: AggregateField<number> }>;
+
     /**
      * Creates and returns a new Query that ends at the provided document (inclusive). The end
      * position is relative to the order of the query. The document must contain all of the
