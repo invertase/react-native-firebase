@@ -165,6 +165,43 @@ RCT_EXPORT_METHOD(namedQueryGet
          }];
 }
 
+RCT_EXPORT_METHOD(collectionCount
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)path
+                  : (NSString *)type
+                  : (NSArray *)filters
+                  : (NSArray *)orders
+                  : (NSDictionary *)options
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+  FIRQuery *query = [RNFBFirestoreCommon getQueryForFirestore:firestore path:path type:type];
+  RNFBFirestoreQuery *firestoreQuery = [[RNFBFirestoreQuery alloc] initWithModifiers:firestore
+                                                                               query:query
+                                                                             filters:filters
+                                                                              orders:orders
+                                                                             options:options];
+
+  // NOTE: There is only "server" as the source at the moment. So this
+  // is unused for the time being. Using "FIRAggregateSourceServer".
+  // NSString *source = arguments[@"source"];
+
+  FIRAggregateQuery *aggregateQuery = [firestoreQuery.query count];
+
+  [aggregateQuery
+      aggregationWithSource:FIRAggregateSourceServer
+                 completion:^(FIRAggregateQuerySnapshot *_Nullable snapshot,
+                              NSError *_Nullable error) {
+                   if (error) {
+                     [RNFBFirestoreCommon promiseRejectFirestoreException:reject error:error];
+                   } else {
+                     NSMutableDictionary *snapshotMap = [NSMutableDictionary dictionary];
+                     snapshotMap[@"count"] = snapshot.count;
+                     resolve(snapshotMap);
+                   }
+                 }];
+}
+
 RCT_EXPORT_METHOD(collectionGet
                   : (FIRApp *)firebaseApp
                   : (NSString *)path
