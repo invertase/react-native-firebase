@@ -54,10 +54,12 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.MultiFactorAssertion;
 import com.google.firebase.auth.MultiFactorInfo;
 import com.google.firebase.auth.MultiFactorResolver;
+import com.google.firebase.auth.MultiFactorSession;
 import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.auth.PhoneMultiFactorAssertion;
 import com.google.firebase.auth.PhoneMultiFactorGenerator;
 import com.google.firebase.auth.PhoneMultiFactorInfo;
 import com.google.firebase.auth.TwitterAuthProvider;
@@ -97,6 +99,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private PhoneAuthCredential mCredential;
 
   private final HashMap<String, MultiFactorResolver> mCachedResolvers = new HashMap<>();
+  private final HashMap<String, MultiFactorSession> mMultiFactorSessions = new HashMap<>();
 
   ReactNativeFirebaseAuthModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
@@ -139,6 +142,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
 
     mCachedResolvers.clear();
+    mMultiFactorSessions.clear();
   }
 
   /** Add a new auth state listener - if one doesn't exist already */
@@ -949,6 +953,29 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
+  public void getSession(final String appName, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    firebaseAuth
+        .getCurrentUser()
+        .getMultiFactor()
+        .getSession()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+                return;
+              }
+
+              final MultiFactorSession session = task.getResult();
+              final String sessionId = Integer.toString(session.hashCode());
+              mMultiFactorSessions.put(sessionId, session);
+
+              promise.resolve(sessionId);
+            });
+  }
+
+  @ReactMethod
   public void verifyPhoneNumberWithMultiFactorInfo(
       final String appName, final String hintUid, final String sessionKey, final Promise promise) {
     final MultiFactorResolver resolver = mCachedResolvers.get(sessionKey);
@@ -1013,6 +1040,82 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
   }
 
+  @ReactMethod
+  public void verifyPhoneNumberForMultiFactor(
+      final String appName,
+      final String phoneNumber,
+      final String sessionKey,
+      final Promise promise) {
+    final MultiFactorSession multiFactorSession = mMultiFactorSessions.get(sessionKey);
+    if (multiFactorSession == null) {
+      rejectPromiseWithCodeAndMessage(promise, "unknown", "can't find session for provided key");
+      return;
+    }
+
+    final PhoneAuthOptions phoneAuthOptions =
+        PhoneAuthOptions.newBuilder()
+            .setPhoneNumber(phoneNumber)
+            .setActivity(getCurrentActivity())
+            .setTimeout(30L, TimeUnit.SECONDS)
+            .setMultiFactorSession(multiFactorSession)
+            .requireSmsValidation(true)
+            .setCallbacks(
+                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                  @Override
+                  public void onVerificationCompleted(
+                      @NonNull PhoneAuthCredential phoneAuthCredential) {
+                    // We can't handle this flow in the JS part if we want to be compatible with
+                    // the firebase-js-sdk. If we set the requireSmsValidation option to true
+                    // this code should not be executed.
+                    rejectPromiseWithCodeAndMessage(
+                        promise, "not-implemented", "This is currently not supported.");
+                  }
+
+                  @Override
+                  public void onVerificationFailed(@NonNull FirebaseException e) {
+                    promiseRejectAuthException(promise, e);
+                  }
+
+                  @Override
+                  public void onCodeSent(
+                      @NonNull String verificationId,
+                      @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                    promise.resolve(verificationId);
+                  }
+                })
+            .build();
+
+    PhoneAuthProvider.verifyPhoneNumber(phoneAuthOptions);
+  }
+
+  @ReactMethod
+  public void finalizeMultiFactorEnrollment(
+      final String appName,
+      final String verificationId,
+      final String verificationCode,
+      @Nullable final String displayName,
+      final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    final PhoneAuthCredential phoneAuthCredential =
+        PhoneAuthProvider.getCredential(verificationId, verificationCode);
+    final PhoneMultiFactorAssertion assertion =
+        PhoneMultiFactorGenerator.getAssertion(phoneAuthCredential);
+    firebaseAuth
+        .getCurrentUser()
+        .getMultiFactor()
+        .enroll(assertion, displayName)
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+
+              // Need to reload user to make it all visible?
+              promise.resolve("yes");
+            });
+  }
   /**
    * This method is intended to resolve a {@link PhoneAuthCredential} obtained through a
    * multi-factor authentication flow. A credential can either be obtained using:
@@ -1777,6 +1880,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       authResultMap.putMap("user", userMap);
 
       promise.resolve(authResultMap);
+
     } else {
       promiseNoUser(promise, true);
     }
@@ -1790,8 +1894,14 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   private void promiseRejectAuthException(Promise promise, Exception exception) {
     WritableMap error = getJSError(exception);
+    final String sessionId = error.getString("sessionId");
+    final MultiFactorResolver multiFactorResolver = mCachedResolvers.get(sessionId);
+    WritableMap resolverAsMap = Arguments.createMap();
+    if (multiFactorResolver != null) {
+      resolverAsMap = resolverToMap(sessionId, multiFactorResolver);
+    }
     rejectPromiseWithCodeAndMessage(
-        promise, error.getString("code"), error.getString("message"), error.getMap("resolver"));
+        promise, error.getString("code"), error.getString("message"), resolverAsMap);
   }
 
   /**
@@ -1887,7 +1997,9 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       final MultiFactorResolver resolver = multiFactorException.getResolver();
       final String sessionId = Integer.toString(resolver.getSession().hashCode());
       mCachedResolvers.put(sessionId, resolver);
-      error.putMap("resolver", resolverToMap(sessionId, resolver));
+      // Passing around a resolver ReadableMap leads to issues when trying to send the data back by
+      // calling Promise#reject. Building the map just before sending solves that issue.
+      error.putString("sessionId", sessionId);
     }
 
     if (code.equals("UNKNOWN")) {
@@ -1900,6 +2012,18 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         code = "TOO_MANY_REQUESTS";
         message = message;
       }
+    }
+
+    // Some message need to be rewritten to match error messages from the Web SDK
+    switch (code) {
+      case "ERROR_UNVERIFIED_EMAIL":
+        message = "This operation requires a verified email.";
+        break;
+      case "ERROR_UNSUPPORTED_FIRST_FACTOR":
+        message =
+            "Enrolling a second factor or signing in with a multi-factor account requires sign-in"
+                + " with a supported first factor.";
+        break;
     }
 
     code = code.toLowerCase(Locale.ROOT).replace("error_", "").replace('_', '-');

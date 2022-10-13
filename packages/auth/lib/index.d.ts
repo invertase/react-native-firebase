@@ -464,6 +464,32 @@ export namespace FirebaseAuthTypes {
   ) => MultiFactorResolver | null;
 
   /**
+   * The entry point for most multi-factor operations.
+   */
+  export interface MultiFactorUser {
+    /**
+     * Returns the user's enrolled factors.
+     */
+    enrolledFactors: MultiFactorInfo[];
+
+    /**
+     * Return the session id for this user.
+     */
+    getSession(): Promise<string>;
+
+    /**
+     * Enroll an additional factor. Provide an optional display name that can be shown to the user.
+     * The method will ensure the user state is reloaded after successfully enrolling a factor.
+     */
+    enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+  }
+
+  /**
+   * Return the #{@link MultiFactorUser} instance for the current user.
+   */
+  export type multiFactor = (auth: FirebaseAuthTypes.Module) => Promise<MultiFactorUser>;
+
+  /**
    * Holds information about the user's enrolled factors.
    *
    * #### Example

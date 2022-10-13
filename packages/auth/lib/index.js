@@ -42,6 +42,7 @@ import Settings from './Settings';
 import User from './User';
 import version from './version';
 import { getMultiFactorResolver } from './getMultiFactorResolver';
+import { multiFactor } from './multiFactor';
 
 const statics = {
   AppleAuthProvider,
@@ -60,6 +61,7 @@ const statics = {
     ERROR: 'error',
   },
   getMultiFactorResolver,
+  multiFactor,
 };
 
 const namespace = 'auth';
@@ -256,6 +258,11 @@ class FirebaseAuthModule extends FirebaseModule {
 
   verifyPhoneNumberWithMultiFactorInfo(multiFactorHint, session) {
     return this.native.verifyPhoneNumberWithMultiFactorInfo(multiFactorHint.uid, session);
+  }
+
+  verifyPhoneNumberForMultiFactor(phoneInfoOptions) {
+    const { phoneNumber, session } = phoneInfoOptions;
+    return this.native.verifyPhoneNumberForMultiFactor(phoneNumber, session);
   }
 
   resolveMultiFactorSignIn(session, verificationId, verificationCode) {

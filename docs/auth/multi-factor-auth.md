@@ -11,6 +11,46 @@ Make sure to follow [the official Identity Platform
 documentation](https://cloud.google.com/identity-platform/docs/ios/mfa#enabling_multi-factor_authentication)
 to enable multi-factor authentication for your project and verify your app.
 
+# Enroll a new factor
+
+> Before a user can enroll a second factor they need to verify their email. See
+> [`User`](/reference/auth/user#sendEmailVerification) interface is returned.
+
+Begin by obtaining a [`MultiFactorUser`](/reference/auth/multifactoruser)
+instance for the current user. This is the entry point for most multi-factor
+operations:
+
+```js
+import auth from '@react-native-firebase/auth';
+const multiFactorUser = await auth.multiFactor(auth());
+```
+
+Request the session identifier and use the phone number obtained from the user
+to send a verification code:
+
+```js
+const session = await multiFactorUser.getSession();
+const phoneOptions = {
+  phoneNumber,
+  session,
+};
+
+// Sends a text message to the user
+const verificationId = await auth().verifyPhoneNumberForMultiFactor(phoneOptions);
+```
+
+Once the user has provided the verification code received by text message, you
+can complete the process:
+
+```js
+const cred = auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+const multiFactorAssertion = auth.PhoneMultiFactorGenerator.assertion(cred);
+await multiFactorUser.enroll(multiFactorAssertion, 'Optional display name for the user);
+```
+
+You can inspect [`User#multiFactor`](/reference/auth/user#multiFactor) for
+information about the user's enrolled factors.
+
 # Sign-in flow using multi-factor
 
 Ensure the account has already enrolled a second factor. Begin by calling the

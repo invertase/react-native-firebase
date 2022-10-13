@@ -48,7 +48,9 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule
     WritableMap userInfoMap = Arguments.createMap();
     userInfoMap.putString("code", code);
     userInfoMap.putString("message", message);
-    userInfoMap.putMap("resolver", resolver);
+    if (resolver != null) {
+      userInfoMap.putMap("resolver", resolver);
+    }
     promise.reject(code, message, userInfoMap);
   }
 
