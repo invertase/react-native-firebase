@@ -301,4 +301,4 @@ async function onGoogleButtonPress() {
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
 
-If you are testing this feature on an android emulator ensure that the emulate has Google Play Enabled, Installed and Updated.
+If you are testing this feature on an android emulator ensure that the emulate is either the Google APIs or Google Play flavor.
