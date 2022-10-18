@@ -73,9 +73,9 @@
       "minSdk": 19,
       "targetSdk": 33,
       "compileSdk": 33,
-      "firebase": "30.5.0",
+      "firebase": "31.0.0",
       "firebaseCrashlyticsGradle": "2.9.2",
-      "firebasePerfGradle": "1.4.1",
+      "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.3.14",
       "playServicesAuth": "20.3.0"
     }
