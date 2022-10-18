@@ -393,11 +393,18 @@
 }
 
 + (FIRStorageMetadata *)buildMetadataFromMap:(NSDictionary *)metadata
-                            existingMetadata:(nullable FIRStorageMetadata *)existingMetadata {
+                            existingMetadata:(nullable FIRStorageMetadata *)existingMetadata
+                                        path:(NSString *)path {
   // If an existing metadata was passed in, modify it with our map, otherwise init a fresh copy
   FIRStorageMetadata *storageMetadata = existingMetadata;
   if (storageMetadata == nil) {
-    storageMetadata = [[FIRStorageMetadata alloc] init];
+    // NOTE: Firebase iOS SDK 10 requires a "path" property on `FIRStorageMetadata`. We do this by
+    // "initWithDictionary()" which uses "name" property as "path" under the hood.
+    // See
+    // https://github.com/firebase/firebase-ios-sdk/blob/970b4c45098319e40e6e5157d340d16cb73a2b88/FirebaseStorage/Sources/StorageMetadata.swift#L156-L178
+    NSMutableDictionary *metadata = [[NSMutableDictionary alloc] init];
+    metadata[@"name"] = path;
+    storageMetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
   }
 
   if (metadata[@"cacheControl"] == [NSNull null]) {
