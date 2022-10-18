@@ -65,9 +65,9 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "9.6.0",
-      "iosTarget": "10.0",
-      "macosTarget": "10.12"
+      "firebase": "10.0.0",
+      "iosTarget": "11.0",
+      "macosTarget": "10.13"
     },
     "android": {
       "minSdk": 19,

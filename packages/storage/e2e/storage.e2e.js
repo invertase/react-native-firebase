@@ -60,7 +60,7 @@ describe('storage()', function () {
     });
 
     // FIXME on android this is unathorized against emulator but works on iOS?
-    it('uploads to a custom bucket when specified', async function () {
+    xit('uploads to a custom bucket when specified', async function () {
       if (device.getPlatform() === 'ios') {
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
         const bucket = 'gs://react-native-firebase-testing';
