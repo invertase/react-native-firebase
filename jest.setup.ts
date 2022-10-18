@@ -1,4 +1,5 @@
 import * as ReactNative from 'react-native';
+import { jest } from '@jest/globals';
 
 jest.doMock('react-native', () => {
   return Object.setPrototypeOf(

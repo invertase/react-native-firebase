@@ -54,7 +54,6 @@
     "@babel/preset-env": "^7.19.4",
     "@octokit/core": "^4.1.0",
     "@tsconfig/node12": "^1.0.11",
-    "@types/jest": "28.1.2",
     "@types/react": "^17.0.48",
     "@types/react-native": "^0.67.12",
     "@typescript-eslint/eslint-plugin": "^5.40.1",

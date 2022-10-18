@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import perf, { firebase } from '../lib';
 
 describe('Performance Monitoring', function () {

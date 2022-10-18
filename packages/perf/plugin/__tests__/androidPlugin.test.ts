@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 
 import { applyPlugin } from '../src/android/applyPlugin';
 import { setBuildscriptDependency } from '../src/android/buildscriptDependency';
