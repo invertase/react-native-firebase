@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import { firebase } from '../lib';
 
 describe('Crashlytics', function () {

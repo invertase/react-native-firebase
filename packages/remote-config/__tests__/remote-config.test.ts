@@ -14,6 +14,8 @@
  * limitations under the License.
  *
  */
+import { describe, expect, it } from '@jest/globals';
+
 import { firebase } from '../lib';
 
 describe('remoteConfig()', function () {
