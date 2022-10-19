@@ -75,6 +75,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Auth";
   private static HashMap<String, FirebaseAuth.AuthStateListener> mAuthListeners = new HashMap<>();
   private static HashMap<String, FirebaseAuth.IdTokenListener> mIdTokenListeners = new HashMap<>();
+  private static HashMap<String, String> emulatorConfigs = new HashMap<>();
   private String mVerificationId;
   private String mLastPhoneNumber;
   private PhoneAuthProvider.ForceResendingToken mForceResendingToken;
@@ -1561,10 +1562,13 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   @ReactMethod
   public void useEmulator(String appName, String host, int port) {
-    Log.d(TAG, "useEmulator");
-    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-    firebaseAuth.useEmulator(host, port);
+
+    if (emulatorConfigs.get(appName) == null) {
+      emulatorConfigs.put(appName, "true");
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+      firebaseAuth.useEmulator(host, port);
+    }
   }
 
   /* ------------------

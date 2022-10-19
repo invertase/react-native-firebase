@@ -50,6 +50,7 @@ static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"phone_auth_state_chang
 
 static __strong NSMutableDictionary *authStateHandlers;
 static __strong NSMutableDictionary *idTokenHandlers;
+static __strong NSMutableDictionary *emulatorConfigs;
 // Used for caching credentials between method calls.
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
 
@@ -69,6 +70,7 @@ RCT_EXPORT_MODULE();
   dispatch_once(&onceToken, ^{
     authStateHandlers = [[NSMutableDictionary alloc] init];
     idTokenHandlers = [[NSMutableDictionary alloc] init];
+    emulatorConfigs = [[NSMutableDictionary alloc] init];
     credentials = [[NSMutableDictionary alloc] init];
   });
   return self;
@@ -940,7 +942,10 @@ RCT_EXPORT_METHOD(useEmulator
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)host
                   : (NSInteger)port) {
-  [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:port];
+  if (!emulatorConfigs[firebaseApp.name]) {
+    [[FIRAuth authWithApp:firebaseApp] useEmulatorWithHost:host port:port];
+    emulatorConfigs[firebaseApp.name] = @YES;
+  }
 }
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
