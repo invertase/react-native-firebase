@@ -44,6 +44,8 @@ import java.util.Objects;
 public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule {
   private static final String TAG = "Storage";
 
+  private static HashMap<String, String> emulatorConfigs = new HashMap<>();
+
   ReactNativeFirebaseStorageModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
@@ -282,7 +284,10 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
   public void useEmulator(String appName, String host, int port, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseStorage firebaseStorage = FirebaseStorage.getInstance(firebaseApp);
-    firebaseStorage.useEmulator(host, port);
+    if (emulatorConfigs.get(appName) == null) {
+      firebaseStorage.useEmulator(host, port);
+      emulatorConfigs.put(appName, "true");
+    }
     promise.resolve(null);
   }
 
