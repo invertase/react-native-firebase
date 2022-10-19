@@ -28,10 +28,13 @@ import com.google.firebase.firestore.LoadBundleTask;
 import io.invertase.firebase.common.UniversalFirebaseModule;
 import io.invertase.firebase.common.UniversalFirebasePreferences;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
+
+  private static HashMap<String, String> emulatorConfigs = new HashMap<>();
 
   UniversalFirebaseFirestoreModule(Context context, String serviceName) {
     super(context, serviceName);
@@ -49,7 +52,10 @@ public class UniversalFirebaseFirestoreModule extends UniversalFirebaseModule {
     return Tasks.call(
         getExecutor(),
         () -> {
-          getFirestoreForApp(appName).useEmulator(host, port);
+          if (emulatorConfigs.get(appName) == null) {
+            emulatorConfigs.put(appName, "true");
+            getFirestoreForApp(appName).useEmulator(host, port);
+          }
           return null;
         });
   }
