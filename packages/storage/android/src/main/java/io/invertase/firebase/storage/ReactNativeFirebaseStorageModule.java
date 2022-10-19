@@ -54,7 +54,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     super.onCatalystInstanceDestroy();
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#delete
+   */
   @ReactMethod
   public void delete(String appName, String url, final Promise promise) {
     try {
@@ -97,7 +99,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#getMetadata
+   */
   @ReactMethod
   public void getMetadata(String appName, String url, Promise promise) {
     try {
@@ -118,7 +122,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#list
+   */
   @ReactMethod
   public void list(String appName, String url, ReadableMap listOptions, Promise promise) {
     try {
@@ -148,7 +154,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#listAll
+   */
   @ReactMethod
   public void listAll(String appName, String url, Promise promise) {
     try {
@@ -267,7 +275,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Storage#useEmulator
+   */
   @ReactMethod
   public void useEmulator(String appName, String host, int port, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
@@ -276,7 +286,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#writeToFile
+   */
   @ReactMethod
   public void writeToFile(
       String appName, String url, String localFilePath, int taskId, Promise promise) {
@@ -300,7 +312,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putString
+   */
   @ReactMethod
   public void putString(
       String appName,
@@ -321,7 +335,9 @@ public class ReactNativeFirebaseStorageModule extends ReactNativeFirebaseModule 
     }
   }
 
-  /** @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile */
+  /**
+   * @link https://firebase.google.com/docs/reference/js/firebase.storage.Reference#putFile
+   */
   @ReactMethod
   public void putFile(
       String appName,
