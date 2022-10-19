@@ -5,7 +5,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [15.7.1](https://github.com/invertase/react-native-firebase/compare/v15.7.0...v15.7.1) (2022-10-19)
 
-**Note:** Version bump only for package react-native-firebase
+**Note:** This version (15.7.1) was released in error, the contents of this release should have been versioned as 16.0.0 by our release process.
+
+The breaking changes that will be in v16.0.0 here are an **increase in minimum iOS target version to 11.0 and macOS version to 10.13**.
+
+Attempts to install v15.7.1 without apple deployment targets at that level or higher should result in fast-failure during pod install.
+
+If these new apple target deployment minimums are not possible for project, please stay on v15.7.0
+
+v16.0.0 of react-native-firebase will be released shortly.
+Sorry for the inconvenience.
 
 # [15.7.0](https://github.com/invertase/react-native-firebase/compare/v15.6.0...v15.7.0) (2022-10-01)
 
