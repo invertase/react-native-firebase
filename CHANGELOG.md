@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.0.0](https://github.com/invertase/react-native-firebase/compare/v15.7.1...v16.0.0) (2022-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- fix release version change type resolution
+
+### release
+
+- fix release version change type resolution ([6fcb946](https://github.com/invertase/react-native-firebase/commit/6fcb946f7e7bbc3e7ad6605d48ce3d11f1184c70))
+
 ## [15.7.1](https://github.com/invertase/react-native-firebase/compare/v15.7.0...v15.7.1) (2022-10-19)
 
 **Note:** This version (15.7.1) was released in error, the contents of this release should have been versioned as 16.0.0 by our release process.
