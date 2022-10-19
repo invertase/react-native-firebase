@@ -5,7 +5,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [15.7.1](https://github.com/invertase/react-native-firebase/compare/v15.7.0...v15.7.1) (2022-10-19)
 
-**Note:** Version bump only for package @react-native-firebase/app
+**Note:** Inadvertent breaking change. iOS minimum deploy target bumped to 11, macOS to 10.13
 
 # [15.7.0](https://github.com/invertase/react-native-firebase/compare/v15.6.0...v15.7.0) (2022-10-01)
 
