@@ -11,6 +11,10 @@
       "message": "chore(release): release packages"
     }
   },
+  "changelogPreset": {
+    "name": "conventionalcommits",
+    "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}"
+  },
   "ignoreChanges": ["**/docs/**", "**/.github/**", "**/e2e/**", "**/tests/**"],
   "version": "15.7.1"
 }
