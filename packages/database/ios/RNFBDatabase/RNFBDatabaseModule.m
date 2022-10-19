@@ -22,6 +22,8 @@
 #import "RNFBDatabaseModule.h"
 #import "RNFBPreferences.h"
 
+static __strong NSMutableDictionary *emulatorSettings;
+
 @implementation RNFBDatabaseModule
 #pragma mark -
 #pragma mark Module Setup
@@ -58,8 +60,22 @@ RCT_EXPORT_METHOD(useEmulator
                   : (NSString *)dbURL
                   : (nonnull NSString *)host
                   : (NSInteger)port) {
-  [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost:host
-                                                                                 port:port];
+  // javascript may hot reload, losing state, and native throws an error if you double-request
+  // so we keep track of useEmulator calls here to avoid calling native twice
+  if (emulatorSettings == nil) {
+    emulatorSettings = [NSMutableDictionary dictionary];
+  }
+
+  NSMutableString *configKey = [firebaseApp.name mutableCopy];
+  if (dbURL != nil && dbURL.length > 0) {
+    [configKey appendString:dbURL];
+  }
+
+  if (!emulatorSettings[configKey]) {
+    [[RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL] useEmulatorWithHost:host
+                                                                                   port:port];
+    emulatorSettings[configKey] = @YES;
+  }
 }
 
 RCT_EXPORT_METHOD(setPersistenceEnabled
