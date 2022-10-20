@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.1.0](https://github.com/invertase/react-native-firebase/compare/v16.0.0...v16.1.0) (2022-10-20)
+
+### Bug Fixes
+
+- **storage, emulator:** avoid calling useEmulator multiple times ([276630d](https://github.com/invertase/react-native-firebase/commit/276630d4690cb6c3b2b632ec9dd0808ca8013eba)), closes [#5860](https://github.com/invertase/react-native-firebase/issues/5860)
+
 ## [16.0.0](https://github.com/invertase/react-native-firebase/compare/v15.7.1...v16.0.0) (2022-10-19)
 
 **Note:** Version bump only for package @react-native-firebase/storage
