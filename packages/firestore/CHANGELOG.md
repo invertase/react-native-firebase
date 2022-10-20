@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.1.0](https://github.com/invertase/react-native-firebase/compare/v16.0.0...v16.1.0) (2022-10-20)
+
+### Features
+
+- **firestore, count:** implement AggregateQuery count() on collections ([bd52301](https://github.com/invertase/react-native-firebase/commit/bd52301ad4ef35eeb4dbdab1bc4926db72d40949))
+
+### Bug Fixes
+
+- **firestore, emulator:** avoid double calls to useEmulator ([4e0d188](https://github.com/invertase/react-native-firebase/commit/4e0d188416f4ae8eb176ef024b5698bc892838d5)), closes [#5723](https://github.com/invertase/react-native-firebase/issues/5723)
+
 ## [16.0.0](https://github.com/invertase/react-native-firebase/compare/v15.7.1...v16.0.0) (2022-10-19)
 
 **Note:** Version bump only for package @react-native-firebase/firestore
