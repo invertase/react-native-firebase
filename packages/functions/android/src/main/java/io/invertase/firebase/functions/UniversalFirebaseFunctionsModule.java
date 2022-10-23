@@ -25,6 +25,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableReference;
 import io.invertase.firebase.common.UniversalFirebaseModule;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("WeakerAccess")
@@ -53,6 +54,35 @@ public class UniversalFirebaseFunctionsModule extends UniversalFirebaseModule {
           FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
 
           HttpsCallableReference httpReference = functionsInstance.getHttpsCallable(name);
+
+          if (options.hasKey("timeout")) {
+            httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);
+          }
+
+          if (host != null) {
+            functionsInstance.useEmulator(host, port);
+          }
+
+          return Tasks.await(httpReference.call(data)).getData();
+        });
+  }
+
+  Task<Object> httpsCallableFromUrl(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String url,
+      Object data,
+      ReadableMap options) {
+    return Tasks.call(
+        getExecutor(),
+        () -> {
+          FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+          FirebaseFunctions functionsInstance = FirebaseFunctions.getInstance(firebaseApp, region);
+          URL parsedUrl = new URL(url);
+          HttpsCallableReference httpReference =
+              functionsInstance.getHttpsCallableFromUrl(parsedUrl);
 
           if (options.hasKey("timeout")) {
             httpReference.setTimeout((long) options.getInt("timeout"), TimeUnit.SECONDS);

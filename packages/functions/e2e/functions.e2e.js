@@ -100,6 +100,22 @@ describe('functions()', function () {
     });
   });
 
+  describe('httpsCallableFromUrl()', function () {
+    it('Calls a function by URL', async function () {
+      let hostname = 'localhost';
+      if (device.getPlatform() === 'android') {
+        hostname = '10.0.2.2';
+      }
+      const functionRunner = firebase
+        .functions()
+        .httpsCallableFromUrl(
+          `http://${hostname}:5001/react-native-firebase-testing/us-central1/helloWorld`,
+        );
+      const response = await functionRunner();
+      response.data.should.equal('Hello from Firebase!');
+    });
+  });
+
   describe('httpsCallable(fnName)(args)', function () {
     it('accepts primitive args: undefined', async function () {
       const functionRunner = firebase.functions().httpsCallable('testFunctionDefaultRegion');
