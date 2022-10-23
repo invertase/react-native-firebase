@@ -339,6 +339,29 @@ export namespace FirebaseFunctionsTypes {
     httpsCallable(name: string, options?: HttpsCallableOptions): HttpsCallable;
 
     /**
+     * Gets an `HttpsCallable` instance that refers to the function with the given
+     * URL.
+     *
+     * #### Example
+     *
+     * ```js
+     * const instance = firebase.functions().httpsCallable('order');
+     *
+     * try {
+     *  const response = await instance({
+     *    id: '12345',
+     *  });
+     * } catch (e) {
+     *  console.error(e);
+     * }
+     * ```
+     *
+     * @param name The name of the https callable function.
+     * @return The `HttpsCallable` instance.
+     */
+    httpsCallableFromUrl(url: string, options?: HttpsCallableOptions): HttpsCallable;
+
+    /**
      * Changes this instance to point to a Cloud Functions emulator running locally.
      *
      * See https://firebase.google.com/docs/functions/local-emulator

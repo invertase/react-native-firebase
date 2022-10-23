@@ -93,4 +93,55 @@ public class ReactNativeFirebaseFunctionsModule extends ReactNativeFirebaseModul
           promise.reject(code, message, exception, userInfo);
         });
   }
+
+  @ReactMethod
+  public void httpsCallableFromUrl(
+      String appName,
+      String region,
+      String host,
+      Integer port,
+      String url,
+      ReadableMap wrapper,
+      ReadableMap options,
+      Promise promise) {
+    Task<Object> callMethodTask =
+        module.httpsCallableFromUrl(
+            appName, region, host, port, url, wrapper.toHashMap().get(DATA_KEY), options);
+
+    // resolve
+    callMethodTask.addOnSuccessListener(
+        getExecutor(),
+        result -> {
+          promise.resolve(RCTConvertFirebase.mapPutValue(DATA_KEY, result, Arguments.createMap()));
+        });
+
+    // reject
+    callMethodTask.addOnFailureListener(
+        getExecutor(),
+        exception -> {
+          Object details = null;
+          String code = "UNKNOWN";
+          String message = exception.getMessage();
+          WritableMap userInfo = Arguments.createMap();
+          if (exception.getCause() instanceof FirebaseFunctionsException) {
+            FirebaseFunctionsException functionsException =
+                (FirebaseFunctionsException) exception.getCause();
+            details = functionsException.getDetails();
+            code = functionsException.getCode().name();
+            message = functionsException.getMessage();
+            String timeout = FirebaseFunctionsException.Code.DEADLINE_EXCEEDED.name();
+            Boolean isTimeout = code.contains(timeout);
+
+            if (functionsException.getCause() instanceof IOException && !isTimeout) {
+              // return UNAVAILABLE for network io errors, to match iOS
+              code = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+              message = FirebaseFunctionsException.Code.UNAVAILABLE.name();
+            }
+          }
+          RCTConvertFirebase.mapPutValue(CODE_KEY, code, userInfo);
+          RCTConvertFirebase.mapPutValue(MSG_KEY, message, userInfo);
+          RCTConvertFirebase.mapPutValue(DETAILS_KEY, details, userInfo);
+          promise.reject(code, message, exception, userInfo);
+        });
+  }
 }
