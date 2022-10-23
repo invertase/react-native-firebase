@@ -756,8 +756,17 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
   }
   FIRMultiFactorSession *session = cachedResolver[sessionKey].session;
   NSPredicate *findByUid = [NSPredicate predicateWithFormat:@"UID == %@", hintUid];
-  FIRPhoneMultiFactorInfo *hint =
+  FIRMultiFactorInfo *_Nullable hint =
       [[cachedResolver[sessionKey].hints filteredArrayUsingPredicate:findByUid] firstObject];
+  if (hint == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"multi-factor-info-not-found",
+                                        @"message" : @"The user does not have a second factor "
+                                                     @"matching the identifier provided."
+                                      }];
+    return;
+  }
 
   [FIRPhoneAuthProvider.provider
       verifyPhoneNumberWithMultiFactorInfo:hint
@@ -772,6 +781,7 @@ RCT_EXPORT_METHOD(verifyPhoneNumberWithMultiFactorInfo
                                   }
                                 }];
 }
+
 RCT_EXPORT_METHOD(verifyPhoneNumberForMultiFactor
                   : (FIRApp *)firebaseApp
                   : (NSString *)phoneNumber

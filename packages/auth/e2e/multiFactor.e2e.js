@@ -160,6 +160,34 @@ describe('multi-factor', function () {
       }
       return Promise.reject();
     });
+    it('reports an error when using an unknown factor', async function () {
+      const { email, password } = await createUserWithMultiFactor();
+
+      try {
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+      } catch (e) {
+        e.message.should.equal(
+          '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
+        );
+        const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        const unknownFactor = {
+          uid: 'notknown',
+        };
+        try {
+          await firebase
+            .auth()
+            .verifyPhoneNumberWithMultiFactorInfo(unknownFactor, resolver.session);
+        } catch (e) {
+          e.code.should.equal('auth/multi-factor-info-not-found');
+          e.message.should.equal(
+            '[auth/multi-factor-info-not-found] The user does not have a second factor matching the identifier provided.',
+          );
+
+          return Promise.resolve();
+        }
+      }
+      return Promise.reject();
+    });
   });
 
   describe('enroll', function () {

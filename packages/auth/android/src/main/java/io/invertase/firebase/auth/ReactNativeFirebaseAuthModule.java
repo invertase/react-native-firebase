@@ -998,7 +998,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
 
     if (selectedHint == null) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown", "Requested multi-factor hint not found.");
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "multi-factor-info-not-found",
+          "The user does not have a second factor matching the identifier provided.");
       return;
     }
 
