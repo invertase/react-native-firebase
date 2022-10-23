@@ -447,5 +447,23 @@ describe('multi-factor', function () {
         new Error('Enrolling a second factor when using phone authentication is not supported.'),
       );
     });
+    it('can not enroll when phone number is missing + sign', async function () {
+      await createVerifiedUser('verified@example.com', 'test123');
+      const multiFactorUser = firebase.auth.multiFactor(firebase.auth());
+      const session = await multiFactorUser.getSession();
+      try {
+        await firebase.auth().verifyPhoneNumberForMultiFactor({ phoneNumber: '491575', session });
+      } catch (e) {
+        e.code.should.equal('auth/invalid-phone-number');
+        e.message.should.equal(
+          '[auth/invalid-phone-number] The format of the phone number provided is incorrect. Please enter the ' +
+            'phone number in a format that can be parsed into E.164 format. E.164 ' +
+            'phone numbers are written in the format [+][country code][subscriber ' +
+            'number including area code].',
+        );
+        return Promise.resolve();
+      }
+      return Promise.reject();
+    });
   });
 });

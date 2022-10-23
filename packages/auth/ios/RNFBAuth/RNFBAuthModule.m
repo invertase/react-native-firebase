@@ -1156,7 +1156,7 @@ RCT_EXPORT_METHOD(useEmulator
   };
 }
 
-- (NSString *)getJSFactorId:(NSString *)factorId {
+- (NSString *)getJSFactorId:(NSString *)factorId {
   if ([factorId isEqualToString:@"1"]) {
     // Only phone is supported by the front-end so far
     return @"phone";
@@ -1247,6 +1247,12 @@ RCT_EXPORT_METHOD(useEmulator
       break;
     case FIRAuthErrorCodeInternalError:
       message = @"An internal error has occurred, please try again.";
+      break;
+    case FIRAuthErrorCodeInvalidPhoneNumber:
+      message = @"The format of the phone number provided is incorrect. "
+                @"Please enter the phone number in a format that can be parsed into E.164 format. "
+                @"E.164 phone numbers are written in the format [+][country code][subscriber "
+                @"number including area code].";
       break;
     default:
       break;

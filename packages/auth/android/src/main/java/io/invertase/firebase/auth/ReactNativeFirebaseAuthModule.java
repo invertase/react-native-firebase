@@ -2024,6 +2024,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             "Enrolling a second factor or signing in with a multi-factor account requires sign-in"
                 + " with a supported first factor.";
         break;
+      case "ERROR_INVALID_PHONE_NUMBER":
+        message =
+            "The format of the phone number provided is incorrect. Please enter the phone number in"
+                + " a format that can be parsed into E.164 format. E.164 phone numbers are written"
+                + " in the format [+][country code][subscriber number including area code].";
+        break;
     }
 
     code = code.toLowerCase(Locale.ROOT).replace("error_", "").replace('_', '-');
