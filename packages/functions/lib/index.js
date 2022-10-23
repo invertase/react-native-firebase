@@ -93,6 +93,39 @@ class FirebaseFunctionsModule extends FirebaseModule {
     };
   }
 
+  httpsCallableFromUrl(url, options = {}) {
+    if (options.timeout) {
+      if (isNumber(options.timeout)) {
+        options.timeout = options.timeout / 1000;
+      } else {
+        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+      }
+    }
+
+    return data => {
+      const nativePromise = this.native.httpsCallableFromUrl(
+        this._useFunctionsEmulatorHost,
+        this._useFunctionsEmulatorPort,
+        url,
+        {
+          data,
+        },
+        options,
+      );
+      return nativePromise.catch(nativeError => {
+        const { code, message, details } = nativeError.userInfo || {};
+        return Promise.reject(
+          new HttpsError(
+            HttpsErrorCode[code] || HttpsErrorCode.UNKNOWN,
+            message || nativeError.message,
+            details || null,
+            nativeError,
+          ),
+        );
+      });
+    };
+  }
+
   useFunctionsEmulator(origin) {
     [_, host, port] = /https?\:.*\/\/([^:]+):?(\d+)?/.exec(origin);
     if (!port) {
