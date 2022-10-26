@@ -60,6 +60,10 @@ public class UniversalFirebaseAnalyticsModule extends UniversalFirebaseModule {
     return FirebaseAnalytics.getInstance(getContext()).getAppInstanceId();
   }
 
+  Task<Long> getSessionId() {
+    return FirebaseAnalytics.getInstance(getContext()).getSessionId();
+  }
+
   Task<Void> setUserId(String id) {
     return Tasks.call(
         () -> {
