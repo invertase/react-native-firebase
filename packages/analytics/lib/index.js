@@ -196,6 +196,10 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.getAppInstanceId();
   }
 
+  getSessionId() {
+    return this.native.getSessionId();
+  }
+
   setUserId(id) {
     if (!isNull(id) && !isString(id)) {
       throw new Error("firebase.analytics().setUserId(*) 'id' expected a string value.");
