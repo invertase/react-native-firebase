@@ -49,6 +49,40 @@ describe('analytics()', function () {
     });
   });
 
+  describe('getSessionId()', function () {
+    it('calls native fn without error', async function () {
+      await firebase.analytics().getSessionId();
+    });
+
+    it('returns a non empty session ID', async function () {
+      let sessionId = await firebase.analytics().getSessionId();
+      // On iOS it can take ~ 3 minutes for the session ID to be generated
+      // Otherwise, `Analytics uninitialized` error will be thrown
+      const retries = 240;
+      while (!sessionId && retries > 0) {
+        await Utils.sleep(1000);
+        sessionId = await firebase.analytics().getSessionId();
+      }
+
+      if (!sessionId) {
+        return Promise.reject(
+          new Error('Firebase SDK did not return a session ID after 4 minutes'),
+        );
+      }
+
+      sessionId.should.not.equal(0);
+    });
+
+    it('returns a null value if session expires', async function () {
+      // Set session duration to 1 millisecond
+      firebase.analytics().setSessionTimeoutDuration(1);
+      // Wait 100 millisecond to ensure session expires
+      await Utils.sleep(100);
+      const sessionId = await firebase.analytics().getSessionId();
+      should.equal(sessionId, null);
+    });
+  });
+
   describe('setUserId()', function () {
     it('allows a null values to be set', async function () {
       await firebase.analytics().setUserId(null);
