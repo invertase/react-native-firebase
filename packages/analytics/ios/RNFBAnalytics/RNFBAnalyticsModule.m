@@ -125,6 +125,19 @@ RCT_EXPORT_METHOD(getAppInstanceId
   return resolve([FIRAnalytics appInstanceID]);
 }
 
+RCT_EXPORT_METHOD(getSessionId
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  [FIRAnalytics sessionIDWithCompletion:^(int64_t sessionID, NSError *_Nullable error) {
+    if (error) {
+      DLog(@"Error getting session ID: %@", error);
+      return resolve([NSNull null]);
+    } else {
+      return resolve([NSNumber numberWithLongLong:sessionID]);
+    }
+  }];
+}
+
 RCT_EXPORT_METHOD(setDefaultEventParameters
                   : (NSDictionary *)params resolver
                   : (RCTPromiseResolveBlock)resolve rejecter

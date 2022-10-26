@@ -94,6 +94,21 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
   }
 
   @ReactMethod
+  public void getSessionId(Promise promise) {
+    module
+        .getSessionId()
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Long result = task.getResult();
+                promise.resolve(result != null ? result.doubleValue() : null);
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
+  }
+
+  @ReactMethod
   public void setUserId(String id, Promise promise) {
     module
         .setUserId(id)

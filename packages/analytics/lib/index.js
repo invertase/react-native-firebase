@@ -43,6 +43,7 @@ export {
   setAnalyticsCollectionEnabled,
   setSessionTimeoutDuration,
   getAppInstanceId,
+  getSessionId,
   setUserId,
   setUserProperty,
   setUserProperties,
@@ -194,6 +195,10 @@ class FirebaseAnalyticsModule extends FirebaseModule {
 
   getAppInstanceId() {
     return this.native.getAppInstanceId();
+  }
+
+  getSessionId() {
+    return this.native.getSessionId();
   }
 
   setUserId(id) {
