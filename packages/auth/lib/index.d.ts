@@ -59,6 +59,11 @@ export namespace FirebaseAuthTypes {
        *  you might receive an updated credential (depending of provider) which you can use to recover from the error.
        */
       authCredential: AuthCredential | null;
+      /**
+       * When trying to sign in the user might be prompted for a second factor confirmation. Can
+       * can use this object to initialize the second factor flow and recover from the error.
+       */
+      resolver: MultiFactorResolver | null;
     };
   }
 
@@ -189,10 +194,23 @@ export namespace FirebaseAuthTypes {
     ERROR: 'error';
   }
 
+  export interface PhoneMultiFactorGenerator {
+    /**
+     * Identifies second factors of type phone.
+     */
+    FACTOR_ID: FactorId.PHONE;
+
+    /**
+     * Build a MultiFactorAssertion to resolve the multi-factor sign in process.
+     */
+    assertion(credential: AuthCredential): MultiFactorAssertion;
+  }
+
   /**
    * firebase.auth.X
    */
   export interface Statics {
+    getMultiFactorResolver: getMultiFactorResolver;
     /**
      * Email and password auth provider implementation.
      *
@@ -285,6 +303,11 @@ export namespace FirebaseAuthTypes {
      * ```
      */
     PhoneAuthState: PhoneAuthState;
+
+    /**
+     * A PhoneMultiFactorGenerator interface.
+     */
+    PhoneMultiFactorGenerator: PhoneMultiFactorGenerator;
   }
 
   /**
@@ -358,6 +381,129 @@ export namespace FirebaseAuthTypes {
      * This is only accurate up to a granularity of 2 minutes for consecutive sign-in attempts.
      */
     lastSignInTime?: string;
+  }
+
+  /**
+   * Identifies the type of a second factor.
+   */
+  export enum FactorId {
+    PHONE = 'phone',
+  }
+
+  /**
+   * Contains information about a second factor.
+   */
+  export interface MultiFactorInfo {
+    /**
+     * User friendly name for this factor.
+     */
+    displayName?: string;
+    /**
+     * Time the second factor was enrolled, in UTC.
+     */
+    enrollmentTime: string;
+    /**
+     * Type of factor.
+     */
+    factorId: FactorId;
+    /**
+     * Unique id for this factor.
+     */
+    uid: string;
+  }
+
+  export interface MultiFactorAssertion {
+    token: string;
+    secret: string;
+  }
+
+  /**
+   * Facilitates the recovery when a user needs to provide a second factor to sign-in.
+   */
+  export interface MultiFactorResolver {
+    /**
+     * A list of enrolled factors that can be used to complete the multi-factor challenge.
+     */
+    hints: MultiFactorInfo[];
+    /**
+     * Serialized session this resolver belongs to.
+     */
+    session: string;
+
+    /**
+     * For testing purposes only
+     */
+    _auth: FirebaseAuthTypes.Module;
+
+    /**
+     * Resolve the multi factor flow.
+     */
+    resolveSignIn(assertion: MultiFactorAssertion): Promise<UserCredential>;
+  }
+
+  /**
+   * Try and obtain a #{@link MultiFactorResolver} instance based on an error.
+   * Returns null if no resolver object could be found.
+   *
+   * #### Example
+   *
+   * ```js
+   * const auth = firebase.auth();
+   * auth.signInWithEmailAndPassword(email, password).then((user) => {
+   *   // signed in
+   * }).catch((error) => {
+   *   if (error.code === 'auth/multi-factor-auth-required') {
+   *     const resolver = getMultiFactorResolver(auth, error);
+   *   }
+   * });
+   * ```
+   */
+  export type getMultiFactorResolver = (
+    auth: FirebaseAuthTypes.Module,
+    error: unknown,
+  ) => MultiFactorResolver | null;
+
+  /**
+   * The entry point for most multi-factor operations.
+   */
+  export interface MultiFactorUser {
+    /**
+     * Returns the user's enrolled factors.
+     */
+    enrolledFactors: MultiFactorInfo[];
+
+    /**
+     * Return the session id for this user.
+     */
+    getSession(): Promise<string>;
+
+    /**
+     * Enroll an additional factor. Provide an optional display name that can be shown to the user.
+     * The method will ensure the user state is reloaded after successfully enrolling a factor.
+     */
+    enroll(assertion: MultiFactorAssertion, displayName?: string): Promise<void>;
+  }
+
+  /**
+   * Return the #{@link MultiFactorUser} instance for the current user.
+   */
+  export type multiFactor = (auth: FirebaseAuthTypes.Module) => Promise<MultiFactorUser>;
+
+  /**
+   * Holds information about the user's enrolled factors.
+   *
+   * #### Example
+   *
+   * ```js
+   * const user = firebase.auth().currentUser;
+   * console.log('User multi factors: ', user.multiFactor);
+   * ```
+   */
+  export interface MultiFactor {
+    /**
+     * Returns the enrolled factors
+     */
+    enrolledFactors: MultiFactorInfo[];
   }
 
   /**
@@ -905,6 +1051,11 @@ export namespace FirebaseAuthTypes {
     metadata: UserMetadata;
 
     /**
+     * Returns the {@link auth.MultiFactor} associated with this user.
+     */
+    multiFactor: MultiFactor | null;
+
+    /**
      * Returns the phone number of the user, as stored in the Firebase project's user database,
      * or null if none exists. This can be updated at any time by calling {@link auth.User#updatePhoneNumber}.
      */
@@ -1411,6 +1562,11 @@ export namespace FirebaseAuthTypes {
       autoVerifyTimeoutOrForceResend?: number | boolean,
       forceResend?: boolean,
     ): PhoneAuthListener;
+
+    /**
+     * Obtain a verification id to complete the multi-factor sign-in flow.
+     */
+    verifyPhoneNumberWithMultiFactorInfo(hint: MultiFactorInfo, session: string): Promise<string>;
 
     /**
      * Creates a new user with an email and password.

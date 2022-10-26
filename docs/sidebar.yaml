@@ -38,6 +38,8 @@
       - '/auth/social-auth'
     - - Phone Auth
       - '/auth/phone-auth'
+    - - Multi-factor Auth
+      - '/auth/multi-factor-auth'
   - '//static.invertase.io/assets/firebase/authentication.svg'
 - - Cloud Firestore
   - - - Usage
