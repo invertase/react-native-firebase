@@ -36,9 +36,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [16.0.0](https://github.com/invertase/react-native-firebase/compare/v15.7.1...v16.0.0) (2022-10-19)
 
+## Features
+
+- use firebase-ios-adk 10.0.0
+- use firease-android-sdk 31.0.0
+- implement new [Firestore AggregateQueries](https://firebase.google.com/docs/firestore/solutions/aggregation) and support [new `count()` feature](https://firebase.google.com/docs/firestore/query-data/aggregation-queries)
+
 ### ⚠ BREAKING CHANGES
 
-- fix release version change type resolution
+- **increase in minimum iOS target version to 11.0 and macOS version to 10.13**, stay on v15.7.0 if you must support older Apple platforms
+
+### KNOWN ISSUES
+
+- storage getDownloadURL has an upstream issue on iOS + storage emulator; either use Android, or use cloud storage, or stay on v15.7.0 until firebase-ios-sdk 10.1.0+ is released with the fix
 
 ### release
 
