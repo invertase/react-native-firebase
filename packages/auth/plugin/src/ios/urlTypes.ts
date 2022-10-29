@@ -11,30 +11,27 @@ import plist from 'plist';
 // does this for you: https://firebase.google.com/docs/auth/ios/phone-auth#enable-phone-number-sign-in-for-your-firebase-project
 export const withIosCaptchaUrlTypes: ConfigPlugin = config => {
   return withInfoPlist(config, config => {
-    if (!config.ios?.googleServicesFile) {
-      throw new Error(
-        'Path to GoogleService-Info.plist is not defined. Please specify the `expo.ios.googleServicesFile` field in app.json.',
-      );
-    }
-
     return setUrlTypesForCaptcha({ config });
   });
 };
 
 function getReversedClientId(googleServiceFilePath: string): string {
-  let REVERSED_CLIENT_ID: string;
   try {
     const googleServicePlist = fs.readFileSync(googleServiceFilePath, 'utf8');
 
     const googleServiceJson = plist.parse(googleServicePlist) as { REVERSED_CLIENT_ID: string };
-    REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
+    const REVERSED_CLIENT_ID = googleServiceJson.REVERSED_CLIENT_ID;
+
+    if (!REVERSED_CLIENT_ID) {
+      throw new TypeError('REVERSED_CLIENT_ID missing');
+    }
+
+    return REVERSED_CLIENT_ID;
   } catch {
     throw new Error(
       '[@react-native-firebase/auth] Failed to parse your GoogleService-Info.plist. Are you sure it is a valid Info.Plist file with a REVERSE_CLIENT_ID field?',
     );
   }
-
-  return REVERSED_CLIENT_ID;
 }
 
 // add phone auth support by configuring recaptcha
