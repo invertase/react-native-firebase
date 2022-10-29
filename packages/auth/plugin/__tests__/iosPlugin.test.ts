@@ -48,7 +48,7 @@ describe('Config Plugin iOS Tests', () => {
           slug: 'TestSlug',
           modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
           modResults: {},
-          ios: { googleServicesFile: 'GoogleService-Info.incomplete.plist' },
+          ios: { googleServicesFile: 'TestGoogleService-Info.incomplete.plist' },
         },
       });
     }).toThrow(
@@ -63,7 +63,7 @@ describe('Config Plugin iOS Tests', () => {
         slug: 'TestSlug',
         modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
         modResults: {},
-        ios: { googleServicesFile: 'GoogleService-Info.plist' },
+        ios: { googleServicesFile: 'TestGoogleService-Info.plist' },
       },
     });
     expect(result.modResults).toMatchSnapshot();
