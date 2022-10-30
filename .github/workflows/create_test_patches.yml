@@ -28,13 +28,13 @@ jobs:
         with:
           all_but_latest: true
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
       # - name patches w/PR as "semver prerelease" and SHA as "semver build info". Needs patch-package enhancement.
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -42,7 +42,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Yarn Cache
         id: yarn-cache
         with:
@@ -93,7 +93,7 @@ jobs:
         shell: bash
 
       - name: Upload Test Patches
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: patches
           path: ~/template/patches/

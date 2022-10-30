@@ -17,10 +17,10 @@ jobs:
       - uses: styfle/cancel-workflow-action@0.9.1
         with:
           all_but_latest: true
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Get yarn cache directory path
