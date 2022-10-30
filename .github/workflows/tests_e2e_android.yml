@@ -1,6 +1,13 @@
 name: Testing E2E Android
 
 on:
+  workflow_dispatch:
+    inputs:
+      clearCaches:
+        description: "Clear workflow caches where possible"
+        required: false
+        type: string
+
   pull_request:
     branches:
       - '**'
@@ -111,9 +118,20 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1-${{ hashFiles('~/.android/avd/**/snapshots/**') }}
+          key: avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1-${{ github.event.inputs.clearCaches }}
           restore-keys: |
             avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1
+
+      - name: Clear Caches Optionally
+        if: "${{ github.event.inputs.clearCaches != '' }}"
+        shell: bash
+        run: |
+          du -sk ~/.gradle
+          du -sk ~/.android
+          rm -fr ~/.gradle
+          rm -fr ~/.android
+          du -sk ~/.gradle || echo ~/.gradle is gone
+          du -sk ~/.android || echo ~/.android is gone
 
       - name: Build Android App
         uses: nick-invision/retry@v2
@@ -146,7 +164,7 @@ jobs:
       - name: AVD Boot and Snapshot Creation
         # Only generate a snapshot with a cache miss
         # Comment the if out to generate snapshots on branch for performance testing
-        if: steps.avd-cache.outputs.cache-hit != 'true'
+        if: "${{ github.event.inputs.clearCaches != '' || (steps.avd-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main') }}"
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
@@ -168,7 +186,7 @@ jobs:
         # Only generate a snapshot for saving with a cache miss
         # Switch the if statements via comment if generating snapshots for performance testing
         # if: matrix.first-boot-delay != '0'
-        if: steps.avd-cache.outputs.cache-hit != 'true'
+        if: "${{ github.event.inputs.clearCaches != '' || (steps.avd-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/main') }}"
         env:
           FIRST_BOOT_DELAY: ${{ matrix.first-boot-delay }}
         uses: reactivecircus/android-emulator-runner@v2
