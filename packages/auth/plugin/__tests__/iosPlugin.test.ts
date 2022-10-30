@@ -15,6 +15,7 @@ describe('Config Plugin iOS Tests', () => {
           slug: 'TestSlug',
           modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
           modResults: {},
+          modRawConfig: { name: 'TestName', slug: 'TestSlug' },
           ios: {},
         },
       });
@@ -32,6 +33,7 @@ describe('Config Plugin iOS Tests', () => {
           slug: 'TestSlug',
           modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
           modResults: {},
+          modRawConfig: { name: 'TestName', slug: 'TestSlug' },
           ios: { googleServicesFile: 'ThisFileDoesNotExist.plist' },
         },
       });
@@ -48,6 +50,7 @@ describe('Config Plugin iOS Tests', () => {
           slug: 'TestSlug',
           modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
           modResults: {},
+          modRawConfig: { name: 'TestName', slug: 'TestSlug' },
           ios: { googleServicesFile: 'TestGoogleService-Info.incomplete.plist' },
         },
       });
@@ -63,6 +66,7 @@ describe('Config Plugin iOS Tests', () => {
         slug: 'TestSlug',
         modRequest: { projectRoot: path.join(__dirname, 'fixtures') } as any,
         modResults: {},
+        modRawConfig: { name: 'TestName', slug: 'TestSlug' },
         ios: { googleServicesFile: 'TestGoogleService-Info.plist' },
       },
     });
