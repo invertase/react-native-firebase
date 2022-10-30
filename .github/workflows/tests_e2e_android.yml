@@ -101,6 +101,20 @@ jobs:
           key: ${{ runner.os }}-gradle-v1-${{ hashFiles('**/*.gradle*') }}
           restore-keys: ${{ runner.os }}-gradle-v1
 
+        # This appears to be 'Cache Size: ~1230 MB (1290026823 B)' based on watching action logs
+        # Repo limit is 10GB; branch caches are independent; branches may read default branch cache.
+        # We don't want branches to evict main branch snapshot, so save on main, read-only all else
+      - name: AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
+        with:
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1-${{ hashFiles('~/.android/avd/**/snapshots/**') }}
+          restore-keys: |
+            avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1
+
       - name: Build Android App
         uses: nick-invision/retry@v2
         with:
@@ -128,20 +142,6 @@ jobs:
           echo "Packager is online! Preparing javascript bundle..."
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready."
-
-        # This appears to be 'Cache Size: ~1230 MB (1290026823 B)' based on watching action logs
-        # Repo limit is 10GB; branch caches are independent; branches may read default branch cache.
-        # We don't want branches to evict main branch snapshot, so save on main, read-only all else
-      - name: AVD cache
-        uses: actions/cache@v3
-        id: avd-cache
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1-${{ hashFiles('~/.android/avd/**/snapshots/**') }}
-          restore-keys: |
-            avd-${{ matrix.api-level }}-${{ matrix.arch }}-${{matrix.target}}-v1
 
       - name: AVD Boot and Snapshot Creation
         # Only generate a snapshot with a cache miss
