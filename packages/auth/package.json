@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/auth",
-  "version": "16.3.1",
+  "version": "16.4.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - The authentication module provides an easy-to-use API to integrate an authentication workflow into new and existing applications. React Native Firebase provides access to all Firebase authentication methods and identity providers.",
   "main": "lib/index.js",
@@ -8,9 +8,9 @@
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "build:plugin": "rimraf plugin/build && tsc --build plugin", 
-    "lint:plugin": "eslint plugin/src/*", 
-    "prepare": "yarn run build && yarn run build:plugin" 
+    "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "lint:plugin": "eslint plugin/src/*",
+    "prepare": "yarn run build && yarn run build:plugin"
   },
   "repository": {
     "type": "git",
@@ -24,11 +24,11 @@
     "auth"
   ],
   "dependencies": {
-    "plist": "^3.0.5",
-    "@expo/config-plugins": "^5.0.1"
+    "@expo/config-plugins": "^5.0.1",
+    "plist": "^3.0.5"
   },
   "peerDependencies": {
-    "@react-native-firebase/app": "16.3.1"
+    "@react-native-firebase/app": "16.4.0"
   },
   "publishConfig": {
     "access": "public"
