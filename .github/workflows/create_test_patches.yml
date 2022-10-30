@@ -19,15 +19,15 @@ on:
       - '.spellcheck.dict.txt'
       - '**/*.md'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   main:
     name: Create patch-package Patches
     runs-on: ubuntu-latest
     steps:
-      - uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          all_but_latest: true
-
       - uses: actions/checkout@v3
 
       # Future ideas:
