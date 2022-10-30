@@ -881,7 +881,7 @@ PODS:
     - Libuv-gRPC (= 0.0.10)
   - gRPC-Core/Interface (1.44.0)
   - GTMSessionFetcher/Core (2.1.0)
-  - Jet (0.8.1):
+  - Jet (0.8.2):
     - React-Core
   - leveldb-library (1.22.1)
   - Libuv-gRPC (0.0.10):
@@ -1463,7 +1463,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
   GTMSessionFetcher: ffbb25ec00ebcb5201adab0a56d808f6f1902d9f
-  Jet: 62e554fd433139f661030e06ca116c232f9232a5
+  Jet: 749a4d53291c852ea5a888371411654848079aef
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
