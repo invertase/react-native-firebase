@@ -34,12 +34,12 @@ jobs:
           all_but_latest: true
 
       # Set up tool versions
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: Configure JDK 1.11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -60,7 +60,7 @@ jobs:
           echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
           echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Yarn Cache
         id: yarn-cache
         with:
@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Detox Framework Cache
         id: detox-cache
         with:
@@ -103,7 +103,7 @@ jobs:
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Cache Pods
         id: pods-cache
         with:
@@ -120,7 +120,7 @@ jobs:
           command: yarn tests:ios:pod:install
 
       - name: Cache Firestore Emulator
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
@@ -154,7 +154,7 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -187,7 +187,7 @@ jobs:
         run: gzip -9 simulator.log
 
       - name: Upload Simulator Log
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: simulator_log
