@@ -115,7 +115,7 @@ RCT_EXPORT_METHOD(setSessionTimeoutDuration
                   : (double)milliseconds resolver
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
-  // Do nothing - this only exists in android
+  [FIRAnalytics setSessionTimeoutInterval:milliseconds / 1000];
   return resolve([NSNull null]);
 }
 
