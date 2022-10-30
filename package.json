@@ -60,7 +60,6 @@
     "@typescript-eslint/parser": "^5.40.1",
     "babel-jest": "^29.2.0",
     "clang-format": "^1.8.0",
-    "codecov": "^3.8.3",
     "conventional-changelog-cli": "^2.2.2",
     "cross-env": "^7.0.3",
     "eslint": "^8.25.0",
