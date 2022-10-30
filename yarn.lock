@@ -8853,7 +8853,7 @@ jest@^29.2.0:
     import-local "^3.0.2"
     jest-cli "^29.2.2"
 
-jet@^0.8.1:
+jet@^0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/jet/-/jet-0.8.2.tgz#578928b284effccfb57718212c55c309e9d4dcf7"
   integrity sha512-FzyIov7QtsUEmglenhRp6QgJcBMxja10uVEvmkwNPPwqvtz1d9SS6//2VfqRpY3AZB0nmSh5H+z8kD9GbVviQw==
