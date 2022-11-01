@@ -20,6 +20,8 @@
 #import "RNFBFirestoreCommon.h"
 #import "RNFBPreferences.h"
 
+NSMutableDictionary *emulatorConfigs;
+
 @implementation RNFBFirestoreModule
 #pragma mark -
 #pragma mark Module Setup
@@ -142,13 +144,19 @@ RCT_EXPORT_METHOD(useEmulator
                   : (FIRApp *)firebaseApp
                   : (nonnull NSString *)host
                   : (NSInteger)port) {
-  FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
-  [firestore useEmulatorWithHost:host port:port];
+  if (emulatorConfigs == nil) {
+    emulatorConfigs = [[NSMutableDictionary alloc] init];
+  }
+  if (!emulatorConfigs[firebaseApp.name]) {
+    FIRFirestore *firestore = [RNFBFirestoreCommon getFirestoreForApp:firebaseApp];
+    [firestore useEmulatorWithHost:host port:port];
+    emulatorConfigs[firebaseApp.name] = @YES;
 
-  // It is not sufficient to just use emulator. You have toggle SSL off too.
-  FIRFirestoreSettings *settings = firestore.settings;
-  settings.sslEnabled = FALSE;
-  firestore.settings = settings;
+    // It is not sufficient to just use emulator. You have toggle SSL off too.
+    FIRFirestoreSettings *settings = firestore.settings;
+    settings.sslEnabled = FALSE;
+    firestore.settings = settings;
+  }
 }
 
 RCT_EXPORT_METHOD(waitForPendingWrites

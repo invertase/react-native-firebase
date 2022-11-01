@@ -285,6 +285,8 @@ import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 async function onGoogleButtonPress() {
+  // Check if your device supports Google Play
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
   // Get the users ID token
   const { idToken } = await GoogleSignin.signIn();
 
@@ -298,3 +300,5 @@ async function onGoogleButtonPress() {
 
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
+
+If you are testing this feature on an android emulator ensure that the emulate is either the Google APIs or Google Play flavor.

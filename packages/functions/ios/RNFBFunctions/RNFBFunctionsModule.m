@@ -80,6 +80,58 @@ RCT_EXPORT_METHOD(httpsCallable
                 }];
 }
 
+RCT_EXPORT_METHOD(httpsCallableFromUrl
+                  : (FIRApp *)firebaseApp customUrlOrRegion
+                  : (NSString *)customUrlOrRegion host
+                  : (NSString *)host port
+                  : (NSNumber *_Nonnull)port url
+                  : (NSString *)url wrapper
+                  : (NSDictionary *)wrapper options
+                  : (NSDictionary *)options resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  NSURL *customUrl = [NSURL URLWithString:customUrlOrRegion];
+  FIRFunctions *functions =
+      (customUrl && customUrl.scheme && customUrl.host)
+          ? [FIRFunctions functionsForApp:firebaseApp customDomain:customUrlOrRegion]
+          : [FIRFunctions functionsForApp:firebaseApp region:customUrlOrRegion];
+
+  if (host != nil) {
+    [functions useEmulatorWithHost:host port:[port intValue]];
+  }
+
+  NSURL *functionUrl = [NSURL URLWithString:url];
+
+  FIRHTTPSCallable *callable = [functions HTTPSCallableWithURL:functionUrl];
+
+  if (options[@"timeout"]) {
+    callable.timeoutInterval = [options[@"timeout"] doubleValue];
+  }
+
+  [callable callWithObject:[wrapper valueForKey:@"data"]
+                completion:^(FIRHTTPSCallableResult *_Nullable result, NSError *_Nullable error) {
+                  if (error) {
+                    NSObject *details = [NSNull null];
+                    NSString *message = error.localizedDescription;
+                    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+                    if ([error.domain isEqual:@"com.firebase.functions"]) {
+                      details = error.userInfo[@"details"];
+                      if (details == nil) {
+                        details = [NSNull null];
+                      }
+                    }
+
+                    userInfo[@"code"] = [self getErrorCodeName:error];
+                    userInfo[@"message"] = message;
+                    userInfo[@"details"] = details;
+
+                    [RNFBSharedUtils rejectPromiseWithUserInfo:reject userInfo:userInfo];
+                  } else {
+                    resolve(@{@"data" : [result data]});
+                  }
+                }];
+}
+
 - (NSString *)getErrorCodeName:(NSError *)error {
   NSString *code = @"UNKNOWN";
   switch (error.code) {

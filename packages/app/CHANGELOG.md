@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.4.0](https://github.com/invertase/react-native-firebase/compare/v16.3.1...v16.4.0) (2022-10-30)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+### [16.3.1](https://github.com/invertase/react-native-firebase/compare/v16.3.0...v16.3.1) (2022-10-28)
+
+### Bug Fixes
+
+- **app, sdks:** firebase-ios-sdk 10.1.0 / firebase-android-sdk 31.0.2 ([8367c98](https://github.com/invertase/react-native-firebase/commit/8367c9858b8d6e2a0d689d1adcc5c88c6dc377fa))
+
+## [16.3.0](https://github.com/invertase/react-native-firebase/compare/v16.2.0...v16.3.0) (2022-10-26)
+
+### Features
+
+- **auth:** Add multi-factor support for the sign-in flow ([#6593](https://github.com/invertase/react-native-firebase/issues/6593)) ([3c64bf5](https://github.com/invertase/react-native-firebase/commit/3c64bf5987eec73c8cc5d3f9246c4c0185eb7718))
+
+## [16.2.0](https://github.com/invertase/react-native-firebase/compare/v16.1.1...v16.2.0) (2022-10-23)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+### [16.1.1](https://github.com/invertase/react-native-firebase/compare/v16.1.0...v16.1.1) (2022-10-21)
+
+### Bug Fixes
+
+- **app, android:** use firebase-android-sdk 31.0.1 ([89eb33f](https://github.com/invertase/react-native-firebase/commit/89eb33fb49b843afcb3c33480d4c6d28c5eb6e12))
+
+## [16.1.0](https://github.com/invertase/react-native-firebase/compare/v16.0.0...v16.1.0) (2022-10-20)
+
+**Note:** Version bump only for package @react-native-firebase/app
+
+## [16.0.0](https://github.com/invertase/react-native-firebase/compare/v15.7.1...v16.0.0) (2022-10-19)
+
+### ⚠ BREAKING CHANGES
+
+- fix release version change type resolution
+
+### release
+
+- fix release version change type resolution ([6fcb946](https://github.com/invertase/react-native-firebase/commit/6fcb946f7e7bbc3e7ad6605d48ce3d11f1184c70))
+
+## [15.7.1](https://github.com/invertase/react-native-firebase/compare/v15.7.0...v15.7.1) (2022-10-19)
+
+**Note:** Inadvertent breaking change. iOS minimum deploy target bumped to 11, macOS to 10.13
+
 # [15.7.0](https://github.com/invertase/react-native-firebase/compare/v15.6.0...v15.7.0) (2022-10-01)
 
 **Note:** Version bump only for package @react-native-firebase/app

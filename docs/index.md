@@ -100,7 +100,7 @@ Select the downloaded `GoogleService-Info.plist` file from your computer, and en
 
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
-To do this, open your `/ios/{projectName}/AppDelegate.m` file, and add the following:
+To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.m` if on older react-native), and add the following:
 
 At the top of the file, import the Firebase SDK:
 
@@ -215,7 +215,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "30.5.0"
+        bom           : "31.0.2"
       ],
     ],
   ])
@@ -230,7 +230,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '9.6.0'
+$FirebaseSDKVersion = '10.1.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.

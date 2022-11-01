@@ -116,6 +116,8 @@ dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion("firebase", "bom")}")
   implementation "com.google.firebase:firebase-messaging"
+  // temporary workaround: https://github.com/firebase/firebase-android-sdk/issues/4206
+  implementation 'com.google.firebase:firebase-iid:21.1.0'
 }
 
 ReactNative.shared.applyPackageVersion()

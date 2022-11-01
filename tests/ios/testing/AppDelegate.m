@@ -16,12 +16,11 @@
  */
 
 #import "AppDelegate.h"
-#import "RNFBMessagingModule.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-#import <Firebase/Firebase.h>
 
-@import Firebase;
+#import "RNFBMessagingModule.h"
+#import <Firebase.h>
 
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

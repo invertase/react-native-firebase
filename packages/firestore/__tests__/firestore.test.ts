@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import firestore, { firebase, FirebaseFirestoreTypes } from '../lib';
 
 const COLLECTION = 'firestore';

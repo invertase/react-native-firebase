@@ -13,11 +13,11 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: 'main'
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
       - name: Yarn Install
@@ -32,7 +32,7 @@ jobs:
           git config --global user.name '@Salakar'
           git config --global user.email 'Salakar@users.noreply.github.com'
           git remote set-url origin git@github.com:$GITHUB_REPOSITORY
-      - uses: webfactory/ssh-agent@v0.5.3
+      - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Publish Packages

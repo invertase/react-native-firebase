@@ -16,7 +16,7 @@
  */
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
-describe('firestore().collection().starAt()', function () {
+describe('firestore().collection().startAt()', function () {
   before(function () {
     return wipe();
   });

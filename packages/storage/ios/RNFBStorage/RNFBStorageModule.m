@@ -35,6 +35,7 @@ static NSMutableDictionary *PENDING_TASKS;
 // The iOS SDK has a short memory on settings, store these globally and set them in each time
 static NSString *emulatorHost = nil;
 static NSInteger emulatorPort = 0;
+static NSMutableDictionary *emulatorConfigs;
 static NSTimeInterval maxDownloadRetryTime = 600;
 static NSTimeInterval maxUploadRetryTime = 600;
 static NSTimeInterval maxOperationRetryTime = 120;
@@ -55,6 +56,7 @@ RCT_EXPORT_MODULE();
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     PENDING_TASKS = [[NSMutableDictionary alloc] init];
+    emulatorConfigs = [[NSMutableDictionary alloc] init];
   });
 
   return self;
@@ -150,7 +152,9 @@ RCT_EXPORT_METHOD(updateMetadata
       [self promiseRejectStorageException:reject error:error];
     } else {
       FIRStorageMetadata *storageMetadata =
-          [RNFBStorageCommon buildMetadataFromMap:metadata existingMetadata:fetchedMetadata];
+          [RNFBStorageCommon buildMetadataFromMap:metadata
+                                 existingMetadata:fetchedMetadata
+                                             path:[storageReference fullPath]];
 
       [storageReference updateMetadata:storageMetadata
                             completion:^(FIRStorageMetadata *_Nullable updatedMetadata,
@@ -400,9 +404,11 @@ RCT_EXPORT_METHOD(putFile
                   : (nonnull NSNumber *)taskId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata
-                                                               existingMetadata:nil];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  FIRStorageMetadata *storageMetadata =
+      [RNFBStorageCommon buildMetadataFromMap:metadata
+                             existingMetadata:nil
+                                         path:[storageReference fullPath]];
 
   [RNFBStorageCommon
       NSURLForLocalFilePath:localFilePath
@@ -472,9 +478,11 @@ RCT_EXPORT_METHOD(putString
                   : (nonnull NSNumber *)taskId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  FIRStorageMetadata *storageMetadata = [RNFBStorageCommon buildMetadataFromMap:metadata
-                                                               existingMetadata:nil];
   FIRStorageReference *storageReference = [self getReferenceFromUrl:url app:firebaseApp];
+  FIRStorageMetadata *storageMetadata =
+      [RNFBStorageCommon buildMetadataFromMap:metadata
+                             existingMetadata:nil
+                                         path:[storageReference fullPath]];
 
   __block FIRStorageUploadTask *uploadTask;
   RCTUnsafeExecuteOnMainQueueSync(^{
@@ -499,7 +507,10 @@ RCT_EXPORT_METHOD(useEmulator
                   : (NSInteger)port) {
   emulatorHost = host;
   emulatorPort = port;
-  [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost:host port:port];
+  if (!emulatorConfigs[firebaseApp.name]) {
+    [[FIRStorage storageForApp:firebaseApp] useEmulatorWithHost:host port:port];
+    emulatorConfigs[firebaseApp.name] = @YES;
+  }
 }
 
 /**
@@ -657,9 +668,11 @@ RCT_EXPORT_METHOD(setTaskStatus
   storage = [FIRStorage storageForApp:firebaseApp URL:bucket];
 
   NSLog(@"Setting emulator - host %@ port %ld", emulatorHost, (long)emulatorPort);
-  if (![emulatorHost isEqual:[NSNull null]] && emulatorHost != nil) {
+  if (![emulatorHost isEqual:[NSNull null]] && emulatorHost != nil &&
+      !emulatorConfigs[firebaseApp.name]) {
     @try {
       [storage useEmulatorWithHost:emulatorHost port:emulatorPort];
+      emulatorConfigs[firebaseApp.name] = @YES;
     } @catch (NSException *e) {
       NSLog(@"WARNING: Unable to set the Firebase Storage emulator settings. These must be set "
             @"before any usages of Firebase Storage. If you see this log after a hot "

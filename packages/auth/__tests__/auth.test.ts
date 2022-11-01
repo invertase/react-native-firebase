@@ -1,4 +1,9 @@
+import { describe, expect, it } from '@jest/globals';
+
 import auth, { firebase } from '../lib';
+
+// @ts-ignore - We don't mind missing types here
+import { NativeFirebaseError } from '../../app/lib/internal';
 
 describe('Auth', function () {
   describe('namespace', function () {
@@ -65,6 +70,52 @@ describe('Auth', function () {
         expect(e.message).toBe("firebase.auth().setTenantId(*) expected 'tenantId' to be a string");
         return Promise.resolve('Error catched');
       }
+    });
+  });
+
+  describe('getMultiFactorResolver', function () {
+    it('should return null if no resolver object is found', function () {
+      const unknownError = NativeFirebaseError.fromEvent(
+        {
+          code: 'unknown',
+        },
+        'auth',
+      );
+      const actual = auth.getMultiFactorResolver(auth(), unknownError);
+      expect(actual).toBe(null);
+    });
+
+    it('should return null if resolver object is null', function () {
+      const unknownError = NativeFirebaseError.fromEvent(
+        {
+          code: 'unknown',
+          resolver: null,
+        },
+        'auth',
+      );
+      const actual = auth.getMultiFactorResolver(firebase.app().auth(), unknownError);
+      expect(actual).toBe(null);
+    });
+
+    it('should return the resolver object if its found', function () {
+      const resolver = { session: '', hints: [] };
+      const errorWithResolver = NativeFirebaseError.fromEvent(
+        {
+          code: 'multi-factor-auth-required',
+          resolver,
+        },
+        'auth',
+      );
+      const actual = auth.getMultiFactorResolver(firebase.app().auth(), errorWithResolver);
+      // Using expect(actual).toEqual(resolver) causes unexpected errors:
+      //  You attempted to use "firebase.app('[DEFAULT]').appCheck" but this module could not be found.
+      expect(actual).not.toBeNull();
+      // @ts-ignore We know actual is not null
+      expect(actual.session).toEqual(resolver.session);
+      // @ts-ignore We know actual is not null
+      expect(actual.hints).toEqual(resolver.hints);
+      // @ts-ignore We know actual is not null
+      expect(actual._auth).not.toBeNull();
     });
   });
 });
