@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { IOSConfig } from '@expo/config-plugins';
 import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import fs from 'fs/promises';
