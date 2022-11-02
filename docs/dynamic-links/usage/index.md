@@ -50,6 +50,9 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ## iOS Setup
 
+> Notes: Currently, iOS requires a workaround to make method swizzling work. The workaround is described in [this github comment](https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-1252028059). Without this, dynamic link matching behavior may be inconsistent.
+> If you are using Expo Managed Workflow, be sure to load the [@react-native-firebase/dynamic-links config plugin](https://rnfirebase.io/#managed-workflow) to automatically apply the workaround.
+
 To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple developer account [setup](https://developer.apple.com/programs/enroll/).
 
 1. Add an `App Store ID` & `Team ID` to your app in your Firebase console. If you do not have an `App Store ID` yet, you can put any number in here for now. Your `Team ID` can be found in your Apple developer console.
