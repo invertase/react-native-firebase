@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [16.4.1](https://github.com/invertase/react-native-firebase/compare/v16.4.0...v16.4.1) (2022-11-02)
+
+### Bug Fixes
+
+- **dynamic-links, ios:** expo config plugin automates dynamic-links workaround ([#6650](https://github.com/invertase/react-native-firebase/issues/6650)) ([e558ad7](https://github.com/invertase/react-native-firebase/commit/e558ad78f62101be3549ab1c605654007b54a38f)), closes [#2660](https://github.com/invertase/react-native-firebase/issues/2660)
+
 ## [16.4.0](https://github.com/invertase/react-native-firebase/compare/v16.3.1...v16.4.0) (2022-10-30)
 
 ### Features
