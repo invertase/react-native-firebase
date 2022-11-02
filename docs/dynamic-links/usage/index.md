@@ -50,7 +50,7 @@ a Dynamic Link on iOS or Android, they can be taken directly to the linked conte
 
 ## iOS Setup
 
-> Notes: Currently, iOS requires a workaround to make method swizzling work. The workaround is described in [this Github comment](https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-1252028059). Without this, dynamic link matching behavior may be inconsistent.
+> Notes: Currently, iOS requires a workaround to make method swizzling work. The workaround is described in [this github comment](https://github.com/invertase/react-native-firebase/issues/4548#issuecomment-1252028059). Without this, dynamic link matching behavior may be inconsistent.
 > If you are using Expo Managed Workflow, be sure to load the [@react-native-firebase/dynamic-links config plugin](https://rnfirebase.io/#managed-workflow) to automatically apply the workaround.
 
 To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple developer account [setup](https://developer.apple.com/programs/enroll/).
