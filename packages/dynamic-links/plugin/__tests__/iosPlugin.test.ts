@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, jest, mockImplementation } from '@jest/globals';
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { IOSConfig } from '@expo/config-plugins';
 import { AppDelegateProjectFile } from '@expo/config-plugins/build/ios/Paths';
 import fs from 'fs/promises';
@@ -58,7 +58,7 @@ describe('Config Plugin iOS Tests', function () {
   });
 
   it('detects Objective-C++ AppDelegate.mm', async function () {
-    jest.spyOn(fs, 'writeFile').mockImplementation();
+    jest.spyOn(fs, 'writeFile').mockImplementation(() => {});
 
     const appDelegatePath = path.join(__dirname, './fixtures/AppDelegate_sdk45.mm');
     const appDelegateFileInfo = IOSConfig.Paths.getFileInfo(
@@ -75,7 +75,7 @@ describe('Config Plugin iOS Tests', function () {
   });
 
   it("doesn't support Swift AppDelegate", async function () {
-    jest.spyOn(fs, 'writeFile').mockImplementation();
+    jest.spyOn(fs, 'writeFile').mockImplementation(() => {});
 
     const appDelegateFileInfo: AppDelegateProjectFile = {
       path: '.',
