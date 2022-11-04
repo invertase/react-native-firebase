@@ -194,6 +194,11 @@ export namespace FirebaseAuthTypes {
     ERROR: 'error';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface MultiFactorSession {
+    // this is has no documented contents, it is simply returned from some APIs and passed to others
+  }
+
   export interface PhoneMultiFactorGenerator {
     /**
      * Identifies second factors of type phone.
@@ -417,6 +422,22 @@ export namespace FirebaseAuthTypes {
     secret: string;
   }
 
+  export interface PhoneMultiFactorEnrollInfoOptions {
+    phoneNumber: string;
+    session: MultiFactorSession;
+  }
+
+  export interface PhoneMultiFactorSignInInfoOptions {
+    multiFactorHint?: MultiFactorInfo;
+
+    /**
+     * Unused in react-native-firebase ipmlementation
+     */
+    multiFactorUid?: string;
+
+    session: MultiFactorSession;
+  }
+
   /**
    * Facilitates the recovery when a user needs to provide a second factor to sign-in.
    */
@@ -428,12 +449,12 @@ export namespace FirebaseAuthTypes {
     /**
      * Serialized session this resolver belongs to.
      */
-    session: string;
+    session: MultiFactorSession;
 
     /**
      * For testing purposes only
      */
-    _auth: FirebaseAuthTypes.Module;
+    _auth?: FirebaseAuthTypes.Module;
 
     /**
      * Resolve the multi factor flow.
@@ -473,9 +494,9 @@ export namespace FirebaseAuthTypes {
     enrolledFactors: MultiFactorInfo[];
 
     /**
-     * Return the session id for this user.
+     * Return the session for this user.
      */
-    getSession(): Promise<string>;
+    getSession(): Promise<MultiFactorSession>;
 
     /**
      * Enroll an additional factor. Provide an optional display name that can be shown to the user.
@@ -1566,7 +1587,18 @@ export namespace FirebaseAuthTypes {
     /**
      * Obtain a verification id to complete the multi-factor sign-in flow.
      */
-    verifyPhoneNumberWithMultiFactorInfo(hint: MultiFactorInfo, session: string): Promise<string>;
+    verifyPhoneNumberWithMultiFactorInfo(
+      hint: MultiFactorInfo,
+      session: MultiFactorSession,
+    ): Promise<string>;
+
+    /**
+     * Send an SMS to the user for verification of second factor
+     * @param phoneInfoOptions the phone number and session to use during enrollment
+     */
+    verifyPhoneNumberForMultiFactor(
+      phoneInfoOptions: PhoneMultiFactorEnrollInfoOptions,
+    ): Promise<string>;
 
     /**
      * Creates a new user with an email and password.
