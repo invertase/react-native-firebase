@@ -48,6 +48,21 @@ describe('firestore().collection().count()', function () {
     const qs = await colRef.count().get();
     qs.data().count.should.eql(3);
   });
+  it('gets countFromServer of collection reference - unfiltered', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
+
+    const doc1 = colRef.doc('doc1');
+    const doc2 = colRef.doc('doc2');
+    const doc3 = colRef.doc('doc3');
+    await Promise.all([
+      doc1.set({ foo: 1, bar: { value: 1 } }),
+      doc2.set({ foo: 2, bar: { value: 2 } }),
+      doc3.set({ foo: 3, bar: { value: 3 } }),
+    ]);
+
+    const qs = await colRef.countFromServer().get();
+    qs.data().count.should.eql(3);
+  });
   it('gets correct count of collection reference - where equal', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/count/collection`);
 

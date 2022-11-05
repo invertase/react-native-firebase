@@ -942,6 +942,11 @@ export namespace FirebaseFirestoreTypes {
     count(): AggregateQuery<{ count: AggregateField<number> }>;
 
     /**
+     * Same as count()
+     */
+    countFromServer(): AggregateQuery<{ count: AggregateField<number> }>;
+
+    /**
      * Creates and returns a new Query that ends at the provided document (inclusive). The end
      * position is relative to the order of the query. The document must contain all of the
      * fields provided in the orderBy of this query.
