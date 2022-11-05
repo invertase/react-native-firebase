@@ -140,6 +140,10 @@ export default class FirestoreQuery {
     );
   }
 
+  countFromServer() {
+    return this.count();
+  }
+
   endAt(docOrField, ...fields) {
     return new FirestoreQuery(
       this._firestore,
