@@ -47,13 +47,9 @@ public class UniversalFirebaseDatabaseCommon {
 
     HashMap emulatorConfig = getEmulatorConfig(appName, dbURL);
 
-    if (emulatorConfig != null && emulatorConfig.get("configured") == null) {
+    if (emulatorConfig != null) {
       firebaseDatabase.useEmulator(
           (String) emulatorConfig.get("host"), (Integer) emulatorConfig.get("port"));
-      // The underlying SDK may only be configured once, but with hot-reloads in the
-      // javascript bundle, javascript cannot hold SDK configuration state. Keep track here
-      // so we only configure once
-      emulatorConfig.put("configured", "true");
     }
 
     return firebaseDatabase;
