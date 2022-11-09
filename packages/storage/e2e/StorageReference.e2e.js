@@ -629,6 +629,26 @@ describe('storage() -> StorageReference', function () {
         });
       });
     });
+
+    describe('put secondaryApp', function () {
+      it('allows valid metadata properties for upload', async function () {
+        const storageReference = firebase
+          .storage(firebase.app('secondaryFromNative'))
+          // .storage()
+          .ref(`${PATH}/metadataTest.jpeg`);
+        await storageReference.put(new jet.context.window.ArrayBuffer(), {
+          contentType: 'image/jpg',
+          md5hash: '123412341234',
+          cacheControl: 'true',
+          contentDisposition: 'disposed',
+          contentEncoding: 'application/octet-stream',
+          contentLanguage: 'de',
+          customMetadata: {
+            customMetadata1: 'metadata1value',
+          },
+        });
+      });
+    });
   });
 
   describe('StorageReference modular', function () {
@@ -1344,6 +1364,29 @@ describe('storage() -> StorageReference', function () {
       it('allows valid metadata properties for upload', async function () {
         const { getStorage, ref, uploadBytesResumable } = storageModular;
         const storageReference = ref(getStorage(), `${PATH}/metadataTest.jpeg`);
+
+        await uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+          contentType: 'image/jpg',
+          md5hash: '123412341234',
+          cacheControl: 'true',
+          contentDisposition: 'disposed',
+          contentEncoding: 'application/octet-stream',
+          contentLanguage: 'de',
+          customMetadata: {
+            customMetadata1: 'metadata1value',
+          },
+        });
+      });
+    });
+
+    describe('put secondaryApp', function () {
+      it('allows valid metadata properties for upload', async function () {
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const { getApp } = modular;
+        const storageReference = ref(
+          getStorage(getApp('secondaryFromNative')),
+          `${PATH}/metadataTest.jpeg`,
+        );
 
         await uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
           contentType: 'image/jpg',
