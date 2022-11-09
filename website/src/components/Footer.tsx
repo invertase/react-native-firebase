@@ -40,7 +40,7 @@ function Footer(): JSX.Element {
           <Heading>Find us on</Heading>
           <List
             items={[
-              ['Twitter', 'https://twitter.com/https://twitter.com/rnfirebase'],
+              ['Twitter', 'https://twitter.com/rnfirebase'],
               ['NPM', 'https://npmjs.com/package/react-native-firebase'],
               ['Discord', 'https://invertase.link/discord'],
               [
