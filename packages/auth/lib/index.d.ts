@@ -313,7 +313,12 @@ export namespace FirebaseAuthTypes {
      * A PhoneMultiFactorGenerator interface.
      */
     PhoneMultiFactorGenerator: PhoneMultiFactorGenerator;
-  }
+  
+    /**
+     * A multiFactor interface.
+     */
+    multiFactor(auth: FirebaseAuthTypes.Module): Promise<MultiFactorUser>;
+}
 
   /**
    * A structure containing additional user information from a federated identity provider via {@link auth.UserCredential}.
