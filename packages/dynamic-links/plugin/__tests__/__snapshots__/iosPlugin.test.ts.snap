@@ -41,9 +41,9 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
 [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
-// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+// @generated end @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
@@ -134,9 +134,9 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
 [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
-// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+// @generated end @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [UIColor whiteColor];
@@ -287,9 +287,9 @@ static void InitializeFlipper(UIApplication *application) {
   InitializeFlipper(application);
 #endif
   
-// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
 [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
-// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+// @generated end @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   self.launchOptions = launchOptions;
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -386,9 +386,9 @@ exports[`Config Plugin iOS Tests works with AppDelegate.mm (RN 0.68+) 1`] = `
 {
   RCTAppSetupPrepareApp(application);
 
-// @generated begin @react-native-firebase/app-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
+// @generated begin @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions - expo prebuild (DO NOT MODIFY) sync-5b7813c3af090f886568429140e982730142dbe7
 [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
-// @generated end @react-native-firebase/app-didFinishLaunchingWithOptions
+// @generated end @react-native-firebase/dynamic-links-didFinishLaunchingWithOptions
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
 
 #if RCT_NEW_ARCH_ENABLED

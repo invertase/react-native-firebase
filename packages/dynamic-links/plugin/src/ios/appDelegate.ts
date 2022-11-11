@@ -42,7 +42,7 @@ export function modifyObjcAppDelegate(contents: string): string {
   // Add invocation
   try {
     return mergeContents({
-      tag: '@react-native-firebase/app-didFinishLaunchingWithOptions',
+      tag: '@react-native-firebase/dynamic-links-didFinishLaunchingWithOptions',
       src: contents,
       newSrc: methodInvocationBlock,
       anchor: methodInvocationLineMatcher,
