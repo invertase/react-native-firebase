@@ -2,14 +2,19 @@
  * Return a MultiFactorUser instance the gateway to multi-factor operations.
  */
 export function multiFactor(auth) {
+  // eslint-disable-next-line no-console
+  console.warn('This method is deprecated. Please use auth().multiFactor(user) instead');
   return new MultiFactorUser(auth);
 }
 
 export class MultiFactorUser {
-  constructor(auth) {
+  constructor(auth, user) {
     this._auth = auth;
-    this._user = auth.currentUser;
-    this.enrolledFactor = auth.currentUser.multiFactor.enrolledFactors;
+    if (user === undefined) {
+      user = auth.currentUser;
+    }
+    this._user = user;
+    this.enrolledFactor = user.multiFactor.enrolledFactors;
   }
 
   getSession() {

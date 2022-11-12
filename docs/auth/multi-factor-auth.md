@@ -22,7 +22,7 @@ operations:
 
 ```js
 import auth from '@react-native-firebase/auth';
-const multiFactorUser = await auth.multiFactor(auth());
+const multiFactorUser = await auth().multiFactor(auth().currentUser);
 ```
 
 Request the session identifier and use the phone number obtained from the user
@@ -81,7 +81,7 @@ Using the error object you can obtain a
 continue the flow:
 
 ```js
-const resolver = auth.getMultiFactorResolver(auth(), error);
+const resolver = auth().getMultiFactorResolver(error);
 ```
 
 The resolver object has all the required information to prompt the user for a
@@ -143,7 +143,7 @@ authInstance
     const { code } = error;
     // Make sure to check if multi factor authentication is required
     if (code !== 'auth/multi-factor-auth-required') {
-      const resolver = auth.getMultiFactorResolver(authInstance, error);
+      const resolver = auth.getMultiFactorResolver(error);
 
       if (resolver.hints.length > 1) {
         // Use resolver.hints to display a list of second factors to the user

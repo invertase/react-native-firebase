@@ -212,7 +212,7 @@ exports.createUserWithMultiFactor = async function createUserWithMultiFactor() {
   const email = 'verified@example.com';
   const password = 'test123';
   await createVerifiedUser(email, password);
-  const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+  const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
   const session = await multiFactorUser.getSession();
   const phoneNumber = getRandomPhoneNumber();
   const verificationId = await firebase
@@ -242,7 +242,7 @@ exports.signInUserWithMultiFactor = async function signInUserWithMultiFactor(
     e.message.should.equal(
       '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
     );
-    const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+    const resolver = firebase.auth().getMultiFactorResolver(e);
     let verificationId = await firebase
       .auth()
       .verifyPhoneNumberWithMultiFactorInfo(resolver.hints[0], resolver.session);

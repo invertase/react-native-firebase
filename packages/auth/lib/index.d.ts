@@ -1871,6 +1871,19 @@ export namespace FirebaseAuthTypes {
      * @param url: emulator URL, must have host and port (eg, 'http://localhost:9099')
      */
     useEmulator(url: string): void;
+    /**
+     * Provides a MultiFactorResolver suitable for completion of a multi-factor flow.
+     *
+     * @param error: The MultiFactorError raised during a sign-in, or reauthentication operation.
+     */
+    getMultiFactorResolver(error: MultiFactorError): MultiFactorResolver;
+    /**
+     * The MultiFactorUser corresponding to the user.
+     *
+     * This is used to access all multi-factor properties and operations related to the user.
+     * @param user The user.
+     */
+    multiFactor(user: User): MultiFactorUser;
   }
 }
 

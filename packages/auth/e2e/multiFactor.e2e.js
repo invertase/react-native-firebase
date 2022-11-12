@@ -41,7 +41,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        const resolver = firebase.auth().getMultiFactorResolver(e);
         resolver.should.be.an.Object();
         resolver.hints.should.be.an.Array();
         resolver.hints.length.should.equal(1);
@@ -93,7 +93,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        const resolver = firebase.auth().getMultiFactorResolver(e);
         const verificationId = await firebase
           .auth()
           .verifyPhoneNumberWithMultiFactorInfo(resolver.hints[0], resolver.session);
@@ -137,7 +137,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        const resolver = firebase.auth().getMultiFactorResolver(e);
         await firebase
           .auth()
           .verifyPhoneNumberWithMultiFactorInfo(resolver.hints[0], resolver.session);
@@ -169,7 +169,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        const resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        const resolver = firebase.auth().getMultiFactorResolver(e);
         const unknownFactor = {
           uid: 'notknown',
         };
@@ -199,7 +199,7 @@ describe('multi-factor', function () {
       await firebase.auth().signInWithEmailAndPassword(TEST_EMAIL, TEST_PASS);
 
       try {
-        const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+        const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
         const session = await multiFactorUser.getSession();
         await firebase
           .auth()
@@ -223,7 +223,7 @@ describe('multi-factor', function () {
         const phoneNumber = getRandomPhoneNumber();
 
         should.deepEqual(firebase.auth().currentUser.multiFactor.enrolledFactors, []);
-        const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+        const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
 
         const session = await multiFactorUser.getSession();
 
@@ -256,7 +256,7 @@ describe('multi-factor', function () {
         const phoneNumber = getRandomPhoneNumber();
 
         should.deepEqual(firebase.auth().currentUser.multiFactor.enrolledFactors, []);
-        const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+        const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
 
         const session = await multiFactorUser.getSession();
 
@@ -285,7 +285,7 @@ describe('multi-factor', function () {
       await signInUserWithMultiFactor(email, password, phoneNumber);
 
       const anotherNumber = getRandomPhoneNumber();
-      const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+      const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
 
       const session = await multiFactorUser.getSession();
       const verificationId = await firebase
@@ -318,7 +318,7 @@ describe('multi-factor', function () {
         await clearAllUsers();
         const { email, password, phoneNumber } = await createUserWithMultiFactor();
         await signInUserWithMultiFactor(email, password, phoneNumber);
-        const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+        const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
         const session = await multiFactorUser.getSession();
 
         const verificationId = await firebase
@@ -355,7 +355,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        resolver = firebase.auth().getMultiFactorResolver(e);
       }
       await firebase
         .auth()
@@ -392,7 +392,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        resolver = firebase.auth().getMultiFactorResolver(e);
       }
 
       try {
@@ -420,7 +420,7 @@ describe('multi-factor', function () {
         e.message.should.equal(
           '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
         );
-        resolver = firebase.auth.getMultiFactorResolver(firebase.auth(), e);
+        resolver = firebase.auth().getMultiFactorResolver(e);
       }
       const verificationId = await firebase
         .auth()
@@ -461,7 +461,7 @@ describe('multi-factor', function () {
       await confirmResult.confirm(lastSmsCode);
 
       // WHEN they attempt to enroll a second factor
-      const multiFactorUser = await firebase.auth.multiFactor(firebase.auth());
+      const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
       const session = await multiFactorUser.getSession();
       try {
         await firebase.auth().verifyPhoneNumberForMultiFactor({ phoneNumber: '+1123123', session });
@@ -477,7 +477,7 @@ describe('multi-factor', function () {
     });
     it('can not enroll when phone number is missing + sign', async function () {
       await createVerifiedUser('verified@example.com', 'test123');
-      const multiFactorUser = firebase.auth.multiFactor(firebase.auth());
+      const multiFactorUser = firebase.auth().multiFactor(firebase.auth().currentUser);
       const session = await multiFactorUser.getSession();
       try {
         await firebase.auth().verifyPhoneNumberForMultiFactor({ phoneNumber: '491575', session });

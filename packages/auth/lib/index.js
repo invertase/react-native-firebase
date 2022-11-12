@@ -42,7 +42,7 @@ import Settings from './Settings';
 import User from './User';
 import version from './version';
 import { getMultiFactorResolver } from './getMultiFactorResolver';
-import { multiFactor } from './multiFactor';
+import { multiFactor, MultiFactorUser } from './multiFactor';
 
 const statics = {
   AppleAuthProvider,
@@ -413,6 +413,17 @@ class FirebaseAuthModule extends FirebaseModule {
     const port = parseInt(urlMatches[2], 10);
     this.native.useEmulator(host, port);
     return [host, port]; // undocumented return, useful for unit testing
+  }
+
+  getMultiFactorResolver(error) {
+    return getMultiFactorResolver(this, error);
+  }
+
+  multiFactor(user) {
+    if (user.userId !== this.currentUser.userId) {
+      throw new Error('firebase.auth().multiFactor() only operates on currentUser');
+    }
+    return new MultiFactorUser(this, user);
   }
 }
 
