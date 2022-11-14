@@ -70,7 +70,8 @@ To setup Dynamic Links on iOS, it is a **prerequisite** that you have an Apple d
    Firebase console to the `Associated Domains` and prefix with `applinks:`
 
 ![iOS dynamic link fourth step](https://images.prismic.io/invertase/d7a8696f-bef1-44a4-b048-aab7bb534f71_Screenshot+2020-05-07+at+09.55.53.png?auto=compress,format)
-  If you are using Expo Managed Workflow, you can set the `ios.associatedDomains` in your `app.json`:
+If you are using Expo Managed Workflow, you can set the `ios.associatedDomains` in your `app.json`:
+
 ```
 "ios": {
   "associatedDomains": ["applinks:rnfbtestapplication.page.link"]
@@ -107,6 +108,7 @@ Example:
 If you don't add this, the dynamic link will invoke your app, but you cannot retrieve any deep link data you may need within your app, as the deep link will be completely ignored.
 
 If you are using Expo Managed Workflow, you can set the `ios.infoPlist.FirebaseDynamicLinksCustomDomains` in your `app.json`:
+
 ```
 "ios": {
   "infoPlist": {
