@@ -13,8 +13,8 @@
   },
   "main": "lib/index.js",
   "dependencies": {
-    "firebase-admin": "^11.2.0",
-    "firebase-functions": "^4.0.0"
+    "firebase-admin": "^11.2.1",
+    "firebase-functions": "^4.0.2"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.0.0",
