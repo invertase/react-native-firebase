@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [16.4.4](https://github.com/invertase/react-native-firebase/compare/v16.4.3...v16.4.4) (2022-11-14)
+
+### Bug Fixes
+
+- **auth, multifactor:** put multiFactor and getMultiFactorResolver on auth() ([357094e](https://github.com/invertase/react-native-firebase/commit/357094e4b7504165081ffda0c4105569480f5b79))
+- **crashlytics, android:** firebase-android-sdk 31.0.3 fixes NDK issue ([0d37632](https://github.com/invertase/react-native-firebase/commit/0d376327c8d843285d4ceec11d4af0bc8c16fe42))
+- **dynamic-links:** expo config plugin conflict with main firebase app plugin ([ab465ec](https://github.com/invertase/react-native-firebase/commit/ab465ec5fa9bea1e1519d9508ad5aee4ece2a032))
+
 ### [16.4.3](https://github.com/invertase/react-native-firebase/compare/v16.4.2...v16.4.3) (2022-11-06)
 
 ### Bug Fixes
