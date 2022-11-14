@@ -15,9 +15,10 @@ $RNFirebaseAsStaticFramework = true # toggle this to true (and set 'use_framewor
 $RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true
 
 # Versions used below, for quick reference / outdated+upgrade checks
-$iOSMinimumDeployVersion = '11.0'
+$iOSMinimumDeployVersion = '12.4'
 
 platform :ios, $iOSMinimumDeployVersion
+install! 'cocoapods', :deterministic_uuids => false
 
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
@@ -25,13 +26,26 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 target 'testing' do
   # set this and toggle '$RNFirebaseAsStaticFramework' above to test static frameworks)
-  use_frameworks!
+  use_frameworks! :linkage => :static
 
   config = use_native_modules!
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
   use_react_native!(
     :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => false
+    # Hermes is now enabled by default. Disable by setting this flag to false.
+    # Upcoming versions of React Native may rely on get_default_flags(), but
+    # we make it explicit here to aid in the React Native upgrade process.
+    :hermes_enabled => true,
+    :fabric_enabled => flags[:fabric_enabled],
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable the next line.
+    :flipper_configuration => FlipperConfiguration.disabled,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   # Use pre-compiled firestore frameworks to optimize compile time. Auto-includes leveldb if needed.
@@ -40,14 +54,13 @@ target 'testing' do
   # If leveldb auto-inclusion fails and build fails with leveldb symbol conflicts, use this subspec:
   # pod 'FirebaseFirestore/WithoutLeveldb', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => $FirebaseSDKVersion
 
-  # Enables Flipper.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work and
-  # you should disable the next line.
-  #use_flipper!()
-
   post_install do |installer|
-    react_native_post_install(installer)
+    react_native_post_install(
+      installer,
+      # Set `mac_catalyst_enabled` to `true` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
 
     installer.aggregate_targets.each do |aggregate_target|
       aggregate_target.user_project.native_targets.each do |target|

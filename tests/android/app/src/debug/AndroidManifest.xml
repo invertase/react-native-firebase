@@ -10,7 +10,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name="com.facebook.react.devsupport.DevSettingsActivity"
-            android:exported="true"
+            android:exported="false"
         />
     </application>
 </manifest>
