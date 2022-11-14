@@ -26,8 +26,8 @@
     "@react-native-firebase/remote-config": "16.4.3",
     "@react-native-firebase/storage": "16.4.3",
     "postinstall-postinstall": "2.1.0",
-    "react": "17.0.2",
-    "react-native": "0.67.3"
+    "react": "18.1.0",
+    "react-native": "0.70.5"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.4",
