@@ -16,3 +16,4 @@ comment:
   layout: "header, diff"
   behavior: default
   require_changes: no
+  after_n_builds: 3
