@@ -24,6 +24,9 @@
     "deep link",
     "dynamic link"
   ],
+  "dependencies": {
+    "@expo/config-plugins": "^5.0.4"
+  },
   "peerDependencies": {
     "@react-native-firebase/app": "16.4.3"
   },

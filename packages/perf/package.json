@@ -32,7 +32,7 @@
     "@react-native-firebase/app": "16.4.3"
   },
   "dependencies": {
-    "@expo/config-plugins": "^5.0.1"
+    "@expo/config-plugins": "^5.0.4"
   },
   "publishConfig": {
     "access": "public"
