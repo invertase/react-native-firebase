@@ -202,13 +202,17 @@ describe('firestore()', function () {
     describe('serverTimestampBehavior', function () {
       it("handles 'estimate'", async function () {
         firebase.firestore().settings({ serverTimestampBehavior: 'estimate' });
-        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+        const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampEstimate`);
 
         const promise = new Promise((resolve, reject) => {
           const subscription = ref.onSnapshot(snapshot => {
-            should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
-            subscription();
-            resolve();
+            try {
+              should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+              subscription();
+              resolve();
+            } catch (e) {
+              reject(e);
+            }
           }, reject);
         });
 
@@ -218,28 +222,33 @@ describe('firestore()', function () {
       });
       it("handles 'previous'", async function () {
         firebase.firestore().settings({ serverTimestampBehavior: 'previous' });
-        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+        const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampPrevious`);
 
         const promise = new Promise((resolve, reject) => {
           let counter = 0;
           let previous = null;
           const subscription = ref.onSnapshot(snapshot => {
-            switch (counter++) {
-              case 0:
-                break;
-              case 1:
-                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
-                break;
-              case 2:
-                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
-                should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(true);
-                break;
-              case 3:
-                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
-                should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(false);
-                subscription();
-                resolve();
-                break;
+            try {
+              switch (counter++) {
+                case 0:
+                  should(snapshot.get('timestamp')).equal(null);
+                  break;
+                case 1:
+                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  break;
+                case 2:
+                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(true);
+                  break;
+                case 3:
+                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(false);
+                  subscription();
+                  resolve();
+                  break;
+              }
+            } catch (e) {
+              reject(e);
             }
             previous = snapshot;
           }, reject);
@@ -253,13 +262,29 @@ describe('firestore()', function () {
       });
       it("handles 'none'", async function () {
         firebase.firestore().settings({ serverTimestampBehavior: 'none' });
-        const ref = firebase.firestore().doc(`${COLLECTION}/getData`);
+        const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampNone`);
 
         const promise = new Promise((resolve, reject) => {
+          let counter = 0;
           const subscription = ref.onSnapshot(snapshot => {
-            should(snapshot.get('timestamp')).equal(null);
-            subscription();
-            resolve();
+            try {
+              switch (counter++) {
+                case 0:
+                  // The initial callback snapshot should have no value for the timestamp, it has not been set at all
+                  should(snapshot.get('timestamp')).equal(null);
+                  break;
+                case 1:
+                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  subscription();
+                  resolve();
+                  break;
+                default:
+                  // there should only be initial callback and set callback, any other callbacks are a fail
+                  reject(new Error('too many callbacks'));
+              }
+            } catch (e) {
+              reject(e);
+            }
           }, reject);
         });
 

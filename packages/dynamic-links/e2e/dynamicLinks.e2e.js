@@ -197,7 +197,13 @@ describe('dynamicLinks()', function () {
         link.utmParameters.utm_medium.should.equal('web');
         link.utmParameters.utm_campaign.should.equal('prs-welcome');
       } else {
-        link.utmParameters.should.eql({});
+        link.utmParameters.should.eql({
+          utm_campaign: null,
+          utm_term: null,
+          utm_content: null,
+          utm_medium: null,
+          utm_source: null,
+        });
       }
     });
   });
@@ -230,7 +236,13 @@ describe('dynamicLinks()', function () {
           link.utmParameters.utm_medium.should.equal('web');
           link.utmParameters.utm_campaign.should.equal('prs-welcome');
         } else {
-          link.utmParameters.should.eql({});
+          link.utmParameters.should.eql({
+            utm_campaign: null,
+            utm_term: null,
+            utm_content: null,
+            utm_medium: null,
+            utm_source: null,
+          });
         }
       } else {
         this.skip();
