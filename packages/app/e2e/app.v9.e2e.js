@@ -292,5 +292,25 @@ describe('v9', function () {
         e.message.should.equal('Unable to delete the default native firebase app instance.');
       }
     });
+
+    it('registerVersion is not supported on react-native', async function () {
+      const { registerVersion } = modular;
+
+      try {
+        await registerVersion();
+      } catch (e) {
+        e.message.should.equal('registerVersion is only supported on Web');
+      }
+    });
+
+    it('onLog is not supported on react-native', async function () {
+      const { onLog } = modular;
+
+      try {
+        await onLog(() => {}, {});
+      } catch (e) {
+        e.message.should.equal('onLog is only supported on Web');
+      }
+    });
   });
 });
