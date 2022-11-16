@@ -146,9 +146,9 @@ describe('database().ref().transaction()', function () {
     }
   });
 
-  // FIXME flaky on android? works most of the time...
+  // FIXME flaky on android in CI? works most of the time...
   it('passes error back to the callback', async function () {
-    if (device.getPlatform() === 'ios') {
+    if (device.getPlatform() === 'ios' || !global.isCI) {
       const ref = firebase.database().ref('nope');
 
       return new Promise((resolve, reject) => {
@@ -172,8 +172,8 @@ describe('database().ref().transaction()', function () {
               return resolve();
             },
           )
-          .catch(() => {
-            // catch unhandled rejection
+          .catch(e => {
+            return reject(e);
           });
       });
     } else {
