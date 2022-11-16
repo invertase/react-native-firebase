@@ -306,7 +306,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 }
 ```
 
-iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
+iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
 
 ```json
 [
