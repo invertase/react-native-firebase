@@ -16,11 +16,11 @@
  */
 
 import '@react-native-firebase/analytics';
-import firebase from '@react-native-firebase/app';
-import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
-import '@react-native-firebase/app/lib/utils';
+import firebase, * as modular from '@react-native-firebase/app';
 import '@react-native-firebase/app-check';
 import '@react-native-firebase/app-distribution';
+import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
+import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
@@ -41,6 +41,7 @@ import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
+jet.exposeContextProperty('modular', modular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

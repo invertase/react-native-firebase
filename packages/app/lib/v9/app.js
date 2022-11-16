@@ -6,22 +6,22 @@ import { deleteApp as deleteAppV8, getApp, getApps, initializeApp, setLogLevel }
  * @param app - FirebaseApp - The app to delete.
  * @returns
  */
-function deleteApp(app) {
+export function deleteApp(app) {
   return deleteAppV8(app.name, app._nativeInitialized);
 }
 
 /**
  * Registers a library's name and version for platform logging purposes.
  */
-function registerVersion() {
+export function registerVersion() {
   throw new Error('registerVersion is only supported on Web');
 }
 
 /**
  * Sets log handler for all Firebase SDKs.
  */
-function onLog(logCallback, options) {
+export function onLog(logCallback, options) {
   throw new Error('onLog is only supported on Web');
 }
 
-export { getApps, initializeApp, deleteApp, setLogLevel, getApp, registerVersion, onLog };
+export { getApps, initializeApp, getApp, setLogLevel };

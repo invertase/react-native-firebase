@@ -59,4 +59,10 @@ Object.defineProperty(global, 'TestsAPI', {
   },
 });
 
+Object.defineProperty(global, 'modular', {
+  get() {
+    return jet.modular;
+  },
+});
+
 global.isCI = !!process.env.CI;
