@@ -26,8 +26,8 @@
     "@react-native-firebase/remote-config": "16.4.5",
     "@react-native-firebase/storage": "16.4.5",
     "postinstall-postinstall": "2.1.0",
-    "react": "18.1.0",
-    "react-native": "0.70.5"
+    "react": "18.2.0",
+    "react-native": "0.70.6"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.4",
@@ -36,7 +36,7 @@
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "^19.12.6",
     "firebase": "^9.14.0",
-    "firebase-tools": "^11.16.0",
+    "firebase-tools": "^11.16.1",
     "jest-circus": "^29.3.1",
     "jest-environment-node": "^29.3.1",
     "jet": "^0.8.2",
