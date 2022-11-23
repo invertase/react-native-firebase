@@ -15,7 +15,7 @@
  *
  */
 
-describe('v9', function () {
+describe('modular', function () {
   describe('firebase v8 compatibility', function () {
     it('it should allow read the default app from native', function () {
       // app is created in tests app before all hook

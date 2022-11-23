@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { deleteApp as deleteAppV8, getApp, getApps, initializeApp, setLogLevel } from '../internal';
+import {
+  deleteApp as deleteAppCompat,
+  getApp,
+  getApps,
+  initializeApp,
+  setLogLevel,
+} from '../internal';
 
 /**
  * Renders this app unusable and frees the resources of all associated services.
@@ -7,7 +13,7 @@ import { deleteApp as deleteAppV8, getApp, getApps, initializeApp, setLogLevel }
  * @returns
  */
 export function deleteApp(app) {
-  return deleteAppV8(app.name, app._nativeInitialized);
+  return deleteAppCompat(app.name, app._nativeInitialized);
 }
 
 /**
