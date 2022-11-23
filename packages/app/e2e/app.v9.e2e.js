@@ -271,11 +271,13 @@ describe('v9', function () {
       await deleteApp(newApp);
       try {
         await deleteApp(newApp);
+        throw new Error('Should have rejected incorrect deleteApp');
       } catch (e) {
         e.message.should.equal(`Firebase App named '${name}' already deleted`);
       }
       try {
         getApp(name);
+        throw new Error('Should have rejected incorrect getApp');
       } catch (e) {
         e.message.should.equal(
           `No Firebase App '${name}' has been created - call firebase.initializeApp()`,
@@ -288,6 +290,7 @@ describe('v9', function () {
 
       try {
         await deleteApp(getApp());
+        throw new Error('Should have rejected incorrect deleteApp');
       } catch (e) {
         e.message.should.equal('Unable to delete the default native firebase app instance.');
       }
@@ -298,6 +301,7 @@ describe('v9', function () {
 
       try {
         await registerVersion();
+        throw new Error('Should have rejected incorrect registerVersion');
       } catch (e) {
         e.message.should.equal('registerVersion is only supported on Web');
       }
@@ -308,6 +312,7 @@ describe('v9', function () {
 
       try {
         await onLog(() => {}, {});
+        throw new Error('Should have rejected incorrect onLog');
       } catch (e) {
         e.message.should.equal('onLog is only supported on Web');
       }
