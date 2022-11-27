@@ -102,6 +102,7 @@ launchProperties
 learnt
 Lerna
 lifecycle
+macOS
 MDX
 mlkit
 MLKit
