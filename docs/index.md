@@ -14,6 +14,8 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 13.3, which implies a minimum macOS version of 12 (macOS Monterey).
+
 ## Installation
 
 Installing React Native Firebase requires a few steps; installing the NPM module, adding the Firebase config files &
