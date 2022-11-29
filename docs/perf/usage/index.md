@@ -49,6 +49,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-perf'
 ```
 
+Add the dependency in `android/app/build.gradle` file:
+
+```groovy
+  dependencies {
+    // ...
+    // Firebase Performance Monitoring (Java)
+    implementation 'com.google.firebase:firebase-perf'
+  }
+```
+
+
 # What does it do
 
 Performance Monitoring allows you to gain insight into key performance characteristics within your React Native application.
