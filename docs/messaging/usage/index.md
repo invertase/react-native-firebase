@@ -474,7 +474,7 @@ Note that only predefined colors can be used in `firebase.json`. If you want to 
 ```xml
 <!-- <projectRoot>/android/app/src/main/res/values/colors.xml -->
 <resources>
-  <color name="my-custom-color">#123456</color>
+  <color name="my_custom_color">#123456</color>
 </resources>
 
 <!-- <projectRoot>/android/app/src/main/AndroidManifest.xml -->
@@ -486,7 +486,7 @@ Note that only predefined colors can be used in `firebase.json`. If you want to 
 
       <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/my-custom-color"
+            android:resource="@color/my_custom_color"
             tools:replace="android:resource" />
   </application>
 </manifest>
