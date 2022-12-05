@@ -41,7 +41,7 @@
     "jest-environment-node": "^29.3.1",
     "jet": "^0.8.2",
     "jsonwebtoken": "^8.5.1",
-    "metro-react-native-babel-preset": "0.73.3",
+    "metro-react-native-babel-preset": "0.73.4",
     "mocha": "^10.1.0",
     "nyc": "^15.0.1",
     "patch-package": "^6.4.7",
@@ -50,7 +50,7 @@
     "react-native-port-patcher": "^1.0.5",
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
-    "sinon": "^14.0.2"
+    "sinon": "^15.0.0"
   },
   "detox": {
     "test-runner": "mocha",
