@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/stale@v6
         with:
+          operations-per-run: 1000
           stale-issue-message: |
             Hello 👋, to help manage issues we automatically close stale issues.
             
