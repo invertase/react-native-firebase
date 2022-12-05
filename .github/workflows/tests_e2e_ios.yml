@@ -56,9 +56,9 @@ jobs:
       - name: Set workflow variables
         id: workflow-variables
         run: |
-          echo "::set-output name=metro-cache::$HOME/.metro"
-          echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
-          echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
+          echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
+          echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
+          echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v3
         name: Yarn Cache
