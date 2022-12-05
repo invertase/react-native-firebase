@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/stale@v6
         with:
-          repo-token: ${{ secrets.GH_TOKEN }}
           stale-issue-message: |
             Hello 👋, to help manage issues we automatically close stale issues.
             
