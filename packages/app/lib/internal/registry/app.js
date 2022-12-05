@@ -216,6 +216,10 @@ export function deleteApp(name, nativeInitialized) {
 
   const app = APP_REGISTRY[name];
 
+  if (app === undefined) {
+    throw new Error(`Firebase App named '${name}' already deleted`);
+  }
+
   const nativeModule = getAppModule();
 
   return nativeModule.deleteApp(name).then(() => {
