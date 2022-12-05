@@ -14,6 +14,8 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 13.3, which implies a minimum macOS version of 12 (macOS Monterey).
+
 ## Installation
 
 Installing React Native Firebase requires a few steps; installing the NPM module, adding the Firebase config files &
@@ -215,7 +217,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "31.0.3"
+        bom           : "31.1.0"
       ],
     ],
   ])
@@ -230,7 +232,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '10.1.0'
+$FirebaseSDKVersion = '10.2.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
@@ -306,7 +308,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 }
 ```
 
-iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
+iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
 
 ```json
 [
