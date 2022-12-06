@@ -27,6 +27,13 @@ import version from './version';
 const namespace = 'functions';
 const nativeModuleName = 'RNFBFunctionsModule';
 
+export {
+  getFunctions,
+  httpsCallable,
+  httpsCallableFromUrl,
+  connectFunctionsEmulator,
+} from './modular/index';
+
 // import { HttpsErrorCode } from '@react-native-firebase/functions';
 export const HttpsErrorCode = {
   OK: 'ok',
