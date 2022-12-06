@@ -100,6 +100,8 @@ Example:
 
 If you don't add this, the dynamic link will invoke your app, but you cannot retrieve any deep link data you may need within your app, as the deep link will be completely ignored.
 
+Additionally specify the allowed URLs (by clicking the 3 dot menu icon > `Allowlist URL pattern` from the Dynamic Links page of the Firebase console) using regular expressions. Any URL that doesn't match one of the patterns will cause your Dynamic Links to return HTTP error 400.
+
 ## iOS Troubleshooting
 
 1. Ensure you have the right URL in the Associated Domains in Xcode.
