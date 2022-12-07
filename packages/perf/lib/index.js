@@ -25,6 +25,14 @@ import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 import version from './version';
 
+export {
+  getPerformance,
+  isPerformanceCollectionEnabled,
+  setPerformanceCollectionEnabled,
+  trace,
+  httpMetric,
+} from './modular/index';
+
 const statics = {};
 
 const namespace = 'perf';
