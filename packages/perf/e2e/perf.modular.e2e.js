@@ -65,6 +65,29 @@ describe('perf() modular', function () {
         perf.constructor.name.should.be.equal('FirebasePerfModule');
       });
     });
+
+    describe('initializePerformance()', function () {
+      it('call and set "dataCollectionEnabled" to `false`', async function () {
+        const { initializePerformance, isPerformanceCollectionEnabled } = perfModular;
+
+        const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: false });
+
+        const enabled = await isPerformanceCollectionEnabled(perf);
+
+        should.equal(enabled, false);
+      });
+
+      it('call and set "dataCollectionEnabled" to `true`', async function () {
+        const { initializePerformance, isPerformanceCollectionEnabled } = perfModular;
+
+        const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: true });
+
+        const enabled = await isPerformanceCollectionEnabled(perf);
+
+        should.equal(enabled, true);
+      });
+    });
+
     describe('setPerformanceCollectionEnabled()', function () {
       // These depend on `tests/firebase.json` having `perf_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky

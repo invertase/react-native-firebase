@@ -27,6 +27,7 @@ import version from './version';
 
 export {
   getPerformance,
+  initializePerformance,
   isPerformanceCollectionEnabled,
   setPerformanceCollectionEnabled,
   trace,

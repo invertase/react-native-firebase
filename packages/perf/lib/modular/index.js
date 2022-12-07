@@ -1,7 +1,8 @@
+import { isBoolean } from '@react-native-firebase/app/lib/common';
 import { firebase } from '..';
 
 /**
- * Returns a Functions instance for the given app.
+ * Returns a Performance instance for the given app.
  * @param app - FirebaseApp. Optional.
  * @returns {Performance}
  */
@@ -14,7 +15,23 @@ export function getPerformance(app) {
 }
 
 /**
- * Returns a Functions instance for the given app.
+ * Returns a Performance instance for the given app.
+ * @param app - FirebaseApp. Required.
+ * @param settings - PerformanceSettings. Set "dataCollectionEnabled" which will enable/disable Performance collection.
+ * @returns {Performance}
+ */
+export async function initializePerformance(app, settings) {
+  const perf = firebase.app(app.name).perf();
+
+  if (settings && isBoolean(settings.dataCollectionEnabled)) {
+    await perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
+  }
+
+  return perf;
+}
+
+/**
+ * Returns a Performance instance for the given app.
  * @param perf - Performance instance
  * @returns {Boolean}
  */
