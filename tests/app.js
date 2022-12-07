@@ -26,7 +26,7 @@ import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
-import '@react-native-firebase/functions';
+import * as functionsModular from '@react-native-firebase/functions';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
@@ -42,6 +42,7 @@ jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
 jet.exposeContextProperty('module', firebase);
 jet.exposeContextProperty('modular', modular);
+jet.exposeContextProperty('functionsModular', functionsModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');
@@ -49,7 +50,7 @@ firebase.firestore().useEmulator('localhost', 8080);
 firebase.storage().useEmulator('localhost', 9199);
 firebase.functions().useEmulator('localhost', 5001);
 
-// Firestore caches docuuments locally (a great feature!) and that confounds tests
+// Firestore caches documents locally (a great feature!) and that confounds tests
 // as data from previous runs pollutes following runs until re-install the app. Clear it.
 firebase.firestore().clearPersistence();
 
