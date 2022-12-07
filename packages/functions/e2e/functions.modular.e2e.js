@@ -335,6 +335,24 @@ describe('functions() modular', function () {
   });
 
   describe('modular', function () {
+    describe('getFunctions', function () {
+      it('pass app as argument', function () {
+        const { getFunctions } = functionsModular;
+
+        const functions = getFunctions(firebase.app());
+
+        functions.constructor.name.should.be.equal('FirebaseFunctionsModule');
+      });
+
+      it('no app as argument', function () {
+        const { getFunctions } = functionsModular;
+
+        const functions = getFunctions();
+
+        functions.constructor.name.should.be.equal('FirebaseFunctionsModule');
+      });
+    });
+
     it('accepts passing in an FirebaseApp instance as first arg', async function () {
       const { getFunctions } = functionsModular;
       const appName = `functionsApp${FirebaseHelpers.id}3`;
