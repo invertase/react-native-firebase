@@ -24,7 +24,11 @@ import { firebase } from '..';
  * @returns {Functions}
  */
 export function getFunctions(app, regionOrCustomDomain) {
-  return firebase.app(app.name).functions(regionOrCustomDomain);
+  if (app) {
+    return firebase.app(app.name).functions(regionOrCustomDomain);
+  }
+
+  return firebase.app().functions(regionOrCustomDomain);
 }
 
 /**
