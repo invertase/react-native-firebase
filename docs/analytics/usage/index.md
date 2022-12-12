@@ -195,3 +195,11 @@ Automatic screenview reporting can be turned off/on through `google_analytics_au
   }
 }
 ```
+
+# Seeing Events in Firebase Console's DebugView
+
+When running on iOS in debug, events won't be logged by default. If you want to see events in DebugView in the Firebase Console when running debug builds, be sure to set the `-FIRAnalyticsDebugEnabled` flag:
+1. In Xcode, choose Product > Scheme > Edit scheme...
+1. Select Run from the left menu.
+1. Select the Arguments tab.
+1. In the Arguments Passed On Launch section, add `-FIRAnalyticsDebugEnabled` (including the dash).
