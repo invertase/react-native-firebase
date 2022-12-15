@@ -2,7 +2,7 @@
 title: App Check
 description: Installation and getting started with App Check.
 icon: //static.invertase.io/assets/social/firebase-logo.png
-next: /app-distribution/usage
+next: /app-check/default-app-check-providers-ios
 previous: /analytics/screen-tracking
 ---
 

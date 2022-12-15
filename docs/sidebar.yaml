@@ -26,6 +26,8 @@
 - - App Check
   - - - Usage
       - '/app-check/usage'
+    - - Default iOS App Check providers
+      - '/app-check/default-app-check-providers-ios'
   - '//static.invertase.io/assets/social/firebase-logo.png'
 - - App Distribution
   - - - Usage
