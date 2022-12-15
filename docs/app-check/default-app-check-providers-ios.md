@@ -13,17 +13,17 @@ DeviceCheck is a built-in AppCheck provider for Apple platforms. Follow below st
 
 - Create new private key or enable **DeviceCheck** in your existing key from [Apple Developers Account](https://developer.apple.com/account/resources/authkeys/add)
 
-  ![test](https://i.imgur.com/kIDUt4r.png)
+  ![AppCheck](https://i.imgur.com/kIDUt4r.png)
 
-## Upoad key to DeviceCheck in Firebase console
+## Upload key to DeviceCheck in Firebase console
 
 - Navigate to [App Check](https://console.firebase.google.com/project/_/appcheck) section of firebase console
 - Switch to **Apps** tab
 - Select the iOS app that you would like to integrate DeviceCheck provider with
 - Select DeviceCheck
 - Provide the private key you created in the previous step
-  ![img](https://i.imgur.com/2jg48Mg.png)
-- You can find you private key KeyID in your [Apple developers account](https://developer.apple.com/account/resources/authkeys/review/)
+  ![AppCheck](https://i.imgur.com/2jg48Mg.png)
+- You can find you private key Id in your [Apple developers account](https://developer.apple.com/account/resources/authkeys/review/)
 - Save
 
 # AppAttest
@@ -38,14 +38,14 @@ AppAttest is another built-in AppCheck provider for Apple platforms. Follow belo
 - Switch to **Apps** tab
 - Select the iOS app that you would like to integrate AppAttest provider with
 - Check AppAttest and save
-  ![img](https://i.imgur.com/kxZ0JyI.png)
+  ![AppCheck](https://i.imgur.com/kxZ0JyI.png)
 - Save
 
 ## Add AppAttest Capability to your app
 
 - Open **Xcode**
 - Select your app from `Targets` and click on `Signing & Capabilities` and add `AppAttest` as your app capability.
-  ![img](https://i.imgur.com/1HavXoq.png)
+  ![AppCheck](https://i.imgur.com/1HavXoq.png)
 - This will create/update your `.entitlements` file which can be found under `ios/MyAppName/MyAppName.entitlements`
 - Open `.entitlements` file and set the AppAttest environment to `production`
   ```js
@@ -58,8 +58,8 @@ AppAttest is another built-in AppCheck provider for Apple platforms. Follow belo
 - Open [Apple Developer Account](https://developer.apple.com/account/resources/identifiers/bundleId/).
 - Select your app identifier
 - Select `App Attest` and save
-  ![img](https://i.imgur.com/deA7oZe.png)
-- This will invalidate your provisioning pofile. Don't forget to re-generate it.
+  ![AppCheck](https://i.imgur.com/deA7oZe.png)
+- This will invalidate your provisioning profile. Don't forget to re-generate it.
 
 ## Update `AppDelegate.mm` file
 
