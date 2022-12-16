@@ -45,6 +45,7 @@ CP-User
 crashlytics
 Crashlytics
 datastore
+DebugView
 deprecations
 Deprecations
 Detox
