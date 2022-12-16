@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.5.0](https://github.com/invertase/react-native-firebase/compare/v16.4.6...v16.5.0) (2022-12-16)
+
+### Features
+
+- **app:** migrate `app` module to a modular API ([#6694](https://github.com/invertase/react-native-firebase/issues/6694)) ([c285016](https://github.com/invertase/react-native-firebase/commit/c285016618bb79fd3a559d5fdcb983bb2aadaa77))
+- **functions:** Expose modular API that matches the Firebase web JS SDK v9 API ([#6764](https://github.com/invertase/react-native-firebase/issues/6764)) ([0b0b2e5](https://github.com/invertase/react-native-firebase/commit/0b0b2e5d5ae8ca34725f0115e48ddb072d94630e))
+
+### Bug Fixes
+
+- **app, sdks:** ios-sdk 10.3.0 / android-sdk 31.1.1 ([00708b6](https://github.com/invertase/react-native-firebase/commit/00708b680cd837ed23d41b27bb76b2895e719f79))
+- **functions, modular:** return instance with or without app argument ([e3bd896](https://github.com/invertase/react-native-firebase/commit/e3bd8962f921eead94e32f07f4a71ed31c4a5ae9))
+
 ### [16.4.6](https://github.com/invertase/react-native-firebase/compare/v16.4.5...v16.4.6) (2022-11-18)
 
 ### Bug Fixes
