@@ -100,7 +100,7 @@ async function screenTrace() {
     // Stop the trace
     await trace.stop();
   } catch (e) {
-    // rejects if iOS or < Android 9.0
+    // rejects if iOS or (Android == 8 || Android == 8.1)
   }
 }
 ```
