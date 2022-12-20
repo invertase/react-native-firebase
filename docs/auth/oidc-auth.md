@@ -1,6 +1,6 @@
 ---
 title: OpenID Connect Authentication
-description: Sign-in users using OIDC.
+description: Sign-in users using OpenID Connect.
 next: /auth/multi-factor-auth
 previous: /auth/phone-auth
 ---
