@@ -212,9 +212,12 @@ Because you have stack traces readily available while you're debugging your app,
 
 ## Crashlytics NDK
 
-React Native Firebase supports [Crashlytics NDK](https://docs.fabric.io/android/crashlytics/ndk.html#using-gradle) reporting
-which is enabled by default. This allows Crashlytics to capture crashes originating from the Yoga layout engine used by
-React Native. You can disable Crashlytics NDK in your `firebase.json` config.
+React Native Firebase supports [Crashlytics NDK](https://firebase.google.com/docs/crashlytics/ndk-reports) reporting
+which is enabled by default but will require a change as described in that link to enable symbol upload.
+
+This allows Crashlytics to capture crashes originating from the Yoga layout engine used by React Native.
+
+You can disable Crashlytics NDK in your `firebase.json` config.
 
 ```json
 // <project-root>/firebase.json

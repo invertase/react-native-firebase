@@ -14,6 +14,8 @@ If you do not meet these prerequisites, follow the links below:
 - [React Native - Setting up the development environment](https://reactnative.dev/docs/environment-setup)
 - [Create a new Firebase project](https://console.firebase.google.com/)
 
+Additionally, current versions of firebase-ios-sdk have a minimum Xcode requirement of 13.3, which implies a minimum macOS version of 12 (macOS Monterey).
+
 ## Installation
 
 Installing React Native Firebase requires a few steps; installing the NPM module, adding the Firebase config files &
@@ -100,7 +102,7 @@ Select the downloaded `GoogleService-Info.plist` file from your computer, and en
 
 To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be configured during the bootstrap phase of your application.
 
-To do this, open your `/ios/{projectName}/AppDelegate.m` file, and add the following:
+To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.m` if on older react-native), and add the following:
 
 At the top of the file, import the Firebase SDK:
 
@@ -135,7 +137,13 @@ To use Static Frameworks on iOS, you also need to manually enable this for the p
 $RNFirebaseAsStaticFramework = true
 ```
 
-> Note `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). A fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that makes it work with and without Hermes. To use it with Hermes make sure you have set static linkage with `use_frameworks! :linkage => :static`. To use without Flipper, comment out the `:flipper_configuration` line in your Podfile. Community support to help fix `use_frameworks` support for New Architecture is welcome!
+> Notes: React-Native-Firebase uses `use_frameworks`, which has compatibility issues with Flipper, Hermes & Fabric.
+>
+> **Flipper:** `use_frameworks` [is _not_ compatible with Flipper](https://github.com/reactwg/react-native-releases/discussions/21#discussioncomment-2924919). You need to disable Flipper by commenting out the `:flipper_configuration` line in your Podfile.
+>
+> **Hermes:** a fix was put in place in [react-native release 0.69.1](https://github.com/facebook/react-native/releases/tag/v0.69.1) that allows Hermes to work with `use_frameworks!`. To use `use_frameworks` with Hermes, make sure you have set static linkage with `use_frameworks! :linkage => :static`.
+>
+> **New Architecture:** Fabric is not compatible with `use_frameworks!`. Community support to help fix `use_frameworks` support for New Architecture is welcome!
 
 ### 4. Autolinking & rebuilding
 
@@ -209,7 +217,7 @@ project.ext {
       // Overriding Library SDK Versions
       firebase: [
         // Override Firebase SDK Version
-        bom           : "30.5.0"
+        bom           : "31.1.1"
       ],
     ],
   ])
@@ -224,7 +232,7 @@ Open your projects `/ios/Podfile` and add any of the globals shown below to the 
 
 ```ruby
 # Override Firebase SDK Version
-$FirebaseSDKVersion = '9.6.0'
+$FirebaseSDKVersion = '10.3.0'
 ```
 
 Once changed, reinstall your projects pods via pod install and rebuild your project with `npx react-native run-ios`.
@@ -300,7 +308,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 }
 ```
 
-iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/v45.0.0/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
+iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
 
 ```json
 [

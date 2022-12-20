@@ -48,6 +48,10 @@ export default class User {
     };
   }
 
+  get multiFactor() {
+    return this._user.multiFactor || null;
+  }
+
   get phoneNumber() {
     return this._user.phoneNumber || null;
   }

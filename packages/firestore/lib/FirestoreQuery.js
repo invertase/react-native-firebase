@@ -26,6 +26,7 @@ import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseE
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
+import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import { parseSnapshotArgs } from './utils';
 
 let _id = 0;
@@ -128,6 +129,19 @@ export default class FirestoreQuery {
     }
 
     return modifiers.setFieldsCursor(cursor, allFields);
+  }
+
+  count() {
+    return new FirestoreAggregateQuery(
+      this._firestore,
+      this,
+      this._collectionPath,
+      this._modifiers,
+    );
+  }
+
+  countFromServer() {
+    return this.count();
   }
 
   endAt(docOrField, ...fields) {

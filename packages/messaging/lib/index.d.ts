@@ -633,7 +633,7 @@ export namespace FirebaseMessagingTypes {
     getToken(options?: TokenOptions): Promise<string>;
 
     /**
-     * Returns wether the root view is headless or not
+     * Returns whether the root view is headless or not
      * i.e true if the app was launched in the background (for example, by data-only cloud message)
      *
      * More info: https://rnfirebase.io/messaging/usage#background-application-state

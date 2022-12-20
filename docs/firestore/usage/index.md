@@ -3,7 +3,7 @@ title: Cloud Firestore
 description: Installation and getting started with Firestore.
 icon: //static.invertase.io/assets/firebase/cloud-firestore.svg
 next: /firestore/usage-with-flatlists
-previous: /auth/phone-auth
+previous: /auth/multi-factor-auth
 ---
 
 # Installation

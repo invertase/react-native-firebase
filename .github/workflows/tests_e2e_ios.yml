@@ -20,6 +20,10 @@ on:
       - '.spellcheck.dict.txt'
       - '**/*.md'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ios:
     name: iOS
@@ -29,17 +33,13 @@ jobs:
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
-      - uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          all_but_latest: true
-
       # Set up tool versions
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16
 
       - name: Configure JDK 1.11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -48,7 +48,7 @@ jobs:
         with:
           xcode-version: 'latest-stable'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 50
 
@@ -56,11 +56,11 @@ jobs:
       - name: Set workflow variables
         id: workflow-variables
         run: |
-          echo "::set-output name=metro-cache::$HOME/.metro"
-          echo "::set-output name=xcode-version::$(xcodebuild -version|tail -1|cut -f3 -d' ')"
-          echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
+          echo "metro-cache=$HOME/.metro" >> $GITHUB_OUTPUT
+          echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
+          echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Yarn Cache
         id: yarn-cache
         with:
@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Detox Framework Cache
         id: detox-cache
         with:
@@ -76,7 +76,7 @@ jobs:
           key: ${{ runner.os }}-detox-framework-cache-${{ steps.workflow-variables.outputs.xcode-version }}
 
       # Detox is compiled during yarn install, using Xcode, set up cache first
-      - uses: hendrikmuhs/ccache-action@v1
+      - uses: hendrikmuhs/ccache-action@v1.2
         name: Xcode Compile Cache
         with:
           key: ${{ runner.os }}-v2 # makes a unique key w/related restore key internally
@@ -103,7 +103,7 @@ jobs:
           max_attempts: 3
           command: gem update cocoapods xcodeproj
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         name: Cache Pods
         id: pods-cache
         with:
@@ -120,7 +120,7 @@ jobs:
           command: yarn tests:ios:pod:install
 
       - name: Cache Firestore Emulator
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/firebase/emulators
           key: firebase-emulators-v1-${{ github.run_id }}
@@ -154,7 +154,7 @@ jobs:
         shell: bash
 
       - name: Metro Bundler Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.workflow-variables.outputs.metro-cache }}
           key: ${{ runner.os }}-metro-v1-${{ github.run_id }}
@@ -187,17 +187,12 @@ jobs:
         run: gzip -9 simulator.log
 
       - name: Upload Simulator Log
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: simulator_log
           path: simulator.log.gz
 
-      - name: Submit Coverage
-        # This can fail on timeouts etc, wrap with retry
-        uses: nick-invision/retry@v2
+      - uses: codecov/codecov-action@v3
         with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: ./node_modules/.bin/codecov
+          verbose: true

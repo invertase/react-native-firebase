@@ -45,6 +45,7 @@ CP-User
 crashlytics
 Crashlytics
 datastore
+DebugView
 deprecations
 Deprecations
 Detox
@@ -102,6 +103,7 @@ launchProperties
 learnt
 Lerna
 lifecycle
+macOS
 MDX
 mlkit
 MLKit

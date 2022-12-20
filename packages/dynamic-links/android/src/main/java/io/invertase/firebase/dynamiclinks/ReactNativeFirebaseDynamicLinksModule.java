@@ -291,6 +291,19 @@ public class ReactNativeFirebaseDynamicLinksModule extends ReactNativeFirebaseMo
       buildNavigationParameters(dynamicLinkMap.getMap("navigation"), builder);
     }
 
+    if (dynamicLinkMap.hasKey("otherPlatform")) {
+      if (dynamicLinkMap.getMap("otherPlatform").hasKey("fallbackUrl")) {
+        String OTHER_PLATFORM_LINK_KEY = "ofl";
+        String linkUrl = String.valueOf(builder.buildDynamicLink().getUri());
+        linkUrl +=
+            '&'
+                + OTHER_PLATFORM_LINK_KEY
+                + '='
+                + dynamicLinkMap.getMap("otherPlatform").getString("fallbackUrl");
+        builder.setLongLink(Uri.parse(linkUrl));
+      }
+    }
+
     return builder;
   }
 

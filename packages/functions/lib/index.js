@@ -27,6 +27,13 @@ import version from './version';
 const namespace = 'functions';
 const nativeModuleName = 'RNFBFunctionsModule';
 
+export {
+  getFunctions,
+  httpsCallable,
+  httpsCallableFromUrl,
+  connectFunctionsEmulator,
+} from './modular/index';
+
 // import { HttpsErrorCode } from '@react-native-firebase/functions';
 export const HttpsErrorCode = {
   OK: 'ok',
@@ -74,6 +81,39 @@ class FirebaseFunctionsModule extends FirebaseModule {
         this._useFunctionsEmulatorHost,
         this._useFunctionsEmulatorPort,
         name,
+        {
+          data,
+        },
+        options,
+      );
+      return nativePromise.catch(nativeError => {
+        const { code, message, details } = nativeError.userInfo || {};
+        return Promise.reject(
+          new HttpsError(
+            HttpsErrorCode[code] || HttpsErrorCode.UNKNOWN,
+            message || nativeError.message,
+            details || null,
+            nativeError,
+          ),
+        );
+      });
+    };
+  }
+
+  httpsCallableFromUrl(url, options = {}) {
+    if (options.timeout) {
+      if (isNumber(options.timeout)) {
+        options.timeout = options.timeout / 1000;
+      } else {
+        throw new Error('HttpsCallableOptions.timeout expected a Number in milliseconds');
+      }
+    }
+
+    return data => {
+      const nativePromise = this.native.httpsCallableFromUrl(
+        this._useFunctionsEmulatorHost,
+        this._useFunctionsEmulatorPort,
+        url,
         {
           data,
         },

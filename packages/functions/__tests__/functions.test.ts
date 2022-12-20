@@ -1,3 +1,5 @@
+import { describe, expect, it } from '@jest/globals';
+
 import functions, { firebase } from '../lib';
 
 describe('Cloud Functions', function () {

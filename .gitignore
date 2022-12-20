@@ -293,6 +293,7 @@ Temporary Items
 
 ## User settings
 xcuserdata/
+ios/.xcode.env.local
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint

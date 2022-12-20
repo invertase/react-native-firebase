@@ -43,6 +43,17 @@ public class ReactNativeFirebaseModule extends ReactContextBaseJavaModule
     promise.reject(exception, SharedUtils.getExceptionMap(exception));
   }
 
+  public static void rejectPromiseWithCodeAndMessage(
+      Promise promise, String code, String message, ReadableMap resolver) {
+    WritableMap userInfoMap = Arguments.createMap();
+    userInfoMap.putString("code", code);
+    userInfoMap.putString("message", message);
+    if (resolver != null) {
+      userInfoMap.putMap("resolver", resolver);
+    }
+    promise.reject(code, message, userInfoMap);
+  }
+
   public static void rejectPromiseWithCodeAndMessage(Promise promise, String code, String message) {
     WritableMap userInfoMap = Arguments.createMap();
     userInfoMap.putString("code", code);

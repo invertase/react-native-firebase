@@ -1,6 +1,6 @@
 {
   "name": "@react-native-firebase/dynamic-links",
-  "version": "15.6.0",
+  "version": "16.5.0",
   "author": "Invertase <oss@invertase.io> (http://invertase.io)",
   "description": "React Native Firebase - Dynamic Links",
   "main": "lib/index.js",
@@ -8,7 +8,9 @@
   "scripts": {
     "build": "genversion --semi lib/version.js",
     "build:clean": "rimraf android/build && rimraf ios/build",
-    "prepare": "yarn run build"
+    "build:plugin": "rimraf plugin/build && tsc --build plugin",
+    "lint:plugin": "eslint plugin/src/*",
+    "prepare": "yarn run build && npm run build:plugin"
   },
   "repository": {
     "type": "git",
@@ -22,8 +24,11 @@
     "deep link",
     "dynamic link"
   ],
+  "dependencies": {
+    "@expo/config-plugins": "^5.0.4"
+  },
   "peerDependencies": {
-    "@react-native-firebase/app": "15.6.0"
+    "@react-native-firebase/app": "16.5.0"
   },
   "publishConfig": {
     "access": "public"

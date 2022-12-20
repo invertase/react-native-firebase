@@ -276,6 +276,7 @@ RCT_EXPORT_METHOD(resolveLink
   [self buildItunesParameters:dynamicLinkDict[@"itunes"] components:linkComponents];
   [self buildNavigationParameters:dynamicLinkDict[@"navigation"] components:linkComponents];
   [self buildSocialParameters:dynamicLinkDict[@"social"] components:linkComponents];
+  [self buildOtherPlatformParameters:dynamicLinkDict[@"otherPlatform"] components:linkComponents];
 
   return linkComponents;
 }
@@ -417,6 +418,18 @@ RCT_EXPORT_METHOD(resolveLink
   }
 
   linkComponents.socialMetaTagParameters = socialParams;
+}
+
+- (void)buildOtherPlatformParameters:(NSDictionary *)otherDict
+                          components:(FIRDynamicLinkComponents *)linkComponents {
+  if (otherDict == nil) return;
+
+  FIRDynamicLinkOtherPlatformParameters *otherParams =
+      [FIRDynamicLinkOtherPlatformParameters parameters];
+  if (otherDict[@"fallbackUrl"]) {
+    otherParams.fallbackUrl = [NSURL URLWithString:otherDict[@"fallbackUrl"]];
+  }
+  linkComponents.otherPlatformParameters = otherParams;
 }
 
 - (NSArray<NSString *> *)supportedEvents {

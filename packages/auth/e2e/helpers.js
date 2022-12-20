@@ -28,9 +28,10 @@ const callRestApi = async function callRestAPI(url, rawResult = false) {
   });
 };
 
-exports.getRandomPhoneNumber = function getRandomPhoneNumber() {
+function getRandomPhoneNumber() {
   return '+593' + Utils.randString(9, '#19');
-};
+}
+exports.getRandomPhoneNumber = getRandomPhoneNumber;
 
 exports.clearAllUsers = async function clearAllUsers() {
   // console.log('auth::helpers::clearAllUsers');
@@ -86,7 +87,7 @@ exports.disableUser = async function disableUser(userId) {
   }
 };
 
-exports.getLastSmsCode = async function getLastSmsCode(specificPhone) {
+async function getLastSmsCode(specificPhone) {
   let lastSmsCode = null;
   try {
     // console.log('auth::e2e:helpers:getLastSmsCode - start');
@@ -123,9 +124,10 @@ exports.getLastSmsCode = async function getLastSmsCode(specificPhone) {
   }
   // console.log('getLastSmsCode returning code: ' + lastSmsCode);
   return lastSmsCode;
-};
+}
+exports.getLastSmsCode = getLastSmsCode;
 
-exports.getLastOob = async function getLastOob(specificEmail) {
+async function getLastOob(specificEmail) {
   let lastOob = null;
   try {
     // console.log('auth::e2e:helpers:getLastOob - start');
@@ -162,7 +164,8 @@ exports.getLastOob = async function getLastOob(specificEmail) {
   }
   // console.log('getLastOob returning code: ' + JSON.stringify(lastOob, null, 2);
   return lastOob;
-};
+}
+exports.getLastOob = getLastOob;
 
 exports.resetPassword = async function resetPassword(oobCode, newPassword) {
   const resetPasswordUrl =
@@ -175,7 +178,7 @@ exports.resetPassword = async function resetPassword(oobCode, newPassword) {
   return await callRestApi(resetPasswordUrl);
 };
 
-exports.verifyEmail = async function verifyEmail(oobCode) {
+async function verifyEmail(oobCode) {
   const verifyEmailUrl =
     'http://' +
     getE2eEmulatorHost() +
@@ -183,9 +186,69 @@ exports.verifyEmail = async function verifyEmail(oobCode) {
     oobCode +
     '&apiKey=fake-api-key';
   return await callRestApi(verifyEmailUrl);
-};
+}
+exports.verifyEmail = verifyEmail;
 
 // This URL comes from the Auth Emulator's oobCode blocks
 exports.signInUser = async function signInUser(oobUrl) {
   return await callRestApi(oobUrl, true);
+};
+
+async function createVerifiedUser(email, password) {
+  await firebase.auth().createUserWithEmailAndPassword(email, password);
+  await firebase.auth().currentUser.sendEmailVerification();
+  const { oobCode } = await getLastOob(email);
+  await verifyEmail(oobCode);
+  await firebase.auth().currentUser.reload();
+}
+exports.createVerifiedUser = createVerifiedUser;
+
+/**
+ * Create a new user with a second factor enrolled. Returns phoneNumber, email and password
+ * for testing purposes. The session used to enroll the factor is terminated. You'll have to
+ * sign in using `firebase.auth().signInWithEmailAndPassword()`.
+ */
+exports.createUserWithMultiFactor = async function createUserWithMultiFactor() {
+  const email = 'verified@example.com';
+  const password = 'test123';
+  await createVerifiedUser(email, password);
+  const multiFactorUser = await firebase.auth().multiFactor(firebase.auth().currentUser);
+  const session = await multiFactorUser.getSession();
+  const phoneNumber = getRandomPhoneNumber();
+  const verificationId = await firebase
+    .auth()
+    .verifyPhoneNumberForMultiFactor({ phoneNumber, session });
+  const verificationCode = await getLastSmsCode(phoneNumber);
+  const cred = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+  const multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(cred);
+  await multiFactorUser.enroll(multiFactorAssertion, 'Hint displayName');
+  await firebase.auth().signOut();
+
+  return Promise.resolve({
+    phoneNumber,
+    email,
+    password,
+  });
+};
+
+exports.signInUserWithMultiFactor = async function signInUserWithMultiFactor(
+  email,
+  password,
+  phoneNumber,
+) {
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+  } catch (e) {
+    e.message.should.equal(
+      '[auth/multi-factor-auth-required] Please complete a second factor challenge to finish signing into this account.',
+    );
+    const resolver = firebase.auth().getMultiFactorResolver(e);
+    let verificationId = await firebase
+      .auth()
+      .verifyPhoneNumberWithMultiFactorInfo(resolver.hints[0], resolver.session);
+    let verificationCode = await getLastSmsCode(phoneNumber);
+    const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+    let multiFactorAssertion = firebase.auth.PhoneMultiFactorGenerator.assertion(credential);
+    return resolver.resolveSignIn(multiFactorAssertion);
+  }
 };

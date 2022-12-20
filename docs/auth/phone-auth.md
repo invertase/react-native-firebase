@@ -1,7 +1,7 @@
 ---
 title: Phone Authentication
 description: Sign-in users with their phone number.
-next: /firestore/usage
+next: /auth/multi-factor-auth
 previous: /auth/social-auth
 ---
 
@@ -28,6 +28,22 @@ For reliable automated testing, you may want to disable both automatic and fallb
 # Android Setup
 
 Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
+
+# Expo Setup
+
+To use phone auth in an expo app, add the `@react-native-firebase/auth` config plug-in to the [`plugins`](https://docs.expo.io/versions/latest/config/app/#plugins) section of your `app.json`. This is in addition to the `@react-native-firebase/app` plugin.
+
+```json
+{
+  "expo": {
+    "plugins": ["@react-native-firebase/app", "@react-native-firebase/auth"]
+  }
+}
+```
+
+The `@react-native-firebase/auth` config plugin is not required for all auth providers, but it is required to use phone auth. The plugin [will set up reCAPTCHA](https://firebase.google.com/docs/auth/ios/phone-auth#set-up-recaptcha-verification) verification for you on iOS.
+
+The recommendation is to use a [custom development client](https://docs.expo.dev/clients/getting-started/). For more info on using Expo with React Native Firebase, see our [Expo docs](/#expo).
 
 # Sign-in
 

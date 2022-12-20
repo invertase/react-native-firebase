@@ -46,6 +46,7 @@ public class UniversalFirebaseDatabaseCommon {
     setDatabaseConfig(firebaseDatabase, appName, dbURL);
 
     HashMap emulatorConfig = getEmulatorConfig(appName, dbURL);
+
     if (emulatorConfig != null) {
       firebaseDatabase.useEmulator(
           (String) emulatorConfig.get("host"), (Integer) emulatorConfig.get("port"));
