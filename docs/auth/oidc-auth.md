@@ -32,7 +32,7 @@ You can see examples of "Tested OpenID providers" from [react-native-app-auth he
 7. Fill out the details like: "Name", "Client ID", "Issuer (URL)" and "Client secret". These values have to correspond to the OpenID Connect provider you want to use.
 8. Note down the Provider ID below name, if you type in "azure_test" in the name field. Notice how it says below the field: "Provider ID: oidc.azure_test" so this value will be prepended with "oidc." We will use this later when authenticating the user.
 
-## 3. Authenticate in the app using `react-native-app-auth` and `react-native-firebase`
+## 3. Authenticate in the app using **react-native-app-auth** and **react-native-firebase**
 
 The example below demonstrates how you could setup such a flow within your own application:
 
