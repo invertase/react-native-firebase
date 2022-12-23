@@ -212,9 +212,10 @@ export namespace FirebasePerformanceTypes {
   }
 
   /**
-   * ScreenTrace allows you to record a custom screen rendering trace of slow and frozen frames
+   * ScreenTrace allows you to record a custom screen rendering trace of slow and frozen frames.
+   * Throws on constructor if hardware acceleration is off or if Android is 9.0 or 9.1.
    *
-   * @platform android Android >= 9.0.0
+   * @platform android Android !== 9.0.0 && Adnroid !== 9.1.0
    */
   export class ScreenTrace {
     /**
@@ -223,8 +224,12 @@ export namespace FirebasePerformanceTypes {
      * #### Example
      *
      * ```js
-     * const trace = firebase.perf().newScreenTrace('FooScreen');
-     * await trace.start();
+     * try {
+     *   const trace = firebase.perf().newScreenTrace('FooScreen');
+     *   await trace.start();
+     * } catch (e) {
+     *
+     * }
      * ```
      * @platform android Android >= 9.0.0
      */
@@ -235,9 +240,13 @@ export namespace FirebasePerformanceTypes {
      * #### Example
      *
      * ```js
-     * const trace = firebase.perf().newScreenTrace('FooScreen');
-     * await trace.start();
-     * await trace.stop();
+     * try {
+     *   const trace = firebase.perf().newScreenTrace('FooScreen');
+     *   await trace.start();
+     *   await trace.stop();
+     * } catch (e) {
+     *
+     * }
      * ```
      * @platform android Android >= 9.0.0
      */
@@ -461,12 +470,17 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier.
+     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *
      * ```js
-     * const trace = firebase.perf().newScreenTrace('FooScreen');
-     * await trace.start();
+     * try {
+     *   const trace = firebase.perf().newScreenTrace('FooScreen');
+     *   await trace.start();
+     * } catch (e) {
+     *
+     * }
      * ```
      *
      * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
@@ -475,14 +489,19 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier and immediately starts it.
+     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *
      * ```js
-     * const trace = await firebase.perf().startScreenTrace('FooScreen');
-     * await trace.stop();
+     * try {
+     *   const trace = await firebase.perf().startScreenTrace('FooScreen');
+     *   await trace.stop();
+     * } catch (e) {
+     *
+     * }
      * ```
-     * @platform android Android >= 9.0.0
+     * @platform android Android !== 9.0.0 && Android !== 9.1.0
      *
      * @param identifier Name of the screen
      */
