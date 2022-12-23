@@ -46,7 +46,6 @@ describe('perf()', function () {
     });
   });
 
-  // compat >= Android 9.0
   describe('startScreenTrace()', function () {
     it('resolves a started instance of a ScreenTrace', async function () {
       if (device.getPlatform() === 'android') {
