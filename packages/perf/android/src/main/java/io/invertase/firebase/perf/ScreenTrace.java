@@ -132,11 +132,6 @@ public class ScreenTrace {
       }
     }
 
-    if (totalFrames == 0 && slowFrames == 0 && frozenFrames == 0) {
-      // All metrics are zero, no need to send screen trace.
-      // return;
-    }
-
     // Only incrementMetric if corresponding metric is non-zero.
     if (totalFrames > 0) {
       perfScreenTrace.putMetric(Constants.CounterNames.FRAMES_TOTAL.toString(), totalFrames);
