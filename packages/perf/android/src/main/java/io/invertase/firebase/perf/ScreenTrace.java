@@ -17,6 +17,7 @@ package io.invertase.firebase.perf;
  */
 
 import android.app.Activity;
+import android.os.Build;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.WindowManager;
@@ -163,13 +164,16 @@ public class ScreenTrace {
   // region Helper Functions
 
   private static boolean checkScreenTraceSupport(Activity activity) {
-    boolean hasFrameMetricsAggregatorClass = hasFrameMetricsAggregatorClass();
+    boolean isValidSDKVersion = checkSDKVersion();
+    boolean hasFrameMetricsAggregatorClass = checkFrameMetricsAggregatorClass();
     boolean isActivityHardwareAccelerated = activity.getWindow() != null
       && ((activity.getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED) != 0);
 
-    boolean supported = hasFrameMetricsAggregatorClass && isActivityHardwareAccelerated;
+
+    boolean supported = isValidSDKVersion && hasFrameMetricsAggregatorClass && isActivityHardwareAccelerated;
 
     Log.d(TAG, new StringBuilder()
+      .append("isValidSDKVersion: ").append(isValidSDKVersion)
       .append("isScreenTraceSupported(").append(activity).append("): ").append(supported)
       .append(" [hasFrameMetricsAggregatorClass: ").append(hasFrameMetricsAggregatorClass)
       .append(", isActivityHardwareAccelerated: ").append(isActivityHardwareAccelerated).append("]").toString());
@@ -177,10 +181,18 @@ public class ScreenTrace {
     return supported;
   }
 
+  private static boolean checkSDKVersion() {
+    if (Build.VERSION.SDK_INT == 26 || Build.VERSION.SDK_INT == 27) {
+      return false;
+    }
+
+    return true;
+  }
+
   /**
    * Inspired by fireperf source.
    */
-  private static boolean hasFrameMetricsAggregatorClass() {
+  private static boolean checkFrameMetricsAggregatorClass() {
     try {
       Class<?> initializerClass = Class.forName(FRAME_METRICS_AGGREGATOR_CLASSNAME);
       return true;
