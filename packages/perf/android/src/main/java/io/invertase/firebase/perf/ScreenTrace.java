@@ -29,7 +29,7 @@ import com.google.firebase.perf.util.Constants;
 
 /**
  * Utility class to capture Screen rendering information (Slow/Frozen frames) for the
- * {@code Activity} passed to the constructor {@link ScreenTrace#ScreenTrace(Activity, String)}.
+ * {@code Activity} passed to the constructor {@link io.invertase.firebase.perf.ScreenTrace#ScreenTrace(Activity, String)}.
  * <p>
  * Learn more at https://firebase.google.com/docs/perf-mon/screen-traces?platform=android.
  * <p>
@@ -42,7 +42,7 @@ import com.google.firebase.perf.util.Constants;
  * - https://www.youtube.com/playlist?list=PLOU2XLYxmsIKEOXh5TwZEv89aofHzNCiu (Android Performance Patterns)
  * <p>
  * References:
- * - Fireperf Source Code: https://bityl.co/5v2O
+ * - Fireperf Source Code
  */
 public class ScreenTrace {
 
@@ -51,10 +51,9 @@ public class ScreenTrace {
     "androidx.core.app.FrameMetricsAggregator";
 
   private final Activity activity;
-  private final boolean isScreenTraceSupported;
   private final String traceName;
 
-  private FrameMetricsAggregator frameMetricsAggregator;
+  private final FrameMetricsAggregator frameMetricsAggregator;
   private Trace perfScreenTrace;
 
   /**
@@ -63,53 +62,30 @@ public class ScreenTrace {
    * @param activity for which the screen traces should be recorded.
    * @param tag      used as an identifier for the name to be used to log screen rendering
    *                 information (like "MyFancyScreen").
-   * @implNote It will automatically force enable hardware acceleration for the passed {@code activity}.
-   * @see #enableHardwareAcceleration(Activity)
+   * @implNote It requires hardware acceleration to be on or it throws.
    */
-  public ScreenTrace(Activity activity, String tag) {
+  public ScreenTrace(Activity activity, String tag) throws IllegalStateException {
     this.activity = activity;
+
     // We don't care about adding the activity name to the trace name
     // because RN doesn't care about activities
     this.traceName = tag;
 
-    enableHardwareAcceleration(activity);
+    boolean isScreenTraceSupported = checkScreenTraceSupport(activity);
 
-    isScreenTraceSupported = isScreenTraceSupported(activity);
-
-    if (isScreenTraceSupported) {
-      frameMetricsAggregator = new FrameMetricsAggregator();
+    if (!isScreenTraceSupported) {
+      throw new IllegalStateException("Device does not support screen traces. Hardware acceleration must be enabled and Android must be > 8.1.");
     }
+
+    frameMetricsAggregator = new FrameMetricsAggregator();
   }
 
   // region Public APIs
 
   /**
-   * Force enable Hardware acceleration to support screen traces as we can't observe frame
-   * rates for a non hardware accelerated view.
-   * <p>
-   * See: https://developer.android.com/guide/topics/graphics/hardware-accel
-   */
-  public static void enableHardwareAcceleration(Activity activity) {
-    activity.getWindow().setFlags(
-      WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-      WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-  }
-
-  /**
-   * Returns whether recording of screen traces are supported or not.
-   */
-  public boolean isScreenTraceSupported() {
-    return isScreenTraceSupported;
-  }
-
-  /**
    * Starts recording the frame metrics for the screen traces.
    */
   public void recordScreenTrace() {
-    if (!isScreenTraceSupported) {
-      throw new IllegalArgumentException("Trying to record screen trace when it's not supported!");
-    }
-
     Log.d(TAG, "Recording screen trace " + traceName);
 
     frameMetricsAggregator.add(activity);
@@ -119,8 +95,8 @@ public class ScreenTrace {
   /**
    * Stops recording screen traces and dispatches the trace capturing information on %age of
    * Slow/Frozen frames.
-   * <p>
-   * Reference: Fireperf Source Code - https://bityl.co/5v22
+   *
+   * Inspired by fireperf source.
    */
   public void sendScreenTrace() {
     if (perfScreenTrace == null) return;
@@ -186,10 +162,7 @@ public class ScreenTrace {
 
   // region Helper Functions
 
-  /**
-   * Reference: Fireperf Source Code - https://bityl.co/5v0Q
-   */
-  private static boolean isScreenTraceSupported(Activity activity) {
+  private static boolean checkScreenTraceSupport(Activity activity) {
     boolean hasFrameMetricsAggregatorClass = hasFrameMetricsAggregatorClass();
     boolean isActivityHardwareAccelerated = activity.getWindow() != null
       && ((activity.getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED) != 0);
@@ -205,7 +178,7 @@ public class ScreenTrace {
   }
 
   /**
-   * Reference: Fireperf Source Code - https://bityl.co/5v0H
+   * Inspired by fireperf source.
    */
   private static boolean hasFrameMetricsAggregatorClass() {
     try {
@@ -217,7 +190,7 @@ public class ScreenTrace {
   }
 
   /**
-   * Reference: Fireperf Source Code - https://bityl.co/5v0V
+   * Inspired by fireperf source.
    */
   private String getScreenTraceName() {
     return Constants.SCREEN_TRACE_PREFIX + traceName;
