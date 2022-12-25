@@ -323,6 +323,14 @@ iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/late
 
 Next, you need to use the `expo prebuild --clean` command as described in the ["Adding custom native code"](https://docs.expo.io/workflow/customizing/) guide to rebuild your app with the plugin changes. If this command isn't run, you'll encounter connection errors to Firebase. Note, this is not required if you build your project with EAS (Expo Application Services).
 
+iOS only, after prebuild is done, manually pin the Firebase SDK version in `Podfile` inside the `ios` folder. Add this at the beginnig of the file, this is a workaround for version mismatch for Expo's module:
+
+```ruby
+$FirebaseSDKVersion='10.3.0' # The SDK used in the React Native Firebase Module.
+```
+
+The speific version number can be found in `node_modules/@react-native-firebase/app/package.json` under `sdkVersions.ios.firebase`
+
 Config plugins are only required for React Native Firebase modules, which require custom native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. Packages without native steps required will work out of the box.
 
 > Not all React Native Firebase packages have Expo config plugins provided yet. You may see if a module is supported by checking if it contains the `app.plugin.js` file in its package directory.
