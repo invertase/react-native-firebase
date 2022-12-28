@@ -61,7 +61,8 @@ export {
   subscribeToTopic,
   unsubscribeFromTopic,
   setDeliveryMetricsExportToBigQuery,
-} from './modular/index';
+  isDeliveryMetricsExportToBigQueryEnabled,
+} from '../modular/index';
 
 const statics = {
   AuthorizationStatus: {

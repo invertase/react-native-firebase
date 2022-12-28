@@ -93,7 +93,7 @@ export function requestPermission(messaging, iosPermissions) {
  * @returns {boolean}
  */
 export function isAutoInitEnabled(messaging) {
-  return messaging.isAutoInitEnabled();
+  return messaging.isAutoInitEnabled;
 }
 
 /**
@@ -154,7 +154,7 @@ export function registerDeviceForRemoteMessages(messaging) {
  * @returns {boolean}
  */
 export function isDeviceRegisteredForRemoteMessages(messaging) {
-  return messaging.isDeviceRegisteredForRemoteMessages();
+  return messaging.isDeviceRegisteredForRemoteMessages;
 }
 
 /**
@@ -278,4 +278,13 @@ export function unsubscribeFromTopic(messaging, topic) {
  */
 export function setDeliveryMetricsExportToBigQuery(messaging, enabled) {
   return messaging.setDeliveryMetricsExportToBigQuery(enabled);
+}
+
+/**
+ * Returns a boolean whether message delivery metrics are exported to BigQuery.
+ * @param messaging Messaging instance.
+ * @returns {boolean}
+ */
+export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
+  return messaging.isDeliveryMetricsExportToBigQueryEnabled;
 }
