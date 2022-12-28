@@ -34,6 +34,35 @@ import { AppRegistry } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
 
+export {
+  getMessaging,
+  deleteToken,
+  getToken,
+  onMessage,
+  onNotificationOpenedApp,
+  onTokenRefresh,
+  requestPermission,
+  isAutoInitEnabled,
+  setAutoInitEnabled,
+  getInitialNotification,
+  getDidOpenSettingsForNotification,
+  getIsHeadless,
+  registerDeviceForRemoteMessages,
+  isDeviceRegisteredForRemoteMessages,
+  unregisterDeviceForRemoteMessages,
+  getAPNSToken,
+  hasPermission,
+  onDeletedMessages,
+  onMessageSent,
+  onSendError,
+  setBackgroundMessageHandler,
+  setOpenSettingsForNotificationsHandler,
+  sendMessage,
+  subscribeToTopic,
+  unsubscribeFromTopic,
+  setDeliveryMetricsExportToBigQuery,
+} from './modular/index';
+
 const statics = {
   AuthorizationStatus: {
     NOT_DETERMINED: -1,
