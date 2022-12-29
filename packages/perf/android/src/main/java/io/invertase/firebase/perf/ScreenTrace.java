@@ -75,7 +75,7 @@ public class ScreenTrace {
     boolean isScreenTraceSupported = checkScreenTraceSupport(activity);
 
     if (!isScreenTraceSupported) {
-      throw new IllegalStateException("Device does not support screen traces. Hardware acceleration must be enabled and Android must be > 8.1.");
+      throw new IllegalStateException("Device does not support screen traces. Hardware acceleration must be enabled and Android must not be 8.0 or 8.1.");
     }
 
     frameMetricsAggregator = new FrameMetricsAggregator();
