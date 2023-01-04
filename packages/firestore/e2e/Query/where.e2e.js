@@ -294,6 +294,24 @@ describe('firestore().collection().where()', function () {
     });
   });
 
+  it('returns with when combining greather than and lesser than on the same nested field', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
+
+    await Promise.all([
+      colRef.add({ nested: { field: 0 } }),
+      colRef.add({ nested: { field: 1 } }),
+      colRef.add({ nested: { field: 2 } }),
+      colRef.add({ nested: { field: 3 } }),
+    ]);
+
+    const snapshot = await colRef
+      .where(new firestore.FieldPath('nested.field'), '>=', 1)
+      .where(new firestore.FieldPath('nested.field'), '<=', 2)
+      .orderBy(new firestore.FieldPath('nested.field'));
+
+    snapshot.size.should.eql(2);
+  });
+
   it('returns with where array-contains filter', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains`);
 
