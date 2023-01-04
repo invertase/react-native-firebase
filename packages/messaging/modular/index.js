@@ -14,7 +14,7 @@ export function getMessaging(app) {
 }
 
 /**
- * Removes access to an FCM token previously authorized by it's scope. 
+ * Removes access to an FCM token previously authorized by it's scope.
  * Messages sent by the server to this token will fail.
  * @param messaging Messaging instance.
  * @param tokenOptions Options to override senderId (iOS) and projectId (Android).
