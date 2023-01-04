@@ -450,7 +450,7 @@ describe('messaging() modular', function () {
         } = messagingModular;
 
         if (device.getPlatform() === 'ios') {
-          should.equal(is, true);
+          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
         } else {
