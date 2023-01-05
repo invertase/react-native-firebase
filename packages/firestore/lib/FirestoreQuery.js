@@ -196,10 +196,6 @@ export default class FirestoreQuery {
 
     this._modifiers.validatelimitToLast();
 
-    console.error('coucou');
-    console.error(this._modifiers.filters);
-    console.error(this._modifiers.orders);
-
     return this._firestore.native
       .collectionGet(
         this._collectionPath.relativeName,
