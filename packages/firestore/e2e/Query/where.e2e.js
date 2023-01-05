@@ -298,19 +298,36 @@ describe('firestore().collection().where()', function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
 
     await Promise.all([
-      colRef.add({ nested: { field: 0 } }),
-      colRef.add({ nested: { field: 1 } }),
-      colRef.add({ nested: { field: 2 } }),
-      colRef.add({ nested: { field: 3 } }),
+      colRef.doc('doc1').set({ foo: { bar: 1 } }),
+      colRef.doc('doc2').set({ foo: { bar: 2 } }),
+      colRef.doc('doc3').set({ foo: { bar: 3 } }),
     ]);
 
     const snapshot = await colRef
-      .where(new firebase.firestore.FieldPath('nested.field'), '>=', 1)
-      .where(new firebase.firestore.FieldPath('nested.field'), '<=', 2)
-      .orderBy(new firebase.firestore.FieldPath('nested.field'))
+      .where('foo.bar', '>', 1)
+      .where('foo.bar', '<', 3)
+      .orderBy('foo.bar')
       .get();
 
-    snapshot.size.should.eql(2);
+    snapshot.size.should.eql(1);
+  });
+
+  it.only('returns when combining greater than and lesser than on the same nested field using FieldPath', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
+
+    await Promise.all([
+      colRef.doc('doc1').set({ foo: { bar: 1 } }),
+      colRef.doc('doc2').set({ foo: { bar: 2 } }),
+      colRef.doc('doc3').set({ foo: { bar: 3 } }),
+    ]);
+
+    const snapshot = await colRef
+      .where(new firebase.firestore.FieldPath('foo.bar'), '>', 1)
+      .where(new firebase.firestore.FieldPath('foo.bar'), '<', 3)
+      .orderBy(new firebase.firestore.FieldPath('foo.bar'))
+      .get();
+
+    snapshot.size.should.eql(1);
   });
 
   it('returns with where array-contains filter', async function () {

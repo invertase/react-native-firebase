@@ -16,8 +16,8 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
-import { buildNativeArray, generateNativeData } from './utils/serialize';
 import { DOCUMENT_ID } from './FirestoreFieldPath';
+import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -78,7 +78,7 @@ export default class FirestoreQueryModifiers {
   }
 
   get orders() {
-    return this._orders;
+    return this._orders.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
   }
 
   get options() {
@@ -337,7 +337,7 @@ export default class FirestoreQueryModifiers {
 
   orderBy(fieldPath, directionStr) {
     const order = {
-      fieldPath: fieldPath._toPath(),
+      fieldPath: fieldPath,
       direction: directionStr ? DIRECTIONS[directionStr.toLowerCase()] : DIRECTIONS.asc,
     };
 
@@ -386,7 +386,7 @@ export default class FirestoreQueryModifiers {
 
         if (INEQUALITY[filter.operator]) {
           // Initial orderBy() parameter has to match every where() fieldPath parameter when inequality operator is invoked
-          if (filterFieldPath !== this._orders[0].fieldPath) {
+          if (filterFieldPath !== this._orders[0].fieldPath._toPath()) {
             throw new Error(
               `Invalid query. Initial Query.orderBy() parameter: ${orderFieldPath} has to be the same as the Query.where() fieldPath parameter(s): ${filterFieldPath} when an inequality operator is invoked `,
             );
