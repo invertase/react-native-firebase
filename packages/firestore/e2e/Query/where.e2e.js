@@ -312,7 +312,7 @@ describe('firestore().collection().where()', function () {
     snapshot.size.should.eql(1);
   });
 
-  it.only('returns when combining greater than and lesser than on the same nested field using FieldPath', async function () {
+  it('returns when combining greater than and lesser than on the same nested field using FieldPath', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
 
     await Promise.all([
@@ -322,9 +322,9 @@ describe('firestore().collection().where()', function () {
     ]);
 
     const snapshot = await colRef
-      .where(new firebase.firestore.FieldPath('foo.bar'), '>', 1)
-      .where(new firebase.firestore.FieldPath('foo.bar'), '<', 3)
-      .orderBy(new firebase.firestore.FieldPath('foo.bar'))
+      .where(new firebase.firestore.FieldPath('foo', 'bar'), '>', 1)
+      .where(new firebase.firestore.FieldPath('foo', 'bar'), '<', 3)
+      .orderBy(new firebase.firestore.FieldPath('foo', 'bar'))
       .get();
 
     snapshot.size.should.eql(1);

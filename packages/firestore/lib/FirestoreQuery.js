@@ -181,8 +181,6 @@ export default class FirestoreQuery {
       );
     }
 
-    console.error('get', this._modifiers.orders);
-
     if (!isUndefined(this._queryName)) {
       return this._firestore.native
         .namedQueryGet(
@@ -379,8 +377,6 @@ export default class FirestoreQuery {
       );
     }
 
-    console.log('path', path);
-
     const modifiers = this._modifiers._copy().orderBy(path, directionStr);
 
     try {
@@ -389,10 +385,7 @@ export default class FirestoreQuery {
       throw new Error(`firebase.firestore().collection().orderBy() ${e.message}`);
     }
 
-    const a = new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
-    console.error('a', a);
-    console.error('this', a._modifiers);
-    return a;
+    return new FirestoreQuery(this._firestore, this._collectionPath, modifiers, this._queryName);
   }
 
   startAfter(docOrField, ...fields) {
