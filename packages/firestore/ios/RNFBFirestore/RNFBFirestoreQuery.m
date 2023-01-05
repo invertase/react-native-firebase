@@ -85,8 +85,10 @@
     NSString *fieldPath = order[@"fieldPath"];
     NSString *direction = order[@"direction"];
     bool isDescending = [direction isEqualToString:@"DESCENDING"];
+      
+    FIRFieldPath *fieldPathA = [[FIRFieldPath alloc] initWithFields:@[fieldPath]];
 
-    _query = [_query queryOrderedByField:fieldPath descending:isDescending];
+    _query = [_query queryOrderedByFieldPath:fieldPathA descending:isDescending];
   }
 }
 

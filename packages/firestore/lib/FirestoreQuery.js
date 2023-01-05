@@ -23,10 +23,10 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
-import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import { parseSnapshotArgs } from './utils';
 
 let _id = 0;
@@ -195,6 +195,10 @@ export default class FirestoreQuery {
     }
 
     this._modifiers.validatelimitToLast();
+
+    console.error('coucou');
+    console.error(this._modifiers.filters);
+    console.error(this._modifiers.orders);
 
     return this._firestore.native
       .collectionGet(
