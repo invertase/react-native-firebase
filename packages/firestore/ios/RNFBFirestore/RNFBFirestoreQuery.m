@@ -82,13 +82,22 @@
 
 - (void)applyOrders {
   for (NSDictionary *order in _orders) {
-    NSArray *fieldPathArray  = order[@"fieldPath"];
-    NSString *direction = order[@"direction"];
-    bool isDescending = [direction isEqualToString:@"DESCENDING"];
-      
-    FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
-      
-    _query = [_query queryOrderedByFieldPath:fieldPath descending:isDescending];
+    if ([order[@"fieldPath"] isKindOfClass:[NSArray class]]) {
+      NSArray *fieldPathArray = order[@"fieldPath"];
+      NSString *direction = order[@"direction"];
+      bool isDescending = [direction isEqualToString:@"DESCENDING"];
+
+      FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
+
+      _query = [_query queryOrderedByFieldPath:fieldPath descending:isDescending];
+
+    } else {
+      NSString *fieldPath = order[@"fieldPath"];
+      NSString *direction = order[@"direction"];
+      bool isDescending = [direction isEqualToString:@"DESCENDING"];
+
+      _query = [_query queryOrderedByField:fieldPath descending:isDescending];
+    }
   }
 }
 
