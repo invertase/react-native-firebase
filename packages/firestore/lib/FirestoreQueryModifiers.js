@@ -16,7 +16,7 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
-import { DOCUMENT_ID } from './FirestoreFieldPath';
+import FirestoreFieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
 const OPERATORS = {
@@ -74,11 +74,17 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters() {
-    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
+    return this._filters.map(f => ({
+      ...f,
+      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+    }));
   }
 
   get orders() {
-    return this._orders.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
+    return this._orders.map(f => ({
+      ...f,
+      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+    }));
   }
 
   get options() {
