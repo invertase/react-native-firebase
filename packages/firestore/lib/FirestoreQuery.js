@@ -79,11 +79,7 @@ export default class FirestoreQuery {
           continue;
         }
 
-        console.error('fieldpath', order.fieldPath);
-
         const value = documentSnapshot.get(order.fieldPath);
-
-        console.error('value', value);
 
         if (value === undefined) {
           throw new Error(
