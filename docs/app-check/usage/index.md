@@ -69,9 +69,9 @@ The [official Firebase App Check documentation](https://firebase.google.com/docs
 
 ## Register Firebase Apps
 
-Before the App Check package can be used on iOS or Android the corresponding App must be registered in the firebase console. 
+Before the App Check package can be used on iOS or Android, the corresponding App must be registered in the firebase console. 
 
-For instructions on how to generate required keys and register an app for App Check with iOS Device Check and Android SafetyNet follow **Step 1** in these firebase guides:
+For instructions on how to generate required keys and register an app for App Check with iOS Device Check and Android SafetyNet, follow **Step 1** in these firebase guides:
 - [Get started using App Check with DeviceCheck on Apple platforms](https://firebase.google.com/docs/app-check/ios/devicecheck-provider?hl=en&authuser=1#project-setup) 
 - [Get started using App Check with SafetyNet on Android](https://firebase.google.com/docs/app-check/android/safetynet-provider?hl=en&authuser=1#project-setup)
 
