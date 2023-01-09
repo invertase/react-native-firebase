@@ -67,6 +67,16 @@ The [official Firebase App Check documentation](https://firebase.google.com/docs
 
 # Usage
 
+## Register Firebase Apps
+
+Before the App Check package can be used on iOS or Android the corresponding App must be registered in the firebase console. 
+
+For instructions on how to generate required keys and register an app for App Check with iOS Device Check and Android SafetyNet follow **Step 1** in these firebase guides:
+- [Get started using App Check with DeviceCheck on Apple platforms](https://firebase.google.com/docs/app-check/ios/devicecheck-provider?hl=en&authuser=1#project-setup) 
+- [Get started using App Check with SafetyNet on Android](https://firebase.google.com/docs/app-check/android/safetynet-provider?hl=en&authuser=1#project-setup)
+
+> Additionally, You can reference the iOS private key creation and registrations steps outlined in the [Cloud Messaging iOS Setup](/messaging/usage/ios-setup#linking-apns-with-fcm-ios).
+
 ## Activate
 
 On iOS if you include the App Check package, it is activated by default. The only configuration possible is the token auto refresh. When you call activate, the provider (DeviceCheck by default) stays the same but the token auto refresh setting will be changed based on the argument provided.
