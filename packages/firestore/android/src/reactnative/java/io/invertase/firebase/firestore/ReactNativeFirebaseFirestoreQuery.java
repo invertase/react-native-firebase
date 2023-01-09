@@ -129,7 +129,7 @@ public class ReactNativeFirebaseFirestoreQuery {
     for (Object o : ordersList) {
       Map<String, Object> order = (Map) o;
 
-      if (order.get("fieldPath").getClass().isArray()) {
+      if (order.get("fieldPath") instanceof List) {
         ArrayList fieldPathArray = (ArrayList) order.get("fieldPath");
         String[] segmentArray = (String[]) fieldPathArray.toArray(new String[0]);
         FieldPath fieldPath = FieldPath.of(segmentArray);
