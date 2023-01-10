@@ -114,7 +114,7 @@ import firestore from '@react-native-firebase/firestore';
 const userCollection = firestore().collection('Users');
 
 const App: () => Node = () => {
-  const [lastDocument, setLastDocument] = useState();
+  const [lastDocument, setLastDocument] = useState<undefined | 'end'>();
   const [userData, setUserData] = useState([]);
 
   function LoadData() {
@@ -123,13 +123,19 @@ const App: () => Node = () => {
     if (lastDocument !== undefined) {
       query = query.startAfter(lastDocument); // fetch data following the last document accessed
     }
-    query.limit(3) // limit to your page size, 3 is just an example
+    if(lastDocument !== 'end'){ // if lastDocument is 'end', no more fetches 
+       query.limit(3) // limit to your page size, 3 is just an example
         .get()
         .then(querySnapshot => {
+          if(querySnapshot.empty){
+            setLastDocument('end'); // if there are no more docs setLastDocument with 'end' 
+          }
           setLastDocument(querySnapshot.docs[querySnapshot.docs.length - 1]);
           MakeUserData(querySnapshot.docs);
         });
     }
+    }
+   
   }
 
   function MakeUserData(docs) {
