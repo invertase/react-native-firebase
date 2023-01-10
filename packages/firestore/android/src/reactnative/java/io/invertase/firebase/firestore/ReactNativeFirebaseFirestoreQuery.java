@@ -127,12 +127,21 @@ public class ReactNativeFirebaseFirestoreQuery {
     List<Object> ordersList = toArrayList(orders);
 
     for (Object o : ordersList) {
-      Map<String, String> order = (Map) o;
+      Map<String, Object> order = (Map) o;
 
-      String fieldPath = order.get("fieldPath");
-      String direction = order.get("direction");
+      if (order.get("fieldPath") instanceof List) {
+        ArrayList fieldPathArray = (ArrayList) order.get("fieldPath");
+        String[] segmentArray = (String[]) fieldPathArray.toArray(new String[0]);
+        FieldPath fieldPath = FieldPath.of(segmentArray);
+        String direction = (String) order.get("direction");
 
-      query = query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+        query = query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+      } else {
+        String fieldPath = (String) order.get("fieldPath");
+        String direction = (String) order.get("direction");
+
+        query = query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+      }
     }
   }
 
