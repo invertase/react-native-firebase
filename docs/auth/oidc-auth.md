@@ -59,7 +59,7 @@ const config = {
 // Log in to get an authentication token
 const authState = await authorize(config);
 
-const credential = auth.OIDCProvider.credential(
+const credential = auth.OIDCAuthProvider.credential(
   'azure_test', // this is the "Provider ID" value from the firebase console
   authState.idToken,
 );
