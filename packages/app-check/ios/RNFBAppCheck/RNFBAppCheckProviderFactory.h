@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016-present Invertase Limited & Contributors
+ * Copyright (c) 2023-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this library except in compliance with the License.
@@ -15,16 +15,14 @@
  *
  */
 
-#import <Foundation/Foundation.h>
+#import <FirebaseAppCheck/FIRAppCheck.h>
 
-#import <React/RCTBridgeModule.h>
+@interface RNFBAppCheckProviderFactory : NSObject <FIRAppCheckProviderFactory>
 
-#import "RNFBAppCheckProviderFactory.h"
+@property NSMutableDictionary *_Nullable providers;
 
-@interface RNFBAppCheckModule : NSObject <RCTBridgeModule>
-
-@property RNFBAppCheckProviderFactory* _Nullable providerFactory;
-
-+ (_Nonnull instancetype)sharedInstance;
+- (void)configure:(FIRApp *_Nonnull)app
+     providerName:(NSString *_Nonnull)providerName
+       debugToken:(NSString *_Nullable)debugToken;
 
 @end
