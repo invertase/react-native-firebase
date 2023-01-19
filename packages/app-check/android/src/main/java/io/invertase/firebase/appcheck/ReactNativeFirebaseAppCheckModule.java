@@ -23,65 +23,125 @@ import android.util.Log;
 import com.facebook.react.bridge.*;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.appcheck.AppCheckProviderFactory;
 import com.google.firebase.appcheck.FirebaseAppCheck;
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
-import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
+import io.invertase.firebase.common.ReactNativeFirebaseJSON;
+import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
-import java.lang.reflect.*;
+import io.invertase.firebase.common.ReactNativeFirebasePreferences;
 
 public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule {
   private static final String TAG = "AppCheck";
+  private static final String LOGTAG = "RNFBAppCheck";
+  private static final String KEY_APPCHECK_TOKEN_REFRESH_ENABLED = "app_check_token_auto_refresh";
+  ReactNativeFirebaseAppCheckProviderFactory providerFactory =
+      new ReactNativeFirebaseAppCheckProviderFactory();
+
+  static boolean isAppCheckTokenRefreshEnabled() {
+    boolean enabled;
+    ReactNativeFirebaseJSON json = ReactNativeFirebaseJSON.getSharedInstance();
+    ReactNativeFirebaseMeta meta = ReactNativeFirebaseMeta.getSharedInstance();
+    ReactNativeFirebasePreferences prefs = ReactNativeFirebasePreferences.getSharedInstance();
+
+    if (prefs.contains(KEY_APPCHECK_TOKEN_REFRESH_ENABLED)) {
+      enabled = prefs.getBooleanValue(KEY_APPCHECK_TOKEN_REFRESH_ENABLED, true);
+      Log.d(LOGTAG, "isAppCheckCollectionEnabled via RNFBPreferences: " + enabled);
+    } else if (json.contains(KEY_APPCHECK_TOKEN_REFRESH_ENABLED)) {
+      enabled = json.getBooleanValue(KEY_APPCHECK_TOKEN_REFRESH_ENABLED, true);
+      Log.d(LOGTAG, "isAppCheckCollectionEnabled via RNFBJSON: " + enabled);
+    } else {
+      enabled = meta.getBooleanValue(KEY_APPCHECK_TOKEN_REFRESH_ENABLED, true);
+      Log.d(LOGTAG, "isAppCheckCollectionEnabled via RNFBMeta: " + enabled);
+    }
+
+    if (BuildConfig.DEBUG) {
+      if (!json.getBooleanValue(KEY_APPCHECK_TOKEN_REFRESH_ENABLED, false)) {
+        enabled = false;
+      }
+      Log.d(
+          LOGTAG,
+          "isAppCheckTokenRefreshEnabled after checking "
+              + KEY_APPCHECK_TOKEN_REFRESH_ENABLED
+              + ": "
+              + enabled);
+    }
+
+    Log.d(LOGTAG, "isAppCheckTokenRefreshEnabled final value: " + enabled);
+    return enabled;
+  }
+
+  private boolean isAppDebuggable() throws Exception {
+    boolean isDebuggable = false;
+    PackageManager pm = getContext().getPackageManager();
+    if (pm != null) {
+      isDebuggable =
+          (0
+              != (pm.getApplicationInfo(getContext().getPackageName(), 0).flags
+                  & ApplicationInfo.FLAG_DEBUGGABLE));
+    }
+    Log.d(LOGTAG, "debuggable status? " + isDebuggable);
+    return isDebuggable;
+  }
 
   ReactNativeFirebaseAppCheckModule(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
+
+    // Our default token refresh config comes from config files, set it
+    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+    firebaseAppCheck.setTokenAutoRefreshEnabled(isAppCheckTokenRefreshEnabled());
+  }
+
+  @ReactMethod
+  public void configureProvider(
+      String appName, String providerName, String debugToken, Promise promise) {
+    Log.d(
+        LOGTAG,
+        "configureProvider - appName/providerName/debugToken: "
+            + appName
+            + "/"
+            + providerName
+            + (debugToken != null ? "/(not shown)" : "/null"));
+    try {
+      providerFactory.configure(appName, providerName, debugToken);
+      FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName))
+          .installAppCheckProviderFactory(providerFactory);
+      promise.resolve(null);
+    } catch (Exception e) {
+      rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", e.getMessage());
+    }
   }
 
   @ReactMethod
   public void activate(
       String appName, String siteKeyProvider, boolean isTokenAutoRefreshEnabled, Promise promise) {
     try {
-      FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+
+      FirebaseAppCheck firebaseAppCheck =
+          FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName));
       firebaseAppCheck.setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled);
-      boolean isDebuggable = false;
-      PackageManager pm = getContext().getPackageManager();
-      if (pm != null) {
-        isDebuggable =
-            (0
-                != (pm.getApplicationInfo(getContext().getPackageName(), 0).flags
-                    & ApplicationInfo.FLAG_DEBUGGABLE));
-      }
 
-      if (isDebuggable) {
-
+      // Configure our new proxy factory in a backwards-compatible way for old API
+      if (isAppDebuggable()) {
+        Log.d(LOGTAG, "app is debuggable, configuring AppCheck for testing mode");
         if (BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN != "null") {
-          // Get DebugAppCheckProviderFactory class
-          Class<DebugAppCheckProviderFactory> debugACFactoryClass =
-              DebugAppCheckProviderFactory.class;
-
-          // Get the (undocumented) constructor accepting a debug token as string
-          Class<?>[] argType = {String.class};
-          Constructor c = debugACFactoryClass.getDeclaredConstructor(argType);
-
-          // Create a object containing the constructor arguments
-          // and initialize a new instance.
-          Object[] cArgs = {BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN};
-          firebaseAppCheck.installAppCheckProviderFactory(
-              (AppCheckProviderFactory) c.newInstance(cArgs));
+          Log.d(LOGTAG, "debug app check token found in BuildConfig. Installing known token.");
+          providerFactory.configure(appName, "debug", BuildConfig.FIREBASE_APP_CHECK_DEBUG_TOKEN);
         } else {
-          firebaseAppCheck.installAppCheckProviderFactory(
-              DebugAppCheckProviderFactory.getInstance());
+          Log.d(
+              LOGTAG,
+              "no debug app check token found in BuildConfig. Check Log for dynamic test token to"
+                  + " configure in console.");
+          providerFactory.configure(appName, "debug", null);
         }
-
       } else {
-        firebaseAppCheck.installAppCheckProviderFactory(
-            SafetyNetAppCheckProviderFactory.getInstance());
+        providerFactory.configure(appName, "safetyNet", null);
       }
+
+      FirebaseAppCheck.getInstance(FirebaseApp.getInstance(appName))
+          .installAppCheckProviderFactory(providerFactory);
+      promise.resolve(null);
     } catch (Exception e) {
-      rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", "unimplemented");
-      return;
+      rejectPromiseWithCodeAndMessage(promise, "unknown", "internal-error", e.getMessage());
     }
-    promise.resolve(null);
   }
 
   @ReactMethod
@@ -92,6 +152,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
 
   @ReactMethod
   public void getToken(String appName, boolean forceRefresh, Promise promise) {
+    Log.d(LOGTAG, "getToken appName/forceRefresh: " + appName + "/" + forceRefresh);
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     Tasks.call(
             getExecutor(),
@@ -108,7 +169,7 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
                 promise.resolve(tokenResultMap);
               } else {
                 Log.e(
-                    TAG,
+                    LOGTAG,
                     "RNFB: Unknown error while fetching AppCheck token "
                         + task.getException().getMessage());
                 rejectPromiseWithCodeAndMessage(
