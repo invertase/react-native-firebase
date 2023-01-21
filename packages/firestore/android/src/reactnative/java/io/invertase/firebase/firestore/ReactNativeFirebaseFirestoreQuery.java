@@ -135,12 +135,14 @@ public class ReactNativeFirebaseFirestoreQuery {
         FieldPath fieldPath = FieldPath.of(segmentArray);
         String direction = (String) order.get("direction");
 
-        query = query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+        query =
+            query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
       } else {
         String fieldPath = (String) order.get("fieldPath");
         String direction = (String) order.get("direction");
 
-        query = query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+        query =
+            query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
       }
     }
   }
