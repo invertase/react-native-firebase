@@ -104,7 +104,7 @@ To allow Firebase on iOS to use the credentials, the Firebase iOS SDK must be co
 
 To do this, open your `/ios/{projectName}/AppDelegate.mm` file (or `AppDelegate.m` if on older react-native), and add the following:
 
-At the top of the file, import the Firebase SDK:
+At the top of the file, import the Firebase SDK right after `'#import "AppDelegate.h"'`:
 
 ```
 #import <Firebase.h>
@@ -125,15 +125,16 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
 
 Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks.
 
-Open the file `./ios/Podfile` and add this line inside your targets:
-
-```
-use_frameworks!
-```
-
-To use Static Frameworks on iOS, you also need to manually enable this for the project with the following global to the top of your `/ios/Podfile` file:
+Open the file `./ios/Podfile` and add this line inside your targets (right after the line calling the react native Podfile function to get the native modules config):
 
 ```ruby
+use_frameworks! :linkage => :static
+```
+
+To use Static Frameworks on iOS, you also need to manually enable this for the project with the following global to your `/ios/Podfile` file:
+
+```ruby
+# right after `use_frameworks! :linkage => :static`
 $RNFirebaseAsStaticFramework = true
 ```
 
