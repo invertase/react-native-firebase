@@ -31,7 +31,7 @@ export function deleteToken(messaging, tokenOptions) {
 /**
  * Returns an FCM token for this device. Optionally you can specify a custom options to your own use-case.
  * @param messaging Messaging instance.
- * @param options Options to override senderId (iOS) and projectId (Android).
+ * @param options Options to override senderId (iOS) and appName
  * @returns {Promise<string>}
  */
 export function getToken(messaging, options) {
@@ -287,4 +287,9 @@ export function setDeliveryMetricsExportToBigQuery(messaging, enabled) {
  */
 export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
   return messaging.isDeliveryMetricsExportToBigQueryEnabled;
+}
+
+export function isSupported(messaging) {
+  // No-op as web platform isn't implemented
+  return messaging.isSupported();
 }
