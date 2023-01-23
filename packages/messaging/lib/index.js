@@ -196,7 +196,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   getToken({ appName, senderId } = {}) {
     if (!isUndefined(appName) && !isString(appName)) {
-      throw new Error("firebase.messaging().getToken(*) 'projectId' expected a string.");
+      throw new Error("firebase.messaging().getToken(*) 'appName' expected a string.");
     }
 
     if (!isUndefined(senderId) && !isString(senderId)) {
@@ -211,7 +211,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   deleteToken({ appName, senderId } = {}) {
     if (!isUndefined(appName) && !isString(appName)) {
-      throw new Error("firebase.messaging().deleteToken(*) 'projectId' expected a string.");
+      throw new Error("firebase.messaging().deleteToken(*) 'appName' expected a string.");
     }
 
     if (!isUndefined(senderId) && !isString(senderId)) {
@@ -477,6 +477,11 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
     return this.native.setDeliveryMetricsExportToBigQuery(enabled);
+  }
+
+  async isSupported() {
+    // No-op as web platform isn't implemented
+    return true;
   }
 }
 
