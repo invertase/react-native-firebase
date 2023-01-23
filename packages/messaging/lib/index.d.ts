@@ -139,14 +139,35 @@ export namespace FirebaseMessagingTypes {
 
     /**
      * An iOS app specific identifier used for notification grouping.
-     */
     threadId?: string;
+    */
+    threadId?: string;
+
+    /**
+     * Options for features provided by the FCM SDK for Web.
+     */
+    fcmOptions: FcmOptions;
   }
 
   /**
-   * Options for `getToken()`, `deleteToken()`
+   * Options for features provided by the FCM SDK for Web.
    */
-  export interface TokenOptions {
+  export interface FcmOptions {
+    /**
+     * The link to open when the user clicks on the notification.
+     */
+    link?: string;
+
+    /**
+     * The label associated with the message's analytics data.
+     */
+    analyticsLabel?: string;
+  }
+
+  /**
+   * Options for `getToken()`
+   */
+  export interface GetTokenOptions {
     /**
      * The app name of the FirebaseApp instance.
      *
@@ -160,6 +181,45 @@ export namespace FirebaseMessagingTypes {
      * @platform ios iOS
      */
     senderId?: string;
+  }
+
+  /**
+   * Options for `deleteToken()`
+   */
+  export interface DeleteTokenOptions {
+    /**
+     * The app name of the FirebaseApp instance.
+     *
+     * @platform android Android
+     */
+    appName?: string;
+
+    /**
+     * The senderID for a particular Firebase project.
+     *
+     * @platform ios iOS
+     */
+    senderId?: string;
+
+    /**
+     * The VAPID key used to authenticate the push subscribers
+     *  to receive push messages only from sending servers
+     * that hold the corresponding private key.
+     *
+     * @platform web
+     */
+    vapidKey?: string;
+
+    /**
+     * The service worker registration for receiving push messaging.
+     * If the registration is not provided explicitly, you need to
+     * have a firebase-messaging-sw.js at your root location.
+     *
+     * @platform web
+     */
+
+    // TODO - A typed service worker. Could use this https://www.npmjs.com/package/@types/serviceworker ??
+    serviceWorkerRegistration;
   }
 
   export interface Notification {
@@ -182,6 +242,22 @@ export namespace FirebaseMessagingTypes {
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * Web only. The URL to use for the notification's icon. If you don't send this key in the request,
+     * FCM displays the launcher icon specified in your app manifest.
+     */
+    icon?: string;
+
+    /**
+     * Web only. The URL of an image that is downloaded on the device and displayed in the notification.
+     */
+    image?: string;
+
+    /**
+     * Web only. The notification's title.
+     */
+    title?: string;
 
     /**
      * The native localization key for the notification body content.
@@ -630,7 +706,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param options Options to override senderId (iOS) and projectId (Android).
      */
-    getToken(options?: TokenOptions): Promise<string>;
+    getToken(options?: GetTokenOptions): Promise<string>;
 
     /**
      * Returns whether the root view is headless or not
@@ -653,7 +729,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @param options Options to override senderId (iOS) and projectId (Android).
      */
-    deleteToken(options?: TokenOptions): Promise<void>;
+    deleteToken(options?: DeleteTokenOptions): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
@@ -1012,6 +1088,12 @@ export namespace FirebaseMessagingTypes {
      * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
      */
     setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
+    /**
+     * Checks if all required APIs exist in the browser.
+     *
+     * @web
+     */
+    isSupported(): Promise<boolean>;
   }
 }
 
