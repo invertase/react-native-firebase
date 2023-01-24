@@ -47,6 +47,22 @@ about security or implementing a HTTP request library.
 Functions deployed to Firebase have unique names, allowing you to easily identify which endpoint you wish to send a request to.
 To learn more about deploying Functions to Firebase, view the [Writing & Deploying Functions](/functions/writing-deploying-functions) documentation.
 
+## Using an emulator
+
+Whilst developing your application with Cloud Functions, it is possible to run the functions inside of a local emulator.
+
+To call the emulated functions, call the `useEmulator` method exposed by the library:
+
+```js
+import functions from '@react-native-firebase/functions';
+
+// Use a local emulator in development
+if (__DEV__) {
+  // If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
+  firebase.functions().useEmulator('localhost', 5001);
+}
+```
+
 ## Calling an endpoint
 
 Assuming we have a deployed a callable endpoint named `listProducts`, to call the endpoint the library exposes a
@@ -85,21 +101,5 @@ function App() {
   }
 
   // ...
-}
-```
-
-## Using an emulator
-
-Whilst developing your application with Cloud Functions, it is possible to run the functions inside of a local emulator.
-
-To call the emulated functions, call the `useFunctionsEmulator` method exposed by the library:
-
-```js
-import functions from '@react-native-firebase/functions';
-
-// Use a local emulator in development
-if (__DEV__) {
-  // If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
-  functions().useFunctionsEmulator('http://localhost:5000');
 }
 ```
