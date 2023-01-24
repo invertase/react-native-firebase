@@ -36,6 +36,21 @@ describe('perf() modular', function () {
       });
     });
 
+    describe('isInstrumentationEnabled', function () {
+      should.equal(firebase.perf().isInstrumentationEnabled, true);
+    });
+
+    describe('setDataCollectionEnabled()', function () {
+      afterEach(async function () {
+        await firebase.perf().setDataCollectionEnabled(false);
+      });
+      it('should be true', async function () {
+        await firebase.perf().setDataCollectionEnabled(true);
+
+        should.equal(firebase.perf().isDataCollectionEnabled, true);
+      });
+    });
+
     describe('startTrace()', function () {
       it('resolves a started instance of Trace', async function () {
         const trace = await firebase.perf().startTrace('invertase');
@@ -115,6 +130,28 @@ describe('perf() modular', function () {
         const perf = getPerformance();
         await setPerformanceCollectionEnabled(perf, false);
         should.equal(isPerformanceCollectionEnabled(perf), false);
+      });
+    });
+
+    describe('isInstrumentationEnabled', function () {
+      it('should be true', function () {
+        const { getPerformance, isInstrumentationEnabled } = perfModular;
+        should.equal(isInstrumentationEnabled(getPerformance()), true);
+      });
+    });
+
+    describe('setDataCollectionEnabled', function () {
+      afterEach(async function () {
+        const { getPerformance, setPerformanceCollectionEnabled } = perfModular;
+
+        const perf = getPerformance();
+        await setPerformanceCollectionEnabled(perf, false);
+      });
+      it('should be true', async function () {
+        const { getPerformance, isDataCollectionEnabled, setDataCollectionEnabled } = perfModular;
+
+        await setDataCollectionEnabled(getPerformance(), true);
+        should.equal(isDataCollectionEnabled(getPerformance()), true);
       });
     });
 
