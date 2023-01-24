@@ -384,7 +384,22 @@ export namespace FirebasePerformanceTypes {
      * ```
      */
     isPerformanceCollectionEnabled: boolean;
+    /**
+     * Determines whether to collect 'out of the box' (i.e already setup for Firebase Performance) events.
+     */
+    isInstrumentationEnabled: boolean;
+    /**
+     * Determines whether performance monitoring is enabled or disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isEnabled = firebase.perf().isDataCollectionEnabled;
+     * console.log('Performance collection enabled: ', isEnabled);
+     * ```
+     */
 
+    isDataCollectionEnabled: boolean;
     /**
      * Enables or disables performance monitoring.
      *
@@ -399,6 +414,19 @@ export namespace FirebasePerformanceTypes {
      */
     setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
+    /**
+     * Enables or disables performance monitoring.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Disable performance monitoring collection
+     * await firebase.perf().setDataCollection(false);
+     * ```
+     *
+     * @param enabled Should performance monitoring be enabled
+     */
+    setDataCollection(enabled: boolean): Promise<null>;
     /**
      * Creates a Trace instance with the given identifier.
      *
