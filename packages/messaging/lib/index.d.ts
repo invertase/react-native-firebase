@@ -111,9 +111,9 @@ export namespace FirebaseMessagingTypes {
     data?: { [key: string]: string };
 
     /**
-     * Additional Notification data sent with the message
+     * Additional NotificationPayload data sent with the message
      */
-    notification?: Notification;
+    notification?: NotificationPayload;
 
     /**
      * Whether the iOS APNs message was configured as a background update notification.
@@ -165,9 +165,9 @@ export namespace FirebaseMessagingTypes {
   }
 
   /**
-   * Options for `getToken()`
+   * Options for `getToken()` and `deleteToken()`
    */
-  export interface GetTokenOptions {
+  export interface NativeTokenOptions {
     /**
      * The app name of the FirebaseApp instance.
      *
@@ -184,23 +184,9 @@ export namespace FirebaseMessagingTypes {
   }
 
   /**
-   * Options for `deleteToken()`
+   * Options for `getToken()`
    */
-  export interface DeleteTokenOptions {
-    /**
-     * The app name of the FirebaseApp instance.
-     *
-     * @platform android Android
-     */
-    appName?: string;
-
-    /**
-     * The senderID for a particular Firebase project.
-     *
-     * @platform ios iOS
-     */
-    senderId?: string;
-
+  export interface GetTokenOptions {
     /**
      * The VAPID key used to authenticate the push subscribers
      *  to receive push messages only from sending servers
@@ -217,10 +203,14 @@ export namespace FirebaseMessagingTypes {
      *
      * @platform web
      */
-
-    // TODO - A typed service worker. Could use this https://www.npmjs.com/package/@types/serviceworker ??
-    serviceWorkerRegistration;
+    serviceWorkerRegistration?: ServiceWorker;
   }
+
+  /**
+   * NotificationPayload is an alias for Notification. This is to keep it the same as
+   * Firebase Web JS SDK v9 and to make it backwards compatible.
+   */
+  type NotificationPayload = Notification;
 
   export interface Notification {
     /**
@@ -704,9 +694,9 @@ export namespace FirebaseMessagingTypes {
      *   });
      * ```
      *
-     * @param options Options to override senderId (iOS) and projectId (Android).
+     * @param options Options can be either `GetTokenOptions` or `NativeTokenOptions`
      */
-    getToken(options?: GetTokenOptions): Promise<string>;
+    getToken(options?: GetTokenOptions | NativeTokenOptions): Promise<string>;
 
     /**
      * Returns whether the root view is headless or not
@@ -727,9 +717,9 @@ export namespace FirebaseMessagingTypes {
      * await firebase.messaging().deleteToken();
      * ```
      *
-     * @param options Options to override senderId (iOS) and projectId (Android).
+     * @param options Options to override senderId (iOS) and appName (android)
      */
-    deleteToken(options?: DeleteTokenOptions): Promise<void>;
+    deleteToken(options?: NativeTokenOptions): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
@@ -1094,6 +1084,15 @@ export namespace FirebaseMessagingTypes {
      * @web
      */
     isSupported(): Promise<boolean>;
+
+    /**
+     * Enables or disables Firebase Cloud Messaging message delivery metrics export to BigQuery. By
+     * default, message delivery metrics are not exported to BigQuery. Use this method to enable or
+     * disable the export at runtime.
+     *
+     * @web
+     */
+    experimentalSetDeliveryMetricsExportedToBigQueryEnabled(): void;
   }
 }
 
