@@ -203,7 +203,7 @@ export namespace FirebaseMessagingTypes {
      *
      * @platform web
      */
-    serviceWorkerRegistration?: ServiceWorker;
+    serviceWorkerRegistration?: ServiceWorkerRegistration;
   }
 
   /**
@@ -693,10 +693,9 @@ export namespace FirebaseMessagingTypes {
      *     fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),
      *   });
      * ```
-     *
-     * @param options Options can be either `GetTokenOptions` or `NativeTokenOptions`
+     * @param options Options composite type with all members of `GetTokenOptions` and `NativeTokenOptions`
      */
-    getToken(options?: GetTokenOptions | NativeTokenOptions): Promise<string>;
+    getToken(options?: GetTokenOptions & NativeTokenOptions): Promise<string>;
 
     /**
      * Returns whether the root view is headless or not
