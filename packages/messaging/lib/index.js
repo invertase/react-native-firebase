@@ -483,6 +483,10 @@ class FirebaseMessagingModule extends FirebaseModule {
     // No-op as web platform isn't implemented
     return true;
   }
+
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enable) {
+    // No-op as web platform isn't implemented
+  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/messaging';

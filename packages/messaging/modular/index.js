@@ -293,3 +293,8 @@ export function isSupported(messaging) {
   // No-op as web platform isn't implemented
   return messaging.isSupported();
 }
+
+export function experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enable) {
+  // No-op as web platform isn't implemented
+  return messaging.experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enable);
+}
