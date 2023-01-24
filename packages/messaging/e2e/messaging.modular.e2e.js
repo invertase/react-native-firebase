@@ -347,6 +347,14 @@ describe('messaging() modular', function () {
         should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
       });
     });
+
+    describe('isSupported()', function () {
+      it('should return "true" if the device or browser supports Firebase Messaging', async function () {
+        // For android, when the play services are available, it will return "true"
+        // iOS & web always return "true". Web can be fully implemented when the platform is supported
+        should.equal(await firebase.messaging().isSupported(), true);
+      });
+    });
   });
 
   describe('modular', function () {
@@ -730,6 +738,15 @@ describe('messaging() modular', function () {
         // Set it back to the default value for future runs in re-use mode
         await setDeliveryMetricsExportToBigQuery(getMessaging(), false);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
+      });
+
+      describe('isSupported()', function () {
+        const { isSupported, getMessaging } = messagingModular;
+        it('should return "true" if the device or browser supports Firebase Messaging', async function () {
+          // For android, when the play services are available, it will return "true"
+          // iOS & web always return "true". Web can be fully implemented when the platform is supported
+          should.equal(await isSupported(getMessaging()), true);
+        });
       });
     });
   });

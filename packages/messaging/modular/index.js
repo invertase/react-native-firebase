@@ -290,7 +290,6 @@ export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
 }
 
 export function isSupported(messaging) {
-  // No-op as web platform isn't implemented
   return messaging.isSupported();
 }
 

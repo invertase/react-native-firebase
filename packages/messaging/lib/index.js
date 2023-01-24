@@ -30,7 +30,7 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
 
@@ -62,6 +62,7 @@ export {
   unsubscribeFromTopic,
   setDeliveryMetricsExportToBigQuery,
   isDeliveryMetricsExportToBigQueryEnabled,
+  isSupported,
 } from '../modular/index';
 
 const statics = {
@@ -480,7 +481,10 @@ class FirebaseMessagingModule extends FirebaseModule {
   }
 
   async isSupported() {
-    // No-op as web platform isn't implemented
+    if (Platform.isAndroid) {
+      return this.native.isSupported();
+    }
+    // Always return "true" for iOS. Web will be implemented when it is supported
     return true;
   }
 
