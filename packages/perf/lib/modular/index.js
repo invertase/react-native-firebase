@@ -24,19 +24,49 @@ export async function initializePerformance(app, settings) {
   const perf = firebase.app(app.name).perf();
 
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
-    await perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
+    await perf.setDataCollection(settings.dataCollectionEnabled);
   }
+  // Once web is implemented, we can also implement `perf.setInstrumentationEnabled(settings.instrumentationEnabled)`
 
   return perf;
 }
 
 /**
- * Returns a Performance instance for the given app.
+ *
+ * Determines whether performance monitoring is enabled or disabled.
+ * @param perf - Performance instance
+ * @returns {Boolean}
+ */
+export function isDataCollectionEnabled(perf) {
+  return perf.isDataCollectionEnabled;
+}
+
+/**
+ * Determines whether performance monitoring is enabled or disabled.
  * @param perf - Performance instance
  * @returns {Boolean}
  */
 export function isPerformanceCollectionEnabled(perf) {
   return perf.isPerformanceCollectionEnabled;
+}
+
+/**
+ * Whether to collect out of the box events.
+ * @param perf - Performance instance
+ * @returns {Boolean}
+ */
+export function isInstrumentationEnabled(perf) {
+  return perf.isInstrumentationEnabled;
+}
+
+/**
+ * Returns nothing.
+ * @param perf - Performance instance
+ * @param enabled - A Boolean for setting Performance collection
+ * @returns {void}
+ */
+export function setDataCollectionEnabled(perf, enabled) {
+  return perf.setDataCollectionEnabled(enabled);
 }
 
 /**
