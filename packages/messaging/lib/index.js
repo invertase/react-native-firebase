@@ -488,8 +488,8 @@ class FirebaseMessagingModule extends FirebaseModule {
     return true;
   }
 
-  experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enable) {
-    // No-op as web platform isn't implemented
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enabled) {
+    return this.setDeliveryMetricsExportToBigQuery(enabled);
   }
 }
 
