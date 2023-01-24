@@ -56,12 +56,12 @@ myproject
 
 The Firebase CLI has created a project structure and also installed a number of dependencies which will be used to build our Cloud Functions.
 
-To enable us to mock some fake data to use in the deployed functions, lets use the [`faker`](https://www.npmjs.com/package/faker)
+To enable us to mock some fake data to use in the deployed functions, lets use the [`@faker-js/faker`](https://www.npmjs.com/package/@faker-js/faker)
 library to create mock data.
 
 ```bash
 cd functions/
-npm install faker
+npm install @faker-js/faker
 ```
 
 Now it's time to write our Cloud Function. Open up the generated `functions/index.js` file in your chosen editor.
@@ -89,7 +89,7 @@ new data set being generated on each request:
 ```js
 // functions/index.js
 const functions = require('firebase-functions');
-const faker = require('faker');
+const { faker } = require('@faker-js/faker');
 
 // Initialize products array
 const products = [];
