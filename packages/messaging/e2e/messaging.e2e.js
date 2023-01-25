@@ -15,7 +15,21 @@
  *
  */
 
-describe('messaging() modular', function () {
+async function isSimulator() {
+  return await DeviceInfo.isEmulator();
+}
+
+async function isAPNSCapableSimulator() {
+  supportedAbis = await DeviceInfo.supportedAbis(); // looking for an ARM Simulator implying M1 host
+  iosVersionMajor = DeviceInfo.getSystemVersion().split('.')[0]; // looking for iOS16+
+  macOSVersionMajor = require('os').release().split('.')[0]; // host macOS13+ has Darwin kernel 22+
+  if (macOSVersionMajor >= 22 && supportedAbis.includes('ARM64E') && iosVersionMajor >= 16) {
+    return true;
+  }
+  return false;
+}
+
+describe('messaging()', function () {
   describe('firebase v8 compatibility', function () {
     describe('namespace', function () {
       it('accessible from firebase.app()', function () {
@@ -74,9 +88,10 @@ describe('messaging() modular', function () {
       });
       it('successfully unregisters on ios', async function () {
         if (device.getPlatform() === 'ios') {
-          should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
           await firebase.messaging().unregisterDeviceForRemoteMessages();
           should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
+          await firebase.messaging().registerDeviceForRemoteMessages();
+          should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
         } else {
           this.skip();
         }
@@ -116,9 +131,84 @@ describe('messaging() modular', function () {
           this.skip();
         }
       });
-      it('resolves null on ios if using simulator', async function () {
+      it('resolves on ios with token on supported simulators', async function () {
+        // Make sure we are registered for remote notifications, else no token
+        await firebase.messaging().registerDeviceForRemoteMessages();
+
         if (device.getPlatform() === 'ios') {
-          should.equal(await firebase.messaging().getAPNSToken(), null);
+          apnsToken = await firebase.messaging().getAPNSToken();
+
+          simulator = await isSimulator();
+          aPNSCapableSimulator = await isAPNSCapableSimulator();
+
+          if (!simulator || (simulator && aPNSCapableSimulator)) {
+            apnsToken.should.be.a.String();
+          } else {
+            // unsupported iOS Simulator returns null (typically,
+            // can attempt-but-fail if M1 Simulator but not macOS13+/ios16+, rare combo)
+            if (apnsToken !== null) {
+              apnsToken.should.be.a.String();
+            }
+          }
+        } else {
+          this.skip();
+        }
+      });
+    });
+
+    describe('setAPNSToken', function () {
+      it('requires a token parameter', async function () {
+        try {
+          firebase.messaging().setAPNSToken();
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'token' expected a string value");
+        }
+        try {
+          firebase.messaging().setAPNSToken(123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'token' expected a string value");
+          return Promise.resolve();
+        }
+      });
+
+      it('verifies type parameter is valid if specified', async function () {
+        try {
+          firebase.messaging().setAPNSToken('typeparamtest', 123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'type' expected one of 'prod', 'sandbox', or 'unknown'");
+        }
+        try {
+          firebase.messaging().setAPNSToken('typeparamtest', 'bogus');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'type' expected one of 'prod', 'sandbox', or 'unknown'");
+        }
+      });
+
+      it('resolves on android', async function () {
+        if (device.getPlatform() === 'android') {
+          should.equal(await firebase.messaging().setAPNSToken('foo'), null);
+        } else {
+          this.skip();
+        }
+      });
+
+      it('correctly sets new token on ios', async function () {
+        if (device.getPlatform() === 'ios') {
+          originalAPNSToken = await firebase.messaging().getAPNSToken();
+          // 74657374696E67746F6B656E is hex for "testingtoken"
+          await firebase.messaging().setAPNSToken('74657374696E67746F6B656E', 'unknown');
+          newAPNSToken = await firebase.messaging().getAPNSToken();
+          newAPNSToken.should.eql('74657374696E67746F6B656E');
+          newAPNSToken.should.not.eql(originalAPNSToken);
+          if (originalAPNSToken !== null) {
+            await firebase.messaging().setAPNSToken(originalAPNSToken);
+          }
+        } else {
+          this.skip();
         }
       });
     });
@@ -367,7 +457,7 @@ describe('messaging() modular', function () {
     });
   });
 
-  describe('modular', function () {
+  describe('firebase v9 modular API', function () {
     describe('getMessaging', function () {
       it('pass app as argument', function () {
         const { getMessaging } = messagingModular;
@@ -418,7 +508,7 @@ describe('messaging() modular', function () {
       });
     });
 
-    describe('isDeviceRegisteredForRemoteMessages', function () {
+    describe('isDeviceRegisteredForRemoteMessages default state', function () {
       it('returns true on android', function () {
         const { getMessaging, isDeviceRegisteredForRemoteMessages } = messagingModular;
 
@@ -430,7 +520,7 @@ describe('messaging() modular', function () {
       });
     });
 
-    describe('unregisterDeviceForRemoteMessages', function () {
+    describe('remote message device register / unregister', function () {
       it('resolves on android, remains registered', async function () {
         const {
           getMessaging,
@@ -450,12 +540,14 @@ describe('messaging() modular', function () {
           getMessaging,
           unregisterDeviceForRemoteMessages,
           isDeviceRegisteredForRemoteMessages,
+          registerDeviceForRemoteMessages,
         } = messagingModular;
 
         if (device.getPlatform() === 'ios') {
-          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
           await unregisterDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
+          await registerDeviceForRemoteMessages(getMessaging());
+          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
         } else {
           this.skip();
         }
@@ -499,10 +591,91 @@ describe('messaging() modular', function () {
           this.skip();
         }
       });
-      it('resolves null on ios if using simulator', async function () {
-        const { getMessaging, getAPNSToken } = messagingModular;
+      it('resolves on ios with token on supported simulators', async function () {
+        // Make sure we are registered for remote notifications, else no token
+        const { getMessaging, getAPNSToken, registerDeviceForRemoteMessages } = messagingModular;
+        await registerDeviceForRemoteMessages(getMessaging());
+
         if (device.getPlatform() === 'ios') {
-          should.equal(await getAPNSToken(getMessaging()), null);
+          apnsToken = await getAPNSToken(getMessaging());
+
+          simulator = await isSimulator();
+          aPNSCapableSimulator = await isAPNSCapableSimulator();
+
+          if (!simulator || (simulator && aPNSCapableSimulator)) {
+            apnsToken.should.be.a.String();
+          } else {
+            // unsupported iOS Simulator returns null (typically,
+            // can attempt-but-fail if M1 Simulator but not macOS13+/ios16+, rare combo)
+            if (apnsToken !== null) {
+              apnsToken.should.be.a.String();
+            }
+          }
+        } else {
+          this.skip();
+        }
+      });
+    });
+
+    describe('setAPNSToken', function () {
+      it('requires a token parameter', async function () {
+        const { getMessaging, setAPNSToken } = messagingModular;
+        try {
+          setAPNSToken(getMessaging());
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'token' expected a string value");
+        }
+        try {
+          setAPNSToken(getMessaging(), 123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'token' expected a string value");
+          return Promise.resolve();
+        }
+      });
+
+      it('verifies type parameter is valid if specified', async function () {
+        const { getMessaging, setAPNSToken } = messagingModular;
+        try {
+          setAPNSToken(getMessaging(), 'typeparamtest', 123);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'type' expected one of 'prod', 'sandbox', or 'unknown'");
+        }
+        try {
+          setAPNSToken(getMessaging(), 'typeparamtest', 'bogus');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'type' expected one of 'prod', 'sandbox', or 'unknown'");
+        }
+      });
+
+      it('resolves on android', async function () {
+        const { getMessaging, setAPNSToken } = messagingModular;
+        if (device.getPlatform() === 'android') {
+          should.equal(await setAPNSToken(getMessaging(), 'foo'), null);
+        } else {
+          this.skip();
+        }
+      });
+
+      it('correctly sets new token on ios', async function () {
+        const { getMessaging, getAPNSToken, setAPNSToken } = messagingModular;
+        if (device.getPlatform() === 'ios') {
+          originalAPNSToken = await getAPNSToken(getMessaging());
+          // 74657374696E67746F6B656E6D6F64756C6172 is hex for "testingtokenmodular"
+          await firebase
+            .messaging()
+            .setAPNSToken('74657374696E67746F6B656E6D6F64756C6172', 'unknown');
+          newAPNSToken = await firebase.messaging().getAPNSToken();
+          newAPNSToken.should.eql('74657374696E67746F6B656E6D6F64756C6172');
+          newAPNSToken.should.not.eql(originalAPNSToken);
+          if (originalAPNSToken !== null) {
+            await setAPNSToken(getMessaging(), originalAPNSToken);
+          }
+        } else {
+          this.skip();
         }
       });
     });
