@@ -482,7 +482,8 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   async isSupported() {
     if (Platform.isAndroid) {
-      return this.native.isSupported();
+      playServicesAvailability = firebase.utils().playServicesAvailability;
+      return playServicesAvailability.isAvailable;
     }
     // Always return "true" for iOS. Web will be implemented when it is supported
     return true;
