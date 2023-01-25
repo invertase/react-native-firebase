@@ -746,14 +746,16 @@ describe('messaging() modular', function () {
 
     describe('setDeliveryMetricsExportToBigQuery()', function () {
       afterEach(async function () {
-        const { getMessaging, setDeliveryMetricsExportToBigQuery } = messagingModular;
-        await setDeliveryMetricsExportToBigQuery(getMessaging(), false);
+        const { getMessaging, experimentalSetDeliveryMetricsExportedToBigQueryEnabled } =
+          messagingModular;
+        await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), false);
       });
 
       it('throws if enabled is not a boolean', function () {
-        const { getMessaging, setDeliveryMetricsExportToBigQuery } = messagingModular;
+        const { getMessaging, experimentalSetDeliveryMetricsExportedToBigQueryEnabled } =
+          messagingModular;
         try {
-          setDeliveryMetricsExportToBigQuery(getMessaging(), 123);
+          experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), 123);
           return Promise.reject(new Error('Did not throw Error.'));
         } catch (e) {
           e.message.should.containEql("'enabled' expected a boolean value");

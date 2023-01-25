@@ -488,10 +488,6 @@ class FirebaseMessagingModule extends FirebaseModule {
     // Always return "true" for iOS. Web will be implemented when it is supported
     return true;
   }
-
-  experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enabled) {
-    return this.setDeliveryMetricsExportToBigQuery(enabled);
-  }
 }
 
 // import { SDK_VERSION } from '@react-native-firebase/messaging';
