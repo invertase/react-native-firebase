@@ -741,8 +741,8 @@ describe('messaging() modular', function () {
       });
 
       describe('isSupported()', function () {
-        const { isSupported, getMessaging } = messagingModular;
         it('should return "true" if the device or browser supports Firebase Messaging', async function () {
+          const { isSupported, getMessaging } = messagingModular;
           // For android, when the play services are available, it will return "true"
           // iOS & web always return "true". Web can be fully implemented when the platform is supported
           should.equal(await isSupported(getMessaging()), true);
