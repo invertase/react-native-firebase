@@ -68,7 +68,12 @@ async function requestUserPermission() {
 The permissions API for iOS provides much more fine-grain control over permissions and how they're handled within your
 application. To learn more, view the advanced [iOS Permissions](/messaging/ios-permissions) documentation.
 
-On Android, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully.
+On Android pre api level 33 you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For api level 33+ you will need to request the permission manually.
+
+```
+  import {PermissionsAndroid} from 'react-native'}
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+```
 
 ## Receiving messages
 
