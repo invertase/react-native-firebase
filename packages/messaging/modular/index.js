@@ -177,6 +177,33 @@ export function getAPNSToken(messaging) {
 }
 
 /**
+ * On iOS, This method is used to set the APNs Token received by the application delegate.
+ * Note that the token is expected to be a hexadecimal string, as it is an NSData type in
+ * the underlying native firebase SDK, and raw data may only be passed as a string if it is
+ * hex encoded. Calling code is responsible for correct encoding, you should verify by comparing
+ * the results of `getAPNSToken()` with your token parameter to make sure they are equivalent
+ *
+ * Messaging uses method swizzling to ensure that the APNs token is set automatically.
+ * However, if you have disabled swizzling by setting FirebaseAppDelegateProxyEnabled to NO
+ * in your app’s Info.plist, you should manually set the APNs token in your application
+ * delegate’s application(_:didRegisterForRemoteNotificationsWithDeviceToken:) method.
+ *
+ * If you would like to set the type of the APNs token, rather than relying on automatic
+ * detection, provide a type of either 'prod', 'sandbox'. Omitting the type parameter
+ * or specifying 'unknown' will rely on automatic type detection based on provisioning profile.
+ *
+ * At a native level you may also call objective-c `[FIRMessaging setAPNSToken];` as needed
+ *
+ * @param messaging Messaging instance.
+ * @param {string} token a hexadecimal string representing your APNS token
+ * @param {string?} type specifying 'prod', 'sandbox' or 'unknown' token type
+ * @returns {Promise<void>}
+ */
+export function setAPNSToken(messaging, token, type) {
+  return messaging.setAPNSToken(token, type);
+}
+
+/**
  * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.
  * @param messaging Messaging instance.
  * @returns {Promise<AuthorizationStatus>}
