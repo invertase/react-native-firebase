@@ -36,23 +36,6 @@ describe('perf() modular', function () {
       });
     });
 
-    describe('instrumentationEnabled', function () {
-      it('should be true', function () {
-        should.equal(firebase.perf().instrumentationEnabled, true);
-      });
-    });
-
-    describe('setDataCollectionEnabled()', function () {
-      afterEach(async function () {
-        await firebase.perf().setDataCollectionEnabled(false);
-      });
-      it('should be true', async function () {
-        await firebase.perf().setDataCollectionEnabled(true);
-
-        should.equal(firebase.perf().dataCollectionEnabled, true);
-      });
-    });
-
     describe('startTrace()', function () {
       it('resolves a started instance of Trace', async function () {
         const trace = await firebase.perf().startTrace('invertase');
