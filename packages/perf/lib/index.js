@@ -70,8 +70,22 @@ class FirebasePerfModule extends FirebaseModule {
     return this._isInstrumentationEnabled;
   }
 
+  set isInstrumentationEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error("firebase.perf().isInstrumentationEnabled = 'enabled' must be a boolean.");
+    }
+    this._isInstrumentationEnabled = enabled;
+  }
+
   get isDataCollectionEnabled() {
     return this.isPerformanceCollectionEnabled;
+  }
+
+  set isDataCollectionEnabled(enabled) {
+    if (!isBoolean(enabled)) {
+      throw new Error("firebase.perf().isDataCollectionEnabled = 'enabled' must be a boolean.");
+    }
+    this._isPerformanceCollectionEnabled = enabled;
   }
 
   setDataCollectionEnabled(enabled) {

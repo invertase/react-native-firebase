@@ -135,25 +135,38 @@ describe('perf() modular', function () {
       });
     });
 
-    describe('isInstrumentationEnabled', function () {
-      it('should be true', function () {
-        const { getPerformance, isInstrumentationEnabled } = perfModular;
-        should.equal(isInstrumentationEnabled(getPerformance()), true);
+    describe('isDataCollectionEnabled', function () {
+      afterEach(async function () {
+        const { getPerformance } = perfModular;
+
+        const perf = getPerformance();
+        perf.dataCollectionEnabled = false;
+      });
+
+      it('true', function () {
+        const { getPerformance } = perfModular;
+
+        const perf = getPerformance();
+        perf.isDataCollectionEnabled = true;
+        should.equal(perf.isDataCollectionEnabled, true);
       });
     });
 
-    describe('setDataCollectionEnabled', function () {
+    describe('isInstrumentationEnabled', function () {
       afterEach(async function () {
-        const { getPerformance, setPerformanceCollectionEnabled } = perfModular;
+        const { getPerformance } = perfModular;
 
         const perf = getPerformance();
-        await setPerformanceCollectionEnabled(perf, false);
+        perf.isInstrumentationEnabled = false;
       });
-      it('should be true', async function () {
-        const { getPerformance, isDataCollectionEnabled, setDataCollectionEnabled } = perfModular;
 
-        await setDataCollectionEnabled(getPerformance(), true);
-        should.equal(isDataCollectionEnabled(getPerformance()), true);
+      it('true', function () {
+        const { getPerformance } = perfModular;
+
+        const perf = getPerformance();
+        perf.isInstrumentationEnabled = false;
+
+        should.equal(perf.isInstrumentationEnabled, true);
       });
     });
 
