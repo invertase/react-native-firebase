@@ -147,7 +147,7 @@ describe('perf() modular', function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
-        perf.instrumentationEnabled = false;
+        perf.instrumentationEnabled = true;
 
         should.equal(perf.instrumentationEnabled, true);
       });

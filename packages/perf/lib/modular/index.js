@@ -24,7 +24,7 @@ export async function initializePerformance(app, settings) {
   const perf = firebase.app(app.name).perf();
 
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
-    await perf.setDataCollection(settings.dataCollectionEnabled);
+    await perf.setPerformanceCollectionEnabled(settings.dataCollectionEnabled);
   }
 
   return perf;
