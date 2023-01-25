@@ -37,10 +37,12 @@ import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
+import DeviceInfo from 'react-native-device-info';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
+jet.exposeContextProperty('DeviceInfo', DeviceInfo);
 jet.exposeContextProperty('module', firebase);
 jet.exposeContextProperty('modular', modular);
 jet.exposeContextProperty('functionsModular', functionsModular);

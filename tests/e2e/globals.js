@@ -53,6 +53,12 @@ Object.defineProperty(global, 'NativeEventEmitter', {
   },
 });
 
+Object.defineProperty(global, 'DeviceInfo', {
+  get() {
+    return jet.DeviceInfo;
+  },
+});
+
 Object.defineProperty(global, 'TestsAPI', {
   get() {
     return new TestingApi();
