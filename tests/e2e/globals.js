@@ -71,4 +71,10 @@ Object.defineProperty(global, 'functionsModular', {
   },
 });
 
+Object.defineProperty(global, 'messagingModular', {
+  get() {
+    return jet.messagingModular;
+  },
+});
+
 global.isCI = !!process.env.CI;

@@ -30,9 +30,40 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
+
+export {
+  getMessaging,
+  deleteToken,
+  getToken,
+  onMessage,
+  onNotificationOpenedApp,
+  onTokenRefresh,
+  requestPermission,
+  isAutoInitEnabled,
+  setAutoInitEnabled,
+  getInitialNotification,
+  getDidOpenSettingsForNotification,
+  getIsHeadless,
+  registerDeviceForRemoteMessages,
+  isDeviceRegisteredForRemoteMessages,
+  unregisterDeviceForRemoteMessages,
+  getAPNSToken,
+  hasPermission,
+  onDeletedMessages,
+  onMessageSent,
+  onSendError,
+  setBackgroundMessageHandler,
+  setOpenSettingsForNotificationsHandler,
+  sendMessage,
+  subscribeToTopic,
+  unsubscribeFromTopic,
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
+  isDeliveryMetricsExportToBigQueryEnabled,
+  isSupported,
+} from '../modular/index';
 
 const statics = {
   AuthorizationStatus: {
@@ -166,7 +197,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   getToken({ appName, senderId } = {}) {
     if (!isUndefined(appName) && !isString(appName)) {
-      throw new Error("firebase.messaging().getToken(*) 'projectId' expected a string.");
+      throw new Error("firebase.messaging().getToken(*) 'appName' expected a string.");
     }
 
     if (!isUndefined(senderId) && !isString(senderId)) {
@@ -181,7 +212,7 @@ class FirebaseMessagingModule extends FirebaseModule {
 
   deleteToken({ appName, senderId } = {}) {
     if (!isUndefined(appName) && !isString(appName)) {
-      throw new Error("firebase.messaging().deleteToken(*) 'projectId' expected a string.");
+      throw new Error("firebase.messaging().deleteToken(*) 'appName' expected a string.");
     }
 
     if (!isUndefined(senderId) && !isString(senderId)) {
@@ -447,6 +478,15 @@ class FirebaseMessagingModule extends FirebaseModule {
 
     this._isDeliveryMetricsExportToBigQueryEnabled = enabled;
     return this.native.setDeliveryMetricsExportToBigQuery(enabled);
+  }
+
+  async isSupported() {
+    if (Platform.isAndroid) {
+      playServicesAvailability = firebase.utils().playServicesAvailability;
+      return playServicesAvailability.isAvailable;
+    }
+    // Always return "true" for iOS. Web will be implemented when it is supported
+    return true;
   }
 }
 
