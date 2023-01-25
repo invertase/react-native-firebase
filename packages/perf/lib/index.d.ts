@@ -387,19 +387,19 @@ export namespace FirebasePerformanceTypes {
     /**
      * Determines whether to collect 'out of the box' (i.e already setup for Firebase Performance) events.
      */
-    isInstrumentationEnabled: boolean;
+    instrumentationEnabled: boolean;
     /**
      * Determines whether performance monitoring is enabled or disabled.
      *
      * #### Example
      *
      * ```js
-     * const isEnabled = firebase.perf().isDataCollectionEnabled;
+     * const isEnabled = firebase.perf().dataCollectionEnabled;
      * console.log('Performance collection enabled: ', isEnabled);
      * ```
      */
 
-    isDataCollectionEnabled: boolean;
+    dataCollectionEnabled: boolean;
     /**
      * Enables or disables performance monitoring.
      *

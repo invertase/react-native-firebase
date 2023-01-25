@@ -56,31 +56,31 @@ class FirebasePerfModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
-    this._isInstrumentationEnabled = true;
+    this._instrumentationEnabled = true;
   }
 
   get isPerformanceCollectionEnabled() {
     return this._isPerformanceCollectionEnabled;
   }
 
-  get isInstrumentationEnabled() {
-    return this._isInstrumentationEnabled;
+  get instrumentationEnabled() {
+    return this._instrumentationEnabled;
   }
 
-  set isInstrumentationEnabled(enabled) {
+  set instrumentationEnabled(enabled) {
     if (!isBoolean(enabled)) {
-      throw new Error("firebase.perf().isInstrumentationEnabled = 'enabled' must be a boolean.");
+      throw new Error("firebase.perf().instrumentationEnabled = 'enabled' must be a boolean.");
     }
-    this._isInstrumentationEnabled = enabled;
+    this._instrumentationEnabled = enabled;
   }
 
-  get isDataCollectionEnabled() {
+  get dataCollectionEnabled() {
     return this.isPerformanceCollectionEnabled;
   }
 
-  set isDataCollectionEnabled(enabled) {
+  set dataCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
-      throw new Error("firebase.perf().isDataCollectionEnabled = 'enabled' must be a boolean.");
+      throw new Error("firebase.perf().dataCollectionEnabled = 'enabled' must be a boolean.");
     }
     this._isPerformanceCollectionEnabled = enabled;
   }

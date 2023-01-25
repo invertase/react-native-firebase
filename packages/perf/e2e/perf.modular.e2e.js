@@ -36,9 +36,9 @@ describe('perf() modular', function () {
       });
     });
 
-    describe('isInstrumentationEnabled', function () {
+    describe('instrumentationEnabled', function () {
       it('should be true', function () {
-        should.equal(firebase.perf().isInstrumentationEnabled, true);
+        should.equal(firebase.perf().instrumentationEnabled, true);
       });
     });
 
@@ -49,7 +49,7 @@ describe('perf() modular', function () {
       it('should be true', async function () {
         await firebase.perf().setDataCollectionEnabled(true);
 
-        should.equal(firebase.perf().isDataCollectionEnabled, true);
+        should.equal(firebase.perf().dataCollectionEnabled, true);
       });
     });
 
@@ -135,7 +135,7 @@ describe('perf() modular', function () {
       });
     });
 
-    describe('isDataCollectionEnabled', function () {
+    describe('dataCollectionEnabled', function () {
       afterEach(async function () {
         const { getPerformance } = perfModular;
 
@@ -147,26 +147,26 @@ describe('perf() modular', function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
-        perf.isDataCollectionEnabled = true;
-        should.equal(perf.isDataCollectionEnabled, true);
+        perf.dataCollectionEnabled = true;
+        should.equal(perf.dataCollectionEnabled, true);
       });
     });
 
-    describe('isInstrumentationEnabled', function () {
+    describe('instrumentationEnabled', function () {
       afterEach(async function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
-        perf.isInstrumentationEnabled = false;
+        perf.instrumentationEnabled = false;
       });
 
       it('true', function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
-        perf.isInstrumentationEnabled = false;
+        perf.instrumentationEnabled = false;
 
-        should.equal(perf.isInstrumentationEnabled, true);
+        should.equal(perf.instrumentationEnabled, true);
       });
     });
 
