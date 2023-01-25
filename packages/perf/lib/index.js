@@ -32,9 +32,6 @@ export {
   setPerformanceCollectionEnabled,
   trace,
   httpMetric,
-  isDataCollectionEnabled,
-  setDataCollectionEnabled,
-  isInstrumentationEnabled,
 } from './modular/index';
 
 const statics = {};
@@ -86,10 +83,6 @@ class FirebasePerfModule extends FirebaseModule {
       throw new Error("firebase.perf().isDataCollectionEnabled = 'enabled' must be a boolean.");
     }
     this._isPerformanceCollectionEnabled = enabled;
-  }
-
-  setDataCollectionEnabled(enabled) {
-    return this.setPerformanceCollectionEnabled(enabled);
   }
 
   setPerformanceCollectionEnabled(enabled) {

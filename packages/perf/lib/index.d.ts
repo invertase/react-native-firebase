@@ -415,19 +415,6 @@ export namespace FirebasePerformanceTypes {
     setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
     /**
-     * Enables or disables performance monitoring.
-     *
-     * #### Example
-     *
-     * ```js
-     * // Disable performance monitoring collection
-     * await firebase.perf().setDataCollection(false);
-     * ```
-     *
-     * @param enabled Should performance monitoring be enabled
-     */
-    setDataCollection(enabled: boolean): Promise<null>;
-    /**
      * Creates a Trace instance with the given identifier.
      *
      * #### Example

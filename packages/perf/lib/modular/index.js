@@ -26,7 +26,6 @@ export async function initializePerformance(app, settings) {
   if (settings && isBoolean(settings.dataCollectionEnabled)) {
     await perf.setDataCollection(settings.dataCollectionEnabled);
   }
-  // Once web is implemented, we can also implement `perf.setInstrumentationEnabled(settings.instrumentationEnabled)`
 
   return perf;
 }
