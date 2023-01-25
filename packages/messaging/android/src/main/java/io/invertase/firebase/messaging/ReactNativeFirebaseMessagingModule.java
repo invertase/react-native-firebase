@@ -28,8 +28,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -240,18 +238,6 @@ public class ReactNativeFirebaseMessagingModule extends ReactNativeFirebaseModul
                 rejectPromiseWithExceptionMap(promise, task.getException());
               }
             });
-  }
-
-  @ReactMethod
-  public void isSupported(Promise promise) {
-    GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-    int status = googleApiAvailability.isGooglePlayServicesAvailable(getReactApplicationContext());
-
-    if (status == ConnectionResult.SUCCESS) {
-      promise.resolve(true);
-    } else {
-      promise.resolve(false);
-    }
   }
 
   @Override
