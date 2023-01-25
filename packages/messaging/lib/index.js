@@ -60,7 +60,7 @@ export {
   sendMessage,
   subscribeToTopic,
   unsubscribeFromTopic,
-  setDeliveryMetricsExportToBigQuery,
+  experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
   isDeliveryMetricsExportToBigQueryEnabled,
   isSupported,
 } from '../modular/index';

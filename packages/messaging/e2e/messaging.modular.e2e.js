@@ -158,6 +158,25 @@ describe('messaging() modular', function () {
       });
     });
 
+    describe('getToken()', function () {
+      it('should throw Error with wrong parameters types', async function () {
+        try {
+          await firebase.messaging().getToken({ appName: 33 });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'appName' expected a string");
+        }
+
+        try {
+          await firebase.messaging().getToken({ senderId: 33 });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'senderId' expected a string.");
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('onMessage()', function () {
       it('throws if listener is not a function', function () {
         try {
@@ -529,6 +548,23 @@ describe('messaging() modular', function () {
         should.exist(token2);
         token1.should.not.eql(token2);
       });
+
+      it('should throw Error with wrong parameter types', async function () {
+        try {
+          await firebase.messaging().deleteToken({ appName: 33 });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'appName' expected a string");
+        }
+
+        try {
+          await firebase.messaging().getToken({ senderId: 33 });
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'senderId' expected a string.");
+          return Promise.resolve();
+        }
+      });
     });
 
     describe('onMessage()', function () {
@@ -728,15 +764,16 @@ describe('messaging() modular', function () {
       it('sets the value', async function () {
         const {
           getMessaging,
-          setDeliveryMetricsExportToBigQuery,
+          experimentalSetDeliveryMetricsExportedToBigQueryEnabled,
           isDeliveryMetricsExportToBigQueryEnabled,
         } = messagingModular;
+
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
-        await setDeliveryMetricsExportToBigQuery(getMessaging(), true);
+        await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), true);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), true);
 
         // Set it back to the default value for future runs in re-use mode
-        await setDeliveryMetricsExportToBigQuery(getMessaging(), false);
+        await experimentalSetDeliveryMetricsExportedToBigQueryEnabled(getMessaging(), false);
         should.equal(isDeliveryMetricsExportToBigQueryEnabled(getMessaging()), false);
       });
 

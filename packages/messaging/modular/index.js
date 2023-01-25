@@ -270,17 +270,6 @@ export function unsubscribeFromTopic(messaging, topic) {
 }
 
 /**
- * Sets whether message delivery metrics are exported to BigQuery is enabled or disabled.
- * The value is false by default. Set this to true to allow exporting of message delivery metrics to BigQuery.
- * @param messaging Messaging instance.
- * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
- * @returns {Promise<void>}
- */
-export function setDeliveryMetricsExportToBigQuery(messaging, enabled) {
-  return messaging.setDeliveryMetricsExportToBigQuery(enabled);
-}
-
-/**
  * Returns a boolean whether message delivery metrics are exported to BigQuery.
  * @param messaging Messaging instance.
  * @returns {boolean}
@@ -289,11 +278,22 @@ export function isDeliveryMetricsExportToBigQueryEnabled(messaging) {
   return messaging.isDeliveryMetricsExportToBigQueryEnabled;
 }
 
+/**
+ * Checks if all required APIs exist in the browser.
+ * @param messaging Messaging instance.
+ * @returns {boolean}
+ */
 export function isSupported(messaging) {
   return messaging.isSupported();
 }
 
+/**
+ * Sets whether message delivery metrics are exported to BigQuery is enabled or disabled.
+ * The value is false by default. Set this to true to allow exporting of message delivery metrics to BigQuery.
+ * @param messaging Messaging instance.
+ * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
+ * @returns {Promise<void>}
+ */
 export function experimentalSetDeliveryMetricsExportedToBigQueryEnabled(messaging, enable) {
-  // No-op as web platform isn't implemented
-  return messaging.experimentalSetDeliveryMetricsExportedToBigQueryEnabled(enable);
+  return messaging.setDeliveryMetricsExportToBigQuery(enable);
 }
