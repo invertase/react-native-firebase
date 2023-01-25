@@ -37,7 +37,9 @@ describe('perf() modular', function () {
     });
 
     describe('isInstrumentationEnabled', function () {
-      should.equal(firebase.perf().isInstrumentationEnabled, true);
+      it('should be true', function () {
+        should.equal(firebase.perf().isInstrumentationEnabled, true);
+      });
     });
 
     describe('setDataCollectionEnabled()', function () {
