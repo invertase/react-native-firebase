@@ -111,9 +111,9 @@ export namespace FirebaseMessagingTypes {
     data?: { [key: string]: string };
 
     /**
-     * Additional Notification data sent with the message
+     * Additional NotificationPayload data sent with the message
      */
-    notification?: Notification;
+    notification?: NotificationPayload;
 
     /**
      * Whether the iOS APNs message was configured as a background update notification.
@@ -139,14 +139,35 @@ export namespace FirebaseMessagingTypes {
 
     /**
      * An iOS app specific identifier used for notification grouping.
-     */
     threadId?: string;
+    */
+    threadId?: string;
+
+    /**
+     * Options for features provided by the FCM SDK for Web.
+     */
+    fcmOptions: FcmOptions;
   }
 
   /**
-   * Options for `getToken()`, `deleteToken()`
+   * Options for features provided by the FCM SDK for Web.
    */
-  export interface TokenOptions {
+  export interface FcmOptions {
+    /**
+     * The link to open when the user clicks on the notification.
+     */
+    link?: string;
+
+    /**
+     * The label associated with the message's analytics data.
+     */
+    analyticsLabel?: string;
+  }
+
+  /**
+   * Options for `getToken()` and `deleteToken()`
+   */
+  export interface NativeTokenOptions {
     /**
      * The app name of the FirebaseApp instance.
      *
@@ -161,6 +182,35 @@ export namespace FirebaseMessagingTypes {
      */
     senderId?: string;
   }
+
+  /**
+   * Options for `getToken()`
+   */
+  export interface GetTokenOptions {
+    /**
+     * The VAPID key used to authenticate the push subscribers
+     *  to receive push messages only from sending servers
+     * that hold the corresponding private key.
+     *
+     * @platform web
+     */
+    vapidKey?: string;
+
+    /**
+     * The service worker registration for receiving push messaging.
+     * If the registration is not provided explicitly, you need to
+     * have a firebase-messaging-sw.js at your root location.
+     *
+     * @platform web
+     */
+    serviceWorkerRegistration?: ServiceWorkerRegistration;
+  }
+
+  /**
+   * NotificationPayload is an alias for Notification. This is to keep it the same as
+   * Firebase Web JS SDK v9 and to make it backwards compatible.
+   */
+  type NotificationPayload = Notification;
 
   export interface Notification {
     /**
@@ -182,6 +232,22 @@ export namespace FirebaseMessagingTypes {
      * The notification body content.
      */
     body?: string;
+
+    /**
+     * Web only. The URL to use for the notification's icon. If you don't send this key in the request,
+     * FCM displays the launcher icon specified in your app manifest.
+     */
+    icon?: string;
+
+    /**
+     * Web only. The URL of an image that is downloaded on the device and displayed in the notification.
+     */
+    image?: string;
+
+    /**
+     * Web only. The notification's title.
+     */
+    title?: string;
 
     /**
      * The native localization key for the notification body content.
@@ -627,10 +693,9 @@ export namespace FirebaseMessagingTypes {
      *     fcmTokens: firebase.firestore.FieldValues.arrayUnion(fcmToken),
      *   });
      * ```
-     *
-     * @param options Options to override senderId (iOS) and projectId (Android).
+     * @param options Options composite type with all members of `GetTokenOptions` and `NativeTokenOptions`
      */
-    getToken(options?: TokenOptions): Promise<string>;
+    getToken(options?: GetTokenOptions & NativeTokenOptions): Promise<string>;
 
     /**
      * Returns whether the root view is headless or not
@@ -651,9 +716,9 @@ export namespace FirebaseMessagingTypes {
      * await firebase.messaging().deleteToken();
      * ```
      *
-     * @param options Options to override senderId (iOS) and projectId (Android).
+     * @param options Options to override senderId (iOS) and appName (android)
      */
-    deleteToken(options?: TokenOptions): Promise<void>;
+    deleteToken(options?: NativeTokenOptions): Promise<void>;
 
     /**
      * When any FCM payload is received, the listener callback is called with a `RemoteMessage`.
@@ -1012,6 +1077,21 @@ export namespace FirebaseMessagingTypes {
      * @param enabled A boolean value to enable or disable exporting of message delivery metrics to BigQuery.
      */
     setDeliveryMetricsExportToBigQuery(enabled: boolean): Promise<void>;
+    /**
+     * Checks if all required APIs exist in the browser.
+     *
+     * @web
+     */
+    isSupported(): Promise<boolean>;
+
+    /**
+     * Enables or disables Firebase Cloud Messaging message delivery metrics export to BigQuery. By
+     * default, message delivery metrics are not exported to BigQuery. Use this method to enable or
+     * disable the export at runtime.
+     *
+     * @web
+     */
+    experimentalSetDeliveryMetricsExportedToBigQueryEnabled(): void;
   }
 }
 
