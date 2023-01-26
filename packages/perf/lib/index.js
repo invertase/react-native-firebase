@@ -81,8 +81,7 @@ class FirebasePerfModule extends FirebaseModule {
     if (!isBoolean(enabled)) {
       throw new Error("firebase.perf().dataCollectionEnabled = 'enabled' must be a boolean.");
     }
-    this._isPerformanceCollectionEnabled = enabled;
-    this.native.setPerformanceCollectionEnabled(enabled);
+    this.setPerformanceCollectionEnabled(enabled);
   }
 
   setPerformanceCollectionEnabled(enabled) {
