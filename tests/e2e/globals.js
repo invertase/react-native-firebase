@@ -71,4 +71,10 @@ Object.defineProperty(global, 'functionsModular', {
   },
 });
 
+Object.defineProperty(global, 'remoteConfigModular', {
+  get() {
+    return jet.remoteConfigModular;
+  },
+});
+
 global.isCI = !!process.env.CI;
