@@ -36,6 +36,62 @@ describe('perf() modular', function () {
       });
     });
 
+    describe('instrumentationEnabled', function () {
+      afterEach(function () {
+        const perf = firebase.perf();
+        perf.instrumentationEnabled = false;
+      });
+
+      it('true', function () {
+        const perf = firebase.perf();
+
+        perf.instrumentationEnabled = true;
+
+        should.equal(perf.instrumentationEnabled, true);
+      });
+
+      it('should throw Error with wrong parameter', function () {
+        const perf = firebase.perf();
+
+        try {
+          perf.instrumentationEnabled = 'some string';
+
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'enabled' must be a boolean");
+          return Promise.resolve();
+        }
+      });
+    });
+
+    describe('dataCollectionEnabled', function () {
+      afterEach(function () {
+        const perf = firebase.perf();
+        perf.dataCollectionEnabled = false;
+      });
+
+      it('true', function () {
+        const perf = firebase.perf();
+
+        perf.dataCollectionEnabled = true;
+
+        should.equal(perf.dataCollectionEnabled, true);
+      });
+
+      it('should throw Error with wrong parameter', function () {
+        const perf = firebase.perf();
+
+        try {
+          perf.dataCollectionEnabled = 'some string';
+
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql("'enabled' must be a boolean");
+          return Promise.resolve();
+        }
+      });
+    });
+
     describe('startTrace()', function () {
       it('resolves a started instance of Trace', async function () {
         const trace = await firebase.perf().startTrace('invertase');
@@ -68,57 +124,29 @@ describe('perf() modular', function () {
 
     describe('initializePerformance()', function () {
       it('call and set "dataCollectionEnabled" to `false`', async function () {
-        const { initializePerformance, isPerformanceCollectionEnabled } = perfModular;
+        const { initializePerformance } = perfModular;
 
         const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: false });
 
-        const enabled = await isPerformanceCollectionEnabled(perf);
+        const enabled = perf.dataCollectionEnabled;
 
         should.equal(enabled, false);
       });
 
       it('call and set "dataCollectionEnabled" to `true`', async function () {
-        const { initializePerformance, isPerformanceCollectionEnabled } = perfModular;
+        const { initializePerformance } = perfModular;
 
         const perf = await initializePerformance(firebase.app(), { dataCollectionEnabled: true });
 
-        const enabled = await isPerformanceCollectionEnabled(perf);
+        const enabled = perf.dataCollectionEnabled;
 
         should.equal(enabled, true);
       });
     });
 
-    describe('setPerformanceCollectionEnabled()', function () {
+    describe('dataCollectionEnabled', function () {
       // These depend on `tests/firebase.json` having `perf_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
-      afterEach(async function () {
-        const { getPerformance, setPerformanceCollectionEnabled } = perfModular;
-
-        const perf = getPerformance();
-        await setPerformanceCollectionEnabled(perf, false);
-      });
-
-      it('true', async function () {
-        const { getPerformance, setPerformanceCollectionEnabled, isPerformanceCollectionEnabled } =
-          perfModular;
-
-        const perf = getPerformance();
-        should.equal(isPerformanceCollectionEnabled(perf), false);
-        await setPerformanceCollectionEnabled(perf, true);
-        should.equal(isPerformanceCollectionEnabled(perf), true);
-      });
-
-      it('false', async function () {
-        const { getPerformance, setPerformanceCollectionEnabled, isPerformanceCollectionEnabled } =
-          perfModular;
-
-        const perf = getPerformance();
-        await setPerformanceCollectionEnabled(perf, false);
-        should.equal(isPerformanceCollectionEnabled(perf), false);
-      });
-    });
-
-    describe('dataCollectionEnabled', function () {
       afterEach(async function () {
         const { getPerformance } = perfModular;
 
@@ -126,17 +154,26 @@ describe('perf() modular', function () {
         perf.dataCollectionEnabled = false;
       });
 
-      it('true', function () {
+      it('true', async function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
+        should.equal(perf.dataCollectionEnabled, false);
         perf.dataCollectionEnabled = true;
         should.equal(perf.dataCollectionEnabled, true);
+      });
+
+      it('false', async function () {
+        const { getPerformance } = perfModular;
+
+        const perf = getPerformance();
+        perf.dataCollectionEnabled = false;
+        should.equal(perf.dataCollectionEnabled, false);
       });
     });
 
     describe('instrumentationEnabled', function () {
-      afterEach(async function () {
+      afterEach(function () {
         const { getPerformance } = perfModular;
 
         const perf = getPerformance();
@@ -150,6 +187,18 @@ describe('perf() modular', function () {
         perf.instrumentationEnabled = true;
 
         should.equal(perf.instrumentationEnabled, true);
+      });
+
+      it('false', function () {
+        if (device.getPlatform() === 'ios') {
+          // Only possible to change instrumentationEnabled on iOS from the app
+          const { getPerformance } = perfModular;
+
+          const perf = getPerformance();
+          perf.instrumentationEnabled = false;
+
+          should.equal(perf.instrumentationEnabled, false);
+        }
       });
     });
 

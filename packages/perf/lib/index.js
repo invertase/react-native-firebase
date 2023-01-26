@@ -21,18 +21,12 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { Platform } from 'react-native';
 import HttpMetric from './HttpMetric';
 import Trace from './Trace';
 import version from './version';
 
-export {
-  getPerformance,
-  initializePerformance,
-  isPerformanceCollectionEnabled,
-  setPerformanceCollectionEnabled,
-  trace,
-  httpMetric,
-} from './modular/index';
+export { getPerformance, initializePerformance, trace, httpMetric } from './modular/index';
 
 const statics = {};
 
@@ -71,11 +65,16 @@ class FirebasePerfModule extends FirebaseModule {
     if (!isBoolean(enabled)) {
       throw new Error("firebase.perf().instrumentationEnabled = 'enabled' must be a boolean.");
     }
-    this._instrumentationEnabled = enabled;
+    if (Platform.OS == 'ios') {
+      // We don't change for android as it cannot be set from code, it is set at gradle build time.
+      this._instrumentationEnabled = enabled;
+      // No need to await, as it only takes effect on the next app run.
+      this.native.instrumentationEnabled(enabled);
+    }
   }
 
   get dataCollectionEnabled() {
-    return this.isPerformanceCollectionEnabled;
+    return this._isPerformanceCollectionEnabled;
   }
 
   set dataCollectionEnabled(enabled) {
@@ -83,6 +82,7 @@ class FirebasePerfModule extends FirebaseModule {
       throw new Error("firebase.perf().dataCollectionEnabled = 'enabled' must be a boolean.");
     }
     this._isPerformanceCollectionEnabled = enabled;
+    this.native.setPerformanceCollectionEnabled(enabled);
   }
 
   setPerformanceCollectionEnabled(enabled) {

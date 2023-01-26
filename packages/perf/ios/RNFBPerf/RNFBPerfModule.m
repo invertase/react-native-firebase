@@ -73,7 +73,6 @@ RCT_EXPORT_METHOD(setPerformanceCollectionEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
-  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
@@ -200,6 +199,15 @@ RCT_EXPORT_METHOD(stopHttpMetric
     [httpMetrics removeObjectForKey:id];
   }
 
+  resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(instrumentationEnabled
+                  : (BOOL)enabled
+                  : (NSDictionary *)metricData resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 

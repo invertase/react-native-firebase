@@ -31,25 +31,6 @@ export async function initializePerformance(app, settings) {
 }
 
 /**
- * Determines whether performance monitoring is enabled or disabled.
- * @param perf - Performance instance
- * @returns {Boolean}
- */
-export function isPerformanceCollectionEnabled(perf) {
-  return perf.isPerformanceCollectionEnabled;
-}
-
-/**
- * Returns nothing.
- * @param perf - Performance instance
- * @param enabled - A Boolean for setting Performance collection
- * @returns {void}
- */
-export function setPerformanceCollectionEnabled(perf, enabled) {
-  return perf.setPerformanceCollectionEnabled(enabled);
-}
-
-/**
  * Returns a Trace instance.
  * @param perf - Performance instance
  * @param identifier - A String to identify the Trace instance

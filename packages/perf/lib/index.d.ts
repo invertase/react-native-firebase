@@ -386,6 +386,7 @@ export namespace FirebasePerformanceTypes {
     isPerformanceCollectionEnabled: boolean;
     /**
      * Determines whether to collect 'out of the box' (i.e already setup for Firebase Performance) events.
+     * This can be set for iOS. Android will always return "true" as it has to be set at gradle level.
      */
     instrumentationEnabled: boolean;
     /**
