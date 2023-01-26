@@ -50,7 +50,7 @@ class FirebasePerfModule extends FirebaseModule {
   constructor(...args) {
     super(...args);
     this._isPerformanceCollectionEnabled = this.native.isPerformanceCollectionEnabled;
-    this._instrumentationEnabled = true;
+    this._instrumentationEnabled = this.native.instrumentationEnabled;
   }
 
   get isPerformanceCollectionEnabled() {

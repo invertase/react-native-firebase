@@ -52,6 +52,9 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     constants.put(
         "isPerformanceCollectionEnabled",
         FirebasePerformance.getInstance().isPerformanceCollectionEnabled());
+        constants.put(
+          "instrumentationEnabled",
+          true);    
     return constants;
   }
 

@@ -58,6 +58,8 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isPerformanceCollectionEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
+  constants[@"instrumentationEnabled"] =
+      @([RCTConvert BOOL:@([FIRPerformance sharedInstance].instrumentationEnabled)]);
   return constants;
 }
 
