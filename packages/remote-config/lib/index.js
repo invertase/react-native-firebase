@@ -31,6 +31,29 @@ import {
 } from '@react-native-firebase/app/lib/internal';
 import version from './version';
 
+export {
+  getRemoteConfig,
+  activate,
+  ensureInitialized,
+  fetchAndActivate,
+  fetchConfig,
+  getAll,
+  getBoolean,
+  getNumber,
+  getString,
+  getValue,
+  setLogLevel,
+  isSupported,
+  fetchTimeMillis,
+  settings,
+  lastFetchStatus,
+  reset,
+  setConfigSettings,
+  fetch,
+  setDefaults,
+  setDefaultsFromResource,
+} from './modular/index';
+
 const statics = {
   LastFetchStatus: {
     SUCCESS: 'success',
