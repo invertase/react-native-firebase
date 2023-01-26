@@ -398,7 +398,6 @@ export namespace FirebasePerformanceTypes {
      * console.log('Performance collection enabled: ', isEnabled);
      * ```
      */
-
     dataCollectionEnabled: boolean;
     /**
      * Enables or disables performance monitoring.
