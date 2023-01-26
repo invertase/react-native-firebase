@@ -700,5 +700,17 @@ describe('remoteConfig() modular', function () {
         }
       });
     });
+    describe('defaultConfig', function(){
+      it('gets plain key/value object of defaults', async function(){
+        const { getRemoteConfig, setDefaults } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+
+        await setDefaults(remoteConfig, {
+          some_key: 'some_key',
+        });
+
+        should(remoteConfig.defaultConfig.some_key).equal('some_key');
+      })
+    })
   });
 });

@@ -84,6 +84,16 @@ class FirebaseConfigModule extends FirebaseModule {
     this._values = {};
   }
 
+  get defaultConfig() {
+    const updatedDefaultConfig = {};
+    Object.keys(this._values).forEach(key => {
+      // Need to make it an object with key and literal value. Not `Value` instance.
+      updatedDefaultConfig[key] = this._values[key].value;
+    });
+
+    return updatedDefaultConfig;
+  }
+
   getValue(key) {
     if (!isString(key)) {
       throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");

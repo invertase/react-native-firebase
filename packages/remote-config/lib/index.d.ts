@@ -324,6 +324,11 @@ export namespace FirebaseRemoteConfigTypes {
     settings: ConfigSettings;
 
     /**
+     * Provides an object with the type ConfigDefaults for default configuration values
+     */
+    defaultConfig: ConfigDefaults;
+
+    /**
      * Set the Remote RemoteConfig settings, currently able to set `fetchTimeMillis` & `minimumFetchIntervalMillis`
      *
      * #### Example
