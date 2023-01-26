@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [16.5.2](https://github.com/invertase/react-native-firebase/compare/v16.5.1...v16.5.2) (2023-01-23)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
+### [16.5.1](https://github.com/invertase/react-native-firebase/compare/v16.5.0...v16.5.1) (2023-01-20)
+
+### Bug Fixes
+
+- **firestore:** correct handling of nested `FieldPath` in `orderBy` clauses ([#6814](https://github.com/invertase/react-native-firebase/issues/6814)) ([84d7bbe](https://github.com/invertase/react-native-firebase/commit/84d7bbe241241c331b7c540bf089adcf603c199e))
+
+## [16.5.0](https://github.com/invertase/react-native-firebase/compare/v16.4.6...v16.5.0) (2022-12-16)
+
+**Note:** Version bump only for package @react-native-firebase/firestore
+
 ### [16.4.6](https://github.com/invertase/react-native-firebase/compare/v16.4.5...v16.4.6) (2022-11-18)
 
 **Note:** Version bump only for package @react-native-firebase/firestore

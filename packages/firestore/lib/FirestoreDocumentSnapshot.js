@@ -15,7 +15,7 @@
  *
  */
 
-import { isString } from '@react-native-firebase/app/lib/common';
+import { isArray, isString } from '@react-native-firebase/app/lib/common';
 import FirestoreDocumentReference, {
   provideDocumentSnapshotClass,
 } from './FirestoreDocumentReference';
@@ -78,9 +78,13 @@ export default class FirestoreDocumentSnapshot {
   get(fieldPath) {
     // TODO: ehesp: How are SnapshotOptions handled?
 
-    if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
+    if (
+      !isString(fieldPath) &&
+      !(fieldPath instanceof FirestoreFieldPath) &&
+      !Array.isArray(fieldPath)
+    ) {
       throw new Error(
-        "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string or FieldPath.",
+        "firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' expected type string, array or FieldPath.",
       );
     }
 
@@ -92,6 +96,8 @@ export default class FirestoreDocumentSnapshot {
       } catch (e) {
         throw new Error(`firebase.firestore() DocumentSnapshot.get(*) 'fieldPath' ${e.message}.`);
       }
+    } else if (isArray(fieldPath)) {
+      path = new FirestoreFieldPath(...fieldPath);
     } else {
       // Is already field path
       path = fieldPath;

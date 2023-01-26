@@ -16,8 +16,8 @@
  */
 
 import { isNumber } from '@react-native-firebase/app/lib/common';
+import FirestoreFieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
-import { DOCUMENT_ID } from './FirestoreFieldPath';
 
 const OPERATORS = {
   '==': 'EQUAL',
@@ -74,11 +74,17 @@ export default class FirestoreQueryModifiers {
   }
 
   get filters() {
-    return this._filters.map(f => ({ ...f, fieldPath: f.fieldPath._toArray() }));
+    return this._filters.map(f => ({
+      ...f,
+      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+    }));
   }
 
   get orders() {
-    return this._orders;
+    return this._orders.map(f => ({
+      ...f,
+      fieldPath: f.fieldPath instanceof FirestoreFieldPath ? f.fieldPath._toArray() : f.fieldPath,
+    }));
   }
 
   get options() {
@@ -337,7 +343,7 @@ export default class FirestoreQueryModifiers {
 
   orderBy(fieldPath, directionStr) {
     const order = {
-      fieldPath: fieldPath._toPath(),
+      fieldPath: fieldPath,
       direction: directionStr ? DIRECTIONS[directionStr.toLowerCase()] : DIRECTIONS.asc,
     };
 
@@ -348,7 +354,7 @@ export default class FirestoreQueryModifiers {
   validateOrderBy() {
     // Ensure order hasn't been called on the same field
     if (this._orders.length > 1) {
-      const orders = this._orders.map($ => $.fieldPath);
+      const orders = this._orders.map($ => $.fieldPath._toPath());
       const set = new Set(orders);
 
       if (set.size !== orders.length) {
@@ -371,7 +377,7 @@ export default class FirestoreQueryModifiers {
         const orderFieldPath = order.fieldPath;
         if (filter.operator === OPERATORS['==']) {
           // Any where() fieldPath parameter cannot match any orderBy() parameter when '==' operand is invoked
-          if (filterFieldPath === orderFieldPath) {
+          if (filterFieldPath === orderFieldPath._toPath()) {
             throw new Error(
               `Invalid query. Query.orderBy() parameter: ${orderFieldPath} cannot be the same as your Query.where() fieldPath parameter: ${filterFieldPath}`,
             );
@@ -386,7 +392,7 @@ export default class FirestoreQueryModifiers {
 
         if (INEQUALITY[filter.operator]) {
           // Initial orderBy() parameter has to match every where() fieldPath parameter when inequality operator is invoked
-          if (filterFieldPath !== this._orders[0].fieldPath) {
+          if (filterFieldPath !== this._orders[0].fieldPath._toPath()) {
             throw new Error(
               `Invalid query. Initial Query.orderBy() parameter: ${orderFieldPath} has to be the same as the Query.where() fieldPath parameter(s): ${filterFieldPath} when an inequality operator is invoked `,
             );
