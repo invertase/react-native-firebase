@@ -125,8 +125,8 @@ export function getValue(remoteConfig, key) {
  */
 // eslint-disable-next-line
 export function setLogLevel(remoteConfig, logLevel) {
-  // always return the "debug" log level for now. Web only.
-  return 'debug';
+  // always return the "error" log level for now as the setter is ignored on native. Web only.
+  return 'error';
 }
 
 /**
