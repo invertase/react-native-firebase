@@ -205,9 +205,9 @@ RCT_EXPORT_METHOD(stopHttpMetric
 }
 
 RCT_EXPORT_METHOD(instrumentationEnabled
-                  : (BOOL)enabled
-                  resolver: (RCTPromiseResolveBlock)resolve
-                  rejecter: (RCTPromiseRejectBlock)reject) {
+                  : (BOOL)enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
