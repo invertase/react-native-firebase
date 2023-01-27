@@ -114,7 +114,6 @@ RCT_EXPORT_METHOD(getToken
                   : (NSString *)senderId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-  // #if !(TARGET_IPHONE_SIMULATOR)
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
@@ -126,7 +125,14 @@ RCT_EXPORT_METHOD(getToken
                          }];
     return;
   }
-  // #endif
+
+  // As of firebase-ios-sdk 10.4.0, an APNS token is strictly required for getToken to work
+  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+  if (apnsToken == nil) {
+    DLog(@"RNFBMessaging getToken - no APNS token is available. Firebase requires an APNS token to "
+         @"vend an FCM token in firebase-ios-sdk 10.4.0 and higher. See documentation on "
+         @"setAPNSToken and getAPNSToken.")
+  }
 
   [[FIRMessaging messaging]
       retrieveFCMTokenForSenderID:senderId
