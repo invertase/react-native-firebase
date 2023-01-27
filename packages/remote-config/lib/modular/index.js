@@ -123,6 +123,7 @@ export function getValue(remoteConfig, key) {
  * @param logLevel - The log level to set
  * @returns {RemoteConfigLogLevel}
  */
+// eslint-disable-next-line
 export function setLogLevel(remoteConfig, logLevel) {
   // always return the "debug" log level for now. Web only.
   return 'debug';

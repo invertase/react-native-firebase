@@ -712,5 +712,16 @@ describe('remoteConfig() modular', function () {
         should(remoteConfig.defaultConfig.some_key).equal('some_key');
       });
     });
+
+    describe('setLogLevel', function () {
+      it('should return "debug" log level', function () {
+        const { getRemoteConfig, setLogLevel } = remoteConfigModular;
+        const remoteConfig = getRemoteConfig();
+
+        const logLevel = setLogLevel(remoteConfig, 'debug');
+
+        should(logLevel).equal('debug');
+      });
+    });
   });
 });

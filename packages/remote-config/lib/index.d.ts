@@ -58,7 +58,7 @@ export namespace FirebaseRemoteConfigTypes {
   /**
    * Defines levels of Remote Config logging. Web only.
    */
-  export declare type LogLevel = 'debug' | 'error' | 'silent';
+  export declare type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
   /**
    * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
    *
