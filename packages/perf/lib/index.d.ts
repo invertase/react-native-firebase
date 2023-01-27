@@ -409,8 +409,9 @@ export namespace FirebasePerformanceTypes {
      * // Disable performance monitoring collection
      * await firebase.perf().setPerformanceCollectionEnabled(false);
      * ```
-     *
-     * @param enabled Should performance monitoring be enabled
+     * @deprecated prefer setting `dataCollectionEnabled = boolean`.
+     * @param enabled Should performance monitoring be enabled. For iOS only, this also toggles whether instrumentation
+     * is enabled. See: https://firebase.google.com/docs/reference/ios/firebaseperformance/api/reference/Classes/FIRPerformance#instrumentationenabled
      */
     setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
