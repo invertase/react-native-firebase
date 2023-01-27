@@ -198,6 +198,10 @@ export default class FirestoreQueryModifiers {
     return OPERATORS[operator] === 'EQUAL';
   }
 
+  isNotEqualOperator(operator) {
+    return OPERATORS[operator] === 'NOT_EQUAL';
+  }
+
   isInOperator(operator) {
     return (
       OPERATORS[operator] === 'IN' ||
