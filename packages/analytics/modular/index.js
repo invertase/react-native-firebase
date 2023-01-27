@@ -14,6 +14,18 @@ export function getAnalytics(app) {
 }
 
 /**
+ * Returns a Analytics instance for the given app.
+ * @param app - FirebaseApp.
+ * @param options - `AnalyticsSettings`. Web only.
+ * @returns {Analytics}
+ */
+// eslint-disable-next-line
+export function initializeAnalytics(app, options) {
+  // options is specifically for web. Implement when it becomes available.
+  return firebase.app(app.name).analytics();
+}
+
+/**
  * Log a custom event with optional params. Note that there are various limits that applied
  * to event parameters (total parameter count, etc), but analytics applies the limits during
  * cloud processing, the errors will not be seen as Promise rejections when you call logEvent.
@@ -24,9 +36,10 @@ export function getAnalytics(app) {
  * @param analytics Analytics instance.
  * @param name Event name must not conflict with any Reserved Events.
  * @param params Parameters to be sent and displayed with the event.
+ * @param options Additional options that can be passed. Web only.
  */
-export function logEvent(analytics, name, params = {}) {
-  return analytics.logEvent(name, params);
+export function logEvent(analytics, name, eventParams = {}, options = {}) {
+  return analytics.logEvent(name, eventParams, options);
 }
 
 /**
@@ -84,9 +97,10 @@ export function setUserProperty(analytics, name, value) {
  *
  * @param analytics Analytics instance.
  * @param properties Set a property value to null to remove it.
+ * @param options Additional options that can be passed. Web only.
  */
-export function setUserProperties(analytics, properties) {
-  return analytics.setUserProperties(properties);
+export function setUserProperties(analytics, properties, options = {}) {
+  return analytics.setUserProperties(properties, options);
 }
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
