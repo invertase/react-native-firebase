@@ -81,14 +81,22 @@ class FirebasePerfModule extends FirebaseModule {
     if (!isBoolean(enabled)) {
       throw new Error("firebase.perf().dataCollectionEnabled = 'enabled' must be a boolean.");
     }
-    this.setPerformanceCollectionEnabled(enabled);
+    this._isPerformanceCollectionEnabled = enabled;
+    this.native.setPerformanceCollectionEnabled(enabled);
   }
 
-  setPerformanceCollectionEnabled(enabled) {
+  async setPerformanceCollectionEnabled(enabled) {
     if (!isBoolean(enabled)) {
       throw new Error(
         "firebase.perf().setPerformanceCollectionEnabled(*) 'enabled' must be a boolean.",
       );
+    }
+
+    if (Platform.OS == 'ios') {
+      // '_instrumentationEnabled' is updated here as well to maintain backward compatibility. See:
+      // https://github.com/invertase/react-native-firebase/commit/b705622e64d6ebf4ee026d50841e2404cf692f85
+      this._instrumentationEnabled = enabled;
+      await this.native.instrumentationEnabled(enabled);
     }
 
     this._isPerformanceCollectionEnabled = enabled;
