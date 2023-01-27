@@ -404,7 +404,7 @@ describe('remoteConfig() modular', function () {
 
     describe('setConfigSettings()', function () {
       it('minimumFetchIntervalMillis sets correctly', async function () {
-        const { getRemoteConfig } = remoteConfigModular;
+        const { getRemoteConfig, setConfigSettings } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
         await setConfigSettings(remoteConfig, { minimumFetchIntervalMillis: 3000 });
 
@@ -412,7 +412,7 @@ describe('remoteConfig() modular', function () {
       });
 
       it('fetchTimeMillis sets correctly', async function () {
-        const { getRemoteConfig } = remoteConfigModular;
+        const { getRemoteConfig, setConfigSettings } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
         await setConfigSettings(remoteConfig, { fetchTimeMillis: 3000 });
 
