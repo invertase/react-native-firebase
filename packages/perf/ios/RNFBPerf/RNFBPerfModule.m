@@ -58,7 +58,7 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isPerformanceCollectionEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
-  constants[@"instrumentationEnabled"] =
+  constants[@"isInstrumentationEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].instrumentationEnabled)]);
   return constants;
 }
@@ -206,9 +206,8 @@ RCT_EXPORT_METHOD(stopHttpMetric
 
 RCT_EXPORT_METHOD(instrumentationEnabled
                   : (BOOL)enabled
-                  : (NSDictionary *)metricData resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
-                  : (RCTPromiseRejectBlock)reject) {
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
