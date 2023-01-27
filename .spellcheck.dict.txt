@@ -134,10 +134,12 @@ pre-release
 pre-rendered
 preflight
 preloaded
+prepended
 programmatically
 PRs
 PubSub
 qa
+react-native-app-auth
 react-native-firebase
 react-native-mlkit
 realtime
