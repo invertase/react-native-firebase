@@ -723,5 +723,15 @@ describe('remoteConfig() modular', function () {
         should(logLevel).equal('debug');
       });
     });
+
+    describe('isSupported', function () {
+      it('should return "debug" log level', async function () {
+        const { isSupported } = remoteConfigModular;
+
+        const supported = await isSupported();
+
+        should(supported).equal(true);
+      });
+    });
   });
 });
