@@ -293,11 +293,11 @@ describe('remoteConfig() modular', function () {
 
     describe('defaultConfig', function () {
       it('gets plain key/value object of defaults', async function () {
-        await firebase.remoteConfig().setDefaults(remoteConfig, {
+        await firebase.remoteConfig().setDefaults({
           test_key: 'foo',
         });
 
-        should(remoteConfig.defaultConfig.test_key).equal('foo');
+        should(firebase.remoteConfig().defaultConfig.test_key).equal('foo');
       });
     });
 
