@@ -291,6 +291,16 @@ describe('remoteConfig() modular', function () {
       });
     });
 
+    describe('defaultConfig', function () {
+      it('gets plain key/value object of defaults', async function () {
+        await firebase.remoteConfig().setDefaults(remoteConfig, {
+          test_key: 'foo',
+        });
+
+        should(remoteConfig.defaultConfig.test_key).equal('foo');
+      });
+    });
+
     describe('reset()', function () {
       it('resets all activated, fetched and default config', async function () {
         if (device.getPlatform() === 'android') {
