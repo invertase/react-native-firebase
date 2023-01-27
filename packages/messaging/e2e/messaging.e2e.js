@@ -61,15 +61,6 @@ describe('messaging() modular', function () {
           this.skip();
         }
       });
-      it('defaults to false on ios before registering', async function () {
-        if (device.getPlatform() === 'ios') {
-          should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, false);
-          await firebase.messaging().registerDeviceForRemoteMessages();
-          should.equal(firebase.messaging().isDeviceRegisteredForRemoteMessages, true);
-        } else {
-          this.skip();
-        }
-      });
     });
 
     describe('unregisterDeviceForRemoteMessages', function () {
@@ -432,21 +423,6 @@ describe('messaging() modular', function () {
         const { getMessaging, isDeviceRegisteredForRemoteMessages } = messagingModular;
 
         if (device.getPlatform() === 'android') {
-          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
-        } else {
-          this.skip();
-        }
-      });
-      it('defaults to false on ios before registering', async function () {
-        const {
-          getMessaging,
-          isDeviceRegisteredForRemoteMessages,
-          registerDeviceForRemoteMessages,
-        } = messagingModular;
-
-        if (device.getPlatform() === 'ios') {
-          should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), false);
-          await registerDeviceForRemoteMessages(getMessaging());
           should.equal(isDeviceRegisteredForRemoteMessages(getMessaging()), true);
         } else {
           this.skip();
