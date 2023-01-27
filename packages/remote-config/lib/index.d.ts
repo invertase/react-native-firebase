@@ -285,6 +285,7 @@ export namespace FirebaseRemoteConfigTypes {
   export interface ConfigDefaults {
     [key: string]: number | string | boolean;
   }
+
   /**
    * The status of the latest Remote RemoteConfig fetch action.
    */
