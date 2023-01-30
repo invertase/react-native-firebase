@@ -437,7 +437,11 @@ export default class FirestoreQuery {
       );
     }
 
-    if (isNull(value) && !this._modifiers.isEqualOperator(opStr)) {
+    if (
+      isNull(value) &&
+      !this._modifiers.isEqualOperator(opStr) &&
+      !this._modifiers.isNotEqualOperator(opStr)
+    ) {
       throw new Error(
         "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
       );

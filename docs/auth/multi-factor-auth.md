@@ -2,7 +2,7 @@
 title: Multi-factor Auth
 description: Increase security by adding Multi-factor authentication to your app.
 next: /firestore/usage
-previous: /auth/phone-auth
+previous: /auth/oidc-auth
 ---
 
 # iOS Setup

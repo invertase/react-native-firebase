@@ -1,7 +1,7 @@
 ---
 title: Phone Authentication
 description: Sign-in users with their phone number.
-next: /auth/multi-factor-auth
+next: /auth/oidc-auth
 previous: /auth/social-auth
 ---
 
