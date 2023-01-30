@@ -724,18 +724,18 @@ describe('remoteConfig() modular', function () {
     });
 
     describe('setLogLevel', function () {
-      it('should return "debug" log level', function () {
+      it('should return "error" log level', function () {
         const { getRemoteConfig, setLogLevel } = remoteConfigModular;
         const remoteConfig = getRemoteConfig();
 
-        const logLevel = setLogLevel(remoteConfig, 'debug');
+        const logLevel = setLogLevel(remoteConfig, 'error');
 
-        should(logLevel).equal('debug');
+        should(logLevel).equal('error');
       });
     });
 
     describe('isSupported', function () {
-      it('should return "debug" log level', async function () {
+      it('should return "true"', async function () {
         const { isSupported } = remoteConfigModular;
 
         const supported = await isSupported();
