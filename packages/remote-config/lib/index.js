@@ -98,6 +98,10 @@ class FirebaseConfigModule extends FirebaseModule {
     this.setDefaults(defaults);
   }
 
+  get settings() {
+    return this._settings;
+  }
+
   set settings(settings) {
     this.setConfigSettings(settings);
   }
@@ -133,10 +137,6 @@ class FirebaseConfigModule extends FirebaseModule {
     const values = {};
     Object.keys(this._values).forEach(key => (values[key] = this.getValue(key)));
     return values;
-  }
-
-  get settings() {
-    return this._settings;
   }
 
   get fetchTimeMillis() {
