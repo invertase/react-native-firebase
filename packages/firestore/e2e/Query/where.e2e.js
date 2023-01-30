@@ -88,6 +88,10 @@ describe('firestore().collection().where()', function () {
     firebase.firestore().collection(COLLECTION).where('foo.bar', '==', null);
   });
 
+  it('allows null to be used with not equal operator', function () {
+    firebase.firestore().collection(COLLECTION).where('foo.bar', '!=', null);
+  });
+
   it('throws if multiple inequalities on different paths is provided', function () {
     try {
       firebase.firestore().collection(COLLECTION).where('foo.bar', '>', 123).where('bar', '>', 123);

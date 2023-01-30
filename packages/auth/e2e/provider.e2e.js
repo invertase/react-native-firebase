@@ -226,4 +226,32 @@ describe('auth() -> Providers', function () {
       });
     });
   });
+
+  describe('OIDCAuthProvider', function () {
+    describe('constructor', function () {
+      it('should throw an unsupported error', function () {
+        (() => new firebase.auth.OIDCAuthProvider()).should.throw(
+          '`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.',
+        );
+      });
+    });
+
+    describe('credential', function () {
+      it('should return a credential object', function () {
+        const token = '123456';
+        const secret = '654321';
+        const providerSuffix = 'sample-provider';
+        const credential = firebase.auth.OIDCAuthProvider.credential(providerSuffix, token, secret);
+        credential.providerId.should.equal('oidc.' + providerSuffix);
+        credential.token.should.equal(token);
+        credential.secret.should.equal(secret);
+      });
+    });
+
+    describe('PROVIDER_ID', function () {
+      it('should return oidc.', function () {
+        firebase.auth.OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
+      });
+    });
+  });
 });

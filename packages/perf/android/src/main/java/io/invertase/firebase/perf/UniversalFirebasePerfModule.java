@@ -17,6 +17,7 @@ package io.invertase.firebase.perf;
  *
  */
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -33,6 +34,7 @@ import java.util.Set;
 
 public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
   private static SparseArray<Trace> traces = new SparseArray<>();
+  private static SparseArray<ScreenTrace> screenTraces = new SparseArray<>();
   private static SparseArray<HttpMetric> httpMetrics = new SparseArray<>();
 
   UniversalFirebasePerfModule(Context context, String serviceName) {
@@ -44,6 +46,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     super.onTearDown();
     traces.clear();
     httpMetrics.clear();
+    screenTraces.clear();
   }
 
   @Override
@@ -101,6 +104,28 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
           return null;
         });
+  }
+
+  Task<Void> startScreenTrace(Activity activity, int id, String identifier) {
+    return Tasks.call(
+      () -> {
+        ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
+        screenTrace.recordScreenTrace();
+        screenTraces.put(id, screenTrace);
+
+        return null;
+      });
+  }
+
+  Task<Void> stopScreenTrace(int id) {
+    return Tasks.call(
+      () -> {
+        ScreenTrace trace = screenTraces.get(id);
+        trace.sendScreenTrace();
+        screenTraces.remove(id);
+
+        return null;
+      });
   }
 
   Task<Void> startHttpMetric(int id, String url, String httpMethod) {

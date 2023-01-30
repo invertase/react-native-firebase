@@ -42,6 +42,19 @@ describe('perf()', function () {
       trace._identifier.should.equal('invertase');
       trace._started.should.equal(true);
       await trace.stop();
+      trace._stopped.should.equal(true);
+    });
+  });
+
+  describe('startScreenTrace()', function () {
+    it('resolves a started instance of a ScreenTrace', async function () {
+      if (device.getPlatform() === 'android') {
+        const screenTrace = await firebase.perf().startScreenTrace('FooScreen');
+        screenTrace.constructor.name.should.be.equal('ScreenTrace');
+        screenTrace._identifier.should.equal('FooScreen');
+        await screenTrace.stop();
+        screenTrace._stopped.should.equal(true);
+      }
     });
   });
 });
