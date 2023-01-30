@@ -346,4 +346,12 @@ describe('messaging()', function () {
       should.equal(firebase.messaging().isDeliveryMetricsExportToBigQueryEnabled, false);
     });
   });
+
+  describe('isSupported()', function () {
+    it('should return "true" if the device or browser supports Firebase Messaging', async function () {
+      // For android, when the play services are available, it will return "true"
+      // iOS & web always return "true". Web can be fully implemented when the platform is supported
+      should.equal(await firebase.messaging().isSupported(), true);
+    });
+  });
 });

@@ -86,6 +86,26 @@ async function customTrace() {
 }
 ```
 
+## Custom screen traces
+
+Record a custom screen rendering trace (slow frames / frozen frames)
+
+```jsx
+import perf from '@react-native-firebase/perf';
+
+async function screenTrace() {
+  // Define & start a screen trace
+  try {
+    const trace = await perf().startScrenTrace('FooScreen');
+    // Stop the trace
+    await trace.stop();
+  } catch (e) {
+    // rejects if iOS or (Android == 8 || Android == 8.1)
+    // or if hardware acceleration is off
+  }
+}
+```
+
 ## HTTP Request Tracing
 
 Below illustrates you would measure the latency of a HTTP request.

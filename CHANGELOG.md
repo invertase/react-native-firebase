@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.7.0](https://github.com/invertase/react-native-firebase/compare/v16.6.0...v16.7.0) (2023-01-28)
+
+### Features
+
+- **perf:** add custom screen rendering traces for android ([#6588](https://github.com/invertase/react-native-firebase/issues/6588)) ([9f2498d](https://github.com/invertase/react-native-firebase/commit/9f2498d29ee3780cba5a7a69fde8f7c370ad723b))
+
+## [16.6.0](https://github.com/invertase/react-native-firebase/compare/v16.5.2...v16.6.0) (2023-01-27)
+
+### Features
+
+- **auth:** Add support for OpenID Connect provider ([#6574](https://github.com/invertase/react-native-firebase/issues/6574)) ([469bf00](https://github.com/invertase/react-native-firebase/commit/469bf004c8d4ccf3da46215e7ca7562a6739265d))
+- **messaging:** Expose modular API that matches the Firebase web JS SDK v9 API ([#6806](https://github.com/invertase/react-native-firebase/issues/6806)) ([da82c10](https://github.com/invertase/react-native-firebase/commit/da82c1036051f0518da0401de24cef24c7ac091f))
+
+### Bug Fixes
+
+- **database, types:** transaction update type is any not object ([#6782](https://github.com/invertase/react-native-firebase/issues/6782)) ([1788a2d](https://github.com/invertase/react-native-firebase/commit/1788a2d10aa61c405958580a767f24e05cb5ccaa))
+- **firestore:** support not equals null query ([b93699c](https://github.com/invertase/react-native-firebase/commit/b93699c0258cadfdd6639b64479f1738b5c301b4))
+
+### [16.5.2](https://github.com/invertase/react-native-firebase/compare/v16.5.1...v16.5.2) (2023-01-23)
+
+### Bug Fixes
+
+- **auth, android:** use a safe copy of auth provider info to avoid crash ([2a90136](https://github.com/invertase/react-native-firebase/commit/2a90136cce0db6ca0f253003643f8bd856fd46a0)), closes [#6798](https://github.com/invertase/react-native-firebase/issues/6798)
+
+### [16.5.1](https://github.com/invertase/react-native-firebase/compare/v16.5.0...v16.5.1) (2023-01-20)
+
+### Bug Fixes
+
+- **firestore:** correct handling of nested `FieldPath` in `orderBy` clauses ([#6814](https://github.com/invertase/react-native-firebase/issues/6814)) ([84d7bbe](https://github.com/invertase/react-native-firebase/commit/84d7bbe241241c331b7c540bf089adcf603c199e))
+
 ## [16.5.0](https://github.com/invertase/react-native-firebase/compare/v16.4.6...v16.5.0) (2022-12-16)
 
 ### Features

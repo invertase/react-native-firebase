@@ -28,6 +28,7 @@ import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
 import * as functionsModular from '@react-native-firebase/functions';
 import * as analyticsModular from '@react-native-firebase/analytics';
+import * as messagingModular from '@react-native-firebase/messaging';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
@@ -45,6 +46,7 @@ jet.exposeContextProperty('module', firebase);
 jet.exposeContextProperty('modular', modular);
 jet.exposeContextProperty('functionsModular', functionsModular);
 jet.exposeContextProperty('analyticsModular', analyticsModular);
+jet.exposeContextProperty('messagingModular', messagingModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

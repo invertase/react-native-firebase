@@ -29,7 +29,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
       snapshot.get(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql("'fieldPath' expected type string or FieldPath");
+      error.message.should.containEql("'fieldPath' expected type string, array or FieldPath");
       return Promise.resolve();
     }
   });

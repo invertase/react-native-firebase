@@ -23,10 +23,10 @@ import {
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
 import NativeError from '@react-native-firebase/app/lib/internal/NativeFirebaseError';
+import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
-import { FirestoreAggregateQuery } from './FirestoreAggregate';
 import { parseSnapshotArgs } from './utils';
 
 let _id = 0;
@@ -437,7 +437,11 @@ export default class FirestoreQuery {
       );
     }
 
-    if (isNull(value) && !this._modifiers.isEqualOperator(opStr)) {
+    if (
+      isNull(value) &&
+      !this._modifiers.isEqualOperator(opStr) &&
+      !this._modifiers.isNotEqualOperator(opStr)
+    ) {
       throw new Error(
         "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
       );

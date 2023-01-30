@@ -70,6 +70,7 @@ import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.SharedUtils;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1553,6 +1554,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   /** Returns an instance of AuthCredential for the specified provider */
   private AuthCredential getCredentialForProvider(
       String provider, String authToken, String authSecret) {
+    if (provider.startsWith("oidc.")) {
+      return OAuthProvider.newCredentialBuilder(provider).setIdToken(authToken).build();
+    }
+
     switch (provider) {
       case "facebook.com":
         return FacebookAuthProvider.getCredential(authToken);
@@ -2055,7 +2060,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   private WritableArray convertProviderData(
       List<? extends UserInfo> providerData, FirebaseUser user) {
     WritableArray output = Arguments.createArray();
-    for (UserInfo userInfo : providerData) {
+    ArrayList<? extends UserInfo> providerDataCopy = new ArrayList(providerData);
+    for (UserInfo userInfo : providerDataCopy) {
       // remove 'firebase' provider data - android fb sdk
       // should not be returning this as the ios/web ones don't
       if (!FirebaseAuthProvider.PROVIDER_ID.equals(userInfo.getProviderId())) {

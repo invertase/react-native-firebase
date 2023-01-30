@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [16.7.0](https://github.com/invertase/react-native-firebase/compare/v16.6.0...v16.7.0) (2023-01-28)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+## [16.6.0](https://github.com/invertase/react-native-firebase/compare/v16.5.2...v16.6.0) (2023-01-27)
+
+### Bug Fixes
+
+- **database, types:** transaction update type is any not object ([#6782](https://github.com/invertase/react-native-firebase/issues/6782)) ([1788a2d](https://github.com/invertase/react-native-firebase/commit/1788a2d10aa61c405958580a767f24e05cb5ccaa))
+
+### [16.5.2](https://github.com/invertase/react-native-firebase/compare/v16.5.1...v16.5.2) (2023-01-23)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
+### [16.5.1](https://github.com/invertase/react-native-firebase/compare/v16.5.0...v16.5.1) (2023-01-20)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
 ## [16.5.0](https://github.com/invertase/react-native-firebase/compare/v16.4.6...v16.5.0) (2022-12-16)
 
 **Note:** Version bump only for package @react-native-firebase/database
