@@ -554,3 +554,37 @@ export function setDefaultEventParameters(analytics, params = {}) {
 export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics, emailAddress) {
   return analytics.initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress);
 }
+
+/**
+ * Checks four different things.
+ * 1. Checks if it's not a browser extension environment.
+ * 2. Checks if cookies are enabled in current browser.
+ * 3. Checks if IndexedDB is supported by the browser environment.
+ * 4. Checks if the current browser context is valid for using IndexedDB.open().
+ * @returns {Promise<boolean>}
+ */
+export function isSupported() {
+  // always return "true" for now. Web only.
+  return Promise.resolve(true);
+}
+/**
+ * Sets the applicable end user consent state for this web app across all gtag
+ * references once Firebase Analytics is initialized. Web only.
+ * @param analytics Analytics instance.
+ * @param consentSettings See {@link analytics.ConsentSettings}.
+ * @returns {void}
+ */
+// eslint-disable-next-line
+export function setConsent(consentSettings) {}
+
+/**
+ * Configures Firebase Analytics to use custom gtag or dataLayer names.
+ * Intended to be used if gtag.js script has been installed on this page
+ * independently of Firebase Analytics, and is using non-default names for
+ * either the gtag function or for dataLayer. Must be called before calling
+ * `getAnalytics()` or it won't have any effect. Web only.
+ * @param options See {@link analytics.SettingsOptions}.
+ * @returns {void}
+ */
+// eslint-disable-next-line
+export function setConsent(options) {}
