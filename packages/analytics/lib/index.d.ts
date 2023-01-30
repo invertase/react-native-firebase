@@ -748,6 +748,43 @@ export namespace FirebaseAnalyticsTypes {
     page_path?: string;
     [key: string]: unknown;
   }
+
+  /**
+   * Consent status settings for each consent type.
+   * For more information, see
+   * {@link https://developers.google.com/tag-platform/tag-manager/templates/consent-apis
+   * | the GA4 reference documentation for consent state and consent types}.
+   */
+  export interface ConsentSettings {
+    /** Enables storage, such as cookies, related to advertising */
+    ad_storage?: ConsentStatusString;
+    /** Enables storage, such as cookies, related to analytics (for example, visit duration) */
+    analytics_storage?: ConsentStatusString;
+    /**
+     * Enables storage that supports the functionality of the website or app such as language settings
+     */
+    functionality_storage?: ConsentStatusString;
+    /** Enables storage related to personalization such as video recommendations */
+    personalization_storage?: ConsentStatusString;
+    /**
+     * Enables storage related to security such as authentication functionality, fraud prevention,
+     * and other user protection.
+     */
+    security_storage?: ConsentStatusString;
+    [key: string]: unknown;
+  }
+
+  /**
+   * Specifies custom options for your Firebase Analytics instance.
+   * You must set these before initializing `firebase.analytics()`.
+   */
+  export interface SettingsOptions {
+    /** Sets custom name for `gtag` function. */
+    gtagName?: string;
+    /** Sets custom name for `dataLayer` array used by `gtag.js`. */
+    dataLayerName?: string;
+  }
+
   /**
    * The Firebase Analytics service interface.
    *
