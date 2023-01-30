@@ -587,4 +587,4 @@ export function setConsent(consentSettings) {}
  * @returns {void}
  */
 // eslint-disable-next-line
-export function setConsent(options) {}
+export function settings(options) {}
