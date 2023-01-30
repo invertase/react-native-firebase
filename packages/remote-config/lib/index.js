@@ -94,6 +94,14 @@ class FirebaseConfigModule extends FirebaseModule {
     return updatedDefaultConfig;
   }
 
+  set defaultConfig(defaults) {
+    this.setDefaults(defaults);
+  }
+
+  set settings(settings) {
+    this.setConfigSettings(settings);
+  }
+
   getValue(key) {
     if (!isString(key)) {
       throw new Error("firebase.remoteConfig().getValue(): 'key' must be a string value.");
