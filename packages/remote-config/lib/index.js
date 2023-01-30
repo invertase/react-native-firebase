@@ -95,6 +95,13 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   set defaultConfig(defaults) {
+    if (!isObject(defaults)) {
+      throw new Error("firebase.remoteConfig().defaultConfig: 'defaults' must be an object.");
+    }
+    // To make Firebase web v9 API compatible, we update the config first so it immediately
+    // updates defaults on the instance. We then pass to web platform to update. We do this because
+    // there is no way to "await" a setter.
+    this._updateFromConstants(defaults);
     this.setDefaults(defaults);
   }
 
@@ -103,7 +110,35 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   set settings(settings) {
-    this.setConfigSettings(settings);
+    if (!isObject(settings)) {
+      throw new Error('firebase.remoteConfig().settings = object: settings must set an object.');
+    }
+
+    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
+      if (!isNumber(settings.minimumFetchIntervalMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().settings = settings: 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
+        );
+      }
+    }
+
+    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
+      if (!isNumber(settings.fetchTimeMillis)) {
+        throw new Error(
+          "firebase.remoteConfig().settings = settings: 'settings.fetchTimeMillis' must be a number type in milliseconds.",
+        );
+      }
+    }
+    this._settings = {
+      fetchTimeMillis: settings.fetchTimeMillis,
+      minimumFetchIntervalMillis: settings.minimumFetchIntervalMillis,
+    };
+    // To make Firebase web v9 API compatible, we update the settings first so it immediately
+    // updates settings on the instance. We then pass to web platform to update. We do this because
+    // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
+    // for native.
+    // TODO - not sure whether we would be calling this?
+    this.native.setConfigSettings(this._settings);
   }
 
   getValue(key) {
@@ -191,7 +226,6 @@ class FirebaseConfigModule extends FirebaseModule {
       }
     }
 
-    // this._settings = settings;
     return this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
   }
 
