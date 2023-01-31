@@ -291,13 +291,9 @@ To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` 
 // Use `addCustomPropsToUserProps` to pass in props for initialization of your app
 // Or pass in `nil` if you have none as per below example
 // For `withLaunchOptions` please pass in `launchOptions` object
-NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+// and use it to set `self.initialProps`
 
-// Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
-RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                             moduleName:@"nameOfYourApp"
-                                             initialProperties:appProperties];
-```
+self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
 
 - For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:
 
