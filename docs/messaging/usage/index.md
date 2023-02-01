@@ -291,7 +291,7 @@ To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` 
 // Use `addCustomPropsToUserProps` to pass in props for initialization of your app
 // Or pass in `nil` if you have none as per below example
 // For `withLaunchOptions` please pass in `launchOptions` object
-// and use it to set `self.initialProps`
+// and use it to set `self.initialProps` (available with react-native >= 0.71.1, older versions need a more difficult style, upgrading is recommended)
 
 self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
 
