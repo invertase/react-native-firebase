@@ -101,6 +101,18 @@ describe('perf() modular', function () {
         await trace.stop();
       });
     });
+
+    describe('startScreenTrace()', function () {
+      it('resolves a started instance of a ScreenTrace', async function () {
+        if (device.getPlatform() === 'android') {
+          const screenTrace = await firebase.perf().startScreenTrace('FooScreen');
+          screenTrace.constructor.name.should.be.equal('ScreenTrace');
+          screenTrace._identifier.should.equal('FooScreen');
+          await screenTrace.stop();
+          screenTrace._stopped.should.equal(true);
+        }
+      });
+    });
   });
 
   describe('modular', function () {
@@ -212,6 +224,19 @@ describe('perf() modular', function () {
         traceInvertase._identifier.should.equal('invertase');
         traceInvertase._started.should.equal(true);
         await traceInvertase.stop();
+      });
+    });
+
+    describe('startScreenTrace()', function () {
+      it('resolves a started instance of a ScreenTrace', async function () {
+        if (device.getPlatform() === 'android') {
+          const { getPerformance, startScreenTrace } = perfModular;
+          const screenTrace = await startScreenTrace(getPerformance(), 'FooScreen');
+          screenTrace.constructor.name.should.be.equal('ScreenTrace');
+          screenTrace._identifier.should.equal('FooScreen');
+          await screenTrace.stop();
+          screenTrace._stopped.should.equal(true);
+        }
       });
     });
   });
