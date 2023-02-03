@@ -32,7 +32,7 @@ import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
 import '@react-native-firebase/ml';
-import '@react-native-firebase/perf';
+import * as perfModular from '@react-native-firebase/perf';
 import '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
@@ -46,7 +46,10 @@ jet.exposeContextProperty('DeviceInfo', DeviceInfo);
 jet.exposeContextProperty('module', firebase);
 jet.exposeContextProperty('modular', modular);
 jet.exposeContextProperty('functionsModular', functionsModular);
+jet.exposeContextProperty('perfModular', perfModular);
+
 jet.exposeContextProperty('messagingModular', messagingModular);
+
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');
