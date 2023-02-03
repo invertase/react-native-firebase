@@ -486,7 +486,7 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier.
-     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
+     * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *
@@ -505,7 +505,7 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier and immediately starts it.
-     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
+     * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *
