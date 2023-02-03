@@ -66,3 +66,24 @@ export function trace(perf, identifier) {
 export function httpMetric(perf, identifier, httpMethod) {
   return perf.newHttpMetric(identifier, httpMethod);
 }
+
+/**
+ * Creates a ScreenTrace instance with the given identifier.
+ * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
+ * @platform android Android !== 9.0.0 && Android !== 9.1.0
+ * @param perf - Performance instance
+ * @param identifier Name of the trace, no leading or trailing whitespace allowed, no leading underscore '_' character allowed, max length is 100.
+ */
+export function newScreenTrace(perf, identifier) {
+  return perf.newScreenTrace(identifier);
+}
+/**
+ * Creates a ScreenTrace instance with the given identifier and immediately starts it.
+ * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
+ * @platform android Android !== 9.0.0 && Android !== 9.1.0
+ * @param perf - Performance instance
+ * @param identifier Name of the screen
+ */
+export function startScreenTrace(perf, identifier) {
+  return perf.startScreenTrace(identifier);
+}

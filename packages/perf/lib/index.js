@@ -27,7 +27,14 @@ import Trace from './Trace';
 import ScreenTrace from './ScreenTrace';
 import version from './version';
 
-export { getPerformance, initializePerformance, trace, httpMetric } from './modular/index';
+export {
+  getPerformance,
+  initializePerformance,
+  trace,
+  httpMetric,
+  newScreenTrace,
+  startScreenTrace,
+} from './modular/index';
 
 const statics = {};
 
