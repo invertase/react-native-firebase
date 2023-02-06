@@ -33,6 +33,17 @@ RCT_EXPORT_MODULE();
   return dispatch_get_main_queue();
 }
 
++ (instancetype)sharedInstance {
+  static dispatch_once_t once;
+  __strong static RNFBAppCheckModule *sharedInstance;
+  dispatch_once(&once, ^{
+    sharedInstance = [[RNFBAppCheckModule alloc] init];
+    sharedInstance.providerFactory = [[RNFBAppCheckProviderFactory alloc] init];
+    [FIRAppCheck setAppCheckProviderFactory:sharedInstance.providerFactory];
+  });
+  return sharedInstance;
+}
+
 #pragma mark -
 #pragma mark Firebase AppCheck Methods
 
@@ -42,21 +53,35 @@ RCT_EXPORT_METHOD(activate
                   : (BOOL)isTokenAutoRefreshEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
-  // From SDK docs:
-  // NOTE: Make sure to call this method before FirebaseApp.configure().
-  // If this method is called after configuring Firebase, the changes will not take effect.
-
-  // So in react-native-firebase we will only use this to set the isTokenAutoRefreshEnabled
-  // parameter, but if AppCheck is included on iOS it wlil be active with DeviceCheckProviderFactory
+  DLog(@"deprecated API, provider will be deviceCheck / token refresh %d for app %@",
+       isTokenAutoRefreshEnabled, firebaseApp.name);
+  [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
+                                                    providerName:@"deviceCheck"
+                                                      debugToken:nil];
 
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(configureProvider
+                  : (FIRApp *)firebaseApp
+                  : (nonnull NSString *)providerName
+                  : (nullable NSString *)debugToken
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  DLog(@"appName/providerName/debugToken: %@/%@/%@", firebaseApp.name, providerName,
+       (debugToken == nil ? @"null" : @"(not shown)"));
+  [[RNFBAppCheckModule sharedInstance].providerFactory configure:firebaseApp
+                                                    providerName:providerName
+                                                      debugToken:debugToken];
+  resolve([NSNull null]);
+}
+
 RCT_EXPORT_METHOD(setTokenAutoRefreshEnabled
                   : (FIRApp *)firebaseApp
                   : (BOOL)isTokenAutoRefreshEnabled) {
+  DLog(@"app/isTokenAutoRefreshEnabled: %@/%d", firebaseApp.name, isTokenAutoRefreshEnabled);
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   appCheck.isTokenAutoRefreshEnabled = isTokenAutoRefreshEnabled;
 }
@@ -69,6 +94,7 @@ RCT_EXPORT_METHOD(isTokenAutoRefreshEnabled
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
   BOOL isTokenAutoRefreshEnabled = appCheck.isTokenAutoRefreshEnabled;
+  DLog(@"app/isTokenAutoRefreshEnabled: %@/%d", firebaseApp.name, isTokenAutoRefreshEnabled);
   resolve([NSNumber numberWithBool:isTokenAutoRefreshEnabled]);
 }
 
@@ -78,41 +104,34 @@ RCT_EXPORT_METHOD(getToken
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   FIRAppCheck *appCheck = [FIRAppCheck appCheckWithApp:firebaseApp];
-  [appCheck tokenForcingRefresh:forceRefresh
-                     completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
-                       if (error != nil) {
-                         // Handle any errors if the token was not retrieved.
-                         DLog(@"Unable to retrieve App Check token: %@", error);
-                         [RNFBSharedUtils
-                             rejectPromiseWithUserInfo:reject
-                                              userInfo:(NSMutableDictionary *)@{
-                                                @"code" : @"token-error",
-                                                @"message" : [error localizedDescription],
-                                              }];
-                         return;
-                       }
-                       if (token == nil) {
-                         DLog(@"Unable to retrieve App Check token.");
-                         [RNFBSharedUtils rejectPromiseWithUserInfo:reject
-                                                           userInfo:(NSMutableDictionary *)@{
-                                                             @"code" : @"token-null",
-                                                             @"message" : @"no token fetched",
-                                                           }];
-                         return;
-                       }
+  DLog(@"appName %@", firebaseApp.name);
+  [appCheck
+      tokenForcingRefresh:forceRefresh
+               completion:^(FIRAppCheckToken *_Nullable token, NSError *_Nullable error) {
+                 if (error != nil) {
+                   // Handle any errors if the token was not retrieved.
+                   DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token: %@", error);
+                   [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                                     userInfo:(NSMutableDictionary *)@{
+                                                       @"code" : @"token-error",
+                                                       @"message" : [error localizedDescription],
+                                                     }];
+                   return;
+                 }
+                 if (token == nil) {
+                   DLog(@"RNFBAppCheck - getToken - Unable to retrieve App Check token.");
+                   [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                                     userInfo:(NSMutableDictionary *)@{
+                                                       @"code" : @"token-null",
+                                                       @"message" : @"no token fetched",
+                                                     }];
+                   return;
+                 }
 
-                       NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
-                       tokenResultDictionary[@"token"] = token.token;
-                       resolve(tokenResultDictionary);
-                     }];
+                 NSMutableDictionary *tokenResultDictionary = [NSMutableDictionary new];
+                 tokenResultDictionary[@"token"] = token.token;
+                 resolve(tokenResultDictionary);
+               }];
 }
-
-// TODO
-// - set up DeviceCheckProvider and Debug provider
-// FIRAppCheckDebugProviderFactory *providerFactory =
-//       [[FIRAppCheckDebugProviderFactory alloc] init];
-// [FIRAppCheck setAppCheckProviderFactory:providerFactory];
-
-// Write a custom provider factory, and allow the AppAttest provider
 
 @end

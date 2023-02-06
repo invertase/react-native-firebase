@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016-present Invertase Limited & Contributors
+ * Copyright (c) 2023-present Invertase Limited & Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this library except in compliance with the License.
@@ -16,17 +16,18 @@
  */
 
 #import <Firebase/Firebase.h>
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
+#import <FirebaseAppCheck/FIRAppCheck.h>
 
-@interface RNFBMessagingSerializer : NSObject
+@interface RNFBAppCheckProvider : NSObject <FIRAppCheckProvider>
 
-+ (NSData *)APNSTokenDataFromNSString:(NSString *)token;
+@property FIRApp *app;
 
-+ (NSString *)APNSTokenFromNSData:(NSData *)tokenData;
+@property id<FIRAppCheckProvider> delegateProvider;
 
-+ (NSDictionary *)notificationToDict:(UNNotification *)notification;
+- (void)configure:(FIRApp *)app
+     providerName:(NSString *)providerName
+       debugToken:(NSString *)debugToken;
 
-+ (NSDictionary *)remoteMessageUserInfoToDict:(NSDictionary *)userInfo;
+- (id)initWithApp:(FIRApp *)app;
 
 @end

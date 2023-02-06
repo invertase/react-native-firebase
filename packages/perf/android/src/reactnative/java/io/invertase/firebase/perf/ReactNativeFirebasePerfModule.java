@@ -97,29 +97,29 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
     }
 
     module
-      .startScreenTrace(currentActivity, id, identifier)
-      .addOnCompleteListener(
-        task -> {
-          if (task.isSuccessful()) {
-            promise.resolve(task.getResult());
-          } else {
-            rejectPromiseWithExceptionMap(promise, task.getException());
-          }
-        });
+        .startScreenTrace(currentActivity, id, identifier)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod
   public void stopScreenTrace(int id, Promise promise) {
     module
-      .stopScreenTrace(id)
-      .addOnCompleteListener(
-        task -> {
-          if (task.isSuccessful()) {
-            promise.resolve(task.getResult());
-          } else {
-            rejectPromiseWithExceptionMap(promise, task.getException());
-          }
-        });
+        .stopScreenTrace(id)
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                promise.resolve(task.getResult());
+              } else {
+                rejectPromiseWithExceptionMap(promise, task.getException());
+              }
+            });
   }
 
   @ReactMethod

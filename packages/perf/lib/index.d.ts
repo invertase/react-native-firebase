@@ -426,7 +426,22 @@ export namespace FirebasePerformanceTypes {
      * ```
      */
     isPerformanceCollectionEnabled: boolean;
-
+    /**
+     * Determines whether to collect 'out of the box' (i.e already setup for Firebase Performance) events.
+     * This can be set for iOS. Android will always return "true" as it has to be set at gradle level.
+     */
+    instrumentationEnabled: boolean;
+    /**
+     * Determines whether performance monitoring is enabled or disabled.
+     *
+     * #### Example
+     *
+     * ```js
+     * const isEnabled = firebase.perf().dataCollectionEnabled;
+     * console.log('Performance collection enabled: ', isEnabled);
+     * ```
+     */
+    dataCollectionEnabled: boolean;
     /**
      * Enables or disables performance monitoring.
      *
@@ -436,8 +451,9 @@ export namespace FirebasePerformanceTypes {
      * // Disable performance monitoring collection
      * await firebase.perf().setPerformanceCollectionEnabled(false);
      * ```
-     *
-     * @param enabled Should performance monitoring be enabled
+     * @deprecated prefer setting `dataCollectionEnabled = boolean`.
+     * @param enabled Should performance monitoring be enabled. For iOS only, this also toggles whether instrumentation
+     * is enabled. See: https://firebase.google.com/docs/reference/ios/firebaseperformance/api/reference/Classes/FIRPerformance#instrumentationenabled
      */
     setPerformanceCollectionEnabled(enabled: boolean): Promise<null>;
 
@@ -470,7 +486,7 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier.
-     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
+     * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *
@@ -489,7 +505,7 @@ export namespace FirebasePerformanceTypes {
 
     /**
      * Creates a ScreenTrace instance with the given identifier and immediately starts it.
-     * Throws if hardware acceleration is diabled or if Android is 9.0 or 9.1.
+     * Throws if hardware acceleration is disabled or if Android is 9.0 or 9.1.
      *
      * #### Example
      *

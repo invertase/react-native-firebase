@@ -68,7 +68,12 @@ async function requestUserPermission() {
 The permissions API for iOS provides much more fine-grain control over permissions and how they're handled within your
 application. To learn more, view the advanced [iOS Permissions](/messaging/ios-permissions) documentation.
 
-On Android, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully.
+On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions`
+
+```
+  import {PermissionsAndroid} from 'react-native'}
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+```
 
 ## Receiving messages
 
@@ -291,12 +296,9 @@ To inject a `isHeadless` prop into your app, please update your `AppDelegate.m` 
 // Use `addCustomPropsToUserProps` to pass in props for initialization of your app
 // Or pass in `nil` if you have none as per below example
 // For `withLaunchOptions` please pass in `launchOptions` object
-NSDictionary *appProperties = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
+// and use it to set `self.initialProps` (available with react-native >= 0.71.1, older versions need a more difficult style, upgrading is recommended)
 
-// Find the `RCTRootView` instance and update the `initialProperties` with your `appProperties` instance
-RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
-                                             moduleName:@"nameOfYourApp"
-                                             initialProperties:appProperties];
+self.initialProps = [RNFBMessagingModule addCustomPropsToUserProps:nil withLaunchOptions:launchOptions];
 ```
 
 - For projects that use react-native-navigation (or if you just don't want to mess with your launchProperties) you can use the `getIsHeadless` method (iOS only) from messaging like so:

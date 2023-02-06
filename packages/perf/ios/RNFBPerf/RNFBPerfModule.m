@@ -58,6 +58,8 @@ RCT_EXPORT_MODULE();
   NSMutableDictionary *constants = [NSMutableDictionary new];
   constants[@"isPerformanceCollectionEnabled"] =
       @([RCTConvert BOOL:@([FIRPerformance sharedInstance].dataCollectionEnabled)]);
+  constants[@"isInstrumentationEnabled"] =
+      @([RCTConvert BOOL:@([FIRPerformance sharedInstance].instrumentationEnabled)]);
   return constants;
 }
 
@@ -73,7 +75,6 @@ RCT_EXPORT_METHOD(setPerformanceCollectionEnabled
                   : (RCTPromiseResolveBlock)resolve rejecter
                   : (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
-  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 
@@ -200,6 +201,14 @@ RCT_EXPORT_METHOD(stopHttpMetric
     [httpMetrics removeObjectForKey:id];
   }
 
+  resolve([NSNull null]);
+}
+
+RCT_EXPORT_METHOD(instrumentationEnabled
+                  : (BOOL)enabled resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
 

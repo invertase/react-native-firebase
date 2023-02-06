@@ -114,7 +114,6 @@ RCT_EXPORT_METHOD(getToken
                   : (NSString *)senderId
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
-#if !(TARGET_IPHONE_SIMULATOR)
   if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
@@ -126,7 +125,14 @@ RCT_EXPORT_METHOD(getToken
                          }];
     return;
   }
-#endif
+
+  // As of firebase-ios-sdk 10.4.0, an APNS token is strictly required for getToken to work
+  NSData *apnsToken = [FIRMessaging messaging].APNSToken;
+  if (apnsToken == nil) {
+    DLog(@"RNFBMessaging getToken - no APNS token is available. Firebase requires an APNS token to "
+         @"vend an FCM token in firebase-ios-sdk 10.4.0 and higher. See documentation on "
+         @"setAPNSToken and getAPNSToken.")
+  }
 
   [[FIRMessaging messaging]
       retrieveFCMTokenForSenderID:senderId
@@ -160,7 +166,17 @@ RCT_EXPORT_METHOD(getAPNSToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
   if (apnsToken) {
     resolve([RNFBMessagingSerializer APNSTokenFromNSData:apnsToken]);
   } else {
-#if !(TARGET_IPHONE_SIMULATOR)
+#if TARGET_IPHONE_SIMULATOR
+#if !TARGET_CPU_ARM64
+    DLog(@"RNFBMessaging getAPNSToken - Simulator without APNS support detected, with no token "
+         @"set. Use setAPNSToken with an arbitrary string if needed for testing.")
+        resolve([NSNull null]);
+    return;
+#endif
+    DLog(@"RNFBMessaging getAPNSToken - ARM64 Simulator detected, but no APNS token set. Assuming "
+         @"APNS token is possible. macOS13+ / iOS16+ / M1 mac required for assumption to be valid. "
+         @"Use setAPNSToken in testing if needed.");
+#endif
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == NO) {
       [RNFBSharedUtils
           rejectPromiseWithUserInfo:reject
@@ -172,9 +188,26 @@ RCT_EXPORT_METHOD(getAPNSToken : (RCTPromiseResolveBlock)resolve : (RCTPromiseRe
                            }];
       return;
     }
-#endif
-    resolve([NSNull null]);
   }
+}
+
+RCT_EXPORT_METHOD(setAPNSToken
+                  : (NSString *)token
+                  : (NSString *)type
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  // Default to unknown (determined by provisioning profile) type, but user may have passed type as
+  // param
+  FIRMessagingAPNSTokenType tokenType = FIRMessagingAPNSTokenTypeUnknown;
+  if (type != nil && [@"prod" isEqualToString:type]) {
+    tokenType = FIRMessagingAPNSTokenTypeProd;
+  } else if (type != nil && [@"sandbox" isEqualToString:type]) {
+    tokenType = FIRMessagingAPNSTokenTypeSandbox;
+  }
+
+  [[FIRMessaging messaging] setAPNSToken:[RNFBMessagingSerializer APNSTokenDataFromNSString:token]
+                                    type:tokenType];
+  resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(getIsHeadless : (RCTPromiseResolveBlock)resolve : (RCTPromiseRejectBlock)reject) {
@@ -267,12 +300,19 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
 #if TARGET_IPHONE_SIMULATOR
+#if !TARGET_CPU_ARM64
+  // Do the registration on this unsupported simulator, but don't set up to wait for a token that
+  // won't arrive
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
   resolve(@([RCTConvert BOOL:@(YES)]));
   return;
 #endif
+  DLog(@"RNFBMessaging registerForRemoteNotifications ARM64 Simulator detected, attempting real "
+       @"registration. macOS13+ / iOS16+ / M1 mac required or will timeout.")
+#endif
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
-  if (@available(iOS 10.0, *)) {
+      if (@available(iOS 10.0, *)) {
 #pragma pop
     if ([UIApplication sharedApplication].isRegisteredForRemoteNotifications == YES) {
       resolve(@([RCTConvert BOOL:@(YES)]));
@@ -286,7 +326,8 @@ RCT_EXPORT_METHOD(registerForRemoteNotifications
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication] registerForRemoteNotifications];
     });
-  } else {
+  }
+  else {
     [RNFBSharedUtils
         rejectPromiseWithUserInfo:reject
                          userInfo:[@{
