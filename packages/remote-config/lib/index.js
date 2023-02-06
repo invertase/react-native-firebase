@@ -30,6 +30,7 @@ import {
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
 import version from './version';
+import { Platform } from 'react-native';
 
 export {
   getRemoteConfig,
@@ -82,6 +83,7 @@ class FirebaseConfigModule extends FirebaseModule {
     };
     this._lastFetchTime = -1;
     this._values = {};
+    this._isWeb = Platform.OS !== 'ios' && Platform.OS !== 'android';
   }
 
   get defaultConfig() {
@@ -102,7 +104,7 @@ class FirebaseConfigModule extends FirebaseModule {
     // updates defaults on the instance. We then pass to web platform to update. We do this because
     // there is no way to "await" a setter.
     this._updateFromConstants(defaults);
-    this.setDefaults(defaults);
+    this.setDefaults.call(this, defaults, true);
   }
 
   get settings() {
@@ -110,35 +112,12 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   set settings(settings) {
-    if (!isObject(settings)) {
-      throw new Error('firebase.remoteConfig().settings = object: settings must set an object.');
-    }
-
-    if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
-      if (!isNumber(settings.minimumFetchIntervalMillis)) {
-        throw new Error(
-          "firebase.remoteConfig().settings = settings: 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
-        );
-      }
-    }
-
-    if (hasOwnProperty(settings, 'fetchTimeMillis')) {
-      if (!isNumber(settings.fetchTimeMillis)) {
-        throw new Error(
-          "firebase.remoteConfig().settings = settings: 'settings.fetchTimeMillis' must be a number type in milliseconds.",
-        );
-      }
-    }
-    this._settings = {
-      fetchTimeMillis: settings.fetchTimeMillis,
-      minimumFetchIntervalMillis: settings.minimumFetchIntervalMillis,
-    };
     // To make Firebase web v9 API compatible, we update the settings first so it immediately
     // updates settings on the instance. We then pass to web platform to update. We do this because
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
-    // TODO - not sure whether we would be calling this?
-    this.native.setConfigSettings(this._settings);
+    this._updateFromConstants(settings);
+    this.setConfigSettings.call(this, settings, true);
   }
 
   getValue(key) {
@@ -196,37 +175,49 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   setConfigSettings(settings) {
-    const nativeSettings = {
-      //iOS & Android expect seconds
-      fetchTimeout: this._settings.fetchTimeMillis / 1000,
-      minimumFetchInterval: this._settings.minimumFetchIntervalMillis / 1000,
-    };
-
+    const updatedSettings = {};
+    if (!this._isWeb) {
+      updatedSettings.fetchTimeMillis = this._settings.fetchTimeMillis;
+      updatedSettings.minimumFetchIntervalMillis = this._settings.minimumFetchIntervalMillis;
+    } else {
+      //iOS & Android expect seconds & different property names
+      updatedSettings.fetchTimeout = this._settings.fetchTimeMillis / 1000;
+      updatedSettings.minimumFetchInterval = this._settings.minimumFetchIntervalMillis / 1000;
+    }
+    const apiCalled = arguments[1] == true ? 'settings' : 'setConfigSettings';
     if (!isObject(settings)) {
-      throw new Error('firebase.remoteConfig().setConfigSettings(*): settings must set an object.');
+      throw new Error(`firebase.remoteConfig().${apiCalled}(*): settings must set an object.`);
     }
 
     if (hasOwnProperty(settings, 'minimumFetchIntervalMillis')) {
       if (!isNumber(settings.minimumFetchIntervalMillis)) {
         throw new Error(
-          "firebase.remoteConfig().setConfigSettings(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.",
+          `firebase.remoteConfig().${apiCalled}(): 'settings.minimumFetchIntervalMillis' must be a number type in milliseconds.`,
         );
       } else {
-        nativeSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+        if (this._isWeb) {
+          updatedSettings.minimumFetchIntervalMillis = settings.minimumFetchIntervalMillis;
+        } else {
+          updatedSettings.minimumFetchInterval = settings.minimumFetchIntervalMillis / 1000;
+        }
       }
     }
 
     if (hasOwnProperty(settings, 'fetchTimeMillis')) {
       if (!isNumber(settings.fetchTimeMillis)) {
         throw new Error(
-          "firebase.remoteConfig().setConfigSettings(): 'settings.fetchTimeMillis' must be a number type in milliseconds.",
+          `firebase.remoteConfig().${apiCalled}(): 'settings.fetchTimeMillis' must be a number type in milliseconds.`,
         );
       } else {
-        nativeSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
+        if (this._isWeb) {
+          updatedSettings.fetchTimeMillis = settings.fetchTimeMillis;
+        } else {
+          updatedSettings.fetchTimeout = settings.fetchTimeMillis / 1000;
+        }
       }
     }
 
-    return this._promiseWithConstants(this.native.setConfigSettings(nativeSettings));
+    return this._promiseWithConstants(this.native.setConfigSettings(updatedSettings));
   }
 
   /**
@@ -269,8 +260,9 @@ class FirebaseConfigModule extends FirebaseModule {
    * @param {object} defaults
    */
   setDefaults(defaults) {
+    const apiCalled = arguments[1] === true ? 'defaultConfig' : 'setDefaults';
     if (!isObject(defaults)) {
-      throw new Error("firebase.remoteConfig().setDefaults(): 'defaults' must be an object.");
+      throw new Error(`firebase.remoteConfig().${apiCalled}(): 'defaults' must be an object.`);
     }
 
     return this._promiseWithConstants(this.native.setDefaults(defaults));
@@ -291,13 +283,27 @@ class FirebaseConfigModule extends FirebaseModule {
   }
 
   _updateFromConstants(constants) {
-    this._lastFetchTime = constants.lastFetchTime;
-    this._lastFetchStatus = constants.lastFetchStatus;
+    // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
+    if (constants.lastFetchTime) {
+      this._lastFetchTime = constants.lastFetchTime;
+    }
 
-    this._settings = {
-      fetchTimeMillis: constants.fetchTimeout * 1000,
-      minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
-    };
+    // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
+    if (constants.lastFetchStatus) {
+      this._lastFetchStatus = constants.lastFetchStatus;
+    }
+
+    if (this._isWeb) {
+      this._settings = {
+        fetchTimeMillis: constants.fetchTimeMillis,
+        minimumFetchIntervalMillis: constants.minimumFetchIntervalMillis,
+      };
+    } else {
+      this._settings = {
+        fetchTimeMillis: constants.fetchTimeout * 1000,
+        minimumFetchIntervalMillis: constants.minimumFetchInterval * 1000,
+      };
+    }
 
     this._values = Object.freeze(constants.values);
   }
