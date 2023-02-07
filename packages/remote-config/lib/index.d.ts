@@ -55,7 +55,10 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  */
 export namespace FirebaseRemoteConfigTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
-
+  /**
+   * Defines levels of Remote Config logging. Web only.
+   */
+  export declare type RemoteConfigLogLevel = 'debug' | 'error' | 'silent';
   /**
    * A pseudo-enum for usage with ConfigSettingsRead.lastFetchStatus to determine the last fetch status.
    *
@@ -284,6 +287,11 @@ export namespace FirebaseRemoteConfigTypes {
   }
 
   /**
+   * The status of the latest Remote RemoteConfig fetch action.
+   */
+  type LastFetchStatusType = 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+
+  /**
    * The Firebase Remote RemoteConfig service interface.
    *
    * > This module is available for the default app only.
@@ -306,7 +314,7 @@ export namespace FirebaseRemoteConfigTypes {
      *
      * See the `LastFetchStatus` statics definition.
      */
-    lastFetchStatus: 'success' | 'failure' | 'no_fetch_yet' | 'throttled';
+    lastFetchStatus: LastFetchStatusType;
 
     /**
      * Provides an object which provides the properties `minimumFetchIntervalMillis` & `fetchTimeMillis` if they have been set
@@ -314,7 +322,12 @@ export namespace FirebaseRemoteConfigTypes {
      * can be found above
      *
      */
-    settings: { fetchTimeMillis: number; minimumFetchIntervalMillis: number };
+    settings: ConfigSettings;
+
+    /**
+     * Provides an object with the type ConfigDefaults for default configuration values
+     */
+    defaultConfig: ConfigDefaults;
 
     /**
      * Set the Remote RemoteConfig settings, currently able to set `fetchTimeMillis` & `minimumFetchIntervalMillis`
