@@ -101,7 +101,7 @@ class FirebaseConfigModule extends FirebaseModule {
       throw new Error("firebase.remoteConfig().defaultConfig: 'defaults' must be an object.");
     }
     // To make Firebase web v9 API compatible, we update the config first so it immediately
-    // updates defaults on the instance. We then pass to web platform to update. We do this because
+    // updates defaults on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter.
     this._updateFromConstants(defaults);
     this.setDefaults.call(this, defaults, true);
@@ -113,7 +113,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   set settings(settings) {
     // To make Firebase web v9 API compatible, we update the settings first so it immediately
-    // updates settings on the instance. We then pass to web platform to update. We do this because
+    // updates settings on the instance. We then pass to underlying SDK to update. We do this because
     // there is no way to "await" a setter. We can't delegate to `setConfigSettings()` as it is setup
     // for native.
     this._updateFromConstants(settings);
@@ -176,7 +176,7 @@ class FirebaseConfigModule extends FirebaseModule {
 
   setConfigSettings(settings) {
     const updatedSettings = {};
-    if (!this._isWeb) {
+    if (this._isWeb) {
       updatedSettings.fetchTimeMillis = this._settings.fetchTimeMillis;
       updatedSettings.minimumFetchIntervalMillis = this._settings.minimumFetchIntervalMillis;
     } else {
