@@ -237,7 +237,7 @@ export namespace FirebaseFirestoreTypes {
      *
      * @param collectionPath A slash-separated path to a collection.
      */
-    collection(collectionPath: string): CollectionReference;
+    collection<U extends DocumentData>(collectionPath: string): CollectionReference<U>;
 
     /**
      * Deletes the document referred to by this DocumentReference.
