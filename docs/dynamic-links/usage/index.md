@@ -100,6 +100,21 @@ Example:
 
 If you don't add this, the dynamic link will invoke your app, but you cannot retrieve any deep link data you may need within your app, as the deep link will be completely ignored.
 
+> If you are using Expo Managed Workflow, you can add the dynamic link URL prefix into your [app.json/app.config.js](https://docs.expo.dev/versions/latest/config/app) file by using the `FirebaseDynamicLinksCustomDomains` key in [`expo.ios.infoPlist`](https://docs.expo.dev/versions/latest/config/app/#infoplist) section.
+> ```json
+> {
+>   "expo": {
+>     "ios": {
+>       "infoPlist": {
+>         "FirebaseDynamicLinksCustomDomains": [
+>           "https://custom.domain.io/bla",
+>           "https://custom.domain.io/bla2",
+>         ],
+>       }
+>     }
+>   }
+> }
+> ```
 Additionally specify the allowed URLs (by clicking the 3 dot menu icon > `Allowlist URL pattern` from the Dynamic Links page of the Firebase console) using regular expressions. Any URL that doesn't match one of the patterns will cause your Dynamic Links to return HTTP error 400.
 
 ## iOS Troubleshooting
