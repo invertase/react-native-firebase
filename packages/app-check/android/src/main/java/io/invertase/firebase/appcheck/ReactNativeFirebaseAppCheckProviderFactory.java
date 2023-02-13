@@ -18,17 +18,17 @@ package io.invertase.firebase.appcheck;
  */
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProvider;
 import com.google.firebase.appcheck.AppCheckProviderFactory;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ReactNativeFirebaseAppCheckProviderFactory implements AppCheckProviderFactory {
   private static final String LOGTAG = "RNFBAppCheck";
 
   // This object has one job - create + maintain control over one provider per app
-  public Map<String, ReactNativeFirebaseAppCheckProvider> providers = new HashMap();
+  public HashMap<String, ReactNativeFirebaseAppCheckProvider> providers = new HashMap<>();
 
   // Our provider will serve as a facade to all the supported native providers,
   // we will just pass through configuration calls to it
@@ -41,7 +41,7 @@ public class ReactNativeFirebaseAppCheckProviderFactory implements AppCheckProvi
             + providerName
             + (debugToken != null ? "/(not shown)" : "/null"));
 
-    ReactNativeFirebaseAppCheckProvider provider = null;
+    ReactNativeFirebaseAppCheckProvider provider;
 
     // Look up the correct provider for the given appName, create it if not created
     provider = providers.get(appName);
@@ -52,6 +52,7 @@ public class ReactNativeFirebaseAppCheckProviderFactory implements AppCheckProvi
     provider.configure(appName, providerName, debugToken);
   }
 
+  @NonNull
   public AppCheckProvider create(FirebaseApp firebaseApp) {
     String appName = firebaseApp.getName();
     Log.d(LOGTAG, "ProviderFactory::create - fetching provider for app " + appName);

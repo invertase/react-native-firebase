@@ -18,15 +18,19 @@ package io.invertase.firebase.appcheck;
  */
 
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.AppCheckProvider;
-import com.google.firebase.appcheck.AppCheckProviderFactory;
 import com.google.firebase.appcheck.AppCheckToken;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
+import com.google.firebase.appcheck.debug.InternalDebugSecretProvider;
+import com.google.firebase.appcheck.debug.internal.DebugAppCheckProvider;
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
-import java.lang.reflect.Constructor;
+import com.google.firebase.inject.Provider;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // Facade for all possible provider factory delegates,
 // configurable dynamically instead of at startup
@@ -35,6 +39,7 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
 
   AppCheckProvider delegateProvider;
 
+  @NonNull
   @Override
   public Task<AppCheckToken> getToken() {
     Log.d(LOGTAG, "Provider::getToken - delegating to native provider");
@@ -58,13 +63,25 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
 
         // the debug configuration may have a token, or may not
         if (debugToken != null) {
-          // Create a debug provider using hidden factory constructor and our debug token
-          Class<DebugAppCheckProviderFactory> debugACFactoryClass =
-              DebugAppCheckProviderFactory.class;
-          Class<?>[] argType = {String.class};
-          Constructor c = debugACFactoryClass.getDeclaredConstructor(argType);
-          Object[] cArgs = {debugToken};
-          delegateProvider = ((AppCheckProviderFactory) c.newInstance(cArgs)).create(app);
+          // To use this token, create debug provider using local secret provider + standard thread
+          // pool
+          ExecutorService executor = Executors.newCachedThreadPool();
+          delegateProvider =
+              new DebugAppCheckProvider(
+                  app,
+                  new Provider<InternalDebugSecretProvider>() {
+                    public InternalDebugSecretProvider get() {
+                      return new InternalDebugSecretProvider() {
+                        public String getDebugSecret() {
+                          return debugToken;
+                        }
+                      };
+                    }
+                  },
+                  executor,
+                  executor,
+                  executor);
+
         } else {
           delegateProvider = DebugAppCheckProviderFactory.getInstance().create(app);
         }
