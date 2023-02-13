@@ -38,18 +38,14 @@
 
   // - determine if debugToken is provided via nullable arg
   if ([providerName isEqualToString:@"debug"]) {
-    // TODO: Currently not handling debugToken argument, relying on existing environment
-    //       variable configuration style.
-    //     - maybe directly setting an environment variable could work?
-    //     https://stackoverflow.com/questions/27139589/whats-the-idiomatic-way-of-setting-an-environment-variable-in-objective-c-coco
-    //     - ...otherwise if env var does not work
-    //       - subclass style: RNFBAppCheckDebugProvider, and we should print local token
-    //       - if a debugToken parameter was supplied, set
-    //       RNFBAppCheckDebugProvider.configuredDebugToken
-    //     - print local token
-    //     https://github.com/firebase/firebase-ios-sdk/blob/c7e95996ff/FirebaseAppCheck/Sources/DebugProvider/FIRAppCheckDebugProviderFactory.m
-    //     - print if current token in provided by configuration, by environment variable, or local
-    //     token?
+    // The firebase-ios-sdk debug app check provider will take a token from environment if it
+    // exists:
+    if (debugToken != nil) {
+      // We have a debug token, so just need to stuff it in the environment and it will hook up
+      char *key = "FIRAAppCheckDebugToken", *value = [debugToken UTF8String];
+      int overwrite = 1;
+      setenv(key, value, overwrite);
+    }
 
     self.delegateProvider = [[FIRAppCheckDebugProvider new] initWithApp:app];
   }

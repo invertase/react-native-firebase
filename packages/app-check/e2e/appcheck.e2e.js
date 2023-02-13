@@ -27,6 +27,7 @@ describe('appCheck()', function () {
       },
       apple: {
         provider: 'debug',
+        debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
       },
       web: {
         provider: 'debug',
