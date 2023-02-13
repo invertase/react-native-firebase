@@ -61,13 +61,26 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
     this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
 
+    if (options.provider === undefined || options.provider.providerOptions === undefined) {
+      throw new Error('Invalid configuration: no provider or no provider options defined.');
+    }
     if (Platform.OS === 'android') {
+      if (!isString(options.provider.providerOptions.android.provider)) {
+        throw new Error(
+          'Invalid configuration: no android provider configured while on android platform.',
+        );
+      }
       return this.native.configureProvider(
         options.provider.providerOptions.android.provider,
         options.provider.providerOptions.android.debugToken,
       );
     }
     if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+      if (!isString(options.provider.providerOptions.apple.provider)) {
+        throw new Error(
+          'Invalid configuration: no apple provider configured while on apple platform.',
+        );
+      }
       return this.native.configureProvider(
         options.provider.providerOptions.apple.provider,
         options.provider.providerOptions.apple.debugToken,
