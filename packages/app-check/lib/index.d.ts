@@ -194,6 +194,11 @@ export namespace FirebaseAppCheckTypes {
    */
   export class Module extends FirebaseModule {
     /**
+     * create a ReactNativeFirebaseAppCheckProvider option for use in react-native-firebase
+     */
+    newReactNativeFirebaseAppCheckProvider(): ReactNativeFirebaseAppCheckProvider;
+
+    /**
      * initialize the AppCheck module. Note that in react-native-firebase AppCheckOptions must always
      * be an object with a `provider` member containing `ReactNativeFirebaseAppCheckProvider` that has returned successfully
      * from a call to the `configure` method, with sub-providers for the various platforms configured to meet your project
