@@ -103,10 +103,12 @@ To configure the react-native-firebase custom provider, first obtain one, then c
 rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
 rnfbProvider.configure({
   android: {
-    provider: 'playIntegrity',
+    provider: __DEV__ ? 'debug' : 'playIntegrity',
+    debugToken: 'some token you have configured for your project firebase web console',
   },
   apple: {
-    provider: 'appAttestWithDeviceCheckFallback',
+    provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',
+    debugToken: 'some token you have configured for your project firebase web console',
   },
   web: {
     provider: 'reCaptchaV3',
@@ -157,20 +159,20 @@ There are a variety of other ways to obtain and configure debug tokens for AppCh
 
 #### A) When testing on an actual android device (debug build)
 
-1.  Start your application on the android device.
-2.  Use `$adb logcat | grep DebugAppCheckProvider` to grab your temporary secret from the android logs. The output should look lit this:
+1. Start your application on the android device.
+2. Use `$adb logcat | grep DebugAppCheckProvider` to grab your temporary secret from the android logs. The output should look lit this:
 
         D DebugAppCheckProvider: Enter this debug secret into the allow list in
         the Firebase Console for your project: XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 
-3.  In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register the debug token you logged in the previous step.
+3. In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register the debug token you logged in the previous step.
 
 #### B) Specifying a generated `FIREBASE_APP_CHECK_DEBUG_TOKEN` -- building for CI/CD (debug build)
 
 When you want to test using an Android virtual device -or- when you prefer to (re)use a token of your choice -- e.g. when configuring a CI/CD pipeline -- use the following steps:
 
-1.  In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register a new debug token by clicking the _Add debug token_ button, then _Generate token_.
-2.  Pass the token you created in the previous step by supplying a `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable to the process that build your react-native android app. e.g.:
+1. In the [Project Settings > App Check](https://console.firebase.google.com/project/_/settings/appcheck) section of the Firebase console, choose _Manage debug tokens_ from your app's overflow menu. Then, register a new debug token by clicking the _Add debug token_ button, then _Generate token_.
+2. Pass the token you created in the previous step by supplying a `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable to the process that build your react-native android app. e.g.:
 
         FIREBASE_APP_CHECK_DEBUG_TOKEN="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" react-native run-android
 
@@ -201,6 +203,6 @@ When using expo-dev-client, the process is a little different, especially on an 
 }
 ```
 
-3.  Rebuild your development client:
+3. Rebuild your development client:
 
         eas build --profile development --platform android
