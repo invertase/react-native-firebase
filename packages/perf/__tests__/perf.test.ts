@@ -13,10 +13,10 @@ describe('Performance Monitoring', function () {
 
   describe('setPerformanceCollectionEnabled', function () {
     it('errors if not boolean', function () {
-      expect(() => {
+      expect(async () => {
         // @ts-ignore
-        perf().setPerformanceCollectionEnabled();
-      }).toThrow('must be a boolean');
+        await perf().setPerformanceCollectionEnabled();
+      }).rejects.toThrow('must be a boolean');
     });
   });
 
@@ -109,7 +109,7 @@ describe('Performance Monitoring', function () {
     it('errors if not boolean', async function () {
       try {
         // @ts-ignore
-        firebase.perf().setPerformanceCollectionEnabled();
+        await firebase.perf().setPerformanceCollectionEnabled();
         return Promise.reject(new Error('Did not throw'));
       } catch (e: any) {
         expect(e.message).toEqual(

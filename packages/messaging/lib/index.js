@@ -51,6 +51,7 @@ export {
   isDeviceRegisteredForRemoteMessages,
   unregisterDeviceForRemoteMessages,
   getAPNSToken,
+  setAPNSToken,
   hasPermission,
   onDeletedMessages,
   onMessageSent,
@@ -338,6 +339,27 @@ class FirebaseMessagingModule extends FirebaseModule {
       return Promise.resolve(null);
     }
     return this.native.getAPNSToken();
+  }
+
+  /**
+   * @platform ios
+   */
+  setAPNSToken(token, type) {
+    if (isUndefined(token) || !isString(token)) {
+      throw new Error("firebase.messaging().setAPNSToken(*) 'token' expected a string value.");
+    }
+
+    if (!isUndefined(type) && (!isString(type) || !['prod', 'sandbox', 'unknown'].includes(type))) {
+      throw new Error(
+        "firebase.messaging().setAPNSToken(*) 'type' expected one of 'prod', 'sandbox', or 'unknown'.",
+      );
+    }
+
+    if (isAndroid) {
+      return Promise.resolve(null);
+    }
+
+    return this.native.setAPNSToken(token, type);
   }
 
   hasPermission() {

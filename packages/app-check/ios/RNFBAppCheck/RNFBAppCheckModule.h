@@ -19,6 +19,12 @@
 
 #import <React/RCTBridgeModule.h>
 
+#import "RNFBAppCheckProviderFactory.h"
+
 @interface RNFBAppCheckModule : NSObject <RCTBridgeModule>
+
+@property RNFBAppCheckProviderFactory* _Nullable providerFactory;
+
++ (_Nonnull instancetype)sharedInstance;
 
 @end

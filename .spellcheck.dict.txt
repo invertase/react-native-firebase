@@ -44,7 +44,9 @@ config-plugin
 CP-User
 crashlytics
 Crashlytics
+CustomProvider
 datastore
+debugToken
 DebugView
 deprecations
 Deprecations
@@ -67,6 +69,7 @@ firebase
 Firebase
 firebase-admin
 firebase-ios-sdk
+firebase-js-sdk
 FirebaseApp
 firestore
 Firestore
@@ -129,6 +132,7 @@ performant
 personalization
 plist
 Podfile
+pre-configured
 pre-fetched
 pre-release
 pre-rendered

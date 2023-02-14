@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.1.0](https://github.com/invertase/react-native-firebase/compare/v17.0.0...v17.1.0) (2023-02-09)
+
+**Note:** Version bump only for package @react-native-firebase/messaging
+
+## [17.0.0](https://github.com/invertase/react-native-firebase/compare/v16.7.0...v17.0.0) (2023-02-02)
+
+### ⚠ BREAKING CHANGES
+
+- **app, ios:** You must have an APNS token before calling getToken to
+  get an FCM token on iOS. Previously it was not required. See documentation
+  for setAPNSToken if you are using getToken in testing or have disabled
+  FCM Swizzling, and use setAPNSToken to set a token before using getToken
+
+### Features
+
+- **app, ios:** adopt firebase-ios-sdk 10.4.0 ([1b8df4c](https://github.com/invertase/react-native-firebase/commit/1b8df4c8e55d474c09e301f9c7b58b6128ae6485))
+- **messaging, ios:** new setAPNSToken API / getToken works on M1 Simulator ([8d75b36](https://github.com/invertase/react-native-firebase/commit/8d75b36f485af07ecfa653192ca56f761d0cc5b7))
+
 ## [16.7.0](https://github.com/invertase/react-native-firebase/compare/v16.6.0...v16.7.0) (2023-01-28)
 
 **Note:** Version bump only for package @react-native-firebase/messaging

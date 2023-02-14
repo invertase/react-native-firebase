@@ -21,6 +21,8 @@ import {
   FirebaseModule,
   getFirebaseRoot,
 } from '@react-native-firebase/app/lib/internal';
+import { Platform } from 'react-native';
+import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckProvider';
 
 import version from './version';
 
@@ -31,27 +33,83 @@ const namespace = 'appCheck';
 const nativeModuleName = 'RNFBAppCheckModule';
 
 class FirebaseAppCheckModule extends FirebaseModule {
+  getIsTokenRefreshEnabledDefault() {
+    // no default to start
+    isTokenAutoRefreshEnabled = undefined;
+
+    return isTokenAutoRefreshEnabled;
+  }
+
+  newReactNativeFirebaseAppCheckProvider() {
+    return new ReactNativeFirebaseAppCheckProvider();
+  }
+
+  initializeAppCheck(options) {
+    // determine token refresh setting, if not specified
+    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+      options.isTokenAutoRefreshEnabled = this.firebaseJson.app_check_token_auto_refresh;
+    }
+
+    // If that was not defined, attempt to use app-wide data collection setting per docs:
+    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+      options.isTokenAutoRefreshEnabled = this.firebaseJson.app_data_collection_default_enabled;
+    }
+
+    // If that also was not defined, the default is documented as true.
+    if (!isBoolean(options.isTokenAutoRefreshEnabled)) {
+      options.isTokenAutoRefreshEnabled = true;
+    }
+    this.native.setTokenAutoRefreshEnabled(options.isTokenAutoRefreshEnabled);
+
+    if (options.provider === undefined || options.provider.providerOptions === undefined) {
+      throw new Error('Invalid configuration: no provider or no provider options defined.');
+    }
+    if (Platform.OS === 'android') {
+      if (!isString(options.provider.providerOptions.android.provider)) {
+        throw new Error(
+          'Invalid configuration: no android provider configured while on android platform.',
+        );
+      }
+      return this.native.configureProvider(
+        options.provider.providerOptions.android.provider,
+        options.provider.providerOptions.android.debugToken,
+      );
+    }
+    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+      if (!isString(options.provider.providerOptions.apple.provider)) {
+        throw new Error(
+          'Invalid configuration: no apple provider configured while on apple platform.',
+        );
+      }
+      return this.native.configureProvider(
+        options.provider.providerOptions.apple.provider,
+        options.provider.providerOptions.apple.debugToken,
+      );
+    }
+    throw new Error('Unsupported platform: ' + Platform.OS);
+  }
+
   activate(siteKeyOrProvider, isTokenAutoRefreshEnabled) {
     if (!isString(siteKeyOrProvider)) {
       throw new Error('siteKeyOrProvider must be a string value to match firebase-js-sdk API');
     }
 
-    // If the caller did not specify token refresh, attempt to use app-check specific setting:
-    if (!isBoolean(isTokenAutoRefreshEnabled)) {
-      isTokenAutoRefreshEnabled = this.firebaseJson.app_check_token_auto_refresh;
-    }
+    // We wrap our new flexible interface, with compatible defaults
+    rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
+    rnfbProvider.configure({
+      android: {
+        provider: 'safetyNet',
+      },
+      apple: {
+        provider: 'deviceCheck',
+      },
+      web: {
+        provider: 'reCaptchaV3',
+        siteKey: 'none',
+      },
+    });
 
-    // If that was not defined, attempt to use app-wide data collection setting per docs:
-    if (!isBoolean(isTokenAutoRefreshEnabled)) {
-      isTokenAutoRefreshEnabled = this.firebaseJson.app_data_collection_default_enabled;
-    }
-
-    // If that also was not defined, the default is documented as true.
-    if (!isBoolean(isTokenAutoRefreshEnabled)) {
-      isTokenAutoRefreshEnabled = true;
-    }
-
-    return this.native.activate(siteKeyOrProvider, isTokenAutoRefreshEnabled);
+    return this.initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled });
   }
 
   setTokenAutoRefreshEnabled(isTokenAutoRefreshEnabled) {

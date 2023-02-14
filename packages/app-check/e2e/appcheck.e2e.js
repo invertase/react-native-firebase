@@ -18,6 +18,29 @@
 const jwt = require('jsonwebtoken');
 
 describe('appCheck()', function () {
+  before(function () {
+    rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+    rnfbProvider.configure({
+      android: {
+        provider: 'debug',
+        debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+      },
+      apple: {
+        provider: 'debug',
+        debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+      },
+      web: {
+        provider: 'debug',
+        siteKey: 'none',
+      },
+    });
+
+    // Our tests configure a debug provider with shared secret so we should get a valid token
+    firebase
+      .appCheck()
+      .initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: false });
+  });
+
   describe('config', function () {
     // This depends on firebase.json containing a false value for token auto refresh, we
     // verify here that it was carried in to the Info.plist correctly
@@ -36,21 +59,39 @@ describe('appCheck()', function () {
   });
 
   describe('setTokenAutoRefresh())', function () {
-    it('should set token refresh', function () {
+    it('should set token refresh', async function () {
       firebase.appCheck().setTokenAutoRefreshEnabled(false);
+
+      // Only iOS lets us assert on this unfortunately, other platforms have no accessor
+      if (device.getPlatform() === 'ios') {
+        let tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
+          '[DEFAULT]',
+        );
+        tokenRefresh.should.equal(false);
+      }
+      firebase.appCheck().setTokenAutoRefreshEnabled(true);
+      // Only iOS lets us assert on this unfortunately, other platforms have no accessor
+      if (device.getPlatform() === 'ios') {
+        tokenRefresh = await NativeModules.RNFBAppCheckModule.isTokenAutoRefreshEnabled(
+          '[DEFAULT]',
+        );
+        tokenRefresh.should.equal(true);
+      }
     });
   });
+
   describe('getToken())', function () {
-    it('token fetch attempt should work', async function () {
-      await firebase.appCheck().activate('ignored', false);
-      // Our tests configure a debug provider with shared secret so we should get a valid token
-      const { token } = await firebase.appCheck().getToken();
+    it('token fetch attempt with configured debug token should work', async function () {
+      const { token } = await firebase.appCheck().getToken(true);
       token.should.not.equal('');
       const decodedToken = jwt.decode(token);
       decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
       if (decodedToken.exp < Date.now()) {
         Promise.reject('Token already expired');
       }
+
+      // on android if you move too fast, you may not get a fresh token
+      await Utils.sleep(2000);
 
       // Force refresh should get a different token?
       // TODO sometimes fails on android https://github.com/firebase/firebase-android-sdk/issues/2954
@@ -63,7 +104,60 @@ describe('appCheck()', function () {
       }
       (token === token2).should.be.false();
     });
+
+    it('token fetch with config switch to invalid then valid should fail then work', async function () {
+      rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
+      rnfbProvider.configure({
+        android: {
+          provider: 'playIntegrity',
+        },
+        apple: {
+          provider: 'appAttest',
+        },
+        web: {
+          provider: 'debug',
+          siteKey: 'none',
+        },
+      });
+
+      // Our tests configure a debug provider with shared secret so we should get a valid token
+      firebase
+        .appCheck()
+        .initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: false });
+      try {
+        await firebase.appCheck().getToken(true);
+        return Promise.reject(new Error('should have thrown an error'));
+      } catch (e) {
+        e.message.should.containEql('appCheck/token-error');
+      }
+
+      rnfbProvider.configure({
+        android: {
+          provider: 'debug',
+          debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+        },
+        apple: {
+          provider: 'debug',
+        },
+        web: {
+          provider: 'debug',
+          siteKey: 'none',
+        },
+      });
+      firebase
+        .appCheck()
+        .initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: false });
+
+      const { token } = await firebase.appCheck().getToken(true);
+      token.should.not.equal('');
+      const decodedToken = jwt.decode(token);
+      decodedToken.aud[1].should.equal('projects/react-native-firebase-testing');
+      if (decodedToken.exp < Date.now()) {
+        Promise.reject('Token already expired');
+      }
+    });
   });
+
   describe('activate())', function () {
     it('should activate with default provider and defined token refresh', function () {
       firebase

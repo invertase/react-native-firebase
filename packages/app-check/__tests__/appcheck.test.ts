@@ -20,4 +20,10 @@ describe('appCheck()', function () {
       );
     });
   });
+
+  describe('react-native-firebase provider', function () {
+    it('correctly creates a provider instance', function () {
+      expect(firebase.appCheck().newReactNativeFirebaseAppCheckProvider()).toBeDefined();
+    });
+  });
 });

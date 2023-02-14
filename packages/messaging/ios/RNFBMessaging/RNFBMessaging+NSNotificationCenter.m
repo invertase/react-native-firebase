@@ -87,12 +87,12 @@
         (RCTRootView *)[UIApplication sharedApplication].delegate.window.rootViewController.view;
   }
 
-#if !(TARGET_IPHONE_SIMULATOR)
+  // #if !(TARGET_IPHONE_SIMULATOR)
   if ([[RNFBJSON shared] getBooleanValue:@"messaging_ios_auto_register_for_remote_messages"
                             defaultValue:YES]) {
     [[UIApplication sharedApplication] registerForRemoteNotifications];
   }
-#endif
+  // #endif
 
   if (notification.userInfo[UIApplicationLaunchOptionsRemoteNotificationKey]) {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
@@ -108,7 +108,7 @@
         }
       }
 
-#if !(TARGET_IPHONE_SIMULATOR)
+      // #if !(TARGET_IPHONE_SIMULATOR)
       // When an app launches in the background (BG mode) and is launched with the notification
       // launch option the app delegate method
       // application:didReceiveRemoteNotification:fetchCompletionHandler: will not get called unless
@@ -118,7 +118,7 @@
       // `messaging_ios_auto_register_for_remote_messages` as this is most likely an app launching
       // as a result of a remote notification - so has been registered previously
       [[UIApplication sharedApplication] registerForRemoteNotifications];
-#endif
+      // #endif
     } else {
       if (rctRootView != nil) {
         isHeadless = NO;

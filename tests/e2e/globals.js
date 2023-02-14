@@ -53,6 +53,12 @@ Object.defineProperty(global, 'NativeEventEmitter', {
   },
 });
 
+Object.defineProperty(global, 'DeviceInfo', {
+  get() {
+    return jet.DeviceInfo;
+  },
+});
+
 Object.defineProperty(global, 'TestsAPI', {
   get() {
     return new TestingApi();
@@ -74,6 +80,18 @@ Object.defineProperty(global, 'functionsModular', {
 Object.defineProperty(global, 'analyticsModular', {
   get() {
     return jet.analyticsModular;
+  },
+});
+
+Object.defineProperty(global, 'remoteConfigModular', {
+  get() {
+    return jet.remoteConfigModular;
+  },
+});
+
+Object.defineProperty(global, 'perfModular', {
+  get() {
+    return jet.perfModular;
   },
 });
 

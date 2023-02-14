@@ -55,6 +55,7 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
     constants.put(
         "isPerformanceCollectionEnabled",
         FirebasePerformance.getInstance().isPerformanceCollectionEnabled());
+    constants.put("isInstrumentationEnabled", true);
     return constants;
   }
 
@@ -105,24 +106,24 @@ public class UniversalFirebasePerfModule extends UniversalFirebaseModule {
 
   Task<Void> startScreenTrace(Activity activity, int id, String identifier) {
     return Tasks.call(
-      () -> {
-        ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
-        screenTrace.recordScreenTrace();
-        screenTraces.put(id, screenTrace);
+        () -> {
+          ScreenTrace screenTrace = new ScreenTrace(activity, identifier);
+          screenTrace.recordScreenTrace();
+          screenTraces.put(id, screenTrace);
 
-        return null;
-      });
+          return null;
+        });
   }
 
   Task<Void> stopScreenTrace(int id) {
     return Tasks.call(
-      () -> {
-        ScreenTrace trace = screenTraces.get(id);
-        trace.sendScreenTrace();
-        screenTraces.remove(id);
+        () -> {
+          ScreenTrace trace = screenTraces.get(id);
+          trace.sendScreenTrace();
+          screenTraces.remove(id);
 
-        return null;
-      });
+          return null;
+        });
   }
 
   Task<Void> startHttpMetric(int id, String url, String httpMethod) {

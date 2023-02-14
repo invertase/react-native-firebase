@@ -881,9 +881,42 @@ export namespace FirebaseMessagingTypes {
      * }
      * ```
      *
-     * @ios
+     * @platform ios
      */
     getAPNSToken(): Promise<string | null>;
+
+    /**
+     * On iOS, This method is used to set the APNs Token received by the application delegate.
+     * Note that the token is expected to be a hexadecimal string, as it is an NSData type in
+     * the underlying native firebase SDK, and raw data may only be passed as a string if it is
+     * hex encoded. Calling code is responsible for correct encoding, you should verify by comparing
+     * the results of `getAPNSToken()` with your token parameter to make sure they are equivalent
+     *
+     * Messaging uses method swizzling to ensure that the APNs token is set automatically.
+     * However, if you have disabled swizzling by setting FirebaseAppDelegateProxyEnabled to NO
+     * in your app’s Info.plist, you should manually set the APNs token in your application
+     * delegate’s application(_:didRegisterForRemoteNotificationsWithDeviceToken:) method.
+     *
+     * If you would like to set the type of the APNs token, rather than relying on automatic
+     * detection, provide a type of either 'prod', 'sandbox'. Omitting the type parameter
+     * or specifying 'unknown' will rely on automatic type detection based on provisioning profile.
+     *
+     * At a native level you may also call objective-c `[FIRMessaging setAPNSToken];` as needed
+     *
+     * > You can safely call this method on Android without platform checks. It's a no-op on Android and will promise resolve `null`.
+     *
+     * #### Example
+     *
+     * ```js
+     * let myAPNSToken = someOthermodule.someWayToGetAPNSToken();
+     * await firebase.messaging().setAPNSToken(myAPNSToken);
+     * ```
+     *
+     * @param token a hexadecimal string representing your APNS token
+     * @param type optional string specifying 'prod', 'sandbox' or 'unknown' token type
+     * @platform ios
+     */
+    setAPNSToken(token: string, type?: string): Promise<void>;
 
     /**
      * Returns a `AuthorizationStatus` as to whether the user has messaging permission for this app.

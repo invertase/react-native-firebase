@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.1.0](https://github.com/invertase/react-native-firebase/compare/v17.0.0...v17.1.0) (2023-02-09)
+
+### Features
+
+- **app, ios:** firebase-ios-sdk 10.5.0 ([cc80d7c](https://github.com/invertase/react-native-firebase/commit/cc80d7c11f533b292d1f5b681a05a206ddc93e9c))
+- **perf:** Expose modular API that matches the Firebase web JS SDK v9 API ([#6771](https://github.com/invertase/react-native-firebase/issues/6771)) ([4e170ea](https://github.com/invertase/react-native-firebase/commit/4e170ead24035cd0154b153dcf1e8d69d6ab7ac9))
+- **remote-config:** Expose modular API that matches the Firebase web JS SDK v9 API ([#6868](https://github.com/invertase/react-native-firebase/issues/6868)) ([e1504aa](https://github.com/invertase/react-native-firebase/commit/e1504aabd6ffba5c7d4b85c46ed44e12e0b9f916))
+
+## [17.0.0](https://github.com/invertase/react-native-firebase/compare/v16.7.0...v17.0.0) (2023-02-02)
+
+### ⚠ BREAKING CHANGES
+
+- **app, ios:** You must have an APNS token before calling getToken to
+  get an FCM token on iOS. Previously it was not required. See documentation
+  for setAPNSToken if you are using getToken in testing or have disabled
+  FCM Swizzling, and use setAPNSToken to set a token before using getToken
+
+### Features
+
+- **app-check:** add custom factory/provider; supports all providers ([ee7df85](https://github.com/invertase/react-native-firebase/commit/ee7df855ec0a573df5aa2e26261adf9c292aa7d5))
+- **app, ios:** adopt firebase-ios-sdk 10.4.0 ([1b8df4c](https://github.com/invertase/react-native-firebase/commit/1b8df4c8e55d474c09e301f9c7b58b6128ae6485))
+
 ## [16.7.0](https://github.com/invertase/react-native-firebase/compare/v16.6.0...v16.7.0) (2023-01-28)
 
 ### Features
