@@ -475,7 +475,7 @@ public class DisplayNotificationTask extends AsyncTask<Void, Void, Void> {
       context,
       notificationId.hashCode(),
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT
+      PendingIntent.FLAG_MUTABLE
     );
   }
 
