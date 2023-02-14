@@ -97,7 +97,7 @@ export function setUserProperty(analytics, name, value) {
  *
  * @param analytics Analytics instance.
  * @param properties Set a property value to null to remove it.
- * @param options Additional options that can be passed. Web only.
+ * @param options `AnalyticsCallOptions`. Additional options that can be passed. Web only.
  */
 export function setUserProperties(analytics, properties, options = {}) {
   return analytics.setUserProperties(properties, options);
@@ -539,6 +539,8 @@ export function logViewSearchResults(analytics, object = {}) {
  * parameter with the same name. Valid parameter values are String, long, and double.
  * Setting a key's value to null will clear that parameter. Passing in a null bundle
  * will clear all parameters.
+ * For Web, the values passed persist on the current page and are passed with all 
+ * subsequent events.
  */
 export function setDefaultEventParameters(analytics, params = {}) {
   return analytics.setDefaultEventParameters(params);
@@ -564,7 +566,7 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics,
  * @returns {Promise<boolean>}
  */
 export function isSupported() {
-  // always return "true" for now. Web only.
+  // always return "true" for now until Web implementation. Web only.
   return Promise.resolve(true);
 }
 /**
@@ -575,7 +577,9 @@ export function isSupported() {
  * @returns {void}
  */
 // eslint-disable-next-line
-export function setConsent(consentSettings) {}
+export function setConsent(consentSettings) {
+  // Returns nothing until Web implemented.
+}
 
 /**
  * Configures Firebase Analytics to use custom gtag or dataLayer names.
