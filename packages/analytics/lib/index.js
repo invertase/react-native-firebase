@@ -232,7 +232,7 @@ class FirebaseAnalyticsModule extends FirebaseModule {
         );
       }
 
-      if (!isBoolean(options.global)) {
+      if (!isUndefined(options.global) && !isBoolean(options.global)) {
         throw new Error("'options.global' property expected a boolean.");
       }
     }
