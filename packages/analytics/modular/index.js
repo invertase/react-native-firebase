@@ -539,7 +539,7 @@ export function logViewSearchResults(analytics, object = {}) {
  * parameter with the same name. Valid parameter values are String, long, and double.
  * Setting a key's value to null will clear that parameter. Passing in a null bundle
  * will clear all parameters.
- * For Web, the values passed persist on the current page and are passed with all 
+ * For Web, the values passed persist on the current page and are passed with all
  * subsequent events.
  */
 export function setDefaultEventParameters(analytics, params = {}) {
@@ -591,4 +591,6 @@ export function setConsent(consentSettings) {
  * @returns {void}
  */
 // eslint-disable-next-line
-export function settings(options) {}
+export function settings(options) {
+  // Returns nothing until Web implemented.
+}
