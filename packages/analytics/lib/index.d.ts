@@ -920,7 +920,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     setUserProperties(
       properties: { [key: string]: string | null },
-      options: AnalyticsCallOptions,
+      options?: AnalyticsCallOptions,
     ): Promise<void>;
 
     /**
