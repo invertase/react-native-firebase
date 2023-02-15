@@ -190,7 +190,7 @@ describe('appCheck() modular', function () {
 
   describe('modular', function () {
     var appCheckInstance;
-    before(function () {
+    before(async function () {
       const { initializeAppCheck } = appCheckModular;
 
       rnfbProvider = firebase.appCheck().newReactNativeFirebaseAppCheckProvider();
@@ -210,7 +210,7 @@ describe('appCheck() modular', function () {
       });
 
       // Our tests configure a debug provider with shared secret so we should get a valid token
-      appCheckInstance = initializeAppCheck(undefined, {
+      appCheckInstance = await initializeAppCheck(undefined, {
         provider: rnfbProvider,
         isTokenAutoRefreshEnabled: false,
       });
@@ -219,6 +219,8 @@ describe('appCheck() modular', function () {
     describe('setTokenAutoRefresh())', function () {
       it('should set token refresh', async function () {
         const { setTokenAutoRefreshEnabled } = appCheckModular;
+
+        console.log(appCheckInstance);
 
         setTokenAutoRefreshEnabled(appCheckInstance, false);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
@@ -284,7 +286,7 @@ describe('appCheck() modular', function () {
         });
 
         // Our tests configure a debug provider with shared secret so we should get a valid token
-        const instance1 = initializeAppCheck(undefined, {
+        const instance1 = await initializeAppCheck(undefined, {
           provider: rnfbProvider,
           isTokenAutoRefreshEnabled: false,
         });
@@ -308,7 +310,7 @@ describe('appCheck() modular', function () {
             siteKey: 'none',
           },
         });
-        const instance2 = initializeAppCheck(undefined, {
+        const instance2 = await initializeAppCheck(undefined, {
           provider: rnfbProvider,
           isTokenAutoRefreshEnabled: false,
         });
