@@ -135,12 +135,12 @@ export namespace FirebaseAppCheckTypes {
      * so AppCheck has the same experience across all platforms, with the only difference being the native
      * providers you choose to use on each platform.
      */
-    configure(
+    configure(options: {
       web?: ReactNativeFirebaseAppCheckProviderWebOptions,
       android?: ReactNativeFirebaseAppCheckProviderAndroidOptions,
       apple?: ReactNativeFirebaseAppCheckProviderAppleOptions,
       isTokenAutoRefreshEnabled?: boolean,
-    ): Promise<void>;
+    }): Promise<void>;
   }
 
   /**
