@@ -77,6 +77,12 @@ Object.defineProperty(global, 'functionsModular', {
   },
 });
 
+Object.defineProperty(global, 'analyticsModular', {
+  get() {
+    return jet.analyticsModular;
+  },
+});
+
 Object.defineProperty(global, 'remoteConfigModular', {
   get() {
     return jet.remoteConfigModular;
