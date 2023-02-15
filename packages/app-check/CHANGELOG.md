@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.3.0](https://github.com/invertase/react-native-firebase/compare/v17.2.0...v17.3.0) (2023-02-15)
+
+### Features
+
+- **app-check:** Expose modular API that matches the Firebase web JS SDK v9 API ([#6912](https://github.com/invertase/react-native-firebase/issues/6912)) ([bf02676](https://github.com/invertase/react-native-firebase/commit/bf0267609251a5b8e4245c300678fe7d7ea53d92))
+
+### Bug Fixes
+
+- **app-check, types:** Correct ReactNativeFirebaseAppCheckProvider options type ([#6911](https://github.com/invertase/react-native-firebase/issues/6911)) ([5d7241b](https://github.com/invertase/react-native-firebase/commit/5d7241b124dc283852efb4c549f6888005101ecd))
+
 ## [17.2.0](https://github.com/invertase/react-native-firebase/compare/v17.1.0...v17.2.0) (2023-02-15)
 
 ### Features
