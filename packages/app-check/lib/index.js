@@ -26,6 +26,13 @@ import ReactNativeFirebaseAppCheckProvider from './ReactNativeFirebaseAppCheckPr
 
 import version from './version';
 
+export {
+  addTokenListener,
+  getToken,
+  initializeAppCheck,
+  setTokenAutoRefreshEnabled,
+} from './modular/index';
+
 const statics = {};
 
 const namespace = 'appCheck';
