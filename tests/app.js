@@ -16,8 +16,10 @@
  */
 
 import '@react-native-firebase/analytics';
+import * as analyticsModular from '@react-native-firebase/analytics';
 import firebase, * as modular from '@react-native-firebase/app';
 import '@react-native-firebase/app-check';
+import * as appCheckModular from '@react-native-firebase/app-check';
 import '@react-native-firebase/app-distribution';
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 import '@react-native-firebase/app/lib/utils';
@@ -27,20 +29,19 @@ import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
 import * as functionsModular from '@react-native-firebase/functions';
-import * as analyticsModular from '@react-native-firebase/analytics';
-import * as remoteConfigModular from '@react-native-firebase/remote-config';
-import * as messagingModular from '@react-native-firebase/messaging';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
 import '@react-native-firebase/messaging';
+import * as messagingModular from '@react-native-firebase/messaging';
 import '@react-native-firebase/ml';
 import * as perfModular from '@react-native-firebase/perf';
 import '@react-native-firebase/remote-config';
+import * as remoteConfigModular from '@react-native-firebase/remote-config';
 import '@react-native-firebase/storage';
 import jet from 'jet/platform/react-native';
 import React from 'react';
-import DeviceInfo from 'react-native-device-info';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -51,9 +52,8 @@ jet.exposeContextProperty('functionsModular', functionsModular);
 jet.exposeContextProperty('analyticsModular', analyticsModular);
 jet.exposeContextProperty('remoteConfigModular', remoteConfigModular);
 jet.exposeContextProperty('perfModular', perfModular);
-
+jet.exposeContextProperty('appCheckModular', appCheckModular);
 jet.exposeContextProperty('messagingModular', messagingModular);
-
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

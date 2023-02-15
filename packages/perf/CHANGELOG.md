@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.2.0](https://github.com/invertase/react-native-firebase/compare/v17.1.0...v17.2.0) (2023-02-15)
+
+### Features
+
+- **app, android:** firebase-android-sdk 31.2.0 ([87156e7](https://github.com/invertase/react-native-firebase/commit/87156e75e16775db14ef8f9bf6b0049b15ee1277))
+
 ## [17.1.0](https://github.com/invertase/react-native-firebase/compare/v17.0.0...v17.1.0) (2023-02-09)
 
 ### Features

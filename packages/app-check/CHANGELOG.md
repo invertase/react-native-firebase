@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.2.0](https://github.com/invertase/react-native-firebase/compare/v17.1.0...v17.2.0) (2023-02-15)
+
+### Features
+
+- **app, android:** firebase-android-sdk 31.2.0 ([87156e7](https://github.com/invertase/react-native-firebase/commit/87156e75e16775db14ef8f9bf6b0049b15ee1277))
+
+### Bug Fixes
+
+- **app-check, ios:** debugToken in config on iOS works now ([04615e5](https://github.com/invertase/react-native-firebase/commit/04615e5568af549fb79d8b1ed59dbbce29ddb5f9))
+- **app-check, types:** add `newReactNativeFirebaseAppCheckProvider` function type ([9f5f231](https://github.com/invertase/react-native-firebase/commit/9f5f231e06ebe3f75e553b898eef173395954ae8))
+- **app-check:** better validation of configuration ([df60d83](https://github.com/invertase/react-native-firebase/commit/df60d834c897e55c7c62b4850be12a2a396ac21f))
+
 ## [17.1.0](https://github.com/invertase/react-native-firebase/compare/v17.0.0...v17.1.0) (2023-02-09)
 
 **Note:** Version bump only for package @react-native-firebase/app-check
