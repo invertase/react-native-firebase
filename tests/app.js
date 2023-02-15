@@ -16,6 +16,7 @@
  */
 
 import '@react-native-firebase/analytics';
+import * as analyticsModular from '@react-native-firebase/analytics';
 import firebase, * as modular from '@react-native-firebase/app';
 import '@react-native-firebase/app-check';
 import * as appCheckModular from '@react-native-firebase/app-check';
@@ -48,6 +49,7 @@ jet.exposeContextProperty('DeviceInfo', DeviceInfo);
 jet.exposeContextProperty('module', firebase);
 jet.exposeContextProperty('modular', modular);
 jet.exposeContextProperty('functionsModular', functionsModular);
+jet.exposeContextProperty('analyticsModular', analyticsModular);
 jet.exposeContextProperty('remoteConfigModular', remoteConfigModular);
 jet.exposeContextProperty('perfModular', perfModular);
 jet.exposeContextProperty('appCheckModular', appCheckModular);

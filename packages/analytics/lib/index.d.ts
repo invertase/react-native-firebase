@@ -630,6 +630,160 @@ export namespace FirebaseAnalyticsTypes {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
+  /**
+   * Analytics instance initialization options. Web only.
+   */
+  export interface AnalyticsSettings {
+    config?: GtagConfigParams | EventParams;
+  }
+  /**
+   * Additional options that can be passed to Analytics method calls such as logEvent. Web only.
+   */
+  export interface AnalyticsCallOptions {
+    /**
+     * If true, this config or event call applies globally to all Google Analytics properties on the page. Web only.
+     */
+    global: boolean;
+  }
+  /**
+   * A set of common Google Analytics config settings recognized by gtag.js. Web only.
+   */
+  export interface GtagConfigParams {
+    /**
+     * Whether or not a page view should be sent.
+     * If set to true (default), a page view is automatically sent upon initialization
+     * of analytics.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/page-view | Page views }
+     */
+    send_page_view?: boolean;
+    /**
+     * The title of the page.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/page-view | Page views }
+     */
+    page_title?: string;
+    /**
+     * The URL of the page.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/page-view | Page views }
+     */
+    page_location?: string;
+    /**
+     * Defaults to `auto`.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id | Cookies and user identification }
+     */
+    cookie_domain?: string;
+    /**
+     * Defaults to 63072000 (two years, in seconds).
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id | Cookies and user identification }
+     */
+    cookie_expires?: number;
+    /**
+     * Defaults to `_ga`.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id | Cookies and user identification }
+     */
+    cookie_prefix?: string;
+    /**
+     * If set to true, will update cookies on each page load.
+     * Defaults to true.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id | Cookies and user identification }
+     */
+    cookie_update?: boolean;
+    /**
+     * Appends additional flags to the cookie when set.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/cookies-user-id | Cookies and user identification }
+     */
+    cookie_flags?: string;
+    /**
+     * If set to false, disables all advertising features with `gtag.js`.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/display-features | Disable advertising features }
+     */
+    allow_google_signals?: boolean;
+    /**
+     * If set to false, disables all advertising personalization with `gtag.js`.
+     * See {@link https://developers.google.com/analytics/devguides/collection/ga4/display-features | Disable advertising features }
+     */
+    allow_ad_personalization_signals?: boolean;
+    [key: string]: unknown;
+  }
+  /**
+   * Standard gtag.js event parameters. For more information, see the GA4 reference documentation. Web only.
+   */
+  export interface EventParams {
+    checkout_option?: string;
+    checkout_step?: number;
+    item_id?: string;
+    content_type?: string;
+    coupon?: string;
+    currency?: string;
+    description?: string;
+    fatal?: boolean;
+    items?: Item[];
+    method?: string;
+    number?: string;
+    promotions?: Promotion[];
+    screen_name?: string;
+    /**
+     * Firebase-specific. Use to log a `screen_name` to Firebase Analytics.
+     */
+    firebase_screen?: string;
+    /**
+     * Firebase-specific. Use to log a `screen_class` to Firebase Analytics.
+     */
+    firebase_screen_class?: string;
+    search_term?: string;
+    shipping?: Currency;
+    tax?: Currency;
+    transaction_id?: string;
+    value?: number;
+    event_label?: string;
+    event_category?: string;
+    shipping_tier?: string;
+    item_list_id?: string;
+    item_list_name?: string;
+    promotion_id?: string;
+    promotion_name?: string;
+    payment_type?: string;
+    affiliation?: string;
+    page_title?: string;
+    page_location?: string;
+    page_path?: string;
+    [key: string]: unknown;
+  }
+
+  /**
+   * Consent status settings for each consent type.
+   * For more information, see
+   * {@link https://developers.google.com/tag-platform/tag-manager/templates/consent-apis
+   * | the GA4 reference documentation for consent state and consent types}.
+   */
+  export interface ConsentSettings {
+    /** Enables storage, such as cookies, related to advertising */
+    ad_storage?: ConsentStatusString;
+    /** Enables storage, such as cookies, related to analytics (for example, visit duration) */
+    analytics_storage?: ConsentStatusString;
+    /**
+     * Enables storage that supports the functionality of the website or app such as language settings
+     */
+    functionality_storage?: ConsentStatusString;
+    /** Enables storage related to personalization such as video recommendations */
+    personalization_storage?: ConsentStatusString;
+    /**
+     * Enables storage related to security such as authentication functionality, fraud prevention,
+     * and other user protection.
+     */
+    security_storage?: ConsentStatusString;
+    [key: string]: unknown;
+  }
+
+  /**
+   * Specifies custom options for your Firebase Analytics instance.
+   * You must set these before initializing `firebase.analytics()`.
+   */
+  export interface SettingsOptions {
+    /** Sets custom name for `gtag` function. */
+    gtagName?: string;
+    /** Sets custom name for `dataLayer` array used by `gtag.js`. */
+    dataLayerName?: string;
+  }
 
   /**
    * The Firebase Analytics service interface.
@@ -665,8 +819,13 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @param name Event name must not conflict with any Reserved Events.
      * @param params Parameters to be sent and displayed with the event.
+     * @param options Additional options that can be passed. Web only.
      */
-    logEvent(name: string, params?: { [key: string]: any }): Promise<void>;
+    logEvent(
+      name: string,
+      params?: { [key: string]: any },
+      options?: AnalyticsCallOptions,
+    ): Promise<void>;
 
     /**
      * If true, allows the device to collect analytical data and send it to
@@ -757,8 +916,12 @@ export namespace FirebaseAnalyticsTypes {
      *
      * @react-native-firebase
      * @param properties Set a property value to null to remove it.
+     * @param options Additional options that can be passed. Web only.
      */
-    setUserProperties(properties: { [key: string]: string | null }): Promise<void>;
+    setUserProperties(
+      properties: { [key: string]: string | null },
+      options?: AnalyticsCallOptions,
+    ): Promise<void>;
 
     /**
      * Clears all analytics data for this instance from the device and resets the app instance ID.

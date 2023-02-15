@@ -37,6 +37,55 @@ import { isBoolean } from '@react-native-firebase/app/lib/common';
 import version from './version';
 import * as structs from './structs';
 
+export {
+  getAnalytics,
+  logEvent,
+  setAnalyticsCollectionEnabled,
+  setSessionTimeoutDuration,
+  getAppInstanceId,
+  setUserId,
+  setUserProperty,
+  setUserProperties,
+  resetAnalyticsData,
+  logAddPaymentInfo,
+  logScreenView,
+  logAddShippingInfo,
+  logAddToCart,
+  logAddToWishlist,
+  logAppOpen,
+  logBeginCheckout,
+  logCampaignDetails,
+  logEarnVirtualCurrency,
+  logGenerateLead,
+  logJoinGroup,
+  logLevelEnd,
+  logLevelStart,
+  logLevelUp,
+  logLogin,
+  logPostScore,
+  logSelectContent,
+  logPurchase,
+  logRefund,
+  logRemoveFromCart,
+  logSearch,
+  logSelectItem,
+  logSetCheckoutOption,
+  logSelectPromotion,
+  logShare,
+  logSignUp,
+  logSpendVirtualCurrency,
+  logTutorialBegin,
+  logTutorialComplete,
+  logUnlockAchievement,
+  logViewCart,
+  logViewItem,
+  logViewItemList,
+  logViewPromotion,
+  logViewSearchResults,
+  setDefaultEventParameters,
+  initiateOnDeviceConversionMeasurementWithEmailAddress,
+} from '../modular/index';
+
 const ReservedEventNames = [
   'ad_activeview',
   'ad_click',
@@ -79,7 +128,7 @@ const namespace = 'analytics';
 const nativeModuleName = 'RNFBAnalyticsModule';
 
 class FirebaseAnalyticsModule extends FirebaseModule {
-  logEvent(name, params = {}) {
+  logEvent(name, params = {}, options = {}) {
     if (!isString(name)) {
       throw new Error("firebase.analytics().logEvent(*) 'name' expected a string value.");
     }
@@ -100,6 +149,18 @@ class FirebaseAnalyticsModule extends FirebaseModule {
       throw new Error(
         `firebase.analytics().logEvent(*) 'name' invalid event name '${name}'. Names should contain 1 to 40 alphanumeric characters or underscores.`,
       );
+    }
+
+    if (!isUndefined(options)) {
+      if (!isObject(options)) {
+        throw new Error(
+          "firebase.analytics().logEvent(_, _, *) 'options' expected an object value.",
+        );
+      }
+
+      if (!isUndefined(options.global) && !isBoolean(options.global)) {
+        throw new Error("'options.global' property expected a boolean.");
+      }
     }
 
     return this.native.logEvent(name, params);
@@ -157,11 +218,23 @@ class FirebaseAnalyticsModule extends FirebaseModule {
     return this.native.setUserProperty(name, value);
   }
 
-  setUserProperties(properties) {
+  setUserProperties(properties, options = {}) {
     if (!isObject(properties)) {
       throw new Error(
         "firebase.analytics().setUserProperties(*) 'properties' expected an object of key/value pairs.",
       );
+    }
+
+    if (!isUndefined(options)) {
+      if (!isObject(options)) {
+        throw new Error(
+          "firebase.analytics().logEvent(_, _, *) 'options' expected an object value.",
+        );
+      }
+
+      if (!isUndefined(options.global) && !isBoolean(options.global)) {
+        throw new Error("'options.global' property expected a boolean.");
+      }
     }
 
     const entries = Object.entries(properties);
