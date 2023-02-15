@@ -136,10 +136,10 @@ export namespace FirebaseAppCheckTypes {
      * providers you choose to use on each platform.
      */
     configure(options: {
-      web?: ReactNativeFirebaseAppCheckProviderWebOptions,
-      android?: ReactNativeFirebaseAppCheckProviderAndroidOptions,
-      apple?: ReactNativeFirebaseAppCheckProviderAppleOptions,
-      isTokenAutoRefreshEnabled?: boolean,
+      web?: ReactNativeFirebaseAppCheckProviderWebOptions;
+      android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
+      apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
+      isTokenAutoRefreshEnabled?: boolean;
     }): Promise<void>;
   }
 
