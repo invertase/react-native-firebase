@@ -220,8 +220,6 @@ describe('appCheck() modular', function () {
       it('should set token refresh', async function () {
         const { setTokenAutoRefreshEnabled } = appCheckModular;
 
-        console.log(appCheckInstance);
-
         setTokenAutoRefreshEnabled(appCheckInstance, false);
         // Only iOS lets us assert on this unfortunately, other platforms have no accessor
         if (device.getPlatform() === 'ios') {
