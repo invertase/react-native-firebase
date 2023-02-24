@@ -110,6 +110,25 @@ export namespace FirebaseAuthTypes {
   }
 
   /**
+   * Interface that represents an Open ID Connect auth provider. Implemented by other providers.
+   */
+  export interface OIDCProvider {
+    /**
+     * The provider ID of the provider.
+     */
+    PROVIDER_ID: string;
+    /**
+     * Creates a new `AuthCredential`.
+     *
+     * @returns {@link auth.AuthCredential}.
+     * @param oidcSuffix this is the "Provider ID" value from the firebase console fx `azure_test`.
+     * @param token A provider token.
+     * @param secret A provider secret.
+     */
+    credential: (oidcSuffix: string, idToken: string) => AuthCredential;
+  }
+
+  /**
    * Email and password auth provider implementation.
    */
   export interface EmailAuthProvider {
@@ -298,6 +317,16 @@ export namespace FirebaseAuthTypes {
      * ```
      */
     OAuthProvider: AuthProvider;
+    /**
+     * Custom Open ID connect auth provider implementation.
+     *
+     * #### Example
+     *
+     * ```js
+     * firebase.auth.OIDCAuthProvider;
+     * ```
+     */
+    OIDCAuthProvider: OIDCProvider;
     /**
      * A PhoneAuthState interface.
      *
