@@ -118,12 +118,11 @@ export namespace FirebaseAuthTypes {
      */
     PROVIDER_ID: string;
     /**
-     * Creates a new `AuthCredential`.
+     * Creates a new `OIDCProvider`.
      *
      * @returns {@link auth.AuthCredential}.
      * @param oidcSuffix this is the "Provider ID" value from the firebase console fx `azure_test`.
      * @param token A provider token.
-     * @param secret A provider secret.
      */
     credential: (oidcSuffix: string, idToken: string) => AuthCredential;
   }
