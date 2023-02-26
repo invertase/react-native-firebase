@@ -1,4 +1,9 @@
-import { firebase } from '..';
+import { getFirebaseRoot } from '@react-native-firebase/app/lib/internal';
+
+/**
+ * Firebase root instance
+ */
+export const firebase = getFirebaseRoot();
 
 /**
  * Returns a Analytics instance for the given app.

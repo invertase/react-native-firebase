@@ -27,13 +27,10 @@ import {
 } from '@react-native-firebase/app/lib/common';
 import { validateStruct, validateCompound } from '@react-native-firebase/app/lib/common/struct';
 
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+import { createModuleNamespace, FirebaseModule } from '@react-native-firebase/app/lib/internal';
 import { isBoolean } from '@react-native-firebase/app/lib/common';
 
+import { firebase } from '../modular/index';
 import version from './version';
 import * as structs from './structs';
 
@@ -785,4 +782,4 @@ export default createModuleNamespace({
 // import analytics, { firebase } from '@react-native-firebase/analytics';
 // analytics().logEvent(...);
 // firebase.analytics().logEvent(...);
-export const firebase = getFirebaseRoot();
+export { firebase };

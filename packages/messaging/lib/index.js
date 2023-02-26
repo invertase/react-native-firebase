@@ -25,12 +25,11 @@ import {
   isString,
   isUndefined,
 } from '@react-native-firebase/app/lib/common';
-import {
-  createModuleNamespace,
-  FirebaseModule,
-  getFirebaseRoot,
-} from '@react-native-firebase/app/lib/internal';
+import { createModuleNamespace, FirebaseModule } from '@react-native-firebase/app/lib/internal';
 import { AppRegistry, Platform } from 'react-native';
+
+import { firebase } from '../modular/index';
+
 import remoteMessageOptions from './remoteMessageOptions';
 import version from './version';
 
@@ -541,4 +540,4 @@ export default createModuleNamespace({
 // import messaging, { firebase } from '@react-native-firebase/messaging';
 // messaging().X(...);
 // firebase.messaging().X(...);
-export const firebase = getFirebaseRoot();
+export { firebase };
