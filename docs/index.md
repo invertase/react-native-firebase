@@ -125,7 +125,7 @@ Within your existing `didFinishLaunchingWithOptions` method, add the following t
 
 Beginning with firebase-ios-sdk v9+ (react-native-firebase v15+) you must tell CocoaPods to use frameworks.
 
-Open the file `./ios/Podfile` and add this line inside your targets (right after the line calling the react native Podfile function to get the native modules config):
+Open the file `./ios/Podfile` and add this line before line `target YOUR_APP_NAME do`:
 
 ```ruby
 use_frameworks! :linkage => :static
