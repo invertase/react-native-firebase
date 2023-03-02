@@ -61,6 +61,8 @@ function App() {
   function onAuthStateChanged(user) {
     setUser(user);
     if (initializing) setInitializing(false);
+    
+    // If you use phone authentication with a verification code (OTP - One-Time-Passcode), you will need to hide the component that accepts the OTP right here, because some Android devices can receive the OTP message and process the login request in the background without the user entering the OTP. Please, refer to https://github.com/invertase/react-native-firebase/issues/530#issuecomment-572513946 for more details. 
   }
 
   useEffect(() => {
