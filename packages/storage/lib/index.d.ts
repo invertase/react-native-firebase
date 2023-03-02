@@ -925,6 +925,21 @@ export namespace FirebaseStorageTypes {
   }
 
   /**
+   * Result returned from a non-resumable upload.
+   */
+  export interface TaskResult {
+    /**
+     * The metadata of the tasks via a {@link storage.FullMetadata} interface.
+     */
+    metadata: FullMetadata;
+
+    /**
+     * The {@link storage.Reference} of the task.
+     */
+    ref: Reference;
+  }
+
+  /**
    * The options `list()` accepts.
    */
   export interface ListOptions {
@@ -959,6 +974,16 @@ export namespace FirebaseStorageTypes {
      * Folders are implicit based on '/' in the object paths. For example, if a bucket has two objects '/a/b/1' and '/a/b/2', list('/a') will return '/a/b' as a prefix.
      */
     prefixes: Reference[];
+  }
+
+  /**
+   * Storage Emulator options. Web only.
+   */
+  export interface EmulatorMockTokenOptions {
+    /**
+     * the mock auth token to use for unit testing Security Rules.
+     */
+    mockUserToken?: string;
   }
 
   /**
