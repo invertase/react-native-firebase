@@ -79,5 +79,13 @@
       "gmsGoogleServicesGradle": "4.3.15",
       "playServicesAuth": "20.3.0"
     }
+  },
+  "codegenConfig": {
+    "name": "RNFirebaseAppSpec",
+    "type": "modules",
+    "jsSrcsDir": "lib",
+    "android": {
+      "javaPackageName": "io.invertase.firebase"
+    }
   }
 }
