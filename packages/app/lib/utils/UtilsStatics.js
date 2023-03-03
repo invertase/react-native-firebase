@@ -16,7 +16,7 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 import { stripTrailingSlash } from '../../lib/common';
 
 const PATH_NAMES = [
@@ -41,15 +41,16 @@ function processPathConstants(nativeModule) {
     return paths;
   }
   processedPathConstants = true;
+  const constants = nativeModule.getConstants();
 
   for (let i = 0; i < PATH_NAMES.length; i++) {
     const path = PATH_NAMES[i];
-    paths[path] = nativeModule[path] ? stripTrailingSlash(nativeModule[path]) : null;
+    paths[path] = constants[path] ? stripTrailingSlash(constants[path]) : null;
   }
 
   for (let i = 0; i < PATH_FILE_TYPES.length; i++) {
     const pathFileType = PATH_FILE_TYPES[i];
-    paths[pathFileType] = stripTrailingSlash(nativeModule[pathFileType]);
+    paths[pathFileType] = stripTrailingSlash(constants[pathFileType]);
   }
 
   Object.freeze(paths);
@@ -60,6 +61,6 @@ function processPathConstants(nativeModule) {
 export default {
   SDK_VERSION: require('./../version'),
   get FilePath() {
-    return processPathConstants(NativeModules.RNFBUtilsModule);
+    return processPathConstants(TurboModuleRegistry.get('RNFBUtilsModule'));
   },
 };

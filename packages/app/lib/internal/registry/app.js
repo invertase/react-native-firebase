@@ -53,7 +53,7 @@ export function setOnAppDestroy(fn) {
  */
 export function initializeNativeApps() {
   const nativeModule = getAppModule();
-  const { NATIVE_FIREBASE_APPS } = nativeModule;
+  const { NATIVE_FIREBASE_APPS } = nativeModule.getConstants();
 
   if (NATIVE_FIREBASE_APPS && NATIVE_FIREBASE_APPS.length) {
     for (let i = 0; i < NATIVE_FIREBASE_APPS.length; i++) {

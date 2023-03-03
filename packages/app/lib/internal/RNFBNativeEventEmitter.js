@@ -15,9 +15,9 @@
  *
  */
 
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, TurboModuleRegistry } from 'react-native';
 
-const { RNFBAppModule } = NativeModules;
+const RNFBAppModule = TurboModuleRegistry.get('RNFBAppModule');
 
 class RNFBNativeEventEmitter extends NativeEventEmitter {
   constructor() {

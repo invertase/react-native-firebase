@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeModules, Platform } from 'react-native';
+import { TurboModuleRegistry, Platform } from 'react-native';
 import { APP_NATIVE_MODULE } from '../constants';
 import NativeFirebaseError from '../NativeFirebaseError';
 import RNFBNativeEventEmitter from '../RNFBNativeEventEmitter';
@@ -101,7 +101,7 @@ function initialiseNativeModule(module) {
   const nativeModuleNames = multiModule ? nativeModuleName : [nativeModuleName];
 
   for (let i = 0; i < nativeModuleNames.length; i++) {
-    const nativeModule = NativeModules[nativeModuleNames[i]];
+    const nativeModule = TurboModuleRegistry.get(nativeModuleNames[i]);
 
     // only error if there's a single native module
     // as multi modules can mean some are optional
@@ -221,7 +221,7 @@ export function getAppModule() {
   }
 
   const namespace = 'app';
-  const nativeModule = NativeModules[APP_NATIVE_MODULE];
+  const nativeModule = TurboModuleRegistry.get(APP_NATIVE_MODULE);
 
   if (!nativeModule) {
     throw new Error(getMissingModuleHelpText(namespace));

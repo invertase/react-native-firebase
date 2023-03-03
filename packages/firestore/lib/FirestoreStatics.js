@@ -15,7 +15,7 @@
  *
  */
 
-import { NativeModules } from 'react-native';
+import { TurboModuleRegistry } from 'react-native';
 import FirestoreBlob from './FirestoreBlob';
 import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';
@@ -38,7 +38,7 @@ export default {
       );
     }
 
-    const native = NativeModules.RNFBFirestoreModule;
+    const native = TurboModuleRegistry.getEnforcing('RNFBFirestoreModule');
     native.setLogLevel(logLevel);
   },
 };

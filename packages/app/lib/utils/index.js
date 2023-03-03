@@ -28,7 +28,7 @@ class FirebaseUtilsModule extends FirebaseModule {
     if (isIOS) {
       return false;
     }
-    return this.native.isRunningInTestLab;
+    return this.native.getConstants().isRunningInTestLab;
   }
 
   get playServicesAvailability() {
@@ -38,7 +38,7 @@ class FirebaseUtilsModule extends FirebaseModule {
         status: 0,
       };
     }
-    return this.native.androidPlayServices;
+    return this.native.getConstants().androidPlayServices;
   }
 
   getPlayServicesStatus() {
