@@ -33,8 +33,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Utils";
+public class ReactNativeFirebaseUtilsModuleImpl extends ReactNativeFirebaseModule {
+  public static final String TAG = "Utils";
   private static final String KEY_MAIN_BUNDLE = "MAIN_BUNDLE";
   private static final String KEY_DOCUMENT_DIRECTORY = "DOCUMENT_DIRECTORY";
   private static final String KEY_LIBRARY_DIRECTORY = "LIBRARY_DIRECTORY";
@@ -46,7 +46,7 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   private static final String KEY_CACHE_DIRECTORY = "CACHES_DIRECTORY";
   private static final String FIREBASE_TEST_LAB = "firebase.test.lab";
 
-  public ReactNativeFirebaseUtilsModule(ReactApplicationContext reactContext) {
+  public ReactNativeFirebaseUtilsModuleImpl(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 
@@ -63,13 +63,11 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
     return "true".equals(testLabSetting);
   }
 
-  @ReactMethod
   public void androidGetPlayServicesStatus(Promise promise) {
     promise.resolve(getPlayServicesStatusMap());
   }
 
   /** Prompt the device user to update play services */
-  @ReactMethod
   public void androidPromptForPlayServices() {
     int status = isGooglePlayServicesAvailable();
     GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
@@ -83,7 +81,6 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   }
 
   /** Prompt the device user to update play services */
-  @ReactMethod
   public void androidResolutionForPlayServices() {
     int status = isGooglePlayServicesAvailable();
     ConnectionResult connectionResult = new ConnectionResult(status);
@@ -101,7 +98,6 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
   }
 
   /** Prompt the device user to update Play Services */
-  @ReactMethod
   public void androidMakePlayServicesAvailable() {
     int status = isGooglePlayServicesAvailable();
 
@@ -180,10 +176,14 @@ public class ReactNativeFirebaseUtilsModule extends ReactNativeFirebaseModule {
     File externalStorageDirectory = Environment.getExternalStorageDirectory();
     if (externalStorageDirectory != null) {
       constants.put(KEY_EXT_STORAGE_DIRECTORY, externalStorageDirectory.getAbsolutePath());
+    } else {
+      constants.put(KEY_EXT_STORAGE_DIRECTORY, "");
     }
 
     if (externalDirectory != null) {
       constants.put(KEY_EXTERNAL_DIRECTORY, externalDirectory.getAbsolutePath());
+    } else {
+      constants.put(KEY_EXTERNAL_DIRECTORY, "");
     }
 
     return constants;

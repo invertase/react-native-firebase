@@ -16,9 +16,18 @@ buildscript {
   }
 }
 
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 plugins {
   id "io.invertase.gradle.build" version "1.5"
 }
+
+if (isNewArchitectureEnabled()) {
+  apply(plugin: "com.facebook.react")
+}
+
 
 def packageJson = PackageJson.getForProject(project)
 def firebaseBomVersion = packageJson['sdkVersions']['android']['firebase']
@@ -64,6 +73,7 @@ android {
     manifestPlaceholders = [
       firebaseJsonDataCollectionDefaultEnabled: dataCollectionDefaultEnabled
     ]
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
   lintOptions {
     disable 'GradleCompatible'
@@ -77,6 +87,12 @@ android {
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
+
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += 'src/newarch/java'
+      } else {
+        java.srcDirs += 'src/oldarch/java'
+      }
     }
   }
 }

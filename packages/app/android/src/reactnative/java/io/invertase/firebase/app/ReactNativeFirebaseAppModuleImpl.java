@@ -35,10 +35,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ReactNativeFirebaseAppModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "App";
+public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule {
+  public static final String TAG = "App";
 
-  ReactNativeFirebaseAppModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseAppModuleImpl(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 
