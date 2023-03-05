@@ -6,7 +6,7 @@ import fs from 'fs';
 const methodInvocationBlock = `[FIRApp configure];`;
 // https://regex101.com/r/mPgaq6/1
 const methodInvocationLineMatcher =
-  /(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[(\[RCTBridge alloc\]|self\.reactDelegate))/g;
+  /(?:self\.moduleName\s*=\s*@\"([^"]*)\";)|(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[(\[RCTBridge alloc\]|self\.reactDelegate))/g;
 
 // https://regex101.com/r/nHrTa9/1/
 // if the above regex fails, we can use this one as a fallback:
