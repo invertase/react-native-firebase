@@ -19,7 +19,7 @@ package io.invertase.firebase.app;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.google.firebase.FirebaseApp;
@@ -48,7 +48,6 @@ public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule 
     ReactNativeFirebaseEventEmitter.getSharedInstance().attachReactContext(getContext());
   }
 
-  @ReactMethod
   public void initializeApp(ReadableMap options, ReadableMap appConfig, Promise promise) {
     FirebaseApp firebaseApp =
         RCTConvertFirebase.readableMapToFirebaseApp(options, appConfig, getContext());
@@ -57,13 +56,11 @@ public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule 
     promise.resolve(firebaseAppMap);
   }
 
-  @ReactMethod
   public void setAutomaticDataCollectionEnabled(String appName, Boolean enabled) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     firebaseApp.setDataCollectionDefaultEnabled(enabled);
   }
 
-  @ReactMethod
   public void deleteApp(String appName, Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
 
@@ -74,19 +71,16 @@ public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule 
     promise.resolve(null);
   }
 
-  @ReactMethod
   public void eventsNotifyReady(Boolean ready) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
     emitter.notifyJsReady(ready);
   }
 
-  @ReactMethod
   public void eventsGetListeners(Promise promise) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
     promise.resolve(emitter.getListenersMap());
   }
 
-  @ReactMethod
   public void eventsPing(String eventName, ReadableMap eventBody, Promise promise) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
     emitter.sendEvent(
@@ -95,62 +89,56 @@ public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule 
     promise.resolve(RCTConvertFirebase.readableMapToWritableMap(eventBody));
   }
 
-  @ReactMethod
   public void eventsAddListener(String eventName) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
     emitter.addListener(eventName);
   }
 
-  @ReactMethod
   public void eventsRemoveListener(String eventName, Boolean all) {
     ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
     emitter.removeListener(eventName, all);
   }
 
-  @ReactMethod
   public void addListener(String eventName) {
     // Keep: Required for RN built in Event Emitter Calls.
   }
 
-  @ReactMethod
   public void removeListeners(Integer count) {
     // Keep: Required for RN built in Event Emitter Calls.
   }
 
   /** ------------------ META ------------------ */
-  @ReactMethod
   public void metaGetAll(Promise promise) {
     promise.resolve(ReactNativeFirebaseMeta.getSharedInstance().getAll());
   }
 
   /** ------------------ JSON ------------------ */
-  @ReactMethod
   public void jsonGetAll(Promise promise) {
     promise.resolve(ReactNativeFirebaseJSON.getSharedInstance().getAll());
   }
 
   /** ------------------ PREFERENCES ------------------ */
-  @ReactMethod
   public void preferencesSetBool(String key, boolean value, Promise promise) {
     ReactNativeFirebasePreferences.getSharedInstance().setBooleanValue(key, value);
     promise.resolve(null);
   }
 
-  @ReactMethod
   public void preferencesSetString(String key, String value, Promise promise) {
     ReactNativeFirebasePreferences.getSharedInstance().setStringValue(key, value);
     promise.resolve(null);
   }
 
-  @ReactMethod
   public void preferencesGetAll(Promise promise) {
     promise.resolve(ReactNativeFirebasePreferences.getSharedInstance().getAll());
   }
 
-  @ReactMethod
   public void preferencesClearAll(Promise promise) {
     ReactNativeFirebasePreferences.getSharedInstance().clearAll();
     promise.resolve(null);
+  }
+
+  public void setLogLevel(String logLevel) {
+    throw new RuntimeException("Firebase::setLogLevel is not available on Android");
   }
 
   @Override

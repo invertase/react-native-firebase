@@ -123,6 +123,11 @@ public class ReactNativeFirebaseAppModule extends ReactContextBaseJavaModule {
     moduleImpl.preferencesClearAll(promise);
   }
 
+  @ReactMethod
+  public void setLogLevel(String logLevel) {
+    moduleImpl.setLogLevel(logLevel);
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     return moduleImpl.getConstants();

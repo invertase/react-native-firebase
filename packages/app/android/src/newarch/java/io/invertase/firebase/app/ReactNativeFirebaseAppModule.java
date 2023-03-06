@@ -125,6 +125,11 @@ public class ReactNativeFirebaseAppModule extends NativeFirebaseAppModuleSpec {
   }
 
   @Override
+  public void setLogLevel(String logLevel) {
+    moduleImpl.setLogLevel(logLevel);
+  }
+
+  @Override
   protected Map<String, Object> getTypedExportedConstants() {
     return moduleImpl.getConstants();
   }
