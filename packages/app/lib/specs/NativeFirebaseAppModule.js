@@ -25,6 +25,7 @@ export interface Spec extends TurboModule {
   +preferencesSetString: (key: string, value: string) => Promise<void>;
   +preferencesGetAll: () => Promise<Object>;
   +preferencesClearAll: () => Promise<void>;
+  +setLogLevel: (logLevel: string) => void;
 }
   
 export default (TurboModuleRegistry.get<Spec>('RNFBAppModule'): ?Spec);

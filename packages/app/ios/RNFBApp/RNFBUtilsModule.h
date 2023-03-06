@@ -18,9 +18,20 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <RNFirebaseAppSpec/RNFirebaseAppSpec.h>
+
+@interface RNFBUtilsModule : NSObject <NativeFirebaseUtilsModuleSpec>
+
+#else
+
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBUtilsModule : NSObject <RCTBridgeModule>
+
+#endif
+
 
 + (BOOL)isRemoteAsset:(NSString *)localFilePath;
 + (BOOL)unused_isHeic:(NSString *)localFilePath;

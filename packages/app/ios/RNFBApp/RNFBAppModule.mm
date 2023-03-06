@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE();
 #pragma mark META Methods
 
 RCT_EXPORT_METHOD(metaGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   resolve([RNFBMeta getAll]);
 }
@@ -84,7 +84,7 @@ RCT_EXPORT_METHOD(metaGetAll
 #pragma mark JSON Methods
 
 RCT_EXPORT_METHOD(jsonGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   resolve([[RNFBJSON shared] getAll]);
 }
@@ -93,31 +93,31 @@ RCT_EXPORT_METHOD(jsonGetAll
 #pragma mark Preference Methods
 
 RCT_EXPORT_METHOD(preferencesSetBool
-                  : (NSString *)key boolValue
-                  : (BOOL)boolValue resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)key value
+                  : (BOOL)value resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBPreferences shared] setBooleanValue:key boolValue:boolValue];
+  [[RNFBPreferences shared] setBooleanValue:key boolValue:value];
   resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(preferencesSetString
-                  : (NSString *)key stringValue
-                  : (NSString *)stringValue resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)key value
+                  : (NSString *)value resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
-  [[RNFBPreferences shared] setStringValue:key stringValue:stringValue];
+  [[RNFBPreferences shared] setStringValue:key stringValue:value];
   resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(preferencesGetAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   resolve([[RNFBPreferences shared] getAll]);
 }
 
 RCT_EXPORT_METHOD(preferencesClearAll
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBPreferences shared] clearAll];
   resolve([NSNull null]);
@@ -131,15 +131,15 @@ RCT_EXPORT_METHOD(eventsNotifyReady : (BOOL)ready) {
 }
 
 RCT_EXPORT_METHOD(eventsGetListeners
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   resolve([[RNFBRCTEventEmitter shared] getListenersDictionary]);
 }
 
 RCT_EXPORT_METHOD(eventsPing
                   : (NSString *)eventName eventBody
-                  : (NSDictionary *)eventBody resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)eventBody resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBRCTEventEmitter shared] sendEventWithName:eventName body:eventBody];
   resolve(eventBody);
@@ -169,8 +169,8 @@ RCT_EXPORT_METHOD(removeListeners : (NSInteger)count) {
 
 RCT_EXPORT_METHOD(initializeApp
                   : (FIROptions *)firOptions appConfig
-                  : (NSDictionary *)appConfig resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)appConfig resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   RCTUnsafeExecuteOnMainQueueSync(^{
     FIRApp *firApp;
@@ -196,7 +196,7 @@ RCT_EXPORT_METHOD(initializeApp
 }
 
 RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {
-  int level = FIRLoggerLevelError;
+  FIRLoggerLevel level = FIRLoggerLevelError;
   if ([logLevel isEqualToString:@"verbose"]) {
     level = FIRLoggerLevelDebug;
   } else if ([logLevel isEqualToString:@"debug"]) {
@@ -206,7 +206,7 @@ RCT_EXPORT_METHOD(setLogLevel : (NSString *)logLevel) {
   } else if ([logLevel isEqualToString:@"warn"]) {
     level = FIRLoggerLevelWarning;
   }
-  DLog(@"RNFBSetLogLevel: setting level to %d from %@.", level, logLevel);
+  DLog(@"RNFBSetLogLevel: setting level to %ld from %@.", level, logLevel);
   [[FIRConfiguration sharedInstance] setLoggerLevel:level];
 }
 
@@ -217,8 +217,8 @@ RCT_EXPORT_METHOD(setAutomaticDataCollectionEnabled : (FIRApp *)firApp enabled :
 }
 
 RCT_EXPORT_METHOD(deleteApp
-                  : (FIRApp *)firApp resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (FIRApp *)firApp resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if (!firApp) {
     return resolve([NSNull null]);
@@ -241,6 +241,10 @@ RCT_EXPORT_METHOD(deleteApp
   }];
 }
 
+- (NSDictionary *)getConstants {
+    return self.constantsToExport;
+}
+
 - (NSDictionary *)constantsToExport {
   NSDictionary *firApps = [FIRApp allApps];
   NSMutableArray *appsArray = [NSMutableArray new];
@@ -258,6 +262,15 @@ RCT_EXPORT_METHOD(deleteApp
 }
 
 + (BOOL)requiresMainQueueSetup {
-  return YES;
+    return YES;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeFirebaseAppModuleSpecJSI>(params);
+}
+#endif
+
 @end

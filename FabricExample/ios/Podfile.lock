@@ -807,7 +807,14 @@ PODS:
     - RNFBApp
   - RNFBApp (17.3.1):
     - Firebase/CoreOnly (= 10.5.0)
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-RCTFabric
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
   - RNFBCrashlytics (17.3.1):
     - Firebase/Crashlytics (= 10.5.0)
     - FirebaseCoreExtension (= 10.5.0)
@@ -860,10 +867,10 @@ DEPENDENCIES:
   - React-rncore (from `../node_modules/react-native/ReactCommon`)
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
-  - "RNFBAnalytics (from `../../node_modules/@react-native-firebase/analytics`)"
-  - "RNFBApp (from `../../node_modules/@react-native-firebase/app`)"
-  - "RNFBCrashlytics (from `../../node_modules/@react-native-firebase/crashlytics`)"
-  - "RNFBPerf (from `../../node_modules/@react-native-firebase/perf`)"
+  - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
+  - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
+  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
+  - "RNFBPerf (from `../node_modules/@react-native-firebase/perf`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -962,13 +969,13 @@ EXTERNAL SOURCES:
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
   RNFBAnalytics:
-    :path: "../../node_modules/@react-native-firebase/analytics"
+    :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
-    :path: "../../node_modules/@react-native-firebase/app"
+    :path: "../node_modules/@react-native-firebase/app"
   RNFBCrashlytics:
-    :path: "../../node_modules/@react-native-firebase/crashlytics"
+    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBPerf:
-    :path: "../../node_modules/@react-native-firebase/perf"
+    :path: "../node_modules/@react-native-firebase/perf"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1028,7 +1035,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: ac7a10ded8315cff945e21afd2b1345afa61a82c
   ReactCommon: 6e791e26a33ee1e359e4a53a2e8dd7021ec39b35
   RNFBAnalytics: 01dd29de4dd871436e72cc3a5f996674443b5e1c
-  RNFBApp: 6210da3d32c005190647805e6ced236d9be5520f
+  RNFBApp: 5cefd8ec1f7db4cddfe46c6d4c010656a0e1cb01
   RNFBCrashlytics: 044ab9bfbb4e9608bfdc771e7f8cdfa151302315
   RNFBPerf: 7c39a7f2adb0ff2604cb1663824c32a1075eafdd
   Yoga: e97a39598d4d05fc8d3373fc83d9dca6d6bbfaf3

@@ -106,4 +106,37 @@ RCT_EXPORT_MODULE();
   return constants;
 }
 
+- (void)androidGetPlayServicesStatus:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    reject(@"Firebase:androidGetPlayServicesStatus", @"androidGetPlayServicesStatus is not supported on iOS", nil);
+}
+
+
+- (void)androidMakePlayServicesAvailable {
+    // NO-OP; Android only
+}
+
+
+- (void)androidPromptForPlayServices {
+    // NO-OP; Android only
+}
+
+
+- (void)androidResolutionForPlayServices {
+    // NO-OP; Android only
+}
+
+
+- (NSDictionary *)getConstants {
+    return self.constantsToExport;
+}
+
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeFirebaseUtilsModuleSpecJSI>(params);
+}
+#endif
+
 @end

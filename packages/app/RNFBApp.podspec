@@ -5,6 +5,8 @@ firebase_sdk_version = package['sdkVersions']['ios']['firebase']
 firebase_ios_target = package['sdkVersions']['ios']['iosTarget']
 firebase_macos_target = package['sdkVersions']['ios']['macosTarget']
 
+new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+
 Pod::Spec.new do |s|
   s.name                = "RNFBApp"
   s.version             = package["version"]
@@ -20,10 +22,14 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = firebase_ios_target
   s.macos.deployment_target = firebase_macos_target
   s.cocoapods_version   = '>= 1.10.2'
-  s.source_files        = "ios/**/*.{h,m}"
+  s.source_files        = "ios/**/*.{h,m,mm}"
 
   # React Native dependencies
-  s.dependency          'React-Core'
+  if new_arch_enabled then
+    install_modules_dependencies(s)
+  else
+    s.dependency        'React-Core'
+  end
 
   if defined?($FirebaseSDKVersion)
     Pod::UI.puts "#{s.name}: Using user specified Firebase SDK version '#{$FirebaseSDKVersion}'"

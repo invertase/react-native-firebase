@@ -17,10 +17,21 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <RNFirebaseAppSpec/RNFirebaseAppSpec.h>
+
+@interface RNFBAppModule : NSObject <NativeFirebaseAppModuleSpec>
+
+#else
+
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBAppModule : NSObject <RCTBridgeModule>
 
+// on new arch it's defined in the spec
 - (void)setLogLevel:(NSString *)logLevel;
+
+#endif
 
 @end
