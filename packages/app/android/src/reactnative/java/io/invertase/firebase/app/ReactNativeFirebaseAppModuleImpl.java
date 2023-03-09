@@ -138,7 +138,7 @@ public class ReactNativeFirebaseAppModuleImpl extends ReactNativeFirebaseModule 
   }
 
   public void setLogLevel(String logLevel) {
-    throw new RuntimeException("Firebase::setLogLevel is not available on Android");
+    // iOS only. fail silently
   }
 
   @Override

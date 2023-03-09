@@ -42,7 +42,7 @@ public class ReactNativeFirebaseAppPackage extends TurboReactPackage {
       return new ReactNativeFirebaseUtilsModule(reactContext);
     } else if (name.equals(ReactNativeFirebaseModule.getModuleName(ReactNativeFirebaseAppModuleImpl.TAG))) {
       return new ReactNativeFirebaseAppModule(reactContext);
-    } {
+    } else {
       return null;
     }
   }
@@ -81,21 +81,4 @@ public class ReactNativeFirebaseAppPackage extends TurboReactPackage {
       return moduleInfos;
     };
   }
-//  @Nonnull
-//  @Override
-//  public List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext) {
-//    if (ReactNativeFirebaseApp.getApplicationContext() == null) {
-//      ReactNativeFirebaseApp.setApplicationContext(reactContext.getApplicationContext());
-//    }
-//    List<NativeModule> modules = new ArrayList<>();
-//    modules.add(new ReactNativeFirebaseAppModule(reactContext));
-//    modules.add(new ReactNativeFirebaseUtilsModule(reactContext));
-//    return modules;
-//  }
-//
-//  @Nonnull
-//  @Override
-//  public List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext) {
-//    return Collections.emptyList();
-//  }
 }
