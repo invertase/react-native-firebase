@@ -36,5 +36,13 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "codegenConfig": {
+    "name": "RNFirebasePerfSpec",
+    "type": "modules",
+    "jsSrcsDir": "lib",
+    "android": {
+      "javaPackageName": "io.invertase.firebase.perf"
+    }
   }
 }
