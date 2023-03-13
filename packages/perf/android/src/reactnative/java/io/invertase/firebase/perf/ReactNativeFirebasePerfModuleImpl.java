@@ -21,27 +21,24 @@ import android.app.Activity;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.Map;
 
-public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "Perf";
+public class ReactNativeFirebasePerfModuleImpl extends ReactNativeFirebaseModule {
+  public static final String SERVICE_NAME = "Perf";
   private final UniversalFirebasePerfModule module;
 
-  ReactNativeFirebasePerfModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebasePerfModuleImpl(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
     this.module = new UniversalFirebasePerfModule(reactContext, SERVICE_NAME);
   }
 
-  @Override
   public void onCatalystInstanceDestroy() {
     super.onCatalystInstanceDestroy();
     module.onTearDown();
   }
 
-  @ReactMethod
   public void setPerformanceCollectionEnabled(Boolean enabled, Promise promise) {
     module
         .setPerformanceCollectionEnabled(enabled)
@@ -55,7 +52,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void startTrace(int id, String identifier, Promise promise) {
     module
         .startTrace(id, identifier)
@@ -69,7 +65,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void stopTrace(int id, ReadableMap traceData, Promise promise) {
     module
         .stopTrace(
@@ -86,7 +81,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void startScreenTrace(int id, String identifier, Promise promise) {
     Activity currentActivity = getCurrentActivity();
 
@@ -108,7 +102,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void stopScreenTrace(int id, Promise promise) {
     module
         .stopScreenTrace(id)
@@ -122,7 +115,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void startHttpMetric(int id, String url, String httpMethod, Promise promise) {
     module
         .startHttpMetric(id, url, httpMethod)
@@ -136,7 +128,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @ReactMethod
   public void stopHttpMetric(int id, ReadableMap metricData, Promise promise) {
     module
         .stopHttpMetric(
@@ -151,7 +142,6 @@ public class ReactNativeFirebasePerfModule extends ReactNativeFirebaseModule {
             });
   }
 
-  @Override
   public Map<String, Object> getConstants() {
     return module.getConstants();
   }
