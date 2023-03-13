@@ -17,8 +17,17 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <RNFirebaseAnalyticsSpec/RNFirebaseAnalyticsSpec.h>
+
+@interface RNFBAnalyticsModule : NSObject <NativeFirebaseAnalyticsModuleSpec>
+
+#else
+
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBAnalyticsModule : NSObject <RCTBridgeModule>
 
+#endif
 @end

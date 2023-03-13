@@ -36,8 +36,8 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(logEvent
                   : (NSString *)name params
-                  : (NSDictionary *)params resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)params resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics logEventWithName:name parameters:[self cleanJavascriptParams:params]];
@@ -49,8 +49,8 @@ RCT_EXPORT_METHOD(logEvent
 }
 
 RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics setAnalyticsCollectionEnabled:enabled];
@@ -62,8 +62,8 @@ RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled
 }
 
 RCT_EXPORT_METHOD(setUserId
-                  : (NSString *)id resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)id resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics setUserID:[self convertNSNullToNil:id]];
@@ -75,8 +75,8 @@ RCT_EXPORT_METHOD(setUserId
 
 RCT_EXPORT_METHOD(setUserProperty
                   : (NSString *)name value
-                  : (NSString *)value resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)value resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics setUserPropertyString:[self convertNSNullToNil:value] forName:name];
@@ -87,8 +87,8 @@ RCT_EXPORT_METHOD(setUserProperty
 }
 
 RCT_EXPORT_METHOD(setUserProperties
-                  : (NSDictionary *)properties resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)properties resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
@@ -101,7 +101,7 @@ RCT_EXPORT_METHOD(setUserProperties
 }
 
 RCT_EXPORT_METHOD(resetAnalyticsData
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics resetAnalyticsData];
@@ -112,22 +112,22 @@ RCT_EXPORT_METHOD(resetAnalyticsData
 }
 
 RCT_EXPORT_METHOD(setSessionTimeoutDuration
-                  : (double)milliseconds resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (double)milliseconds resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   // Do nothing - this only exists in android
   return resolve([NSNull null]);
 }
 
 RCT_EXPORT_METHOD(getAppInstanceId
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   return resolve([FIRAnalytics appInstanceID]);
 }
 
 RCT_EXPORT_METHOD(setDefaultEventParameters
-                  : (NSDictionary *)params resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)params resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics setDefaultEventParameters:[self cleanJavascriptParams:params]];
@@ -139,8 +139,8 @@ RCT_EXPORT_METHOD(setDefaultEventParameters
 }
 
 RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
-                  : (NSString *)emailAddress resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)emailAddress resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   @try {
     [FIRAnalytics initiateOnDeviceConversionMeasurementWithEmailAddress:emailAddress];
@@ -180,5 +180,13 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
 - (NSString *)convertNSNullToNil:(NSString *)value {
   return [value isEqual:[NSNull null]] ? nil : value;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeFirebaseAnalyticsModuleSpecJSI>(params);
+}
+#endif
 
 @end
