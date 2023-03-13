@@ -822,7 +822,14 @@ PODS:
     - RNFBApp
   - RNFBPerf (17.3.1):
     - Firebase/Performance (= 10.5.0)
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-RCTFabric
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
   - Yoga (1.14.0)
 
@@ -1037,7 +1044,7 @@ SPEC CHECKSUMS:
   RNFBAnalytics: 01dd29de4dd871436e72cc3a5f996674443b5e1c
   RNFBApp: 5cefd8ec1f7db4cddfe46c6d4c010656a0e1cb01
   RNFBCrashlytics: 044ab9bfbb4e9608bfdc771e7f8cdfa151302315
-  RNFBPerf: 7c39a7f2adb0ff2604cb1663824c32a1075eafdd
+  RNFBPerf: 2fe8b85b2fcef6e474e4dca282998d954382cf51
   Yoga: e97a39598d4d05fc8d3373fc83d9dca6d6bbfaf3
 
 PODFILE CHECKSUM: 21e447546b71238d83165a62f2c91dec1952d42c
