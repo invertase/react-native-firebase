@@ -17,8 +17,16 @@ buildscript {
   }
 }
 
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
 plugins {
   id "io.invertase.gradle.build" version "1.5"
+}
+
+if (isNewArchitectureEnabled()) {
+  apply(plugin: "com.facebook.react")
 }
 
 def appProject
@@ -115,6 +123,7 @@ android {
       firebaseJsonPersonalizationEnabled: personalizationEnabled,
       firebaseJsonAutomaticScreenReportingEnabled: automaticScreenReportingEnabled
     ]
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
   lintOptions {
     disable 'GradleCompatible'
@@ -127,6 +136,12 @@ android {
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
+
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += 'src/newarch/java'
+      } else {
+        java.srcDirs += 'src/oldarch/java'
+      }
     }
   }
 }
