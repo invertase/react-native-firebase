@@ -63,6 +63,19 @@ RCT_EXPORT_MODULE();
   return constants;
 }
 
+- (NSDictionary *)getConstants {
+    return self.constantsToExport;
+}
+
+- (void)startScreenTrace:(double)id identifier:(NSString *)identifier resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    reject(@"Firebase:startScreenTrace", @"startScreenTrace is not supported on iOS", nil);
+}
+
+- (void)stopScreenTrace:(double)id resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    reject(@"Firebase:stopScreenTrace", @"stopScreenTrace is not supported on iOS", nil);
+}
+
+
 + (BOOL)requiresMainQueueSetup {
   return NO;
 }
@@ -71,11 +84,19 @@ RCT_EXPORT_MODULE();
 #pragma mark Firebase Perf Methods
 
 RCT_EXPORT_METHOD(setPerformanceCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].dataCollectionEnabled = (BOOL)enabled;
   resolve([NSNull null]);
+}
+
+- (void)startTrace
+    : (double)id identifier
+    : (NSString *)identifier resolve
+    : (RCTPromiseResolveBlock)resolve reject
+    : (RCTPromiseRejectBlock)reject {
+        [self startTrace:[NSNumber numberWithDouble:id] identifier:identifier resolver:resolve rejecter: reject];
 }
 
 RCT_EXPORT_METHOD(startTrace
@@ -91,6 +112,14 @@ RCT_EXPORT_METHOD(startTrace
   }
 
   resolve([NSNull null]);
+}
+
+- (void)stopTrace
+    : (double)id traceData
+    : (NSDictionary *)traceData resolve
+    : (RCTPromiseResolveBlock)resolve reject
+    : (RCTPromiseRejectBlock)reject {
+        [self stopTrace:[NSNumber numberWithDouble:id] traceData:traceData resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(stopTrace
@@ -122,6 +151,15 @@ RCT_EXPORT_METHOD(stopTrace
   }
 
   resolve([NSNull null]);
+}
+
+- (void)startHttpMetric
+    : (double)id url
+    : (NSString *)url httpMethod
+    : (NSString *)httpMethod resolve
+    : (RCTPromiseResolveBlock)resolve reject
+    : (RCTPromiseRejectBlock)reject {
+        [self startHttpMetric:[NSNumber numberWithDouble:id] url:url httpMethod:httpMethod resolver: resolve rejecter: reject];
 }
 
 RCT_EXPORT_METHOD(startHttpMetric
@@ -157,6 +195,13 @@ RCT_EXPORT_METHOD(startHttpMetric
   }
 
   resolve([NSNull null]);
+}
+
+- (void)stopHttpMetric
+    : (double)id metricData:(NSDictionary *)metricData resolve
+    : (RCTPromiseResolveBlock)resolve reject
+    : (RCTPromiseRejectBlock)reject {
+        [self stopHttpMetric:[NSNumber numberWithDouble:id] metricData:metricData resolver:resolve rejecter:reject];
 }
 
 RCT_EXPORT_METHOD(stopHttpMetric
@@ -205,11 +250,19 @@ RCT_EXPORT_METHOD(stopHttpMetric
 }
 
 RCT_EXPORT_METHOD(instrumentationEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [FIRPerformance sharedInstance].instrumentationEnabled = (BOOL)enabled;
   resolve([NSNull null]);
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeFirebasePerfModuleSpecJSI>(params);
+}
+#endif
 
 @end
