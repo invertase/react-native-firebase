@@ -26,5 +26,13 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "codegenConfig": {
+    "name": "RNFirebaseAnalyticsSpec",
+    "type": "modules",
+    "jsSrcsDir": "lib",
+    "android": {
+      "javaPackageName": "io.invertase.firebase.analytics"
+    }
   }
 }
