@@ -21,23 +21,21 @@ import android.os.Bundle;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
-public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModule {
-  private static final String SERVICE_NAME = "Analytics";
+public class ReactNativeFirebaseAnalyticsModuleImpl extends ReactNativeFirebaseModule {
+  public static final String SERVICE_NAME = "Analytics";
   private final UniversalFirebaseAnalyticsModule module;
 
-  ReactNativeFirebaseAnalyticsModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseAnalyticsModuleImpl(ReactApplicationContext reactContext) {
     super(reactContext, SERVICE_NAME);
     module = new UniversalFirebaseAnalyticsModule(reactContext, SERVICE_NAME);
   }
 
-  @ReactMethod
   public void logEvent(String name, @Nullable ReadableMap params, Promise promise) {
     module
         .logEvent(name, toBundle(params))
@@ -51,7 +49,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setAnalyticsCollectionEnabled(Boolean enabled, Promise promise) {
     module
         .setAnalyticsCollectionEnabled(enabled)
@@ -65,7 +62,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setSessionTimeoutDuration(double milliseconds, Promise promise) {
     module
         .setSessionTimeoutDuration((long) milliseconds)
@@ -79,7 +75,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void getAppInstanceId(Promise promise) {
     module
         .getAppInstanceId()
@@ -93,7 +88,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setUserId(String id, Promise promise) {
     module
         .setUserId(id)
@@ -107,7 +101,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setUserProperty(String name, String value, Promise promise) {
     module
         .setUserProperty(name, value)
@@ -121,7 +114,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setUserProperties(ReadableMap properties, Promise promise) {
     module
         .setUserProperties(Arguments.toBundle(properties))
@@ -135,7 +127,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void resetAnalyticsData(Promise promise) {
     module
         .resetAnalyticsData()
@@ -149,7 +140,6 @@ public class ReactNativeFirebaseAnalyticsModule extends ReactNativeFirebaseModul
             });
   }
 
-  @ReactMethod
   public void setDefaultEventParameters(@Nullable ReadableMap params, Promise promise) {
     module
         .setDefaultEventParameters(toBundle(params))
