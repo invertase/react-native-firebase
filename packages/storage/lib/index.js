@@ -39,6 +39,11 @@ export {
   list,
   listAll,
   updateMetadata,
+  putFile,
+  writeToFile,
+  toString,
+  child,
+  setMaxDownloadRetryTime,
 } from '../modular/index';
 
 const namespace = 'storage';

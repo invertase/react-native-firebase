@@ -212,3 +212,53 @@ export async function setMaxOperationRetryTime(storage, time) {
 export async function setMaxUploadRetryTime(storage, time) {
   return storage.setMaxOperationRetryTime(time);
 }
+
+/**
+ * Puts a file from local disk onto the storage bucket.
+ * @param storageRef - Storage Reference instance.
+ * @param localFilePath The local file path to upload to the bucket at the reference location.
+ * @param metadata Any additional `SettableMetadata` for this task.
+ * @returns {Task}
+ */
+export function putFile(storageRef, filePath, metadata) {
+  return storageRef.putFile(filePath, metadata);
+}
+
+/**
+ * Downloads a file to the specified local file path on the device.
+ * @param storageRef - Storage Reference instance.
+ * @param localFilePath The local file path to upload to on the device.
+ * @returns {Task}
+ */
+export function writeToFile(storageRef, filePath) {
+  return storageRef.writeToFile(filePath);
+}
+
+/**
+ * Returns a gs:// URL for this object in the form `gs://<bucket>/<path>/<to>/<object>`.
+ * @param storageRef - Storage Reference instance.
+ * @returns {String}
+ */
+export function toString(storageRef) {
+  return storageRef.toString();
+}
+
+/**
+ * Returns a reference to a relative path from this reference.
+ * @param storageRef - Storage Reference instance.
+ * @param path - The relative path from this reference. Leading, trailing, and consecutive slashes are removed.
+ * @returns {String}
+ */
+export function child(storageRef, path) {
+  return storageRef.child(path);
+}
+
+/**
+ * Sets the maximum time in milliseconds to retry a download if a failure occurs.
+ * @param storage - Storage instance.
+ * @param time - The new maximum download retry time in milliseconds.
+ * @returns {Promise<void>}
+ */
+export function setMaxDownloadRetryTime(storage, time) {
+  return storageRef.setMaxDownloadRetryTime(time);
+}
