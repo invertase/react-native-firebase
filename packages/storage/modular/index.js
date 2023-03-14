@@ -76,6 +76,7 @@ export function deleteObject(storageRef) {
  * @param storageRef - Storage `Reference` instance.
  * @returns {Promise<Blob>}
  */
+// eslint-disable-next-line
 export function getBlob(storageRef) {
   throw new Error('`getBlob()` is not implemented');
 }
@@ -86,6 +87,7 @@ export function getBlob(storageRef) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {Promise<ArrayBuffer>}
  */
+// eslint-disable-next-line
 export function getBytes(storageRef, maxDownloadSizeBytes) {
   throw new Error('`getBytes()` is not implemented');
 }
@@ -114,6 +116,7 @@ export function getMetadata(storageRef) {
  * @param maxDownloadSizeBytes - The maximum allowed size in bytes to retrieve. Web only.
  * @returns {NodeJS.ReadableStream;}
  */
+// eslint-disable-next-line
 export function getStream(storageRef, maxDownloadSizeBytes) {
   throw new Error('`getStream()` is not implemented');
 }
@@ -154,6 +157,7 @@ export function updateMetadata(storageRef, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Promise<TaskResult>}
  */
+// eslint-disable-next-line
 export async function uploadBytes(storageRef, data, metadata) {
   throw new Error('`uploadBytes()` is not implemented');
 }
@@ -260,5 +264,5 @@ export function child(storageRef, path) {
  * @returns {Promise<void>}
  */
 export function setMaxDownloadRetryTime(storage, time) {
-  return storageRef.setMaxDownloadRetryTime(time);
+  return storage.setMaxDownloadRetryTime(time);
 }
