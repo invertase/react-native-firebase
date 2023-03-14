@@ -19,7 +19,7 @@ describe('storage() -> StorageReference', function () {
     await seed(PATH);
   });
 
-  describe('storage() modular', function () {
+  describe('storage() -> StorageReference modular', function () {
     describe('firebase v8 compatibility', function () {
       describe('toString()', function () {
         it('returns the correct bucket path to the file', function () {
@@ -686,89 +686,104 @@ describe('storage() -> StorageReference', function () {
     });
   });
 
-  describe('modular', function () {
+  describe('StorageReference modular', function () {
     describe('toString()', function () {
       it('returns the correct bucket path to the file', function () {
-        const { getStorage } = storageModular;
+        const { getStorage, ref, toString } = storageModular;
+        const storageReference = ref(getStorage(), `/uploadNope.jpeg`);
         const app = firebase.app();
-        getStorage()
-          .ref('/uploadNope.jpeg')
-          .toString()
-          .should.equal(`gs://${app.options.storageBucket}/uploadNope.jpeg`);
+
+        toString(storageReference).should.equal(
+          `gs://${app.options.storageBucket}/uploadNope.jpeg`,
+        );
       });
     });
 
     describe('properties', function () {
       describe('fullPath', function () {
         it('returns the full path as a string', function () {
-          const { getStorage } = storageModular;
-          getStorage().ref('/foo/uploadNope.jpeg').fullPath.should.equal('foo/uploadNope.jpeg');
-          getStorage().ref('foo/uploadNope.jpeg').fullPath.should.equal('foo/uploadNope.jpeg');
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+          const storageReference2 = ref(getStorage(), 'foo/uploadNope.jpeg');
+          ref(storageReference, '/foo/uploadNope.jpeg').fullPath.should.equal(
+            'foo/uploadNope.jpeg',
+          );
+          getStorage()
+            .ref(storageReference2, 'foo/uploadNope.jpeg')
+            .fullPath.should.equal('foo/uploadNope.jpeg');
         });
       });
 
       describe('storage', function () {
         it('returns the instance of storage', function () {
-          const { getStorage } = storageModular;
-          getStorage().ref('/foo/uploadNope.jpeg').storage.ref.should.be.a.Function();
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+          storageReference.storage.ref.should.be.a.Function();
         });
       });
 
       describe('bucket', function () {
         it('returns the storage bucket as a string', function () {
-          const { getStorage } = storageModular;
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
           const app = firebase.app();
-          getStorage.ref('/foo/uploadNope.jpeg').bucket.should.equal(app.options.storageBucket);
+          storageReference.bucket.should.equal(app.options.storageBucket);
         });
       });
 
       describe('name', function () {
         it('returns the file name as a string', function () {
-          const { getStorage } = storageModular;
-          const ref = getStorage().ref('/foo/uploadNope.jpeg');
-          ref.name.should.equal('uploadNope.jpeg');
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+
+          storageReference.name.should.equal('uploadNope.jpeg');
         });
       });
 
       describe('parent', function () {
         it('returns the parent directory as a reference', function () {
-          const { getStorage } = storageModular;
-          getStorage().ref('/foo/uploadNope.jpeg').parent.fullPath.should.equal('foo');
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+          storageReference.parent.fullPath.should.equal('foo');
         });
 
         it('returns null if already at root', function () {
-          const { getStorage } = storageModular;
-          const ref = getStorage().ref('/');
-          should.equal(ref.parent, null);
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/');
+
+          should.equal(storageReference, null);
         });
       });
 
       describe('root', function () {
         it('returns a reference to the root of the bucket', function () {
-          const { getStorage } = storageModular;
-          getStorage().ref('/foo/uploadNope.jpeg').root.fullPath.should.equal('/');
+          const { getStorage, ref } = storageModular;
+          const storageReference = ref(getStorage(), '/foo/uploadNope.jpeg');
+          storageReference.root.fullPath.should.equal('/');
         });
       });
     });
 
     describe('child()', function () {
       it('returns a reference to a child path', function () {
-        const { getStorage } = storageModular;
-        const parentRef = getStorage().ref('/foo');
-        const childRef = parentRef.child('someFile.json');
+        const { getStorage, ref, child } = storageModular;
+        const storageReference = ref(getStorage(), '/foo');
+
+        const childRef = child(storageReference, 'someFile.json');
         childRef.fullPath.should.equal('foo/someFile.json');
       });
     });
 
     describe('delete()', function () {
       it('should delete a file', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/deleteMe.txt`);
-        await storageReference.putString('Delete File');
-        await storageReference.delete();
+        const { getStorage, ref, putString, deleteObject } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/deleteMe.txt`);
+
+        await putString(storageReference, 'Delete File');
+        await deleteObject(storageReference);
 
         try {
-          await storageReference.getMetadata();
+          await getMetadata(storageReference);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/object-not-found');
@@ -780,11 +795,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('throws error if file does not exist', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/iDoNotExist.txt`);
+        const { getStorage, ref, deleteObject } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/iDoNotExist.txt`);
 
         try {
-          await storageReference.delete();
+          await deleteObject(storageReference);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/object-not-found');
@@ -796,11 +811,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('throws error if no write permission', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref('/uploadNope.jpeg');
+        const { getStorage, ref, deleteObject } = storageModular;
+        const storageReference = ref(getStorage(), '/uploadNope.jpeg');
 
         try {
-          await storageReference.delete();
+          await deleteObject(storageReference);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/unauthorized');
@@ -814,12 +829,12 @@ describe('storage() -> StorageReference', function () {
 
     describe('getDownloadURL', function () {
       it('should return a download url for a file', async function () {
-        const { getStorage } = storageModular;
+        const { getStorage, ref, getDownloadURL } = storageModular;
         // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
         // Disabled for iOS pending: https://github.com/firebase/firebase-ios-sdk/pull/10370
         if (!isCI && device.getPlatform() !== 'ios') {
-          const storageReference = getStorage().ref(`${PATH}/list/file1.txt`);
-          const downloadUrl = await storageReference.getDownloadURL();
+          const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
+          const downloadUrl = await getDownloadURL(storageReference);
           downloadUrl.should.be.a.String();
           downloadUrl.should.containEql('file1.txt');
           downloadUrl.should.containEql(firebase.app().options.projectId);
@@ -829,11 +844,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('throws error if file does not exist', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/iDoNotExist.txt`);
+        const { getStorage, ref, getDownloadURL } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/iDoNotExist.txt`);
 
         try {
-          await storageReference.getDownloadURL();
+          await getDownloadURL(storageReference);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/object-not-found');
@@ -845,11 +860,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('throws error if no read permission', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(WRITE_ONLY_NAME);
+        const { getStorage, ref, getDownloadURL } = storageModular;
+        const storageReference = ref(getStorage(), WRITE_ONLY_NAME);
 
         try {
-          await storageReference.getDownloadURL();
+          await getDownloadURL(storageReference);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.code.should.equal('storage/unauthorized');
@@ -863,9 +878,9 @@ describe('storage() -> StorageReference', function () {
 
     describe('getMetadata', function () {
       it('should return a metadata for a file', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list/file1.txt`);
-        const metadata = await storageReference.getMetadata();
+        const { getStorage, ref, getMetadata } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
+        const metadata = await getMetadata(storageReference);
         metadata.generation.should.be.a.String();
         metadata.fullPath.should.equal(`${PATH}/list/file1.txt`);
         if (device.getPlatform() === 'android') {
@@ -895,8 +910,9 @@ describe('storage() -> StorageReference', function () {
 
     describe('list', function () {
       it('should return list results', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list`);
+        const { getStorage, ref } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list`);
+
         const result = await storageReference.list();
 
         result.constructor.name.should.eql('StorageListResult');
@@ -913,9 +929,9 @@ describe('storage() -> StorageReference', function () {
 
       it('throws if options is not an object', function () {
         try {
-          const { getStorage } = storageModular;
-          const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
-          storageReference.list(123);
+          const { getStorage, ref, list } = storageModular;
+          const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
+          list(storageReference, 123);
           return Promise.reject(new Error('Did not throw'));
         } catch (error) {
           error.message.should.containEql("'options' expected an object value");
@@ -925,9 +941,10 @@ describe('storage() -> StorageReference', function () {
 
       describe('maxResults', function () {
         it('should limit with maxResults are passed', async function () {
-          const { getStorage } = storageModular;
-          const storageReference = getStorage().ref(`${PATH}/list`);
-          const result = await storageReference.list({
+          const { getStorage, ref, list } = storageModular;
+          const storageReference = ref(getStorage(), `${PATH}/list`);
+
+          const result = await list(storageReference, {
             maxResults: 1,
           });
 
@@ -943,9 +960,10 @@ describe('storage() -> StorageReference', function () {
 
         it('throws if maxResults is not a number', function () {
           try {
-            const { getStorage } = storageModular;
-            const storageReference = getStorage().ref(`${PATH}/list`);
-            storageReference.list({
+            const { getStorage, ref, list } = storageModular;
+            const storageReference = ref(getStorage(), `${PATH}/list`);
+
+            list(storageReference, {
               maxResults: '123',
             });
             return Promise.reject(new Error('Did not throw'));
@@ -957,9 +975,9 @@ describe('storage() -> StorageReference', function () {
 
         it('throws if maxResults is not a valid number', function () {
           try {
-            const { getStorage } = storageModular;
-            const storageReference = getStorage().ref(`${PATH}/list`);
-            storageReference.list({
+            const { getStorage, ref, list } = storageModular;
+            const storageReference = ref(getStorage(), `${PATH}/list`);
+            list(storageReference, {
               maxResults: 2000,
             });
             return Promise.reject(new Error('Did not throw'));
@@ -975,9 +993,9 @@ describe('storage() -> StorageReference', function () {
       describe('pageToken', function () {
         it('throws if pageToken is not a string', function () {
           try {
-            const { getStorage } = storageModular;
-            const storageReference = getStorage().ref(`${PATH}/list`);
-            storageReference.list({
+            const { getStorage, ref, list } = storageModular;
+            const storageReference = ref(getStorage(), `${PATH}/list`);
+            list(storageReference, {
               pageToken: 123,
             });
             return Promise.reject(new Error('Did not throw'));
@@ -988,15 +1006,15 @@ describe('storage() -> StorageReference', function () {
         });
 
         it('should return and use a page token', async function () {
-          const { getStorage } = storageModular;
-          const storageReference = getStorage().ref(`${PATH}/list`);
-          const result1 = await storageReference.list({
+          const { getStorage, ref, list } = storageModular;
+          const storageReference = ref(getStorage(), `${PATH}/list`);
+          const result1 = await list(storageReference, {
             maxResults: 1,
           });
 
           const item1 = result1.items[0].fullPath;
 
-          const result2 = await storageReference.list({
+          const result2 = await list(storageReference, {
             maxResults: 1,
             pageToken: result1.nextPageToken,
           });
@@ -1012,9 +1030,9 @@ describe('storage() -> StorageReference', function () {
 
     describe('listAll', function () {
       it('should return all results', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list`);
-        const result = await storageReference.listAll();
+        const { getStorage, ref, listAll } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list`);
+        const result = await listAll(storageReference);
 
         should.equal(result.nextPageToken, null);
 
@@ -1028,10 +1046,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('should not crash if the user is not allowed to list the directory', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref('/forbidden');
+        const { getStorage, ref, listAll } = storageModular;
+        const storageReference = ref(getStorage(), '/forbidden');
+
         try {
-          await storageReference.listAll();
+          await listAll(storageReference);
           return Promise.reject(new Error('listAll on a forbidden directory succeeded'));
         } catch (error) {
           error.code.should.equal('storage/unauthorized');
@@ -1045,9 +1064,10 @@ describe('storage() -> StorageReference', function () {
 
     describe('updateMetadata', function () {
       it('should return the updated metadata for a file', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list/file1.txt`);
-        let metadata = await storageReference.updateMetadata({
+        const { getStorage, ref, updateMetadata } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
+
+        let metadata = await updateMetadata(storageReference, {
           cacheControl: 'cache-control',
           contentDisposition: 'content-disposition',
           contentEncoding: 'application/octet-stream',
@@ -1089,7 +1109,7 @@ describe('storage() -> StorageReference', function () {
         Object.keys(metadata.customMetadata).length.should.equal(2);
 
         // Now let's make sure removing metadata works
-        metadata = await storageReference.updateMetadata({
+        metadata = await updateMetadata(storageReference, {
           contentType: null,
           cacheControl: null,
           contentDisposition: null,
@@ -1126,9 +1146,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('should set update or remove customMetadata properties correctly', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list/file1.txt`);
-        let metadata = await storageReference.updateMetadata({
+        const { getStorage, ref, updateMetadata } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
+
+        let metadata = await updateMetadata(storageReference, {
           contentType: 'application/octet-stream',
           customMetadata: {
             keepMe: 'please',
@@ -1142,7 +1163,7 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.removeMeFirstTime.should.equal('please');
         metadata.customMetadata.removeMeSecondTime.should.equal('please');
 
-        metadata = await storageReference.updateMetadata({
+        metadata = await updateMetadata(storageReference, {
           contentType: 'application/octet-stream',
           customMetadata: {
             keepMe: 'please',
@@ -1155,7 +1176,7 @@ describe('storage() -> StorageReference', function () {
         metadata.customMetadata.keepMe.should.equal('please');
         metadata.customMetadata.removeMeSecondTime.should.equal('please');
 
-        metadata = await storageReference.updateMetadata({
+        metadata = await updateMetadata(storageReference, {
           contentType: 'application/octet-stream',
           customMetadata: {
             keepMe: 'please',
@@ -1167,10 +1188,11 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('should error if updateMetadata includes md5hash', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/list/file1.txt`);
+        const { getStorage, ref, updateMetadata } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/list/file1.txt`);
+
         try {
-          await storageReference.updateMetadata({
+          await updateMetadata(storageReference, {
             md5hash: '0xDEADBEEF',
           });
           return Promise.reject(new Error('Did not throw on invalid updateMetadata'));
@@ -1183,10 +1205,11 @@ describe('storage() -> StorageReference', function () {
 
     describe('putFile', function () {
       it('errors if file path is not a string', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putFile } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
+
         try {
-          storageReference.putFile(1337);
+          putFile(storageReference, 1337);
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('expects a string value');
@@ -1195,10 +1218,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putFile } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putFile('foo', 123);
+          putFile(storageReference, 'foo', 123);
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('must be an object value');
@@ -1207,10 +1230,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata contains an unsupported property', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putFile } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putFile('foo', { foo: true });
+          putFile(storageReference, 'foo', { foo: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql("unknown property 'foo'");
@@ -1219,10 +1242,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata property value is not a string or null value', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putFile } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putFile('foo', { contentType: true });
+          putFile(storageReference, 'foo', { contentType: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('should be a string or null value');
@@ -1231,10 +1254,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata.customMetadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putFile } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putFile('foo', { customMetadata: true });
+          putFile(storageReference, 'foo', { customMetadata: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql(
@@ -1249,10 +1272,10 @@ describe('storage() -> StorageReference', function () {
 
     describe('putString', function () {
       it('errors if metadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putString } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putString('foo', 'raw', 123);
+          putString(storageReference, 'foo', 'raw', 123);
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('must be an object value');
@@ -1261,10 +1284,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata contains an unsupported property', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putString } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putString('foo', 'raw', { foo: true });
+          putString(storageReference, 'foo', 'raw', { foo: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql("unknown property 'foo'");
@@ -1273,10 +1296,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata property value is not a string or null value', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putString } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putString('foo', 'raw', { contentType: true });
+          putString(storageReference, 'foo', 'raw', { contentType: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('should be a string or null value');
@@ -1285,10 +1308,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata.customMetadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, putString } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.putString('foo', 'raw', { customMetadata: true });
+          putString(storageReference, 'foo', 'raw', { customMetadata: true });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql(
@@ -1299,9 +1322,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('allows valid metadata properties for upload', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/metadataTest.txt`);
-        await storageReference.putString('foo', 'raw', {
+        const { getStorage, ref, putString } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/metadataTest.txt`);
+
+        await putString(storageReference, 'foo', 'raw', {
           contentType: 'text/plain',
           md5hash: '123412341234',
           cacheControl: 'true',
@@ -1317,10 +1341,11 @@ describe('storage() -> StorageReference', function () {
 
     describe('put', function () {
       it('errors if metadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
+
         try {
-          storageReference.put(new jet.context.window.ArrayBuffer(), 123);
+          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), 123);
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('must be an object value');
@@ -1329,10 +1354,12 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata contains an unsupported property', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.put(new jet.context.window.ArrayBuffer(), { foo: true });
+          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+            foo: true,
+          });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql("unknown property 'foo'");
@@ -1341,10 +1368,12 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata property value is not a string or null value', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.put(new jet.context.window.ArrayBuffer(), { contentType: true });
+          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+            contentType: true,
+          });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql('should be a string or null value');
@@ -1353,10 +1382,12 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('errors if metadata.customMetadata is not an object', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/ok.jpeg`);
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/ok.jpeg`);
         try {
-          storageReference.put(new jet.context.window.ArrayBuffer(), { customMetadata: true });
+          uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
+            customMetadata: true,
+          });
           return Promise.reject(new Error('Did not error!'));
         } catch (error) {
           error.message.should.containEql(
@@ -1367,9 +1398,10 @@ describe('storage() -> StorageReference', function () {
       });
 
       it('allows valid metadata properties for upload', async function () {
-        const { getStorage } = storageModular;
-        const storageReference = getStorage().ref(`${PATH}/metadataTest.jpeg`);
-        await storageReference.put(new jet.context.window.ArrayBuffer(), {
+        const { getStorage, ref, uploadBytesResumable } = storageModular;
+        const storageReference = ref(getStorage(), `${PATH}/metadataTest.jpeg`);
+
+        await uploadBytesResumable(storageReference, new jet.context.window.ArrayBuffer(), {
           contentType: 'image/jpg',
           md5hash: '123412341234',
           cacheControl: 'true',

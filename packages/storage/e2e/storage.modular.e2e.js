@@ -263,7 +263,7 @@ describe('storage() modular', function () {
         'gs://react-native-firebase-testing.appspot.com',
       );
       getStorage().app.name.should.equal('[DEFAULT]');
-      const instanceForBucket = firebase.app().storage(bucket);
+      const instanceForBucket = getStorage(null, bucket);
       instanceForBucket._customUrlOrRegion.should.equal(bucket);
     });
 
@@ -282,15 +282,19 @@ describe('storage() modular', function () {
     // FIXME on android this is unathorized against emulator but works on iOS?
     xit('uploads to a custom bucket when specified', async function () {
       if (device.getPlatform() === 'ios') {
-        const { getStorage } = storageModular;
+        const { getStorage, ref, uploadString } = storageModular;
         const jsonDerulo = JSON.stringify({ foo: 'bar' });
         const bucket = 'gs://react-native-firebase-testing';
         const storage = getStorage(null, bucket);
-        const uploadTaskSnapshot = await storage
-          .ref(`${PATH}/putStringCustomBucket.json`)
-          .putString(jsonDerulo, firebase.storage.StringFormat.RAW, {
+        const storageReference = ref(storage, `${PATH}/putStringCustomBucket.json`);
+        const uploadTaskSnapshot = await uploadString(
+          storageReference,
+          jsonDerulo,
+          firebase.storage.StringFormat.RAW,
+          {
             contentType: 'application/json',
-          });
+          },
+        );
 
         uploadTaskSnapshot.state.should.eql(storage.TaskState.SUCCESS);
         uploadTaskSnapshot.bytesTransferred.should.eql(uploadTaskSnapshot.totalBytes);
@@ -303,27 +307,29 @@ describe('storage() modular', function () {
 
   describe('ref', function () {
     it('uses default path if none provided', async function () {
-      const { getStorage } = storageModular;
-      const ref = getStorage().ref();
-      ref.fullPath.should.equal('/');
+      const { getStorage, ref } = storageModular;
+      const storageRef = ref(getStorage());
+      storageRef.fullPath.should.equal('/');
     });
 
     it('accepts a custom path', async function () {
-      const { getStorage } = storageModular;
-      const ref = getStorage().ref('foo/bar/baz.png');
-      ref.fullPath.should.equal('foo/bar/baz.png');
+      const { getStorage, ref } = storageModular;
+      const storageRef = ref(getStorage(), 'foo/bar/baz.png');
+
+      storageRef.fullPath.should.equal('foo/bar/baz.png');
     });
 
     it('strips leading / from custom path', async function () {
-      const { getStorage } = storageModular;
-      const ref = getStorage().ref('/foo/bar/baz.png');
-      ref.fullPath.should.equal('foo/bar/baz.png');
+      const { getStorage, ref } = storageModular;
+      const storageRef = ref(getStorage(), '/foo/bar/baz.png');
+      storageRef.fullPath.should.equal('foo/bar/baz.png');
     });
 
     it('throws an error if custom path not a string', async function () {
       try {
-        const { getStorage } = storageModular;
-        getStorage().ref({ derp: true });
+        const { getStorage, ref } = storageModular;
+        ref(getStorage(), { derp: true });
+
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'path' must be a string value");
@@ -334,30 +340,30 @@ describe('storage() modular', function () {
 
   describe('refFromURL', function () {
     it('accepts a gs url', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, refFromURL } = storageModular;
 
       const url = 'gs://foo/bar/baz.png';
-      const ref = getStorage().refFromURL(url);
+      const ref = refFromURL(getStorage(), url);
       ref.toString().should.equal(url);
     });
 
     it('accepts a https url', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, refFromURL } = storageModular;
 
       const url =
         'https://firebasestorage.googleapis.com/v0/b/react-native-firebase-testing.appspot.com/o/1mbTestFile.gif?alt=media';
-      const ref = getStorage().refFromURL(url);
+      const ref = refFromURL(getStorage(), url);
       ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
       ref.name.should.equal('1mbTestFile.gif');
       ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
     });
 
     it('accepts a https encoded url', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, refFromURL } = storageModular;
 
       const url =
         'https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Freact-native-firebase-testing.appspot.com%2Fo%2F1mbTestFile.gif%3Falt%3Dmedia';
-      const ref = getStorage().refFromURL(url);
+      const ref = refFromURL(getStorage(), url);
       ref.bucket.should.equal('react-native-firebase-testing.appspot.com');
       ref.name.should.equal('1mbTestFile.gif');
       ref.toString().should.equal('gs://react-native-firebase-testing.appspot.com/1mbTestFile.gif');
@@ -365,9 +371,9 @@ describe('storage() modular', function () {
 
     it('throws an error if https url could not be parsed', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, refFromURL } = storageModular;
 
-        getStorage().refFromURL('https://invertase.io');
+        refFromURL(getStorage(), 'https://invertase.io');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("unable to parse 'url'");
@@ -376,18 +382,18 @@ describe('storage() modular', function () {
     });
 
     it('accepts a gs url without a fullPath', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, refFromURL } = storageModular;
 
       const url = 'gs://some-bucket';
-      const ref = getStorage().refFromURL(url);
+      const ref = refFromURL(getStorage(), url);
       ref.toString().should.equal(url);
     });
 
     it('throws an error if url is not a string', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, refFromURL } = storageModular;
 
-        getStorage().refFromURL({ derp: true });
+        refFromURL(getStorage(), { derp: true });
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'url' must be a string value");
@@ -397,9 +403,10 @@ describe('storage() modular', function () {
 
     it('throws an error if url does not start with gs:// or https://', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, refFromURL } = storageModular;
 
-        getStorage().refFromURL('bs://foo/bar/cat.gif');
+        refFromURL(getStorage(), 'bs://foo/bar/cat.gif');
+
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("begin with 'gs://'");
@@ -410,18 +417,18 @@ describe('storage() modular', function () {
 
   describe('setMaxOperationRetryTime', function () {
     it('should set', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, setMaxOperationRetryTime } = storageModular;
 
       getStorage().maxOperationRetryTime.should.equal(120000);
-      await getStorage().setMaxOperationRetryTime(100000);
+      await setMaxOperationRetryTime(getStorage(), 100000);
       getStorage().maxOperationRetryTime.should.equal(100000);
     });
 
     it('throws if time is not a number value', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, setMaxOperationRetryTime } = storageModular;
 
-        await getStorage().setMaxOperationRetryTime('im a teapot');
+        await setMaxOperationRetryTime(getStorage(), 'im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql("'time' must be a number value");
@@ -432,18 +439,18 @@ describe('storage() modular', function () {
 
   describe('setMaxUploadRetryTime', function () {
     it('should set', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, setMaxUploadRetryTime } = storageModular;
 
       getStorage().maxUploadRetryTime.should.equal(600000);
-      await getStorage().setMaxUploadRetryTime(120000);
+      await setMaxUploadRetryTime(getStorage(), 120000);
       getStorage().maxUploadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, setMaxUploadRetryTime } = storageModular;
 
-        await getStorage().setMaxUploadRetryTime('im a teapot');
+        await setMaxUploadRetryTime(getStorage(), 'im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql("'time' must be a number value");
@@ -454,18 +461,18 @@ describe('storage() modular', function () {
 
   describe('setMaxDownloadRetryTime', function () {
     it('should set', async function () {
-      const { getStorage } = storageModular;
+      const { getStorage, setMaxDownloadRetryTime } = storageModular;
 
       getStorage().maxDownloadRetryTime.should.equal(600000);
-      await getStorage().setMaxDownloadRetryTime(120000);
+      await setMaxDownloadRetryTime(getStorage(), 120000);
       getStorage().maxDownloadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async function () {
       try {
-        const { getStorage } = storageModular;
+        const { getStorage, setMaxDownloadRetryTime } = storageModular;
 
-        await getStorage().setMaxDownloadRetryTime('im a teapot');
+        await setMaxDownloadRetryTime(getStorage(), 'im a teapot');
         return Promise.reject(new Error('Did not throw'));
       } catch (error) {
         error.message.should.containEql("'time' must be a number value");
