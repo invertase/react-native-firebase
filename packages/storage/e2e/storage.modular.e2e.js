@@ -200,6 +200,7 @@ describe('storage() modular', function () {
 
       describe('setMaxUploadRetryTime', function () {
         it('should set', async function () {
+          await firebase.storage().setMaxUploadRetryTime(600000);
           firebase.storage().maxUploadRetryTime.should.equal(600000);
           await firebase.storage().setMaxUploadRetryTime(120000);
           firebase.storage().maxUploadRetryTime.should.equal(120000);
