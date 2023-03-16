@@ -343,11 +343,12 @@ describe('storage() modular', function () {
 
   describe('refFromURL', function () {
     it('accepts a gs url', async function () {
-      const { getStorage, refFromURL } = storageModular;
+      const { getStorage, refFromURL, toString } = storageModular;
 
       const url = 'gs://foo/bar/baz.png';
       const ref = refFromURL(getStorage(), url);
-      ref.toString().should.equal(url);
+
+      toString(ref).should.equal(url);
     });
 
     it('accepts a https url', async function () {
@@ -421,7 +422,7 @@ describe('storage() modular', function () {
   describe('setMaxOperationRetryTime', function () {
     it('should set', async function () {
       const { getStorage, setMaxOperationRetryTime } = storageModular;
-
+      await setMaxOperationRetryTime(getStorage(), 120000);
       getStorage().maxOperationRetryTime.should.equal(120000);
       await setMaxOperationRetryTime(getStorage(), 100000);
       getStorage().maxOperationRetryTime.should.equal(100000);
@@ -443,10 +444,11 @@ describe('storage() modular', function () {
   describe('setMaxUploadRetryTime', function () {
     it('should set', async function () {
       const { getStorage, setMaxUploadRetryTime } = storageModular;
-
-      getStorage().maxUploadRetryTime.should.equal(600000);
-      await setMaxUploadRetryTime(getStorage(), 120000);
-      getStorage().maxUploadRetryTime.should.equal(120000);
+      const storage = getStorage();
+      await setMaxUploadRetryTime(storage, 600000);
+      storage.maxUploadRetryTime.should.equal(600000);
+      await setMaxUploadRetryTime(storage, 120000);
+      storage.maxUploadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async function () {
@@ -465,10 +467,11 @@ describe('storage() modular', function () {
   describe('setMaxDownloadRetryTime', function () {
     it('should set', async function () {
       const { getStorage, setMaxDownloadRetryTime } = storageModular;
-
-      getStorage().maxDownloadRetryTime.should.equal(600000);
-      await setMaxDownloadRetryTime(getStorage(), 120000);
-      getStorage().maxDownloadRetryTime.should.equal(120000);
+      const storage = getStorage();
+      await setMaxDownloadRetryTime(storage, 600000);
+      storage.maxDownloadRetryTime.should.equal(600000);
+      await setMaxDownloadRetryTime(storage, 120000);
+      storage.maxDownloadRetryTime.should.equal(120000);
     });
 
     it('throws if time is not a number value', async function () {

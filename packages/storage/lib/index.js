@@ -44,7 +44,11 @@ export {
   toString,
   child,
   setMaxDownloadRetryTime,
+  setMaxOperationRetryTime,
+  setMaxUploadRetryTime,
   refFromURL,
+  uploadString,
+  uploadBytesResumable,
 } from '../modular/index';
 
 const namespace = 'storage';

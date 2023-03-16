@@ -68,7 +68,7 @@ export function ref(storage, path) {
  * @returns {Promise<void>}
  */
 export function deleteObject(storageRef) {
-  return storage.ref(storageRef).delete();
+  return storageRef.delete();
 }
 
 /**
@@ -137,7 +137,7 @@ export function list(storageRef, options) {
  * @returns {Promise<ListResult>}
  */
 export function listAll(storageRef) {
-  return storageRef.listAll(options);
+  return storageRef.listAll();
 }
 
 /**
@@ -169,7 +169,7 @@ export async function uploadBytes(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export async function uploadBytesResumable(storageRef, data, metadata) {
+export function uploadBytesResumable(storageRef, data, metadata) {
   return storageRef.put(data, metadata);
 }
 
@@ -181,7 +181,7 @@ export async function uploadBytesResumable(storageRef, data, metadata) {
  * @param metadata - A Storage `SettableMetadata` instance to update. Optional.
  * @returns {Task}
  */
-export async function uploadString(storageRef, data, format, metadata) {
+export function uploadString(storageRef, data, format, metadata) {
   return storageRef.putString(data, format, metadata);
 }
 
@@ -193,7 +193,7 @@ export async function uploadString(storageRef, data, format, metadata) {
  * @param url - A storage bucket URL pointing to a single file or location. Must be either a `gs://` url or an `http` url. Not available on web.
  * @returns {Reference}
  */
-export async function refFromURL(storage, url) {
+export function refFromURL(storage, url) {
   return storage.refFromURL(url);
 }
 
@@ -203,7 +203,7 @@ export async function refFromURL(storage, url) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export async function setMaxOperationRetryTime(storage, time) {
+export function setMaxOperationRetryTime(storage, time) {
   return storage.setMaxOperationRetryTime(time);
 }
 
@@ -213,7 +213,7 @@ export async function setMaxOperationRetryTime(storage, time) {
  * @param time - The new maximum operation retry time in milliseconds.
  * @returns {Promise<void>}
  */
-export async function setMaxUploadRetryTime(storage, time) {
+export function setMaxUploadRetryTime(storage, time) {
   return storage.setMaxOperationRetryTime(time);
 }
 
