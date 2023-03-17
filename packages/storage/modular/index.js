@@ -214,7 +214,7 @@ export function setMaxOperationRetryTime(storage, time) {
  * @returns {Promise<void>}
  */
 export function setMaxUploadRetryTime(storage, time) {
-  return storage.setMaxOperationRetryTime(time);
+  return storage.setMaxUploadRetryTime(time);
 }
 
 /**
