@@ -73,7 +73,7 @@ application. To learn more, view the advanced [iOS Permissions](/messaging/ios-p
 On Android API level 32 and below, you do not need to request user permission. This method can still be called on Android devices; however, and will always resolve successfully. For API level 33+ you will need to request the permission manually using either the built-in react-native `PermissionsAndroid` APIs or a related module such as `react-native-permissions`
 
 ```
-  import {PermissionsAndroid} from 'react-native'}
+  import {PermissionsAndroid} from 'react-native';
   PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 ```
 
