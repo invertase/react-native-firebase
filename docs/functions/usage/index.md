@@ -54,12 +54,15 @@ Whilst developing your application with Cloud Functions, it is possible to run t
 To call the emulated functions, call the `useEmulator` method exposed by the library:
 
 ```js
-import functions from '@react-native-firebase/functions';
+import { firebase } from '@react-native-firebase/functions';
 
 // Use a local emulator in development
 if (__DEV__) {
   // If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
   firebase.functions().useEmulator('localhost', 5001);
+  
+  // For functions deplyed in a non-default location/region.
+  firebase.app().functions("region_name").useEmulator('localhost', 5001);
 }
 ```
 
@@ -70,7 +73,10 @@ Assuming we have a deployed a callable endpoint named `listProducts`, to call th
 
 ```js
 // Deployed HTTPS callable
+  
 exports.listProducts = functions.https.onCall(() => {
+   // For functions deplyed in a non-default location/region, you can use the following form, instead of the one above.  
+   // functions.region("region_name").https.onCall(() => {});
   return [
     /* ... */
     // Return some data
@@ -81,19 +87,21 @@ exports.listProducts = functions.https.onCall(() => {
 Within the React Native application, the list of products returned can be directly accessed:
 
 ```jsx
-import functions from '@react-native-firebase/functions';
+import { firebase } from '@react-native-firebase/functions';
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    functions()
-      .httpsCallable('listProducts')()
+    firebase.functions()
+      .httpsCallable('listProducts')({ abc: 123 })
       .then(response => {
         setProducts(response.data);
         setLoading(false);
       });
+    // For functions deplyed in a non-default location/region, you can use the following form, instead of the one above.  
+    // firebase.app().functions("region_name").httpsCallable('listProducts')({ abc: 123 }).then();
   }, []);
 
   if (loading) {
