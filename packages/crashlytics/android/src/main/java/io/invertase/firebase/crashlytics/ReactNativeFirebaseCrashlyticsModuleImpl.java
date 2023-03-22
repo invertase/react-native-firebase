@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ReactNativeFirebaseCrashlyticsModule extends ReactNativeFirebaseModule {
-  private static final String TAG = "Crashlytics";
+public class ReactNativeFirebaseCrashlyticsModuleImpl extends ReactNativeFirebaseModule {
+  public static final String TAG = "Crashlytics";
 
-  ReactNativeFirebaseCrashlyticsModule(ReactApplicationContext reactContext) {
+  ReactNativeFirebaseCrashlyticsModuleImpl(ReactApplicationContext reactContext) {
     super(reactContext, TAG);
   }
 

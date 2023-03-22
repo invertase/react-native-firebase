@@ -17,25 +17,55 @@ package io.invertase.firebase.crashlytics;
  *
  */
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactPackage;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.invertase.firebase.common.ReactNativeFirebaseModule;
 
 @SuppressWarnings("unused")
-public class ReactNativeFirebaseCrashlyticsPackage implements ReactPackage {
+public class ReactNativeFirebaseCrashlyticsPackage extends TurboReactPackage {
+  @Nullable
   @Override
-  public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    List<NativeModule> modules = new ArrayList<>();
-    modules.add(new ReactNativeFirebaseCrashlyticsModule(reactContext));
-    return modules;
+  public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+    if (name.equals(ReactNativeFirebaseModule.getModuleName(ReactNativeFirebaseCrashlyticsModuleImpl.TAG))) {
+      return new ReactNativeFirebaseCrashlyticsModule(reactContext);
+    } else {
+      return null;
+    }
   }
 
   @Override
-  public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-    return Collections.emptyList();
+  public ReactModuleInfoProvider getReactModuleInfoProvider() {
+    String crashlyticsModuleName = ReactNativeFirebaseModule.getModuleName(ReactNativeFirebaseCrashlyticsModuleImpl.TAG);
+
+    return () -> {
+      boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+      final Map<String, ReactModuleInfo> moduleInfo = new HashMap<>();
+      moduleInfo.put(
+        crashlyticsModuleName,
+        new ReactModuleInfo(
+          crashlyticsModuleName,
+          crashlyticsModuleName,
+          false, // canOverrideExistingModule
+          false, // needsEagerInit
+          true, // hasConstants
+          false, // isCxxModule
+          isTurboModule // isTurboModule
+        ));
+
+      return moduleInfo;
+    };
   }
 }
