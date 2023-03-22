@@ -17,8 +17,18 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
+#import <RNFirebaseCrashlyticsSpec/RNFirebaseCrashlyticsSpec.h>
+
+@interface RNFBCrashlyticsModule : NSObject <NativeFirebaseCrashlyticsModuleSpec>
+
+#else
+
 #import <React/RCTBridgeModule.h>
 
 @interface RNFBCrashlyticsModule : NSObject <RCTBridgeModule>
+
+#endif
 
 @end

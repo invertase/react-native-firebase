@@ -57,8 +57,12 @@ RCT_EXPORT_MODULE();
 #pragma mark -
 #pragma mark Firebase Crashlytics Methods
 
+- (NSDictionary *)getConstants {
+    return self.constantsToExport;
+}
+
 RCT_EXPORT_METHOD(checkForUnsentReports
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[FIRCrashlytics crashlytics] checkForUnsentReportsWithCompletion:^(BOOL unsentReports) {
     resolve([NSNumber numberWithBool:unsentReports]);
@@ -83,8 +87,8 @@ RCT_EXPORT_METHOD(crash) {
 }
 
 RCT_EXPORT_METHOD(crashWithStackPromise
-                  : (NSDictionary *)jsErrorDict resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)jsErrorDict resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     if ([self isDebuggerAttached]) {
@@ -107,7 +111,7 @@ RCT_EXPORT_METHOD(crashWithStackPromise
 RCT_EXPORT_METHOD(deleteUnsentReports) { [[FIRCrashlytics crashlytics] deleteUnsentReports]; }
 
 RCT_EXPORT_METHOD(didCrashOnPreviousExecution
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   BOOL didCrash = [[FIRCrashlytics crashlytics] didCrashDuringPreviousExecution];
   resolve([NSNumber numberWithBool:didCrash]);
@@ -116,8 +120,8 @@ RCT_EXPORT_METHOD(didCrashOnPreviousExecution
 RCT_EXPORT_METHOD(log : (NSString *)message) { [[FIRCrashlytics crashlytics] log:message]; }
 
 RCT_EXPORT_METHOD(logPromise
-                  : (NSString *)message resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)message resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[FIRCrashlytics crashlytics] log:message];
   resolve([NSNull null]);
@@ -127,8 +131,8 @@ RCT_EXPORT_METHOD(sendUnsentReports) { [[FIRCrashlytics crashlytics] sendUnsentR
 
 RCT_EXPORT_METHOD(setAttribute
                   : (NSString *)key value
-                  : (NSString *)value resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)value resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [[FIRCrashlytics crashlytics] setCustomValue:value forKey:key];
@@ -137,8 +141,8 @@ RCT_EXPORT_METHOD(setAttribute
 }
 
 RCT_EXPORT_METHOD(setAttributes
-                  : (NSDictionary *)attributes resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)attributes resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     NSArray *keys = [attributes allKeys];
@@ -151,8 +155,8 @@ RCT_EXPORT_METHOD(setAttributes
 }
 
 RCT_EXPORT_METHOD(setUserId
-                  : (NSString *)userId resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSString *)userId resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [[FIRCrashlytics crashlytics] setUserID:userId];
@@ -167,8 +171,8 @@ RCT_EXPORT_METHOD(recordError : (NSDictionary *)jsErrorDict) {
 }
 
 RCT_EXPORT_METHOD(recordErrorPromise
-                  : (NSDictionary *)jsErrorDict resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (NSDictionary *)jsErrorDict resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   if ([RNFBCrashlyticsInitProvider isCrashlyticsCollectionEnabled]) {
     [self recordJavaScriptError:jsErrorDict];
@@ -177,8 +181,8 @@ RCT_EXPORT_METHOD(recordErrorPromise
 }
 
 RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled
-                  : (BOOL)enabled resolver
-                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (BOOL)enabled resolve
+                  : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject) {
   [[RNFBPreferences shared] setBooleanValue:@"crashlytics_auto_collection_enabled"
                                   boolValue:enabled];
@@ -244,5 +248,13 @@ RCT_EXPORT_METHOD(setCrashlyticsCollectionEnabled
 
   return debuggerIsAttached;
 }
+
+#ifdef RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+  return std::make_shared<facebook::react::NativeFirebaseCrashlyticsModuleSpecJSI>(params);
+}
+#endif
 
 @end
