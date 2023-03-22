@@ -4,7 +4,7 @@ const escape = require('escape-string-regexp');
 
 const root = path.resolve(__dirname, '..');
 
-const modules = ['react', 'react-native'];
+const modules = ['react', 'react-native', 'promise'];
 
 module.exports = {
   projectRoot: __dirname,

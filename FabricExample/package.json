@@ -15,7 +15,7 @@
     "@react-native-firebase/crashlytics": "link:../packages/crashlytics",
     "@react-native-firebase/perf": "link:../packages/perf",
     "react": "18.2.0",
-    "react-native": "0.0.0-20230301-2111-dadf74fb6"
+    "react-native": "0.72.0-rc.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
