@@ -850,7 +850,15 @@ PODS:
   - RNFBCrashlytics (17.3.1):
     - Firebase/Crashlytics (= 10.5.0)
     - FirebaseCoreExtension (= 10.5.0)
+    - RCT-Folly (= 2021.07.22.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
     - RNFBApp
   - RNFBPerf (17.3.1):
     - Firebase/Performance (= 10.5.0)
@@ -1082,7 +1090,7 @@ SPEC CHECKSUMS:
   ReactCommon: ff05d034f18f4beea06ae4995f6b862ad60b782e
   RNFBAnalytics: fe2aa1ba743a753afc633d02eb487b8749945638
   RNFBApp: b9b57511ba7535e647cc426d0287e4efeaa05a3f
-  RNFBCrashlytics: 044ab9bfbb4e9608bfdc771e7f8cdfa151302315
+  RNFBCrashlytics: 930e30f31400db4b0953dbce18badab718c87fa4
   RNFBPerf: 1cc8225c9a239d920b8e55e4eb454691d6e96e4c
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 28ed55bfd6f464955f81e6f0c9d16ee31b14c623
