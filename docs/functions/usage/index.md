@@ -60,9 +60,6 @@ import { firebase } from '@react-native-firebase/functions';
 if (__DEV__) {
   // If you are running on a physical device, replace http://localhost with the local ip of your PC. (http://192.168.x.x)
   firebase.functions().useEmulator('localhost', 5001);
-  
-  // For functions deplyed in a non-default location/region.
-  firebase.app().functions("region_name").useEmulator('localhost', 5001);
 }
 ```
 
@@ -75,8 +72,6 @@ Assuming we have a deployed a callable endpoint named `listProducts`, to call th
 // Deployed HTTPS callable
   
 exports.listProducts = functions.https.onCall(() => {
-   // For functions deplyed in a non-default location/region, you can use the following form, instead of the one above.  
-   // functions.region("region_name").https.onCall(() => {});
   return [
     /* ... */
     // Return some data
@@ -100,8 +95,6 @@ function App() {
         setProducts(response.data);
         setLoading(false);
       });
-    // For functions deplyed in a non-default location/region, you can use the following form, instead of the one above.  
-    // firebase.app().functions("region_name").httpsCallable('listProducts')({ abc: 123 }).then();
   }, []);
 
   if (loading) {
@@ -111,3 +104,22 @@ function App() {
   // ...
 }
 ```
+
+## Region-specific Functions
+
+If you need to deploy Functions in a region other than the default one, modified statements need to be used. 
+
+```javascript
+import { firebase } from '@react-native-firebase/functions';
+  
+  // Emulator statement 
+  firebase.app().functions("region_name").useEmulator('localhost', 5001);
+
+  // definition statement 
+  functions.region("region_name").https.onCall(() => {});
+
+  // function calling statement
+  firebase.app().functions("region_name").httpsCallable('listProducts')({ abc: 123 }).then();
+```
+
+
