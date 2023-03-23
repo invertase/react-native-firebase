@@ -82,14 +82,14 @@ exports.listProducts = functions.https.onCall(() => {
 Within the React Native application, the list of products returned can be directly accessed:
 
 ```jsx
-import { firebase } from '@react-native-firebase/functions';
+import functions from '@react-native-firebase/functions';
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    firebase.functions()
+    functions()
       .httpsCallable('listProducts')({ abc: 123 })
       .then(response => {
         setProducts(response.data);
