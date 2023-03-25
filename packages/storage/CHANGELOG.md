@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.4.0](https://github.com/invertase/react-native-firebase/compare/v17.3.2...v17.4.0) (2023-03-25)
+
+### Features
+
+- **storage:** Firebase JS SDK v9 modular API ([#6958](https://github.com/invertase/react-native-firebase/issues/6958)) ([02df92e](https://github.com/invertase/react-native-firebase/commit/02df92e8d76a60e7cfaa80d65d98f4c905a89937))
+
 ### [17.3.2](https://github.com/invertase/react-native-firebase/compare/v17.3.1...v17.3.2) (2023-03-05)
 
 **Note:** Version bump only for package @react-native-firebase/storage
