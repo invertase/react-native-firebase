@@ -55,7 +55,7 @@ This App Check module has built-in support for using the following services as a
 
 - DeviceCheck on iOS
 - App Attest on iOS
-- Play Integrity on Android
+- Play Integrity on Android (requires distribution from Play Store to successfully fetch tokens)
 - SafetyNet on Android (deprecated)
 - Debug providers on both platforms
 
