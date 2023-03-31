@@ -25,6 +25,7 @@ import * as appDistributionModular from '@react-native-firebase/app-distribution
 import NativeEventEmitter from '@react-native-firebase/app/lib/internal/RNFBNativeEventEmitter';
 import '@react-native-firebase/app/lib/utils';
 import '@react-native-firebase/auth';
+import * as authModular from '@react-native-firebase/auth';
 import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
@@ -59,6 +60,7 @@ jet.exposeContextProperty('analyticsModular', analyticsModular);
 jet.exposeContextProperty('appDistributionModular', appDistributionModular);
 jet.exposeContextProperty('remoteConfigModular', remoteConfigModular);
 jet.exposeContextProperty('perfModular', perfModular);
+jet.exposeContextProperty('authModular', authModular);
 jet.exposeContextProperty('appCheckModular', appCheckModular);
 jet.exposeContextProperty('messagingModular', messagingModular);
 jet.exposeContextProperty('storageModular', storageModular);
