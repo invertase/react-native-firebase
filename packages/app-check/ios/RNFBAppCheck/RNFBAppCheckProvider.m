@@ -42,7 +42,7 @@
     // exists:
     if (debugToken != nil) {
       // We have a debug token, so just need to stuff it in the environment and it will hook up
-      char *key = "FIRAAppCheckDebugToken", *value = [debugToken UTF8String];
+      char *key = "FIRAAppCheckDebugToken", *value = (char*)[debugToken UTF8String];
       int overwrite = 1;
       setenv(key, value, overwrite);
     }
