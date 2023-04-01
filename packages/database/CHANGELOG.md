@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [17.4.1](https://github.com/invertase/react-native-firebase/compare/v17.4.0...v17.4.1) (2023-04-01)
+
+**Note:** Version bump only for package @react-native-firebase/database
+
 ## [17.4.0](https://github.com/invertase/react-native-firebase/compare/v17.3.2...v17.4.0) (2023-03-25)
 
 **Note:** Version bump only for package @react-native-firebase/database
