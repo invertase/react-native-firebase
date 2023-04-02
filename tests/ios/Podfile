@@ -75,10 +75,12 @@ target 'testing' do
 
 
     # Turn off warnings on non-RNFB dependencies - some of them are really really noisy
+    # Also bumps minimum deploy target to ours (which is >12.4): https://github.com/facebook/react-native/issues/34106
     installer.pods_project.targets.each do |target|
       if !target.name.include? "RNFB"
         target.build_configurations.each do |config|
           config.build_settings["GCC_WARN_INHIBIT_ALL_WARNINGS"] = "YES"
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = $iOSMinimumDeployVersion
         end
       end
     end

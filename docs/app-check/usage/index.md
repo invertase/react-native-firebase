@@ -55,7 +55,7 @@ This App Check module has built-in support for using the following services as a
 
 - DeviceCheck on iOS
 - App Attest on iOS
-- Play Integrity on Android
+- Play Integrity on Android (requires distribution from Play Store to successfully fetch tokens)
 - SafetyNet on Android (deprecated)
 - Debug providers on both platforms
 
@@ -141,7 +141,7 @@ The [official documentation](https://firebase.google.com/docs/app-check/web/cust
 
 ### on iOS
 
-The react-native-firebase CustomProvider implementation allows for runtime configuration of the `debug` provider as well as a `debugToken` in the `android` CustomProvider options. This allows the easy use of a token pre-configured in the Firebase console, allowing for dynamic configuration and testing of AppCheck in CI environments or Android Emulators.
+The react-native-firebase CustomProvider implementation allows for runtime configuration of the `debug` provider as well as a `debugToken` in the `ios` CustomProvider options. This allows the easy use of a token pre-configured in the Firebase console, allowing for dynamic configuration and testing of AppCheck in CI environments or iOS Simulators.
 
 ### on Android
 

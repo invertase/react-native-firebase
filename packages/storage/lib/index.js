@@ -26,6 +26,31 @@ import StorageStatics from './StorageStatics';
 import { getGsUrlParts, getHttpUrlParts, handleStorageEvent } from './utils';
 import version from './version';
 
+export {
+  getStorage,
+  connectStorageEmulator,
+  ref,
+  deleteObject,
+  getBlob,
+  getBytes,
+  getDownloadURL,
+  getMetadata,
+  getStream,
+  list,
+  listAll,
+  updateMetadata,
+  putFile,
+  writeToFile,
+  toString,
+  child,
+  setMaxDownloadRetryTime,
+  setMaxOperationRetryTime,
+  setMaxUploadRetryTime,
+  refFromURL,
+  uploadString,
+  uploadBytesResumable,
+} from '../modular/index';
+
 const namespace = 'storage';
 const nativeEvents = ['storage_event'];
 const nativeModuleName = 'RNFBStorageModule';

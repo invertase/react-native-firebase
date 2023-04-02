@@ -42,16 +42,16 @@
     // exists:
     if (debugToken != nil) {
       // We have a debug token, so just need to stuff it in the environment and it will hook up
-      char *key = "FIRAAppCheckDebugToken", *value = [debugToken UTF8String];
+      char *key = "FIRAAppCheckDebugToken", *value = (char *)[debugToken UTF8String];
       int overwrite = 1;
       setenv(key, value, overwrite);
     }
 
-    self.delegateProvider = [[FIRAppCheckDebugProvider new] initWithApp:app];
+    self.delegateProvider = [[FIRAppCheckDebugProvider alloc] initWithApp:app];
   }
 
   if ([providerName isEqualToString:@"deviceCheck"]) {
-    self.delegateProvider = [[FIRDeviceCheckProvider new] initWithApp:app];
+    self.delegateProvider = [[FIRDeviceCheckProvider alloc] initWithApp:app];
   }
 
   if ([providerName isEqualToString:@"appAttest"]) {
@@ -61,7 +61,7 @@
       // This is not a valid configuration.
       DLog(@"AppAttest unavailable: it requires iOS14+, macCatalyst14+ or tvOS15+. Installing "
            @"debug provider to guarantee invalid tokens in this invalid configuration.");
-      self.delegateProvider = [[FIRAppCheckDebugProvider new] initWithApp:app];
+      self.delegateProvider = [[FIRAppCheckDebugProvider alloc] initWithApp:app];
     }
   }
 

@@ -107,4 +107,10 @@ Object.defineProperty(global, 'appCheckModular', {
   },
 });
 
+Object.defineProperty(global, 'storageModular', {
+  get() {
+    return jet.storageModular;
+  },
+});
+
 global.isCI = !!process.env.CI;

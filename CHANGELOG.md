@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [17.4.1](https://github.com/invertase/react-native-firebase/compare/v17.4.0...v17.4.1) (2023-04-01)
+
+### Bug Fixes
+
+- **app-check, ios:** Xcode 14.3 compat bugfix ([c4bb807](https://github.com/invertase/react-native-firebase/commit/c4bb807bad5beeef1a2d353d417209b776668e83)), closes [#7014](https://github.com/invertase/react-native-firebase/issues/7014)
+- **crashlytics, android:** use v2.9.2 of crashlytics android plugin ([8460ab6](https://github.com/invertase/react-native-firebase/commit/8460ab6176bb0d287a277853427d94004c30a4d0)), closes [#6983](https://github.com/invertase/react-native-firebase/issues/6983)
+
+## [17.4.0](https://github.com/invertase/react-native-firebase/compare/v17.3.2...v17.4.0) (2023-03-25)
+
+### Features
+
+- **storage:** Firebase JS SDK v9 modular API ([#6958](https://github.com/invertase/react-native-firebase/issues/6958)) ([02df92e](https://github.com/invertase/react-native-firebase/commit/02df92e8d76a60e7cfaa80d65d98f4c905a89937))
+
+### Bug Fixes
+
+- **android:** bump to firebase-android-sdk 31.3.0 ([500f15a](https://github.com/invertase/react-native-firebase/commit/500f15ab5409686d2b7defde32effce0f2b537d9))
+- **app-distribution, android:** update the gradle plugin to match BoM 31.2.3 release ([ebfb413](https://github.com/invertase/react-native-firebase/commit/ebfb413670d189f77384e05000e13e48abac4516))
+- **ios:** bump firebase-ios-sdk to 10.7.0 ([7103473](https://github.com/invertase/react-native-firebase/commit/7103473e0f0b43e2e994aa7cb9ba553906f9cf46))
+
+### [17.3.2](https://github.com/invertase/react-native-firebase/compare/v17.3.1...v17.3.2) (2023-03-05)
+
+### Bug Fixes
+
+- **app, android:** adopt firebase-android-sdk 31.2.3 ([24fa17e](https://github.com/invertase/react-native-firebase/commit/24fa17e710070b11d2be2851bd3ef9a81185d472))
+- **app, ios:** bump firebase-ios-sdk to 10.6.0 ([06a6f69](https://github.com/invertase/react-native-firebase/commit/06a6f6945280f2b22f50f9327c57c8222c80ae8a))
+- **auth, types:** add `OIDCProvider` to typescript declaration ([#6936](https://github.com/invertase/react-native-firebase/issues/6936)) ([00185a3](https://github.com/invertase/react-native-firebase/commit/00185a37bc554f9bcb6feb6434d6c9c75ed51a3a))
+- **expo:** extend expo config plugin regex to match latest version of AppDelegate ([#6957](https://github.com/invertase/react-native-firebase/issues/6957)) ([281deed](https://github.com/invertase/react-native-firebase/commit/281deedb2c23819816d73a864cbc0f6907a7f110))
+
 ### [17.3.1](https://github.com/invertase/react-native-firebase/compare/v17.3.0...v17.3.1) (2023-02-23)
 
 ### Bug Fixes
