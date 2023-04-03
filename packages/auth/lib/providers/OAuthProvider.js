@@ -18,8 +18,14 @@
 const providerId = 'oauth';
 
 export default class OAuthProvider {
-  constructor() {
-    throw new Error('`new OAuthProvider()` is not supported on the native Firebase SDKs.');
+  constructor(providerId) {
+    this.providerId = providerId;
+  }
+
+  customParameters = {};
+
+  setCustomParameters(customParameters) {
+    this.customParameters = customParameters;
   }
 
   static get PROVIDER_ID() {

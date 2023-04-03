@@ -109,6 +109,11 @@ export namespace FirebaseAuthTypes {
     credential: (token: string | null, secret?: string) => AuthCredential;
   }
 
+  export type OAuthProvider = AuthProvider & {
+    new (providerId: string): OAuthProvider;
+    setCustomParameters: (customOAuthParameters: object) => void;
+  };
+
   /**
    * Interface that represents an Open ID Connect auth provider. Implemented by other providers.
    */
@@ -315,7 +320,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.OAuthProvider;
      * ```
      */
-    OAuthProvider: AuthProvider;
+    OAuthProvider: OAuthProvider;
     /**
      * Custom Open ID connect auth provider implementation.
      *
@@ -387,6 +392,12 @@ export namespace FirebaseAuthTypes {
      * Any additional user information assigned to the user.
      */
     additionalUserInfo?: AdditionalUserInfo;
+
+    /**
+     * The AuthCredential returned from the identity provider.
+     */
+    credential: AuthCredential | null;
+
     /**
      * Returns the {@link auth.User} interface of this credential.
      */
@@ -1213,6 +1224,46 @@ export namespace FirebaseAuthTypes {
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Link the user with a 3rd party provider.
+     *
+     * #### Example
+     *
+     * ```js
+     * const oauthProvider = new firebase.auth.OAuthProvider('oidc.react.com')
+     * const authCredentials = await firebase.auth().currentUser.linkWithPopup(oauthProvider);
+     * ```
+     *
+     * @error auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User.
+     * @error auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
+     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    linkWithPopup(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
+     * Link the user with a 3rd party provider.
+     *
+     * #### Example
+     *
+     * ```js
+     * const oauthProvider = new firebase.auth.OAuthProvider('oidc.react.com')
+     * const authCredentials = await firebase.auth().currentUser.linkWithPopup(oauthProvider);
+     * ```
+     *
+     * @error auth/provider-already-linked Thrown if the provider has already been linked to the user. This error is thrown even if this is not the same provider's account that is currently linked to the user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/credential-already-in-use Thrown if the account corresponding to the credential already exists among your users, or is already linked to a Firebase User.
+     * @error auth/email-already-in-use Thrown if the email corresponding to the credential already exists among your users.
+     * @error auth/operation-not-allowed Thrown if you have not enabled the provider in the Firebase Console. Go to the Firebase Console for your project, in the Auth section and the Sign in Method tab and configure the provider.
+     * @throws on iOS {@link auth.NativeFirebaseAuthError}, on Android {@link auth.NativeFirebaseError}
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    linkWithRedirect(provider: Provider): Promise<UserCredential>;
+
+    /**
      * Re-authenticate a user with a third-party authentication provider.
      *
      * #### Example
@@ -1721,6 +1772,9 @@ export namespace FirebaseAuthTypes {
      * @param credential A generated `AuthCredential`, for example from social auth.
      */
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
+
+    signInWithPopup(provider: AuthProvider): Promise<UserCredential>;
+    signInWithRedirect(provider: AuthProvider): Promise<UserCredential>;
 
     /**
      * Sends a password reset email to the given email address.

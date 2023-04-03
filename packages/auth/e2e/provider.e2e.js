@@ -149,9 +149,7 @@ describe('auth() -> Providers', function () {
   describe('OAuthProvider', function () {
     describe('constructor', function () {
       it('should throw an unsupported error', function () {
-        (() => new firebase.auth.OAuthProvider()).should.throw(
-          '`new OAuthProvider()` is not supported on the native Firebase SDKs.',
-        );
+        (() => new firebase.auth.OAuthProvider('oidc.react.com')).should.not.throw();
       });
     });
 

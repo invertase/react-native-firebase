@@ -360,16 +360,16 @@ class FirebaseAuthModule extends FirebaseModule {
     throw new Error('firebase.auth().setPersistence() is unsupported by the native Firebase SDKs.');
   }
 
-  signInWithPopup() {
-    throw new Error(
-      'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
-    );
+  signInWithPopup(provider) {
+    return this.native
+      .signInWithProvider(provider.providerId, provider.customParameters?.login_hint)
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   signInWithRedirect() {
-    throw new Error(
-      'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
-    );
+    return this.native
+      .signInWithProvider(provider.providerId, provider.customParameters?.login_hint)
+      .then(userCredential => this._setUserCredential(userCredential));
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680

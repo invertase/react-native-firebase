@@ -310,16 +310,14 @@ export default class User {
     );
   }
 
-  linkWithPopup() {
-    throw new Error(
-      'firebase.auth.User.linkWithPopup() is unsupported by the native Firebase SDKs.',
-    );
+  linkWithPopup(provider) {
+    return this._auth.native
+      .linkWithProvider(provider.providerId, provider.customParameters?.login_hint)
+      .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
-  linkWithRedirect() {
-    throw new Error(
-      'firebase.auth.User.linkWithRedirect() is unsupported by the native Firebase SDKs.',
-    );
+  async linkWithRedirect(provider) {
+    return this.linkWithPopup(provider);
   }
 
   reauthenticateWithPhoneNumber() {

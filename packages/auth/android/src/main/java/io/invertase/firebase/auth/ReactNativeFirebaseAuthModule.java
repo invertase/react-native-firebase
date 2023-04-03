@@ -30,6 +30,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.FirebaseNetworkException;
@@ -56,6 +59,7 @@ import com.google.firebase.auth.MultiFactorInfo;
 import com.google.firebase.auth.MultiFactorResolver;
 import com.google.firebase.auth.MultiFactorSession;
 import com.google.firebase.auth.OAuthProvider;
+import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -203,7 +207,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-
     if (!mIdTokenListeners.containsKey(appName)) {
       FirebaseAuth.IdTokenListener newIdTokenListener =
           firebaseAuth1 -> {
@@ -859,6 +862,87 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                   promiseRejectAuthException(promise, exception);
                 }
               });
+    }
+  }
+
+  @ReactMethod
+  public void signInWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
+    OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
+    if(email != null){
+      provider.addCustomParameter("login_hint", email);
+    }
+    Activity activity = getCurrentActivity();
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    OnSuccessListener onSuccess = new OnSuccessListener<AuthResult>(){
+      @Override
+      public void onSuccess(AuthResult authResult) {
+        Log.d(TAG, "signInWithProvider:onComplete:success");
+        promiseWithAuthResult(authResult, promise);
+      }
+    };
+
+    OnFailureListener onFailure = new OnFailureListener(){
+      @Override
+      public void onFailure(@NonNull Exception e) {
+        Log.w(TAG, "signInWithProvider:onComplete:failure", e);
+        promiseRejectAuthException(promise, e);
+      }
+    };
+
+
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if(pendingResultTask != null){
+      pendingResultTask
+        .addOnSuccessListener(onSuccess)
+        .addOnFailureListener(onFailure);
+    } else {
+      firebaseAuth
+        .startActivityForSignInWithProvider(activity, provider.build())
+        .addOnSuccessListener(onSuccess)
+        .addOnFailureListener(onFailure);
+    }
+  }
+
+  @ReactMethod
+  public void linkWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
+    OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
+    if(email != null){
+      provider.addCustomParameter("login_hint", email);
+    }
+    Activity activity = getCurrentActivity();
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+    OnSuccessListener onSuccess = new OnSuccessListener<AuthResult>(){
+      @Override
+      public void onSuccess(AuthResult authResult) {
+        Log.d(TAG, "linkWithProvider:onComplete:success");
+        promiseWithAuthResult(authResult, promise);
+      }
+    };
+
+    OnFailureListener onFailure = new OnFailureListener(){
+      @Override
+      public void onFailure(@NonNull Exception e) {
+        Log.w(TAG, "linkInWithProvider:onComplete:failure", e);
+        promiseRejectAuthException(promise, e);
+      }
+    };
+
+
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if(pendingResultTask != null){
+      pendingResultTask
+        .addOnSuccessListener(onSuccess)
+        .addOnFailureListener(onFailure);
+    } else {
+      firebaseUser
+        .startActivityForLinkWithProvider(activity, provider.build())
+        .addOnSuccessListener(onSuccess)
+        .addOnFailureListener(onFailure);
     }
   }
 
@@ -1889,6 +1973,30 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       WritableMap authResultMap = Arguments.createMap();
       WritableMap userMap = firebaseUserToMap(authResult.getUser());
 
+      if(authResult.getCredential() != null){
+        if(authResult.getCredential() instanceof OAuthCredential){
+          OAuthCredential creds = (OAuthCredential) authResult.getCredential();
+          WritableMap credentialMap = Arguments.createMap();
+          
+          credentialMap.putString("providerId", creds.getProvider());
+          credentialMap.putString("signInMethod", creds.getSignInMethod());
+
+          if(creds.getIdToken() != null){
+            credentialMap.putString("idToken", creds.getIdToken());
+          }
+
+          if(creds.getAccessToken() != null){
+            credentialMap.putString("accessToken", creds.getAccessToken());
+          }
+
+          if(creds.getSecret() != null){
+            credentialMap.putString("secret", creds.getSecret());
+          }
+
+          authResultMap.putMap("credential", credentialMap);
+        }
+      }
+
       if (authResult.getAdditionalUserInfo() != null) {
         WritableMap additionalUserInfoMap = Arguments.createMap();
 
@@ -1929,6 +2037,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   private void promiseRejectAuthException(Promise promise, Exception exception) {
     WritableMap error = getJSError(exception);
+    
     final String sessionId = error.getString("sessionId");
     final MultiFactorResolver multiFactorResolver = mCachedResolvers.get(sessionId);
     WritableMap resolverAsMap = Arguments.createMap();
@@ -1949,6 +2058,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     String code = "UNKNOWN";
     String message = exception.getMessage();
     String invalidEmail = "The email address is badly formatted.";
+
+    System.out.print(exception);
 
     try {
       FirebaseAuthException authException = (FirebaseAuthException) exception;

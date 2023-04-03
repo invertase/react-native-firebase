@@ -45,6 +45,10 @@ static NSString *const constAppUser = @"APP_USER";
 static NSString *const keyHandleCodeInApp = @"handleCodeInApp";
 static NSString *const keyDynamicLinkDomain = @"dynamicLinkDomain";
 static NSString *const keyAdditionalUserInfo = @"additionalUserInfo";
+static NSString *const keyCredential = @"credential";
+static NSString *const keyIdToken = @"idToken";
+static NSString *const keyAccessToken = @"accessToken";
+static NSString *const keySecret = @"secret";
 static NSString *const AUTH_STATE_CHANGED_EVENT = @"auth_state_changed";
 static NSString *const AUTH_ID_TOKEN_CHANGED_EVENT = @"auth_id_token_changed";
 static NSString *const PHONE_AUTH_STATE_CHANGED_EVENT = @"phone_auth_state_changed";
@@ -56,6 +60,7 @@ static __strong NSMutableDictionary *emulatorConfigs;
 static __strong NSMutableDictionary<NSString *, FIRAuthCredential *> *credentials;
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorResolver *> *cachedResolver;
 static __strong NSMutableDictionary<NSString *, FIRMultiFactorSession *> *cachedSessions;
+static __strong NSMutableDictionary<NSString *, FIROAuthProvider *> *oAuthProviders;
 
 @implementation RNFBAuthModule
 #pragma mark -
@@ -77,6 +82,7 @@ RCT_EXPORT_MODULE();
     credentials = [[NSMutableDictionary alloc] init];
     cachedResolver = [[NSMutableDictionary alloc] init];
     cachedSessions = [[NSMutableDictionary alloc] init];
+    oAuthProviders = [[NSMutableDictionary alloc] init];
   });
   return self;
 }
@@ -104,6 +110,7 @@ RCT_EXPORT_MODULE();
   [credentials removeAllObjects];
   [cachedResolver removeAllObjects];
   [cachedSessions removeAllObjects];
+  [oAuthProviders removeAllObjects];
 }
 
 #pragma mark -
@@ -569,6 +576,73 @@ RCT_EXPORT_METHOD(signInWithCredential
                     [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
                   }
                 }];
+}
+
+
+RCT_EXPORT_METHOD(signInWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)providerID
+                  : (NSString *_Nullable)email
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIROAuthProvider *provider = [FIROAuthProvider providerWithProviderID:providerID];
+  [oAuthProviders setValue:provider forKey:providerID];
+
+  if (email) {
+    [provider setCustomParameters:@{@"login_hint": email}];
+  }
+
+  [provider getCredentialWithUIDelegate:nil
+                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+    }
+
+    if (credential) {
+      [[FIRAuth auth] signInWithCredential:credential
+                                completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+        }
+        else {
+          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:credential];
+        }
+      }];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(linkWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)providerID
+                  : (NSString *_Nullable)email
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIROAuthProvider *provider = [FIROAuthProvider providerWithProviderID:providerID];
+  [oAuthProviders setValue:provider forKey:providerID];
+
+  if (email) {
+    [provider setCustomParameters:@{@"login_hint": email}];
+  }
+
+  [provider getCredentialWithUIDelegate:nil
+                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+    }
+
+    if (credential) {
+      [[FIRAuth auth].currentUser linkWithCredential:credential
+                                          completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+        }
+        else {
+          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:credential];
+        }
+      }];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(confirmPasswordReset
@@ -1315,7 +1389,14 @@ RCT_EXPORT_METHOD(useEmulator
 
 - (void)promiseWithAuthResult:(RCTPromiseResolveBlock)resolve
                      rejecter:(RCTPromiseRejectBlock)reject
-                   authResult:(FIRAuthDataResult *)authResult {
+                             authResult:(FIRAuthDataResult *)authResult {
+  [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:nil];
+}
+
+- (void)promiseWithAuthResult:(RCTPromiseResolveBlock)resolve
+                     rejecter:(RCTPromiseRejectBlock)reject
+                   authResult:(FIRAuthDataResult *)authResult
+                   credential:(FIRAuthCredential *_Nullable)credential {
   if (authResult && authResult.user) {
     NSMutableDictionary *authResultDict = [NSMutableDictionary dictionary];
 
@@ -1345,6 +1426,39 @@ RCT_EXPORT_METHOD(useEmulator
       [authResultDict setValue:additionalUserInfo forKey:keyAdditionalUserInfo];
     } else {
       [authResultDict setValue:[NSNull null] forKey:keyAdditionalUserInfo];
+    }
+
+    if (credential && ([credential isKindOfClass:[FIROAuthCredential class]])) {
+      NSMutableDictionary *credentialDict = [NSMutableDictionary dictionary];
+      FIROAuthCredential* oAuthCredential = (FIROAuthCredential *)credential;
+
+      [credentialDict setValue:oAuthCredential.provider forKey:keyProviderId];
+
+      if (oAuthCredential.IDToken) {
+        [credentialDict setValue:oAuthCredential.IDToken forKey:keyIdToken];
+      }
+      else {
+        [credentialDict setValue:[NSNull null] forKey:keyIdToken];
+      }
+
+      if (oAuthCredential.accessToken) {
+        [credentialDict setValue:oAuthCredential.accessToken forKey:keyAccessToken];
+      }
+      else {
+        [credentialDict setValue:[NSNull null] forKey:keyAccessToken];
+      }
+
+      if (oAuthCredential.accessToken) {
+        [credentialDict setValue:oAuthCredential.secret forKey:keySecret];
+      }
+      else {
+        [credentialDict setValue:[NSNull null] forKey:keySecret];
+      }
+
+      [authResultDict setValue:credentialDict forKey:keyCredential];
+    }
+    else {
+      [authResultDict setValue:[NSNull null] forKey:keyCredential];
     }
 
     [authResultDict setValue:[self firebaseUserToDict:authResult.user] forKey:keyUser];

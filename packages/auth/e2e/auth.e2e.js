@@ -912,12 +912,11 @@ describe('auth()', function () {
   });
 
   describe('signInWithPopup', function () {
-    it('should throw an unsupported error', function () {
-      (() => {
-        firebase.auth().signInWithPopup();
-      }).should.throw(
-        'firebase.auth().signInWithPopup() is unsupported by the native Firebase SDKs.',
-      );
+    it('should trigger the oauth flow', async function () {
+      await (async () => {
+        const provider = new firebase.auth.OAuthProvider('oidc.react.com');
+        await firebase.auth().signInWithPopup(provider);
+      }).should.not.throw();
     });
   });
 
@@ -1025,12 +1024,11 @@ describe('auth()', function () {
   });
 
   describe('signInWithRedirect()', function () {
-    it('should throw an unsupported error', function () {
-      (() => {
-        firebase.auth().signInWithRedirect();
-      }).should.throw(
-        'firebase.auth().signInWithRedirect() is unsupported by the native Firebase SDKs.',
-      );
+    it('should trigger the oauth flow', async function () {
+      await (async () => {
+        const provider = new firebase.auth.OAuthProvider('oidc.react.com');
+        await firebase.auth().signInWithRedirect(provider);
+      }).should.not.throw();
     });
   });
 
