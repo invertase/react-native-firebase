@@ -29,10 +29,16 @@
     "performance monitoring"
   ],
   "peerDependencies": {
-    "@react-native-firebase/app": "17.4.2"
+    "@react-native-firebase/app": "17.4.2",
+    "expo": ">=47.0.0"
   },
-  "dependencies": {
-    "@expo/config-plugins": "^5.0.4"
+  "devDependencies": {
+    "expo": "^47.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
