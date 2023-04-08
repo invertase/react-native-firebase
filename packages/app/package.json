@@ -52,13 +52,21 @@
     "crashlytics"
   ],
   "peerDependencies": {
+    "expo": ">=47.0.0",
     "react": "*",
     "react-native": "*"
   },
   "dependencies": {
-    "@expo/config-plugins": "^5.0.4",
     "opencollective-postinstall": "^2.0.1",
     "superstruct": "^0.6.2"
+  },
+  "devDependencies": {
+    "expo": "^47.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
