@@ -85,6 +85,22 @@ android {
 }
 ```
 
+## 5. Add a firebase.json file to the root of your project
+
+Add the `react-native` block line to the `firebase.json` file:
+
+```groovy
+{
+  "react-native": {
+    "crashlytics_debug_enabled": true,
+    "crashlytics_disable_auto_disabler": true,
+    "crashlytics_auto_collection_enabled": true,
+    "crashlytics_is_error_generation_on_js_crash_enabled": true,
+    "crashlytics_javascript_exception_handler_chaining_enabled": true
+  }
+}
+```
+
 ## 5. Rebuild the project
 
 Once the above steps have been completed, rebuild your Android project:
