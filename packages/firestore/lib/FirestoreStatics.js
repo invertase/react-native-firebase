@@ -21,13 +21,14 @@ import FirestoreFieldPath from './FirestoreFieldPath';
 import FirestoreFieldValue from './FirestoreFieldValue';
 import FirestoreGeoPoint from './FirestoreGeoPoint';
 import FirestoreTimestamp from './FirestoreTimestamp';
-
+import { Filter } from './FirestoreFilter';
 export default {
   Blob: FirestoreBlob,
   FieldPath: FirestoreFieldPath,
   FieldValue: FirestoreFieldValue,
   GeoPoint: FirestoreGeoPoint,
   Timestamp: FirestoreTimestamp,
+  Filter: Filter,
 
   CACHE_SIZE_UNLIMITED: -1,
 

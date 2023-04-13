@@ -19,7 +19,7 @@ import { isNumber } from '@react-native-firebase/app/lib/common';
 import FirestoreFieldPath, { DOCUMENT_ID } from './FirestoreFieldPath';
 import { buildNativeArray, generateNativeData } from './utils/serialize';
 
-const OPERATORS = {
+export const OPERATORS = {
   '==': 'EQUAL',
   '>': 'GREATER_THAN',
   '>=': 'GREATER_THAN_OR_EQUAL',
@@ -221,12 +221,29 @@ export default class FirestoreQueryModifiers {
     return this;
   }
 
+  filterWhere(filter) {
+    this._filters = this._filters.concat(filter);
+    return this;
+  }
+
   validateWhere() {
+    if (this._filters.length > 0) {
+      this._filterCheck(this._filters);
+    }
+  }
+
+  _filterCheck(filters) {
     let hasInequality;
     let hasNotEqual;
 
-    for (let i = 0; i < this._filters.length; i++) {
-      const filter = this._filters[i];
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+
+      if (filter.queries) {
+        // Recursively check sub-queries for Filters
+        this._filterCheck(filter.queries);
+      }
+
       // Skip if no inequality
       if (!INEQUALITY[filter.operator]) {
         continue;
@@ -261,8 +278,8 @@ export default class FirestoreQueryModifiers {
     let hasIn;
     let hasNotIn;
 
-    for (let i = 0; i < this._filters.length; i++) {
-      const filter = this._filters[i];
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
 
       if (filter.operator === OPERATORS['array-contains']) {
         if (hasArrayContains) {
