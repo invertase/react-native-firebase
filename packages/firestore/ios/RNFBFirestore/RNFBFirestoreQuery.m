@@ -51,32 +51,87 @@
 
 - (void)applyFilters {
   for (NSDictionary *filter in _filters) {
-    NSArray *fieldPathArray = filter[@"fieldPath"];
-    FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
-    NSString *operator= filter[@"operator"];
-    id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:filter[@"value"]];
-
-    if ([operator isEqualToString:@"EQUAL"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isEqualTo:value];
-    } else if ([operator isEqualToString:@"NOT_EQUAL"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isNotEqualTo:value];
-    } else if ([operator isEqualToString:@"GREATER_THAN"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isGreaterThan:value];
-    } else if ([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isGreaterThanOrEqualTo:value];
-    } else if ([operator isEqualToString:@"LESS_THAN"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isLessThan:value];
-    } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
-      _query = [_query queryWhereFieldPath:fieldPath isLessThanOrEqualTo:value];
-    } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
-      _query = [_query queryWhereFieldPath:fieldPath arrayContains:value];
-    } else if ([operator isEqualToString:@"IN"]) {
-      _query = [_query queryWhereFieldPath:fieldPath in:value];
-    } else if ([operator isEqualToString:@"ARRAY_CONTAINS_ANY"]) {
-      _query = [_query queryWhereFieldPath:fieldPath arrayContainsAny:value];
-    } else if ([operator isEqualToString:@"NOT_IN"]) {
-      _query = [_query queryWhereFieldPath:fieldPath notIn:value];
+    if(filter[@"fieldPath"]){
+      NSArray *fieldPathArray = filter[@"fieldPath"];
+      
+      FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
+      NSString *operator= filter[@"operator"];
+      id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:filter[@"value"]];
+      if ([operator isEqualToString:@"EQUAL"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isEqualTo:value];
+      } else if ([operator isEqualToString:@"NOT_EQUAL"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isNotEqualTo:value];
+      } else if ([operator isEqualToString:@"GREATER_THAN"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isGreaterThan:value];
+      } else if ([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isGreaterThanOrEqualTo:value];
+      } else if ([operator isEqualToString:@"LESS_THAN"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isLessThan:value];
+      } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
+        _query = [_query queryWhereFieldPath:fieldPath isLessThanOrEqualTo:value];
+      } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
+        _query = [_query queryWhereFieldPath:fieldPath arrayContains:value];
+      } else if ([operator isEqualToString:@"IN"]) {
+        _query = [_query queryWhereFieldPath:fieldPath in:value];
+      } else if ([operator isEqualToString:@"ARRAY_CONTAINS_ANY"]) {
+        _query = [_query queryWhereFieldPath:fieldPath arrayContainsAny:value];
+      } else if ([operator isEqualToString:@"NOT_IN"]) {
+        _query = [_query queryWhereFieldPath:fieldPath notIn:value];
+      }
+    } else if(filter[@"operator"] && filter[@"queries"]) {
+      // Filter query
+      [self _applyFilterQueries:filter];
+    } else {
+      @throw [NSException exceptionWithName:@"InvalidOperator" reason:@"The correct signature for a filter has not been parsed" userInfo:nil];
     }
+    }
+  }
+
+- (void) _applyFilterQueries:(NSDictionary<NSString *, id> *)map {
+  NSString *op = map[@"operator"];
+  NSArray<NSDictionary<NSString *, id> *> *queries = map[@"queries"];
+  NSMutableArray<FIRFilter *> *parsedFilters = [NSMutableArray array];
+  
+  for (NSDictionary *query in queries) {
+    [parsedFilters addObject:[self filterQuery:query]];
+  }
+
+  if([op isEqual:@"AND"]){
+    _query = [_query queryWhereFilter:[FIRFilter andFilterWithFilters:parsedFilters]];
+  }
+}
+  
+- (FIRFilter *) filterQuery:(NSDictionary<NSString *, id> *) map {
+  NSString *operator = map[@"operator"];
+  NSArray *fieldPathArray = map[@"fieldPath"];
+
+  FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
+  id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:map[@"value"]];
+  
+  if ([operator isEqualToString:@"EQUAL"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isEqualTo:value];
+  } else if ([operator isEqualToString:@"NOT_EQUAL"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isNotEqualTo:value];
+  } else if ([operator isEqualToString:@"LESS_THAN"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isLessThan:value];
+  } else if ([operator isEqualToString:@"LESS_THAN_OR_EQUAL"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isLessThanOrEqualTo:value];
+  } else if ([operator isEqualToString:@"GREATER_THAN"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isGreaterThan:value];
+  } else if ([operator isEqualToString:@"GREATER_THAN_OR_EQUAL"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath isGreaterThanOrEqualTo:value];
+  } else if ([operator isEqualToString:@"ARRAY_CONTAINS"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath arrayContains:value];
+  } else if ([operator isEqualToString:@"ARRAY_CONTAINS_ANY"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath arrayContainsAny:value];
+  } else if ([operator isEqualToString:@"IN"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath in:value];
+  } else if ([operator isEqualToString:@"NOT_IN"]) {
+    return  [FIRFilter filterWhereFieldPath:fieldPath notIn:value];
+  } else {
+    @throw [NSException exceptionWithName:@"InvalidOperator"
+                                   reason:@"Invalid operator"
+                                 userInfo:nil];
   }
 }
 
