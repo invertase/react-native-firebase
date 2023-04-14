@@ -104,7 +104,7 @@ export function generateFilters(filter, modifiers) {
     }
 
     return {
-      fieldPath: path._segments,
+      fieldPath: path,
       operator: OPERATORS[operator],
       value: generateNativeData(value, true),
     };

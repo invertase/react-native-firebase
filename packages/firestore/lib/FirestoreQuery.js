@@ -419,10 +419,17 @@ export default class FirestoreQuery {
     }
 
     let modifiers;
-    if (fieldPathOrFilter instanceof _Filter) {
+    if (fieldPathOrFilter instanceof _Filter && fieldPathOrFilter.queries) {
+      //AND or OR filter
       const filters = generateFilters(fieldPathOrFilter, this._modifiers);
       modifiers = this._modifiers._copy().filterWhere(filters);
     } else {
+      if (fieldPathOrFilter instanceof _Filter) {
+        // Standard Filter. Usual path.
+        opStr = fieldPathOrFilter.operator;
+        value = fieldPathOrFilter.value;
+        fieldPathOrFilter = fieldPathOrFilter.fieldPath;
+      }
       let path;
 
       if (isString(fieldPathOrFilter)) {

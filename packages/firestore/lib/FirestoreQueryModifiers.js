@@ -242,6 +242,8 @@ export default class FirestoreQueryModifiers {
       if (filter.queries) {
         // Recursively check sub-queries for Filters
         this._filterCheck(filter.queries);
+        // If it is a Filter query, skip the rest of the loop
+        continue;
       }
 
       // Skip if no inequality
@@ -373,6 +375,10 @@ export default class FirestoreQueryModifiers {
   }
 
   validateOrderBy() {
+    this._validateOrderByCheck(this._filters);
+  }
+
+  _validateOrderByCheck(filters) {
     // Ensure order hasn't been called on the same field
     if (this._orders.length > 1) {
       const orders = this._orders.map($ => $.fieldPath._toPath());
@@ -384,13 +390,20 @@ export default class FirestoreQueryModifiers {
     }
 
     // Skip if no where filters
-    if (this._filters.length === 0) {
+    if (filters.length === 0) {
       return;
     }
 
     // Ensure the first order field path is equal to the inequality filter field path
-    for (let i = 0; i < this._filters.length; i++) {
-      const filter = this._filters[i];
+    for (let i = 0; i < filters.length; i++) {
+      const filter = filters[i];
+
+      if (filter.queries) {
+        // Recursively check sub-queries for Filters
+        this._validateCheck(filter.queries);
+        // If it is a Filter query, skip the rest of the loop
+        continue;
+      }
       const filterFieldPath = filter.fieldPath._toPath();
 
       for (let k = 0; k < this._orders.length; k++) {
