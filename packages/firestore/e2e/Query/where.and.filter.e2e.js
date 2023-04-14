@@ -19,7 +19,7 @@ const { wipe } = require('../helpers');
 let Filter;
 
 setInterval(() => {}, 200);
-describe('firestore().collection().where(Filters) ', function () {
+describe(' firestore().collection().where(AND Filters)', function () {
   beforeEach(async function () {
     Filter = firebase.firestore.Filter;
     return await wipe();
@@ -428,86 +428,8 @@ describe('firestore().collection().where(Filters) ', function () {
     });
   });
 
-  it('returns with where "!=" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/not-equals`);
-
-    const expected = { foo: 'bar' };
-
-    await Promise.all([
-      colRef.add({ foo: 'something' }),
-      colRef.add(expected),
-      colRef.add(expected),
-    ]);
-
-    const snapshot = await colRef.where(Filter('foo', '!=', 'something')).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
-  it('returns with where ">" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greater-than`);
-
-    const expected = { foo: 100 };
-
-    await Promise.all([colRef.add({ foo: 2 }), colRef.add(expected), colRef.add(expected)]);
-
-    const snapshot = await colRef.where(Filter('foo', '>', 2)).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
-  it('returns with where "<" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/less-than`);
-
-    const expected = { foo: 2 };
-
-    await Promise.all([colRef.add({ foo: 100 }), colRef.add(expected), colRef.add(expected)]);
-
-    const snapshot = await colRef.where(Filter('foo', '<', 3)).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
-  it('returns with where ">=" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greater-than-or-equal`);
-
-    const expected = { foo: 100 };
-
-    await Promise.all([colRef.add({ foo: 2 }), colRef.add(expected), colRef.add(expected)]);
-
-    const snapshot = await colRef.where(Filter('foo', '>=', 100)).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
-  it('returns with where "<=" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/less-than-or-equal`);
-
-    const expected = { foo: 100 };
-
-    await Promise.all([colRef.add({ foo: 101 }), colRef.add(expected), colRef.add(expected)]);
-
-    const snapshot = await colRef.where(Filter('foo', '<=', 100)).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
   // Equals and another filter: '==', '>', '>=', '<', '<=', '!='
+
   it('returns with where "==" & "==" filter', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
 
@@ -777,6 +699,7 @@ describe('firestore().collection().where(Filters) ', function () {
   });
 
   // Special Filter queries
+
   it('returns when combining greater than and lesser than on the same nested field', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
 
