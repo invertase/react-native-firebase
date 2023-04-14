@@ -103,7 +103,7 @@
   
 - (FIRFilter *) filterQuery:(NSDictionary<NSString *, id> *) map {
   NSString *operator = map[@"operator"];
-  NSArray *fieldPathArray = map[@"fieldPath"];
+  NSArray *fieldPathArray = map[@"fieldPath"][@"_segments"];
 
   FIRFieldPath *fieldPath = [[FIRFieldPath alloc] initWithFields:fieldPathArray];
   id value = [RNFBFirestoreSerialize parseTypeMap:_firestore typeMap:map[@"value"]];
