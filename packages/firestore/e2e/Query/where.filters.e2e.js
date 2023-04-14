@@ -17,6 +17,8 @@
 const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 let Filter;
+
+setInterval(() => {}, 200);
 describe('firestore().collection().where(Filters) ', function () {
   beforeEach(async function () {
     Filter = firebase.firestore.Filter;
@@ -342,10 +344,9 @@ describe('firestore().collection().where(Filters) ', function () {
       firebase
         .firestore()
         .collection(COLLECTION)
-        .where(firebase.firestore.FieldPath.documentId(), 'in', ['document-id'])
         .where(
           Filter.and(
-            Filter(firebase.firestore.FieldPath.documentId(), 'in', ['document-id']),
+            Filter(firebase.firestore.FieldPath.documentId(), '==', ['document-id']),
             Filter('foo.bar', 'not-in', [1, 2, 3, 4]),
           ),
         )
@@ -406,6 +407,376 @@ describe('firestore().collection().where(Filters) ', function () {
 
   /* Queries */
 
+  // Single Filters using '==', '>', '>=', '<', '<=', '!='
+
+  it('returns with where "==" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar' };
+
+    await Promise.all([
+      colRef.add({ foo: [1, '1', 'something'] }),
+      colRef.add(expected),
+      colRef.add(expected),
+    ]);
+
+    const snapshot = await colRef.where(Filter('foo', '==', 'bar')).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "!=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/not-equals`);
+
+    const expected = { foo: 'bar' };
+
+    await Promise.all([
+      colRef.add({ foo: 'something' }),
+      colRef.add(expected),
+      colRef.add(expected),
+    ]);
+
+    const snapshot = await colRef.where(Filter('foo', '!=', 'something')).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where ">" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greater-than`);
+
+    const expected = { foo: 100 };
+
+    await Promise.all([colRef.add({ foo: 2 }), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef.where(Filter('foo', '>', 2)).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "<" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/less-than`);
+
+    const expected = { foo: 2 };
+
+    await Promise.all([colRef.add({ foo: 100 }), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef.where(Filter('foo', '<', 3)).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where ">=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greater-than-or-equal`);
+
+    const expected = { foo: 100 };
+
+    await Promise.all([colRef.add({ foo: 2 }), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef.where(Filter('foo', '>=', 100)).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "<=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/less-than-or-equal`);
+
+    const expected = { foo: 100 };
+
+    await Promise.all([colRef.add({ foo: 101 }), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef.where(Filter('foo', '<=', 100)).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  // Equals and another filter: '==', '>', '>=', '<', '<=', '!='
+  it('returns with where "==" & "==" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', bar: 'baz' };
+    await Promise.all([
+      colRef.add({ foo: [1, '1', 'something'] }),
+      colRef.add(expected),
+      colRef.add(expected),
+    ]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('bar', '==', 'baz')))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & "!=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', baz: 'baz' };
+    const notExpected = { foo: 'bar', baz: 'something' };
+    await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('baz', '!=', 'something')))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & ">" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', population: 200 };
+    const notExpected = { foo: 'bar', population: 1 };
+    await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('population', '>', 2)))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & "<" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', population: 200 };
+    const notExpected = { foo: 'bar', population: 1000 };
+    await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('population', '<', 201)))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & "<=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', population: 200 };
+    const notExpected = { foo: 'bar', population: 1000 };
+    await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('population', '<=', 200)))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & ">=" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const expected = { foo: 'bar', population: 200 };
+    const notExpected = { foo: 'bar', population: 100 };
+    await Promise.all([colRef.add(notExpected), colRef.add(expected), colRef.add(expected)]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', '==', 'bar'), Filter('population', '>=', 200)))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().should.eql(jet.contextify(expected));
+    });
+  });
+
+  // Filters using single "array-contains", "array-contains-any", "not-in" and "in" filters
+
+  it('returns with where "array-contains" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains`);
+
+    const expected = [101, 102];
+    const data = { foo: expected };
+
+    await Promise.all([colRef.add({ foo: [1, 2, 3] }), colRef.add(data), colRef.add(data)]);
+
+    const snapshot = await colRef.where(Filter('foo', 'array-contains', 101)).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().foo.should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "array-contains-any" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains-any`);
+    const expected = [101, 102, 103, 104];
+    const data = { foo: expected };
+
+    await Promise.all([colRef.add({ foo: [1, 2, 3] }), colRef.add(data), colRef.add(data)]);
+
+    const snapshot = await colRef.where(Filter('foo', 'array-contains-any', [120, 101])).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().foo.should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "not-in" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/not-in`);
+    const expected = 'bar';
+    const data = { foo: expected };
+
+    await Promise.all([
+      colRef.add({ foo: 'not' }),
+      colRef.add({ foo: 'this' }),
+      colRef.add(data),
+      colRef.add(data),
+    ]);
+
+    const snapshot = await colRef.where(Filter('foo', 'not-in', ['not', 'this'])).get();
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().foo.should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "in" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in`);
+    const expected1 = 'bar';
+    const expected2 = 'baz';
+    const data1 = { foo: expected1 };
+    const data2 = { foo: expected2 };
+
+    await Promise.all([
+      colRef.add({ foo: 'not' }),
+      colRef.add({ foo: 'this' }),
+      colRef.add(data1),
+      colRef.add(data2),
+    ]);
+
+    const snapshot = await colRef
+      .where(Filter('foo', 'in', [expected1, expected2]))
+      .orderBy('foo')
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.docs[0].data().foo.should.eql(expected1);
+    snapshot.docs[1].data().foo.should.eql(expected2);
+  });
+
+  // Using AND query combinations with Equals && "array-contains", "array-contains-any", "not-in" and "in" filters
+
+  it('returns with where "==" & "array-contains" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const match = Date.now();
+    await Promise.all([
+      colRef.add({ foo: [1, '1', match] }),
+      colRef.add({ foo: [1, '2', match.toString()], bar: 'baz' }),
+      colRef.add({ foo: [1, '2', match.toString()], bar: 'baz' }),
+    ]);
+
+    const snapshot = await colRef
+      .where(
+        Filter.and(Filter('foo', 'array-contains', match.toString()), Filter('bar', '==', 'baz')),
+      )
+      .get();
+    const expected = [1, '2', match.toString()];
+
+    snapshot.size.should.eql(2);
+    snapshot.forEach(s => {
+      s.data().foo.should.eql(jet.contextify(expected));
+    });
+  });
+
+  it('returns with where "==" & "array-contains-any" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
+
+    const match = Date.now();
+    await Promise.all([
+      colRef.add({ foo: [1, '1', match] }),
+      colRef.add({ foo: [1, '2'], bar: 'baz' }),
+      colRef.add({ foo: ['2', match.toString()], bar: 'baz' }),
+    ]);
+
+    const snapshot = await colRef
+      .where(
+        Filter.and(
+          Filter('foo', 'array-contains-any', [match.toString(), 1]),
+          Filter('bar', '==', 'baz'),
+        ),
+      )
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.docs[0].data().bar.should.equal('baz');
+    snapshot.docs[1].data().bar.should.equal('baz');
+  });
+
+  it('returns with where "==" & "not-in" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/not-in`);
+
+    await Promise.all([
+      colRef.add({ foo: 'bar', bar: 'baz' }),
+      colRef.add({ foo: 'thing', bar: 'baz' }),
+      colRef.add({ foo: 'bar', bar: 'baz' }),
+      colRef.add({ foo: 'yolo', bar: 'baz' }),
+    ]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', 'not-in', ['yolo', 'thing']), Filter('bar', '==', 'baz')))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.docs[0].data().foo.should.equal('bar');
+    snapshot.docs[1].data().foo.should.equal('bar');
+  });
+
+  it('returns with where "==" & "in" filter', async function () {
+    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in`);
+
+    await Promise.all([
+      colRef.add({ foo: 'bar', bar: 'baz' }),
+      colRef.add({ foo: 'thing', bar: 'baz' }),
+      colRef.add({ foo: 'yolo', bar: 'baz' }),
+    ]);
+
+    const snapshot = await colRef
+      .where(Filter.and(Filter('foo', 'in', ['bar', 'yolo']), Filter('bar', '==', 'baz')))
+      .get();
+
+    snapshot.size.should.eql(2);
+    snapshot.docs[0].data().foo.should.equal('bar');
+    snapshot.docs[1].data().foo.should.equal('yolo');
+  });
+
+  // Special Filter queries
   it('returns when combining greater than and lesser than on the same nested field', async function () {
     const colRef = firebase.firestore().collection(`${COLLECTION}/filter/greaterandless`);
 
@@ -416,7 +787,6 @@ describe('firestore().collection().where(Filters) ', function () {
     ]);
 
     const snapshot = await colRef
-      .collection(COLLECTION)
       .where(Filter.and(Filter('foo.bar', '>', 1), Filter('foo.bar', '<', 3)))
       .get();
 
@@ -433,7 +803,6 @@ describe('firestore().collection().where(Filters) ', function () {
     ]);
 
     const snapshot = await colRef
-      .collection(COLLECTION)
       .where(Filter.and(Filter('foo.bar', '>', 1), Filter('foo.bar', '<', 3)))
       .orderBy(new firebase.firestore.FieldPath('foo', 'bar'))
       .get();
@@ -441,155 +810,26 @@ describe('firestore().collection().where(Filters) ', function () {
     snapshot.size.should.eql(1);
   });
 
-  // it('returns with where array-contains filter', async function () {
-  //   const colRef = firebase.firestore().collection(`${COLLECTION}/filter/array-contains`);
+  it('returns with a FieldPath', async function () {
+    const colRef = firebase
+      .firestore()
+      .collection(`${COLLECTION}/filter/where-fieldpath${Date.now() + ''}`);
+    const fieldPath = new firebase.firestore.FieldPath('map', 'foo.bar@gmail.com');
 
-  //   const match = Date.now();
-  //   await Promise.all([
-  //     colRef.add({ foo: [1, '2', match] }),
-  //     colRef.add({ foo: [1, '2', match.toString()] }),
-  //     colRef.add({ foo: [1, '2', match.toString()] }),
-  //   ]);
+    await colRef.add({
+      map: {
+        'foo.bar@gmail.com': true,
+      },
+    });
+    await colRef.add({
+      map: {
+        'bar.foo@gmail.com': true,
+      },
+    });
 
-  //   const snapshot = await colRef.where('foo', 'array-contains', match.toString()).get();
-  //   const expected = [1, '2', match.toString()];
-
-  //   snapshot.size.should.eql(2);
-  //   snapshot.forEach(s => {
-  //     s.data().foo.should.eql(jet.contextify(expected));
-  //   });
-  // });
-
-  // it('returns with in filter', async function () {
-  //   const colRef = firebase.firestore().collection(`${COLLECTION}/filter/in${Date.now() + ''}`);
-
-  //   await Promise.all([
-  //     colRef.add({ status: 'Ordered' }),
-  //     colRef.add({ status: 'Ready to Ship' }),
-  //     colRef.add({ status: 'Ready to Ship' }),
-  //     colRef.add({ status: 'Incomplete' }),
-  //   ]);
-
-  //   const expect = ['Ready to Ship', 'Ordered'];
-  //   const snapshot = await colRef.where('status', 'in', expect).get();
-  //   snapshot.size.should.eql(3);
-
-  //   snapshot.forEach(s => {
-  //     s.data().status.should.equalOneOf(...expect);
-  //   });
-  // });
-
-  // it('returns with array-contains-any filter', async function () {
-  //   const colRef = firebase
-  //     .firestore()
-  //     .collection(`${COLLECTION}/filter/array-contains-any${Date.now() + ''}`);
-
-  //   await Promise.all([
-  //     colRef.add({ category: ['Appliances', 'Housewares', 'Cooking'] }),
-  //     colRef.add({ category: ['Appliances', 'Electronics', 'Nursery'] }),
-  //     colRef.add({ category: ['Audio/Video', 'Electronics'] }),
-  //     colRef.add({ category: ['Beauty'] }),
-  //   ]);
-
-  //   const expect = ['Appliances', 'Electronics'];
-  //   const snapshot = await colRef.where('category', 'array-contains-any', expect).get();
-  //   snapshot.size.should.eql(3); // 2nd record should only be returned once
-  // });
-
-  // it('returns with a FieldPath', async function () {
-  //   const colRef = firebase
-  //     .firestore()
-  //     .collection(`${COLLECTION}/filter/where-fieldpath${Date.now() + ''}`);
-  //   const fieldPath = new firebase.firestore.FieldPath('map', 'foo.bar@gmail.com');
-
-  //   await colRef.add({
-  //     map: {
-  //       'foo.bar@gmail.com': true,
-  //     },
-  //   });
-  //   await colRef.add({
-  //     map: {
-  //       'bar.foo@gmail.com': true,
-  //     },
-  //   });
-
-  //   const snapshot = await colRef.where(fieldPath, '==', true).get();
-  //   snapshot.size.should.eql(1); // 2nd record should only be returned once
-  //   const data = snapshot.docs[0].data();
-  //   should.equal(data.map['foo.bar@gmail.com'], true);
-  // });
-
-  // it('should correctly query integer values with in operator', async function () {
-  //   const ref = firebase.firestore().collection(`${COLLECTION}/filter/int-in${Date.now() + ''}`);
-
-  //   await ref.add({ status: 1 });
-
-  //   const items = [];
-  //   await ref
-  //     .where('status', 'in', [1, 2])
-  //     .get()
-  //     .then($ => $.forEach(doc => items.push(doc.data())));
-
-  //   items.length.should.equal(1);
-  // });
-
-  // it('should correctly query integer values with array-contains operator', async function () {
-  //   const ref = firebase
-  //     .firestore()
-  //     .collection(`${COLLECTION}/filter/int-array-contains${Date.now() + ''}`);
-
-  //   await ref.add({ status: [1, 2, 3] });
-
-  //   const items = [];
-  //   await ref
-  //     .where('status', 'array-contains', 2)
-  //     .get()
-  //     .then($ => $.forEach(doc => items.push(doc.data())));
-
-  //   items.length.should.equal(1);
-  // });
-
-  // it("should correctly retrieve data when using 'not-in' operator", async function () {
-  //   const ref = firebase.firestore().collection(`${COLLECTION}/filter/not-in${Date.now() + ''}`);
-
-  //   await Promise.all([ref.add({ notIn: 'here' }), ref.add({ notIn: 'now' })]);
-
-  //   const result = await ref.where('notIn', 'not-in', ['here', 'there', 'everywhere']).get();
-  //   should(result.docs.length).equal(1);
-  //   should(result.docs[0].data().notIn).equal('now');
-  // });
-
-  // it("should correctly retrieve data when using '!=' operator", async function () {
-  //   const ref = firebase
-  //     .firestore()
-  //     .collection(`${COLLECTION}/filter/bang-equals${Date.now() + ''}`);
-
-  //   await Promise.all([ref.add({ notEqual: 'here' }), ref.add({ notEqual: 'now' })]);
-
-  //   const result = await ref.where('notEqual', '!=', 'here').get();
-
-  //   should(result.docs.length).equal(1);
-  //   should(result.docs[0].data().notEqual).equal('now');
-  // });
-
-  // it('should handle where clause after sort by', async function () {
-  //   const ref = firebase
-  //     .firestore()
-  //     .collection(`${COLLECTION}/filter/sort-by-where${Date.now() + ''}`);
-
-  //   await ref.add({ status: 1 });
-  //   await ref.add({ status: 2 });
-  //   await ref.add({ status: 3 });
-
-  //   const items = [];
-  //   await ref
-  //     .orderBy('status', 'desc')
-  //     .where('status', '<=', 2)
-  //     .get()
-  //     .then($ => $.forEach(doc => items.push(doc.data())));
-
-  //   items.length.should.equal(2);
-  //   items[0].status.should.equal(2);
-  //   items[1].status.should.equal(1);
-  // });
+    const snapshot = await colRef.where(Filter(fieldPath, '==', true)).get();
+    snapshot.size.should.eql(1); // 2nd record should only be returned once
+    const data = snapshot.docs[0].data();
+    should.equal(data.map['foo.bar@gmail.com'], true);
+  });
 });
