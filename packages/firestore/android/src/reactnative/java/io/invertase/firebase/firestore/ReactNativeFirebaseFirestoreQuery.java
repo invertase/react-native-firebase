@@ -20,6 +20,8 @@ package io.invertase.firebase.firestore;
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
 
+import android.system.ErrnoException;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -127,69 +129,74 @@ public class ReactNativeFirebaseFirestoreQuery {
             break;
         }
       } else if (filter.hasKey("operator") && filter.hasKey("queries")) {
-        applyFilterQueries(filter);
+       query = query.where(applyFilterQueries(filter));
       }
     }
   }
 
-  private void applyFilterQueries(ReadableMap filter) {
+  private Filter applyFilterQueries(ReadableMap filter) {
+    if (filter.hasKey("fieldPath")) {
+      String operator = (String) Objects.requireNonNull(Objects.requireNonNull(filter).getString("operator"));
+      ReadableMap fieldPathMap = Objects.requireNonNull(filter.getMap("fieldPath"));
+      ReadableArray segments = Objects.requireNonNull(fieldPathMap.getArray("_segments"));
+      int arraySize = segments.size();
+      String[] segmentArray = new String[arraySize];
+
+      for (int i = 0; i < arraySize; i++) {
+        segmentArray[i] = segments.getString(i);
+      }
+      FieldPath fieldPath = FieldPath.of(segmentArray);
+      ReadableArray arrayValue = filter.getArray("value");
+
+      Object value = parseTypeMap(query.getFirestore(), Objects.requireNonNull(arrayValue));
+
+      switch (operator) {
+        case "EQUAL":
+          return Filter.equalTo(fieldPath, value);
+        case "NOT_EQUAL":
+          return Filter.notEqualTo(fieldPath, value);
+        case "LESS_THAN":
+          return Filter.lessThan(fieldPath, value);
+        case "LESS_THAN_OR_EQUAL":
+          return Filter.lessThanOrEqualTo(fieldPath, value);
+        case "GREATER_THAN":
+          return Filter.greaterThan(fieldPath, value);
+        case "GREATER_THAN_OR_EQUAL":
+          return Filter.greaterThanOrEqualTo(fieldPath, value);
+        case "ARRAY_CONTAINS":
+          return Filter.arrayContains(fieldPath, value);
+        case "ARRAY_CONTAINS_ANY":
+          assert value != null;
+          return Filter.arrayContainsAny(fieldPath, (List<?>) value);
+        case "IN":
+          assert value != null;
+          return Filter.inArray(fieldPath, (List<?>) value);
+        case "NOT_IN":
+          assert value != null;
+          return Filter.notInArray(fieldPath, (List<?>) value);
+        default:
+          throw new Error("Invalid operator");
+      }
+    }
+
     String operator = Objects.requireNonNull(filter).getString("operator");
     ReadableArray queries = Objects.requireNonNull(Objects.requireNonNull(filter).getArray("queries"));
     ArrayList<Filter> parsedFilters = new ArrayList<>();
     int arraySize = queries.size();
     for (int i = 0; i < arraySize; i++) {
       ReadableMap map = queries.getMap(i);
-      parsedFilters.add(filterQuery(map));
+      parsedFilters.add(applyFilterQueries(map));
     }
 
     if (operator.equals("AND")) {
-      query = query.where(Filter.and(parsedFilters.toArray(new Filter[0])));
-    }
-  }
-
-  private Filter filterQuery(ReadableMap map) {
-    String operator = (String) Objects.requireNonNull(Objects.requireNonNull(map).getString("operator"));
-    ReadableMap fieldPathMap = Objects.requireNonNull(map.getMap("fieldPath"));
-    ReadableArray segments = Objects.requireNonNull(fieldPathMap.getArray("_segments"));
-    int arraySize = segments.size();
-    String[] segmentArray = new String[arraySize];
-
-    for (int i = 0; i < arraySize; i++) {
-      segmentArray[i] = segments.getString(i);
-    }
-    FieldPath fieldPath = FieldPath.of(segmentArray);
-    ReadableArray arrayValue = map.getArray("value");
-
-    Object value = parseTypeMap(query.getFirestore(), Objects.requireNonNull(arrayValue));
-
-    switch (operator) {
-      case "EQUAL":
-        return Filter.equalTo(fieldPath, value);
-      case "NOT_EQUAL":
-        return Filter.notEqualTo(fieldPath, value);
-      case "LESS_THAN":
-        return Filter.lessThan(fieldPath, value);
-      case "LESS_THAN_OR_EQUAL":
-        return Filter.lessThanOrEqualTo(fieldPath, value);
-      case "GREATER_THAN":
-        return Filter.greaterThan(fieldPath, value);
-      case "GREATER_THAN_OR_EQUAL":
-        return Filter.greaterThanOrEqualTo(fieldPath, value);
-      case "ARRAY_CONTAINS":
-        return Filter.arrayContains(fieldPath, value);
-      case "ARRAY_CONTAINS_ANY":
-        assert value != null;
-        return Filter.arrayContainsAny(fieldPath, (List<?>) value);
-      case "IN":
-        assert value != null;
-        return Filter.inArray(fieldPath, (List<?>) value);
-      case "NOT_IN":
-        assert value != null;
-        return Filter.notInArray(fieldPath, (List<?>) value);
-      default:
-        throw new Error("Invalid operator");
+      return Filter.and(parsedFilters.toArray(new Filter[0]));
     }
 
+    if (operator.equals("OR")) {
+      return Filter.or(parsedFilters.toArray(new Filter[0]));
+    }
+
+    throw new Error("Missing 'Filter' instance return");
   }
 
   private void applyOrders(ReadableArray orders) {
