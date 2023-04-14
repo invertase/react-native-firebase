@@ -72,7 +72,7 @@ public class ReactNativeFirebaseFirestoreQuery {
 
       if (filter.hasKey("fieldPath")) {
         ArrayList<Object> fieldPathArray = Objects.requireNonNull(Objects.requireNonNull(filter).getArray("fieldPath")).toArrayList();
-        String[] segmentArray = (String[]) fieldPathArray.toArray(new Object[0]);
+        String[] segmentArray = (String[]) fieldPathArray.toArray(new String[0]);
 
         FieldPath fieldPath = FieldPath.of(Objects.requireNonNull(segmentArray));
         String operator = filter.getString("operator");
