@@ -400,7 +400,7 @@ export default class FirestoreQueryModifiers {
 
       if (filter.queries) {
         // Recursively check sub-queries for Filters
-        this._validateCheck(filter.queries);
+        this._validateOrderByCheck(filter.queries);
         // If it is a Filter query, skip the rest of the loop
         continue;
       }

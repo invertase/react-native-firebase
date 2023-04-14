@@ -3,14 +3,15 @@ import { fromDotSeparatedString } from './FirestoreFieldPath';
 import { generateNativeData } from './utils/serialize';
 import { OPERATORS } from './FirestoreQueryModifiers';
 const AND_QUERY = 'AND';
+const OR_QUERY = 'OR';
 
 export function Filter(fieldPath, operator, value) {
   return new _Filter(fieldPath, operator, value);
 }
 
 export function _Filter(fieldPath, operator, value, filterOperator, queries) {
-  if (!fieldPath && !operator && !value && filterOperator && queries) {
-    // AND Filter (list of Filters)
+  if ([AND_QUERY, OR_QUERY].includes(filterOperator)) {
+    // AND or OR Filter (list of Filters)
     this.operator = filterOperator;
     this.queries = queries;
 
@@ -52,6 +53,20 @@ Filter.and = function and(...queries) {
   }
 
   return new _Filter(null, null, null, AND_QUERY, queries);
+};
+
+Filter.or = function or(...queries) {
+  if (queries.length > 10 || queries.length < 2) {
+    throw new Error(`Expected 2-10 instances of Filter, but got ${queries.length} Filters`);
+  }
+
+  const validateFilters = queries.every(filter => filter instanceof _Filter);
+
+  if (!validateFilters) {
+    throw new Error('Expected every argument to be an instance of Filter');
+  }
+
+  return new _Filter(null, null, null, OR_QUERY, queries);
 };
 
 export function generateFilters(filter, modifiers) {
