@@ -57,6 +57,14 @@ export default class FirestoreQueryModifiers {
     this._startAfter = undefined;
     this._endAt = undefined;
     this._endBefore = undefined;
+
+    // Pulled out of function to preserve their state
+    this.hasInequality = false;
+    this.hasNotEqual = false;
+    this.hasArrayContains = false;
+    this.hasArrayContainsAny = false;
+    this.hasIn = false;
+    this.hasNotIn = false;
   }
 
   _copy() {
@@ -233,9 +241,6 @@ export default class FirestoreQueryModifiers {
   }
 
   _filterCheck(filters) {
-    let hasInequality;
-    let hasNotEqual;
-
     for (let i = 0; i < filters.length; i++) {
       const filter = filters[i];
 
@@ -252,106 +257,101 @@ export default class FirestoreQueryModifiers {
       }
 
       if (filter.operator === OPERATORS['!=']) {
-        if (hasNotEqual) {
+        if (this.hasNotEqual) {
           throw new Error("Invalid query. You cannot use more than one '!=' inequality filter.");
         }
         //needs to set hasNotEqual = true  before setting first hasInequality = filter. It is used in a condition check later
-        hasNotEqual = true;
+        this.hasNotEqual = true;
       }
 
       // Set the first inequality
-      if (!hasInequality) {
-        hasInequality = filter;
+      if (!this.hasInequality) {
+        this.hasInequality = filter;
         continue;
       }
 
       // Check the set value is the same as the new one
-      if (INEQUALITY[filter.operator] && hasInequality) {
-        if (hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
+      if (INEQUALITY[filter.operator] && this.hasInequality) {
+        if (this.hasInequality.fieldPath._toPath() !== filter.fieldPath._toPath()) {
           throw new Error(
-            `Invalid query. All where filters with an inequality (<, <=, >, != or >=) must be on the same field. But you have inequality filters on '${hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
+            `Invalid query. All where filters with an inequality (<, <=, >, != or >=) must be on the same field. But you have inequality filters on '${this.hasInequality.fieldPath._toPath()}' and '${filter.fieldPath._toPath()}'`,
           );
         }
       }
     }
 
-    let hasArrayContains;
-    let hasArrayContainsAny;
-    let hasIn;
-    let hasNotIn;
-
     for (let i = 0; i < filters.length; i++) {
       const filter = filters[i];
 
       if (filter.operator === OPERATORS['array-contains']) {
-        if (hasArrayContains) {
+        if (this.hasArrayContains) {
           throw new Error('Invalid query. Queries only support a single array-contains filter.');
         }
-        hasArrayContains = true;
+        this.hasArrayContains = true;
       }
 
       if (filter.operator === OPERATORS['array-contains-any']) {
-        if (hasArrayContainsAny) {
+        if (this.hasArrayContainsAny) {
           throw new Error(
             "Invalid query. You cannot use more than one 'array-contains-any' filter.",
           );
         }
 
-        if (hasIn) {
+        if (this.hasIn) {
           throw new Error(
             "Invalid query. You cannot use 'array-contains-any' filters with 'in' filters.",
           );
         }
 
-        if (hasNotIn) {
+        if (this.hasNotIn) {
           throw new Error(
             "Invalid query. You cannot use 'array-contains-any' filters with 'not-in' filters.",
           );
         }
 
-        hasArrayContainsAny = true;
+        this.hasArrayContainsAny = true;
       }
 
       if (filter.operator === OPERATORS.in) {
-        if (hasIn) {
+        if (this.hasIn) {
           throw new Error("Invalid query. You cannot use more than one 'in' filter.");
         }
 
-        if (hasArrayContainsAny) {
+        if (this.hasArrayContainsAny) {
           throw new Error(
             "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
           );
         }
 
-        if (hasNotIn) {
+        if (this.hasNotIn) {
           throw new Error("Invalid query. You cannot use 'in' filters with 'not-in' filters.");
         }
 
-        hasIn = true;
+        this.hasIn = true;
       }
 
       if (filter.operator === OPERATORS['not-in']) {
-        if (hasNotIn) {
+        if (this.hasNotIn) {
           throw new Error("Invalid query. You cannot use more than one 'not-in' filter.");
         }
 
-        if (hasNotEqual) {
+        if (this.hasNotEqual) {
           throw new Error(
             "Invalid query. You cannot use 'not-in' filters with '!=' inequality filters",
           );
         }
 
-        if (hasIn) {
+        if (this.hasIn) {
           throw new Error("Invalid query. You cannot use 'not-in' filters with 'in' filters.");
         }
 
-        if (hasArrayContainsAny) {
+        if (this.hasArrayContainsAny) {
           throw new Error(
             "Invalid query. You cannot use 'not-in' filters with 'array-contains-any' filters.",
           );
         }
 
-        hasNotIn = true;
+        this.hasNotIn = true;
       }
     }
   }
