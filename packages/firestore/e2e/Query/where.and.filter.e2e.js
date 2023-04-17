@@ -407,27 +407,6 @@ describe(' firestore().collection().where(AND Filters)', function () {
 
   /* Queries */
 
-  // Single Filters using '==', '>', '>=', '<', '<=', '!='
-
-  it('returns with where "==" filter', async function () {
-    const colRef = firebase.firestore().collection(`${COLLECTION}/filter/equals`);
-
-    const expected = { foo: 'bar' };
-
-    await Promise.all([
-      colRef.add({ foo: [1, '1', 'something'] }),
-      colRef.add(expected),
-      colRef.add(expected),
-    ]);
-
-    const snapshot = await colRef.where(Filter('foo', '==', 'bar')).get();
-
-    snapshot.size.should.eql(2);
-    snapshot.forEach(s => {
-      s.data().should.eql(jet.contextify(expected));
-    });
-  });
-
   // Equals and another filter: '==', '>', '>=', '<', '<=', '!='
 
   it('returns with where "==" & "==" filter', async function () {
@@ -691,6 +670,7 @@ describe(' firestore().collection().where(AND Filters)', function () {
 
     const snapshot = await colRef
       .where(Filter.and(Filter('foo', 'in', ['bar', 'yolo']), Filter('bar', '==', 'baz')))
+      .orderBy('foo')
       .get();
 
     snapshot.size.should.eql(2);

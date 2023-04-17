@@ -38,7 +38,7 @@ describe('firestore().collection().where(Filters)', function () {
 
   it('throws if operator string is invalid', function () {
     try {
-      firebase.firestore().collection(COLLECTION).where(Filter('.foo.bar', '!', 1));
+      firebase.firestore().collection(COLLECTION).where(Filter('foo.bar', '!', 1));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
@@ -52,8 +52,8 @@ describe('firestore().collection().where(Filters)', function () {
       firebase
         .firestore()
         .collection(COLLECTION)
-        .where(Filter('.foo.bar', 'array-contains', 1))
-        .where(Filter('.foo.bar', 'array-contains', 1));
+        .where(Filter('foo.bar', 'array-contains', 1))
+        .where(Filter('foo.bar', 'array-contains', 1));
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
