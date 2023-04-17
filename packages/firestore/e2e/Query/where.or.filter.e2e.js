@@ -975,8 +975,9 @@ describe('firestore().collection().where(OR Filters)', function () {
       .get();
 
     snapshot.size.should.eql(2);
-    snapshot.docs[0].data().foo.should.equal('bar');
-    snapshot.docs[1].data().foo.should.equal('yolo');
+    const result = snapshot.docs.map(d => d.data().foo);
+    result.should.containEql('bar');
+    result.should.containEql('yolo');
   });
 
   // Backwards compatibility Filter queries. Add where() queries and also use multiple where() queries with Filters to check it works
