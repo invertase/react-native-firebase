@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [17.4.2](https://github.com/invertase/react-native-firebase/compare/v17.4.1...v17.4.2) (2023-04-05)
+
+### Bug Fixes
+
+- **android, auth:** phone auth supports Play Integrity now ([59b0238](https://github.com/invertase/react-native-firebase/commit/59b02382492ee568fc9d4bed933ae1cf8d7efdfb))
+
 ### [17.4.1](https://github.com/invertase/react-native-firebase/compare/v17.4.0...v17.4.1) (2023-04-01)
 
 ### Bug Fixes
