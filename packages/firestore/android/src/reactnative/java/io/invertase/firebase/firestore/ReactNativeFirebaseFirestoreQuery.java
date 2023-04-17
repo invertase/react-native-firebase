@@ -129,7 +129,7 @@ public class ReactNativeFirebaseFirestoreQuery {
             break;
         }
       } else if (filter.hasKey("operator") && filter.hasKey("queries")) {
-       query = query.where(applyFilterQueries(filter));
+        query = query.where(applyFilterQueries(filter));
       }
     }
   }
