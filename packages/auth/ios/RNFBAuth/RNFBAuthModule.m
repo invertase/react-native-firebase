@@ -1268,7 +1268,8 @@ RCT_EXPORT_METHOD(useEmulator
                          @"message" : [jsError valueForKey:@"message"],
                          @"nativeErrorMessage" : [jsError valueForKey:@"nativeErrorMessage"],
                          @"authCredential" : [jsError valueForKey:@"authCredential"],
-                         @"resolver" : [jsError valueForKey:@"resolver"]
+                         @"resolver" : [jsError valueForKey:@"resolver"],
+                         @"email" : [jsError valueForKey:@"email"]
                        }];
 }
 
@@ -1366,13 +1367,16 @@ RCT_EXPORT_METHOD(useEmulator
     NSString *sessionKey = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
     cachedResolver[sessionKey] = resolver;
   }
+  
+  NSString *email = [error userInfo][FIRAuthErrorUserInfoEmailKey];
 
   return @{
     @"code" : code,
     @"message" : message,
     @"nativeErrorMessage" : nativeErrorMessage,
     @"authCredential" : authCredentialDict != nil ? (id)authCredentialDict : [NSNull null],
-    @"resolver" : resolverDict != nil ? (id)resolverDict : [NSNull null]
+    @"resolver" : resolverDict != nil ? (id)resolverDict : [NSNull null],
+    @"email": email != nil ? email : [NSNull null]
   };
 }
 
