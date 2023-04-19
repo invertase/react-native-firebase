@@ -15,7 +15,7 @@
  *
  */
 
-import { ReactNativeFirebase } from '@react-native-firebase/app';
+import { ReactNativeFirebase } from "@react-native-firebase/app";
 
 /**
  * Firebase Messaging package for React Native.
@@ -243,11 +243,6 @@ export namespace FirebaseMessagingTypes {
      * Web only. The URL of an image that is downloaded on the device and displayed in the notification.
      */
     image?: string;
-
-    /**
-     * Web only. The notification's title.
-     */
-    title?: string;
 
     /**
      * The native localization key for the notification body content.
@@ -761,7 +756,9 @@ export namespace FirebaseMessagingTypes {
      *
      * @param listener Called with a `RemoteMessage` when a notification press opens the application.
      */
-    onNotificationOpenedApp(listener: (message: RemoteMessage) => any): () => void;
+    onNotificationOpenedApp(
+      listener: (message: RemoteMessage) => any
+    ): () => void;
 
     /**
      * Called when a new registration token is generated for the device. For example, this event can happen when a
@@ -815,7 +812,9 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios
      */
-    requestPermission(permissions?: IOSPermissions): Promise<AuthorizationStatus>;
+    requestPermission(
+      permissions?: IOSPermissions
+    ): Promise<AuthorizationStatus>;
     /**
      * On iOS, if your app wants to receive remote messages from FCM (via APNs), you must explicitly register
      * with APNs if auto-registration has been disabled.
@@ -1031,7 +1030,9 @@ export namespace FirebaseMessagingTypes {
      * ```
      *
      */
-    setBackgroundMessageHandler(handler: (message: RemoteMessage) => Promise<any>): void;
+    setBackgroundMessageHandler(
+      handler: (message: RemoteMessage) => Promise<any>
+    ): void;
 
     /**
      * Set a handler function which is called when the `${App Name} notifications settings`
@@ -1042,7 +1043,9 @@ export namespace FirebaseMessagingTypes {
      *
      * @ios iOS >= 12
      */
-    setOpenSettingsForNotificationsHandler(handler: (message: RemoteMessage) => any): void;
+    setOpenSettingsForNotificationsHandler(
+      handler: (message: RemoteMessage) => any
+    ): void;
 
     /**
      * Send a new `RemoteMessage` to the FCM server.
@@ -1136,8 +1139,10 @@ declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
 export const firebase: ReactNativeFirebase.Module & {
   messaging: typeof defaultExport;
   app(
-    name?: string,
-  ): ReactNativeFirebase.FirebaseApp & { messaging(): FirebaseMessagingTypes.Module };
+    name?: string
+  ): ReactNativeFirebase.FirebaseApp & {
+    messaging(): FirebaseMessagingTypes.Module;
+  };
 };
 
 export default defaultExport;
@@ -1145,7 +1150,7 @@ export default defaultExport;
 /**
  * Attach namespace to `firebase.` and `FirebaseApp.`.
  */
-declare module '@react-native-firebase/app' {
+declare module "@react-native-firebase/app" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
