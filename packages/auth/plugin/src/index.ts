@@ -1,16 +1,12 @@
-import { ConfigPlugin, withPlugins, createRunOncePlugin } from '@expo/config-plugins';
-
-import { withIosCaptchaUrlTypes } from './ios';
+import { ConfigPlugin, withPlugins, createRunOncePlugin, IOSConfig } from '@expo/config-plugins';
 
 /**
  * A config plugin for configuring `@react-native-firebase/auth`
  */
 const withRnFirebaseAuth: ConfigPlugin = config => {
-  return withPlugins(config, [
-    // iOS
-    withIosCaptchaUrlTypes,
-  ]);
+  return withPlugins(config, [IOSConfig.Google.withGoogle]);
 };
 
 const pak = require('@react-native-firebase/auth/package.json');
+
 export default createRunOncePlugin(withRnFirebaseAuth, pak.name, pak.version);
