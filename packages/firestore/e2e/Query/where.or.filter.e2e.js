@@ -18,11 +18,51 @@ const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 let Filter;
 
-setInterval(() => {}, 200);
 describe('firestore().collection().where(OR Filters)', function () {
   beforeEach(async function () {
     Filter = firebase.firestore.Filter;
     return await wipe();
+  });
+
+  it('throws if using nested Filter.or() queries', async function () {
+    try {
+      firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where(
+          Filter.or(
+            Filter.or(Filter('foo', '==', 'bar'), Filter('bar', '==', 'foo')),
+            Filter.or(Filter('foo', '==', 'baz'), Filter('bar', '==', 'baz')),
+          ),
+        );
+
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('Nested OR filters are not supported');
+    }
+
+    try {
+      firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where(
+          Filter.or(
+            Filter.and(
+              Filter.or(Filter('foo', '==', 'bar'), Filter('bar', '==', 'baz')),
+              Filter('more', '==', 'stuff'),
+            ),
+            Filter.and(
+              Filter.or(Filter('foo', '==', 'bar'), Filter('bar', '==', 'baz')),
+              Filter('baz', '==', 'foo'),
+            ),
+          ),
+        );
+
+      return Promise.reject(new Error('Did not throw an Error.'));
+    } catch (error) {
+      error.message.should.containEql('Nested OR filters are not supported');
+    }
+    return Promise.resolve();
   });
 
   it('throws if fieldPath string is invalid', function () {

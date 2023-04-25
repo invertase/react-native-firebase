@@ -55,6 +55,10 @@ Filter.and = function and(...queries) {
   return new _Filter(null, null, null, AND_QUERY, queries);
 };
 
+function hasOrOperator(obj) {
+  return obj.operator === 'OR' || (Array.isArray(obj.queries) && obj.queries.some(hasOrOperator));
+}
+
 Filter.or = function or(...queries) {
   if (queries.length > 10 || queries.length < 2) {
     throw new Error(`Expected 2-10 instances of Filter, but got ${queries.length} Filters`);
@@ -64,6 +68,12 @@ Filter.or = function or(...queries) {
 
   if (!validateFilters) {
     throw new Error('Expected every argument to be an instance of Filter');
+  }
+
+  const hasOr = queries.some(hasOrOperator);
+
+  if (hasOr) {
+    throw new Error('OR Filters with nested OR Filters are not supported');
   }
 
   return new _Filter(null, null, null, OR_QUERY, queries);
