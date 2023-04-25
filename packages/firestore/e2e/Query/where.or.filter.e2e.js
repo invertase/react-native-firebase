@@ -38,7 +38,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql('Nested OR filters are not supported');
+      error.message.should.containEql('OR Filters with nested OR Filters are not supported');
     }
 
     try {
@@ -60,7 +60,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql('Nested OR filters are not supported');
+      error.message.should.containEql('OR Filters with nested OR Filters are not supported');
     }
     return Promise.resolve();
   });
