@@ -18,7 +18,6 @@ const COLLECTION = 'firestore';
 const { wipe } = require('../helpers');
 let Filter;
 
-setInterval(() => {}, 200);
 describe('firestore().collection().where(Filters)', function () {
   beforeEach(async function () {
     Filter = firebase.firestore.Filter;
