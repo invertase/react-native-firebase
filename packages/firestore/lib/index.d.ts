@@ -49,6 +49,39 @@ import { ReactNativeFirebase } from '@react-native-firebase/app';
  */
 export namespace FirebaseFirestoreTypes {
   import FirebaseModule = ReactNativeFirebase.FirebaseModule;
+  /**
+   * An instance of Filter used to generate Firestore Filter queries.
+   */
+  export interface Filter {
+    fieldPath: string | null;
+    operator: string;
+    value: any | null;
+  }
+  /**
+   * The Filter functions used to generate an instance of Filter.
+   */
+  export interface FilterFunction {
+    /**
+     * The Filter function used to generate an instance of Filter.
+     * e.g. Filter('name', '==', 'Ada')
+     */
+    (fieldPath: string, operator: string, value: any): Filter;
+    /**
+     * The Filter.or() static function used to generate a logical OR query using multiple Filter instances.
+     * e.g. Filter.or(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
+     */
+    or(...queries: Filter[]): Filter;
+    /**
+     * The Filter.and() static function used to generate a logical AND query using multiple Filter instances.
+     * e.g. Filter.and(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
+     */
+    and(...queries: Filter[]): Filter;
+  }
+  /**
+   * The Filter function used to generate an instance of Filter.
+   * e.g. Filter('name', '==', 'Ada')
+   */
+  export const Filter: FilterFunction;
 
   /**
    * An immutable object representing an array of bytes.
