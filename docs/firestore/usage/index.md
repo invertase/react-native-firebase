@@ -246,7 +246,7 @@ For example, you could chain like so:
 const snapshot = await firestore()
   .collection('Users')
   .where(Filter('user', '==', 'Tim'))
-  .where('email', '==', 'tim@email.com')
+  .where('email', '==', 'tim@example.com')
   .get();
 ```
 
@@ -255,7 +255,7 @@ You can use the `Filter.and()` static method to make logical AND queries:
 ```js
 const snapshot = await firestore()
   .collection('Users')
-  .where(Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@email.com')))
+  .where(Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@example.com')))
   .get();
 ```
 
@@ -266,8 +266,8 @@ const snapshot = await firestore()
   .collection('Users')
   .where(
     Filter.or(
-      Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@email.com')),
-      Filter.and(Filter('user', '==', 'Dave'), Filter('email', '==', 'dave@email.com')),
+      Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@example.com')),
+      Filter.and(Filter('user', '==', 'Dave'), Filter('email', '==', 'dave@example.com')),
     ),
   )
   .get();
