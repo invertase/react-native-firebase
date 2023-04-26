@@ -589,7 +589,10 @@ RCT_EXPORT_METHOD(signInWithProvider
   [oAuthProviders setValue:provider forKey:providerID];
 
   if (email) {
-    [provider setCustomParameters:@{@"login_hint": email}];
+    [provider setCustomParameters:@{@"login_hint": email, @"prompt": @"select_account"}];
+  }
+  else {
+    [provider setCustomParameters:@{@"prompt": @"select_account"}];
   }
 
   [provider getCredentialWithUIDelegate:nil
@@ -622,7 +625,10 @@ RCT_EXPORT_METHOD(linkWithProvider
   [oAuthProviders setValue:provider forKey:providerID];
 
   if (email) {
-    [provider setCustomParameters:@{@"login_hint": email}];
+    [provider setCustomParameters:@{@"login_hint": email, @"prompt": @"select_account"}];
+  }
+  else {
+    [provider setCustomParameters:@{@"prompt": @"select_account"}];
   }
 
   [provider getCredentialWithUIDelegate:nil
@@ -1367,7 +1373,7 @@ RCT_EXPORT_METHOD(useEmulator
     NSString *sessionKey = [NSString stringWithFormat:@"%@", @([resolver.session hash])];
     cachedResolver[sessionKey] = resolver;
   }
-  
+
   NSString *email = [error userInfo][FIRAuthErrorUserInfoEmailKey];
 
   return @{
