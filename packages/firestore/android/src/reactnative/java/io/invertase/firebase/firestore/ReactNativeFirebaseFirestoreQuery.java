@@ -20,13 +20,8 @@ package io.invertase.firebase.firestore;
 import static io.invertase.firebase.common.RCTConvertFirebase.toArrayList;
 import static io.invertase.firebase.firestore.ReactNativeFirebaseFirestoreSerialize.*;
 
-import android.system.ErrnoException;
-
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableType;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -35,7 +30,6 @@ import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.Source;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +41,11 @@ public class ReactNativeFirebaseFirestoreQuery {
   Query query;
 
   ReactNativeFirebaseFirestoreQuery(
-    String appName,
-    Query query,
-    ReadableArray filters,
-    ReadableArray orders,
-    ReadableMap options) {
+      String appName,
+      Query query,
+      ReadableArray filters,
+      ReadableArray orders,
+      ReadableMap options) {
     this.appName = appName;
     this.query = query;
     applyFilters(filters);
@@ -61,11 +55,11 @@ public class ReactNativeFirebaseFirestoreQuery {
 
   public Task<WritableMap> get(Executor executor, Source source) {
     return Tasks.call(
-      executor,
-      () -> {
-        QuerySnapshot querySnapshot = Tasks.await(query.get(source));
-        return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
-      });
+        executor,
+        () -> {
+          QuerySnapshot querySnapshot = Tasks.await(query.get(source));
+          return snapshotToWritableMap(this.appName, "get", querySnapshot, null);
+        });
   }
 
   private void applyFilters(ReadableArray filters) {
@@ -73,7 +67,9 @@ public class ReactNativeFirebaseFirestoreQuery {
       ReadableMap filter = filters.getMap(i);
 
       if (filter.hasKey("fieldPath")) {
-        ArrayList<Object> fieldPathArray = Objects.requireNonNull(Objects.requireNonNull(filter).getArray("fieldPath")).toArrayList();
+        ArrayList<Object> fieldPathArray =
+            Objects.requireNonNull(Objects.requireNonNull(filter).getArray("fieldPath"))
+                .toArrayList();
         String[] segmentArray = (String[]) fieldPathArray.toArray(new String[0]);
 
         FieldPath fieldPath = FieldPath.of(Objects.requireNonNull(segmentArray));
@@ -90,42 +86,46 @@ public class ReactNativeFirebaseFirestoreQuery {
             break;
           case "GREATER_THAN":
             query =
-              query.whereGreaterThan(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+                query.whereGreaterThan(
+                    Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
             break;
           case "GREATER_THAN_OR_EQUAL":
             query =
-              query.whereGreaterThanOrEqualTo(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+                query.whereGreaterThanOrEqualTo(
+                    Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
             break;
           case "LESS_THAN":
             query =
-              query.whereLessThan(Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+                query.whereLessThan(
+                    Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
             break;
           case "LESS_THAN_OR_EQUAL":
             query =
-              query.whereLessThanOrEqualTo(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+                query.whereLessThanOrEqualTo(
+                    Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
             break;
           case "ARRAY_CONTAINS":
             query =
-              query.whereArrayContains(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
+                query.whereArrayContains(
+                    Objects.requireNonNull(fieldPath), Objects.requireNonNull(value));
             break;
           case "ARRAY_CONTAINS_ANY":
             query =
-              query.whereArrayContainsAny(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+                query.whereArrayContainsAny(
+                    Objects.requireNonNull(fieldPath),
+                    Objects.requireNonNull((List<Object>) value));
             break;
           case "IN":
             query =
-              query.whereIn(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+                query.whereIn(
+                    Objects.requireNonNull(fieldPath),
+                    Objects.requireNonNull((List<Object>) value));
             break;
           case "NOT_IN":
             query =
-              query.whereNotIn(
-                Objects.requireNonNull(fieldPath), Objects.requireNonNull((List<Object>) value));
+                query.whereNotIn(
+                    Objects.requireNonNull(fieldPath),
+                    Objects.requireNonNull((List<Object>) value));
             break;
         }
       } else if (filter.hasKey("operator") && filter.hasKey("queries")) {
@@ -136,7 +136,8 @@ public class ReactNativeFirebaseFirestoreQuery {
 
   private Filter applyFilterQueries(ReadableMap filter) {
     if (filter.hasKey("fieldPath")) {
-      String operator = (String) Objects.requireNonNull(Objects.requireNonNull(filter).getString("operator"));
+      String operator =
+          (String) Objects.requireNonNull(Objects.requireNonNull(filter).getString("operator"));
       ReadableMap fieldPathMap = Objects.requireNonNull(filter.getMap("fieldPath"));
       ReadableArray segments = Objects.requireNonNull(fieldPathMap.getArray("_segments"));
       int arraySize = segments.size();
@@ -180,7 +181,8 @@ public class ReactNativeFirebaseFirestoreQuery {
     }
 
     String operator = Objects.requireNonNull(filter).getString("operator");
-    ReadableArray queries = Objects.requireNonNull(Objects.requireNonNull(filter).getArray("queries"));
+    ReadableArray queries =
+        Objects.requireNonNull(Objects.requireNonNull(filter).getArray("queries"));
     ArrayList<Filter> parsedFilters = new ArrayList<>();
     int arraySize = queries.size();
     for (int i = 0; i < arraySize; i++) {
@@ -212,13 +214,13 @@ public class ReactNativeFirebaseFirestoreQuery {
         String direction = (String) order.get("direction");
 
         query =
-          query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+            query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
       } else {
         String fieldPath = (String) order.get("fieldPath");
         String direction = (String) order.get("direction");
 
         query =
-          query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
+            query.orderBy(Objects.requireNonNull(fieldPath), Query.Direction.valueOf(direction));
       }
     }
   }
@@ -236,13 +238,13 @@ public class ReactNativeFirebaseFirestoreQuery {
 
     if (options.hasKey("startAt")) {
       List<Object> fieldList =
-        parseReadableArray(query.getFirestore(), options.getArray("startAt"));
+          parseReadableArray(query.getFirestore(), options.getArray("startAt"));
       query = query.startAt(Objects.requireNonNull(fieldList.toArray()));
     }
 
     if (options.hasKey("startAfter")) {
       List<Object> fieldList =
-        parseReadableArray(query.getFirestore(), options.getArray("startAfter"));
+          parseReadableArray(query.getFirestore(), options.getArray("startAfter"));
       query = query.startAfter(Objects.requireNonNull(fieldList.toArray()));
     }
 
@@ -253,7 +255,7 @@ public class ReactNativeFirebaseFirestoreQuery {
 
     if (options.hasKey("endBefore")) {
       List<Object> fieldList =
-        parseReadableArray(query.getFirestore(), options.getArray("endBefore"));
+          parseReadableArray(query.getFirestore(), options.getArray("endBefore"));
       query = query.endBefore(Objects.requireNonNull(fieldList.toArray()));
     }
   }
