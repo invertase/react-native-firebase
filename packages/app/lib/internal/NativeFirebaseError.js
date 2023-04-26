@@ -39,6 +39,15 @@ export default class NativeFirebaseError extends Error {
       value: `[${this.code}] ${userInfo.message || nativeError.message}`,
     });
 
+    if (typeof userInfo === 'object' && userInfo !== null) {
+      if ('email' in userInfo) {
+        Object.defineProperty(this, 'email', {
+          enumerable: true,
+          value: userInfo.email,
+        });
+      }
+    }
+
     Object.defineProperty(this, 'jsStack', {
       enumerable: false,
       value: jsStack,

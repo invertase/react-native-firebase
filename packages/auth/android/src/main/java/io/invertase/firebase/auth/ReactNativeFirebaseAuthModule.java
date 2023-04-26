@@ -46,6 +46,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthMultiFactorException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
@@ -868,9 +869,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void signInWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
     OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
+
     if(email != null){
       provider.addCustomParameter("login_hint", email);
     }
+    provider.addCustomParameter("prompt", "select_account");
+
     Activity activity = getCurrentActivity();
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -908,9 +912,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   @ReactMethod
   public void linkWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
     OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
+
     if(email != null){
       provider.addCustomParameter("login_hint", email);
     }
+    provider.addCustomParameter("prompt", "select_account");
+
     Activity activity = getCurrentActivity();
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
@@ -1977,7 +1984,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
         if(authResult.getCredential() instanceof OAuthCredential){
           OAuthCredential creds = (OAuthCredential) authResult.getCredential();
           WritableMap credentialMap = Arguments.createMap();
-          
+
           credentialMap.putString("providerId", creds.getProvider());
           credentialMap.putString("signInMethod", creds.getSignInMethod());
 
@@ -2037,15 +2044,23 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    */
   private void promiseRejectAuthException(Promise promise, Exception exception) {
     WritableMap error = getJSError(exception);
-    
+
     final String sessionId = error.getString("sessionId");
     final MultiFactorResolver multiFactorResolver = mCachedResolvers.get(sessionId);
     WritableMap resolverAsMap = Arguments.createMap();
+
+    WritableMap map = Arguments.createMap();
     if (multiFactorResolver != null) {
       resolverAsMap = resolverToMap(sessionId, multiFactorResolver);
+      map.putMap("resolver", resolverAsMap);
     }
-    rejectPromiseWithCodeAndMessage(
-        promise, error.getString("code"), error.getString("message"), resolverAsMap);
+
+    if(error.getString("email") != null){
+      map.putString("email", error.getString("email"));
+    }
+
+    rejectPromiseWithMap(
+        promise, error.getString("code"), error.getString("message"), map);
   }
 
   /**
@@ -2060,7 +2075,6 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     String invalidEmail = "The email address is badly formatted.";
 
     System.out.print(exception);
-
     try {
       FirebaseAuthException authException = (FirebaseAuthException) exception;
       code = authException.getErrorCode();
@@ -2096,7 +2110,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                     + " before retrying this request.";
             break;
           case "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-            message =
+          message =
                 "An account already exists with the same email address but different sign-in"
                     + " credentials. Sign in using a provider associated with this email address.";
             break;
@@ -2132,6 +2146,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
             break;
         }
       }
+    }
+
+    if(exception instanceof FirebaseAuthUserCollisionException) {
+      error.putString("email", ((FirebaseAuthUserCollisionException) exception).getEmail());
     }
 
     if (exception instanceof FirebaseAuthMultiFactorException) {

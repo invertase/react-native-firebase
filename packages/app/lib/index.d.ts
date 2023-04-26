@@ -43,6 +43,11 @@ export namespace ReactNativeFirebase {
     readonly message: string;
 
     /**
+     * The email address of the user's account used in the operation that triggered the error, if applicable
+     */
+    readonly email?: string;
+
+    /**
      * The firebase module namespace that this error originated from, e.g. 'analytics'
      */
     readonly namespace: string;
