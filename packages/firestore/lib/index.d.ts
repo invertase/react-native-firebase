@@ -52,10 +52,18 @@ export namespace FirebaseFirestoreTypes {
   /**
    * An instance of Filter used to generate Firestore Filter queries.
    */
-  export interface Filter {
+
+  export type QueryFilterType = 'OR' | 'AND';
+
+  export interface QueryFilterConstraint {
     fieldPath: keyof T | FieldPath;
     operator: WhereFilterOp;
     value: any;
+  }
+
+  export interface QueryCompositeFilterConstraint {
+    operator: QueryFilterType;
+    queries: QueryFilterConstraint[];
   }
   /**
    * The Filter functions used to generate an instance of Filter.
@@ -65,17 +73,17 @@ export namespace FirebaseFirestoreTypes {
      * The Filter function used to generate an instance of Filter.
      * e.g. Filter('name', '==', 'Ada')
      */
-    (fieldPath: keyof T | FieldPath, operator: WhereFilterOp, value: any): Filter;
+    (fieldPath: keyof T | FieldPath, operator: WhereFilterOp, value: any): QueryFilterConstraint;
     /**
      * The Filter.or() static function used to generate a logical OR query using multiple Filter instances.
      * e.g. Filter.or(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    or(...queries: Filter[]): Filter;
+    or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
     /**
      * The Filter.and() static function used to generate a logical AND query using multiple Filter instances.
      * e.g. Filter.and(Filter('name', '==', 'Ada'), Filter('name', '==', 'Bob'))
      */
-    and(...queries: Filter[]): Filter;
+    and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
   }
   /**
    * The Filter function used to generate an instance of Filter.
