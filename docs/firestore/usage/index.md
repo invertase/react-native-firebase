@@ -239,6 +239,43 @@ firestore()
 To learn more about all of the querying capabilities Cloud Firestore has to offer, view the
 [Firebase documentation](https://firebase.google.com/docs/firestore/query-data/queries).
 
+It is now possible to use the `Filter` instance to make queries. They can be used with the existing query API.
+For example, you could chain like so:
+
+```js
+const snapshot = await firestore()
+  .collection('Users')
+  .where(Filter('user', '==', 'Tim'))
+  .where('email', '==', 'tim@example.com')
+  .get();
+```
+
+You can use the `Filter.and()` static method to make logical AND queries:
+
+```js
+const snapshot = await firestore()
+  .collection('Users')
+  .where(Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@example.com')))
+  .get();
+```
+
+You can use the `Filter.or()` static method to make logical OR queries:
+
+```js
+const snapshot = await firestore()
+  .collection('Users')
+  .where(
+    Filter.or(
+      Filter.and(Filter('user', '==', 'Tim'), Filter('email', '==', 'tim@example.com')),
+      Filter.and(Filter('user', '==', 'Dave'), Filter('email', '==', 'dave@example.com')),
+    ),
+  )
+  .get();
+```
+
+For an understanding of what queries are possible, please consult the query limitation documentation on the official
+[Firebase Firestore documentation](https://firebase.google.com/docs/firestore/query-data/queries#limits_on_or_queries).
+
 #### Limiting
 
 To limit the number of documents returned from a query, use the `limit` method on a collection reference:
@@ -317,7 +354,6 @@ with an ID of `DEF`.
 Cloud Firestore does not support the following types of queries:
 
 - Queries with range filters on different fields, as described in the previous section.
-- Logical OR queries. In this case, you should create a separate query for each OR condition and merge the query results in your app.
 
 ## Writing Data
 

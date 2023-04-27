@@ -28,6 +28,7 @@ import FirestoreDocumentSnapshot from './FirestoreDocumentSnapshot';
 import FirestoreFieldPath, { fromDotSeparatedString } from './FirestoreFieldPath';
 import FirestoreQuerySnapshot from './FirestoreQuerySnapshot';
 import { parseSnapshotArgs } from './utils';
+import { _Filter, generateFilters } from './FirestoreFilter';
 
 let _id = 0;
 
@@ -406,62 +407,79 @@ export default class FirestoreQuery {
     );
   }
 
-  where(fieldPath, opStr, value) {
-    if (!isString(fieldPath) && !(fieldPath instanceof FirestoreFieldPath)) {
-      throw new Error(
-        "firebase.firestore().collection().where(*) 'fieldPath' must be a string or instance of FieldPath.",
-      );
-    }
-
-    let path;
-
-    if (isString(fieldPath)) {
-      try {
-        path = fromDotSeparatedString(fieldPath);
-      } catch (e) {
-        throw new Error(`firebase.firestore().collection().where(*) 'fieldPath' ${e.message}.`);
-      }
-    } else {
-      path = fieldPath;
-    }
-
-    if (!this._modifiers.isValidOperator(opStr)) {
-      throw new Error(
-        "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', '!=', 'array-contains', 'not-in', 'array-contains-any' or 'in'.",
-      );
-    }
-
-    if (isUndefined(value)) {
-      throw new Error(
-        "firebase.firestore().collection().where(_, _, *) 'value' argument expected.",
-      );
-    }
-
+  where(fieldPathOrFilter, opStr, value) {
     if (
-      isNull(value) &&
-      !this._modifiers.isEqualOperator(opStr) &&
-      !this._modifiers.isNotEqualOperator(opStr)
+      !isString(fieldPathOrFilter) &&
+      !(fieldPathOrFilter instanceof FirestoreFieldPath) &&
+      !(fieldPathOrFilter instanceof _Filter)
     ) {
       throw new Error(
-        "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
+        "firebase.firestore().collection().where(*) 'fieldPath' must be a string, instance of FieldPath or instance of Filter.",
       );
     }
 
-    if (this._modifiers.isInOperator(opStr)) {
-      if (!isArray(value) || !value.length) {
+    let modifiers;
+    if (fieldPathOrFilter instanceof _Filter && fieldPathOrFilter.queries) {
+      //AND or OR filter
+      const filters = generateFilters(fieldPathOrFilter, this._modifiers);
+      modifiers = this._modifiers._copy().filterWhere(filters);
+    } else {
+      if (fieldPathOrFilter instanceof _Filter) {
+        // Standard Filter. Usual path.
+        opStr = fieldPathOrFilter.operator;
+        value = fieldPathOrFilter.value;
+        fieldPathOrFilter = fieldPathOrFilter.fieldPath;
+      }
+      let path;
+
+      if (isString(fieldPathOrFilter)) {
+        try {
+          path = fromDotSeparatedString(fieldPathOrFilter);
+        } catch (e) {
+          throw new Error(`firebase.firestore().collection().where(*) 'fieldPath' ${e.message}.`);
+        }
+      } else {
+        path = fieldPathOrFilter;
+      }
+
+      if (!this._modifiers.isValidOperator(opStr)) {
         throw new Error(
-          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. A non-empty array is required for '${opStr}' filters.`,
+          "firebase.firestore().collection().where(_, *) 'opStr' is invalid. Expected one of '==', '>', '>=', '<', '<=', '!=', 'array-contains', 'not-in', 'array-contains-any' or 'in'.",
         );
       }
 
-      if (value.length > 10) {
+      if (isUndefined(value)) {
         throw new Error(
-          `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 10 elements in the value array.`,
+          "firebase.firestore().collection().where(_, _, *) 'value' argument expected.",
         );
       }
+
+      if (
+        isNull(value) &&
+        !this._modifiers.isEqualOperator(opStr) &&
+        !this._modifiers.isNotEqualOperator(opStr)
+      ) {
+        throw new Error(
+          "firebase.firestore().collection().where(_, _, *) 'value' is invalid. You can only perform equals comparisons on null",
+        );
+      }
+
+      if (this._modifiers.isInOperator(opStr)) {
+        if (!isArray(value) || !value.length) {
+          throw new Error(
+            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. A non-empty array is required for '${opStr}' filters.`,
+          );
+        }
+
+        if (value.length > 10) {
+          throw new Error(
+            `firebase.firestore().collection().where(_, _, *) 'value' is invalid. '${opStr}' filters support a maximum of 10 elements in the value array.`,
+          );
+        }
+      }
+
+      modifiers = this._modifiers._copy().where(path, opStr, value);
     }
-
-    const modifiers = this._modifiers._copy().where(path, opStr, value);
 
     try {
       modifiers.validateWhere();

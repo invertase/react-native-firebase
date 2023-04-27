@@ -25,7 +25,9 @@ describe('firestore().collection().where()', function () {
       firebase.firestore().collection(COLLECTION).where(123);
       return Promise.reject(new Error('Did not throw an Error.'));
     } catch (error) {
-      error.message.should.containEql("'fieldPath' must be a string or instance of FieldPath");
+      error.message.should.containEql(
+        'must be a string, instance of FieldPath or instance of Filter',
+      );
       return Promise.resolve();
     }
   });
