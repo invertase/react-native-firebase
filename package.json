@@ -128,5 +128,6 @@
       "**/superstruct",
       "**/superstruct/**"
     ]
-  }
+  },
+  "version": "0.0.1"
 }
