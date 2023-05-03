@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { firebase } from '../lib';
+import { firebase, getInstallations } from '../lib';
 
 describe('installations()', function () {
   describe('namespace', function () {
@@ -18,6 +18,27 @@ describe('installations()', function () {
       expect(firebase.app('secondaryFromNative').installations().app.name).toEqual(
         'secondaryFromNative',
       );
+    });
+  });
+
+  describe('modular', function () {
+    describe('getInstallations', function () {
+      it('returns an instance of Installations', async function () {
+        const installations = getInstallations();
+        expect(installations).toBeDefined();
+        expect(installations.app).toBeDefined();
+      });
+
+      it('supports multiple apps', async function () {
+        const app = firebase.app();
+        const secondaryApp = firebase.app('secondaryFromNative');
+
+        const installations = getInstallations();
+        const installationsForApp = getInstallations(secondaryApp);
+
+        expect(installations.app).toEqual(app);
+        expect(installationsForApp.app).toEqual(secondaryApp);
+      });
     });
   });
 });
