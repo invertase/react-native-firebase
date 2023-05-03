@@ -366,10 +366,8 @@ class FirebaseAuthModule extends FirebaseModule {
       .then(userCredential => this._setUserCredential(userCredential));
   }
 
-  signInWithRedirect() {
-    return this.native
-      .signInWithProvider(provider.providerId, provider.customParameters?.login_hint)
-      .then(userCredential => this._setUserCredential(userCredential));
+  signInWithRedirect(provider) {
+    return this.signInWithPopup(provider);
   }
 
   // firebase issue - https://github.com/invertase/react-native-firebase/pull/655#issuecomment-349904680
