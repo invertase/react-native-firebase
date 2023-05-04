@@ -20,6 +20,9 @@ yarn add @react-native-firebase/crashlytics
 
 # If you're developing your app using iOS, run this command
 cd ios/ && pod install
+
+# If you're developing your app using android, run this command
+cd android/ && ./gradlew clean
 ```
 
 Once installed, you must complete the following additional setup steps for Android:
