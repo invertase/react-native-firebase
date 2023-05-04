@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { firebase, getInstallations } from '../lib';
+import { firebase, getInstallations, onIdChange } from '../lib';
 
 describe('installations()', function () {
   describe('namespace', function () {
@@ -38,6 +38,15 @@ describe('installations()', function () {
 
         expect(installations.app).toEqual(app);
         expect(installationsForApp.app).toEqual(secondaryApp);
+      });
+    });
+
+    describe('onIdChange', function () {
+      it('throws an unsupported error', async function () {
+        const installations = getInstallations();
+        expect(() => onIdChange(installations, () => {})).toThrow(
+          'onIdChange() is unsupported by the React Native Firebase SDK.',
+        );
       });
     });
   });
