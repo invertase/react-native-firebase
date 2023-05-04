@@ -168,7 +168,7 @@ Once successfully linked and rebuilt, your application will be connected to Fire
 
 #### Manual Linking
 
-If you're using an older version of React Native without autolinking support, or wish to integrate into an existing project,
+If you're using an older version (below 0.60) of React Native without autolinking support, or wish to integrate into an existing project,
 you can follow the manual installation steps for [iOS](/install-ios) and [Android](/install-android).
 
 ---
