@@ -58,6 +58,7 @@ export function getToken(installations, forceRefresh) {
  * @param {(string) => void} callback
  * @returns {() => void}
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function onIdChange(installations, callback) {
   throw new Error('onIdChange() is unsupported by the React Native Firebase SDK.');
 }
