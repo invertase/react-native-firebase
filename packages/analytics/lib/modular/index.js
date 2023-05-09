@@ -52,6 +52,7 @@ export function logEvent(analytics, name, eventParams = {}, options = {}) {
 export function setAnalyticsCollectionEnabled(analytics, enabled) {
   return analytics.setAnalyticsCollectionEnabled(enabled);
 }
+
 /**
  * Sets the duration of inactivity that terminates the current session.
  *
@@ -61,6 +62,7 @@ export function setAnalyticsCollectionEnabled(analytics, enabled) {
 export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
   return analytics.setSessionTimeoutDuration(milliseconds);
 }
+
 /**
  * Retrieve the app instance id of the application.
  *
@@ -70,6 +72,7 @@ export function setSessionTimeoutDuration(analytics, milliseconds = 1800000) {
 export function getAppInstanceId(analytics) {
   return analytics.getAppInstanceId();
 }
+
 /**
  * Gives a user a unique identification.
  *
@@ -80,6 +83,7 @@ export function getAppInstanceId(analytics) {
 export function setUserId(analytics, id) {
   return analytics.setUserId(id);
 }
+
 /**
  * Sets a key/value pair of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
  *
@@ -90,6 +94,7 @@ export function setUserId(analytics, id) {
 export function setUserProperty(analytics, name, value) {
   return analytics.setUserProperty(name, value);
 }
+
 /**
  * Sets multiple key/value pairs of data on the current user. Each Firebase project can have up to 25 uniquely named (case-sensitive) user properties.
  *
@@ -102,6 +107,7 @@ export function setUserProperty(analytics, name, value) {
 export function setUserProperties(analytics, properties, options = {}) {
   return analytics.setUserProperties(properties, options);
 }
+
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  *
@@ -110,6 +116,7 @@ export function setUserProperties(analytics, properties, options = {}) {
 export function resetAnalyticsData(analytics) {
   return analytics.resetAnalyticsData();
 }
+
 /**
  * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
  * automatically for Google Play-based apps.
@@ -124,6 +131,7 @@ export function resetAnalyticsData(analytics) {
 export function logAddPaymentInfo(analytics, object = {}) {
   return analytics.logAddPaymentInfo(object);
 }
+
 /**
  * Sets or clears the screen name and class the user is currently viewing
  *
@@ -133,6 +141,7 @@ export function logAddPaymentInfo(analytics, object = {}) {
 export function logScreenView(analytics, object = {}) {
   return analytics.logScreenView(object);
 }
+
 /**
  * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
  *
@@ -146,6 +155,7 @@ export function logScreenView(analytics, object = {}) {
 export function logAddShippingInfo(analytics, object = {}) {
   return analytics.logAddShippingInfo(object);
 }
+
 /**
  * E-Commerce Add To Cart event.
  *
@@ -159,6 +169,7 @@ export function logAddShippingInfo(analytics, object = {}) {
 export function logAddToCart(analytics, object = {}) {
   return analytics.logAddToCart(object);
 }
+
 /**
  * E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.
  * Use this event to identify popular gift items in your app.
@@ -173,6 +184,7 @@ export function logAddToCart(analytics, object = {}) {
 export function logAddToWishlist(analytics, object = {}) {
   return analytics.logAddToWishlist(object);
 }
+
 /**
  * App Open event. By logging this event when an App is moved to the foreground, developers can
  * understand how often users leave and return during the course of a Session. Although Sessions
@@ -184,6 +196,7 @@ export function logAddToWishlist(analytics, object = {}) {
 export function logAppOpen(analytics) {
   return analytics.logAppOpen();
 }
+
 /**
  * E-Commerce Begin Checkout event. This event signifies that a user has begun the process of
  * checking out.
@@ -198,6 +211,7 @@ export function logAppOpen(analytics) {
 export function logBeginCheckout(analytics, object = {}) {
   return analytics.logBeginCheckout(object);
 }
+
 /**
  * Log this event to supply the referral details of a re-engagement campaign.
  *
@@ -209,6 +223,7 @@ export function logBeginCheckout(analytics, object = {}) {
 export function logCampaignDetails(analytics, object = {}) {
   return analytics.logCampaignDetails(object);
 }
+
 /**
  * Earn Virtual Currency event. This event tracks the awarding of virtual currency in your app. Log this along with
  * {@link analytics.logSpendVirtualCurrency} to better understand your virtual economy.
@@ -221,6 +236,7 @@ export function logCampaignDetails(analytics, object = {}) {
 export function logEarnVirtualCurrency(analytics, object = {}) {
   return analytics.logEarnVirtualCurrency(object);
 }
+
 /**
  * Generate Lead event. Log this event when a lead has been generated in the app to understand
  * the efficacy of your install and re-engagement campaigns.
@@ -235,6 +251,7 @@ export function logEarnVirtualCurrency(analytics, object = {}) {
 export function logGenerateLead(analytics, object = {}) {
   return analytics.logGenerateLead(object);
 }
+
 /**
  * Join Group event. Log this event when a user joins a group such as a guild, team or family.
  * Use this event to analyze how popular certain groups or social features are in your app
@@ -247,6 +264,7 @@ export function logGenerateLead(analytics, object = {}) {
 export function logJoinGroup(analytics, object = {}) {
   return analytics.logJoinGroup(object);
 }
+
 /**
  * Level End event.
  *
@@ -258,6 +276,7 @@ export function logJoinGroup(analytics, object = {}) {
 export function logLevelEnd(analytics, object = {}) {
   return analytics.logLevelEnd(object);
 }
+
 /**
  * Level Start event.
  *
@@ -269,6 +288,7 @@ export function logLevelEnd(analytics, object = {}) {
 export function logLevelStart(analytics, object = {}) {
   return analytics.logLevelStart(object);
 }
+
 /**
  * Level Up event. This event signifies that a player has leveled up in your gaming app.
  * It can help you gauge the level distribution of your userbase and help you identify certain levels that are difficult to pass.
@@ -281,6 +301,7 @@ export function logLevelStart(analytics, object = {}) {
 export function logLevelUp(analytics, object = {}) {
   return analytics.logLevelUp(object);
 }
+
 /**
  * Login event. Apps with a login feature can report this event to signify that a user has logged in.
  *
@@ -292,6 +313,7 @@ export function logLevelUp(analytics, object = {}) {
 export function logLogin(analytics, object = {}) {
   return analytics.logLogin(object);
 }
+
 /**
  * Post Score event. Log this event when the user posts a score in your gaming app. This event can
  * help you understand how users are actually performing in your game and it can help you correlate
@@ -305,6 +327,7 @@ export function logLogin(analytics, object = {}) {
 export function logPostScore(analytics, object = {}) {
   return analytics.logPostScore(object);
 }
+
 /**
  * Select Content event. This general purpose event signifies that a user has selected some
  * content of a certain type in an app. The content can be any object in your app. This event
@@ -318,6 +341,7 @@ export function logPostScore(analytics, object = {}) {
 export function logSelectContent(analytics, object = {}) {
   return analytics.logSelectContent(object);
 }
+
 /**
  * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
  * automatically for Google Play-based apps.
@@ -332,6 +356,7 @@ export function logSelectContent(analytics, object = {}) {
 export function logPurchase(analytics, object = {}) {
   return analytics.logPurchase(object);
 }
+
 /**
  * E-Commerce Refund event. This event signifies that a refund was issued.
  *
@@ -343,6 +368,7 @@ export function logPurchase(analytics, object = {}) {
 export function logRefund(analytics, object = {}) {
   return analytics.logRefund(object);
 }
+
 /**
  * Remove from cart event.
  *
@@ -354,6 +380,7 @@ export function logRefund(analytics, object = {}) {
 export function logRemoveFromCart(analytics, object = {}) {
   return analytics.logRemoveFromCart(object);
 }
+
 /**
  * Search event. Apps that support search features can use this event to contextualize search
  * operations by supplying the appropriate, corresponding parameters. This event can help you
@@ -367,6 +394,7 @@ export function logRemoveFromCart(analytics, object = {}) {
 export function logSearch(analytics, object = {}) {
   return analytics.logSearch(object);
 }
+
 /**
  * Select Item event. This event signifies that an item was selected by a user from a list.
  * Use the appropriate parameters to contextualize the event.
@@ -380,6 +408,7 @@ export function logSearch(analytics, object = {}) {
 export function logSelectItem(analytics, object = {}) {
   return analytics.logSelectItem(object);
 }
+
 /**
  * Set checkout option event.
  *
@@ -391,6 +420,7 @@ export function logSelectItem(analytics, object = {}) {
 export function logSetCheckoutOption(analytics, object = {}) {
   return analytics.logSetCheckoutOption(object);
 }
+
 /**
  * Select promotion event. This event signifies that a user has selected a promotion offer. Use the
  * appropriate parameters to contextualize the event, such as the item(s) for which the promotion applies.
@@ -403,6 +433,7 @@ export function logSetCheckoutOption(analytics, object = {}) {
 export function logSelectPromotion(analytics, object = {}) {
   return analytics.logSelectPromotion(object);
 }
+
 /**
  * Share event. Apps with social features can log the Share event to identify the most viral content.
  *
@@ -414,6 +445,7 @@ export function logSelectPromotion(analytics, object = {}) {
 export function logShare(analytics, object = {}) {
   return analytics.logShare(object);
 }
+
 /**
  * Sign Up event. This event indicates that a user has signed up for an account in your app.
  * The parameter signifies the method by which the user signed up. Use this event to understand
@@ -427,6 +459,7 @@ export function logShare(analytics, object = {}) {
 export function logSignUp(analytics, object = {}) {
   return analytics.logSignUp(object);
 }
+
 /**
  * Spend Virtual Currency event. This event tracks the sale of virtual goods in your app and can
  * help you identify which virtual goods are the most popular objects of purchase.
@@ -439,6 +472,7 @@ export function logSignUp(analytics, object = {}) {
 export function logSpendVirtualCurrency(analytics, object = {}) {
   return analytics.logSpendVirtualCurrency(object);
 }
+
 /**
  * Tutorial Begin event. This event signifies the start of the on-boarding process in your app.
  * Use this in a funnel with {@link analytics#logTutorialComplete} to understand how many users
@@ -451,6 +485,7 @@ export function logSpendVirtualCurrency(analytics, object = {}) {
 export function logTutorialBegin(analytics) {
   return analytics.logTutorialBegin();
 }
+
 /**
  * Tutorial End event. Use this event to signify the user's completion of your app's on-boarding process.
  * Add this to a funnel with {@link analytics#logTutorialBegin} to understand how many users
@@ -463,6 +498,7 @@ export function logTutorialBegin(analytics) {
 export function logTutorialComplete(analytics) {
   return analytics.logTutorialComplete();
 }
+
 /**
  * Unlock Achievement event. Log this event when the user has unlocked an achievement in your game.
  * Since achievements generally represent the breadth of a gaming experience, this event can help
@@ -476,6 +512,7 @@ export function logTutorialComplete(analytics) {
 export function logUnlockAchievement(analytics, object = {}) {
   return analytics.logUnlockAchievement(object);
 }
+
 /**
  * E-commerce View Cart event. This event signifies that a user has viewed their cart. Use this to analyze your purchase funnel.
  *
@@ -489,6 +526,7 @@ export function logUnlockAchievement(analytics, object = {}) {
 export function logViewCart(analytics, object = {}) {
   return analytics.logViewCart(object);
 }
+
 /**
  * View Item event. This event signifies that some content was shown to the user. This content
  * may be a product, a screen or just a simple image or text. Use the appropriate parameters
@@ -504,6 +542,7 @@ export function logViewCart(analytics, object = {}) {
 export function logViewItem(analytics, object = {}) {
   return analytics.logViewItem(object);
 }
+
 /**
  * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
  *
@@ -516,9 +555,18 @@ export function logViewItemList(analytics, object = {}) {
   return analytics.logViewItemList(object);
 }
 
+/**
+ * View Promotion event. This event signifies that a promotion was shown to a user.
+ *
+ * Logged event name: `view_promotion`
+ *
+ * @param analytics Analytics instance.
+ * @param params See {@link analytics.ViewPromotionEventParameters}.
+ */
 export function logViewPromotion(analytics, object = {}) {
   return analytics.logViewPromotion(object);
 }
+
 /**
  * View Search Results event. Log this event when the user has been presented with the results of a search.
  *
@@ -530,6 +578,7 @@ export function logViewPromotion(analytics, object = {}) {
 export function logViewSearchResults(analytics, object = {}) {
   return analytics.logViewSearchResults(object);
 }
+
 /**
  * Adds parameters that will be set on every event logged from the SDK, including automatic ones.
  *
@@ -545,6 +594,7 @@ export function logViewSearchResults(analytics, object = {}) {
 export function setDefaultEventParameters(analytics, params = {}) {
   return analytics.setDefaultEventParameters(params);
 }
+
 /**
  * start privacy-sensitive on-device conversion management.
  * This is iOS-only.
@@ -569,6 +619,7 @@ export function isSupported() {
   // always return "true" for now until Web implementation. Web only.
   return Promise.resolve(true);
 }
+
 /**
  * Sets the applicable end user consent state for this web app across all gtag
  * references once Firebase Analytics is initialized. Web only.
@@ -577,7 +628,7 @@ export function isSupported() {
  * @returns {void}
  */
 // eslint-disable-next-line
-export function setConsent(consentSettings) {
+export function setConsent(analytics, consentSettings) {
   // Returns nothing until Web implemented.
 }
 
