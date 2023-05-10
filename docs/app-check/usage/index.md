@@ -100,9 +100,9 @@ To do that, edit your ios/ProjectName/AppDelegate.mm and add the following two l
   // Initialize RNFBAppCheckModule, it sets the custom RNFBAppCheckProviderFactory
   // which lets us configure any of the available native platform providers,
   // and reconfigure if needed, dynamically after `[FIRApp configure]` just like the other platforms.
-  
+
   [RNFBAppCheckModule sharedInstance]; // ⬅️ ADD THIS LINE BEFORE [FIRApp configure]
-  
+
   [FIRApp configure];
 
   ...
@@ -154,17 +154,14 @@ After initializing the custom provider, you can verify AppCheck is working by lo
 
 ```javascript
 try {
-  const {token} = await firebase.appCheck().getToken(true);
-  
+  const { token } = await firebase.appCheck().getToken(true);
+
   if (token.length > 0) {
     console.log('AppCheck verification passed');
   }
-  
 } catch (error) {
   console.log('AppCheck verification failed');
 }
-
-
 ```
 
 ## Automatic Data Collection
