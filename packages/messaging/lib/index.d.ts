@@ -214,11 +214,6 @@ export namespace FirebaseMessagingTypes {
 
   export interface Notification {
     /**
-     * The notification title.
-     */
-    title?: string;
-
-    /**
      * The native localization key for the notification title.
      */
     titleLocKey?: string;
