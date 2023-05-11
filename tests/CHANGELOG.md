@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.5.0](https://github.com/invertase/react-native-firebase/compare/v17.4.3...v17.5.0) (2023-05-11)
+
+### Features
+
+- **firestore:** Firestore `Filter` instance. Use `Filter`, `Filter.or()` & `Filter.and()` in Firestore queries. ([#7045](https://github.com/invertase/react-native-firebase/issues/7045)) ([f7ec3d1](https://github.com/invertase/react-native-firebase/commit/f7ec3d1970f4fa8cc9752bb3cd8f1550b2a457c5))
+
 ### [17.4.3](https://github.com/invertase/react-native-firebase/compare/v17.4.2...v17.4.3) (2023-04-26)
 
 **Note:** Version bump only for package react-native-firebase-tests

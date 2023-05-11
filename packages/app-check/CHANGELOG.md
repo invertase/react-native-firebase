@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [17.5.0](https://github.com/invertase/react-native-firebase/compare/v17.4.3...v17.5.0) (2023-05-11)
+
+### Bug Fixes
+
+- **app-check, types:** ReactNativeFirebaseAppCheckProvider.configure returns void not Promise<void> ([f53dc2d](https://github.com/invertase/react-native-firebase/commit/f53dc2de546b608c9108ce351ac47b97295a7f63))
+
 ### [17.4.3](https://github.com/invertase/react-native-firebase/compare/v17.4.2...v17.4.3) (2023-04-26)
 
 **Note:** Version bump only for package @react-native-firebase/app-check
