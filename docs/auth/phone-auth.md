@@ -54,7 +54,7 @@ a code. Based on whether the code is correct for the device, the method rejects 
 The example below demonstrates how you could setup such a flow within your own application:
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextInput } from 'react-native';
 import auth from '@react-native-firebase/auth';
 
