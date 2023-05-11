@@ -87,6 +87,29 @@ For instructions on how to generate required keys and register an app for the de
 
 You must call initialize the AppCheck module prior to calling any firebase back-end services for App Check to function.
 
+To do that, edit your `ios/ProjectName/AppDelegate.mm` and add the following two lines:
+
+```objectivec
+#import "AppDelegate.h"
+#import "RNFBAppCheckModule.h" // ⬅️ ADD THIS LINE
+#import <Firebase.h>
+...
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  // Initialize RNFBAppCheckModule, it sets the custom RNFBAppCheckProviderFactory
+  // which lets us configure any of the available native platform providers,
+  // and reconfigure if needed, dynamically after `[FIRApp configure]` just like the other platforms.
+
+  [RNFBAppCheckModule sharedInstance]; // ⬅️ ADD THIS LINE BEFORE [FIRApp configure]
+
+  [FIRApp configure];
+
+  ...
+}
+
+```
+
 There are several differences between the web, Apple, and Android platform SDKs produced by Firebase, which react-native-firebase smooths over to give you a common, firebase-js-sdk compatible API.
 
 How do we do this? We use the standard firebase-js-sdk v9 API `initializeAppCheck`, and take advantage of its parameters which allow the use of an `AppCheckOptions` argument that itself allows a `CustomProvider`.
@@ -123,6 +146,22 @@ Once you have the custom provider configured, install it in app-check using the 
 
 ```javascript
 firebase.appCheck().initializeAppCheck({ provider: rnfbProvider, isTokenAutoRefreshEnabled: true });
+```
+
+### Verify AppCheck was initialized correctly
+
+After initializing the custom provider, you can verify AppCheck is working by logging a response from the token server:
+
+```javascript
+try {
+  const { token } = await firebase.appCheck().getToken(true);
+
+  if (token.length > 0) {
+    console.log('AppCheck verification passed');
+  }
+} catch (error) {
+  console.log('AppCheck verification failed');
+}
 ```
 
 ## Automatic Data Collection
