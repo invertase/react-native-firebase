@@ -54,7 +54,7 @@ Whilst developing your application with Cloud Functions, it is possible to run t
 To call the emulated functions, call the `useEmulator` method exposed by the library:
 
 ```js
-import { firebase } from '@react-native-firebase/functions';
+import functions from '@react-native-firebase/functions';
 
 // Use a local emulator in development
 if (__DEV__) {
@@ -113,9 +113,6 @@ import { firebase } from '@react-native-firebase/functions';
   
   // Emulator statement 
   firebase.app().functions("region_name").useEmulator('localhost', 5001);
-
-  // definition statement 
-  functions.region("region_name").https.onCall(() => {});
 
   // function calling statement
   firebase.app().functions("region_name").httpsCallable('listProducts')({ abc: 123 }).then();
