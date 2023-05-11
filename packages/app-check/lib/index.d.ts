@@ -140,7 +140,7 @@ export namespace FirebaseAppCheckTypes {
       android?: ReactNativeFirebaseAppCheckProviderAndroidOptions;
       apple?: ReactNativeFirebaseAppCheckProviderAppleOptions;
       isTokenAutoRefreshEnabled?: boolean;
-    }): Promise<void>;
+    }): void;
   }
 
   /**
