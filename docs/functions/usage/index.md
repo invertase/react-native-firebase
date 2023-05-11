@@ -70,7 +70,6 @@ Assuming we have a deployed a callable endpoint named `listProducts`, to call th
 
 ```js
 // Deployed HTTPS callable
-  
 exports.listProducts = functions.https.onCall(() => {
   return [
     /* ... */
