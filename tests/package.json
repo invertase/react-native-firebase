@@ -44,6 +44,7 @@
     "jsonwebtoken": "^9.0.0",
     "metro-react-native-babel-preset": "0.73.4",
     "mocha": "^10.2.0",
+    "node-fetch": "^2.6.7",
     "nyc": "^15.0.1",
     "patch-package": "^6.5.1",
     "pod-install": "^0.1.37",

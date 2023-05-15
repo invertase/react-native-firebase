@@ -5,8 +5,8 @@
   },
   "functions": {
     "predeploy": [
-      "yarn",
-      "yarn --prefix \"$RESOURCE_DIR\" build"
+      "cd functions && yarn",
+      "cd functions && yarn --prefix \"$RESOURCE_DIR\" build"
     ],
     "source": "functions"
   },

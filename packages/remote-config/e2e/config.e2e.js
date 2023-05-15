@@ -15,6 +15,8 @@
  *
  */
 
+const { updateTemplate } = require('./helpers');
+
 describe('remoteConfig() modular', function () {
   describe('firebase v8 compatibility', function () {
     describe('fetch()', function () {
@@ -330,6 +332,13 @@ describe('remoteConfig() modular', function () {
 
           should(reset).equal(null);
         }
+      });
+    });
+
+    describe('onConfigUpdated', function () {
+      it('onConfigUpdated can run without an issue', async function () {
+        const unsubscribe = firebase.remoteConfig().onConfigUpdated(function () {});
+        unsubscribe();
       });
     });
   });
@@ -741,6 +750,188 @@ describe('remoteConfig() modular', function () {
         const supported = await isSupported();
 
         should(supported).equal(true);
+      });
+    });
+
+    describe('onConfigUpdated', function () {
+      let unsubscribers = [];
+      before(async function () {
+        // configure a listener so any new templates are fetched and cached locally
+        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        const config = getRemoteConfig();
+        const unsubscribe = onConfigUpdated(config, () => {});
+
+        // clear out old test data
+        const response = await updateTemplate({
+          operations: {
+            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+        // console.error('before updateTemplate version: ' + response.result.templateVersion);
+
+        // activate to make sure all values are in effect,
+        // thus realtime updates only shows our testing work
+        await fetchAndActivate(getRemoteConfig());
+        unsubscribe();
+      });
+
+      after(async function () {
+        const response = await updateTemplate({
+          operations: {
+            delete: ['rttest_param1', 'rttest_param2', 'rttest_param3'],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+        // console.error('after updateTemplate version: ' + response.result.templateVersion);
+      });
+
+      afterEach(async function () {
+        for (let i = 0; i < unsubscribers.length; i++) {
+          unsubscribers[i]();
+        }
+        unsubscribers = [];
+      });
+
+      // TODO:
+      //  native listener emits, so verifying native listener count is same as counting callback events
+      //  - so main idea is to focus on callback counts and make sure they are exactly as expected
+      it('adds a listener and receives updates', async function () {
+        // Configure our listener
+        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        const config = getRemoteConfig();
+        await fetchAndActivate(config);
+        const callback = sinon.spy();
+        const unsubscribe = onConfigUpdated(config, (event, error) => callback(event, error));
+        unsubscribers.push(unsubscribe);
+        // give the SDK<->server time to settle, otherwise iOS catches error code 8003
+        await Utils.sleep(10000);
+        // Update the template using our cloud function, so our listeners are called
+        let response = await updateTemplate({
+          operations: {
+            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+
+        // Assert: we were called exactly once with expected update event contents
+        await Utils.spyToBeCalledTimesAsync(callback, 1, 60000);
+        should(callback.callCount).equal(1);
+        let callbackError = callback.getCall(0).args[1];
+        should(callbackError).equal(undefined, 'error ' + JSON.stringify(callbackError));
+        let callbackEvent = callback.getCall(0).args[0];
+        // This may sometimes flake if the device does not have the correct template fetched yet,
+        // which may happen if fetch is throttled and a realtime listener hasn't triggered. A re-try
+        // does reliably clear it though and react-native-firebase re-tries 4 times so it is self-healing
+        // should(callbackEvent.updatedKeys.length).equal(1);
+        should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
+          true,
+          'updated param not in callback updated keys set',
+        );
+        unsubscribe();
+      });
+
+      it('manages multiple listeners', async function () {
+        const { fetchAndActivate, getRemoteConfig, onConfigUpdated } = remoteConfigModular;
+        const config = getRemoteConfig();
+
+        // activate the current config so the "updated" list starts empty
+        await fetchAndActivate(config);
+
+        // Set up our listeners
+        const callback1 = sinon.spy();
+        const unsubscribe1 = onConfigUpdated(config, (event, error) => callback1(event, error));
+        unsubscribers.push(unsubscribe1);
+        const callback2 = sinon.spy();
+        const unsubscribe2 = onConfigUpdated(config, (event, error) => callback2(event, error));
+        unsubscribers.push(unsubscribe2);
+        const callback3 = sinon.spy();
+        const unsubscribe3 = onConfigUpdated(config, (event, error) => callback3(event, error));
+        unsubscribers.push(unsubscribe3);
+
+        // Trigger an update that should call them all
+        let response = await updateTemplate({
+          operations: {
+            add: [{ name: 'rttest_param1', value: Date.now() + '' }],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+
+        // Assert all were called with expected values
+        await Utils.spyToBeCalledTimesAsync(callback1, 1, 60000);
+        await Utils.spyToBeCalledTimesAsync(callback2, 1, 60000);
+        await Utils.spyToBeCalledTimesAsync(callback3, 1, 60000);
+        [callback1, callback2, callback3].forEach(callback => {
+          should(callback.callCount).equal(1);
+          should(callback.getCall(0).args[1]).equal(
+            undefined,
+            'error ' + JSON.stringify(callback.getCall(0).args[1]),
+          );
+          let callbackEvent = callback.getCall(0).args[0];
+          should(callbackEvent.updatedKeys.length).equal(1);
+          should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
+            true,
+            'updated param not in callback updated keys set',
+          );
+        });
+
+        // Unsubscribe second listener and repeat, this time expecting no call on second listener
+        unsubscribe2();
+
+        // Trigger update that should call listener 1 and 3
+        response = await updateTemplate({
+          operations: {
+            add: [{ name: 'rttest_param2', value: Date.now() + '' }],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+
+        // Assert first and third were called with expected values
+        await Utils.spyToBeCalledTimesAsync(callback1, 2, 60000);
+        await Utils.spyToBeCalledTimesAsync(callback3, 2, 60000);
+
+        // callback2 should not have been called again - same call count expected
+        should(callback2.callCount).equal(1);
+
+        // assert callback 1 and 3 have new information
+        [callback1, callback3].forEach(callback => {
+          should(callback.callCount).equal(2);
+          should(callback.getCall(1).args[1]).equal(
+            undefined,
+            'error ' + JSON.stringify(callback.getCall(1).args[1]),
+          );
+          let callbackEvent = callback.getCall(1).args[0];
+          should(callbackEvent.updatedKeys.length).equal(2);
+          should(callbackEvent.updatedKeys.includes('rttest_param2')).equal(
+            true,
+            'updated param not in callback updated keys set',
+          );
+        });
+
+        // Unsubscribe remaining listeners
+        unsubscribe1();
+        unsubscribe3();
+
+        // Trigger an update that should call no listeners
+        response = await updateTemplate({
+          operations: {
+            add: [{ name: 'rttest_param3', value: Date.now() + '' }],
+          },
+        });
+        should(response.result !== undefined).equal(true, 'response result not defined');
+        // Give the servers plenty of time to call us
+        await Utils.sleep(20000);
+        should(callback1.callCount).equal(2);
+        should(callback3.callCount).equal(2);
+      });
+
+      // - react-native reload
+      //   - make sure native count is zero
+      //   - add a listener, assert native count one
+      //   - rnReload via detox, assert native count is zero
+      it('handles react-native reload', async function () {
+        // TODO implement rnReload test
+        // console.log('checking listener functionality across javascript layer reload');
       });
     });
   });

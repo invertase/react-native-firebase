@@ -22,6 +22,10 @@
 #import "RNFBConfigModule.h"
 #import "RNFBSharedUtils.h"
 
+static NSString *const ON_CONFIG_UPDATED_EVENT = @"on_config_updated";
+
+static __strong NSMutableDictionary *configUpdateHandlers;
+
 @implementation RNFBConfigModule
 #pragma mark -
 #pragma mark Converters
@@ -64,6 +68,21 @@ NSString *convertFIRRemoteConfigSourceToNSString(FIRRemoteConfigSource value) {
   }
 }
 
+NSString *convertFIRRemoteConfigUpdateErrorToNSString(FIRRemoteConfigUpdateError value) {
+  switch (value) {
+    case FIRRemoteConfigUpdateErrorStreamError:
+      return @"config_update_stream_error";
+    case FIRRemoteConfigUpdateErrorMessageInvalid:
+      return @"config_update_message_invalid";
+    case FIRRemoteConfigUpdateErrorNotFetched:
+      return @"config_update_not_fetched";
+    case FIRRemoteConfigUpdateErrorUnavailable:
+      return @"config_update_unavailable";
+    default:
+      return @"internal";
+  }
+}
+
 NSDictionary *convertFIRRemoteConfigValueToNSDictionary(FIRRemoteConfigValue *value) {
   return @{
     @"value" : (id)value.stringValue ?: [NSNull null],
@@ -82,6 +101,28 @@ RCT_EXPORT_MODULE();
 
 + (BOOL)requiresMainQueueSetup {
   return YES;
+}
+
+- (id)init {
+  self = [super init];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    configUpdateHandlers = [[NSMutableDictionary alloc] init];
+  });
+  return self;
+}
+
+- (void)dealloc {
+  [self invalidate];
+}
+
+- (void)invalidate {
+  for (NSString *key in configUpdateHandlers) {
+    FIRConfigUpdateListenerRegistration *registration = [configUpdateHandlers objectForKey:key];
+    [registration remove];
+  }
+
+  [configUpdateHandlers removeAllObjects];
 }
 
 #pragma mark -
@@ -220,6 +261,47 @@ RCT_EXPORT_METHOD(setDefaultsFromResource
                                         @"code" : @"resource_not_found",
                                         @"message" : @"The specified resource name was not found."
                                       } mutableCopy]];
+  }
+}
+
+RCT_EXPORT_METHOD(onConfigUpdated : (FIRApp *)firebaseApp) {
+  if (![configUpdateHandlers valueForKey:firebaseApp.name]) {
+    FIRConfigUpdateListenerRegistration *newRegistration =
+        [[FIRRemoteConfig remoteConfigWithApp:firebaseApp]
+            addOnConfigUpdateListener:^(FIRRemoteConfigUpdate *_Nonnull configUpdate,
+                                        NSError *_Nullable error) {
+              if (error != nil) {
+                NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+
+                [userInfo setValue:@"error" forKey:@"resultType"];
+                [userInfo setValue:convertFIRRemoteConfigUpdateErrorToNSString(error.code)
+                            forKey:@"code"];
+                [userInfo setValue:error.localizedDescription forKey:@"message"];
+                [userInfo setValue:error.localizedDescription forKey:@"nativeErrorMessage"];
+                [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                              name:ON_CONFIG_UPDATED_EVENT
+                                              body:userInfo];
+                return;
+              }
+
+              NSMutableDictionary *results = [NSMutableDictionary dictionary];
+
+              [results setValue:@"success" forKey:@"resultType"];
+              [results setValue:[configUpdate.updatedKeys allObjects] forKey:@"updatedKeys"];
+
+              [RNFBSharedUtils sendJSEventForApp:firebaseApp
+                                            name:ON_CONFIG_UPDATED_EVENT
+                                            body:results];
+            }];
+
+    configUpdateHandlers[firebaseApp.name] = newRegistration;
+  }
+}
+
+RCT_EXPORT_METHOD(removeConfigUpdateRegistration : (FIRApp *)firebaseApp) {
+  if ([configUpdateHandlers valueForKey:firebaseApp.name]) {
+    [[configUpdateHandlers objectForKey:firebaseApp.name] remove];
+    [configUpdateHandlers removeObjectForKey:firebaseApp.name];
   }
 }
 

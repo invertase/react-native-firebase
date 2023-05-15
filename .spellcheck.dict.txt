@@ -187,6 +187,7 @@ TypeDoc
 UI
 uid
 UIViewController
+Unactivated
 uncomment
 unhandled
 UNNotificationPresentationOptions

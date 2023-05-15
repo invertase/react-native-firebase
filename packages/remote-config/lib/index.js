@@ -53,6 +53,7 @@ export {
   fetch,
   setDefaults,
   setDefaultsFromResource,
+  onConfigUpdated,
 } from './modular/index';
 
 const statics = {
@@ -84,6 +85,7 @@ class FirebaseConfigModule extends FirebaseModule {
     this._lastFetchTime = -1;
     this._values = {};
     this._isWeb = Platform.OS !== 'ios' && Platform.OS !== 'android';
+    this._configUpdateListenerCount = 0;
   }
 
   get defaultConfig() {
@@ -282,6 +284,59 @@ class FirebaseConfigModule extends FirebaseModule {
     return this._promiseWithConstants(this.native.setDefaultsFromResource(resourceName));
   }
 
+  /**
+   * Registers a listener to changes in the configuration.
+   *
+   * @param listenerOrObserver - function called on config change
+   * @returns {function} unsubscribe listener
+   */
+  onConfigUpdated(listenerOrObserver) {
+    const listener = this._parseListener(listenerOrObserver);
+    let unsubscribed = false;
+    const subscription = this.emitter.addListener(
+      this.eventNameForApp('on_config_updated'),
+      event => {
+        const { resultType } = event;
+        if (resultType === 'success') {
+          listener({ updatedKeys: event.updatedKeys }, undefined);
+          return;
+        }
+
+        listener(undefined, {
+          code: event.code,
+          message: event.message,
+          nativeErrorMessage: event.nativeErrorMessage,
+        });
+      },
+    );
+    if (this._configUpdateListenerCount === 0) {
+      this.native.onConfigUpdated();
+    }
+
+    this._configUpdateListenerCount++;
+
+    return () => {
+      if (unsubscribed) {
+        // there is no harm in calling this multiple times to unsubscribe,
+        // but anything after the first call is a no-op
+        return;
+      } else {
+        unsubscribed = true;
+      }
+      subscription.remove();
+      this._configUpdateListenerCount--;
+      if (this._configUpdateListenerCount === 0) {
+        this.native.removeConfigUpdateRegistration();
+      }
+    };
+  }
+
+  _parseListener(listenerOrObserver) {
+    return typeof listenerOrObserver === 'object'
+      ? listenerOrObserver.next.bind(listenerOrObserver)
+      : listenerOrObserver;
+  }
+
   _updateFromConstants(constants) {
     // Wrapped this as we update using sync getters initially for `defaultConfig` & `settings`
     if (constants.lastFetchTime) {
@@ -326,7 +381,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false,
+  nativeEvents: ['on_config_updated'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseConfigModule,
