@@ -10,3 +10,4 @@ export const helloWorld = functions.https.onRequest((request, response) => {
 
 export { testFunctionCustomRegion } from './testFunctionCustomRegion';
 export { testFunctionDefaultRegion } from './testFunctionDefaultRegion';
+export { testFunctionRemoteConfigUpdate } from './testFunctionRemoteConfigUpdate';
