@@ -377,6 +377,17 @@ export namespace FirebaseRemoteConfigTypes {
     setDefaultsFromResource(resourceName: string): Promise<null>;
 
     /**
+     * Start listening for real-time config updates from the Remote Config backend and
+     * automatically fetch updates when they’re available. Note that the list of updated keys
+     * passed to the callback will include all keys not currently active, and the config update
+     * process fetches the new config but does not automatically activate for you. Typically
+     * you will want to activate the config in your callback so the new values are in force.
+     *
+     * @param listener called with either array of updated keys or error arg when config changes
+     */
+    onConfigUpdated(listener: CallbackOrObserver<OnConfigUpdatedListenerCallback>): () => void;
+
+    /**
      * Moves fetched data to the apps active config.
      * Resolves with a boolean value true if new local values were activated
      *
@@ -542,6 +553,17 @@ export const firebase: ReactNativeFirebase.Module & {
     name?: string,
   ): ReactNativeFirebase.FirebaseApp & { remoteConfig(): FirebaseRemoteConfigTypes.Module };
 };
+
+type CallbackOrObserver<T extends (...args: any[]) => any> = T | { next: T };
+
+type OnConfigUpdatedListenerCallback = (
+  event?: { updatedKeys: string[] },
+  error?: {
+    code: string;
+    message: string;
+    nativeErrorMessage: string;
+  },
+) => void;
 
 export default defaultExport;
 
