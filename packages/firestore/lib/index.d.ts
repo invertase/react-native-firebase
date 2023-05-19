@@ -2335,6 +2335,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { firestore(): FirebaseFirestoreTypes.Module };
 };
 
+export const Filter: FilterFunction;
+
 export default defaultExport;
 
 /**
