@@ -216,6 +216,8 @@ export default createModuleNamespace({
   ModuleClass: FirebaseDatabaseModule,
 });
 
+export * from './modular';
+
 // import database, { firebase } from '@react-native-firebase/database';
 // database().X(...);
 // firebase.database().X(...);
