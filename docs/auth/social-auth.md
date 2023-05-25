@@ -121,7 +121,7 @@ async function onFacebookButtonPress() {
     throw 'User cancelled the login process';
   }
 
-  // Once signed in, get the users AccesToken
+  // Once signed in, get the users AccessToken
   const data = await AccessToken.getCurrentAccessToken();
 
   if (!data) {
