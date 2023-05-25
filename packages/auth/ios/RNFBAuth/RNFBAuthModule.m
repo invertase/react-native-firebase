@@ -571,6 +571,50 @@ RCT_EXPORT_METHOD(signInWithCredential
                 }];
 }
 
+RCT_EXPORT_METHOD(signInWithProvider
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  NSString *providerId = provider[@"providerId"];
+  if (providerId == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+  }
+
+  FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  // Add scopes if present
+  if (provider[@"scopes"]) {
+    [builder setScopes:provider[@"scopes"]];
+  }
+  // Add custom parameters if present
+  if (provider[@"parameters"]) {
+      [builder setCustomParameters:provider[@"parameters"]];
+  }
+
+  [provider getCredentialWithUIDelegate:nil
+                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+      return;
+    }
+    if (credential) {
+      [[FIRAuth auth] signInWithCredential:credential
+                                completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+        if (error) {
+          [self promiseRejectAuthException:reject error:error];
+          return;
+        }
+        [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+      }];
+    }
+  }];
+}
+
 RCT_EXPORT_METHOD(confirmPasswordReset
                   : (FIRApp *)firebaseApp
                   : (NSString *)code
@@ -981,6 +1025,57 @@ RCT_EXPORT_METHOD(linkWithCredential
   } else {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
   }
+}
+
+RCT_EXPORT_METHOD(linkWithProvider
+                    : (FIRApp *)firebaseApp
+                    : (NSDictionary *)provider
+                    : (RCTPromiseResolveBlock)resolve
+                    : (RCTPromiseRejectBlock)reject) {
+  NSString *providerId = provider[@"providerId"];
+  if (providerId == nil) {
+    [RNFBSharedUtils rejectPromiseWithUserInfo:reject
+                                      userInfo:(NSMutableDictionary *)@{
+                                        @"code" : @"invalid-credential",
+                                        @"message" : @"The supplied auth credential is malformed, "
+                                                     @"has expired or is not currently supported.",
+                                      }];
+  }
+
+  // Store current user in a variable
+  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  if (user == nil) {
+    [self promiseNoUser:resolve rejecter:reject isError:YES];
+    return;
+  }
+
+  FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  // Add scopes if present
+  if (provider[@"scopes"]) {
+    [builder setScopes:provider[@"scopes"]];
+  }
+  // Add custom parameters if present
+  if (provider[@"parameters"]) {
+      [builder setCustomParameters:provider[@"parameters"]];
+  }
+
+  [provider getCredentialWithUIDelegate:nil
+                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
+    if (error) {
+      [self promiseRejectAuthException:reject error:error];
+      return;
+    }
+    if (credential) {
+        [user linkWithCredential:credential
+            completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
+          if (error) {
+            [self promiseRejectAuthException:reject error:error];
+            return;
+          }
+          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
+        }];
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(unlink
