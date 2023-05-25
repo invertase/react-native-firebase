@@ -96,6 +96,12 @@ export default class User {
       .then(userCredential => this._auth._setUserCredential(userCredential));
   }
 
+  linkWithProvider(provider) {
+    return this._auth.native
+      .linkWithProvider(provider.toObject())
+      .then(userCredential => this._auth._setUserCredential(userCredential));
+  }
+
   reauthenticateWithCredential(credential) {
     return this._auth.native
       .reauthenticateWithCredential(credential.providerId, credential.token, credential.secret)
