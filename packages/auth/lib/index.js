@@ -372,6 +372,12 @@ class FirebaseAuthModule extends FirebaseModule {
     return this.native.revokeToken(authorizationCode);
   }
 
+  signInWithProvider(provider) {
+    return this.native
+      .signInWithProvider(provider.toObject())
+      .then(userCredential => this._setUserCredential(userCredential));
+  }
+
   sendPasswordResetEmail(email, actionCodeSettings = null) {
     return this.native.sendPasswordResetEmail(email, actionCodeSettings);
   }

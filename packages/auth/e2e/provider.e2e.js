@@ -251,6 +251,41 @@ describe('auth() -> Providers', function () {
         });
       });
     });
+
+    describe('OAuth Provider', function () {
+      describe('credential', function () {
+        it('should return a credential object', function () {
+          const idToken = '123456';
+          const accessToken = '654321';
+          const credential = firebase.auth.OAuthProvider.credential(idToken, accessToken);
+          credential.providerId.should.equal('oauth');
+          credential.token.should.equal(idToken);
+          credential.secret.should.equal(accessToken);
+        });
+      });
+
+      describe('PROVIDER_ID', function () {
+        it('should return microsoft', function () {
+          const provider = new firebase.auth.OAuthProvider('microsoft.com');
+          provider.PROVIDER_ID.should.equal('microsoft.com');
+        });
+      });
+
+      describe('provider object', function () {
+        it('should return a credential object with scopes and custom parameters', function () {
+          const provider = new firebase.auth.OAuthProvider('microsoft.com');
+          provider.addScope('profile');
+          provider.addScope('email');
+          provider.setCustomParameters({
+            prompt: 'consent',
+          });
+          provider.toObject().scopes.should.equal(['profile', 'email']);
+          provider.toObject().customParameters.should.equal({
+            prompt: 'consent',
+          });
+        });
+      });
+    });
   });
 
   describe('modular', function () {
@@ -531,7 +566,6 @@ describe('auth() -> Providers', function () {
       describe('constructor', function () {
         it('should throw an unsupported error', function () {
           const { OIDCAuthProvider } = authModular;
-
           (() => new OIDCAuthProvider()).should.throw(
             '`new OIDCAuthProvider()` is not supported on the native Firebase SDKs.',
           );
@@ -550,13 +584,38 @@ describe('auth() -> Providers', function () {
           credential.token.should.equal(token);
           credential.secret.should.equal(secret);
         });
+
+        describe('PROVIDER_ID', function () {
+          it('should return oidc.', function () {
+            const { OIDCAuthProvider } = authModular;
+            OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
+          });
+        });
       });
 
-      describe('PROVIDER_ID', function () {
-        it('should return oidc.', function () {
-          const { OIDCAuthProvider } = authModular;
+      describe('Native OAuth Provider', function () {
+        describe('PROVIDER_ID', function () {
+          it('should return microsoft', function () {
+            const { OAuthProvider } = authModular;
+            const provider = new OAuthProvider('microsoft.com');
+            provider.PROVIDER_ID.should.equal('microsoft.com');
+          });
+        });
 
-          OIDCAuthProvider.PROVIDER_ID.should.equal('oidc.');
+        describe('provider object', function () {
+          it('should return a credential object with scopes and custom parameters', function () {
+            const { OAuthProvider } = authModular;
+            const provider = new OAuthProvider('microsoft.com');
+            provider.addScope('profile');
+            provider.addScope('email');
+            provider.setCustomParameters({
+              prompt: 'consent',
+            });
+            provider.toObject().scopes.should.equal(['profile', 'email']);
+            provider.toObject().customParameters.should.equal({
+              prompt: 'consent',
+            });
+          });
         });
       });
     });

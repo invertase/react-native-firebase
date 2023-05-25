@@ -97,8 +97,10 @@ export namespace FirebaseAuthTypes {
   export interface AuthProvider {
     /**
      * The provider ID of the provider.
+     * @param providerId
      */
-    PROVIDER_ID: string;
+    // eslint-disable-next-line @typescript-eslint/no-misused-new
+    new (providerId: string): AuthProvider;
     /**
      * Creates a new `AuthCredential`.
      *
@@ -107,6 +109,32 @@ export namespace FirebaseAuthTypes {
      * @param secret A provider secret.
      */
     credential: (token: string | null, secret?: string) => AuthCredential;
+    /**
+     * Sets the OAuth custom parameters to pass in an OAuth request for sign-in
+     * operations.
+     *
+     * @remarks
+     * For a detailed list, check the reserved required OAuth 2.0 parameters such as `client_id`,
+     * `redirect_uri`, `scope`, `response_type`, and `state` are not allowed and will be ignored.
+     *
+     * @param customOAuthParameters - The custom OAuth parameters to pass in the OAuth request.
+     */
+    setCustomParameters: (customOAuthParameters: Record<string, string>) => AuthProvider;
+    /**
+     * Retrieve the current list of custom parameters.
+     * @returns The current map of OAuth custom parameters.
+     */
+    getCustomParameters: () => Record<string, string>;
+    /**
+     * Add an OAuth scope to the credential.
+     *
+     * @param scope - Provider OAuth scope to add.
+     */
+    addScope: (scope: string) => AuthProvider;
+    /**
+     * Retrieve the current list of OAuth scopes.
+     */
+    getScopes: () => string[];
   }
 
   /**
@@ -1213,6 +1241,20 @@ export namespace FirebaseAuthTypes {
     linkWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Link the user with a 3rd party credential provider (Microsoft, Yahoo).
+     *
+     * #### Example
+     *
+     * ```js
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * const userCredential = await firebase.auth().currentUser.linkWithProvider(provider);
+     * ```
+     *
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    linkWithProvider(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
      * Re-authenticate a user with a third-party authentication provider.
      *
      * #### Example
@@ -1737,6 +1779,33 @@ export namespace FirebaseAuthTypes {
      * @param authorizationCode A generated authorization code from Sign in with Apple.
      */
     revokeToken(authorizationCode: string): Promise<void>;
+
+    /**
+     * Signs the user in with a federated OAuth provider supported by Firebase (Microsoft, Yahoo).
+     *
+     * From Firebase Docs:
+     * Unlike other OAuth providers supported by Firebase such as Google, Facebook, and Twitter, where
+     * sign-in can directly be achieved with OAuth access token based credentials, Firebase Auth does not
+     * support the same capability for providers such as Microsoft due to the inability of the Firebase Auth
+     * server to verify the audience of Microsoft OAuth access tokens.
+     *
+     * #### Example
+     * ```js
+     * // Generate an OAuth instance
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * // Optionally add scopes to the OAuth instance
+     * provider.addScope('mail.read');
+     * // Optionally add custom parameters to the OAuth instance
+     * provider.setCustomParameters({
+     *  prompt: 'consent',
+     * });
+     * // Sign in using the OAuth provider
+     * const userCredential = await firebase.auth().signInWithProvider(provider);
+     * ```
+     *
+     * @param provider A custom generated OAuth provider credential.
+     */
+    signInWithProvider(provider: AuthProvider): Promise<UserCredential>;
 
     /**
      * Sends a password reset email to the given email address.

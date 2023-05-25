@@ -200,4 +200,5 @@ method:
 - [Facebook Sign-In](/auth/social-auth#facebook).
 - [Twitter Sign-In](/auth/social-auth#twitter).
 - [Google Sign-In](/auth/social-auth#google).
+- [Microsoft Sign-In](/auth/social-auth#microsoft).
 - [Phone Number Sign-In](/auth/phone-auth).
