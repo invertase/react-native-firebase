@@ -328,4 +328,4 @@ Config plugins are only required for React Native Firebase modules, which requir
 
 > Not all React Native Firebase packages have Expo config plugins provided yet. You may see if a module is supported by checking if it contains the `app.plugin.js` file in its package directory.
 >
-> If you're using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) VSCode extension, the IntelliSense will display a list of available plugins, when editing the `plugins` section of `app.json`.
+> If you're using the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) VSCode extension, the IntelliSense will display a list of available plugins, when editing the `plugins` section of `app.json`.
