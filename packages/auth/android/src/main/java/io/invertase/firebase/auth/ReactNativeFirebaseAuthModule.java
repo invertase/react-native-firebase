@@ -1664,12 +1664,12 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       user.startActivityForLinkWithProvider(getCurrentActivity(), builder.build())
           .addOnSuccessListener(
               authResult -> {
-                Log.w(TAG, "signInWithProvider:success");
+                Log.w(TAG, "linkWithProvider:success");
                 promiseWithAuthResult(authResult, promise);
               })
           .addOnFailureListener(
               e -> {
-                Log.w(TAG, "signInWithProvider:failure", e);
+                Log.w(TAG, "linkWithProvider:failure", e);
                 promiseRejectAuthException(promise, e);
               });
     }
