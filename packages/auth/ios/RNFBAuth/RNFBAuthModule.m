@@ -609,6 +609,11 @@ RCT_EXPORT_METHOD(signInWithProvider
           [self promiseRejectAuthException:reject error:error];
           return;
         }
+
+        // NOTE: This variable has NO PURPOSE AT ALL, it is only to keep a strong reference to
+        // the builder variable so it is not deallocated prematurely by ARC.
+        NSString *providerID = builder.providerID;
+
         [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
       }];
     }
@@ -1071,6 +1076,11 @@ RCT_EXPORT_METHOD(linkWithProvider
             [self promiseRejectAuthException:reject error:error];
             return;
           }
+
+          // NOTE: This variable has NO PURPOSE AT ALL, it is only to keep a strong reference to
+          // the builder variable so it is not deallocated prematurely by ARC.
+          NSString *providerID = builder.providerID;
+
           [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
         }];
     }
