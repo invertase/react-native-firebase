@@ -596,7 +596,7 @@ RCT_EXPORT_METHOD(signInWithProvider
       [builder setCustomParameters:provider[@"parameters"]];
   }
 
-  [provider getCredentialWithUIDelegate:nil
+  [builder getCredentialWithUIDelegate:nil
                              completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
@@ -1059,7 +1059,7 @@ RCT_EXPORT_METHOD(linkWithProvider
       [builder setCustomParameters:provider[@"parameters"]];
   }
 
-  [provider getCredentialWithUIDelegate:nil
+  [builder getCredentialWithUIDelegate:nil
                              completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
     if (error) {
       [self promiseRejectAuthException:reject error:error];
