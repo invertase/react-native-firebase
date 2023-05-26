@@ -586,7 +586,7 @@ RCT_EXPORT_METHOD(signInWithProvider
                                       }];
   }
 
-  FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
   // Add scopes if present
   if (provider[@"scopes"]) {
     [builder setScopes:provider[@"scopes"]];
@@ -1042,14 +1042,13 @@ RCT_EXPORT_METHOD(linkWithProvider
                                       }];
   }
 
-  // Store current user in a variable
-  FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
+  __block FIRUser *user = [FIRAuth authWithApp:firebaseApp].currentUser;
   if (user == nil) {
     [self promiseNoUser:resolve rejecter:reject isError:YES];
     return;
   }
 
-  FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
+  __block FIROAuthProvider *builder = [FIROAuthProvider providerWithProviderID:providerId];
   // Add scopes if present
   if (provider[@"scopes"]) {
     [builder setScopes:provider[@"scopes"]];
