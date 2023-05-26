@@ -1286,6 +1286,27 @@ export namespace FirebaseAuthTypes {
     reauthenticateWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Re-authenticate a user with a federated authentication provider (Microsoft, Yahoo)
+     *
+     * #### Example
+     *
+     * ```js
+     * const provider = new firebase.auth.OAuthProvider('microsoft.com');
+     * const userCredential = await firebase.auth().currentUser.reauthenticateWithProvider(provider);
+     * ```
+     *
+     * @error auth/user-mismatch Thrown if the credential given does not correspond to the user.
+     * @error auth/user-not-found Thrown if the credential given does not correspond to any existing user.
+     * @error auth/invalid-credential Thrown if the provider's credential is not valid. This can happen if it has already expired when calling link, or if it used invalid token(s). See the Firebase documentation for your provider, and make sure you pass in the correct parameters to the credential method.
+     * @error auth/invalid-email Thrown if the email used in a auth.EmailAuthProvider.credential is invalid.
+     * @error auth/wrong-password Thrown if the password used in a auth.EmailAuthProvider.credential is not correct or when the user associated with the email does not have a password.
+     * @error auth/invalid-verification-code Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification code of the credential is not valid.
+     * @error auth/invalid-verification-id Thrown if the credential is a auth.PhoneAuthProvider.credential and the verification ID of the credential is not valid.
+     * @param provider A created {@link auth.AuthProvider}.
+     */
+    reauthenticateWithProvider(provider: AuthProvider): Promise<UserCredential>;
+
+    /**
      * Refreshes the current user.
      *
      * #### Example

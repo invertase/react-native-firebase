@@ -1738,6 +1738,85 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     }
   }
 
+  /**
+   * reauthenticateWithProvider
+   *
+   * @param provider
+   * @param promise
+   */
+  @ReactMethod
+  private void reauthenticateWithProvider(String appName, ReadableMap provider, final Promise promise) {
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+
+    if (provider.getString("providerId") == null) {
+      rejectPromiseWithCodeAndMessage(
+          promise,
+          "invalid-credential",
+          "The supplied auth credential is malformed, has expired or is not currently supported.");
+      return;
+    }
+
+    FirebaseUser user = firebaseAuth.getCurrentUser();
+    Log.d(TAG, "reauthenticateWithProvider");
+
+    if (user == null) {
+      promiseNoUser(promise, true);
+      return;
+    }
+
+    OAuthProvider.Builder builder = OAuthProvider.newBuilder(provider.getString("providerId"));
+    // Add scopes if present
+    if (provider.hasKey("scopes")) {
+      ReadableArray scopes = provider.getArray("scopes");
+      if (scopes != null) {
+        List<String> scopeList = new ArrayList<>();
+        for (int i = 0; i < scopes.size(); i++) {
+          String scope = scopes.getString(i);
+          scopeList.add(scope);
+        }
+        builder.setScopes(scopeList);
+      }
+    }
+    // Add custom parameters if present
+    if (provider.hasKey("customParameters")) {
+      ReadableMap customParameters = provider.getMap("customParameters");
+      if (customParameters != null) {
+        ReadableMapKeySetIterator iterator = customParameters.keySetIterator();
+        while (iterator.hasNextKey()) {
+          String key = iterator.nextKey();
+          builder.addCustomParameter(key, customParameters.getString(key));
+        }
+      }
+    }
+    Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
+    if (pendingResultTask != null) {
+      pendingResultTask
+          .addOnSuccessListener(
+              authResult -> {
+                Log.d(TAG, "reauthenticateWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.w(TAG, "reauthenticateWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    } else {
+      user.startActivityForReauthenticateWithProvider(getCurrentActivity(), builder.build())
+          .addOnSuccessListener(
+              authResult -> {
+                Log.w(TAG, "reauthenticateWithProvider:success");
+                promiseWithAuthResult(authResult, promise);
+              })
+          .addOnFailureListener(
+              e -> {
+                Log.w(TAG, "reauthenticateWithProvider:failure", e);
+                promiseRejectAuthException(promise, e);
+              });
+    }
+  }
+
   /** Returns an instance of AuthCredential for the specified provider */
   private AuthCredential getCredentialForProvider(
       String provider, String authToken, String authSecret) {
