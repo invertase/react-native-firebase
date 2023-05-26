@@ -357,7 +357,7 @@ function MicrosoftSignIn() {
 ```js
 import auth from '@react-native-firebase/auth';
 
-const onGoogleButtonPress = async () => {
+const onMicrosoftButtonPress = async () => {
   // Generate the provider object
   const provider = new auth.OAuthProvider('microsoft.com');
   // Optionally add scopes
