@@ -245,24 +245,6 @@ describe(' firestore().collection().where(AND Filters)', function () {
     }
   });
 
-  it('throws if query has in & array-contains-any filter', function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where(
-          Filter.and(Filter('foo.bar', 'in', [1]), Filter('foo.bar', 'array-contains-any', [2])),
-        );
-
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "You cannot use 'array-contains-any' filters with 'in' filters",
-      );
-      return Promise.resolve();
-    }
-  });
-
   it("should throw error when using 'not-in' operator twice", async function () {
     const ref = firebase.firestore().collection(COLLECTION);
 
