@@ -88,3 +88,23 @@ export function setLoggingEnabled(db, enabled) {
 export function setPersistenceCacheSizeBytes(db, bytes) {
   return db.setPersistenceCacheSizeBytes(bytes);
 }
+
+// TODO: check if this function is supported on mobile
+export function forceLongPolling() {
+  throw new Error('Unimplemented');
+}
+
+// TODO: check if this function is supported on mobile
+export function forceWebSockets() {
+  throw new Error('Unimplemented');
+}
+
+/**
+ * @param {Database} db
+ * @returns {Date}
+ */
+export function getServerTime(db) {
+  return db.getServerTime();
+}
+
+export * from './api/query';

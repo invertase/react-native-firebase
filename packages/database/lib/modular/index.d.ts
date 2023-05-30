@@ -189,3 +189,13 @@ export declare function setLoggingEnabled(db: Database, enabled: boolean): void;
  * @param bytes The new size of the cache in bytes.
  */
 export declare function setPersistenceCacheSizeBytes(db: Database, bytes: number): void;
+
+/**
+ * Force the use of longPolling instead of websockets. This will be ignored if websocket protocol is used in databaseURL.
+ */
+export declare function forceLongPolling(): void;
+
+/**
+ * Force the use of websockets instead of longPolling.
+ */
+export declare function forceWebSockets(): void;
