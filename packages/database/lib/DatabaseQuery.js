@@ -411,6 +411,19 @@ export default class DatabaseQuery extends ReferenceBase {
       });
   }
 
+  get() {
+    const modifiers = this._modifiers._copy().toArray();
+
+    return this._database.native
+      .get(this.path, modifiers)
+      .then(result => {
+        return new DatabaseDataSnapshot(this.ref, result);
+      })
+      .catch(error => {
+        return Promise.reject(error);
+      });
+  }
+
   /**
    * @url https://firebase.google.com/docs/reference/js/firebase.database.Query.html#orderbychild
    */
