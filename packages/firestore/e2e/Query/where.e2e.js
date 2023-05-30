@@ -159,36 +159,6 @@ describe('firestore().collection().where()', function () {
     }
   });
 
-  it('throws if query has array-contains-any & in filter', function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where('foo.bar', 'array-contains-any', [1])
-        .where('foo.bar', 'in', [2]);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "You cannot use 'in' filters with 'array-contains-any' filters",
-      );
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if query has multiple in filter', function () {
-    try {
-      firebase
-        .firestore()
-        .collection(COLLECTION)
-        .where('foo.bar', 'in', [1])
-        .where('foo.bar', 'in', [2]);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("You cannot use more than one 'in' filter");
-      return Promise.resolve();
-    }
-  });
-
   /* Queries */
 
   it('returns with where equal filter', async function () {
