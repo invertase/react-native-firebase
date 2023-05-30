@@ -460,4 +460,34 @@ public class ReactNativeFirebaseDatabaseQueryModule extends ReactNativeFirebaseM
     getDatabaseQueryInstance(key, reference, modifiers).query.keepSynced(bool);
     promise.resolve(null);
   }
+
+  /**
+   * ref().get('*')
+   *
+   * @param app
+   * @param dbURL
+   * @param path
+   * @param modifiers
+   * @param promise
+   */
+  @ReactMethod
+  public void get(
+      String app,
+      String dbURL,
+      String path,
+      ReadableArray modifiers,
+      Promise promise) {
+
+    DatabaseReference reference = getDatabaseForApp(app, dbURL).getReference(path);
+
+    getDatabaseQueryInstance(reference, modifiers).query.get().addOnCompleteListener(
+      getTransactionalExecutor(),
+      task -> {
+        if (task.isSuccessful()) {
+          promise.resolve(snapshotToMap(task.getResult()));
+        } else {
+          rejectPromiseWithExceptionMap(promise, task.getException());
+        }
+      });
+  }
 }

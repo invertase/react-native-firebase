@@ -692,6 +692,11 @@ export namespace FirebaseDatabaseTypes {
     ): Promise<DataSnapshot>;
 
     /**
+     * Get the server-value for this query, or return a cached value if not connected.
+     */
+    get(): Promise<DataSnapshot>;
+
+    /**
      * Generates a new `Query` object ordered by the specified child key.
      *
      * Queries can only order by one key at a time. Calling `orderByChild()` multiple times on the same query is an error.
