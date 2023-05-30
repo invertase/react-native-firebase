@@ -68,21 +68,6 @@ When a value is read from the database, the API returns a [`DataSnapshot`](/refe
 
 The snapshot includes information such as whether the reference node exists, it's value or any children the node has and more.
 
-### One-time read
-
-To read the value once, call the `once` method on a reference:
-
-```js
-import database from '@react-native-firebase/database';
-
-database()
-  .ref('/users/123')
-  .once('value')
-  .then(snapshot => {
-    console.log('User data: ', snapshot.val());
-  });
-```
-
 ### Realtime changes
 
 To setup an active listener to react to any changes to the node and it's children, call the `on` method with an event handler:
@@ -120,6 +105,41 @@ function User({ userId }) {
     return () => database().ref(`/users/${userId}`).off('value', onValueChange);
   }, [userId]);
 }
+```
+
+### One-time read
+
+Read data once with get()
+The SDK is designed to manage interactions with database servers whether your app is online or offline.
+
+Generally, you should use the value event techniques described above to read data to get notified of updates to the data from the backend. The listener techniques reduce your usage and billing, and are optimized to give your users the best experience as they go online and offline.
+
+If you need the data only once, you can use get() to get a snapshot of the data from the database. If for any reason get() is unable to return the server value, the client will probe the local storage cache and return an error if the value is still not found.
+
+Unnecessary use of get() can increase use of bandwidth and lead to loss of performance, which can be prevented by using a realtime listener as shown above.
+
+```js
+import database from '@react-native-firebase/database';
+
+database()
+  .ref('/users/123')
+  .get()
+  .then(snapshot => {
+    console.log('User data: ', snapshot.val());
+  });
+```
+
+In some cases you may want the value from the local cache to be returned immediately, instead of checking for an updated value on the server. In those cases you can use once() to get the data from the local disk cache immediately.
+
+```js
+import database from '@react-native-firebase/database';
+
+database()
+  .ref('/users/123')
+  .once('value')
+  .then(snapshot => {
+    console.log('User data: ', snapshot.val());
+  });
 ```
 
 #### Additional events
