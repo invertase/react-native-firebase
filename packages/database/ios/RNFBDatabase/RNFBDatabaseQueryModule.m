@@ -247,6 +247,28 @@ RCT_EXPORT_METHOD(keepSynced
   resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(get
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)dbURL
+                  : (NSString *)path
+                  : (NSArray *)modifiers
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  FIRDatabase *firDatabase = [RNFBDatabaseCommon getDatabaseForApp:firebaseApp dbURL:dbURL];
+  FIRDatabaseReference *firDatabaseReference =
+      [RNFBDatabaseCommon getReferenceForDatabase:firDatabase path:path];
+  RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:firDatabaseReference
+                                                          modifiers:modifiers];
+
+  [databaseQuery.query getDataWithCompletionBlock:^(NSError * _Nullable error, FIRDataSnapshot * _Nonnull snapshot) {
+    if (error != nil) {
+      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+    } else {
+      resolve([RNFBDatabaseCommon snapshotToDictionary:snapshot]);
+    }
+  }];
+}
+
 + (BOOL)requiresMainQueueSetup {
   return YES;
 }
