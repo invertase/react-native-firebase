@@ -1,5 +1,7 @@
 /**
  * @typedef {import('../..').FirebaseDatabaseTypes.Reference} DatabaseReference
+ * @typedef {import('../..').FirebaseDatabaseTypes.DataSnapshot} DataSnapshot
+ * @typedef {import('./query.d').Query} Query
  */
 
 /**
@@ -119,9 +121,37 @@ export function set(ref, value) {
 }
 
 /**
- * @param {import('./query.d').Query} query
- * @returns {Promise<import('../..').FirebaseDatabaseTypes.DataSnapshot>}
+ * @param {DatabaseReference} ref
+ * @param {string | number | null} priority
+ * @returns {Promise<void>}
+ */
+export function setPriority(ref, priority) {
+  return ref.setPriority(priority);
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @param {unknown} value
+ * @param {string | number | null} priority
+ * @returns {Promise<void>}
+ */
+export function setWithPriority(ref, value, priority) {
+  return ref.setWithPriority(value, priority);
+}
+
+/**
+ * @param {Query} query
+ * @returns {DataSnapshot}
  */
 export function get(query) {
   return query.once('value');
+}
+
+/**
+ * @param {DatabaseReference} parent
+ * @param {string} path
+ * @returns {DatabaseReference}
+ */
+export function child(parent, path) {
+  return parent.child(path);
 }

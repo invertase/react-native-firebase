@@ -329,3 +329,60 @@ export function query(query: Query, ...queryConstraints: QueryConstraint[]): Que
  * @returns Resolves when write to server is complete.
  */
 export function set(ref: DatabaseReference, value: unknown): Promise<void>;
+
+/**
+ * Sets a priority for the data at this Database location.
+ *
+ * Applications need not use priority but can order collections by
+ * ordinary properties
+ *
+ * @param ref - The location to write to.
+ * @param priority - The priority to be written (string, number, or null).
+ * @returns Resolves when write to server is complete.
+ */
+export function setPriority(
+  ref: DatabaseReference,
+  priority: string | number | null,
+): Promise<void>;
+
+/**
+ * Writes data the Database location. Like `set()` but also specifies the
+ * priority for that data.
+ *
+ * Applications need not use priority but can order collections by
+ * ordinary properties
+ *
+ * @param ref - The location to write to.
+ * @param value - The value to be written (string, number, boolean, object,
+ *   array, or null).
+ * @param priority - The priority to be written (string, number, or null).
+ * @returns Resolves when write to server is complete.
+ */
+export function setWithPriority(
+  ref: DatabaseReference,
+  value: unknown,
+  priority: string | number | null,
+): Promise<void>;
+
+/**
+ * Gets the most up-to-date result for this query.
+ *
+ * @param query - The query to run.
+ * @returns A `Promise` which resolves to the resulting DataSnapshot if a value is
+ * available, or rejects if the client is unable to return a value (e.g., if the
+ * server is unreachable and there is nothing cached).
+ */
+export function get(query: Query): Promise<DataSnapshot>;
+
+/**
+ * Gets a `Reference` for the location at the specified relative path.
+ *
+ * The relative path can either be a simple child name (for example, "ada") or
+ * a deeper slash-separated path (for example, "ada/name/first").
+ *
+ * @param parent - The parent location.
+ * @param path - A relative path from this location to the desired child
+ *   location.
+ * @returns The specified child location.
+ */
+export function child(parent: DatabaseReference, path: string): DatabaseReference;
