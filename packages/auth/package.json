@@ -24,7 +24,7 @@
     "auth"
   ],
   "dependencies": {
-    "@expo/config-plugins": "^5.0.4",
+    "@expo/config-plugins": "^6.0.2",
     "plist": "^3.0.5"
   },
   "peerDependencies": {
