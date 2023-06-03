@@ -80,6 +80,10 @@
         "type": "android.emulator",
         "device": {
           "avdName": "TestingAVD"
+        },
+        "session": {
+            "server": "ws://localhost:60994",
+            "autoStart": true
         }
       },
       "android.emu.debug.windows": {
