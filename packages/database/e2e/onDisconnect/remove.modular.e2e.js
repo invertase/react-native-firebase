@@ -17,23 +17,23 @@
 
 const { PATH, wipe } = require('../helpers');
 
-const TEST_PATH = `${PATH}/onDisconnectCancel`;
+const TEST_PATH = `${PATH}/onDisconnectRemove`;
 
-describe('database().ref().onDisconnect().cancel()', function () {
+describe('database().ref().onDisconnect().remove()', function () {
   after(async function () {
     await wipe(TEST_PATH);
   });
 
-  afterEach(async function () {
-    // Ensures the db is online before running each test
-    await firebase.database().goOnline();
-  });
-
   describe('v8 compatibility', function () {
+    afterEach(async function () {
+      // Ensures the db is online before running each test
+      await firebase.database().goOnline();
+    });
+
     it('throws if onComplete is not a function', function () {
       const ref = firebase.database().ref(TEST_PATH).onDisconnect();
       try {
-        ref.cancel('foo');
+        ref.remove('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'onComplete' must be a function if provided");
@@ -41,30 +41,24 @@ describe('database().ref().onDisconnect().cancel()', function () {
       }
     });
 
-    it('cancels all previously queued events', async function () {
-      const ref = firebase.database().ref(TEST_PATH);
-
+    xit('removes a node whilst offline', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('removeMe');
       await ref.set('foobar');
-      const value = Date.now();
-
-      await ref.onDisconnect().set(value);
-      await ref.onDisconnect().cancel();
+      await ref.onDisconnect().remove();
       await firebase.database().goOffline();
       await firebase.database().goOnline();
-
       const snapshot = await ref.once('value');
-      snapshot.val().should.eql('foobar');
+      snapshot.exists().should.eql(false);
     });
 
     it('calls back to the onComplete function', async function () {
       const callback = sinon.spy();
-      const ref = firebase.database().ref(TEST_PATH);
+      const ref = firebase.database().ref(TEST_PATH).child('removeMe');
 
       // Set an initial value
       await ref.set('foo');
 
-      await ref.onDisconnect().set('bar');
-      await ref.onDisconnect().cancel(callback);
+      await ref.onDisconnect().remove(callback);
       await firebase.database().goOffline();
       await firebase.database().goOnline();
 
@@ -73,6 +67,14 @@ describe('database().ref().onDisconnect().cancel()', function () {
   });
 
   describe('modular', function () {
+    afterEach(async function () {
+      const { getDatabase, goOnline } = databaseModular;
+      const db = getDatabase();
+
+      // Ensures the db is online before running each test
+      await goOnline(db);
+    });
+
     it('throws if onComplete is not a function', function () {
       const { getDatabase, ref, onDisconnect } = databaseModular;
       const db = getDatabase();
@@ -80,7 +82,7 @@ describe('database().ref().onDisconnect().cancel()', function () {
 
       const disconnect = onDisconnect(dbRef);
       try {
-        disconnect.cancel('foo');
+        disconnect.remove('foo');
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
         error.message.should.containEql("'onComplete' must be a function if provided");
@@ -88,35 +90,32 @@ describe('database().ref().onDisconnect().cancel()', function () {
       }
     });
 
-    it('cancels all previously queued events', async function () {
-      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get } = databaseModular;
+    xit('removes a node whilst offline', async function () {
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, get } = databaseModular;
       const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
+      const childRef = child(dbRef, 'removeMe');
 
-      await dbRef.set('foobar');
-      const value = Date.now();
-
-      await onDisconnect(dbRef).set(value);
-      await onDisconnect(dbRef).cancel();
+      await childRef.set('foobar');
+      await onDisconnect(childRef).remove();
       await goOffline(db);
       await goOnline(db);
-
-      const snapshot = await get(dbRef);
-      snapshot.val().should.eql('foobar');
+      const snapshot = await get(childRef);
+      snapshot.exists().should.eql(false);
     });
 
     it('calls back to the onComplete function', async function () {
-      const { getDatabase, ref, onDisconnect, set, goOffline, goOnline } = databaseModular;
-      const db = getDatabase();
-
       const callback = sinon.spy();
+
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline } = databaseModular;
+      const db = getDatabase();
       const dbRef = ref(db, TEST_PATH);
+      const childRef = child(dbRef, 'removeMe');
 
       // Set an initial value
-      await set(dbRef, 'foo');
+      await childRef.set('foo');
 
-      await onDisconnect(dbRef).set('bar');
-      await onDisconnect(dbRef).cancel(callback);
+      await onDisconnect(childRef).remove(callback);
       await goOffline(db);
       await goOnline(db);
 
