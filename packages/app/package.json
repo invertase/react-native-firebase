@@ -73,7 +73,7 @@
   },
   "sdkVersions": {
     "ios": {
-      "firebase": "10.7.0",
+      "firebase": "10.8.0",
       "iosTarget": "11.0",
       "macosTarget": "10.13"
     },
@@ -81,11 +81,11 @@
       "minSdk": 19,
       "targetSdk": 33,
       "compileSdk": 33,
-      "firebase": "31.4.0",
+      "firebase": "31.5.0",
       "firebaseCrashlyticsGradle": "2.9.2",
       "firebasePerfGradle": "1.4.2",
       "gmsGoogleServicesGradle": "4.3.15",
-      "playServicesAuth": "20.3.0"
+      "playServicesAuth": "20.5.0"
     }
   }
 }
