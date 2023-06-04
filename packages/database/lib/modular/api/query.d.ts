@@ -1,7 +1,12 @@
 import { FirebaseDatabaseTypes } from '../..';
+
 import Query = FirebaseDatabaseTypes.Query;
+import DatabaseReference = FirebaseDatabaseTypes.Reference;
+import OnDisconnect = FirebaseDatabaseTypes.OnDisconnect;
 
 export type Query = Query;
+export type DatabaseReference = DatabaseReference;
+export type OnDisconnect = OnDisconnect;
 
 /** Describes the different query constraints available in this SDK. */
 export type QueryConstraintType =
@@ -386,3 +391,12 @@ export function get(query: Query): Promise<DataSnapshot>;
  * @returns The specified child location.
  */
 export function child(parent: DatabaseReference, path: string): DatabaseReference;
+
+/**
+ * Returns an `OnDisconnect` object - see
+ * {@link https://firebase.google.com/docs/database/web/offline-capabilities | Enabling Offline Capabilities in JavaScript}
+ * for more information on how to use it.
+ *
+ * @param ref - The reference to add OnDisconnect triggers for.
+ */
+export function onDisconnect(ref: DatabaseReference): OnDisconnect;

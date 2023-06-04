@@ -1,7 +1,8 @@
 /**
- * @typedef {import('../..').FirebaseDatabaseTypes.Reference} DatabaseReference
- * @typedef {import('../..').FirebaseDatabaseTypes.DataSnapshot} DataSnapshot
+ * @typedef {import('../..').DatabaseReference} DatabaseReference
+ * @typedef {import('../..').DataSnapshot} DataSnapshot
  * @typedef {import('./query.d').Query} Query
+ * @typedef {import('./query.d').OnDisconnect} OnDisconnect
  */
 
 /**
@@ -154,4 +155,12 @@ export function get(query) {
  */
 export function child(parent, path) {
   return parent.child(path);
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @returns {OnDisconnect}
+ */
+export function onDisconnect(ref) {
+  return ref.onDisconnect();
 }
