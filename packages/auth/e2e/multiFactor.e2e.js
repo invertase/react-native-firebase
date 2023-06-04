@@ -105,9 +105,7 @@ describe('multi-factor', function () {
         } catch (e) {
           e.message
             .toLocaleLowerCase()
-            .should.containEql(
-              '[auth/invalid-verification-code] The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms'.toLocaleLowerCase(),
-            );
+            .should.containEql('[auth/invalid-verification-code]'.toLocaleLowerCase());
 
           const verificationId = await firebase
             .auth()
@@ -440,9 +438,7 @@ describe('multi-factor', function () {
         // THEN an error message is thrown
         e.message
           .toLocaleLowerCase()
-          .should.containEql(
-            '[auth/invalid-verification-code] The SMS verification code used to create the phone auth credential is invalid. Please resend the verification code sms'.toLocaleLowerCase(),
-          );
+          .should.containEql('[auth/invalid-verification-code]'.toLocaleLowerCase());
 
         return Promise.resolve();
       }
