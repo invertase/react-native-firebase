@@ -3,6 +3,9 @@
  * @typedef {import('../..').DataSnapshot} DataSnapshot
  * @typedef {import('./query.d').Query} Query
  * @typedef {import('./query.d').OnDisconnect} OnDisconnect
+ * @typedef {import('./query.d').ListenOptions} ListenOptions
+ * @typedef {import('./query.d').Unsubscribe} Unsubscribe
+ * @typedef {import('./query.d').EventType} EventType
  */
 
 /**
@@ -110,6 +113,57 @@ export function query(query, ...queryConstraints) {
     queryConstraint._apply(query);
   }
   return query;
+}
+
+/**
+ * @param {Query} query
+ * @param {EventType} eventType
+ * @param {(snapshot: DataSnapshot) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+function addEventListener(query, eventType, callback, cancelCallbackOrListenOptions, options) {
+  let cancelCallback = cancelCallbackOrListenOptions;
+
+  if (typeof cancelCallbackOrListenOptions === 'object') {
+    cancelCallback = undefined;
+    options = cancelCallbackOrListenOptions;
+  }
+
+  if (options && options.onlyOnce) {
+    const userCallback = callback;
+    callback = snapshot => {
+      query.off(eventType, callback);
+      return userCallback(snapshot);
+    };
+  }
+
+  query.on(eventType, callback, cancelCallback);
+
+  return () => query.off(eventType, callback);
+}
+
+/**
+ * @param {Query} query
+ * @param {(snapshot: DataSnapshot) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+export function onValue(query, callback, cancelCallbackOrListenOptions, options) {
+  return addEventListener(query, 'value', callback, cancelCallbackOrListenOptions, options);
+}
+
+/**
+ * @param {Query} query
+ * @param {(snapshot: DataSnapshot, previousChildName: string | null) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+export function onChildAdded(query, callback, cancelCallbackOrListenOptions, options) {
+  return addEventListener(query, 'child_added', callback, cancelCallbackOrListenOptions, options);
 }
 
 /**
