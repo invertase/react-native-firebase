@@ -297,12 +297,6 @@ export default class FirestoreQueryModifiers {
           );
         }
 
-        if (this.hasIn) {
-          throw new Error(
-            "Invalid query. You cannot use 'array-contains-any' filters with 'in' filters.",
-          );
-        }
-
         if (this.hasNotIn) {
           throw new Error(
             "Invalid query. You cannot use 'array-contains-any' filters with 'not-in' filters.",
@@ -313,16 +307,6 @@ export default class FirestoreQueryModifiers {
       }
 
       if (filter.operator === OPERATORS.in) {
-        if (this.hasIn) {
-          throw new Error("Invalid query. You cannot use more than one 'in' filter.");
-        }
-
-        if (this.hasArrayContainsAny) {
-          throw new Error(
-            "Invalid query. You cannot use 'in' filters with 'array-contains-any' filters.",
-          );
-        }
-
         if (this.hasNotIn) {
           throw new Error("Invalid query. You cannot use 'in' filters with 'not-in' filters.");
         }
