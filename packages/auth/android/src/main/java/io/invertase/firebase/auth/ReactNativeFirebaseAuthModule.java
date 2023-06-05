@@ -247,6 +247,29 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * Forces application verification to use the web reCAPTCHA flow for Phone Authentication.
+   *
+   * <p>Once this has been called, every call to PhoneAuthProvider#verifyPhoneNumber() will skip the
+   * Play Integrity API verification flow and use the reCAPTCHA flow instead.
+   *
+   * <p>Calling this method a second time will overwrite the previously passed parameter.
+   *
+   * @param appName
+   * @param forceRecaptchaFlow
+   * @param promise
+   */
+  @ReactMethod
+  public void forceRecaptchaFlowForTesting(
+      String appName, boolean forceRecaptchaFlow, Promise promise) {
+    Log.d(TAG, "forceRecaptchaFlowForTesting");
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    FirebaseAuthSettings firebaseAuthSettings = firebaseAuth.getFirebaseAuthSettings();
+    firebaseAuthSettings.forceRecaptchaFlowForTesting(forceRecaptchaFlow);
+    promise.resolve(null);
+  }
+
+  /**
    * The phone number and SMS code here must have been configured in the Firebase Console
    * (Authentication > Sign In Method > Phone).
    *

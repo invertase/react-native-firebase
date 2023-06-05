@@ -1021,6 +1021,20 @@ export namespace FirebaseAuthTypes {
    */
   export interface AuthSettings {
     /**
+     * Forces application verification to use the web reCAPTCHA flow for Phone Authentication.
+     *
+     * Once this has been called, every call to PhoneAuthProvider#verifyPhoneNumber() will skip the Play Integrity API verification flow and use the reCAPTCHA flow instead.
+     *
+     * <p>Calling this method a second time will overwrite the previously passed parameter.
+     *
+     * @android
+     * @param appName
+     * @param forceRecaptchaFlow
+     * @param promise
+     */
+    forceRecaptchaFlowForTesting: boolean;
+
+    /**
      * Flag to disable app verification for the purpose of testing phone authentication. For this property to take effect, it needs to be set before rendering a reCAPTCHA app verifier. When this is disabled, a mock reCAPTCHA is rendered instead. This is useful for manual testing during development or for automated integration tests.
      *
      * > In order to use this feature, you will need to [whitelist your phone number](https://firebase.google.com/docs/auth/web/phone-auth#test-with-whitelisted-phone-numbers) via the Firebase Console.
