@@ -106,16 +106,14 @@ function App() {
 
 ## Region-specific Functions
 
-If you need to deploy Functions in a region other than the default one, modified statements need to be used. 
+If you need to deploy Functions in a region other than the default one, modified statements need to be used.
 
 ```javascript
 import { firebase } from '@react-native-firebase/functions';
-  
-  // Emulator statement 
-  firebase.app().functions("region_name").useEmulator('localhost', 5001);
 
-  // function calling statement
-  firebase.app().functions("region_name").httpsCallable('listProducts')({ abc: 123 }).then();
+// Emulator statement
+firebase.app().functions('region_name').useEmulator('localhost', 5001);
+
+// function calling statement
+firebase.app().functions('region_name').httpsCallable('listProducts')({ abc: 123 }).then();
 ```
-
-
