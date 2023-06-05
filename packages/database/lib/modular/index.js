@@ -1,10 +1,10 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import("..").FirebaseApp} FirebaseApp
  * @typedef {import("..").FirebaseDatabaseTypes.Module} Database
  */
 
-// TODO: figure out what to do with `url`
 /**
  * @param {FirebaseApp?} app - The FirebaseApp instance that the returned Realtime Database instance is associated with.
  * @param {string?} url
@@ -12,10 +12,10 @@ import { firebase } from '..';
  */
 export function getDatabase(app, url) {
   if (app) {
-    return firebase.app(app.name).database();
+    return firebase.app(app.name).database(url);
   }
 
-  return firebase.app().database();
+  return firebase.app().database(url);
 }
 
 /**
