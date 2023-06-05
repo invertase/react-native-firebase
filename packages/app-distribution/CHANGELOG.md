@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.0.0](https://github.com/invertase/react-native-firebase/compare/v17.5.0...v18.0.0) (2023-06-05)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdks:** firebase-ios-sdk 10.8.0 and higher require Xcode 13.3+,
+  which transitively requires macOS 12.0+. You must update your CI build environments
+  to meet these minimums as well as your development environments - if you have older
+  hardware that still works but cannot be upgraded normally, you may like:
+  https://dortania.github.io/OpenCore-Legacy-Patcher/
+
+### Features
+
+- **app, sdks:** ios-sdk 10.8.0 requires Xcode 13.3+; android-sdk 31.5.0 ([86dc4d5](https://github.com/invertase/react-native-firebase/commit/86dc4d5d08a4cc7c788b057b5411ccdeb413e13e))
+
 ## [17.5.0](https://github.com/invertase/react-native-firebase/compare/v17.4.3...v17.5.0) (2023-05-11)
 
 **Note:** Version bump only for package @react-native-firebase/app-distribution

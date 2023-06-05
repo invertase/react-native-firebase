@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.0.0](https://github.com/invertase/react-native-firebase/compare/v17.5.0...v18.0.0) (2023-06-05)
+
+### ⚠ BREAKING CHANGES
+
+- **app, sdk:** this version of the underlying firebase-ios-sdk has
+  a minimum Xcode requirement of 14.1 which transitively implies a macOS
+  minimum version of 12.5
+- **app, sdk:** the "safetyNet" provider for App Check has been removed
+  from the underlying firebase-android-sdk and we have removed it here. You
+  should upgrade to the "playIntegrity" provider for App Check
+
+### Features
+
+- **app, sdk:** android-sdk v32 - app-check safetyNet provider is removed ([a0e76ec](https://github.com/invertase/react-native-firebase/commit/a0e76ecab65c69a19055a84bc19c069482b1bc88))
+- **app, sdk:** ios-sdk 10.10.0, requires Xcode 14.1+ / macOS 12.5+ ([3122918](https://github.com/invertase/react-native-firebase/commit/3122918c19c27696caf51f30caafdcaa76807db8))
+
+### Bug Fixes
+
+- **firestore, types:** add types for Filter constraints on Queries ([#7124](https://github.com/invertase/react-native-firebase/issues/7124)) ([0785d27](https://github.com/invertase/react-native-firebase/commit/0785d276669b9c875951d4527e8884c9014e48fe))
+- **firestore:** Allow queries with combined in and array-contains-any ([#7142](https://github.com/invertase/react-native-firebase/issues/7142)) ([8da6951](https://github.com/invertase/react-native-firebase/commit/8da69519b3dd516a67976a490434f8f9c12a426e))
+
 ## [17.5.0](https://github.com/invertase/react-native-firebase/compare/v17.4.3...v17.5.0) (2023-05-11)
 
 ### Features
