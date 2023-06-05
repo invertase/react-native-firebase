@@ -33,7 +33,6 @@ import FirestoreCollectionReference from './FirestoreCollectionReference';
 import FirestoreDocumentReference from './FirestoreDocumentReference';
 import FirestorePath from './FirestorePath';
 import FirestoreQuery from './FirestoreQuery';
-export { Filter } from './FirestoreFilter';
 import FirestoreQueryModifiers from './FirestoreQueryModifiers';
 import FirestoreStatics from './FirestoreStatics';
 import FirestoreTransactionHandler from './FirestoreTransactionHandler';

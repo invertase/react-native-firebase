@@ -2066,6 +2066,11 @@ export namespace FirebaseFirestoreTypes {
     Timestamp: typeof Timestamp;
 
     /**
+     * Returns the `Filter` function.
+     */
+    Filter: typeof Filter;
+
+    /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in
      * `firebase.firestore().settings()`.
      */
