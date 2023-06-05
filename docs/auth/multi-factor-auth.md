@@ -142,7 +142,7 @@ authInstance
   .catch(error => {
     const { code } = error;
     // Make sure to check if multi factor authentication is required
-    if (code !== 'auth/multi-factor-auth-required') {
+    if (code === 'auth/multi-factor-auth-required') {
       const resolver = auth.getMultiFactorResolver(error);
 
       if (resolver.hints.length > 1) {
