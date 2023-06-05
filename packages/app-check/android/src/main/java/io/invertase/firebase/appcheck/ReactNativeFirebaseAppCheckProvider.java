@@ -27,7 +27,6 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.appcheck.debug.InternalDebugSecretProvider;
 import com.google.firebase.appcheck.debug.internal.DebugAppCheckProvider;
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
-import com.google.firebase.appcheck.safetynet.SafetyNetAppCheckProviderFactory;
 import com.google.firebase.inject.Provider;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -85,10 +84,6 @@ public class ReactNativeFirebaseAppCheckProvider implements AppCheckProvider {
         } else {
           delegateProvider = DebugAppCheckProviderFactory.getInstance().create(app);
         }
-      }
-
-      if ("safetyNet".equals(providerName)) {
-        delegateProvider = SafetyNetAppCheckProviderFactory.getInstance().create(app);
       }
 
       if ("playIntegrity".equals(providerName)) {

@@ -105,7 +105,7 @@ class FirebaseAppCheckModule extends FirebaseModule {
     rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
     rnfbProvider.configure({
       android: {
-        provider: 'safetyNet',
+        provider: 'playIntegrity',
       },
       apple: {
         provider: 'deviceCheck',
