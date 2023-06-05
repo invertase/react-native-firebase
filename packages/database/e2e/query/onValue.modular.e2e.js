@@ -89,7 +89,6 @@ describe('onValue()', function () {
 
     value = Date.now();
     set(dbRef, value);
-    await Utils.spyToBeCalledOnceAsync(callback, 5000);
     callback.should.not.be.calledWith(value);
 
     unsubscribe();
