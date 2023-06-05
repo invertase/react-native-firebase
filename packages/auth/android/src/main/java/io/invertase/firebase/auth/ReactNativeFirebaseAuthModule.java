@@ -248,9 +248,10 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
 
   /**
    * Forces application verification to use the web reCAPTCHA flow for Phone Authentication.
-   * 
-   * Once this has been called, every call to PhoneAuthProvider#verifyPhoneNumber() will skip the Play Integrity API verification flow and use the reCAPTCHA flow instead.
-   * 
+   *
+   * <p>Once this has been called, every call to PhoneAuthProvider#verifyPhoneNumber() will skip the
+   * Play Integrity API verification flow and use the reCAPTCHA flow instead.
+   *
    * <p>Calling this method a second time will overwrite the previously passed parameter.
    *
    * @param appName

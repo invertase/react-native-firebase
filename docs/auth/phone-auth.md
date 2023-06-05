@@ -29,7 +29,7 @@ For reliable automated testing, you may want to disable both automatic and fallb
 
 Ensure that all parts of step 1 and 2 from [the official firebase Android phone auth docs](https://firebase.google.com/docs/auth/android/phone-auth#enable-phone-number-sign-in-for-your-firebase-project) have been followed.
 
-To bypass Play Integrity for manual testing, you may [force Recaptcha to be used](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling [verifyPhoneNumber](https://rnfirebase.io/reference/auth/phoneauthprovider#verifyPhoneNumber).
+To bypass Play Integrity for manual testing, you may [force reCAPTCHA to be used](https://rnfirebase.io/reference/auth/authsettings#appVerificationDisabledForTesting) prior to calling [`verifyPhoneNumber`](https://rnfirebase.io/reference/auth/phoneauthprovider#verifyPhoneNumber).
 
 # Expo Setup
 
