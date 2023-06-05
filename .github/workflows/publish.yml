@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 16
       - name: Yarn Install
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
           retry_wait_seconds: 60
