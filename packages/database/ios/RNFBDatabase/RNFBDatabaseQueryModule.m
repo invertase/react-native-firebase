@@ -260,13 +260,14 @@ RCT_EXPORT_METHOD(get
   RNFBDatabaseQuery *databaseQuery = [self getDatabaseQueryInstance:firDatabaseReference
                                                           modifiers:modifiers];
 
-  [databaseQuery.query getDataWithCompletionBlock:^(NSError * _Nullable error, FIRDataSnapshot * _Nonnull snapshot) {
-    if (error != nil) {
-      [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
-    } else {
-      resolve([RNFBDatabaseCommon snapshotToDictionary:snapshot]);
-    }
-  }];
+  [databaseQuery.query
+      getDataWithCompletionBlock:^(NSError *_Nullable error, FIRDataSnapshot *_Nonnull snapshot) {
+        if (error != nil) {
+          [RNFBDatabaseCommon promiseRejectDatabaseException:reject error:error];
+        } else {
+          resolve([RNFBDatabaseCommon snapshotToDictionary:snapshot]);
+        }
+      }];
 }
 
 + (BOOL)requiresMainQueueSetup {
