@@ -130,7 +130,7 @@ Once successfully signed in, any [`onAuthStateChanged`](#listening-to-authentica
 with the [`User`](/reference/auth/user) details.
 
 In case any errors occur, the module provides support for identifying what specifically went wrong by attaching a code
-to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#error-codes_9).
+to the error. For a full list of error codes available, view the [Firebase documentation](https://firebase.google.com/docs/reference/js/auth.md#autherrorcodes).
 
 ## Email/Password sign-in
 
