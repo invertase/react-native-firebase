@@ -41,11 +41,8 @@ describe('firestore().namedQuery()', function () {
     snapshot.docs[0].metadata.fromCache.should.eql(true);
   });
 
-  it('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
-    // TODO: log upstream issue - this broke with BoM >= 32.0.0, source always appears to be cache now
-    if (device.getPlatform() === 'android') {
-      this.skip();
-    }
+  // TODO: log upstream issue - this broke with BoM >= 32.0.0, source always appears to be cache now
+  xit('returns QuerySnapshot from firestore backend when omitting "source: cache"', async function () {
     const docRef = firebase.firestore().collection(BUNDLE_COLLECTION).doc();
     await docRef.set({ number: 4 });
 
