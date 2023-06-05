@@ -216,7 +216,7 @@ jobs:
 
       - name: Detox Tests
         uses: reactivecircus/android-emulator-runner@v2
-        timeout-minutes: 40
+        timeout-minutes: 60
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: TestingAVD
