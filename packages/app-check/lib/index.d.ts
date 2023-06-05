@@ -121,9 +121,9 @@ export namespace FirebaseAppCheckTypes {
   export interface ReactNativeFirebaseAppCheckProviderAndroidOptions
     extends ReactNativeFirebaseAppCheckProviderOptions {
     /**
-     * The android provider to use, either `safetyNet` or `playIntegrity`. default is `playIntegrity`, `safetyNet` is deprecated.
+     * The android provider to use, either `debug` or `playIntegrity`. default is `playIntegrity`.
      */
-    provider?: 'debug' | 'safetyNet' | 'playIntegrity';
+    provider?: 'debug' | 'playIntegrity';
   }
 
   export interface ReactNativeFirebaseAppCheckProvider extends AppCheckProvider {
@@ -212,14 +212,14 @@ export namespace FirebaseAppCheckTypes {
      * Activate App Check
      * On iOS App Check is activated with DeviceCheck provider simply by including the module, using the token auto refresh default or
      * the specific value (if configured) in firebase.json, but calling this does no harm.
-     * On Android you must call this and it will install the SafetyNet provider in release builds, the Debug provider if debuggable.
+     * On Android if you call this it will install the PlayIntegrity provider in release builds, the Debug provider if debuggable.
      * On both platforms you may use this method to alter the token refresh setting after startup.
      * On iOS if you want to set a specific AppCheckProviderFactory (for instance to FIRAppCheckDebugProviderFactory or
      * FIRAppAttestProvider) you must manually do that in your AppDelegate.m prior to calling [FIRApp configure]
      *
      * @deprecated use initializeAppCheck to gain access to all platform providers and firebase-js-sdk v9 compatibility
      * @param siteKeyOrProvider - This is ignored, Android uses DebugProviderFactory if the app is debuggable (https://firebase.google.com/docs/app-check/android/debug-provider)
-     *                            Android uses SafetyNetProviderFactory for release builds.
+     *                            Android uses PlayIntegrityProviderFactory for release builds.
      *                            iOS uses DeviceCheckProviderFactory by default unless altered in AppDelegate.m manually
      * @param isTokenAutoRefreshEnabled - If true, enables SDK to automatically
      * refresh AppCheck token as needed. If undefined, the value will default

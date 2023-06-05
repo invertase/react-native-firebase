@@ -90,7 +90,6 @@ dependencies {
   api appProject
   implementation platform("com.google.firebase:firebase-bom:${ReactNative.ext.getVersion('firebase', 'bom')}")
   implementation 'com.google.firebase:firebase-appcheck-playintegrity'
-  implementation "com.google.firebase:firebase-appcheck-safetynet"
   implementation "com.google.firebase:firebase-appcheck-debug"
 }
 
