@@ -1395,6 +1395,24 @@ export namespace FirebaseFirestoreTypes {
      * @param value The comparison value.
      */
     where(fieldPath: keyof T | FieldPath, opStr: WhereFilterOp, value: any): Query<T>;
+
+    /**
+     * Creates and returns a new Query with the additional filter that documents must contain the specified field and
+     * the value should satisfy the relation constraint provided.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Get all users who's age is 30 or above
+     * const querySnapshot = await firebase.firestore()
+     *   .collection('users')
+     *   .where(Filter('age', '>=', 30));
+     *   .get();
+     * ```
+     *
+     * @param filter The filter to apply to the query.
+     */
+    where(filter: QueryFilterConstraint | QueryCompositeFilterConstraint): Query<T>;
   }
 
   /**
@@ -2048,6 +2066,11 @@ export namespace FirebaseFirestoreTypes {
     Timestamp: typeof Timestamp;
 
     /**
+     * Returns the `Filter` function.
+     */
+    Filter: typeof Filter;
+
+    /**
      * Used to set the cache size to unlimited when passing to `cacheSizeBytes` in
      * `firebase.firestore().settings()`.
      */
@@ -2316,6 +2339,8 @@ export const firebase: ReactNativeFirebase.Module & {
     name?: string,
   ): ReactNativeFirebase.FirebaseApp & { firestore(): FirebaseFirestoreTypes.Module };
 };
+
+export const Filter: FilterFunction;
 
 export default defaultExport;
 
