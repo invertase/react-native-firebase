@@ -20,7 +20,19 @@ import { isAndroid } from '@react-native-firebase/app/lib/common';
 export default class Settings {
   constructor(auth) {
     this._auth = auth;
+    this._forceRecaptchaFlowForTesting = false;
     this._appVerificationDisabledForTesting = false;
+  }
+
+  get forceRecaptchaFlowForTesting() {
+    return this._forceRecaptchaFlowForTesting;
+  }
+
+  set forceRecaptchaFlowForTesting(forceRecaptchaFlow) {
+    if (isAndroid) {
+      this._forceRecaptchaFlowForTesting = forceRecaptchaFlow;
+      this._auth.native.forceRecaptchaFlowForTesting(forceRecaptchaFlow);
+    }
   }
 
   get appVerificationDisabledForTesting() {
