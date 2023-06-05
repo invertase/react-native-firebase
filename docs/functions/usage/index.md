@@ -89,7 +89,7 @@ function App() {
 
   useEffect(() => {
     functions()
-      .httpsCallable('listProducts')({ abc: 123 })
+      .httpsCallable('listProducts')()
       .then(response => {
         setProducts(response.data);
         setLoading(false);
