@@ -147,7 +147,7 @@ function addEventListener(query, eventType, callback, cancelCallbackOrListenOpti
 /**
  * @param {Query} query
  * @param {(snapshot: DataSnapshot) => unknown} callback
- * @param {((error: Error) => unknown) | ListenOptions} cancelCallbackOrListenOptions
+ * @param {((error: Error) => unknown) | ListenOptions | undefined} cancelCallbackOrListenOptions
  * @param {ListenOptions?} options
  * @returns {Unsubscribe}
  */
@@ -158,12 +158,23 @@ export function onValue(query, callback, cancelCallbackOrListenOptions, options)
 /**
  * @param {Query} query
  * @param {(snapshot: DataSnapshot, previousChildName: string | null) => unknown} callback
- * @param {((error: Error) => unknown) | ListenOptions} cancelCallbackOrListenOptions
+ * @param {((error: Error) => unknown) | ListenOptions | undefined} cancelCallbackOrListenOptions
  * @param {ListenOptions?} options
  * @returns {Unsubscribe}
  */
 export function onChildAdded(query, callback, cancelCallbackOrListenOptions, options) {
   return addEventListener(query, 'child_added', callback, cancelCallbackOrListenOptions, options);
+}
+
+/**
+ * @param {Query} query
+ * @param {(snapshot: DataSnapshot, previousChildName: string | null) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions | undefined} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+export function onChildChanged(query, callback, cancelCallbackOrListenOptions, options) {
+  return addEventListener(query, 'child_changed', callback, cancelCallbackOrListenOptions, options);
 }
 
 /**
