@@ -41,14 +41,14 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Lint
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 10
@@ -77,7 +77,7 @@ jobs:
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
@@ -108,14 +108,14 @@ jobs:
           key: ${{ runner.os }}-yarn-with-website-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-with-website-v1
       - name: Yarn Install
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
       - name: Yarn Install (Website)
-        uses: nick-invision/retry@v2
+        uses: nick-fields/retry@v2
         with:
           timeout_minutes: 3
           retry_wait_seconds: 30
