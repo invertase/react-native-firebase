@@ -190,6 +190,17 @@ export function onChildMoved(query, callback, cancelCallbackOrListenOptions, opt
 }
 
 /**
+ * @param {Query} query
+ * @param {(snapshot: DataSnapshot, previousChildName: string | null) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions | undefined} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+export function onChildRemoved(query, callback, cancelCallbackOrListenOptions, options) {
+  return addEventListener(query, 'child_removed', callback, cancelCallbackOrListenOptions, options);
+}
+
+/**
  * @param {DatabaseReference} ref
  * @param {unknown} value
  * @returns {Promise<void>}
@@ -223,6 +234,14 @@ export function setWithPriority(ref, value, priority) {
  */
 export function get(query) {
   return query.once('value');
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @returns {Promise<void>}
+ */
+export function remove(ref) {
+  return ref.remove();
 }
 
 /**

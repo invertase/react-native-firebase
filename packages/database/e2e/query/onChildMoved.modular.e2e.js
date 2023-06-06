@@ -31,7 +31,6 @@ describe('onChildMoved', function () {
     const { getDatabase, ref, query, orderByChild, set, child, onChildMoved } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
     const orderedRef = query(dbRef, orderByChild('nuggets'));
-    // const orderedRef = dbRef.orderByChild('nuggets');
 
     const callback = sinon.spy();
 
