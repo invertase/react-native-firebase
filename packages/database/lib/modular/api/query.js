@@ -14,11 +14,11 @@
 export class QueryConstraint {
   constructor(type, ...args) {
     this._type = type;
-    this.args = args;
+    this._args = args;
   }
 
   _apply(query) {
-    query[this.type].apply(query, ...args);
+    return query[this._type].apply(query, this._args);
   }
 }
 
@@ -104,15 +104,16 @@ export function equalTo(value, key) {
 }
 
 /**
- * @param {import('./query.d').Query} query
+ * @param {Query} query
  * @param {QueryConstraint[]} queryConstraints
- * @returns {import('./query.d').Query}
+ * @returns {Query}
  */
 export function query(query, ...queryConstraints) {
+  let q = query;
   for (const queryConstraint of queryConstraints) {
-    queryConstraint._apply(query);
+    q = queryConstraint._apply(q);
   }
-  return query;
+  return q;
 }
 
 /**
@@ -175,6 +176,17 @@ export function onChildAdded(query, callback, cancelCallbackOrListenOptions, opt
  */
 export function onChildChanged(query, callback, cancelCallbackOrListenOptions, options) {
   return addEventListener(query, 'child_changed', callback, cancelCallbackOrListenOptions, options);
+}
+
+/**
+ * @param {Query} query
+ * @param {(snapshot: DataSnapshot, previousChildName: string | null) => unknown} callback
+ * @param {((error: Error) => unknown) | ListenOptions | undefined} cancelCallbackOrListenOptions
+ * @param {ListenOptions?} options
+ * @returns {Unsubscribe}
+ */
+export function onChildMoved(query, callback, cancelCallbackOrListenOptions, options) {
+  return addEventListener(query, 'child_moved', callback, cancelCallbackOrListenOptions, options);
 }
 
 /**
