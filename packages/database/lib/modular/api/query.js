@@ -1,17 +1,20 @@
 /**
  * @typedef {import('../..').DatabaseReference} DatabaseReference
  * @typedef {import('../..').DataSnapshot} DataSnapshot
- * @typedef {import('./query.d').Query} Query
- * @typedef {import('./query.d').OnDisconnect} OnDisconnect
- * @typedef {import('./query.d').ListenOptions} ListenOptions
- * @typedef {import('./query.d').Unsubscribe} Unsubscribe
- * @typedef {import('./query.d').EventType} EventType
+ * @typedef {import('./query').QueryConstraint} IQueryConstraint
+ * @typedef {import('./query').Query} Query
+ * @typedef {import('./query').OnDisconnect} OnDisconnect
+ * @typedef {import('./query').ListenOptions} ListenOptions
+ * @typedef {import('./query').Unsubscribe} Unsubscribe
+ * @typedef {import('./query').EventType} EventType
  */
 
+import { DatabaseReference } from './query';
+
 /**
- * @implements {import('./query').QueryConstraint}
+ * @implements {IQueryConstraint}
  */
-export class QueryConstraint {
+class QueryConstraint {
   constructor(type, ...args) {
     this._type = type;
     this._args = args;
@@ -259,4 +262,13 @@ export function child(parent, path) {
  */
 export function onDisconnect(ref) {
   return ref.onDisconnect();
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @param {boolean} value
+ * @returns {Promise<void>}
+ */
+export function keepSynced(ref, value) {
+  return ref.keepSynced(value);
 }

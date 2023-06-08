@@ -44,7 +44,7 @@ export interface ListenOptions {
  */
 export interface QueryConstraint {
   /** The type of this query constraints */
-  readonly type: QueryConstraintType;
+  readonly _type: QueryConstraintType;
 
   _apply(query: Query): Query;
 }
@@ -938,3 +938,19 @@ export function child(parent: DatabaseReference, path: string): DatabaseReferenc
  * @param ref - The reference to add OnDisconnect triggers for.
  */
 export function onDisconnect(ref: DatabaseReference): OnDisconnect;
+
+/**
+ * By calling `keepSynced(true)` on a location, the data for that location will automatically
+ * be downloaded and kept in sync, even when no listeners are attached for that location.
+ *
+ * #### Example
+ *
+ * ```js
+ * const dbRef = ref(getDatabase(), 'users');
+ * await keepSynced(dbRef, true);
+ * ```
+ *
+ * @param ref A location to keep synchronized.
+ * @param bool  Pass `true` to keep this location synchronized, pass `false` to stop synchronization.
+ */
+export function keepSynced(ref: DatabaseReference, bool: boolean): Promise<void>;

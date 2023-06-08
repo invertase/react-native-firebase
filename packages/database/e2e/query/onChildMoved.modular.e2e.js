@@ -60,7 +60,8 @@ describe('onChildMoved', function () {
   });
 
   it('subscribe to child moved events', async function () {
-    const { getDatabase, ref, query, orderByChild, onChildMoved, set, child } = databaseModular;
+    const { getDatabase, ref, query, orderByChild, onChildMoved, set, child, get } =
+      databaseModular;
 
     const callback = sinon.spy();
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
