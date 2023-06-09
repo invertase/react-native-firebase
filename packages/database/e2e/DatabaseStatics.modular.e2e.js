@@ -20,11 +20,11 @@ const { PATH, wipe } = require('./helpers');
 const TEST_PATH = `${PATH}/statics`;
 
 describe('database.X', function () {
-  after(function () {
-    return wipe(TEST_PATH);
-  });
-
   describe('v8 compatibility', function () {
+    after(function () {
+      return wipe(TEST_PATH);
+    });
+
     describe('ServerValue.TIMESTAMP', function () {
       it('returns a valid object', function () {
         const { TIMESTAMP } = firebase.database.ServerValue;
@@ -68,6 +68,10 @@ describe('database.X', function () {
   });
 
   describe('modular', function () {
+    after(function () {
+      return wipe(TEST_PATH);
+    });
+
     describe('serverTimestamp', function () {
       it('returns a valid object', function () {
         const { serverTimestamp } = databaseModular;
