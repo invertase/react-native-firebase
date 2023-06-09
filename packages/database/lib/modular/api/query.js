@@ -10,6 +10,8 @@
  * @typedef {import('./query').ThenableReference} ThenableReference
  */
 
+import { DatabaseReference } from './query';
+
 /**
  * @implements {IQueryConstraint}
  */
@@ -279,4 +281,13 @@ export function push(parent, value) {
  */
 export function remove(ref) {
   return ref.remove();
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @param {object} values
+ * @returns {Promise<void>}
+ */
+export function update(ref, values) {
+  return ref.update(values);
 }
