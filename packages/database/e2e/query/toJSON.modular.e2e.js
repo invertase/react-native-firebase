@@ -25,7 +25,7 @@ describe('database().ref().toJSON()', function () {
   });
 
   describe('modular', function () {
-    it.only('returns a string version of the current query path', async function () {
+    it('returns a string version of the current query path', async function () {
       const { getDatabase, ref } = databaseModular;
 
       const db = getDatabase();
