@@ -296,7 +296,8 @@ describe('database().ref().transaction()', function () {
       }
     });
 
-    it('sets a value if one does not exist', async function () {
+    // FIXME runs in isolation but not in suite. Crashes on iOS, and gets stuck on Android.
+    xit('sets a value if one does not exist', async function () {
       const { getDatabase, ref, runTransaction } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionCreate`);
