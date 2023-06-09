@@ -206,7 +206,7 @@ describe('database().ref().onDisconnect().update()', function () {
     });
 
     it('calls back to the onComplete function', async function () {
-      const { getDatabase, ref, onDisconnect, set, goOffline, goOnline } = databaseModular;
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline } = databaseModular;
       const db = getDatabase();
 
       const callback = sinon.spy();

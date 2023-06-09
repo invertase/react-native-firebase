@@ -130,6 +130,28 @@ export declare function equalTo(
 ): QueryConstraint;
 
 /**
+ * Creates a `QueryConstraint` that includes children that match the specified
+ * value.
+ *
+ * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
+ * allows you to choose arbitrary starting and ending points for your queries.
+ *
+ * The optional key argument can be used to further limit the range of the
+ * query. If it is specified, then children that have exactly the specified
+ * value must also have exactly the specified key as their key name. This can be
+ * used to filter result sets with many matches for the same value.
+ *
+ * @param value - The value to match for. The argument type depends on which
+ * `orderBy*()` function was used in this query. Specify a value that matches
+ * the `orderBy*()` type. When used in combination with `orderByKey()`, the
+ * value must be a string.
+ * @param key - The child key to start at, among the children with the
+ * previously specified priority. This argument is only allowed if ordering by
+ * child, value, or priority.
+ */
+export function equalTo(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
  * Creates a QueryConstraint with the specified starting point.
  *
  * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
@@ -152,26 +174,6 @@ export declare function startAt(
   value?: number | string | boolean | null,
   key?: string,
 ): QueryConstraint;
-
-/**
- * Creates a `QueryConstraint` with the specified starting point (exclusive).
- *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The starting point is exclusive. If only a value is provided, children
- * with a value greater than the specified value will be included in the query.
- * If a key is specified, then children must have a value greater than or equal
- * to the specified value and a a key name greater than the specified key.
- *
- * @param value - The value to start after. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to start after. This argument is only allowed if
- * ordering by child, value, or priority.
- */
-export function startAfter(value: number | string | boolean | null, key?: string): QueryConstraint;
 
 /**
  * Creates a `QueryConstraint` with the specified starting point.
@@ -207,6 +209,26 @@ export function startAt(
  * with a value greater than the specified value will be included in the query.
  * If a key is specified, then children must have a value greater than or equal
  * to the specified value and a a key name greater than the specified key.
+ *
+ * @param value - The value to start after. The argument type depends on which
+ * `orderBy*()` function was used in this query. Specify a value that matches
+ * the `orderBy*()` type. When used in combination with `orderByKey()`, the
+ * value must be a string.
+ * @param key - The child key to start after. This argument is only allowed if
+ * ordering by child, value, or priority.
+ */
+export function startAfter(value: number | string | boolean | null, key?: string): QueryConstraint;
+
+/**
+ * Creates a `QueryConstraint` with the specified starting point (exclusive).
+ *
+ * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
+ * allows you to choose arbitrary starting and ending points for your queries.
+ *
+ * The starting point is exclusive. If only a value is provided, children
+ * with a value greater than the specified value will be included in the query.
+ * If a key is specified, then children must have a value greater than or equal
+ * to the specified value and a key name greater than the specified key.
  *
  * @param value - The value to start after. The argument type depends on which
  * `orderBy*()` function was used in this query. Specify a value that matches
@@ -287,28 +309,6 @@ export function orderByPriority(): QueryConstraint;
  * boolean), you can order the results by their (ascending) values.
  */
 export function orderByValue(): QueryConstraint;
-
-/**
- * Creates a `QueryConstraint` that includes children that match the specified
- * value.
- *
- * Using `startAt()`, `startAfter()`, `endBefore()`, `endAt()` and `equalTo()`
- * allows you to choose arbitrary starting and ending points for your queries.
- *
- * The optional key argument can be used to further limit the range of the
- * query. If it is specified, then children that have exactly the specified
- * value must also have exactly the specified key as their key name. This can be
- * used to filter result sets with many matches for the same value.
- *
- * @param value - The value to match for. The argument type depends on which
- * `orderBy*()` function was used in this query. Specify a value that matches
- * the `orderBy*()` type. When used in combination with `orderByKey()`, the
- * value must be a string.
- * @param key - The child key to start at, among the children with the
- * previously specified priority. This argument is only allowed if ordering by
- * child, value, or priority.
- */
-export function equalTo(value: number | string | boolean | null, key?: string): QueryConstraint;
 
 /**
  * Creates a new immutable instance of `Query` that is extended to also include

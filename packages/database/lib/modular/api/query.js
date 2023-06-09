@@ -10,8 +10,6 @@
  * @typedef {import('./query').ThenableReference} ThenableReference
  */
 
-import { DatabaseReference } from './query';
-
 /**
  * @implements {IQueryConstraint}
  */
