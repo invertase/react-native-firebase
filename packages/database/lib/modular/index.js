@@ -107,4 +107,20 @@ export function getServerTime(db) {
   return db.getServerTime();
 }
 
+/**
+ * @returns {object}
+ */
+export function serverTimestamp() {
+  return firebase.database.ServerValue.TIMESTAMP;
+}
+
+/**
+ * @param {number} delta
+ * @returns {object}
+ */
+export function increment(delta) {
+  return firebase.database.ServerValue.increment(delta);
+}
+
 export * from './api/query';
+export * from './api/transaction';
