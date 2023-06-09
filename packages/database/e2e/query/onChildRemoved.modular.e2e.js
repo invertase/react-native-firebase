@@ -35,7 +35,7 @@ describe('onChildRemoved', function () {
 
     const callback = sinon.spy();
 
-    const unsubscribe = onChildRemoved(
+    onChildRemoved(
       dbRef,
       $ => {
         callback($.val());
@@ -46,8 +46,6 @@ describe('onChildRemoved', function () {
     await remove(childRef);
     await Utils.spyToBeCalledTimesAsync(callback, 1);
     callback.should.be.calledWith('foo');
-
-    unsubscribe();
   });
 
   it('subscribe to child removed events', async function () {
@@ -56,7 +54,7 @@ describe('onChildRemoved', function () {
     const successCallback = sinon.spy();
     const cancelCallback = sinon.spy();
 
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved`);
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved2`);
     const childRef = child(dbRef, 'removeme');
     await set(childRef, 'foo');
 

@@ -33,7 +33,7 @@ describe('onChildAdded', function () {
 
     const callback = sinon.spy();
 
-    const unsubscribe = onChildAdded(
+    onChildAdded(
       dbRef,
       $ => {
         callback($.val());
@@ -47,8 +47,6 @@ describe('onChildAdded', function () {
 
     set(child(dbRef, 'child1'), 'bar');
     callback.should.not.be.calledWith('bar');
-
-    unsubscribe();
   });
 
   // FIXME super flaky on android emulator
@@ -58,7 +56,7 @@ describe('onChildAdded', function () {
     if (device.getPlatform() === 'ios') {
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();
-      const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded2`);
 
       const unsubscribe = onChildAdded(
         dbRef,

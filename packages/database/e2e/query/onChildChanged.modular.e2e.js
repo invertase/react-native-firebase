@@ -28,14 +28,14 @@ describe('onChildChanged', function () {
   });
 
   // FIXME: Utils.spyToBeCalledOnceAsync timesout
-  xit('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+  it.only('should stop listening if ListeningOptions.onlyOnce is true', async function () {
     const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
     await set(child(dbRef, 'changeme'), 'foo');
 
     const callback = sinon.spy();
 
-    const unsubscribe = onChildChanged(
+    onChildChanged(
       dbRef,
       $ => {
         callback($.val());
@@ -49,8 +49,6 @@ describe('onChildChanged', function () {
 
     await set(child(dbRef, 'changeme'), 'baz');
     callback.should.not.be.calledWith('baz');
-
-    unsubscribe();
   });
 
   // FIXME super flaky on android emulator
@@ -61,7 +59,7 @@ describe('onChildChanged', function () {
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();
 
-      const dbRef = ref(getDatabase(), `${TEST_PATH}/childChanged`);
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/childChanged2`);
       const refChild = child(dbRef, 'changeme');
       await set(refChild, 'foo');
 

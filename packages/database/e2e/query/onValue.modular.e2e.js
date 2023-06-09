@@ -74,7 +74,7 @@ describe('onValue()', function () {
 
     const callback = sinon.spy();
 
-    const unsubscribe = onValue(
+    onValue(
       dbRef,
       $ => {
         callback($.val());
@@ -90,8 +90,6 @@ describe('onValue()', function () {
     value = Date.now();
     set(dbRef, value);
     callback.should.not.be.calledWith(value);
-
-    unsubscribe();
   });
 
   xit('should callback multiple times when the value changes', async function () {

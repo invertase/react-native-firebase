@@ -42,7 +42,7 @@ describe('onChildMoved', function () {
       greg: { nuggets: 52 },
     };
 
-    const unsubscribe = onChildMoved(
+    onChildMoved(
       orderedRef,
       $ => {
         callback($.val());
@@ -55,15 +55,13 @@ describe('onChildMoved', function () {
     await set(child(dbRef, 'rob/nuggets'), 61);
     await Utils.spyToBeCalledTimesAsync(callback, 1);
     callback.should.be.calledWith({ nuggets: 57 });
-
-    unsubscribe();
   });
 
-  xit('subscribe to child moved events', async function () {
+  it('subscribe to child moved events', async function () {
     const { getDatabase, ref, query, orderByChild, onChildMoved, set, child } = databaseModular;
 
     const callback = sinon.spy();
-    const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
+    const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved2`);
     const orderedRef = query(dbRef, orderByChild('nuggets'));
 
     const initial = {
