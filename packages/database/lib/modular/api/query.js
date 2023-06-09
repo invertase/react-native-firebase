@@ -7,9 +7,8 @@
  * @typedef {import('./query').ListenOptions} ListenOptions
  * @typedef {import('./query').Unsubscribe} Unsubscribe
  * @typedef {import('./query').EventType} EventType
+ * @typedef {import('./query').ThenableReference} ThenableReference
  */
-
-import { DatabaseReference } from './query';
 
 /**
  * @implements {IQueryConstraint}
@@ -271,4 +270,13 @@ export function onDisconnect(ref) {
  */
 export function keepSynced(ref, value) {
   return ref.keepSynced(value);
+}
+
+/**
+ * @param {DatabaseReference} parent
+ * @param {unknown} value
+ * @returns {ThenableReference}
+ */
+export function push(parent, value) {
+  return parent.push(value);
 }
