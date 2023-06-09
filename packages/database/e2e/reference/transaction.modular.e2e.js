@@ -242,8 +242,7 @@ describe('database().ref().transaction()', function () {
     });
 
     // FIXME this test works in isolation but not running in the suite?
-    // FIXME Make xit
-    it('updates the value via a transaction', async function () {
+    xit('updates the value via a transaction', async function () {
       const { getDatabase, set, ref, runTransaction } = databaseModular;
 
       const dbRef = ref(getDatabase(), `${TEST_PATH}/transactionUpdate`);
