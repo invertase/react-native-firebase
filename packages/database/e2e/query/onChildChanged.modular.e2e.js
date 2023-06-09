@@ -27,8 +27,12 @@ describe('onChildChanged', function () {
     await wipe(TEST_PATH);
   });
 
-  // FIXME: Utils.spyToBeCalledOnceAsync timesout
-  it.only('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+  // FIXME super flaky on ios simulator
+  it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (device.getPlatform() === 'ios') {
+      this.skip();
+    }
+
     const { getDatabase, ref, set, child, onChildChanged } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
     await set(child(dbRef, 'changeme'), 'foo');

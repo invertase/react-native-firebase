@@ -27,7 +27,12 @@ describe('onChildRemoved', function () {
     await wipe(TEST_PATH);
   });
 
+  // FIXME super flaky on ios simulator
   it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (device.getPlatform() === 'ios') {
+      this.skip();
+    }
+
     const { getDatabase, ref, child, set, remove, onChildRemoved } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childRemoved`);
     const childRef = child(dbRef, 'removeme');

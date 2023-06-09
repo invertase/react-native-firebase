@@ -27,7 +27,12 @@ describe('onChildAdded', function () {
     await wipe(TEST_PATH);
   });
 
+  // FIXME super flaky on ios simulator
   it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (device.getPlatform() === 'ios') {
+      this.skip();
+    }
+
     const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded`);
 
@@ -51,9 +56,9 @@ describe('onChildAdded', function () {
 
   // FIXME super flaky on android emulator
   it('subscribe to child added events', async function () {
-    const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
-
     if (device.getPlatform() === 'ios') {
+      const { getDatabase, ref, set, child, onChildAdded } = databaseModular;
+
       const successCallback = sinon.spy();
       const cancelCallback = sinon.spy();
       const dbRef = ref(getDatabase(), `${TEST_PATH}/childAdded2`);

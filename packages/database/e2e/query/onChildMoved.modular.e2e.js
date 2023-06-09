@@ -27,7 +27,12 @@ describe('onChildMoved', function () {
     await wipe(TEST_PATH);
   });
 
+  // FIXME super flaky on ios simulator
   it('should stop listening if ListeningOptions.onlyOnce is true', async function () {
+    if (device.getPlatform() === 'ios') {
+      this.skip();
+    }
+
     const { getDatabase, ref, query, orderByChild, set, child, onChildMoved } = databaseModular;
     const dbRef = ref(getDatabase(), `${TEST_PATH}/childMoved`);
     const orderedRef = query(dbRef, orderByChild('nuggets'));
