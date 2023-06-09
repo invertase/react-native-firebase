@@ -909,22 +909,6 @@ export function setWithPriority(
 export function get(query: Query): Promise<DataSnapshot>;
 
 /**
- * Removes the data at this Database location.
- *
- * Any data at child locations will also be deleted.
- *
- * The effect of the remove will be visible immediately and the corresponding
- * event 'value' will be triggered. Synchronization of the remove to the
- * Firebase servers will also be started, and the returned Promise will resolve
- * when complete. If provided, the onComplete callback will be called
- * asynchronously after synchronization has finished.
- *
- * @param ref - The location to remove.
- * @returns Resolves when remove on server is complete.
- */
-export function remove(ref: DatabaseReference): Promise<void>;
-
-/**
  * Gets a `Reference` for the location at the specified relative path.
  *
  * The relative path can either be a simple child name (for example, "ada") or
@@ -986,3 +970,19 @@ export function keepSynced(ref: DatabaseReference, bool: boolean): Promise<void>
  * but can be used immediately as the `Reference` to the child location.
  */
 export function push(parent: DatabaseReference, value?: unknown): ThenableReference;
+
+/**
+ * Removes the data at this Database location.
+ *
+ * Any data at child locations will also be deleted.
+ *
+ * The effect of the remove will be visible immediately and the corresponding
+ * event 'value' will be triggered. Synchronization of the remove to the
+ * Firebase servers will also be started, and the returned Promise will resolve
+ * when complete. If provided, the onComplete callback will be called
+ * asynchronously after synchronization has finished.
+ *
+ * @param ref - The location to remove.
+ * @returns Resolves when remove on server is complete.
+ */
+export function remove(ref: DatabaseReference): Promise<void>;

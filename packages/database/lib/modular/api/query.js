@@ -239,14 +239,6 @@ export function get(query) {
 }
 
 /**
- * @param {DatabaseReference} ref
- * @returns {Promise<void>}
- */
-export function remove(ref) {
-  return ref.remove();
-}
-
-/**
  * @param {DatabaseReference} parent
  * @param {string} path
  * @returns {DatabaseReference}
@@ -279,4 +271,12 @@ export function keepSynced(ref, value) {
  */
 export function push(parent, value) {
   return parent.push(value);
+}
+
+/**
+ * @param {DatabaseReference} ref
+ * @returns {Promise<void>}
+ */
+export function remove(ref) {
+  return ref.remove();
 }
