@@ -35,16 +35,6 @@ describe('database()', function () {
       });
     });
 
-    it('supports custom database URL', async function () {
-      firebase.database().app.name.should.eql('[DEFAULT]');
-
-      firebase
-        .database(firebase.app('secondaryFromNative'))
-        .app.name.should.eql('secondaryFromNative');
-
-      firebase.app('secondaryFromNative').database().app.name.should.eql('secondaryFromNative');
-    });
-
     describe('ref()', function () {
       it('throws if path is not a string', async function () {
         try {
@@ -217,7 +207,7 @@ describe('database()', function () {
         const { getDatabase } = databaseModular;
 
         const app = firebase.app();
-        const database = getDatabase();
+        const database = getDatabase(app);
         should.exist(app.database);
         database.app.should.eql(app);
       });
@@ -233,21 +223,6 @@ describe('database()', function () {
 
         firebase.app('secondaryFromNative').database().app.name.should.eql('secondaryFromNative');
       });
-    });
-
-    it.skip('supports custom database URL', async function () {
-      // FIXME: the v8 API doesn't seem to have a URL argument
-      throw new Error('Incomplete test');
-
-      // Below is the v8 test, which has nothing to do with custom database URLs
-
-      // firebase.database().app.name.should.eql('[DEFAULT]');
-
-      // firebase
-      //   .database(firebase.app('secondaryFromNative'))
-      //   .app.name.should.eql('secondaryFromNative');
-
-      // firebase.app('secondaryFromNative').database().app.name.should.eql('secondaryFromNative');
     });
 
     describe('ref()', function () {

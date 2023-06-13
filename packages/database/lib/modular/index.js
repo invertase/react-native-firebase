@@ -89,14 +89,12 @@ export function setPersistenceCacheSizeBytes(db, bytes) {
   return db.setPersistenceCacheSizeBytes(bytes);
 }
 
-// TODO: check if this function is supported on mobile
 export function forceLongPolling() {
-  throw new Error('Unimplemented');
+  throw new Error('forceLongPolling() is not implemented');
 }
 
-// TODO: check if this function is supported on mobile
 export function forceWebSockets() {
-  throw new Error('Unimplemented');
+  throw new Error('forceWebSockets() is not implemented');
 }
 
 /**
@@ -122,5 +120,5 @@ export function increment(delta) {
   return firebase.database.ServerValue.increment(delta);
 }
 
-export * from './api/query';
-export * from './api/transaction';
+export * from './query';
+export * from './transaction';
