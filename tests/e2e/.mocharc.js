@@ -8,7 +8,6 @@ module.exports = {
   retries: 4,
   bail: true,
   exit: true,
-  recursive: true,
   require: 'node_modules/jet/platform/node',
   spec: [
     '../packages/app/e2e/**/*.e2e.js',

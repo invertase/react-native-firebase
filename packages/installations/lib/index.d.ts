@@ -89,7 +89,7 @@ export namespace FirebaseInstallationsTypes {
      * stable, URL-safe base64 string identifier that uniquely identifies the app instance.
      * NOTE: If the application already has an existing FirebaseInstanceID then the InstanceID identifier will be used.
      *
-     * @return Firebase Installation ID, this is a url-safe base64 string of a 128-bit integer.
+     * @return Firebase Installation ID, this is an url-safe base64 string of a 128-bit integer.
      */
     getId(): Promise<string>;
 
@@ -109,7 +109,7 @@ export namespace FirebaseInstallationsTypes {
      * Deletes the Firebase Installation and all associated data from the Firebase backend.
      * This call may cause Firebase Cloud Messaging, Firebase Remote Config, Firebase Predictions,
      * or Firebase In-App Messaging to not function properly. Fetching a new installations ID should
-     * reset all of the dependent services to a stable state again. A network connection is required
+     * reset all the dependent services to a stable state again. A network connection is required
      * for the method to succeed. If it fails, the existing installation data remains untouched.
      */
     delete(): Promise<void>;
@@ -117,7 +117,7 @@ export namespace FirebaseInstallationsTypes {
     /**
      * TODO implement id change listener for android.
      *
-     * Sets a new callback that will get called when Installlation ID changes.
+     * Sets a new callback that will get called when Installation ID changes.
      * Returns an unsubscribe function that will remove the callback when called.
      * Only the Android SDK supports sending ID change events.
      *
@@ -139,6 +139,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { installations(): FirebaseInstallationsTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**
@@ -147,12 +149,14 @@ export default defaultExport;
 declare module '@react-native-firebase/app' {
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStaticsAndApp = ReactNativeFirebase.FirebaseModuleWithStaticsAndApp;
+
     interface Module {
       installations: FirebaseModuleWithStaticsAndApp<
         FirebaseInstallationsTypes.Module,
         FirebaseInstallationsTypes.Statics
       >;
     }
+
     interface FirebaseApp {
       installations(): FirebaseInstallationsTypes.Module;
     }

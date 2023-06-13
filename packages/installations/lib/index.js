@@ -77,3 +77,5 @@ export default createModuleNamespace({
 // installations().X(...);
 // firebase.installations().X(...);
 export const firebase = getFirebaseRoot();
+
+export * from './modular';
