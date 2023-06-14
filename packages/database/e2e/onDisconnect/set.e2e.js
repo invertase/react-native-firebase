@@ -24,57 +24,131 @@ describe('database().ref().onDisconnect().set()', function () {
     await wipe(TEST_PATH);
   });
 
-  afterEach(async function () {
-    // Ensures the db is online before running each test
-    await firebase.database().goOnline();
+  describe('v8 compatibility', function () {
+    afterEach(async function () {
+      // Ensures the db is online before running each test
+      await firebase.database().goOnline();
+    });
+
+    it('throws if value is not a defined', function () {
+      const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+      try {
+        ref.set();
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'value' must be defined");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if onComplete is not a function', function () {
+      const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+      try {
+        ref.set(null, 'foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
+
+    xit('sets value when disconnected', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+
+      const value = Date.now();
+
+      await ref.onDisconnect().set(value);
+      await firebase.database().goOffline();
+      await firebase.database().goOnline();
+
+      const snapshot = await ref.once('value');
+      snapshot.val().should.eql(value);
+    });
+
+    it('calls back to the onComplete function', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH);
+
+      // Set an initial value
+      await ref.set('foo');
+
+      await ref.onDisconnect().set('bar', callback);
+      await firebase.database().goOffline();
+      await firebase.database().goOnline();
+
+      callback.should.be.calledOnce();
+    });
   });
 
-  it('throws if value is not a defined', function () {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
-    try {
-      ref.set();
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'value' must be defined");
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    afterEach(async function () {
+      const { getDatabase, goOnline } = databaseModular;
+      const db = getDatabase();
 
-  it('throws if onComplete is not a function', function () {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
-    try {
-      ref.set(null, 'foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'onComplete' must be a function if provided");
-      return Promise.resolve();
-    }
-  });
+      // Ensures the db is online before running each test
+      await goOnline(db);
+    });
 
-  xit('sets value when disconnected', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
+    it('throws if value is not a defined', function () {
+      const { getDatabase, ref, onDisconnect } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
 
-    const value = Date.now();
+      const disconnect = onDisconnect(dbRef);
+      try {
+        disconnect.set();
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'value' must be defined");
+        return Promise.resolve();
+      }
+    });
 
-    await ref.onDisconnect().set(value);
-    await firebase.database().goOffline();
-    await firebase.database().goOnline();
+    it('throws if onComplete is not a function', function () {
+      const { getDatabase, ref, onDisconnect } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
 
-    const snapshot = await ref.once('value');
-    snapshot.val().should.eql(value);
-  });
+      const disconnect = onDisconnect(dbRef);
+      try {
+        disconnect.set(null, 'foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
 
-  it('calls back to the onComplete function', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH);
+    xit('sets value when disconnected', async function () {
+      const { getDatabase, ref, onDisconnect, goOffline, goOnline, get } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
 
-    // Set an initial value
-    await ref.set('foo');
+      const value = Date.now();
 
-    await ref.onDisconnect().set('bar', callback);
-    await firebase.database().goOffline();
-    await firebase.database().goOnline();
+      await onDisconnect(dbRef).set(value);
+      await goOffline(db);
+      await goOnline(db);
 
-    callback.should.be.calledOnce();
+      const snapshot = await get(dbRef);
+      snapshot.val().should.eql(value);
+    });
+
+    it('calls back to the onComplete function', async function () {
+      const { getDatabase, ref, onDisconnect, set, goOnline, goOffline } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
+
+      const callback = sinon.spy();
+
+      // Set an initial value
+      await set(dbRef, 'foo');
+
+      await onDisconnect(dbRef).set('bar', callback);
+      await goOffline(db);
+      await goOnline(db);
+
+      callback.should.be.calledOnce();
+    });
   });
 });

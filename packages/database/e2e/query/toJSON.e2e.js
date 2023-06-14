@@ -16,9 +16,22 @@
  */
 
 describe('database().ref().toJSON()', function () {
-  it('returns a string version of the current query path', async function () {
-    const res = firebase.database().ref('foo/bar/baz').toJSON();
-    const expected = `${firebase.database()._customUrlOrRegion}/foo/bar/baz`;
-    should.equal(res, expected);
+  describe('v8 compatibility', function () {
+    it('returns a string version of the current query path', async function () {
+      const res = firebase.database().ref('foo/bar/baz').toJSON();
+      const expected = `${firebase.database()._customUrlOrRegion}/foo/bar/baz`;
+      should.equal(res, expected);
+    });
+  });
+
+  describe('modular', function () {
+    it('returns a string version of the current query path', async function () {
+      const { getDatabase, ref } = databaseModular;
+
+      const db = getDatabase();
+      const res = ref(db, 'foo/bar/baz').toJSON();
+      const expected = `${db._customUrlOrRegion}/foo/bar/baz`;
+      should.equal(res, expected);
+    });
   });
 });

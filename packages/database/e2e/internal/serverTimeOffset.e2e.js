@@ -16,9 +16,21 @@
  */
 
 describe("database().ref('.info/serverTimeOffset')", function () {
-  it('returns a valid number value', async function () {
-    const snapshot = await firebase.database().ref('.info/serverTimeOffset').once('value');
+  describe('v8 compatibility', function () {
+    it('returns a valid number value', async function () {
+      const snapshot = await firebase.database().ref('.info/serverTimeOffset').once('value');
 
-    should.equal(typeof snapshot.val(), 'number');
+      should.equal(typeof snapshot.val(), 'number');
+    });
+  });
+
+  describe('modular', function () {
+    it('returns a valid number value', async function () {
+      const { getDatabase, ref, get } = databaseModular;
+
+      const snapshot = await get(ref(getDatabase(), '.info/serverTimeOffset'));
+
+      should.equal(typeof snapshot.val(), 'number');
+    });
   });
 });

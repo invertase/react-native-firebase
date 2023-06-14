@@ -27,63 +27,151 @@ describe('database().ref().limitToLast()', function () {
     await wipe(TEST_PATH);
   });
 
-  it('throws if limit is invalid', async function () {
-    try {
-      await firebase.database().ref().limitToLast('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'limit' must be a positive integer value");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if limit is invalid', async function () {
+      try {
+        await firebase.database().ref().limitToLast('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limit' must be a positive integer value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if limit has already been set', async function () {
+      try {
+        await firebase.database().ref().limitToFirst(3).limitToLast(2);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'Limit was already set (by another call to limitToFirst, or limitToLast)',
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a limited array data set', async function () {
+      const ref = firebase.database().ref(`${TEST_PATH}`);
+
+      const initial = {
+        0: 'foo',
+        1: 'bar',
+        2: 'baz',
+      };
+
+      await ref.set(initial);
+
+      return ref
+        .limitToLast(2)
+        .once('value')
+        .then(snapshot => {
+          snapshot.val().should.eql(jet.contextify([null, 'bar', 'baz']));
+          return Promise.resolve();
+        });
+    });
+
+    it('returns a limited object data set', async function () {
+      const ref = firebase.database().ref(`${TEST_PATH}`);
+
+      const initial = {
+        a: 'foo',
+        b: 'bar',
+        c: 'baz',
+      };
+
+      await ref.set(initial);
+
+      return ref
+        .limitToLast(2)
+        .once('value')
+        .then(snapshot => {
+          snapshot.val().should.eql(
+            jet.contextify({
+              b: 'bar',
+              c: 'baz',
+            }),
+          );
+          return Promise.resolve();
+        });
+    });
+
+    it('returns a null value when not possible to limit', async function () {
+      const ref = firebase.database().ref(`${TEST_PATH}`);
+
+      const initial = 'foo';
+
+      await ref.set(initial);
+
+      return ref
+        .limitToFirst(2)
+        .once('value')
+        .then(snapshot => {
+          should.equal(snapshot.val(), null);
+          return Promise.resolve();
+        });
+    });
   });
 
-  it('throws if limit has already been set', async function () {
-    try {
-      await firebase.database().ref().limitToFirst(3).limitToLast(2);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        'Limit was already set (by another call to limitToFirst, or limitToLast)',
-      );
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('throws if limit is invalid', async function () {
+      const { getDatabase, ref, limitToLast, query } = databaseModular;
 
-  it('returns a limited array data set', async function () {
-    const ref = firebase.database().ref(`${TEST_PATH}`);
+      try {
+        query(ref(getDatabase()), limitToLast('foo'));
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'limit' must be a positive integer value");
+        return Promise.resolve();
+      }
+    });
 
-    const initial = {
-      0: 'foo',
-      1: 'bar',
-      2: 'baz',
-    };
+    it('throws if limit has already been set', async function () {
+      const { getDatabase, ref, limitToLast, limitToFirst, query } = databaseModular;
 
-    await ref.set(initial);
+      try {
+        query(ref(getDatabase()), limitToFirst(3), limitToLast(2));
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          'Limit was already set (by another call to limitToFirst, or limitToLast)',
+        );
+        return Promise.resolve();
+      }
+    });
 
-    return ref
-      .limitToLast(2)
-      .once('value')
-      .then(snapshot => {
+    it('returns a limited array data set', async function () {
+      const { getDatabase, ref, set, get, limitToLast, query } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${TEST_PATH}`);
+
+      const initial = {
+        0: 'foo',
+        1: 'bar',
+        2: 'baz',
+      };
+
+      await set(dbRef, initial);
+
+      return get(query(dbRef, limitToLast(2))).then(snapshot => {
         snapshot.val().should.eql(jet.contextify([null, 'bar', 'baz']));
         return Promise.resolve();
       });
-  });
+    });
 
-  it('returns a limited object data set', async function () {
-    const ref = firebase.database().ref(`${TEST_PATH}`);
+    it('returns a limited object data set', async function () {
+      const { getDatabase, ref, set, get, limitToLast, query } = databaseModular;
 
-    const initial = {
-      a: 'foo',
-      b: 'bar',
-      c: 'baz',
-    };
+      const dbRef = ref(getDatabase(), `${TEST_PATH}`);
 
-    await ref.set(initial);
+      const initial = {
+        a: 'foo',
+        b: 'bar',
+        c: 'baz',
+      };
 
-    return ref
-      .limitToLast(2)
-      .once('value')
-      .then(snapshot => {
+      await set(dbRef, initial);
+
+      return get(query(dbRef, limitToLast(2))).then(snapshot => {
         snapshot.val().should.eql(
           jet.contextify({
             b: 'bar',
@@ -92,21 +180,21 @@ describe('database().ref().limitToLast()', function () {
         );
         return Promise.resolve();
       });
-  });
+    });
 
-  it('returns a null value when not possible to limit', async function () {
-    const ref = firebase.database().ref(`${TEST_PATH}`);
+    it('returns a null value when not possible to limit', async function () {
+      const { getDatabase, ref, set, get, limitToLast, query } = databaseModular;
 
-    const initial = 'foo';
+      const dbRef = ref(getDatabase(), `${TEST_PATH}`);
 
-    await ref.set(initial);
+      const initial = 'foo';
 
-    return ref
-      .limitToFirst(2)
-      .once('value')
-      .then(snapshot => {
+      await set(dbRef, initial);
+
+      return get(query(dbRef, limitToLast(2))).then(snapshot => {
         should.equal(snapshot.val(), null);
         return Promise.resolve();
       });
+    });
   });
 });

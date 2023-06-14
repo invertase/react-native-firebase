@@ -16,15 +16,36 @@
  */
 
 describe('database().ref().key', function () {
-  it('returns null when no reference path is provides', function () {
-    const ref = firebase.database().ref();
-    should.equal(ref.key, null);
+  describe('v8 compatibility', function () {
+    it('returns null when no reference path is provides', function () {
+      const ref = firebase.database().ref();
+      should.equal(ref.key, null);
+    });
+
+    it('return last token in reference path', function () {
+      const ref1 = firebase.database().ref('foo');
+      const ref2 = firebase.database().ref('foo/bar/baz');
+      ref1.key.should.equal('foo');
+      ref2.key.should.equal('baz');
+    });
   });
 
-  it('return last token in reference path', function () {
-    const ref1 = firebase.database().ref('foo');
-    const ref2 = firebase.database().ref('foo/bar/baz');
-    ref1.key.should.equal('foo');
-    ref2.key.should.equal('baz');
+  describe('modular', function () {
+    it('returns null when no reference path is provides', function () {
+      const { getDatabase, ref } = databaseModular;
+
+      const dbRef = ref(getDatabase());
+      should.equal(dbRef.key, null);
+    });
+
+    it('return last token in reference path', function () {
+      const { getDatabase, ref } = databaseModular;
+
+      const db = getDatabase();
+      const ref1 = ref(db, 'foo');
+      const ref2 = ref(db, 'foo/bar/baz');
+      ref1.key.should.equal('foo');
+      ref2.key.should.equal('baz');
+    });
   });
 });

@@ -20,21 +20,35 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/remove`;
 
 describe('database().ref().remove()', function () {
-  it('throws if onComplete is not a function', async function () {
-    try {
-      await firebase.database().ref(TEST_PATH).remove('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'onComplete' must be a function if provided");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if onComplete is not a function', async function () {
+      try {
+        await firebase.database().ref(TEST_PATH).remove('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
+
+    it('removes a value at the path', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+      await ref.set('foo');
+      await ref.remove();
+      const snapshot = await ref.once('value');
+      snapshot.exists().should.equal(false);
+    });
   });
 
-  it('removes a value at the path', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
-    await ref.set('foo');
-    await ref.remove();
-    const snapshot = await ref.once('value');
-    snapshot.exists().should.equal(false);
+  describe('modular', function () {
+    it('removes a value at the path', async function () {
+      const { getDatabase, ref, set, remove, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+      await set(dbRef, 'foo');
+      await remove(dbRef);
+      const snapshot = await get(dbRef);
+      snapshot.exists().should.equal(false);
+    });
   });
 });

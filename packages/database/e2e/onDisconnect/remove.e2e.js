@@ -24,43 +24,102 @@ describe('database().ref().onDisconnect().remove()', function () {
     await wipe(TEST_PATH);
   });
 
-  afterEach(async function () {
-    // Ensures the db is online before running each test
-    await firebase.database().goOnline();
+  describe('v8 compatibility', function () {
+    afterEach(async function () {
+      // Ensures the db is online before running each test
+      await firebase.database().goOnline();
+    });
+
+    it('throws if onComplete is not a function', function () {
+      const ref = firebase.database().ref(TEST_PATH).onDisconnect();
+      try {
+        ref.remove('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
+
+    xit('removes a node whilst offline', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('removeMe');
+      await ref.set('foobar');
+      await ref.onDisconnect().remove();
+      await firebase.database().goOffline();
+      await firebase.database().goOnline();
+      const snapshot = await ref.once('value');
+      snapshot.exists().should.eql(false);
+    });
+
+    it('calls back to the onComplete function', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('removeMe');
+
+      // Set an initial value
+      await ref.set('foo');
+
+      await ref.onDisconnect().remove(callback);
+      await firebase.database().goOffline();
+      await firebase.database().goOnline();
+
+      callback.should.be.calledOnce();
+    });
   });
 
-  it('throws if onComplete is not a function', function () {
-    const ref = firebase.database().ref(TEST_PATH).onDisconnect();
-    try {
-      ref.remove('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'onComplete' must be a function if provided");
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    afterEach(async function () {
+      const { getDatabase, goOnline } = databaseModular;
+      const db = getDatabase();
 
-  xit('removes a node whilst offline', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('removeMe');
-    await ref.set('foobar');
-    await ref.onDisconnect().remove();
-    await firebase.database().goOffline();
-    await firebase.database().goOnline();
-    const snapshot = await ref.once('value');
-    snapshot.exists().should.eql(false);
-  });
+      // Ensures the db is online before running each test
+      await goOnline(db);
+    });
 
-  it('calls back to the onComplete function', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('removeMe');
+    it('throws if onComplete is not a function', function () {
+      const { getDatabase, ref, onDisconnect } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
 
-    // Set an initial value
-    await ref.set('foo');
+      const disconnect = onDisconnect(dbRef);
+      try {
+        disconnect.remove('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
 
-    await ref.onDisconnect().remove(callback);
-    await firebase.database().goOffline();
-    await firebase.database().goOnline();
+    xit('removes a node whilst offline', async function () {
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline, get } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
+      const childRef = child(dbRef, 'removeMe');
 
-    callback.should.be.calledOnce();
+      await childRef.set('foobar');
+      await onDisconnect(childRef).remove();
+      await goOffline(db);
+      await goOnline(db);
+      const snapshot = await get(childRef);
+      snapshot.exists().should.eql(false);
+    });
+
+    it('calls back to the onComplete function', async function () {
+      const callback = sinon.spy();
+
+      const { getDatabase, ref, child, onDisconnect, goOffline, goOnline } = databaseModular;
+      const db = getDatabase();
+      const dbRef = ref(db, TEST_PATH);
+      const childRef = child(dbRef, 'removeMe');
+
+      // Set an initial value
+      await childRef.set('foo');
+
+      await onDisconnect(childRef).remove(callback);
+      await goOffline(db);
+      await goOnline(db);
+
+      callback.should.be.calledOnce();
+    });
   });
 });

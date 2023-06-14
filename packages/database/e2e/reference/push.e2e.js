@@ -20,72 +20,123 @@ const { PATH } = require('../helpers');
 const TEST_PATH = `${PATH}/push`;
 
 describe('database().ref().push()', function () {
-  it('throws if on complete callback is not a function', function () {
-    try {
-      firebase.database().ref(TEST_PATH).push('foo', 'bar');
-      return Promise.reject(new Error('Did not throw Error'));
-    } catch (error) {
-      error.message.should.containEql("'onComplete' must be a function if provided");
-      return Promise.resolve();
-    }
-  });
+  describe('v8 compatibility', function () {
+    it('throws if on complete callback is not a function', function () {
+      try {
+        firebase.database().ref(TEST_PATH).push('foo', 'bar');
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (error) {
+        error.message.should.containEql("'onComplete' must be a function if provided");
+        return Promise.resolve();
+      }
+    });
 
-  it('returns a promise when no value is passed', function () {
-    const ref = firebase.database().ref(`${TEST_PATH}/boop`);
-    const pushed = ref.push();
-    return pushed
-      .then(childRef => {
-        pushed.ref.parent.toString().should.eql(ref.toString());
-        pushed.toString().should.eql(childRef.toString());
-        return pushed.once('value');
-      })
-      .then(snap => {
-        should.equal(snap.val(), null);
-        snap.ref.toString().should.eql(pushed.toString());
+    it('returns a promise when no value is passed', function () {
+      const ref = firebase.database().ref(`${TEST_PATH}/boop`);
+      const pushed = ref.push();
+      return pushed
+        .then(childRef => {
+          pushed.ref.parent.toString().should.eql(ref.toString());
+          pushed.toString().should.eql(childRef.toString());
+          return pushed.once('value');
+        })
+        .then(snap => {
+          should.equal(snap.val(), null);
+          snap.ref.toString().should.eql(pushed.toString());
+        });
+    });
+
+    it('returns a promise and sets the provided value', function () {
+      const ref = firebase.database().ref(`${TEST_PATH}/value`);
+      const pushed = ref.push(6);
+      return pushed
+        .then(childRef => {
+          pushed.ref.parent.toString().should.eql(ref.toString());
+          pushed.toString().should.eql(childRef.toString());
+          return pushed.once('value');
+        })
+        .then(snap => {
+          snap.val().should.equal(6);
+          snap.ref.toString().should.eql(pushed.toString());
+        });
+    });
+
+    it('returns a to the callback if provided once set', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(`${TEST_PATH}/callback`);
+      const value = Date.now();
+      ref.push(value, () => {
+        callback();
       });
-  });
+      await Utils.spyToBeCalledOnceAsync(callback);
+    });
 
-  it('returns a promise and sets the provided value', function () {
-    const ref = firebase.database().ref(`${TEST_PATH}/value`);
-    const pushed = ref.push(6);
-    return pushed
-      .then(childRef => {
-        pushed.ref.parent.toString().should.eql(ref.toString());
-        pushed.toString().should.eql(childRef.toString());
-        return pushed.once('value');
-      })
-      .then(snap => {
-        snap.val().should.equal(6);
-        snap.ref.toString().should.eql(pushed.toString());
+    it('throws if push errors', async function () {
+      const ref = firebase.database().ref('nope');
+      return ref.push('foo').catch(error => {
+        error.message.should.containEql("doesn't have permission to access");
+        return Promise.resolve();
       });
-  });
-
-  it('returns a to the callback if provided once set', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(`${TEST_PATH}/callback`);
-    const value = Date.now();
-    ref.push(value, () => {
-      callback();
     });
-    await Utils.spyToBeCalledOnceAsync(callback);
-  });
 
-  it('throws if push errors', async function () {
-    const ref = firebase.database().ref('nope');
-    return ref.push('foo').catch(error => {
-      error.message.should.containEql("doesn't have permission to access");
-      return Promise.resolve();
+    it('returns an error to the callback', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref('nope');
+      ref.push('foo', error => {
+        error.message.should.containEql("doesn't have permission to access");
+        callback();
+      });
+      await Utils.spyToBeCalledOnceAsync(callback);
+      callback.should.be.calledOnce();
     });
   });
 
-  it('returns an error to the callback', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref('nope');
-    ref.push('foo', error => {
-      error.message.should.containEql("doesn't have permission to access");
-      callback();
+  describe('modular', function () {
+    it('returns a promise when no value is passed', function () {
+      const { getDatabase, ref, push } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/boop`);
+      const pushed = push(dbRef);
+      return pushed
+        .then(childRef => {
+          pushed.ref.parent.toString().should.eql(dbRef.toString());
+          pushed.toString().should.eql(childRef.toString());
+          return pushed.once('value');
+        })
+        .then(snap => {
+          should.equal(snap.val(), null);
+          snap.ref.toString().should.eql(pushed.toString());
+        });
     });
-    await Utils.spyToBeCalledOnceAsync(callback);
-    callback.should.be.calledOnce();
+
+    it('returns a promise and sets the provided value', function () {
+      const { getDatabase, ref, push } = databaseModular;
+
+      const dbRef = ref(getDatabase(), `${TEST_PATH}/value`);
+      const pushed = push(dbRef, 6);
+      return pushed
+        .then(childRef => {
+          pushed.ref.parent.toString().should.eql(dbRef.toString());
+          pushed.toString().should.eql(childRef.toString());
+          return pushed.once('value');
+        })
+        .then(snap => {
+          snap.val().should.equal(6);
+          snap.ref.toString().should.eql(pushed.toString());
+        });
+    });
+
+    it('throws if push errors', async function () {
+      const { getDatabase, ref, push } = databaseModular;
+
+      const dbRef = ref(getDatabase(), 'nope');
+      try {
+        await push(dbRef, 'foo');
+        return Promise.reject(new Error('Did not throw Error'));
+      } catch (error) {
+        error.message.should.containEql("doesn't have permission to access");
+        return Promise.resolve();
+      }
+    });
   });
 });
