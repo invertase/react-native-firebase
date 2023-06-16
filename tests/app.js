@@ -30,6 +30,7 @@ import '@react-native-firebase/crashlytics';
 import '@react-native-firebase/database';
 import '@react-native-firebase/dynamic-links';
 import '@react-native-firebase/firestore';
+import * as firestoreModular from '@react-native-firebase/firestore';
 import * as functionsModular from '@react-native-firebase/functions';
 import '@react-native-firebase/in-app-messaging';
 import '@react-native-firebase/installations';
@@ -70,6 +71,7 @@ jet.exposeContextProperty('installationsModular', installationsModular);
 jet.exposeContextProperty('crashlyticsModular', crashlyticsModular);
 jet.exposeContextProperty('dynamicLinksModular', dynamicLinksModular);
 jet.exposeContextProperty('databaseModular', databaseModular);
+jet.exposeContextProperty('firestoreModular', firestoreModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

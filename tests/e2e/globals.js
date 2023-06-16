@@ -155,4 +155,10 @@ Object.defineProperty(global, 'databaseModular', {
   },
 });
 
+Object.defineProperty(global, 'firestoreModular', {
+  get() {
+    return jet.firestoreModular;
+  },
+});
+
 global.isCI = !!process.env.CI;
