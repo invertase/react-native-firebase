@@ -335,34 +335,45 @@ describe('firestore()', function () {
 
     describe('collection()', function () {});
 
-    describe('collectionGroup()', function () {
+    describe.only('collectionGroup()', function () {
       it('performs a collection group query', async function () {
-        const docRef1 = firebase.firestore().doc(`${COLLECTION}/collectionGroup1`);
-        const docRef2 = firebase.firestore().doc(`${COLLECTION}/collectionGroup2`);
-        const docRef3 = firebase.firestore().doc(`${COLLECTION}/collectionGroup3`);
-        const subRef1 = docRef1.collection(COLLECTION_GROUP).doc('ref');
-        const subRef2 = docRef1.collection(COLLECTION_GROUP).doc('ref2');
-        const subRef3 = docRef2.collection(COLLECTION_GROUP).doc('ref');
-        const subRef4 = docRef2.collection(COLLECTION_GROUP).doc('ref2');
-        const subRef5 = docRef3.collection(COLLECTION_GROUP).doc('ref');
-        const subRef6 = docRef3.collection(COLLECTION_GROUP).doc('ref2');
+        const {
+          getFirestore,
+          setDoc,
+          doc,
+          collection,
+          collectionGroup,
+          where,
+          getDocs,
+          query,
+          deleteDoc,
+        } = firestoreModular;
+        const db = getFirestore();
+
+        const docRef1 = doc(db, `${COLLECTION}/collectionGroup1`);
+        const docRef2 = doc(db, `${COLLECTION}/collectionGroup2`);
+        const docRef3 = doc(db, `${COLLECTION}/collectionGroup3`);
+        const subRef1 = doc(collection(docRef1, COLLECTION_GROUP), 'ref');
+        const subRef2 = doc(collection(docRef1, COLLECTION_GROUP), 'ref2');
+        const subRef3 = doc(collection(docRef2, COLLECTION_GROUP), 'ref');
+        const subRef4 = doc(collection(docRef2, COLLECTION_GROUP), 'ref2');
+        const subRef5 = doc(collection(docRef3, COLLECTION_GROUP), 'ref');
+        const subRef6 = doc(collection(docRef3, COLLECTION_GROUP), 'ref2');
 
         await Promise.all([
-          subRef1.set({ value: 1 }),
-          subRef2.set({ value: 2 }),
+          setDoc(subRef1, { value: 1 }),
+          setDoc(subRef2, { value: 2 }),
 
-          subRef3.set({ value: 1 }),
-          subRef4.set({ value: 2 }),
+          setDoc(subRef3, { value: 1 }),
+          setDoc(subRef4, { value: 2 }),
 
-          subRef5.set({ value: 1 }),
-          subRef6.set({ value: 2 }),
+          setDoc(subRef5, { value: 1 }),
+          setDoc(subRef6, { value: 2 }),
         ]);
 
-        const querySnapshot = await firebase
-          .firestore()
-          .collectionGroup(COLLECTION_GROUP)
-          .where('value', '==', 2)
-          .get();
+        const querySnapshot = await getDocs(
+          query(collectionGroup(db, COLLECTION_GROUP), where('value', '==', 2)),
+        );
 
         querySnapshot.forEach(ds => {
           ds.data().value.should.eql(2);
@@ -371,14 +382,14 @@ describe('firestore()', function () {
         querySnapshot.size.should.eql(3);
 
         await Promise.all([
-          subRef1.delete(),
-          subRef2.delete(),
+          deleteDoc(subRef1),
+          deleteDoc(subRef2),
 
-          subRef3.delete(),
-          subRef4.delete(),
+          deleteDoc(subRef3),
+          deleteDoc(subRef4),
 
-          subRef5.delete(),
-          subRef6.delete(),
+          deleteDoc(subRef5),
+          deleteDoc(subRef6),
         ]);
       });
 
