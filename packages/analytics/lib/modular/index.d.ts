@@ -1,46 +1,9 @@
 import { ReactNativeFirebase } from '@react-native-firebase/app';
 import { FirebaseAnalyticsTypes } from '..';
-
-import AddPaymentInfoEventParameters = FirebaseAnalyticsTypes.AddPaymentInfoEventParameters;
-import AddShippingInfoParameters = FirebaseAnalyticsTypes.AddShippingInfoParameters;
-import AddToCartEventParameters = FirebaseAnalyticsTypes.AddToCartEventParameters;
-import AddToWishlistEventParameters = FirebaseAnalyticsTypes.AddToWishlistEventParameters;
 import Analytics = FirebaseAnalyticsTypes.Module;
 import AnalyticsCallOptions = FirebaseAnalyticsTypes.AnalyticsCallOptions;
-import AnalyticsSettings = FirebaseAnalyticsTypes.AnalyticsSettings;
-import BeginCheckoutEventParameters = FirebaseAnalyticsTypes.BeginCheckoutEventParameters;
-import CampaignDetailsEventParameters = FirebaseAnalyticsTypes.CampaignDetailsEventParameters;
-import CustomEventName = FirebaseAnalyticsTypes.CustomEventName;
-import EarnVirtualCurrencyEventParameters = FirebaseAnalyticsTypes.EarnVirtualCurrencyEventParameters;
 import EventParams = FirebaseAnalyticsTypes.EventParams;
 import FirebaseApp = ReactNativeFirebase.FirebaseApp;
-import GenerateLeadEventParameters = FirebaseAnalyticsTypes.GenerateLeadEventParameters;
-import JoinGroupEventParameters = FirebaseAnalyticsTypes.JoinGroupEventParameters;
-import LevelEndEventParameters = FirebaseAnalyticsTypes.LevelEndEventParameters;
-import LevelStartEventParameters = FirebaseAnalyticsTypes.LevelStartEventParameters;
-import LevelUpEventParameters = FirebaseAnalyticsTypes.LevelUpEventParameters;
-import LoginEventParameters = FirebaseAnalyticsTypes.LoginEventParameters;
-import PostScoreEventParameters = FirebaseAnalyticsTypes.PostScoreEventParameters;
-import PurchaseEventParameters = FirebaseAnalyticsTypes.PurchaseEventParameters;
-import RefundEventParameters = FirebaseAnalyticsTypes.RefundEventParameters;
-import RemoveFromCartEventParameters = FirebaseAnalyticsTypes.RemoveFromCartEventParameters;
-import ScreenViewParameters = FirebaseAnalyticsTypes.ScreenViewParameters;
-import SearchEventParameters = FirebaseAnalyticsTypes.SearchEventParameters;
-import SelectContentEventParameters = FirebaseAnalyticsTypes.SelectContentEventParameters;
-import SelectItemEventParameters = FirebaseAnalyticsTypes.SelectItemEventParameters;
-import SelectPromotionEventParameters = FirebaseAnalyticsTypes.SelectPromotionEventParameters;
-import SetCheckoutOptionEventParameters = FirebaseAnalyticsTypes.SetCheckoutOptionEventParameters;
-import ShareEventParameters = FirebaseAnalyticsTypes.ShareEventParameters;
-import SignUpEventParameters = FirebaseAnalyticsTypes.SignUpEventParameters;
-import SpendVirtualCurrencyEventParameters = FirebaseAnalyticsTypes.SpendVirtualCurrencyEventParameters;
-import UnlockAchievementEventParameters = FirebaseAnalyticsTypes.UnlockAchievementEventParameters;
-import ViewCartEventParameters = FirebaseAnalyticsTypes.ViewCartEventParameters;
-import ViewItemEventParameters = FirebaseAnalyticsTypes.ViewItemEventParameters;
-import ViewItemListEventParameters = FirebaseAnalyticsTypes.ViewItemListEventParameters;
-import ViewPromotionEventParameters = FirebaseAnalyticsTypes.ViewPromotionEventParameters;
-import ViewSearchResultsParameters = FirebaseAnalyticsTypes.ViewSearchResultsParameters;
-import ConsentSettings = FirebaseAnalyticsTypes.ConsentSettings;
-import SettingsOptions = FirebaseAnalyticsTypes.SettingsOptions;
 
 /**
  * Returns an Analytics instance for the given app.
@@ -57,7 +20,7 @@ export declare function getAnalytics(app?: FirebaseApp): Analytics;
  */
 export declare function initializeAnalytics(
   app: FirebaseApp,
-  options?: AnalyticsSettings,
+  options?: FirebaseAnalyticsTypes.AnalyticsSettings,
 ): Analytics;
 
 /**
@@ -428,7 +391,7 @@ export declare function logEvent(
  */
 export declare function logEvent<T extends string>(
   analytics: Analytics,
-  name: CustomEventName<T>,
+  name: FirebaseAnalyticsTypes.CustomEventName<T>,
   params?: {
     [key: string]: any;
   },
@@ -695,7 +658,7 @@ export function resetAnalyticsData(analytics: Analytics): Promise<void>;
  */
 export function logAddPaymentInfo(
   analytics: Analytics,
-  object: AddPaymentInfoEventParameters,
+  object: FirebaseAnalyticsTypes.AddPaymentInfoEventParameters,
 ): Promise<void>;
 
 /**
@@ -704,7 +667,10 @@ export function logAddPaymentInfo(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.ScreenViewParameters}.
  */
-export function logScreenView(analytics: Analytics, params: ScreenViewParameters): Promise<void>;
+export function logScreenView(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.ScreenViewParameters,
+): Promise<void>;
 
 /**
  * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
@@ -718,7 +684,7 @@ export function logScreenView(analytics: Analytics, params: ScreenViewParameters
  */
 export function logAddShippingInfo(
   analytics: Analytics,
-  params: AddShippingInfoParameters,
+  params: FirebaseAnalyticsTypes.AddShippingInfoParameters,
 ): Promise<void>;
 
 /**
@@ -731,7 +697,10 @@ export function logAddShippingInfo(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.AddToCartEventParameters}.
  */
-export function logAddToCart(analytics: Analytics, params: AddToCartEventParameters): Promise<void>;
+export function logAddToCart(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.AddToCartEventParameters,
+): Promise<void>;
 
 /**
  * E-Commerce Add To Wishlist event. This event signifies that an item was added to a wishlist.
@@ -744,7 +713,10 @@ export function logAddToCart(analytics: Analytics, params: AddToCartEventParamet
  * @param analytics Analytics instance.
  * @param params See {@link analytics.AddToWishlistEventParameters}.
  */
-export function logAddToWishlist(analytics, params: AddToWishlistEventParameters): Promise<void>;
+export function logAddToWishlist(
+  analytics,
+  params: FirebaseAnalyticsTypes.AddToWishlistEventParameters,
+): Promise<void>;
 
 /**
  * App Open event. By logging this event when an App is moved to the foreground, developers can
@@ -769,7 +741,7 @@ export function logAppOpen(analytics: Analytics): Promise<void>;
  */
 export function logBeginCheckout(
   analytics: Analytics,
-  params: BeginCheckoutEventParameters,
+  params: FirebaseAnalyticsTypes.BeginCheckoutEventParameters,
 ): Promise<void>;
 
 /**
@@ -782,7 +754,7 @@ export function logBeginCheckout(
  */
 export function logCampaignDetails(
   analytics: Analytics,
-  params: CampaignDetailsEventParameters,
+  params: FirebaseAnalyticsTypes.CampaignDetailsEventParameters,
 ): Promise<void>;
 
 /**
@@ -796,7 +768,7 @@ export function logCampaignDetails(
  */
 export function logEarnVirtualCurrency(
   analytics: Analytics,
-  params: EarnVirtualCurrencyEventParameters,
+  params: FirebaseAnalyticsTypes.EarnVirtualCurrencyEventParameters,
 ): Promise<void>;
 
 /**
@@ -812,7 +784,7 @@ export function logEarnVirtualCurrency(
  */
 export function logGenerateLead(
   analytics: Analytics,
-  params: GenerateLeadEventParameters,
+  params: FirebaseAnalyticsTypes.GenerateLeadEventParameters,
 ): Promise<void>;
 
 /**
@@ -824,7 +796,10 @@ export function logGenerateLead(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.JoinGroupEventParameters}.
  */
-export function logJoinGroup(analytics: Analytics, params: JoinGroupEventParameters): Promise<void>;
+export function logJoinGroup(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.JoinGroupEventParameters,
+): Promise<void>;
 
 /**
  * Level End event.
@@ -834,7 +809,10 @@ export function logJoinGroup(analytics: Analytics, params: JoinGroupEventParamet
  * @param analytics Analytics instance.
  * @param params See {@link analytics.LevelEndEventParameters}.
  */
-export function logLevelEnd(analytics: Analytics, params: LevelEndEventParameters): Promise<void>;
+export function logLevelEnd(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.LevelEndEventParameters,
+): Promise<void>;
 
 /**
  * Level Start event.
@@ -846,7 +824,7 @@ export function logLevelEnd(analytics: Analytics, params: LevelEndEventParameter
  */
 export function logLevelStart(
   analytics: Analytics,
-  params: LevelStartEventParameters,
+  params: FirebaseAnalyticsTypes.LevelStartEventParameters,
 ): Promise<void>;
 
 /**
@@ -858,7 +836,10 @@ export function logLevelStart(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.LevelUpEventParameters}.
  */
-export function logLevelUp(analytics: Analytics, params: LevelUpEventParameters): Promise<void>;
+export function logLevelUp(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.LevelUpEventParameters,
+): Promise<void>;
 
 /**
  * Login event. Apps with a login feature can report this event to signify that a user has logged in.
@@ -868,7 +849,10 @@ export function logLevelUp(analytics: Analytics, params: LevelUpEventParameters)
  * @param analytics Analytics instance.
  * @param params See {@link analytics.LoginEventParameters}.
  */
-export function logLogin(analytics: Analytics, params: LoginEventParameters): Promise<void>;
+export function logLogin(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.LoginEventParameters,
+): Promise<void>;
 
 /**
  * Post Score event. Log this event when the user posts a score in your gaming app. This event can
@@ -880,7 +864,10 @@ export function logLogin(analytics: Analytics, params: LoginEventParameters): Pr
  * @param analytics Analytics instance.
  * @param params See {@link analytics.PostScoreEventParameters}.
  */
-export function logPostScore(analytics: Analytics, params: PostScoreEventParameters): Promise<void>;
+export function logPostScore(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.PostScoreEventParameters,
+): Promise<void>;
 
 /**
  * Select Content event. This general purpose event signifies that a user has selected some
@@ -894,7 +881,7 @@ export function logPostScore(analytics: Analytics, params: PostScoreEventParamet
  */
 export function logSelectContent(
   analytics: Analytics,
-  params: SelectContentEventParameters,
+  params: FirebaseAnalyticsTypes.SelectContentEventParameters,
 ): Promise<void>;
 
 /**
@@ -908,7 +895,10 @@ export function logSelectContent(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.PurchaseEventParameters}.
  */
-export function logPurchase(analytics: Analytics, params: PurchaseEventParameters): Promise<void>;
+export function logPurchase(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.PurchaseEventParameters,
+): Promise<void>;
 
 /**
  * E-Commerce Refund event. This event signifies that a refund was issued.
@@ -918,7 +908,10 @@ export function logPurchase(analytics: Analytics, params: PurchaseEventParameter
  * @param analytics Analytics instance.
  * @param params See {@link analytics.RefundEventParameters}.
  */
-export function logRefund(analytics: Analytics, params: RefundEventParameters): Promise<void>;
+export function logRefund(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.RefundEventParameters,
+): Promise<void>;
 
 /**
  * Remove from cart event.
@@ -930,7 +923,7 @@ export function logRefund(analytics: Analytics, params: RefundEventParameters): 
  */
 export function logRemoveFromCart(
   analytics: Analytics,
-  params: RemoveFromCartEventParameters,
+  params: FirebaseAnalyticsTypes.RemoveFromCartEventParameters,
 ): Promise<void>;
 
 /**
@@ -943,7 +936,10 @@ export function logRemoveFromCart(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.SearchEventParameters}.
  */
-export function logSearch(analytics: Analytics, params: SearchEventParameters): Promise<void>;
+export function logSearch(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.SearchEventParameters,
+): Promise<void>;
 
 /**
  * Select Item event. This event signifies that an item was selected by a user from a list.
@@ -957,7 +953,7 @@ export function logSearch(analytics: Analytics, params: SearchEventParameters): 
  */
 export function logSelectItem(
   analytics: Analytics,
-  params: SelectItemEventParameters,
+  params: FirebaseAnalyticsTypes.SelectItemEventParameters,
 ): Promise<void>;
 
 /**
@@ -970,7 +966,7 @@ export function logSelectItem(
  */
 export function logSetCheckoutOption(
   analytics: Analytics,
-  params: SetCheckoutOptionEventParameters,
+  params: FirebaseAnalyticsTypes.SetCheckoutOptionEventParameters,
 ): Promise<void>;
 
 /**
@@ -984,7 +980,7 @@ export function logSetCheckoutOption(
  */
 export function logSelectPromotion(
   analytics: Analytics,
-  params: SelectPromotionEventParameters,
+  params: FirebaseAnalyticsTypes.SelectPromotionEventParameters,
 ): Promise<void>;
 
 /**
@@ -995,7 +991,10 @@ export function logSelectPromotion(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.ShareEventParameters}.
  */
-export function logShare(analytics: Analytics, params: ShareEventParameters): Promise<void>;
+export function logShare(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.ShareEventParameters,
+): Promise<void>;
 
 /**
  * Sign Up event. This event indicates that a user has signed up for an account in your app.
@@ -1007,7 +1006,10 @@ export function logShare(analytics: Analytics, params: ShareEventParameters): Pr
  * @param analytics Analytics instance.
  * @param params See {@link analytics.SignUpEventParameters}.
  */
-export function logSignUp(analytics: Analytics, params: SignUpEventParameters): Promise<void>;
+export function logSignUp(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.SignUpEventParameters,
+): Promise<void>;
 
 /**
  * Spend Virtual Currency event. This event tracks the sale of virtual goods in your app and can
@@ -1020,7 +1022,7 @@ export function logSignUp(analytics: Analytics, params: SignUpEventParameters): 
  */
 export function logSpendVirtualCurrency(
   analytics: Analytics,
-  params: SpendVirtualCurrencyEventParameters,
+  params: FirebaseAnalyticsTypes.SpendVirtualCurrencyEventParameters,
 ): Promise<void>;
 
 /**
@@ -1057,7 +1059,7 @@ export function logTutorialComplete(analytics: Analytics): Promise<void>;
  */
 export function logUnlockAchievement(
   analytics: Analytics,
-  params: UnlockAchievementEventParameters,
+  params: FirebaseAnalyticsTypes.UnlockAchievementEventParameters,
 ): Promise<void>;
 
 /**
@@ -1070,7 +1072,10 @@ export function logUnlockAchievement(
  * @param analytics Analytics instance.
  * @param params See {@link analytics.ViewCartEventParameters}.
  */
-export function logViewCart(analytics: Analytics, params: ViewCartEventParameters): Promise<void>;
+export function logViewCart(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.ViewCartEventParameters,
+): Promise<void>;
 
 /**
  * View Item event. This event signifies that some content was shown to the user. This content
@@ -1084,7 +1089,10 @@ export function logViewCart(analytics: Analytics, params: ViewCartEventParameter
  * @param analytics Analytics instance.
  * @param params See {@link analytics.ViewItemEventParameters}.
  */
-export function logViewItem(analytics: Analytics, params: ViewItemEventParameters): Promise<void>;
+export function logViewItem(
+  analytics: Analytics,
+  params: FirebaseAnalyticsTypes.ViewItemEventParameters,
+): Promise<void>;
 
 /**
  * View Item List event. Log this event when the user has been presented with a list of items of a certain category.
@@ -1096,7 +1104,7 @@ export function logViewItem(analytics: Analytics, params: ViewItemEventParameter
  */
 export function logViewItemList(
   analytics: Analytics,
-  params: ViewItemListEventParameters,
+  params: FirebaseAnalyticsTypes.ViewItemListEventParameters,
 ): Promise<void>;
 
 /**
@@ -1109,7 +1117,7 @@ export function logViewItemList(
  */
 export function logViewPromotion(
   analytics: Analytics,
-  params: ViewPromotionEventParameters,
+  params: FirebaseAnalyticsTypes.ViewPromotionEventParameters,
 ): Promise<void>;
 
 /**
@@ -1122,7 +1130,7 @@ export function logViewPromotion(
  */
 export function logViewSearchResults(
   analytics: Analytics,
-  params: ViewSearchResultsParameters,
+  params: FirebaseAnalyticsTypes.ViewSearchResultsParameters,
 ): Promise<void>;
 
 /**
@@ -1174,7 +1182,10 @@ export function isSupported(): Promise<boolean>;
  * @param consentSettings See {@link analytics.ConsentSettings}.
  * @returns {void}
  */
-export function setConsent(analytics: Analytics, consentSettings: ConsentSettings): void;
+export function setConsent(
+  analytics: Analytics,
+  consentSettings: FirebaseAnalyticsTypes.ConsentSettings,
+): void;
 
 /**
  * Configures Firebase Analytics to use custom gtag or dataLayer names.
@@ -1185,4 +1196,4 @@ export function setConsent(analytics: Analytics, consentSettings: ConsentSetting
  * @param options See {@link analytics.SettingsOptions}.
  * @returns {void}
  */
-export function settings(options: SettingsOptions): void;
+export function settings(options: FirebaseAnalyticsTypes.SettingsOptions): void;
