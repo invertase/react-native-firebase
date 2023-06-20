@@ -325,7 +325,13 @@ class FirebaseConfigModule extends FirebaseModule {
       }
       subscription.remove();
       this._configUpdateListenerCount--;
-      if (this._configUpdateListenerCount === 0) {
+      // In firebase-ios-sdk, it appears listener removal fails, so our native listeners accumulate
+      // if we try to remove them. Temporarily allow iOS native listener to stay active forever after
+      // first subscription for an app, until issue #11458 in firebase-ios-sdk repo is resolved.
+      // react-native-firebase native subscribe code won't add multiple native listeners for same app,
+      // so this prevents listener accumulation but means the web socket on iOS will never close.
+      // TODO: Remove when firebase-ios-sdk 10.12.0 is adopted, the PR to fix it should be included
+      if (this._configUpdateListenerCount === 0 && Platform.OS !== 'ios') {
         this.native.removeConfigUpdateRegistration();
       }
     };
