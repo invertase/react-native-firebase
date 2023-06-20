@@ -190,6 +190,7 @@ in applications that attach one or more listeners for them.
 ### Known Issues
 
 1. **_Handle errors / retry in callback_** During testing here in react-native-firebase, we frequently received the "config_update_not_fetched" error when performing updates and fetching them rapidly. This may not occur in normal usage but be sure to include error handling code in your callback. If this error is raised, you should be able to fetch and activate the new config template with retries after a timeout. Tracked as https://github.com/firebase/firebase-ios-sdk/issues/11462 and a fix is anticipated in firebase-ios-sdk 10.12.0
+1. **_iOS web socket will never close_** During testing here in react-native-firebase, we identified a problem in firebase-ios-sdk where native listeners are not removed when you attempt to unsubscribe them, resulting in more update events than expected. As a temporary workaround to avoid the issue, we create a native listener on iOS the first time you subscribe to realtime update events, and we never remove the listener, even if you unsubscribe it. That means the web socket will never close once opened. This is tracked as https://github.com/firebase/firebase-ios-sdk/issues/11458 and a fix is anticipated in firebase-ios-sdk 10.12.0
 
 Here is an example of how to use the feature, with comments emphasizing the key points to know:
 
