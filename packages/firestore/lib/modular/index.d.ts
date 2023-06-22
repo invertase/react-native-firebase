@@ -7,6 +7,34 @@ import CollectionReference = FirebaseFirestoreTypes.CollectionReference;
 import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
 import DocumentData = FirebaseFirestoreTypes.DocumentData;
 import Query = FirebaseFirestoreTypes.Query;
+import FieldValue = FirebaseFirestoreTypes.FieldValue;
+
+/** Primitive types. */
+export type Primitive = string | number | boolean | undefined | null;
+
+/**
+ * Similar to Typescript's `Partial<T>`, but allows nested fields to be
+ * omitted and FieldValues to be passed in as property values.
+ */
+export type PartialWithFieldValue<T> =
+  | Partial<T>
+  | (T extends Primitive
+      ? T
+      : T extends object
+      ? { [K in keyof T]?: PartialWithFieldValue<T[K]> | FieldValue }
+      : never);
+
+/**
+ * Allows FieldValues to be passed in as a property value while maintaining
+ * type safety.
+ */
+export type WithFieldValue<T> =
+  | T
+  | (T extends Primitive
+      ? T
+      : T extends object
+      ? { [K in keyof T]: WithFieldValue<T[K]> | FieldValue }
+      : never);
 
 /**
  * Returns the existing default {@link Firestore} instance that is associated with the
@@ -177,3 +205,130 @@ export function collection(
  * @returns The created `Query`.
  */
 export function collectionGroup(firestore: Firestore, collectionId: string): Query<DocumentData>;
+
+/**
+ * Writes to the document referred to by this `DocumentReference`. If the
+ * document does not yet exist, it will be created.
+ *
+ * @param reference - A reference to the document to write.
+ * @param data - A map of the fields and values for the document.
+ * @returns A `Promise` resolved once the data has been successfully written
+ * to the backend (note that it won't resolve while you're offline).
+ */
+export function setDoc<T>(reference: DocumentReference<T>, data: WithFieldValue<T>): Promise<void>;
+
+/**
+ * Writes to the document referred to by the specified `DocumentReference`. If
+ * the document does not yet exist, it will be created. If you provide `merge`
+ * or `mergeFields`, the provided data can be merged into an existing document.
+ *
+ * @param reference - A reference to the document to write.
+ * @param data - A map of the fields and values for the document.
+ * @param options - An object to configure the set behavior.
+ * @returns A Promise resolved once the data has been successfully written
+ * to the backend (note that it won't resolve while you're offline).
+ */
+export function setDoc<T>(
+  reference: DocumentReference<T>,
+  data: PartialWithFieldValue<T>,
+  options: FirebaseFirestoreTypes.SetOptions,
+): Promise<void>;
+
+export function setDoc<T>(
+  reference: DocumentReference<T>,
+  data: PartialWithFieldValue<T>,
+  options?: FirebaseFirestoreTypes.SetOptions,
+): Promise<void>;
+
+/**
+ * Add a new document to specified `CollectionReference` with the given data,
+ * assigning it a document ID automatically.
+ *
+ * @param reference - A reference to the collection to add this document to.
+ * @param data - An Object containing the data for the new document.
+ * @returns A `Promise` resolved with a `DocumentReference` pointing to the
+ * newly created document after it has been written to the backend (Note that it
+ * won't resolve while you're offline).
+ */
+export function addDoc<T>(
+  reference: CollectionReference<T>,
+  data: WithFieldValue<T>,
+): Promise<DocumentReference<T>>;
+
+/**
+ * Re-enables use of the network for this {@link Firestore} instance after a prior
+ * call to {@link disableNetwork}.
+ *
+ * @returns A `Promise` that is resolved once the network has been enabled.
+ */
+export function enableNetwork(firestore: Firestore): Promise<void>;
+
+/**
+ * Disables network usage for this instance. It can be re-enabled via {@link
+ * enableNetwork}. While the network is disabled, any snapshot listeners,
+ * `getDoc()` or `getDocs()` calls will return results from cache, and any write
+ * operations will be queued until the network is restored.
+ *
+ * @returns A `Promise` that is resolved once the network has been disabled.
+ */
+export function disableNetwork(firestore: Firestore): Promise<void>;
+
+/**
+ * Aimed primarily at clearing up any data cached from running tests. Needs to be executed before any database calls
+ * are made.
+ *
+ * @param firestore - A reference to the root `Firestore` instance.
+ */
+export function clearPersistence(firestore: Firestore): Promise<void>;
+
+/**
+ * Terminates the provided {@link Firestore} instance.
+ *
+ * To restart after termination, create a new instance of FirebaseFirestore with
+ * {@link (getFirestore:1)}.
+ *
+ * Termination does not cancel any pending writes, and any promises that are
+ * awaiting a response from the server will not be resolved. If you have
+ * persistence enabled, the next time you start this instance, it will resume
+ * sending these writes to the server.
+ *
+ * Note: Under normal circumstances, calling `terminate()` is not required. This
+ * function is useful only when you want to force this instance to release all
+ * of its resources or in combination with `clearIndexedDbPersistence()` to
+ * ensure that all local state is destroyed between test runs.
+ *
+ * @returns A `Promise` that is resolved when the instance has been successfully
+ * terminated.
+ */
+export function terminate(firestore: Firestore): Promise<void>;
+
+/**
+ * Waits until all currently pending writes for the active user have been
+ * acknowledged by the backend.
+ *
+ * The returned promise resolves immediately if there are no outstanding writes.
+ * Otherwise, the promise waits for all previously issued writes (including
+ * those written in a previous app session), but it does not wait for writes
+ * that were added after the function is called. If you want to wait for
+ * additional writes, call `waitForPendingWrites()` again.
+ *
+ * Any outstanding `waitForPendingWrites()` promises are rejected during user
+ * changes.
+ *
+ * @returns A `Promise` which resolves when all currently pending writes have been
+ * acknowledged by the backend.
+ */
+export function waitForPendingWrites(firestore: Firestore): Promise<void>;
+
+/*
+ * @param app - The {@link @firebase/app#FirebaseApp} with which the {@link Firestore} instance will
+ * be associated.
+ * @param settings - A settings object to configure the {@link Firestore} instance.
+ * @param databaseId - The name of database.
+ * @returns A newly initialized {@link Firestore} instance.
+ */
+export function initializeFirestore(
+  app: FirebaseApp,
+  settings: FirestoreSettings,
+  databaseId?: string,
+): Promise<Firestore>;

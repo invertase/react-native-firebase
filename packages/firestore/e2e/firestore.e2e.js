@@ -335,7 +335,7 @@ describe('firestore()', function () {
 
     describe('collection()', function () {});
 
-    describe.only('collectionGroup()', function () {
+    describe('collectionGroup()', function () {
       it('performs a collection group query', async function () {
         const {
           getFirestore,
@@ -394,55 +394,72 @@ describe('firestore()', function () {
       });
 
       it('performs a collection group query with cursor queries', async function () {
-        const docRef = firebase.firestore().doc(`${COLLECTION}/collectionGroupCursor`);
+        const {
+          getFirestore,
+          doc,
+          collection,
+          collectionGroup,
+          addDoc,
+          getDocs,
+          query,
+          orderBy,
+          startAt,
+          deleteDoc,
+        } = firestoreModular;
 
-        const ref1 = await docRef.collection(COLLECTION_GROUP).add({ number: 1 });
-        const startAt = await docRef.collection(COLLECTION_GROUP).add({ number: 2 });
-        const ref3 = await docRef.collection(COLLECTION_GROUP).add({ number: 3 });
+        const db = getFirestore();
+        const docRef = doc(db, `${COLLECTION}/collectionGroupCursor`);
 
-        const ds = await startAt.get();
+        const ref1 = await addDoc(collection(docRef, COLLECTION_GROUP), { number: 1 });
+        const startAtRef = await addDoc(collection(docRef, COLLECTION_GROUP), { number: 2 });
+        const ref3 = await addDoc(collection(docRef, COLLECTION_GROUP), { number: 3 });
 
-        const querySnapshot = await firebase
-          .firestore()
-          .collectionGroup(COLLECTION_GROUP)
-          .orderBy('number')
-          .startAt(ds)
-          .get();
+        const ds = await getDocs(startAtRef);
+
+        const querySnapshot = await getDocs(
+          query(collectionGroup(db, COLLECTION_GROUP), orderBy('number'), startAt(ds)),
+        );
 
         querySnapshot.size.should.eql(2);
         querySnapshot.forEach((d, i) => {
           d.data().number.should.eql(i + 2);
         });
-        await Promise.all([ref1.delete(), ref3.delete(), startAt.delete()]);
+        await Promise.all([deleteDoc(ref1), deleteDoc(ref3), deleteDoc(startAtRef)]);
       });
     });
 
     describe('disableNetwork() & enableNetwork()', function () {
       it('disables and enables with no errors', async function () {
-        await firebase.firestore().disableNetwork();
-        await firebase.firestore().enableNetwork();
+        const { getFirestore, disableNetwork, enableNetwork } = firestoreModular;
+        const db = getFirestore();
+
+        await disableNetwork(db);
+        await enableNetwork(db);
       });
     });
 
     describe('Clear cached data persistence', function () {
       // NOTE: removed as it breaks emulator tests
       xit('should clear any cached data', async function () {
-        const db = firebase.firestore();
+        const { getFirestore, doc, setDoc, getDocsFromCache, terminate, clearPersistence } =
+          firestoreModular;
+
+        const db = getFirestore();
         const id = 'foobar';
-        const ref = db.doc(`${COLLECTION}/${id}`);
-        await ref.set({ foo: 'bar' });
+        const ref = doc(db, `${COLLECTION}/${id}`);
+        await setDoc(ref, { foo: 'bar' });
         try {
-          await db.clearPersistence();
+          await clearPersistence(db);
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.code.should.equal('firestore/failed-precondition');
         }
-        const doc = await ref.get({ source: 'cache' });
-        should(doc.id).equal(id);
-        await db.terminate();
-        await db.clearPersistence();
+        const docRef = await getDocsFromCache(ref);
+        should(docRef.id).equal(id);
+        await terminate(db);
+        await clearPersistence(db);
         try {
-          await ref.get({ source: 'cache' });
+          await getDocsFromCache(ref);
           return Promise.reject(new Error('Did not throw an Error.'));
         } catch (error) {
           error.code.should.equal('firestore/unavailable');
@@ -453,32 +470,32 @@ describe('firestore()', function () {
 
     describe('wait for pending writes', function () {
       xit('waits for pending writes', async function () {
+        const { getFirestore, disableNetwork, doc, setDoc, waitForPendingWrites, enableNetwork } =
+          firestoreModular;
+
         const waitForPromiseMs = 500;
         const testTimeoutMs = 10000;
+        const db = getFirestore();
 
-        await firebase.firestore().disableNetwork();
+        await disableNetwork(db);
 
         //set up a pending write
 
-        const db = firebase.firestore();
         const id = 'foobar';
-        const ref = db.doc(`v6/${id}`);
-        ref.set({ foo: 'bar' });
+        const ref = doc(db, `v6/${id}`);
+        setDoc(ref, { foo: 'bar' });
 
         //waitForPendingWrites should never resolve, but unfortunately we can only
         //test that this is not returning within X ms
 
         let rejected = false;
         const timedOutWithNetworkDisabled = await Promise.race([
-          firebase
-            .firestore()
-            .waitForPendingWrites()
-            .then(
-              () => false,
-              () => {
-                rejected = true;
-              },
-            ),
+          waitForPendingWrites(db).then(
+            () => false,
+            () => {
+              rejected = true;
+            },
+          ),
           Utils.sleep(waitForPromiseMs).then(() => true),
         ]);
 
@@ -493,13 +510,10 @@ describe('firestore()', function () {
         should(rejected).equal(true);
 
         //now if we enable the network then waitForPendingWrites should return immediately
-        await firebase.firestore().enableNetwork();
+        await enableNetwork(db);
 
         const timedOutWithNetworkEnabled = await Promise.race([
-          firebase
-            .firestore()
-            .waitForPendingWrites()
-            .then(() => false),
+          waitForPendingWrites(db).then(() => false),
           Utils.sleep(testTimeoutMs).then(() => true),
         ]);
 
@@ -508,110 +522,137 @@ describe('firestore()', function () {
     });
 
     describe('settings', function () {
-      describe('serverTimestampBehavior', function () {
+      // TODO: Continue from here
+      describe.only('serverTimestampBehavior', function () {
         it("handles 'estimate'", async function () {
-          firebase.firestore().settings({ serverTimestampBehavior: 'estimate' });
-          const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampEstimate`);
+          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+
+          const db = await initializeFirestore(firebase.app(), {
+            serverTimestampBehavior: 'estimate',
+          });
+          const ref = doc(db, `${COLLECTION}/serverTimestampEstimate`);
 
           const promise = new Promise((resolve, reject) => {
-            const subscription = ref.onSnapshot(snapshot => {
-              try {
-                should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
-                subscription();
-                resolve();
-              } catch (e) {
-                reject(e);
-              }
-            }, reject);
+            const subscription = onSnapshot(
+              ref,
+              snapshot => {
+                try {
+                  should(snapshot.get('timestamp')).be.an.instanceOf(firebase.firestore.Timestamp);
+                  subscription();
+                  resolve();
+                } catch (e) {
+                  reject(e);
+                }
+              },
+              reject,
+            );
           });
 
-          await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
           await promise;
-          await ref.delete();
+          await deleteDoc(ref);
         });
+
         it("handles 'previous'", async function () {
-          firebase.firestore().settings({ serverTimestampBehavior: 'previous' });
-          const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampPrevious`);
+          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+
+          const db = await initializeFirestore(firebase.app(), {
+            serverTimestampBehavior: 'previous',
+          });
+          const ref = doc(db, `${COLLECTION}/serverTimestampPrevious`);
 
           const promise = new Promise((resolve, reject) => {
             let counter = 0;
             let previous = null;
-            const subscription = ref.onSnapshot(snapshot => {
-              try {
-                switch (counter++) {
-                  case 0:
-                    should(snapshot.get('timestamp')).equal(null);
-                    break;
-                  case 1:
-                    should(snapshot.get('timestamp')).be.an.instanceOf(
-                      firebase.firestore.Timestamp,
-                    );
-                    break;
-                  case 2:
-                    should(snapshot.get('timestamp')).be.an.instanceOf(
-                      firebase.firestore.Timestamp,
-                    );
-                    should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                      true,
-                    );
-                    break;
-                  case 3:
-                    should(snapshot.get('timestamp')).be.an.instanceOf(
-                      firebase.firestore.Timestamp,
-                    );
-                    should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
-                      false,
-                    );
-                    subscription();
-                    resolve();
-                    break;
+            const subscription = onSnapshot(
+              ref,
+              snapshot => {
+                try {
+                  switch (counter++) {
+                    case 0:
+                      should(snapshot.get('timestamp')).equal(null);
+                      break;
+                    case 1:
+                      should(snapshot.get('timestamp')).be.an.instanceOf(
+                        firebase.firestore.Timestamp,
+                      );
+                      break;
+                    case 2:
+                      should(snapshot.get('timestamp')).be.an.instanceOf(
+                        firebase.firestore.Timestamp,
+                      );
+                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
+                        true,
+                      );
+                      break;
+                    case 3:
+                      should(snapshot.get('timestamp')).be.an.instanceOf(
+                        firebase.firestore.Timestamp,
+                      );
+                      should(snapshot.get('timestamp').isEqual(previous.get('timestamp'))).equal(
+                        false,
+                      );
+                      subscription();
+                      resolve();
+                      break;
+                  }
+                } catch (e) {
+                  reject(e);
                 }
-              } catch (e) {
-                reject(e);
-              }
-              previous = snapshot;
-            }, reject);
+                previous = snapshot;
+              },
+              reject,
+            );
           });
 
-          await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
           await new Promise(resolve => setTimeout(resolve, 100));
-          await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
           await promise;
-          await ref.delete();
+          await deleteDoc(ref);
         });
+
         it("handles 'none'", async function () {
-          firebase.firestore().settings({ serverTimestampBehavior: 'none' });
-          const ref = firebase.firestore().doc(`${COLLECTION}/serverTimestampNone`);
+          const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
+
+          const db = await initializeFirestore(firebase.app(), {
+            serverTimestampBehavior: 'none',
+          });
+          const ref = doc(db, `${COLLECTION}/serverTimestampNone`);
 
           const promise = new Promise((resolve, reject) => {
             let counter = 0;
-            const subscription = ref.onSnapshot(snapshot => {
-              try {
-                switch (counter++) {
-                  case 0:
-                    // The initial callback snapshot should have no value for the timestamp, it has not been set at all
-                    should(snapshot.get('timestamp')).equal(null);
-                    break;
-                  case 1:
-                    should(snapshot.get('timestamp')).be.an.instanceOf(
-                      firebase.firestore.Timestamp,
-                    );
-                    subscription();
-                    resolve();
-                    break;
-                  default:
-                    // there should only be initial callback and set callback, any other callbacks are a fail
-                    reject(new Error('too many callbacks'));
+            const subscription = onSnapshot(
+              ref,
+              snapshot => {
+                try {
+                  switch (counter++) {
+                    case 0:
+                      // The initial callback snapshot should have no value for the timestamp, it has not been set at all
+                      should(snapshot.get('timestamp')).equal(null);
+                      break;
+                    case 1:
+                      should(snapshot.get('timestamp')).be.an.instanceOf(
+                        firebase.firestore.Timestamp,
+                      );
+                      subscription();
+                      resolve();
+                      break;
+                    default:
+                      // there should only be initial callback and set callback, any other callbacks are a fail
+                      reject(new Error('too many callbacks'));
+                  }
+                } catch (e) {
+                  reject(e);
                 }
-              } catch (e) {
-                reject(e);
-              }
-            }, reject);
+              },
+              reject,
+            );
           });
 
-          await ref.set({ timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await setDoc(ref, { timestamp: firebase.firestore.FieldValue.serverTimestamp() });
           await promise;
-          await ref.delete();
+          await deleteDoc(ref);
         });
       });
     });
