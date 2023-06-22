@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.1.0](https://github.com/invertase/react-native-firebase/compare/v18.0.0...v18.1.0) (2023-06-22)
+
+### Bug Fixes
+
+- **app, sdk:** adopt firebase-ios-sdk 10.11.0 ([f40cb5b](https://github.com/invertase/react-native-firebase/commit/f40cb5b46276dbd7977dc72f4a8bdf783d282b03))
+
 ## [18.0.0](https://github.com/invertase/react-native-firebase/compare/v17.5.0...v18.0.0) (2023-06-05)
 
 ### ⚠ BREAKING CHANGES

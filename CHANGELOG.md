@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.1.0](https://github.com/invertase/react-native-firebase/compare/v18.0.0...v18.1.0) (2023-06-22)
+
+### Features
+
+- **installations:** Firebase JS SDK V9 modular API ([#7095](https://github.com/invertase/react-native-firebase/issues/7095)) ([08cb0c2](https://github.com/invertase/react-native-firebase/commit/08cb0c2a14ed1513ece59bae0598d169118521c3))
+- **remote-config:** realtime config updates ([9ded619](https://github.com/invertase/react-native-firebase/commit/9ded619e81c1523d7fa0cdbda8fc94929450a967))
+
+### Bug Fixes
+
+- **app, sdk:** adopt firebase-ios-sdk 10.11.0 ([f40cb5b](https://github.com/invertase/react-native-firebase/commit/f40cb5b46276dbd7977dc72f4a8bdf783d282b03))
+- **remote-config, ios:** workaround firebase-ios-sdk[#11458](https://github.com/invertase/react-native-firebase/issues/11458) until SDK v10.12.0 ([8c75849](https://github.com/invertase/react-native-firebase/commit/8c758496c2fadc506805f81d1619ebce21a413df))
+
 ## [18.0.0](https://github.com/invertase/react-native-firebase/compare/v17.5.0...v18.0.0) (2023-06-05)
 
 ### ⚠ BREAKING CHANGES
