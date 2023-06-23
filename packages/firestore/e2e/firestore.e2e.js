@@ -523,7 +523,7 @@ describe('firestore()', function () {
 
     describe('settings', function () {
       // TODO: Continue from here
-      describe.only('serverTimestampBehavior', function () {
+      describe('serverTimestampBehavior', function () {
         it("handles 'estimate'", async function () {
           const { initializeFirestore, doc, onSnapshot, setDoc, deleteDoc } = firestoreModular;
 
