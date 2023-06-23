@@ -190,6 +190,15 @@ export function startAt(
 ): QueryStartAtConstraint;
 
 /**
+ * Creates a {@link QueryLimitConstraint} that only returns the first matching
+ * documents.
+ *
+ * @param limit - The maximum number of items to return.
+ * @returns The created {@link QueryLimitConstraint}.
+ */
+export function limit(limit: number): QueryLimitConstraint;
+
+/**
  * Executes the query and returns the results as a `QuerySnapshot`.
  *
  * Note: `getDocs()` attempts to provide up-to-date data when possible by

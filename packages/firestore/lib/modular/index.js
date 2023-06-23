@@ -2,16 +2,17 @@
  * @typedef {import('..').FirebaseFirestoreTypes.CollectionReference} CollectionReference
  * @typedef {import('..').FirebaseFirestoreTypes.DocumentData} DocumentData
  * @typedef {import('..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
+ * @typedef {import('..').FirebaseFirestoreTypes.FieldPath} FieldPath
  * @typedef {import('..').FirebaseFirestoreTypes.Module} Firestore
  * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('..').FirebaseFirestoreTypes.SetOptions} SetOptions
  * @typedef {import('..').FirebaseFirestoreTypes.Settings} FirestoreSettings
+ * @typedef {import('./index').PartialWithFieldValue} PartialWithFieldValue
+ * @typedef {import('./index').UpdateData} UpdateData
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
- * @typedef {import('./query').PartialWithFieldValue} PartialWithFieldValue
  */
 
 import { firebase } from '../index';
-import { WithFieldValue } from './index';
 
 /**
  * @param {FirebaseApp?} app
@@ -70,6 +71,25 @@ export function collectionGroup(firestore, collectionId) {
  */
 export function setDoc(reference, data, options) {
   return reference.set(data, options);
+}
+
+/**
+ * @param {DocumentReference} reference
+ * @param {string | FieldPath | UpdateData} fieldOrUpdateData
+ * @param {unknown?} value
+ * @param {unknown} moreFieldsAndValues
+ * @returns {Promise<void>}
+ */
+export function updateDoc<T>(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
+  if (!value) {
+    return reference.update(fieldOrUpdateData);
+  }
+
+  if (!moreFieldsAndValues || !Array.isArray(moreFieldsAndValues)) {
+    return reference.update(fieldOrUpdateData, value);
+  }
+
+  return reference.update(fieldOrUpdateData, value, ...moreFieldsAndValues);
 }
 
 /**

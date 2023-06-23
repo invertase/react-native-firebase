@@ -9,6 +9,7 @@
  * @typedef {import('./query').IQueryConstraint} IQueryConstraint
  * @typedef {import('./query').OrderByDirection} OrderByDirection
  * @typedef {import('./query').QueryFieldFilterConstraint} QueryFieldFilterConstraint
+ * @typedef {import('./query').QueryLimitConstraint} QueryLimitConstraint
  * @typedef {import('./query').QueryNonFilterConstraint} QueryNonFilterConstraint
  * @typedef {import('./query').QueryOrderByConstraint} QueryOrderByConstraint
  * @typedef {import('./query').QueryStartAtConstraint} QueryStartAtConstraint
@@ -74,6 +75,14 @@ export function startAt(...docOrFields) {
   }
 
   return new QueryConstraint('startAt', ...docOrFields);
+}
+
+/**
+ * @param {number} limit
+ * @returns {QueryLimitConstraint}
+ */
+export function limit(limit) {
+  return new QueryConstraint('limit', limit);
 }
 
 /**
