@@ -118,7 +118,7 @@ describe('firestore.DocumentChange', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('.doc -> returns a DocumentSnapshot', async function () {
       const { getFirestore, collection, addDoc, limit, getDocs, query } = firestoreModular;
       const db = getFirestore();

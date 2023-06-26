@@ -160,3 +160,4 @@ export async function initializeFirestore(app, settings, databaseId) {
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';
+export * from './FieldPath';
