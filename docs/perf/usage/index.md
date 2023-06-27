@@ -96,7 +96,7 @@ import perf from '@react-native-firebase/perf';
 async function screenTrace() {
   // Define & start a screen trace
   try {
-    const trace = await perf().startScrenTrace('FooScreen');
+    const trace = await perf().startScreenTrace('FooScreen');
     // Stop the trace
     await trace.stop();
   } catch (e) {
