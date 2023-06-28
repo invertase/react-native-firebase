@@ -23,7 +23,7 @@
 
 Dynamic Links are smart URLs that allow you to send existing and potential users to any location within your React Native app. They survive the app install process, so even new users can see the content they're looking for when they open the app for the first time.
 
-[> Learn More](https://firebase.google.com/products/dynamic-links/)
+[> Learn More](https://firebase.google.com/docs/dynamic-links)
 
 ## Installation
 
