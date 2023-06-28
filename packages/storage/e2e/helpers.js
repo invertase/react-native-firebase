@@ -1,4 +1,5 @@
 const testingUtils = require('@firebase/rules-unit-testing');
+const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
 
 // TODO make more unique?
 const ID = Date.now();
@@ -11,7 +12,7 @@ exports.seed = async function seed(path) {
   // Force the rules for the storage emulator to be what we expect
 
   await testingUtils.initializeTestEnvironment({
-    projectId: 'react-native-firebase-testing',
+    projectId: getE2eTestProject(),
     storage: {
       rules: `rules_version = '2';
       service firebase.storage {
@@ -29,12 +30,12 @@ exports.seed = async function seed(path) {
             allow read, write: if true;
           }
 
-          match /react-native-firebase-testing/{document=**} {
+          match /${getE2eTestProject()}/{document=**} {
             allow read, write: if true;
           }
         }
       }`,
-      host: 'localhost',
+      host: getE2eEmulatorHost(),
       port: 9199,
     },
   });
