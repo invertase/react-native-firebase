@@ -169,3 +169,4 @@ export * from './snapshot';
 export * from './Bytes';
 export * from './FieldPath';
 export * from './FieldValue';
+export * from './GeoPoint';

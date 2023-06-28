@@ -20,112 +20,251 @@ describe('firestore.GeoPoint', function () {
   before(function () {
     return wipe();
   });
-  it('throws if invalid number of arguments', function () {
-    try {
-      new firebase.firestore.GeoPoint(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('constructor expected latitude and longitude values');
-      return Promise.resolve();
-    }
-  });
 
-  it('throws if latitude is not a number', function () {
-    try {
-      new firebase.firestore.GeoPoint('123', 0);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'latitude' must be a number value");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if longitude is not a number', function () {
-    try {
-      new firebase.firestore.GeoPoint(0, '123');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'longitude' must be a number value");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if latitude is not valid', function () {
-    try {
-      new firebase.firestore.GeoPoint(-100, 0);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'latitude' must be a number between -90 and 90");
-      return Promise.resolve();
-    }
-  });
-
-  it('throws if longitude is not valid', function () {
-    try {
-      new firebase.firestore.GeoPoint(0, 200);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'longitude' must be a number between -180 and 180");
-      return Promise.resolve();
-    }
-  });
-
-  it('gets the latitude value', function () {
-    const geo = new firebase.firestore.GeoPoint(20, 0);
-    geo.latitude.should.equal(20);
-  });
-
-  it('gets the longitude value', function () {
-    const geo = new firebase.firestore.GeoPoint(20, 15);
-    geo.longitude.should.equal(15);
-  });
-
-  describe('isEqual()', function () {
-    it('throws if other is a GeoPoint instance', function () {
+  describe('v8 compatibility', function () {
+    it('throws if invalid number of arguments', function () {
       try {
-        const geo = new firebase.firestore.GeoPoint(0, 0);
-        geo.isEqual();
+        new firebase.firestore.GeoPoint(123);
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
-        error.message.should.containEql("'other' expected an instance of GeoPoint");
+        error.message.should.containEql('constructor expected latitude and longitude values');
         return Promise.resolve();
       }
     });
 
-    it('returns false if not the same', function () {
-      const geo1 = new firebase.firestore.GeoPoint(0, 0);
-      const geo2 = new firebase.firestore.GeoPoint(0, 1);
-      const equal = geo1.isEqual(geo2);
-      equal.should.equal(false);
+    it('throws if latitude is not a number', function () {
+      try {
+        new firebase.firestore.GeoPoint('123', 0);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'latitude' must be a number value");
+        return Promise.resolve();
+      }
     });
 
-    it('returns true if the same', function () {
-      const geo1 = new firebase.firestore.GeoPoint(40, 40);
-      const geo2 = new firebase.firestore.GeoPoint(40, 40);
-      const equal = geo1.isEqual(geo2);
-      equal.should.equal(true);
+    it('throws if longitude is not a number', function () {
+      try {
+        new firebase.firestore.GeoPoint(0, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'longitude' must be a number value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if latitude is not valid', function () {
+      try {
+        new firebase.firestore.GeoPoint(-100, 0);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'latitude' must be a number between -90 and 90");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if longitude is not valid', function () {
+      try {
+        new firebase.firestore.GeoPoint(0, 200);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'longitude' must be a number between -180 and 180");
+        return Promise.resolve();
+      }
+    });
+
+    it('gets the latitude value', function () {
+      const geo = new firebase.firestore.GeoPoint(20, 0);
+      geo.latitude.should.equal(20);
+    });
+
+    it('gets the longitude value', function () {
+      const geo = new firebase.firestore.GeoPoint(20, 15);
+      geo.longitude.should.equal(15);
+    });
+
+    describe('isEqual()', function () {
+      it('throws if other is a GeoPoint instance', function () {
+        try {
+          const geo = new firebase.firestore.GeoPoint(0, 0);
+          geo.isEqual();
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql("'other' expected an instance of GeoPoint");
+          return Promise.resolve();
+        }
+      });
+
+      it('returns false if not the same', function () {
+        const geo1 = new firebase.firestore.GeoPoint(0, 0);
+        const geo2 = new firebase.firestore.GeoPoint(0, 1);
+        const equal = geo1.isEqual(geo2);
+        equal.should.equal(false);
+      });
+
+      it('returns true if the same', function () {
+        const geo1 = new firebase.firestore.GeoPoint(40, 40);
+        const geo2 = new firebase.firestore.GeoPoint(40, 40);
+        const equal = geo1.isEqual(geo2);
+        equal.should.equal(true);
+      });
+    });
+
+    describe('toJSON()', function () {
+      it('returns a json representation of the GeoPoint', function () {
+        const geo = new firebase.firestore.GeoPoint(30, 35);
+        const json = geo.toJSON();
+        json.latitude.should.eql(30);
+        json.longitude.should.eql(35);
+      });
+    });
+
+    it('sets & returns correctly', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/geopoint`);
+      await ref.set({
+        geopoint: new firebase.firestore.GeoPoint(20, 30),
+      });
+      const snapshot = await ref.get();
+      const geo = snapshot.data().geopoint;
+      should.equal(geo.constructor.name, 'FirestoreGeoPoint');
+      geo.latitude.should.equal(20);
+      geo.longitude.should.equal(30);
+      await ref.delete();
     });
   });
 
-  describe('toJSON()', function () {
-    it('returns a json representation of the GeoPoint', function () {
-      const geo = new firebase.firestore.GeoPoint(30, 35);
-      const json = geo.toJSON();
-      json.latitude.should.eql(30);
-      json.longitude.should.eql(35);
-    });
-  });
+  describe('modular', function () {
+    it('throws if invalid number of arguments', function () {
+      const { GeoPoint } = firestoreModular;
 
-  it('sets & returns correctly', async function () {
-    const ref = firebase.firestore().doc(`${COLLECTION}/geopoint`);
-    await ref.set({
-      geopoint: new firebase.firestore.GeoPoint(20, 30),
+      try {
+        new GeoPoint(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('constructor expected latitude and longitude values');
+        return Promise.resolve();
+      }
     });
-    const snapshot = await ref.get();
-    const geo = snapshot.data().geopoint;
-    should.equal(geo.constructor.name, 'FirestoreGeoPoint');
-    geo.latitude.should.equal(20);
-    geo.longitude.should.equal(30);
-    await ref.delete();
+
+    it('throws if latitude is not a number', function () {
+      const { GeoPoint } = firestoreModular;
+
+      try {
+        new GeoPoint('123', 0);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'latitude' must be a number value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if longitude is not a number', function () {
+      const { GeoPoint } = firestoreModular;
+
+      try {
+        new GeoPoint(0, '123');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'longitude' must be a number value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if latitude is not valid', function () {
+      const { GeoPoint } = firestoreModular;
+
+      try {
+        new GeoPoint(-100, 0);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'latitude' must be a number between -90 and 90");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if longitude is not valid', function () {
+      const { GeoPoint } = firestoreModular;
+
+      try {
+        new GeoPoint(0, 200);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'longitude' must be a number between -180 and 180");
+        return Promise.resolve();
+      }
+    });
+
+    it('gets the latitude value', function () {
+      const { GeoPoint } = firestoreModular;
+
+      const geo = new GeoPoint(20, 0);
+      geo.latitude.should.equal(20);
+    });
+
+    it('gets the longitude value', function () {
+      const { GeoPoint } = firestoreModular;
+
+      const geo = new GeoPoint(20, 15);
+      geo.longitude.should.equal(15);
+    });
+
+    describe('isEqual()', function () {
+      it('throws if other is a GeoPoint instance', function () {
+        const { GeoPoint } = firestoreModular;
+
+        try {
+          const geo = new GeoPoint(0, 0);
+          geo.isEqual();
+          return Promise.reject(new Error('Did not throw an Error.'));
+        } catch (error) {
+          error.message.should.containEql("'other' expected an instance of GeoPoint");
+          return Promise.resolve();
+        }
+      });
+
+      it('returns false if not the same', function () {
+        const { GeoPoint } = firestoreModular;
+
+        const geo1 = new GeoPoint(0, 0);
+        const geo2 = new GeoPoint(0, 1);
+        const equal = geo1.isEqual(geo2);
+        equal.should.equal(false);
+      });
+
+      it('returns true if the same', function () {
+        const { GeoPoint } = firestoreModular;
+
+        const geo1 = new GeoPoint(40, 40);
+        const geo2 = new GeoPoint(40, 40);
+        const equal = geo1.isEqual(geo2);
+        equal.should.equal(true);
+      });
+    });
+
+    describe('toJSON()', function () {
+      it('returns a json representation of the GeoPoint', function () {
+        const { GeoPoint } = firestoreModular;
+
+        const geo = new GeoPoint(30, 35);
+        const json = geo.toJSON();
+        json.latitude.should.eql(30);
+        json.longitude.should.eql(35);
+      });
+    });
+
+    it('sets & returns correctly', async function () {
+      const { getFirestore, doc, setDoc, getDocs, deleteDoc, GeoPoint } = firestoreModular;
+      const db = getFirestore();
+
+      const ref = doc(db, `${COLLECTION}/geopoint`);
+      await setDoc(ref, {
+        geopoint: new GeoPoint(20, 30),
+      });
+      const snapshot = await getDocs(ref);
+      const geo = snapshot.data().geopoint;
+      should.equal(geo.constructor.name, 'FirestoreGeoPoint');
+      geo.latitude.should.equal(20);
+      geo.longitude.should.equal(30);
+      await deleteDoc(ref);
+    });
   });
 });
