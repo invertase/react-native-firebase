@@ -76,7 +76,7 @@ Working on your first Pull Request? You can learn how from this _free_ series, [
      *
      * @platform ios iOS
      */
-    aCoolMethod(): Promize<null>;
+    aCoolMethod(): Promise<null>;
   }
   ```
   - If a method works on both platforms then there's no need to annotate it
