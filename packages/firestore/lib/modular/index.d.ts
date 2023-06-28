@@ -426,3 +426,17 @@ export function initializeFirestore(
   settings: FirestoreSettings,
   databaseId?: string,
 ): Promise<Firestore>;
+
+/**
+ * The verbosity you set for activity and error logging. Can be any of the following values:
+ * - debug for the most verbose logging level, primarily for debugging.
+ * - error to log errors only.
+ * - silent to turn off logging.
+ */
+type LogLevel = 'debug' | 'error' | 'silent';
+
+/**
+ * Sets the verbosity of Cloud Firestore logs (debug, error, or silent).
+ * @param logLevel - The verbosity you set for activity and error logging.
+ */
+export function setLogLevel(logLevel: LogLevel): void;

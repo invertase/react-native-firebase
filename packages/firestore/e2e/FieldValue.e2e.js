@@ -267,7 +267,7 @@ describe('firestore.FieldValue', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('should throw if constructed manually', function () {
       const { FieldValue } = firestoreModular;
 

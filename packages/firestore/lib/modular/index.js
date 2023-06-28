@@ -7,12 +7,11 @@
  * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('..').FirebaseFirestoreTypes.SetOptions} SetOptions
  * @typedef {import('..').FirebaseFirestoreTypes.Settings} FirestoreSettings
- * @typedef {import('./index').PartialWithFieldValue} PartialWithFieldValue
- * @typedef {import('./index').UpdateData} UpdateData
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
 import { firebase } from '../index';
+import { LogLevel } from './index';
 
 /**
  * @param {FirebaseApp?} app
@@ -65,7 +64,7 @@ export function collectionGroup(firestore, collectionId) {
 
 /**
  * @param {DocumentReference} reference
- * @param {PartialWithFieldValue} data
+ * @param {import('.').PartialWithFieldValue} data
  * @param {SetOptions?} options
  * @returns {Promise<void>}
  */
@@ -75,7 +74,7 @@ export function setDoc(reference, data, options) {
 
 /**
  * @param {DocumentReference} reference
- * @param {string | FieldPath | UpdateData} fieldOrUpdateData
+ * @param {string | FieldPath | import('.').UpdateData} fieldOrUpdateData
  * @param {unknown?} value
  * @param {unknown} moreFieldsAndValues
  * @returns {Promise<void>}
@@ -155,6 +154,14 @@ export async function initializeFirestore(app, settings, databaseId) {
   const firestore = firebase.firestore(app);
   await firestore.settings(settings);
   return firestore;
+}
+
+/**
+ * @param {import('./').LogLevel} logLevel
+ * @returns {void}
+ */
+export function setLogLevel(logLevel) {
+  return firebase.firestore.setLogLevel(logLevel);
 }
 
 export * from './query';
