@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { getE2eTestProject, getE2eEmulatorHost } = require('../../app/e2e/helpers');
 const http = require('http');
+const fetch = require('node-fetch');
 
 // Call HTTP REST API URL and return JSON response parsed into object
 const callRestApi = async function callRestAPI(url, rawResult = false) {
@@ -34,24 +35,23 @@ function getRandomPhoneNumber() {
 exports.getRandomPhoneNumber = getRandomPhoneNumber;
 
 exports.clearAllUsers = async function clearAllUsers() {
-  // console.log('auth::helpers::clearAllUsers');
+  // console.error('auth::helpers::clearAllUsers');
   try {
-    const deleteOptions = {
-      method: 'DELETE',
-      headers: {
-        // Undocumented, but necessary - from Emulator UI network requests
-        Authorization: 'Bearer owner',
+    const response = await fetch(
+      'http://' +
+        getE2eEmulatorHost() +
+        ':9099' +
+        '/emulator/v1/projects/' +
+        getE2eTestProject() +
+        '/accounts',
+      {
+        method: 'delete',
+        headers: { Authorization: 'Bearer owner' },
       },
-      port: 9099,
-      host: getE2eEmulatorHost(),
-      path: '/emulator/v1/projects/' + getE2eTestProject() + '/accounts',
-    };
-    // console.log('request: ' + JSON.stringify(deleteOptions));
-    await new Promise((resolve, reject) => {
-      const req = http.request(deleteOptions);
-      req.on('error', error => reject(error));
-      req.end(resolve());
-    });
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const result = await response.json();
+    // console.error('received: ' + JSON.stringify(result));
   } catch (e) {
     console.error('Unable to wipe auth:', e);
     throw e;
@@ -59,28 +59,24 @@ exports.clearAllUsers = async function clearAllUsers() {
 };
 
 exports.disableUser = async function disableUser(userId) {
-  // console.log('auth::helpers::disableUser on userId: ' + userId);
-  const reqBody = JSON.stringify({ disableUser: true, localId: userId });
+  // console.error('auth::helpers::disableUser on userId: ' + userId);
   try {
-    const postOptions = {
-      method: 'POST',
-      headers: {
-        // Undocumented, but necessary - from Emulator UI network requests
-        Authorization: 'Bearer owner',
-        'Content-Type': 'application/json',
-        'Content-Length': reqBody.length,
+    const response = await fetch(
+      'http://' +
+        getE2eEmulatorHost() +
+        ':9099' +
+        '/identitytoolkit.googleapis.com/v1/projects/' +
+        getE2eTestProject() +
+        '/accounts:update',
+      {
+        method: 'post',
+        body: JSON.stringify({ disableUser: true, localId: userId }),
+        headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
       },
-      port: 9099,
-      host: getE2eEmulatorHost(),
-      path: '/identitytoolkit.googleapis.com/v1/accounts:update',
-    };
-    // console.log('request: ' + JSON.stringify(postOptions));
-    await new Promise((resolve, reject) => {
-      const req = http.request(postOptions);
-      req.on('error', error => reject(error));
-      req.write(reqBody);
-      req.end(resolve());
-    });
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const result = await response.json();
+    // console.error('received: ' + JSON.stringify(result));
   } catch (e) {
     console.error('Unable to update user:', e);
     throw e;
