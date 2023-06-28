@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - uses: amannn/action-semantic-pull-request@v5
         with:
           validateSingleCommit: true
