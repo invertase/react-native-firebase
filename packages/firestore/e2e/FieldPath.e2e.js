@@ -116,7 +116,7 @@ describe('firestore.FieldPath', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('should throw if no segments', function () {
       const { FieldPath } = firestoreModular;
 

@@ -32,7 +32,7 @@ export function getFirestore(app) {
  * @param {string?} pathSegments
  * @returns {DocumentReference}
  */
-export function doc<T>(parent, path, ...pathSegments) {
+export function doc(parent, path, ...pathSegments) {
   if (pathSegments && pathSegments.length) {
     path = path + '/' + pathSegments.map(e => e.replace(/^\/|\/$/g, '')).join('/');
   }
@@ -80,7 +80,7 @@ export function setDoc(reference, data, options) {
  * @param {unknown} moreFieldsAndValues
  * @returns {Promise<void>}
  */
-export function updateDoc<T>(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
+export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
   if (!value) {
     return reference.update(fieldOrUpdateData);
   }
@@ -97,7 +97,7 @@ export function updateDoc<T>(reference, fieldOrUpdateData, value, ...moreFieldsA
  * @param {WithFieldValue} data
  * @returns {Promise<DocumentReference>}
  */
-export function addDoc<T>(reference, data) {
+export function addDoc(reference, data) {
   return reference.add(data);
 }
 
@@ -161,3 +161,4 @@ export * from './query';
 export * from './snapshot';
 export * from './Bytes';
 export * from './FieldPath';
+export * from './FieldValue';
