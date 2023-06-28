@@ -38,11 +38,11 @@ jobs:
         with:
           node-version: 16
 
-      - name: Configure JDK 1.11
+      - name: Configure JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
