@@ -27,7 +27,7 @@
     "@react-native-firebase/storage": "18.1.0",
     "postinstall-postinstall": "2.1.0",
     "react": "18.2.0",
-    "react-native": "0.70.7",
+    "react-native": "0.72.0",
     "react-native-device-info": "^10.6.0"
   },
   "devDependencies": {
