@@ -1,14 +1,14 @@
 package com.invertase.testing;
 
 import android.app.Application;
+import android.os.Build;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.config.ReactFeatureFlags;
-import com.facebook.react.devsupport.DevInternalSettings;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
-import com.invertase.testing.newarchitecture.MainApplicationReactNativeHost;
 import io.invertase.firebase.app.ReactNativeFirebaseApp;
 import io.invertase.jet.JetPackage;
 
@@ -16,54 +16,57 @@ import java.util.List;
 
 
 public class MainApplication extends Application implements ReactApplication {
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
-    @Override
-    public boolean getUseDeveloperSupport() {
-      return BuildConfig.DEBUG;
-    }
+  
+  private final ReactNativeHost mReactNativeHost =
+      new DefaultReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+          return BuildConfig.DEBUG;
+        }
 
-    @Override
-    protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new PackageList(this).getPackages();
-      return packages;
-    }
+        @Override
+        protected List<ReactPackage> getPackages() {
+          @SuppressWarnings("UnnecessaryLocalVariable")
+          List<ReactPackage> packages = new PackageList(this).getPackages();
+          // Packages that cannot be autolinked yet can be added manually here, for example:
+          // packages.add(new MyReactNativePackage());
+          return packages;
+        }
 
-    @Override
-    protected String getJSMainModuleName() {
-      return "index";
-    }
-  };
+        @Override
+        protected String getJSMainModuleName() {
+          return "index";
+        }
 
-  private final ReactNativeHost mNewArchitectureNativeHost =
-      new MainApplicationReactNativeHost(this);
+        @Override
+        protected boolean isNewArchEnabled() {
+          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+        }
+
+        @Override
+        protected Boolean isHermesEnabled() {
+          return BuildConfig.IS_HERMES_ENABLED;
+        }
+      };
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      return mNewArchitectureNativeHost;
-    } else {
-      return mReactNativeHost;
-    }
+    return mReactNativeHost;
   }
+
 
   @Override
   public void onCreate() {
     super.onCreate();
-
-    // If you opted-in for the New Architecture, we enable the TurboModule system
-    ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-    
-    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative", getApplicationContext());
     SoLoader.init(this, /* native exopackage */ false);
-
-//    // TODO move to jet
-//    DevInternalSettings settings = (DevInternalSettings) getReactNativeHost()
-//      .getReactInstanceManager()
-//      .getDevSupportManager()
-//      .getDevSettings();
-//
-//    if (settings != null) {
-//      settings.setBundleDeltasEnabled(false);
-//    }
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // If you opted-in for the New Architecture, we load the native entry point for this app.
+      DefaultNewArchitectureEntryPoint.load();
+    }
+    // Flipper only works on API >= 23
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+      ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+    }
+    ReactNativeFirebaseApp.initializeSecondaryApp("secondaryFromNative", getApplicationContext());
   }
 }
