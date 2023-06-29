@@ -44,6 +44,7 @@ jest.doMock('react-native', () => {
           },
           addAuthStateListener: jest.fn(),
           addIdTokenListener: jest.fn(),
+          setTenantId: jest.fn(),
           useEmulator: jest.fn(),
         },
         RNFBCrashlyticsModule: {},
