@@ -46,10 +46,10 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthMultiFactorException;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseAuthSettings;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GetTokenResult;
@@ -59,8 +59,8 @@ import com.google.firebase.auth.MultiFactorAssertion;
 import com.google.firebase.auth.MultiFactorInfo;
 import com.google.firebase.auth.MultiFactorResolver;
 import com.google.firebase.auth.MultiFactorSession;
-import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.OAuthCredential;
+import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -867,10 +867,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   @ReactMethod
-  public void signInWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
+  public void signInWithProvider(
+      String appName, String providerId, @Nullable String email, Promise promise) {
     OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
 
-    if(email != null){
+    if (email != null) {
       provider.addCustomParameter("login_hint", email);
     }
     provider.addCustomParameter("prompt", "select_account");
@@ -879,41 +880,41 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
-    OnSuccessListener onSuccess = new OnSuccessListener<AuthResult>(){
-      @Override
-      public void onSuccess(AuthResult authResult) {
-        Log.d(TAG, "signInWithProvider:onComplete:success");
-        promiseWithAuthResult(authResult, promise);
-      }
-    };
+    OnSuccessListener onSuccess =
+        new OnSuccessListener<AuthResult>() {
+          @Override
+          public void onSuccess(AuthResult authResult) {
+            Log.d(TAG, "signInWithProvider:onComplete:success");
+            promiseWithAuthResult(authResult, promise);
+          }
+        };
 
-    OnFailureListener onFailure = new OnFailureListener(){
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        Log.w(TAG, "signInWithProvider:onComplete:failure", e);
-        promiseRejectAuthException(promise, e);
-      }
-    };
-
+    OnFailureListener onFailure =
+        new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            Log.w(TAG, "signInWithProvider:onComplete:failure", e);
+            promiseRejectAuthException(promise, e);
+          }
+        };
 
     Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
-    if(pendingResultTask != null){
-      pendingResultTask
-        .addOnSuccessListener(onSuccess)
-        .addOnFailureListener(onFailure);
+    if (pendingResultTask != null) {
+      pendingResultTask.addOnSuccessListener(onSuccess).addOnFailureListener(onFailure);
     } else {
       firebaseAuth
-        .startActivityForSignInWithProvider(activity, provider.build())
-        .addOnSuccessListener(onSuccess)
-        .addOnFailureListener(onFailure);
+          .startActivityForSignInWithProvider(activity, provider.build())
+          .addOnSuccessListener(onSuccess)
+          .addOnFailureListener(onFailure);
     }
   }
 
   @ReactMethod
-  public void linkWithProvider(String appName, String providerId, @Nullable String email, Promise promise){
+  public void linkWithProvider(
+      String appName, String providerId, @Nullable String email, Promise promise) {
     OAuthProvider.Builder provider = OAuthProvider.newBuilder(providerId);
 
-    if(email != null){
+    if (email != null) {
       provider.addCustomParameter("login_hint", email);
     }
     provider.addCustomParameter("prompt", "select_account");
@@ -923,33 +924,32 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-    OnSuccessListener onSuccess = new OnSuccessListener<AuthResult>(){
-      @Override
-      public void onSuccess(AuthResult authResult) {
-        Log.d(TAG, "linkWithProvider:onComplete:success");
-        promiseWithAuthResult(authResult, promise);
-      }
-    };
+    OnSuccessListener onSuccess =
+        new OnSuccessListener<AuthResult>() {
+          @Override
+          public void onSuccess(AuthResult authResult) {
+            Log.d(TAG, "linkWithProvider:onComplete:success");
+            promiseWithAuthResult(authResult, promise);
+          }
+        };
 
-    OnFailureListener onFailure = new OnFailureListener(){
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        Log.w(TAG, "linkInWithProvider:onComplete:failure", e);
-        promiseRejectAuthException(promise, e);
-      }
-    };
-
+    OnFailureListener onFailure =
+        new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+            Log.w(TAG, "linkInWithProvider:onComplete:failure", e);
+            promiseRejectAuthException(promise, e);
+          }
+        };
 
     Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
-    if(pendingResultTask != null){
-      pendingResultTask
-        .addOnSuccessListener(onSuccess)
-        .addOnFailureListener(onFailure);
+    if (pendingResultTask != null) {
+      pendingResultTask.addOnSuccessListener(onSuccess).addOnFailureListener(onFailure);
     } else {
       firebaseUser
-        .startActivityForLinkWithProvider(activity, provider.build())
-        .addOnSuccessListener(onSuccess)
-        .addOnFailureListener(onFailure);
+          .startActivityForLinkWithProvider(activity, provider.build())
+          .addOnSuccessListener(onSuccess)
+          .addOnFailureListener(onFailure);
     }
   }
 
@@ -1980,23 +1980,23 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       WritableMap authResultMap = Arguments.createMap();
       WritableMap userMap = firebaseUserToMap(authResult.getUser());
 
-      if(authResult.getCredential() != null){
-        if(authResult.getCredential() instanceof OAuthCredential){
+      if (authResult.getCredential() != null) {
+        if (authResult.getCredential() instanceof OAuthCredential) {
           OAuthCredential creds = (OAuthCredential) authResult.getCredential();
           WritableMap credentialMap = Arguments.createMap();
 
           credentialMap.putString("providerId", creds.getProvider());
           credentialMap.putString("signInMethod", creds.getSignInMethod());
 
-          if(creds.getIdToken() != null){
+          if (creds.getIdToken() != null) {
             credentialMap.putString("idToken", creds.getIdToken());
           }
 
-          if(creds.getAccessToken() != null){
+          if (creds.getAccessToken() != null) {
             credentialMap.putString("accessToken", creds.getAccessToken());
           }
 
-          if(creds.getSecret() != null){
+          if (creds.getSecret() != null) {
             credentialMap.putString("secret", creds.getSecret());
           }
 
@@ -2055,12 +2055,11 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       map.putMap("resolver", resolverAsMap);
     }
 
-    if(error.getString("email") != null){
+    if (error.getString("email") != null) {
       map.putString("email", error.getString("email"));
     }
 
-    rejectPromiseWithMap(
-        promise, error.getString("code"), error.getString("message"), map);
+    rejectPromiseWithMap(promise, error.getString("code"), error.getString("message"), map);
   }
 
   /**
@@ -2110,7 +2109,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
                     + " before retrying this request.";
             break;
           case "ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-          message =
+            message =
                 "An account already exists with the same email address but different sign-in"
                     + " credentials. Sign in using a provider associated with this email address.";
             break;
@@ -2148,7 +2147,7 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
       }
     }
 
-    if(exception instanceof FirebaseAuthUserCollisionException) {
+    if (exception instanceof FirebaseAuthUserCollisionException) {
       error.putString("email", ((FirebaseAuthUserCollisionException) exception).getEmail());
     }
 

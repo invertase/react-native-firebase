@@ -578,7 +578,6 @@ RCT_EXPORT_METHOD(signInWithCredential
                 }];
 }
 
-
 RCT_EXPORT_METHOD(signInWithProvider
                   : (FIRApp *)firebaseApp
                   : (NSString *)providerID
@@ -589,30 +588,35 @@ RCT_EXPORT_METHOD(signInWithProvider
   [oAuthProviders setValue:provider forKey:providerID];
 
   if (email) {
-    [provider setCustomParameters:@{@"login_hint": email, @"prompt": @"select_account"}];
-  }
-  else {
-    [provider setCustomParameters:@{@"prompt": @"select_account"}];
+    [provider setCustomParameters:@{@"login_hint" : email, @"prompt" : @"select_account"}];
+  } else {
+    [provider setCustomParameters:@{@"prompt" : @"select_account"}];
   }
 
   [provider getCredentialWithUIDelegate:nil
-                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    }
+                             completion:^(FIRAuthCredential *_Nullable credential,
+                                          NSError *_Nullable error) {
+                               if (error) {
+                                 [self promiseRejectAuthException:reject error:error];
+                               }
 
-    if (credential) {
-      [[FIRAuth auth] signInWithCredential:credential
-                                completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-        if (error) {
-          [self promiseRejectAuthException:reject error:error];
-        }
-        else {
-          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:credential];
-        }
-      }];
-    }
-  }];
+                               if (credential) {
+                                 [[FIRAuth auth]
+                                     signInWithCredential:credential
+                                               completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                            NSError *_Nullable error) {
+                                                 if (error) {
+                                                   [self promiseRejectAuthException:reject
+                                                                              error:error];
+                                                 } else {
+                                                   [self promiseWithAuthResult:resolve
+                                                                      rejecter:reject
+                                                                    authResult:authResult
+                                                                    credential:credential];
+                                                 }
+                                               }];
+                               }
+                             }];
 }
 
 RCT_EXPORT_METHOD(linkWithProvider
@@ -625,30 +629,35 @@ RCT_EXPORT_METHOD(linkWithProvider
   [oAuthProviders setValue:provider forKey:providerID];
 
   if (email) {
-    [provider setCustomParameters:@{@"login_hint": email, @"prompt": @"select_account"}];
-  }
-  else {
-    [provider setCustomParameters:@{@"prompt": @"select_account"}];
+    [provider setCustomParameters:@{@"login_hint" : email, @"prompt" : @"select_account"}];
+  } else {
+    [provider setCustomParameters:@{@"prompt" : @"select_account"}];
   }
 
   [provider getCredentialWithUIDelegate:nil
-                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-    }
+                             completion:^(FIRAuthCredential *_Nullable credential,
+                                          NSError *_Nullable error) {
+                               if (error) {
+                                 [self promiseRejectAuthException:reject error:error];
+                               }
 
-    if (credential) {
-      [[FIRAuth auth].currentUser linkWithCredential:credential
-                                          completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-        if (error) {
-          [self promiseRejectAuthException:reject error:error];
-        }
-        else {
-          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:credential];
-        }
-      }];
-    }
-  }];
+                               if (credential) {
+                                 [[FIRAuth auth].currentUser
+                                     linkWithCredential:credential
+                                             completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                          NSError *_Nullable error) {
+                                               if (error) {
+                                                 [self promiseRejectAuthException:reject
+                                                                            error:error];
+                                               } else {
+                                                 [self promiseWithAuthResult:resolve
+                                                                    rejecter:reject
+                                                                  authResult:authResult
+                                                                  credential:credential];
+                                               }
+                                             }];
+                               }
+                             }];
 }
 
 RCT_EXPORT_METHOD(confirmPasswordReset
@@ -1382,7 +1391,7 @@ RCT_EXPORT_METHOD(useEmulator
     @"nativeErrorMessage" : nativeErrorMessage,
     @"authCredential" : authCredentialDict != nil ? (id)authCredentialDict : [NSNull null],
     @"resolver" : resolverDict != nil ? (id)resolverDict : [NSNull null],
-    @"email": email != nil ? email : [NSNull null]
+    @"email" : email != nil ? email : [NSNull null]
   };
 }
 
@@ -1399,7 +1408,7 @@ RCT_EXPORT_METHOD(useEmulator
 
 - (void)promiseWithAuthResult:(RCTPromiseResolveBlock)resolve
                      rejecter:(RCTPromiseRejectBlock)reject
-                             authResult:(FIRAuthDataResult *)authResult {
+                   authResult:(FIRAuthDataResult *)authResult {
   [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult credential:nil];
 }
 
@@ -1440,34 +1449,30 @@ RCT_EXPORT_METHOD(useEmulator
 
     if (credential && ([credential isKindOfClass:[FIROAuthCredential class]])) {
       NSMutableDictionary *credentialDict = [NSMutableDictionary dictionary];
-      FIROAuthCredential* oAuthCredential = (FIROAuthCredential *)credential;
+      FIROAuthCredential *oAuthCredential = (FIROAuthCredential *)credential;
 
       [credentialDict setValue:oAuthCredential.provider forKey:keyProviderId];
 
       if (oAuthCredential.IDToken) {
         [credentialDict setValue:oAuthCredential.IDToken forKey:keyIdToken];
-      }
-      else {
+      } else {
         [credentialDict setValue:[NSNull null] forKey:keyIdToken];
       }
 
       if (oAuthCredential.accessToken) {
         [credentialDict setValue:oAuthCredential.accessToken forKey:keyAccessToken];
-      }
-      else {
+      } else {
         [credentialDict setValue:[NSNull null] forKey:keyAccessToken];
       }
 
       if (oAuthCredential.accessToken) {
         [credentialDict setValue:oAuthCredential.secret forKey:keySecret];
-      }
-      else {
+      } else {
         [credentialDict setValue:[NSNull null] forKey:keySecret];
       }
 
       [authResultDict setValue:credentialDict forKey:keyCredential];
-    }
-    else {
+    } else {
       [authResultDict setValue:[NSNull null] forKey:keyCredential];
     }
 
