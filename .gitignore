@@ -326,13 +326,6 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-### ReactNative.Buck Stack ###
-buck-out/
-.buckconfig.local
-.buckd/
-.buckversion
-.fakebuckversion
-
 ### ReactNative.Linux Stack ###
 
 # temporary files which can be created if a process still has a handle open of a deleted file
@@ -564,3 +557,6 @@ spelling.json
 # Gatsby / Website
 website/.cache
 website/public
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
