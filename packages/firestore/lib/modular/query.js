@@ -15,17 +15,19 @@
  * @typedef {import('./query').QueryStartAtConstraint} QueryStartAtConstraint
  */
 
+import { QueryStartAtConstraint } from './query';
+
 /**
  * @implements {IQueryConstraint}
  */
 class QueryConstraint {
   constructor(type, ...args) {
-    this._type = type;
+    this.type = type;
     this._args = args;
   }
 
   _apply(query) {
-    return query[this._type].apply(query, this._args);
+    return query[this.type].apply(query, this._args);
   }
 }
 
@@ -70,11 +72,15 @@ export function orderBy(fieldPath, directionStr) {
  * @returns {QueryStartAtConstraint}
  */
 export function startAt(...docOrFields) {
-  if (docOrFields.length > 1) {
-    return new QueryConstraint('startAt', docOrFields[0], docOrFields.slice(1));
-  }
-
   return new QueryConstraint('startAt', ...docOrFields);
+}
+
+/**
+ * @param {(unknown | DocumentSnapshot)} docOrFields
+ * @returns {QueryStartAtConstraint}
+ */
+export function startAfter(...docOrFields) {
+  return new QueryConstraint('startAfter', ...docOrFields);
 }
 
 /**

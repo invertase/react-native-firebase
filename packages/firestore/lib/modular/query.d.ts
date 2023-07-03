@@ -7,6 +7,7 @@ import FieldPath = FirebaseFirestoreTypes.FieldPath;
 import QuerySnapshot = FirebaseFirestoreTypes.QuerySnapshot;
 import DocumentReference = FirebaseFirestoreTypes.DocumentReference;
 import DocumentSnapshot = FirebaseFirestoreTypes.DocumentSnapshot;
+import DocumentData = FirebaseFirestoreTypes.DocumentData;
 
 /** Describes the different query constraints available in this SDK. */
 export type QueryConstraintType =
@@ -187,6 +188,34 @@ export function startAt(...fieldValues: unknown[]): QueryStartAtConstraint;
 
 export function startAt(
   ...docOrFields: Array<unknown | DocumentSnapshot<unknown>>
+): QueryStartAtConstraint;
+
+/**
+ * Creates a {@link QueryStartAtConstraint} that modifies the result set to
+ * start after the provided document (exclusive). The starting position is
+ * relative to the order of the query. The document must contain all of the
+ * fields provided in the orderBy of the query.
+ *
+ * @param snapshot - The snapshot of the document to start after.
+ * @returns A {@link QueryStartAtConstraint} to pass to `query()`
+ */
+export function startAfter<AppModelType, DbModelType extends DocumentData>(
+  snapshot: DocumentSnapshot<AppModelType, DbModelType>,
+): QueryStartAtConstraint;
+
+/**
+ * Creates a {@link QueryStartAtConstraint} that modifies the result set to
+ * start after the provided fields relative to the order of the query. The order
+ * of the field values must match the order of the order by clauses of the query.
+ *
+ * @param fieldValues - The field values to start this query after, in order
+ * of the query's order by.
+ * @returns A {@link QueryStartAtConstraint} to pass to `query()`
+ */
+export function startAfter(...fieldValues: unknown[]): QueryStartAtConstraint;
+
+export function startAfter<AppModelType, DbModelType extends DocumentData>(
+  ...docOrFields: Array<unknown | DocumentSnapshot<AppModelType, DbModelType>>
 ): QueryStartAtConstraint;
 
 /**
