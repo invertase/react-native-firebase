@@ -170,3 +170,4 @@ export * from './Bytes';
 export * from './FieldPath';
 export * from './FieldValue';
 export * from './GeoPoint';
+export * from './Timestamp';

@@ -6,6 +6,9 @@
  * Longitude values are in the range of [-180, 180].
  */
 export declare class GeoPoint {
+  readonly latitude: number;
+  readonly longitude: number;
+
   constructor(latitude: number, longitude: number);
 
   isEqual(other: GeoPoint): boolean;
