@@ -1,4 +1,5 @@
 /**
+ * @typedef {import('..').FirebaseFirestoreTypes} FirebaseFirestoreTypes
  * @typedef {import('..').FirebaseFirestoreTypes.CollectionReference} CollectionReference
  * @typedef {import('..').FirebaseFirestoreTypes.DocumentData} DocumentData
  * @typedef {import('..').FirebaseFirestoreTypes.DocumentReference} DocumentReference
@@ -10,7 +11,7 @@
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
-import { firebase } from '../index';
+import { firebase, FirebaseFirestoreTypes } from '../index';
 import { LogLevel } from './index';
 
 /**
@@ -162,6 +163,15 @@ export async function initializeFirestore(app, settings, databaseId) {
  */
 export function setLogLevel(logLevel) {
   return firebase.firestore.setLogLevel(logLevel);
+}
+
+/**
+ * @param {Firestore} firestore
+ * @param {(transaction: FirebaseFirestoreTypes.Transaction) => Promise} updateFunction
+ * @returns {Promise}
+ */
+export function runTransaction(firestore, updateFunction) {
+  return firestore.runTransaction(updateFunction);
 }
 
 export * from './query';
