@@ -12,7 +12,7 @@
  */
 
 import { firebase, FirebaseFirestoreTypes } from '../index';
-import { LogLevel } from './index';
+import { LoadBundleTask, LogLevel } from './index';
 
 /**
  * @param {FirebaseApp?} app
@@ -180,6 +180,15 @@ export function runTransaction(firestore, updateFunction) {
  */
 export function getCountFromServer(query) {
   return query.count().get();
+}
+
+/**
+ * @param {Firestore} firestore
+ * @param {ReadableStream<Uint8Array> | ArrayBuffer | string} bundleData
+ * @returns {import('.').LoadBundleTask}
+ */
+export function loadBundle(firestore, bundleData) {
+  return firestore.loadBundle(bundleData);
 }
 
 export * from './query';

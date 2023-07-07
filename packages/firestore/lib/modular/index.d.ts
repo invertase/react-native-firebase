@@ -493,3 +493,25 @@ export function getCountFromServer<AppModelType, DbModelType extends DocumentDat
     DbModelType
   >
 >;
+
+/**
+ * Represents the task of loading a Firestore bundle.
+ * It provides progress of bundle loading, as well as task completion and error events.
+ */
+type LoadBundleTask = Promise<FirebaseFirestoreTypes.LoadBundleTaskProgress>;
+
+/**
+ * Loads a Firestore bundle into the local cache.
+ *
+ * @param firestore - The {@link Firestore} instance to load bundles for.
+ * @param bundleData - An object representing the bundle to be loaded. Valid
+ * objects are `ArrayBuffer`, `ReadableStream<Uint8Array>` or `string`.
+ *
+ * @returns A `LoadBundleTask` object, which notifies callers with progress
+ * updates, and completion or error events. It can be used as a
+ * `Promise<LoadBundleTaskProgress>`.
+ */
+export function loadBundle(
+  firestore: Firestore,
+  bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
+): LoadBundleTask;
