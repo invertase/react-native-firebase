@@ -264,6 +264,7 @@ describe('firestore()', function () {
 
     describe('number type consistency', function () {
       before(async function () {
+        // FIXME:
         // This only throws an error in the suite since this is already initialized in the v8 tests above.
         // It throws the following error:
         //
