@@ -18,42 +18,94 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc().collection()', function () {
-  it('throws if path is not a string', function () {
-    try {
-      firebase.firestore().doc('bar/baz').collection(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'collectionPath' must be a string value");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if path is not a string', function () {
+      try {
+        firebase.firestore().doc('bar/baz').collection(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must be a string value");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path empty', function () {
+      try {
+        firebase.firestore().doc('bar/baz').collection('');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must be a non-empty string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if path does not point to a collection', function () {
+      try {
+        firebase.firestore().doc('bar/baz').collection(`${COLLECTION}/bar`);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must point to a collection");
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a collection instance', function () {
+      const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`).collection(COLLECTION);
+      const instance2 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .doc('bar')
+        .collection(COLLECTION);
+      should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
+      should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
+      instance1.id.should.equal(COLLECTION);
+      instance2.id.should.equal(COLLECTION);
+    });
   });
 
-  it('throws if path empty', function () {
-    try {
-      firebase.firestore().doc('bar/baz').collection('');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'collectionPath' must be a non-empty string");
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('throws if path is not a string', function () {
+      const { getFirestore, doc, collection } = firestoreModular;
+      try {
+        collection(doc(getFirestore(), 'bar/baz'), 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must be a string value");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if path does not point to a collection', function () {
-    try {
-      firebase.firestore().doc('bar/baz').collection(`${COLLECTION}/bar`);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'collectionPath' must point to a collection");
-      return Promise.resolve();
-    }
-  });
+    it('throws if path empty', function () {
+      const { getFirestore, doc, collection } = firestoreModular;
+      try {
+        collection(doc(getFirestore(), 'bar/baz'), '');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must be a non-empty string");
+        return Promise.resolve();
+      }
+    });
 
-  it('returns a collection instance', function () {
-    const instance1 = firebase.firestore().doc(`${COLLECTION}/bar`).collection(COLLECTION);
-    const instance2 = firebase.firestore().collection(COLLECTION).doc('bar').collection(COLLECTION);
-    should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
-    should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
-    instance1.id.should.equal(COLLECTION);
-    instance2.id.should.equal(COLLECTION);
+    it('throws if path does not point to a collection', function () {
+      const { getFirestore, doc, collection } = firestoreModular;
+      try {
+        collection(doc(getFirestore(), 'bar/baz'), `${COLLECTION}/bar`);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'collectionPath' must point to a collection");
+        return Promise.resolve();
+      }
+    });
+
+    it('returns a collection instance', function () {
+      const { getFirestore, doc, collection } = firestoreModular;
+      const db = getFirestore();
+      const instance1 = collection(doc(db, `${COLLECTION}/bar`), COLLECTION);
+      const instance2 = collection(doc(collection(db, COLLECTION), 'bar'), COLLECTION);
+      should.equal(instance1.constructor.name, 'FirestoreCollectionReference');
+      should.equal(instance2.constructor.name, 'FirestoreCollectionReference');
+      instance1.id.should.equal(COLLECTION);
+      instance2.id.should.equal(COLLECTION);
+    });
   });
 });
