@@ -172,7 +172,7 @@ describe('firestore().namedQuery()', function () {
       }
     });
 
-    it.only('calls onError if invalid query name', async function () {
+    it('calls onError if invalid query name', async function () {
       const { getFirestore, namedQuery, onSnapshot } = firestoreModular;
 
       const onNext = sinon.spy();
