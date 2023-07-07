@@ -81,6 +81,11 @@ export function setDoc(reference, data, options) {
  * @returns {Promise<void>}
  */
 export function updateDoc(reference, fieldOrUpdateData, value, ...moreFieldsAndValues) {
+  if (!fieldOrUpdateData) {
+    // @ts-ignore
+    return reference.update();
+  }
+
   if (!value) {
     return reference.update(fieldOrUpdateData);
   }
