@@ -21,54 +21,94 @@ describe('firestore.doc().get()', function () {
   before(function () {
     return wipe();
   });
-  it('throws if get options are not an object', function () {
-    try {
-      firebase.firestore().doc('bar/baz').get('foo');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'options' must be an object is provided");
-      return Promise.resolve();
-    }
+
+  describe('v8 compatibility', function () {
+    it('throws if get options are not an object', function () {
+      try {
+        firebase.firestore().doc('bar/baz').get('foo');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'options' must be an object is provided");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if get options are invalid', function () {
+      try {
+        firebase.firestore().doc('bar/baz').get({ source: 'nope' });
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'options' GetOptions.source must be one of 'default', 'server' or 'cache'",
+        );
+        return Promise.resolve();
+      }
+    });
+
+    it('gets data from default source', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await ref.set(data);
+      const snapshot = await ref.get();
+      snapshot.data().should.eql(jet.contextify(data));
+      await ref.delete();
+    });
+
+    it('gets data from the server', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await ref.set(data);
+      const snapshot = await ref.get({ source: 'server' });
+      snapshot.data().should.eql(jet.contextify(data));
+      snapshot.metadata.fromCache.should.equal(false);
+      await ref.delete();
+    });
+
+    it('gets data from cache', async function () {
+      const ref = firebase.firestore().doc(`${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await ref.set(data);
+      const snapshot = await ref.get({ source: 'cache' });
+      snapshot.data().should.eql(jet.contextify(data));
+      snapshot.metadata.fromCache.should.equal(true);
+      await ref.delete();
+    });
   });
 
-  it('throws if get options are invalid', function () {
-    try {
-      firebase.firestore().doc('bar/baz').get({ source: 'nope' });
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "'options' GetOptions.source must be one of 'default', 'server' or 'cache'",
-      );
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('gets data from default source', async function () {
+      const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
 
-  it('gets data from default source', async function () {
-    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
-    const data = { foo: 'bar', bar: 123 };
-    await ref.set(data);
-    const snapshot = await ref.get();
-    snapshot.data().should.eql(jet.contextify(data));
-    await ref.delete();
-  });
+      const ref = doc(getFirestore(), `${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await setDoc(ref, data);
+      const snapshot = await getDocs(ref);
+      snapshot.data().should.eql(jet.contextify(data));
+      await deleteDoc(ref);
+    });
 
-  it('gets data from the server', async function () {
-    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
-    const data = { foo: 'bar', bar: 123 };
-    await ref.set(data);
-    const snapshot = await ref.get({ source: 'server' });
-    snapshot.data().should.eql(jet.contextify(data));
-    snapshot.metadata.fromCache.should.equal(false);
-    await ref.delete();
-  });
+    it('gets data from the server', async function () {
+      const { getFirestore, doc, setDoc, getDocsFromServer, deleteDoc } = firestoreModular;
 
-  it('gets data from cache', async function () {
-    const ref = firebase.firestore().doc(`${COLLECTION}/get`);
-    const data = { foo: 'bar', bar: 123 };
-    await ref.set(data);
-    const snapshot = await ref.get({ source: 'cache' });
-    snapshot.data().should.eql(jet.contextify(data));
-    snapshot.metadata.fromCache.should.equal(true);
-    await ref.delete();
+      const ref = doc(getFirestore(), `${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await setDoc(ref, data);
+      const snapshot = await getDocsFromServer(ref);
+      snapshot.data().should.eql(jet.contextify(data));
+      snapshot.metadata.fromCache.should.equal(false);
+      await deleteDoc(ref);
+    });
+
+    it('gets data from cache', async function () {
+      const { getFirestore, doc, setDoc, getDocsFromCache, deleteDoc } = firestoreModular;
+
+      const ref = doc(getFirestore(), `${COLLECTION}/get`);
+      const data = { foo: 'bar', bar: 123 };
+      await setDoc(ref, data);
+      const snapshot = await getDocsFromCache(ref);
+      snapshot.data().should.eql(jet.contextify(data));
+      snapshot.metadata.fromCache.should.equal(true);
+      await deleteDoc(ref);
+    });
   });
 });
