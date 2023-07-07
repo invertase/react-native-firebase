@@ -515,3 +515,17 @@ export function loadBundle(
   firestore: Firestore,
   bundleData: ReadableStream<Uint8Array> | ArrayBuffer | string,
 ): LoadBundleTask;
+
+/**
+ * Reads a Firestore {@link Query} from local cache, identified by the given
+ * name.
+ *
+ * The named queries are packaged  into bundles on the server side (along
+ * with resulting documents), and loaded to local cache using `loadBundle`. Once
+ * in local cache, use this method to extract a {@link Query} by name.
+ *
+ * @param firestore - The {@link Firestore} instance to read the query from.
+ * @param name - The name of the query.
+ * @returns A named Query.
+ */
+export function namedQuery(firestore: Firestore, name: string): Query<DocumentData>;

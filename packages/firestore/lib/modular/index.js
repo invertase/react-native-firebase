@@ -191,6 +191,15 @@ export function loadBundle(firestore, bundleData) {
   return firestore.loadBundle(bundleData);
 }
 
+/**
+ * @param {Firestore} firestore
+ * @param {string} name
+ * @returns {Query<DocumentData>}
+ */
+export function namedQuery(firestore, name) {
+  return firestore.namedQuery(name);
+}
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';

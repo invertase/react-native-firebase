@@ -15,11 +15,17 @@ export function onSnapshot(reference, ...args) {
   let options = {};
   let observer = {};
   const optionsOrObserverOrOnNext = args[0];
-  if (typeof options === 'object' && !isPartialObserver(optionsOrObserverOrOnNext)) {
+  if (
+    typeof optionsOrObserverOrOnNext === 'object' &&
+    !isPartialObserver(optionsOrObserverOrOnNext)
+  ) {
     options = optionsOrObserverOrOnNext;
   }
 
-  if (isPartialObserver(optionsOrObserverOrOnNext)) {
+  if (
+    typeof optionsOrObserverOrOnNext === 'object' &&
+    isPartialObserver(optionsOrObserverOrOnNext)
+  ) {
     observer = optionsOrObserverOrOnNext;
   }
 
