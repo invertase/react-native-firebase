@@ -21,23 +21,51 @@ describe('firestore.collection().doc()', function () {
   before(function () {
     return wipe();
   });
-  it('throws if path is not a document', function () {
-    try {
-      firebase.firestore().collection(COLLECTION).doc('bar/baz');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'documentPath' must point to a document");
-      return Promise.resolve();
-    }
+
+  describe('v8 compatibility', function () {
+    it('throws if path is not a document', function () {
+      try {
+        firebase.firestore().collection(COLLECTION).doc('bar/baz');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentPath' must point to a document");
+        return Promise.resolve();
+      }
+    });
+
+    it('generates an ID if no path is provided', function () {
+      const instance = firebase.firestore().collection(COLLECTION).doc();
+      should.equal(20, instance.id.length);
+    });
+
+    it('uses path if provided', function () {
+      const instance = firebase.firestore().collection(COLLECTION).doc('bar');
+      instance.id.should.eql('bar');
+    });
   });
 
-  it('generates an ID if no path is provided', function () {
-    const instance = firebase.firestore().collection(COLLECTION).doc();
-    should.equal(20, instance.id.length);
-  });
+  describe('modular', function () {
+    it('throws if path is not a document', function () {
+      const { getFirestore, collection, doc } = firestoreModular;
+      try {
+        doc(collection(getFirestore(), COLLECTION), 'bar/baz');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentPath' must point to a document");
+        return Promise.resolve();
+      }
+    });
 
-  it('uses path if provided', function () {
-    const instance = firebase.firestore().collection(COLLECTION).doc('bar');
-    instance.id.should.eql('bar');
+    it('generates an ID if no path is provided', function () {
+      const { getFirestore, collection, doc } = firestoreModular;
+      const instance = doc(collection(getFirestore(), COLLECTION));
+      should.equal(20, instance.id.length);
+    });
+
+    it('uses path if provided', function () {
+      const { getFirestore, collection, doc } = firestoreModular;
+      const instance = doc(collection(getFirestore(), COLLECTION), 'bar');
+      instance.id.should.eql('bar');
+    });
   });
 });
