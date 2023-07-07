@@ -264,8 +264,15 @@ describe('firestore()', function () {
 
     describe('number type consistency', function () {
       before(async function () {
-        jsFirebase.initializeApp(FirebaseHelpers.app.config());
-        jsFirebase.firestore().useEmulator(getE2eEmulatorHost(), 8080);
+        // This only throws an error in the suite since this is already initialized in the v8 tests above.
+        // It throws the following error:
+        //
+        // FirebaseError: Firestore has already been started and its settings can no longer be changed.
+        // You can only modify settings before calling any other methods on a Firestore object.
+        try {
+          jsFirebase.initializeApp(FirebaseHelpers.app.config());
+          jsFirebase.firestore().useEmulator(getE2eEmulatorHost(), 8080);
+        } catch (e) {}
 
         // Put one example of each number in our collection using JS SDK
         await Promise.all(

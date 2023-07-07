@@ -12,30 +12,5 @@ import { isPartialObserver } from './utils/observer';
  * @returns {Promise<unknown>}
  */
 export function onSnapshot(reference, ...args) {
-  let options = {};
-  let observer = {};
-  const optionsOrObserverOrOnNext = args[0];
-  if (
-    typeof optionsOrObserverOrOnNext === 'object' &&
-    !isPartialObserver(optionsOrObserverOrOnNext)
-  ) {
-    options = optionsOrObserverOrOnNext;
-  }
-
-  if (
-    typeof optionsOrObserverOrOnNext === 'object' &&
-    isPartialObserver(optionsOrObserverOrOnNext)
-  ) {
-    observer = optionsOrObserverOrOnNext;
-  }
-
-  if (typeof optionsOrObserverOrOnNext === 'function') {
-    observer = {
-      next: optionsOrObserverOrOnNext,
-      error: args[1],
-      complete: args[2],
-    };
-  }
-
-  return reference.onSnapshot(options, observer);
+  return reference.onSnapshot(...args);
 }
