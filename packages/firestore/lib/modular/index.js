@@ -174,6 +174,14 @@ export function runTransaction(firestore, updateFunction) {
   return firestore.runTransaction(updateFunction);
 }
 
+/**
+ * @param {Query} query
+ * @returns {Promise<FirebaseFirestoreTypes.AggregateQuerySnapshot>}
+ */
+export function getCountFromServer(query) {
+  return query.count().get();
+}
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';
