@@ -17,112 +17,236 @@
 const COLLECTION = 'firestore';
 
 describe('firestore().collection().isEqual()', function () {
-  it('throws if other is not a Query', function () {
-    try {
-      firebase.firestore().collection(COLLECTION).isEqual(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'other' expected a Query instance");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if other is not a Query', function () {
+      try {
+        firebase.firestore().collection(COLLECTION).isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'other' expected a Query instance");
+        return Promise.resolve();
+      }
+    });
+
+    it('returns false when not equal (simple checks)', function () {
+      const subCol = `${COLLECTION}/isequal/simplechecks`;
+      const query = firebase.firestore().collection(subCol);
+
+      const q1 = firebase.firestore(firebase.app('secondaryFromNative')).collection(subCol);
+      const q2 = firebase.firestore().collection(subCol).where('foo', '==', 'bar');
+      const q3 = firebase.firestore().collection(subCol).orderBy('foo');
+      const q4 = firebase.firestore().collection(subCol).limit(3);
+
+      const ref1 = firebase.firestore().collection(subCol).where('bar', '==', true);
+      const ref2 = firebase.firestore().collection(subCol).where('bar', '==', true);
+
+      const eql1 = query.isEqual(q1);
+      const eql2 = query.isEqual(q2);
+      const eql3 = query.isEqual(q3);
+      const eql4 = query.isEqual(q4);
+      const eql5 = ref1.isEqual(ref2);
+
+      eql1.should.be.False();
+      eql2.should.be.False();
+      eql3.should.be.False();
+      eql4.should.be.False();
+      eql5.should.be.True();
+    });
+
+    it('returns false when not equal (expensive checks)', function () {
+      const query = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('bam')
+        .limit(1)
+        .endAt(2);
+
+      const q1 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '<', 'bar')
+        .orderBy('foo')
+        .limit(1)
+        .endAt(2);
+
+      const q2 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('foob')
+        .limit(1)
+        .endAt(2);
+
+      const q3 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('baz')
+        .limit(2)
+        .endAt(2);
+
+      const q4 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('baz')
+        .limit(1)
+        .endAt(1);
+
+      const eql1 = query.isEqual(q1);
+      const eql2 = query.isEqual(q2);
+      const eql3 = query.isEqual(q3);
+      const eql4 = query.isEqual(q4);
+
+      eql1.should.be.False();
+      eql2.should.be.False();
+      eql3.should.be.False();
+      eql4.should.be.False();
+    });
+
+    it('returns true when equal', function () {
+      const query = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('baz')
+        .limit(1)
+        .endAt(2);
+
+      const query2 = firebase
+        .firestore()
+        .collection(COLLECTION)
+        .where('foo', '==', 'bar')
+        .orderBy('baz')
+        .limit(1)
+        .endAt(2);
+
+      const eql1 = query.isEqual(query2);
+
+      eql1.should.be.True();
+    });
   });
 
-  it('returns false when not equal (simple checks)', function () {
-    const subCol = `${COLLECTION}/isequal/simplechecks`;
-    const query = firebase.firestore().collection(subCol);
+  describe('modular', function () {
+    it('throws if other is not a Query', function () {
+      const { getFirestore, collection } = firestoreModular;
+      try {
+        collection(getFirestore(), COLLECTION).isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'other' expected a Query instance");
+        return Promise.resolve();
+      }
+    });
 
-    const q1 = firebase.firestore(firebase.app('secondaryFromNative')).collection(subCol);
-    const q2 = firebase.firestore().collection(subCol).where('foo', '==', 'bar');
-    const q3 = firebase.firestore().collection(subCol).orderBy('foo');
-    const q4 = firebase.firestore().collection(subCol).limit(3);
+    it('returns false when not equal (simple checks)', function () {
+      const { getFirestore, collection, query, where, orderBy, limit } = firestoreModular;
+      const db = getFirestore();
+      const secondaryDb = getFirestore(firebase.app('secondaryFromNative'));
 
-    const ref1 = firebase.firestore().collection(subCol).where('bar', '==', true);
-    const ref2 = firebase.firestore().collection(subCol).where('bar', '==', true);
+      const subCol = `${COLLECTION}/isequal/simplechecks`;
+      const queryRef = collection(db, subCol);
 
-    const eql1 = query.isEqual(q1);
-    const eql2 = query.isEqual(q2);
-    const eql3 = query.isEqual(q3);
-    const eql4 = query.isEqual(q4);
-    const eql5 = ref1.isEqual(ref2);
+      const q1 = collection(secondaryDb, subCol);
+      const q2 = query(collection(db, subCol), where('foo', '==', 'bar'));
+      const q3 = query(collection(db, subCol), orderBy('foo'));
+      const q4 = query(collection(db, subCol), limit(3));
 
-    eql1.should.be.False();
-    eql2.should.be.False();
-    eql3.should.be.False();
-    eql4.should.be.False();
-    eql5.should.be.True();
-  });
+      const ref1 = query(collection(db, subCol), where('bar', '==', true));
+      const ref2 = query(collection(db, subCol), where('bar', '==', true));
 
-  it('returns false when not equal (expensive checks)', function () {
-    const query = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('bam')
-      .limit(1)
-      .endAt(2);
+      const eql1 = queryRef.isEqual(q1);
+      const eql2 = queryRef.isEqual(q2);
+      const eql3 = queryRef.isEqual(q3);
+      const eql4 = queryRef.isEqual(q4);
+      const eql5 = ref1.isEqual(ref2);
 
-    const q1 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '<', 'bar')
-      .orderBy('foo')
-      .limit(1)
-      .endAt(2);
+      eql1.should.be.False();
+      eql2.should.be.False();
+      eql3.should.be.False();
+      eql4.should.be.False();
+      eql5.should.be.True();
+    });
 
-    const q2 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('foob')
-      .limit(1)
-      .endAt(2);
+    it('returns false when not equal (expensive checks)', function () {
+      const { getFirestore, collection, query, where, orderBy, limit, endAt } = firestoreModular;
+      const db = getFirestore();
 
-    const q3 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('baz')
-      .limit(2)
-      .endAt(2);
+      const queryRef = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('bam'),
+        limit(1),
+        endAt(2),
+      );
 
-    const q4 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('baz')
-      .limit(1)
-      .endAt(1);
+      const q1 = query(
+        collection(db, COLLECTION),
+        where('foo', '<', 'bar'),
+        orderBy('foo'),
+        limit(1),
+        endAt(2),
+      );
 
-    const eql1 = query.isEqual(q1);
-    const eql2 = query.isEqual(q2);
-    const eql3 = query.isEqual(q3);
-    const eql4 = query.isEqual(q4);
+      const q2 = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('foob'),
+        limit(1),
+        endAt(2),
+      );
 
-    eql1.should.be.False();
-    eql2.should.be.False();
-    eql3.should.be.False();
-    eql4.should.be.False();
-  });
+      const q3 = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('baz'),
+        limit(2),
+        endAt(2),
+      );
 
-  it('returns true when equal', function () {
-    const query = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('baz')
-      .limit(1)
-      .endAt(2);
+      const q4 = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('baz'),
+        limit(1),
+        endAt(1),
+      );
 
-    const query2 = firebase
-      .firestore()
-      .collection(COLLECTION)
-      .where('foo', '==', 'bar')
-      .orderBy('baz')
-      .limit(1)
-      .endAt(2);
+      const eql1 = queryRef.isEqual(q1);
+      const eql2 = queryRef.isEqual(q2);
+      const eql3 = queryRef.isEqual(q3);
+      const eql4 = queryRef.isEqual(q4);
 
-    const eql1 = query.isEqual(query2);
+      eql1.should.be.False();
+      eql2.should.be.False();
+      eql3.should.be.False();
+      eql4.should.be.False();
+    });
 
-    eql1.should.be.True();
+    it('returns true when equal', function () {
+      const { getFirestore, collection, query, where, orderBy, limit, endAt } = firestoreModular;
+      const db = getFirestore();
+
+      const queryRef = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('baz'),
+        limit(1),
+        endAt(2),
+      );
+
+      const query2 = query(
+        collection(db, COLLECTION),
+        where('foo', '==', 'bar'),
+        orderBy('baz'),
+        limit(1),
+        endAt(2),
+      );
+
+      const eql1 = queryRef.isEqual(query2);
+
+      eql1.should.be.True();
+    });
   });
 });
