@@ -96,6 +96,18 @@ export function endAt(value, key) {
 }
 
 /**
+ * @param {number | string | boolean | null} value
+ * @param {string?} key
+ * @returns {QueryConstraint}
+ */
+export function endBefore(value, key) {
+  if (!key) {
+    return new QueryConstraint('endBefore', value);
+  }
+  return new QueryConstraint('endBefore', value, key);
+}
+
+/**
  * @param {number} limit
  * @returns {QueryLimitConstraint}
  */
