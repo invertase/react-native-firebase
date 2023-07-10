@@ -84,6 +84,18 @@ export function startAfter(...docOrFields) {
 }
 
 /**
+ * @param {number | string | boolean | null} value
+ * @param {string?} key
+ * @returns {QueryConstraint}
+ */
+export function endAt(value, key) {
+  if (!key) {
+    return new QueryConstraint('endAt', value);
+  }
+  return new QueryConstraint('endAt', value, key);
+}
+
+/**
  * @param {number} limit
  * @returns {QueryLimitConstraint}
  */
