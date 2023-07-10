@@ -166,7 +166,7 @@ describe('firestore().doc() -> snapshot.get()', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('throws if invalid fieldPath argument', async function () {
       const { getFirestore, doc, getDocs } = firestoreModular;
       const ref = doc(getFirestore(), `${COLLECTION}/foo`);

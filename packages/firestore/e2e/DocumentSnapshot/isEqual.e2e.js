@@ -17,43 +17,91 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc() -> snapshot.isEqual()', function () {
-  it('throws if other is not a DocumentSnapshot', async function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
+  describe('v8 compatibility', () => {
+    it('throws if other is not a DocumentSnapshot', async function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
+
+        const docSnapshot = await docRef.get();
+        docSnapshot.isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'other' expected a DocumentSnapshot instance");
+        return Promise.resolve();
+      }
+    });
+
+    it('returns false when not equal', async function () {
+      const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-false-exists`);
+      await docRef.set({ foo: 'bar' });
+
+      const docSnapshot1 = await docRef.get();
+      const docSnapshot2 = await firebase.firestore().doc(`${COLLECTION}/idonotexist`).get();
+      await docRef.set({ foo: 'baz' });
+      const docSnapshot3 = await docRef.get();
+
+      const eql1 = docSnapshot1.isEqual(docSnapshot2);
+      const eql2 = docSnapshot1.isEqual(docSnapshot3);
+
+      eql1.should.be.False();
+      eql2.should.be.False();
+    });
+
+    it('returns true when equal', async function () {
+      const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-true-exists`);
+      await docRef.set({ foo: 'bar' });
 
       const docSnapshot = await docRef.get();
-      docSnapshot.isEqual(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'other' expected a DocumentSnapshot instance");
-      return Promise.resolve();
-    }
+
+      const eql1 = docSnapshot.isEqual(docSnapshot);
+
+      eql1.should.be.True();
+    });
   });
 
-  it('returns false when not equal', async function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-false-exists`);
-    await docRef.set({ foo: 'bar' });
+  describe('modular', () => {
+    it('throws if other is not a DocumentSnapshot', async function () {
+      const { getFirestore, doc, getDocs } = firestoreModular;
+      try {
+        const docRef = doc(getFirestore(), `${COLLECTION}/baz`);
 
-    const docSnapshot1 = await docRef.get();
-    const docSnapshot2 = await firebase.firestore().doc(`${COLLECTION}/idonotexist`).get();
-    await docRef.set({ foo: 'baz' });
-    const docSnapshot3 = await docRef.get();
+        const docSnapshot = await getDocs(docRef);
+        docSnapshot.isEqual(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'other' expected a DocumentSnapshot instance");
+        return Promise.resolve();
+      }
+    });
 
-    const eql1 = docSnapshot1.isEqual(docSnapshot2);
-    const eql2 = docSnapshot1.isEqual(docSnapshot3);
+    it('returns false when not equal', async function () {
+      const { getFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const db = getFirestore();
+      const docRef = doc(db, `${COLLECTION}/isEqual-false-exists`);
+      await setDoc(docRef, { foo: 'bar' });
 
-    eql1.should.be.False();
-    eql2.should.be.False();
-  });
+      const docSnapshot1 = await getDocs(docRef);
+      const docSnapshot2 = await doc(db, `${COLLECTION}/idonotexist`).get();
+      await setDoc(docRef, { foo: 'baz' });
+      const docSnapshot3 = await getDocs(docRef);
 
-  it('returns true when equal', async function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/isEqual-true-exists`);
-    await docRef.set({ foo: 'bar' });
+      const eql1 = docSnapshot1.isEqual(docSnapshot2);
+      const eql2 = docSnapshot1.isEqual(docSnapshot3);
 
-    const docSnapshot = await docRef.get();
+      eql1.should.be.False();
+      eql2.should.be.False();
+    });
 
-    const eql1 = docSnapshot.isEqual(docSnapshot);
+    it('returns true when equal', async function () {
+      const { getFirestore, doc, setDoc, getDocs } = firestoreModular;
+      const docRef = doc(getFirestore(), `${COLLECTION}/isEqual-true-exists`);
+      await setDoc(docRef, { foo: 'bar' });
 
-    eql1.should.be.True();
+      const docSnapshot = await getDocs(docRef);
+
+      const eql1 = docSnapshot.isEqual(docSnapshot);
+
+      eql1.should.be.True();
+    });
   });
 });
