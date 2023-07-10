@@ -142,7 +142,7 @@ describe('firestore().collection().endAt()', function () {
     });
   });
 
-  describe.only('modular', () => {
+  describe('modular', () => {
     it('throws if no argument provided', function () {
       const { getFirestore, collection, endAt, query } = firestoreModular;
       try {
