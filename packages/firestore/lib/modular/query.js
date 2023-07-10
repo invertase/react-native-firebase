@@ -116,6 +116,14 @@ export function limit(limit) {
 }
 
 /**
+ * @param {number} limit
+ * @returns {QueryConstraint}
+ */
+export function limitToLast(limit) {
+  return new QueryConstraint('limitToLast', limit);
+}
+
+/**
  * @param {Query} query
  * @returns {Promise<QuerySnapshot>}
  */
