@@ -804,8 +804,6 @@ describe('remoteConfig() modular', function () {
         const callback = sinon.spy();
         const unsubscribe = onConfigUpdated(config, (event, error) => callback(event, error));
         unsubscribers.push(unsubscribe);
-        // give the SDK<->server time to settle, otherwise iOS catches error code 8003
-        await Utils.sleep(10000);
         // Update the template using our cloud function, so our listeners are called
         let response = await updateTemplate({
           operations: {
@@ -818,26 +816,8 @@ describe('remoteConfig() modular', function () {
         await Utils.spyToBeCalledTimesAsync(callback, 1, 60000);
         should(callback.callCount).equal(1);
         let callbackError = callback.getCall(0).args[1];
-
-        if (
-          device.getPlatform() === 'ios' &&
-          callbackError !== undefined &&
-          callbackError.code === 'config_update_not_fetched'
-        ) {
-          // FIXME indicates known issue firebase-ios-sdk#11462 - should be fixed in release 10.12.0
-          // not much we can do, skip the test, but remove this with adoption of 10.12.0
-          // eslint-disable-next-line no-console
-          console.error('firebas-ios-sdk#11462 encountered, skipping test');
-          // eslint-disable-next-line no-console
-          console.error('error contents: ' + JSON.stringify(callback.getCall(0).args[1]));
-          this.skip();
-        }
         should(callbackError).equal(undefined, 'error ' + JSON.stringify(callbackError));
         let callbackEvent = callback.getCall(0).args[0];
-        // This may sometimes flake if the device does not have the correct template fetched yet,
-        // which may happen if fetch is throttled and a realtime listener hasn't triggered. A re-try
-        // does reliably clear it though and react-native-firebase re-tries 4 times so it is self-healing
-        // should(callbackEvent.updatedKeys.length).equal(1);
         should(callbackEvent.updatedKeys.includes('rttest_param1')).equal(
           true,
           'updated param not in callback updated keys set',
@@ -877,19 +857,6 @@ describe('remoteConfig() modular', function () {
         await Utils.spyToBeCalledTimesAsync(callback3, 1, 60000);
         [callback1, callback2, callback3].forEach(callback => {
           should(callback.callCount).equal(1);
-          if (
-            device.getPlatform() === 'ios' &&
-            callback.getCall(0).args[1] !== undefined &&
-            callback.getCall(0).args[1].code === 'config_update_not_fetched'
-          ) {
-            // FIXME indicates known issue firebase-ios-sdk#11462 - should be fixed in release 10.12.0
-            // not much we can do, skip the test, but remove this with adoption of 10.12.0
-            // eslint-disable-next-line no-console
-            console.error('firebas-ios-sdk#11462 encountered, skipping test');
-            // eslint-disable-next-line no-console
-            console.error('error contents: ' + JSON.stringify(callback.getCall(0).args[1]));
-            this.skip();
-          }
           should(callback.getCall(0).args[1]).equal(
             undefined,
             'error ' + JSON.stringify(callback.getCall(0).args[1]),
