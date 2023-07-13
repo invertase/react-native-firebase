@@ -6,7 +6,6 @@
  * @typedef {import('..').FirebaseFirestoreTypes.QuerySnapshot} QuerySnapshot
  * @typedef {import('..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('..').FirebaseFirestoreTypes.WhereFilterOp} WhereFilterOp
- * @typedef {import('./query').IQueryConstraint} IQueryConstraint
  * @typedef {import('./query').OrderByDirection} OrderByDirection
  * @typedef {import('./query').QueryFieldFilterConstraint} QueryFieldFilterConstraint
  * @typedef {import('./query').QueryLimitConstraint} QueryLimitConstraint
@@ -15,10 +14,10 @@
  * @typedef {import('./query').QueryStartAtConstraint} QueryStartAtConstraint
  */
 
-import { QueryStartAtConstraint } from './query';
+import { _Filter, Filter } from '../FirestoreFilter';
 
 /**
- * @implements {IQueryConstraint}
+ * @implements {import('./query').IQueryConstraint}
  */
 class QueryConstraint {
   constructor(type, ...args) {
@@ -56,6 +55,51 @@ export function query(query, queryConstraint, ...additionalQueryConstraints) {
  */
 export function where(fieldPath, opStr, value) {
   return new QueryConstraint('where', fieldPath, opStr, value);
+}
+
+/**
+ * @param {QueryFieldFilterConstraint[]} queries
+ * @returns {import('../FirestoreFilter')._Filter[]}
+ */
+function getFilterOps(queries) {
+  const ops = [];
+  for (const query of queries) {
+    if (query.type !== 'where') {
+      throw 'Not where'; // FIXME: Better error message
+    }
+
+    const args = query._args;
+    if (!args.length) {
+      throw 'No args'; // FIXME: Better error message
+    }
+
+    if (args[0] instanceof _Filter) {
+      ops.push(args[0]);
+      continue;
+    }
+
+    const [fieldPath, opStr, value] = args;
+    ops.push(Filter(fieldPath, opStr, value));
+  }
+  return ops;
+}
+
+/**
+ * @param {QueryFieldFilterConstraint[]} queries
+ * @returns {QueryCompositeFilterConstraint}
+ */
+export function or(...queries) {
+  const ops = getFilterOps(queries);
+  return new QueryConstraint('where', Filter.or(...ops));
+}
+
+/**
+ * @param {QueryFieldFilterConstraint[]} queries
+ * @returns {QueryCompositeFilterConstraint}
+ */
+export function and(...queries) {
+  const ops = getFilterOps(queries);
+  return new QueryConstraint('where', Filter.and(...ops));
 }
 
 /**

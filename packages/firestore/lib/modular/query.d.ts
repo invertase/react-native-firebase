@@ -142,6 +142,18 @@ export function where(
 ): QueryFieldFilterConstraint;
 
 /**
+ * The or() function used to generate a logical OR query.
+ * e.g. or(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+ */
+export function or(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
+
+/**
+ * The and() function used to generate a logical AND query.
+ * e.g. and(where('name', '==', 'Ada'), where('name', '==', 'Bob'))
+ */
+export function and(...queries: QueryFilterConstraint[]): QueryCompositeFilterConstraint;
+
+/**
  * The direction of a {@link orderBy} clause is specified as 'desc' or 'asc'
  * (descending or ascending).
  */
