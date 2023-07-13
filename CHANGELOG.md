@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.2.0](https://github.com/invertase/react-native-firebase/compare/v18.1.0...v18.2.0) (2023-07-13)
+
+### Features
+
+- **analytics, ios:** implement setSessionTimeoutDuration for ios ([b3ce13f](https://github.com/invertase/react-native-firebase/commit/b3ce13ff5f7922e4a253aa58377e5c3c436e74f0))
+- **analytics:** implement getSessionId ([566470c](https://github.com/invertase/react-native-firebase/commit/566470cfc0e919a46c0a119835187257bf046df7))
+
+### Bug Fixes
+
+- **app, ios:** incorporate firebase-ios-sdk 10.12.0 ([#7231](https://github.com/invertase/react-native-firebase/issues/7231)) ([ee66459](https://github.com/invertase/react-native-firebase/commit/ee66459cd214ffb84ce2d4e15eef79d047f075ab))
+
 ## [18.1.0](https://github.com/invertase/react-native-firebase/compare/v18.0.0...v18.1.0) (2023-06-22)
 
 ### Features
