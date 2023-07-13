@@ -529,3 +529,18 @@ export function loadBundle(
  * @returns A named Query.
  */
 export function namedQuery(firestore: Firestore, name: string): Query<DocumentData>;
+
+/**
+ * Creates a write batch, used for performing multiple writes as a single
+ * atomic operation. The maximum number of writes allowed in a single WriteBatch
+ * is 500.
+ *
+ * The result of these writes will only be reflected in document reads that
+ * occur after the returned promise resolves. If the client is offline, the
+ * write fails. If you would like to see local modifications or buffer writes
+ * until the client is online, use the full Firestore SDK.
+ *
+ * @returns A `WriteBatch` that can be used to atomically execute multiple
+ * writes.
+ */
+export function writeBatch(firestore: Firestore): FirebaseFirestoreTypes.WriteBatch;

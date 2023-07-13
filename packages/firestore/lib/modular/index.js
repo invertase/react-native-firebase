@@ -205,6 +205,14 @@ export function namedQuery(firestore, name) {
   return firestore.namedQuery(name);
 }
 
+/**
+ * @param {Firestore} firestore
+ * @returns {FirebaseFirestoreTypes.WriteBatch}
+ */
+export function writeBatch(firestore) {
+  return firestore.batch();
+}
+
 export * from './query';
 export * from './snapshot';
 export * from './Bytes';
