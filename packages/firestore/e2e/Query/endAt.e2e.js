@@ -22,7 +22,7 @@ describe('firestore().collection().endAt()', function () {
     return wipe();
   });
 
-  describe('v8 compatibility', () => {
+  describe('v8 compatibility', function () {
     it('throws if no argument provided', function () {
       try {
         firebase.firestore().collection(COLLECTION).endAt();
@@ -142,7 +142,7 @@ describe('firestore().collection().endAt()', function () {
     });
   });
 
-  describe('modular', () => {
+  describe('modular', function () {
     it('throws if no argument provided', function () {
       const { getFirestore, collection, endAt, query } = firestoreModular;
       try {

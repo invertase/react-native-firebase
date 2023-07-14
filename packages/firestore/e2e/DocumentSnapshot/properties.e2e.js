@@ -22,7 +22,7 @@ describe('firestore().doc() -> snapshot', function () {
     return wipe();
   });
 
-  describe('v8 compatibility', () => {
+  describe('v8 compatibility', function () {
     it('.exists -> returns a boolean for exists', async function () {
       const ref1 = firebase.firestore().doc(`${COLLECTION}/exists`);
       const ref2 = firebase.firestore().doc(`${COLLECTION}/idonotexist`);
@@ -66,7 +66,7 @@ describe('firestore().doc() -> snapshot', function () {
     });
   });
 
-  describe('modular', () => {
+  describe('modular', function () {
     it('.exists -> returns a boolean for exists', async function () {
       const { getFirestore, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
       const db = getFirestore(firebase.app());

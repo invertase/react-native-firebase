@@ -11,8 +11,7 @@
  * @typedef {import('@firebase/app').FirebaseApp} FirebaseApp
  */
 
-import { firebase, FirebaseFirestoreTypes } from '../index';
-import { LoadBundleTask, LogLevel } from './index';
+import { firebase } from '../index';
 
 /**
  * @param {FirebaseApp?} app
@@ -157,6 +156,7 @@ export function waitForPendingWrites(firestore) {
 //       Calling getFirestore() after initializeFirestore() would return this new instance.
 //       Need to figure out how to handle this using the compat API.
 export async function initializeFirestore(app, settings, databaseId) {
+  databaseId; // make eslint happy
   const firestore = firebase.firestore(app);
   await firestore.settings(settings);
   return firestore;

@@ -17,7 +17,7 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.doc() -> snapshot.isEqual()', function () {
-  describe('v8 compatibility', () => {
+  describe('v8 compatibility', function () {
     it('throws if other is not a DocumentSnapshot', async function () {
       try {
         const docRef = firebase.firestore().doc(`${COLLECTION}/baz`);
@@ -59,7 +59,7 @@ describe('firestore.doc() -> snapshot.isEqual()', function () {
     });
   });
 
-  describe('modular', () => {
+  describe('modular', function () {
     it('throws if other is not a DocumentSnapshot', async function () {
       const { getFirestore, doc, getDocs } = firestoreModular;
       try {

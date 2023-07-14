@@ -1,5 +1,3 @@
-import { isPartialObserver } from './utils/observer';
-
 /**
  * @typedef {import('../..').FirebaseFirestoreTypes.Query} Query
  * @typedef {import('../..').FirebaseFirestoreTypes.DocumentReference} DocumentReference

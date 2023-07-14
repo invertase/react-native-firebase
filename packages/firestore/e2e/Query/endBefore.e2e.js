@@ -254,8 +254,7 @@ describe('firestore().collection().endBefore()', function () {
     });
 
     it('ends before snapshot', async function () {
-      const { getFirestore, collection, doc, setDoc, query, orderBy, endBefore, getDocs } =
-        firestoreModular;
+      const { getFirestore, collection, doc, setDoc, query, endBefore, getDocs } = firestoreModular;
       const colRef = collection(getFirestore(), `${COLLECTION}/endBefore/snapshot`);
       const doc1 = doc(colRef, 'doc1');
       const doc2 = doc(colRef, 'doc2');
@@ -269,7 +268,7 @@ describe('firestore().collection().endBefore()', function () {
 
       const endBeforeSnapshot = await getDocs(doc2);
 
-      const qs = await getDocs(colRef.endBefore(endBeforeSnapshot));
+      const qs = await getDocs(query(colRef, endBefore(endBeforeSnapshot)));
 
       qs.docs.length.should.eql(1);
       qs.docs[0].id.should.eql('doc1');

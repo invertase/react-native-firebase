@@ -232,7 +232,8 @@ describe('firestore().collection().orderBy()', function () {
     });
 
     it('orders by a value DESC', async function () {
-      const { getFirestore, collection, addDoc, getDocs, query, orderBy } = firestoreModular;
+      const { getFirestore, collection, addDoc, getDocs, query, orderBy, FieldPath } =
+        firestoreModular;
       const colRef = collection(
         getFirestore(),
         // Firestore caches aggressively, even if you wipe the emulator, local documents are cached
@@ -244,9 +245,7 @@ describe('firestore().collection().orderBy()', function () {
       await addDoc(colRef, { value: 3 });
       await addDoc(colRef, { value: 2 });
 
-      const snapshot = await getDocs(
-        query(colRef.orderBy(new firebase.firestore.FieldPath('value'), 'desc')),
-      );
+      const snapshot = await getDocs(query(colRef, orderBy(new FieldPath('value'), 'desc')));
       const expected = [3, 2, 1];
 
       snapshot.forEach((docSnap, i) => {

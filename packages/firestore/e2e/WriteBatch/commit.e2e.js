@@ -356,7 +356,7 @@ describe('firestore.WriteBatch.commit()', function () {
     });
 
     it('should delete & commit', async function () {
-      const { getFirestore, writeBatch, doc, setDoc, getDocs, deleteDoc } = firestoreModular;
+      const { getFirestore, writeBatch, doc, setDoc, getDocs } = firestoreModular;
       const db = getFirestore();
       const lRef = doc(db, `${COLLECTION}/LON`);
       const nycRef = doc(db, `${COLLECTION}/NYC`);

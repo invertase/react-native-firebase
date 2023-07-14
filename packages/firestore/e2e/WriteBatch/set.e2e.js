@@ -369,7 +369,7 @@ describe('firestore.WriteBatch.set()', function () {
         docRef,
         {},
         {
-          mergeFields: ['foo.bar', new firebase.firestore.FieldPath('foo', 'bar')],
+          mergeFields: ['foo.bar', new FieldPath('foo', 'bar')],
         },
       );
     });

@@ -120,12 +120,12 @@ describe('FirestoreQuery/FirestoreQueryModifiers', function () {
       const { getFirestore, collection, query, where, orderBy, limit, endAt } = firestoreModular;
       try {
         query(
-          collection(getFirestore(), COLLECTION)
-            .where('foo', '>', 'bar')
-            .orderBy('bar')
-            .orderBy('foo')
-            .limit(1)
-            .endAt(2),
+          collection(getFirestore(), COLLECTION),
+          where('foo', '>', 'bar'),
+          orderBy('bar'),
+          orderBy('foo'),
+          limit(1),
+          endAt(2),
         );
         return Promise.reject(new Error('Did not throw an Error.'));
       } catch (error) {
