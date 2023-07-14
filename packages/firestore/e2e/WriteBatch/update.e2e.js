@@ -18,83 +18,179 @@
 const COLLECTION = 'firestore';
 
 describe('firestore.WriteBatch.update()', function () {
-  it('throws if a DocumentReference instance is not provided', function () {
-    try {
-      firebase.firestore().batch().update(123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
-      return Promise.resolve();
-    }
-  });
+  describe('v8 compatibility', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      try {
+        firebase.firestore().batch().update(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if a DocumentReference firestore instance is different', function () {
-    try {
-      const app2 = firebase.app('secondaryFromNative');
-      const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
+    it('throws if a DocumentReference firestore instance is different', function () {
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = firebase.firestore(app2).doc(`${COLLECTION}/foo`);
 
-      firebase.firestore().batch().update(docRef);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql(
-        "'documentRef' provided DocumentReference is from a different Firestore instance",
-      );
-      return Promise.resolve();
-    }
-  });
+        firebase.firestore().batch().update(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if update args are not provided', function () {
-    try {
+    it('throws if update args are not provided', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().update(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Expected update object or list of key/value pairs');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update arg is not an object', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().update(docRef, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('if using a single update argument, it must be an object');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update key/values are invalid', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().update(docRef, 'foo', 'bar', 'baz');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('equal numbers of key/value pairs');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update keys are invalid', function () {
+      try {
+        const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
+        firebase.firestore().batch().update(docRef, 'foo', 'bar', 123, 'ben');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('argument at index 2 must be a string or FieldPath');
+        return Promise.resolve();
+      }
+    });
+
+    it('adds the DocumentReference to the internal writes', function () {
       const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().update(docRef);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('Expected update object or list of key/value pairs');
-      return Promise.resolve();
-    }
+      const wb = firebase.firestore().batch().update(docRef, { foo: 'bar' });
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'UPDATE',
+      };
+      wb._writes[0].should.containEql(jet.contextify(expected));
+    });
   });
 
-  it('throws if update arg is not an object', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().update(docRef, 123);
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('if using a single update argument, it must be an object');
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('throws if a DocumentReference instance is not provided', function () {
+      const { getFirestore, writeBatch } = firestoreModular;
+      try {
+        writeBatch(getFirestore()).update(123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql("'documentRef' expected instance of a DocumentReference");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if update key/values are invalid', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().update(docRef, 'foo', 'bar', 'baz');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('equal numbers of key/value pairs');
-      return Promise.resolve();
-    }
-  });
+    it('throws if a DocumentReference firestore instance is different', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      try {
+        const app2 = firebase.app('secondaryFromNative');
+        const docRef = doc(getFirestore(app2), `${COLLECTION}/foo`);
 
-  it('throws if update keys are invalid', function () {
-    try {
-      const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-      firebase.firestore().batch().update(docRef, 'foo', 'bar', 123, 'ben');
-      return Promise.reject(new Error('Did not throw an Error.'));
-    } catch (error) {
-      error.message.should.containEql('argument at index 2 must be a string or FieldPath');
-      return Promise.resolve();
-    }
-  });
+        writeBatch(getFirestore()).update(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql(
+          "'documentRef' provided DocumentReference is from a different Firestore instance",
+        );
+        return Promise.resolve();
+      }
+    });
 
-  it('adds the DocumentReference to the internal writes', function () {
-    const docRef = firebase.firestore().doc(`${COLLECTION}/foo`);
-    const wb = firebase.firestore().batch().update(docRef, { foo: 'bar' });
-    wb._writes.length.should.eql(1);
-    const expected = {
-      path: `${COLLECTION}/foo`,
-      type: 'UPDATE',
-    };
-    wb._writes[0].should.containEql(jet.contextify(expected));
+    it('throws if update args are not provided', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).update(docRef);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('Expected update object or list of key/value pairs');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update arg is not an object', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).update(docRef, 123);
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('if using a single update argument, it must be an object');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update key/values are invalid', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).update(docRef, 'foo', 'bar', 'baz');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('equal numbers of key/value pairs');
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if update keys are invalid', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      try {
+        const docRef = doc(db, `${COLLECTION}/foo`);
+        writeBatch(db).update(docRef, 'foo', 'bar', 123, 'ben');
+        return Promise.reject(new Error('Did not throw an Error.'));
+      } catch (error) {
+        error.message.should.containEql('argument at index 2 must be a string or FieldPath');
+        return Promise.resolve();
+      }
+    });
+
+    it('adds the DocumentReference to the internal writes', function () {
+      const { getFirestore, doc, writeBatch } = firestoreModular;
+      const db = getFirestore();
+      const docRef = doc(db, `${COLLECTION}/foo`);
+      const wb = writeBatch(db).update(docRef, { foo: 'bar' });
+      wb._writes.length.should.eql(1);
+      const expected = {
+        path: `${COLLECTION}/foo`,
+        type: 'UPDATE',
+      };
+      wb._writes[0].should.containEql(jet.contextify(expected));
+    });
   });
 });
