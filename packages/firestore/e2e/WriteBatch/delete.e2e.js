@@ -55,7 +55,7 @@ describe('firestore.WriteBatch.delete()', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('throws if a DocumentReference instance is not provided', function () {
       const { getFirestore, writeBatch } = firestoreModular;
       try {
