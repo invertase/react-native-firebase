@@ -79,6 +79,28 @@ async function onAppleButtonPress() {
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
 
+Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete there account. This can be accomplished with the `revokeToken` API.
+
+```js
+import auth from '@react-native-firebase/auth';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+
+async function revokeSignInWithAppleToken() {
+  // Get an authorizationCode from Apple
+  const { authorizationCode } = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.REFRESH,
+  });
+
+  // Ensure Apple returned an authorizationCode
+  if (!authorizationCode) {
+    throw new Error('Apple Revocation failed - no authorizationCode returned');
+  }
+
+  // Revoke the token
+  return auth().revokeToken(authorizationCode);
+}
+```
+
 ## Facebook
 
 There is a [community-supported React Native library](https://github.com/thebergamo/react-native-fbsdk-next) which wraps around

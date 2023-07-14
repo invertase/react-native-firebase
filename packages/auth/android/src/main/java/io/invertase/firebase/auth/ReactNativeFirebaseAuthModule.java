@@ -451,6 +451,22 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
   }
 
   /**
+   * revokeToken
+   *
+   * @param authorizationCode
+   * @param promise
+   */
+  @ReactMethod
+  public void revokeToken(
+      String appName, final String authorizationCode, final Promise promise) {
+    Log.d(TAG, "revokeToken");
+
+    // Revocation is not implemented on Android
+    Log.e(TAG, "revokeToken:failure:noCurrentUser");
+    promiseNoUser(promise, false);
+  }
+
+  /**
    * sendPasswordResetEmail
    *
    * @param email
