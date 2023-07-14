@@ -79,7 +79,7 @@ async function onAppleButtonPress() {
 Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-authentication-state) listeners will trigger
 with the new authentication state of the user.
 
-Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete there account. This can be accomplished with the `revokeToken` API.
+Apple also requires that the app revoke the `Sign in with Apple` token when the user chooses to delete their account. This can be accomplished with the `revokeToken` API.
 
 ```js
 import auth from '@react-native-firebase/auth';
