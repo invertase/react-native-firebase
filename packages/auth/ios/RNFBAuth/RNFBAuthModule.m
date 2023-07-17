@@ -593,31 +593,39 @@ RCT_EXPORT_METHOD(signInWithProvider
   }
   // Add custom parameters if present
   if (provider[@"parameters"]) {
-      [builder setCustomParameters:provider[@"parameters"]];
+    [builder setCustomParameters:provider[@"parameters"]];
   }
 
   [builder getCredentialWithUIDelegate:nil
-                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-      return;
-    }
-    if (credential) {
-      [[FIRAuth auth] signInWithCredential:credential
-                                completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-        if (error) {
-          [self promiseRejectAuthException:reject error:error];
-          return;
-        }
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [[FIRAuth auth]
+                                    signInWithCredential:credential
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                  return;
+                                                }
 
-        // NOTE: This variable has NO PURPOSE AT ALL, it is only to keep a strong reference to
-        // the builder variable so it is not deallocated prematurely by ARC.
-        NSString *providerID = builder.providerID;
+                                                // NOTE: This variable has NO PURPOSE AT ALL, it is
+                                                // only to keep a strong reference to the builder
+                                                // variable so it is not deallocated prematurely by
+                                                // ARC.
+                                                NSString *providerID = builder.providerID;
 
-        [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-      }];
-    }
-  }];
+                                                [self promiseWithAuthResult:resolve
+                                                                   rejecter:reject
+                                                                 authResult:authResult];
+                                              }];
+                              }
+                            }];
 }
 
 RCT_EXPORT_METHOD(confirmPasswordReset
@@ -1033,10 +1041,10 @@ RCT_EXPORT_METHOD(linkWithCredential
 }
 
 RCT_EXPORT_METHOD(linkWithProvider
-                    : (FIRApp *)firebaseApp
-                    : (NSDictionary *)provider
-                    : (RCTPromiseResolveBlock)resolve
-                    : (RCTPromiseRejectBlock)reject) {
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   NSString *providerId = provider[@"providerId"];
   if (providerId == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1060,31 +1068,38 @@ RCT_EXPORT_METHOD(linkWithProvider
   }
   // Add custom parameters if present
   if (provider[@"parameters"]) {
-      [builder setCustomParameters:provider[@"parameters"]];
+    [builder setCustomParameters:provider[@"parameters"]];
   }
 
   [builder getCredentialWithUIDelegate:nil
-                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-      return;
-    }
-    if (credential) {
-        [user linkWithCredential:credential
-            completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-          if (error) {
-            [self promiseRejectAuthException:reject error:error];
-            return;
-          }
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [user linkWithCredential:credential
+                                              completion:^(FIRAuthDataResult *_Nullable authResult,
+                                                           NSError *_Nullable error) {
+                                                if (error) {
+                                                  [self promiseRejectAuthException:reject
+                                                                             error:error];
+                                                  return;
+                                                }
 
-          // NOTE: This variable has NO PURPOSE AT ALL, it is only to keep a strong reference to
-          // the builder variable so it is not deallocated prematurely by ARC.
-          NSString *providerID = builder.providerID;
+                                                // NOTE: This variable has NO PURPOSE AT ALL, it is
+                                                // only to keep a strong reference to the builder
+                                                // variable so it is not deallocated prematurely by
+                                                // ARC.
+                                                NSString *providerID = builder.providerID;
 
-          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-        }];
-    }
-  }];
+                                                [self promiseWithAuthResult:resolve
+                                                                   rejecter:reject
+                                                                 authResult:authResult];
+                                              }];
+                              }
+                            }];
 }
 
 RCT_EXPORT_METHOD(unlink
@@ -1148,10 +1163,10 @@ RCT_EXPORT_METHOD(reauthenticateWithCredential
 }
 
 RCT_EXPORT_METHOD(reauthenticateWithProvider
-                    : (FIRApp *)firebaseApp
-                    : (NSDictionary *)provider
-                    : (RCTPromiseResolveBlock)resolve
-                    : (RCTPromiseRejectBlock)reject) {
+                  : (FIRApp *)firebaseApp
+                  : (NSDictionary *)provider
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
   NSString *providerId = provider[@"providerId"];
   if (providerId == nil) {
     [RNFBSharedUtils rejectPromiseWithUserInfo:reject
@@ -1175,31 +1190,39 @@ RCT_EXPORT_METHOD(reauthenticateWithProvider
   }
   // Add custom parameters if present
   if (provider[@"parameters"]) {
-      [builder setCustomParameters:provider[@"parameters"]];
+    [builder setCustomParameters:provider[@"parameters"]];
   }
 
   [builder getCredentialWithUIDelegate:nil
-                             completion:^(FIRAuthCredential *_Nullable credential, NSError *_Nullable error) {
-    if (error) {
-      [self promiseRejectAuthException:reject error:error];
-      return;
-    }
-    if (credential) {
-        [user reauthenticateWithCredential:credential
-            completion:^(FIRAuthDataResult *_Nullable authResult, NSError *_Nullable error) {
-          if (error) {
-            [self promiseRejectAuthException:reject error:error];
-            return;
-          }
+                            completion:^(FIRAuthCredential *_Nullable credential,
+                                         NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                                return;
+                              }
+                              if (credential) {
+                                [user reauthenticateWithCredential:credential
+                                                        completion:^(
+                                                            FIRAuthDataResult *_Nullable authResult,
+                                                            NSError *_Nullable error) {
+                                                          if (error) {
+                                                            [self promiseRejectAuthException:reject
+                                                                                       error:error];
+                                                            return;
+                                                          }
 
-          // NOTE: This variable has NO PURPOSE AT ALL, it is only to keep a strong reference to
-          // the builder variable so it is not deallocated prematurely by ARC.
-          NSString *providerID = builder.providerID;
+                                                          // NOTE: This variable has NO PURPOSE AT
+                                                          // ALL, it is only to keep a strong
+                                                          // reference to the builder variable so it
+                                                          // is not deallocated prematurely by ARC.
+                                                          NSString *providerID = builder.providerID;
 
-          [self promiseWithAuthResult:resolve rejecter:reject authResult:authResult];
-        }];
-    }
-  }];
+                                                          [self promiseWithAuthResult:resolve
+                                                                             rejecter:reject
+                                                                           authResult:authResult];
+                                                        }];
+                              }
+                            }];
 }
 
 RCT_EXPORT_METHOD(fetchSignInMethodsForEmail

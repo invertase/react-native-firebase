@@ -1745,7 +1745,8 @@ class ReactNativeFirebaseAuthModule extends ReactNativeFirebaseModule {
    * @param promise
    */
   @ReactMethod
-  private void reauthenticateWithProvider(String appName, ReadableMap provider, final Promise promise) {
+  private void reauthenticateWithProvider(
+      String appName, ReadableMap provider, final Promise promise) {
     FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
