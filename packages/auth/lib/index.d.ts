@@ -97,6 +97,24 @@ export namespace FirebaseAuthTypes {
   export interface AuthProvider {
     /**
      * The provider ID of the provider.
+     */
+    PROVIDER_ID: string;
+    /**
+     * Creates a new `AuthCredential`.
+     *
+     * @returns {@link auth.AuthCredential}.
+     * @param token A provider token.
+     * @param secret A provider secret.
+     */
+    credential: (token: string | null, secret?: string) => AuthCredential;
+  }
+
+  /**
+   * Interface that represents an OAuth provider. Implemented by other providers.
+   */
+  export interface OAuthProvider {
+    /**
+     * The provider ID of the provider.
      * @param providerId
      */
     // eslint-disable-next-line @typescript-eslint/no-misused-new
@@ -343,7 +361,7 @@ export namespace FirebaseAuthTypes {
      * firebase.auth.OAuthProvider;
      * ```
      */
-    OAuthProvider: AuthProvider;
+    OAuthProvider: OAuthProvider;
     /**
      * Custom Open ID connect auth provider implementation.
      *
