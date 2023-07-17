@@ -663,6 +663,22 @@ RCT_EXPORT_METHOD(checkActionCode
            }];
 }
 
+RCT_EXPORT_METHOD(revokeToken
+                  : (FIRApp *)firebaseApp
+                  : (NSString *)authorizationCode
+                  : (RCTPromiseResolveBlock)resolve
+                  : (RCTPromiseRejectBlock)reject) {
+  [[FIRAuth authWithApp:firebaseApp]
+      revokeTokenWithAuthorizationCode:authorizationCode
+                            completion:^(NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                              } else {
+                                [self promiseNoUser:resolve rejecter:reject isError:NO];
+                              }
+                            }];
+}
+
 RCT_EXPORT_METHOD(sendPasswordResetEmail
                   : (FIRApp *)firebaseApp
                   : (NSString *)email
