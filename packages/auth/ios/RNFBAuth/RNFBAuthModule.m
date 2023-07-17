@@ -669,13 +669,14 @@ RCT_EXPORT_METHOD(revokeToken
                   : (RCTPromiseResolveBlock)resolve
                   : (RCTPromiseRejectBlock)reject) {
   [[FIRAuth authWithApp:firebaseApp]
-   revokeTokenWithAuthorizationCode:authorizationCode completion:^(NSError * _Nullable error) {
-      if (error) {
-        [self promiseRejectAuthException:reject error:error];
-      } else {
-        [self promiseNoUser:resolve rejecter:reject isError:NO];
-      }
-    }];
+      revokeTokenWithAuthorizationCode:authorizationCode
+                            completion:^(NSError *_Nullable error) {
+                              if (error) {
+                                [self promiseRejectAuthException:reject error:error];
+                              } else {
+                                [self promiseNoUser:resolve rejecter:reject isError:NO];
+                              }
+                            }];
 }
 
 RCT_EXPORT_METHOD(sendPasswordResetEmail
