@@ -1723,6 +1723,22 @@ export namespace FirebaseAuthTypes {
     signInWithCredential(credential: AuthCredential): Promise<UserCredential>;
 
     /**
+     * Revokes a user's Sign in with Apple token.
+     *
+     * #### Example
+     *
+     * ```js
+     * // Generate an Apple ID authorizationCode for the currently logged in user (ie, with @invertase/react-native-apple-authentication)
+     * const { authorizationCode } = await appleAuth.performRequest({ requestedOperation: appleAuth.Operation.REFRESH });
+     * // Revoke the token
+     * await firebase.auth().revokeToken(authorizationCode);
+     * ```
+     *
+     * @param authorizationCode A generated authorization code from Sign in with Apple.
+     */
+    revokeToken(authorizationCode: string): Promise<void>;
+
+    /**
      * Sends a password reset email to the given email address.
      * Unlike the web SDK, the email will contain a password reset link rather than a code.
      *
