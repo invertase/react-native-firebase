@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.3.0](https://github.com/invertase/react-native-firebase/compare/v18.2.0...v18.3.0) (2023-07-19)
+
+### Features
+
+- **auth, revokeToken:** sign in with apple revokeToken API ([#7239](https://github.com/invertase/react-native-firebase/issues/7239)) ([2b9dc73](https://github.com/invertase/react-native-firebase/commit/2b9dc738259b200d47c79cc028becf691cb528d3))
+
 ## [18.2.0](https://github.com/invertase/react-native-firebase/compare/v18.1.0...v18.2.0) (2023-07-13)
 
 ### Features
