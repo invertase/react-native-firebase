@@ -3,7 +3,7 @@ import { firebase } from '..';
 /**
  * Returns a Analytics instance for the given app.
  * @param app - FirebaseApp. Optional.
- * @returns {Analytics}
+ * @returns {import('..').FirebaseAnalyticsTypes.Module}
  */
 export function getAnalytics(app) {
   if (app) {
@@ -17,7 +17,7 @@ export function getAnalytics(app) {
  * Returns a Analytics instance for the given app.
  * @param app - FirebaseApp.
  * @param options - `AnalyticsSettings`. Web only.
- * @returns {Analytics}
+ * @returns {import('..').FirebaseAnalyticsTypes.Module}
  */
 // eslint-disable-next-line
 export function initializeAnalytics(app, options) {
@@ -73,16 +73,6 @@ export function getAppInstanceId(analytics) {
   return analytics.getAppInstanceId();
 }
 
-/**
- * Retrieves the session id from the client.
- * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
- *
- * @param analytics Analytics instance.
- * @returns Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
- */
-export function getSessionId(analytics) {
-  return analytics.getSessionId();
-}
 /**
  * Retrieves the session id from the client.
  * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
