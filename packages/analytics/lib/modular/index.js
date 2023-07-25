@@ -84,6 +84,16 @@ export function getSessionId(analytics) {
   return analytics.getSessionId();
 }
 /**
+ * Retrieves the session id from the client.
+ * On iOS, Firebase SDK may return an error that is handled internally and may take many minutes to return a valid value. Check native debug logs for more details.
+ *
+ * @param analytics Analytics instance.
+ * @returns Returns the session id or null if session is expired, null on android if FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE has been set to FirebaseAnalytics.ConsentStatus.DENIED and null on iOS if ConsentType.analyticsStorage has been set to ConsentStatus.denied.
+ */
+export function getSessionId(analytics) {
+  return analytics.getSessionId();
+}
+/**
  * Gives a user a unique identification.
  *
  * @param analytics Analytics instance.
