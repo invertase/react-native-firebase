@@ -59,7 +59,9 @@ async function onAppleButtonPress() {
   // Start the sign-in request
   const appleAuthRequestResponse = await appleAuth.performRequest({
     requestedOperation: appleAuth.Operation.LOGIN,
-    requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+    // As per the FAQ of react-native-apple-authentication, the name should come first in the following array. 
+    // See: https://github.com/invertase/react-native-apple-authentication#faqs
+    requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
   });
 
   // Ensure Apple returned a user identityToken
