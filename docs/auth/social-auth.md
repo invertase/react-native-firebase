@@ -326,3 +326,27 @@ Upon successful sign-in, any [`onAuthStateChanged`](/auth/usage#listening-to-aut
 with the new authentication state of the user.
 
 If you are testing this feature on an android emulator ensure that the emulate is either the Google APIs or Google Play flavor.
+
+## Linking a Social Account with the Firebase Account
+
+If you want to provide users with an additional login method, you can link their social media account (or an email & password) with their Firebase account, which was created using any of the valid methods that `@react-native-firebase/auth` supports. The code is very similar to the login code (above.) You need to replace `auth().signInWithCredential()` in the scripts above with `auth().currentUser.linkWithCredential()`. An example of linking a Google account with a Firebase account follows. 
+
+```js
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+async function onGoogleLinkButtonPress() {
+  // Check if your device supports Google Play
+  await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+  // Get the user ID token
+  const { idToken } = await GoogleSignin.signIn();
+
+  // Create a Google credential with the token
+  const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+  // Link the user with the credential
+  const firebaseUserCredential = await auth().currentUser.linkWithCredential(googleCredential);
+  // You can store in your app that the account was linked. 
+  return;
+}
+```
