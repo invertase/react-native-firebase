@@ -40,8 +40,7 @@ buildscript {
   // ..
   dependencies {
     // ..
-    // NOTE: 2.9.4 has issues: https://github.com/invertase/react-native-firebase/issues/6983
-    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.8'
   }
   // ..
 }
