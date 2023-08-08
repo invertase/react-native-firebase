@@ -119,4 +119,10 @@ Object.defineProperty(global, 'installationsModular', {
   },
 });
 
+Object.defineProperty(global, 'crashlyticsModular', {
+  get() {
+    return jet.crashlyticsModular;
+  },
+});
+
 global.isCI = !!process.env.CI;
