@@ -44,6 +44,7 @@ import React from 'react';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import * as installationsModular from '@react-native-firebase/installations';
+import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -58,6 +59,7 @@ jet.exposeContextProperty('appCheckModular', appCheckModular);
 jet.exposeContextProperty('messagingModular', messagingModular);
 jet.exposeContextProperty('storageModular', storageModular);
 jet.exposeContextProperty('installationsModular', installationsModular);
+jet.exposeContextProperty('dynamicLinksModular', dynamicLinksModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

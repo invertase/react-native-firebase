@@ -31,7 +31,9 @@ const baseParams = {
 };
 
 const getShortLink = async function (url, type) {
-  return await firebase.dynamicLinks().buildShortLink(
+  const { getDynamicLinks, buildShortLink } = dynamicLinksModular;
+  return await buildShortLink(
+    getDynamicLinks(),
     {
       link: url,
       domainUriPrefix: DYNAMIC_LINK_DOMAIN,
@@ -58,171 +60,141 @@ const getShortLink = async function (url, type) {
 module.exports.baseParams = baseParams;
 
 describe('dynamicLinks()', function () {
-  describe('namespace', function () {
-    it('accessible from firebase.app()', function () {
-      const app = firebase.app();
-      should.exist(app.dynamicLinks);
-      app.dynamicLinks().app.should.equal(app);
-    });
-  });
-
-  describe('buildLink()', function () {
-    it('returns a dynamic link', async function () {
-      const link = await firebase.dynamicLinks().buildLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
-    });
-  });
-
-  describe('buildShortLink()', function () {
-    it('returns a short link', async function () {
-      const link = await firebase.dynamicLinks().buildShortLink(baseParams);
-      link.should.be.String();
-      link.length.should.be.greaterThan(6);
+  describe('v8 compatibility', function () {
+    describe('namespace', function () {
+      it('accessible from firebase.app()', function () {
+        const app = firebase.app();
+        should.exist(app.dynamicLinks);
+        app.dynamicLinks().app.should.equal(app);
+      });
     });
 
-    it('throws if type is invalid', function () {
-      try {
-        firebase.dynamicLinks().buildShortLink(baseParams, 'LONG');
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql(
-          "'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE",
+    describe('buildLink()', function () {
+      it('returns a dynamic link', async function () {
+        const link = await firebase.dynamicLinks().buildLink(baseParams);
+        link.should.be.String();
+        link.length.should.be.greaterThan(6);
+      });
+    });
+
+    describe('buildShortLink()', function () {
+      it('returns a short link', async function () {
+        const link = await firebase.dynamicLinks().buildShortLink(baseParams);
+        link.should.be.String();
+        link.length.should.be.greaterThan(6);
+      });
+
+      it('throws if type is invalid', function () {
+        try {
+          firebase.dynamicLinks().buildShortLink(baseParams, 'LONG');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE",
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
+    describe('resolveLink()', function () {
+      it('resolves a long link', async function () {
+        // TODO: flaky on android if link is used for open tests as well?
+        // https://github.com/firebase/firebase-android-sdk/issues/2909
+        const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK2_TARGET);
+        should.equal(link.minimumAppVersion, null);
+      });
+
+      it('resolves a short link', async function () {
+        const shortLink = await getShortLink(
+          TEST_LINK2_TARGET,
+          firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
         );
-        return Promise.resolve();
-      }
-    });
-  });
+        shortLink.should.be.String();
+        // Unguessable links are 17 characters by definitions, add the slash: 18 chars
+        shortLink.length.should.be.eql(baseParams.domainUriPrefix.length + 18);
 
-  describe('resolveLink()', function () {
-    it('resolves a long link', async function () {
-      // TODO: flaky on android if link is used for open tests as well?
-      // https://github.com/firebase/firebase-android-sdk/issues/2909
-      const link = await firebase.dynamicLinks().resolveLink(TEST_LINK2);
-      link.should.be.an.Object();
-      link.url.should.equal(TEST_LINK2_TARGET);
-      should.equal(link.minimumAppVersion, null);
-    });
+        const link = await firebase.dynamicLinks().resolveLink(shortLink);
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK2_TARGET);
+        // TODO: harmonize the API so that minimumAppVersion is either a number or a string
+        // it would be a breaking change in the API though
+        // On Android it's a number and iOS a String, so parseInt is used to have a single test
+        parseInt(link.minimumAppVersion, 10).should.equal(123);
 
-    it('resolves a short link', async function () {
-      const shortLink = await getShortLink(
-        TEST_LINK2_TARGET,
-        firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
-      );
-      shortLink.should.be.String();
-      // Unguessable links are 17 characters by definitions, add the slash: 18 chars
-      shortLink.length.should.be.eql(baseParams.domainUriPrefix.length + 18);
-
-      const link = await firebase.dynamicLinks().resolveLink(shortLink);
-      link.should.be.an.Object();
-      link.url.should.equal(TEST_LINK2_TARGET);
-      // TODO: harmonize the API so that minimumAppVersion is either a number or a string
-      // it would be a breaking change in the API though
-      // On Android it's a number and iOS a String, so parseInt is used to have a single test
-      parseInt(link.minimumAppVersion, 10).should.equal(123);
-
-      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
-      link.utmParameters.utm_source.should.equal('github');
-      link.utmParameters.utm_medium.should.equal('web');
-      link.utmParameters.utm_campaign.should.equal('prs-welcome');
-    });
-
-    it('throws on links that do not exist', async function () {
-      try {
-        await firebase.dynamicLinks().resolveLink(baseParams.domainUriPrefix + '/not-a-valid-link');
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.code.should.containEql('not-found');
-        e.message.should.containEql('Dynamic link not found');
-        return Promise.resolve();
-      }
-    });
-
-    it('throws on static links', async function () {
-      try {
-        await firebase.dynamicLinks().resolveLink(TEST_LINK2_TARGET);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql('Dynamic link not found');
-        return Promise.resolve();
-      }
-    });
-
-    it('throws on invalid links', async function () {
-      try {
-        await firebase.dynamicLinks().resolveLink(null);
-        return Promise.reject(new Error('Did not throw Error.'));
-      } catch (e) {
-        e.message.should.containEql('Invalid link parameter');
-        return Promise.resolve();
-      }
-    });
-
-    // // The API is documented as being capable of suffering a processing failure, and we
-    // // handle it, but I don't know how to trigger it to validate
-    // it('throws on link processing error', async () => {
-    //   try {
-    //     await firebase.dynamicLinks().resolveLink(SOME UNKNOWN INPUT TO CAUSE PROCESSING ERROR);
-    //     return Promise.reject(new Error('Did not throw Error.'));
-    //   } catch (e) {
-    //     e.code.should.containEql('resolve-link-error');
-    //     return Promise.resolve();
-    //   }
-    // });
-  });
-
-  describe('getInitialLink()', function () {
-    it('should return the dynamic link instance that launched the app', async function () {
-      const shortLink = await getShortLink(
-        TEST_LINK3_TARGET,
-        firebase.dynamicLinks.ShortLinkType.SHORT,
-      );
-      if (device.getPlatform() === 'android') {
-        await device.launchApp({ newInstance: true, url: shortLink });
-      } else {
-        // #2660 - iOS getInitialLink fails, while Linking.getInitialLink() will return the link for resolution !?
-        // #2631 - on iOS getInitialLink will return same link: open app w/link (correct), background, open again (old link)
-        await device.openURL({ url: TEST_LINK3 });
-        // TODO: ios is not able to open short links on simulator?
-        // await device.openURL({ url: shortLink });
-      }
-      const link = await firebase.dynamicLinks().getInitialLink();
-
-      link.should.be.an.Object();
-      link.url.should.equal(TEST_LINK3_TARGET);
-      // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
-      // and they only come back when resolved from a short link, which is android only in testing
-      if (device.getPlatform() === 'android') {
+        // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
         link.utmParameters.utm_source.should.equal('github');
         link.utmParameters.utm_medium.should.equal('web');
         link.utmParameters.utm_campaign.should.equal('prs-welcome');
-      } else {
-        link.utmParameters.should.eql({});
-      }
-    });
-  });
+      });
 
-  describe('onLink()', function () {
-    it('should emit dynamic links', async function () {
-      // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
-      if (!isCI) {
-        const shortLink = await getShortLink(
-          TEST_LINK1_TARGET,
-          firebase.dynamicLinks.ShortLinkType.DEFAULT,
-        );
-        const spy = sinon.spy();
-        firebase.dynamicLinks().onLink(spy);
-
-        if (device.getPlatform() === 'android') {
-          await device.launchApp({ url: shortLink });
-        } else {
-          await device.openURL({ url: TEST_LINK1 });
+      it('throws on links that do not exist', async function () {
+        try {
+          await firebase
+            .dynamicLinks()
+            .resolveLink(baseParams.domainUriPrefix + '/not-a-valid-link');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.code.should.containEql('not-found');
+          e.message.should.containEql('Dynamic link not found');
+          return Promise.resolve();
         }
-        await Utils.spyToBeCalledOnceAsync(spy);
+      });
 
-        const link = spy.getCall(0).args[0];
+      it('throws on static links', async function () {
+        try {
+          await firebase.dynamicLinks().resolveLink(TEST_LINK2_TARGET);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql('Dynamic link not found');
+          return Promise.resolve();
+        }
+      });
+
+      it('throws on invalid links', async function () {
+        try {
+          await firebase.dynamicLinks().resolveLink(null);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql('Invalid link parameter');
+          return Promise.resolve();
+        }
+      });
+
+      // // The API is documented as being capable of suffering a processing failure, and we
+      // // handle it, but I don't know how to trigger it to validate
+      // it('throws on link processing error', async () => {
+      //   try {
+      //     await firebase.dynamicLinks().resolveLink(SOME UNKNOWN INPUT TO CAUSE PROCESSING ERROR);
+      //     return Promise.reject(new Error('Did not throw Error.'));
+      //   } catch (e) {
+      //     e.code.should.containEql('resolve-link-error');
+      //     return Promise.resolve();
+      //   }
+      // });
+    });
+
+    describe('getInitialLink()', function () {
+      it('should return the dynamic link instance that launched the app', async function () {
+        const shortLink = await getShortLink(
+          TEST_LINK3_TARGET,
+          firebase.dynamicLinks.ShortLinkType.SHORT,
+        );
+        if (device.getPlatform() === 'android') {
+          await device.launchApp({ newInstance: true, url: shortLink });
+        } else {
+          // #2660 - iOS getInitialLink fails, while Linking.getInitialLink() will return the link for resolution !?
+          // #2631 - on iOS getInitialLink will return same link: open app w/link (correct), background, open again (old link)
+          await device.openURL({ url: TEST_LINK3 });
+          // TODO: ios is not able to open short links on simulator?
+          // await device.openURL({ url: shortLink });
+        }
+        const link = await firebase.dynamicLinks().getInitialLink();
+
         link.should.be.an.Object();
-        link.url.should.equal(TEST_LINK1_TARGET);
+        link.url.should.equal(TEST_LINK3_TARGET);
         // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
         // and they only come back when resolved from a short link, which is android only in testing
         if (device.getPlatform() === 'android') {
@@ -232,15 +204,241 @@ describe('dynamicLinks()', function () {
         } else {
           link.utmParameters.should.eql({});
         }
-      } else {
-        this.skip();
-      }
+      });
+    });
+
+    describe('onLink()', function () {
+      it('should emit dynamic links', async function () {
+        // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
+        if (!isCI) {
+          const shortLink = await getShortLink(
+            TEST_LINK1_TARGET,
+            firebase.dynamicLinks.ShortLinkType.DEFAULT,
+          );
+          const spy = sinon.spy();
+          firebase.dynamicLinks().onLink(spy);
+
+          if (device.getPlatform() === 'android') {
+            await device.launchApp({ url: shortLink });
+          } else {
+            await device.openURL({ url: TEST_LINK1 });
+          }
+          await Utils.spyToBeCalledOnceAsync(spy);
+
+          const link = spy.getCall(0).args[0];
+          link.should.be.an.Object();
+          link.url.should.equal(TEST_LINK1_TARGET);
+          // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+          // and they only come back when resolved from a short link, which is android only in testing
+          if (device.getPlatform() === 'android') {
+            link.utmParameters.utm_source.should.equal('github');
+            link.utmParameters.utm_medium.should.equal('web');
+            link.utmParameters.utm_campaign.should.equal('prs-welcome');
+          } else {
+            link.utmParameters.should.eql({});
+          }
+        } else {
+          this.skip();
+        }
+      });
+    });
+
+    describe('performDiagnostics()', function () {
+      it('should perform diagnostics without error', async function () {
+        firebase.dynamicLinks().performDiagnostics();
+      });
     });
   });
 
-  describe('performDiagnostics()', function () {
-    it('should perform diagnostics without error', async function () {
-      firebase.dynamicLinks().performDiagnostics();
+  describe('modular', function () {
+    describe('buildLink()', function () {
+      it('returns a dynamic link', async function () {
+        const { getDynamicLinks, buildLink } = dynamicLinksModular;
+        const link = await buildLink(getDynamicLinks(), baseParams);
+        link.should.be.String();
+        link.length.should.be.greaterThan(6);
+      });
+    });
+
+    describe('buildShortLink()', function () {
+      it('returns a short link', async function () {
+        const { getDynamicLinks, buildShortLink } = dynamicLinksModular;
+        const link = await buildShortLink(getDynamicLinks(), baseParams);
+        link.should.be.String();
+        link.length.should.be.greaterThan(6);
+      });
+
+      it('throws if type is invalid', function () {
+        const { getDynamicLinks, buildShortLink } = dynamicLinksModular;
+        try {
+          buildShortLink(getDynamicLinks(), baseParams, 'LONG');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql(
+            "'shortLinkType' expected one of DEFAULT, SHORT or UNGUESSABLE",
+          );
+          return Promise.resolve();
+        }
+      });
+    });
+
+    describe('resolveLink()', function () {
+      it('resolves a long link', async function () {
+        const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+        // TODO: flaky on android if link is used for open tests as well?
+        // https://github.com/firebase/firebase-android-sdk/issues/2909
+        const link = await resolveLink(getDynamicLinks(), TEST_LINK2);
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK2_TARGET);
+        should.equal(link.minimumAppVersion, null);
+      });
+
+      it('resolves a short link', async function () {
+        const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+        const shortLink = await getShortLink(
+          TEST_LINK2_TARGET,
+          firebase.dynamicLinks.ShortLinkType.UNGUESSABLE,
+        );
+        shortLink.should.be.String();
+        // Unguessable links are 17 characters by definitions, add the slash: 18 chars
+        shortLink.length.should.be.eql(baseParams.domainUriPrefix.length + 18);
+
+        const link = await resolveLink(getDynamicLinks(), shortLink);
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK2_TARGET);
+        // TODO: harmonize the API so that minimumAppVersion is either a number or a string
+        // it would be a breaking change in the API though
+        // On Android it's a number and iOS a String, so parseInt is used to have a single test
+        parseInt(link.minimumAppVersion, 10).should.equal(123);
+
+        // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+        link.utmParameters.utm_source.should.equal('github');
+        link.utmParameters.utm_medium.should.equal('web');
+        link.utmParameters.utm_campaign.should.equal('prs-welcome');
+      });
+
+      it('throws on links that do not exist', async function () {
+        const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+        try {
+          await resolveLink(getDynamicLinks(), baseParams.domainUriPrefix + '/not-a-valid-link');
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.code.should.containEql('not-found');
+          e.message.should.containEql('Dynamic link not found');
+          return Promise.resolve();
+        }
+      });
+
+      it('throws on static links', async function () {
+        const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+        try {
+          await resolveLink(getDynamicLinks(), TEST_LINK2_TARGET);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql('Dynamic link not found');
+          return Promise.resolve();
+        }
+      });
+
+      it('throws on invalid links', async function () {
+        const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+        try {
+          await resolveLink(getDynamicLinks(), null);
+          return Promise.reject(new Error('Did not throw Error.'));
+        } catch (e) {
+          e.message.should.containEql('Invalid link parameter');
+          return Promise.resolve();
+        }
+      });
+
+      // // The API is documented as being capable of suffering a processing failure, and we
+      // // handle it, but I don't know how to trigger it to validate
+      // it('throws on link processing error', async () => {
+      //   const { getDynamicLinks, resolveLink } = dynamicLinksModular;
+      //   try {
+      //     await resolveLink(getDynamicLinks(), SOME UNKNOWN INPUT TO CAUSE PROCESSING ERROR);
+      //     return Promise.reject(new Error('Did not throw Error.'));
+      //   } catch (e) {
+      //     e.code.should.containEql('resolve-link-error');
+      //     return Promise.resolve();
+      //   }
+      // });
+    });
+
+    describe('getInitialLink()', function () {
+      it('should return the dynamic link instance that launched the app', async function () {
+        const { getDynamicLinks, getInitialLink } = dynamicLinksModular;
+        const shortLink = await getShortLink(
+          TEST_LINK3_TARGET,
+          firebase.dynamicLinks.ShortLinkType.SHORT,
+        );
+        if (device.getPlatform() === 'android') {
+          await device.launchApp({ newInstance: true, url: shortLink });
+        } else {
+          // #2660 - iOS getInitialLink fails, while Linking.getInitialLink() will return the link for resolution !?
+          // #2631 - on iOS getInitialLink will return same link: open app w/link (correct), background, open again (old link)
+          await device.openURL({ url: TEST_LINK3 });
+          // TODO: ios is not able to open short links on simulator?
+          // await device.openURL({ url: shortLink });
+        }
+        const link = await getInitialLink(getDynamicLinks());
+
+        link.should.be.an.Object();
+        link.url.should.equal(TEST_LINK3_TARGET);
+        // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+        // and they only come back when resolved from a short link, which is android only in testing
+        if (device.getPlatform() === 'android') {
+          link.utmParameters.utm_source.should.equal('github');
+          link.utmParameters.utm_medium.should.equal('web');
+          link.utmParameters.utm_campaign.should.equal('prs-welcome');
+        } else {
+          link.utmParameters.should.eql({});
+        }
+      });
+    });
+
+    describe('onLink()', function () {
+      it('should emit dynamic links', async function () {
+        // This is frequently flaky in CI - but works sometimes. Skipping only in CI for now.
+        if (!isCI) {
+          const { getDynamicLinks, onLink } = dynamicLinksModular;
+          const shortLink = await getShortLink(
+            TEST_LINK1_TARGET,
+            firebase.dynamicLinks.ShortLinkType.DEFAULT,
+          );
+          const spy = sinon.spy();
+          onLink(getDynamicLinks(), spy);
+
+          if (device.getPlatform() === 'android') {
+            await device.launchApp({ url: shortLink });
+          } else {
+            await device.openURL({ url: TEST_LINK1 });
+          }
+          await Utils.spyToBeCalledOnceAsync(spy);
+
+          const link = spy.getCall(0).args[0];
+          link.should.be.an.Object();
+          link.url.should.equal(TEST_LINK1_TARGET);
+          // "utm_content" and "utm_term" will not come back when resolved, even if you build with them
+          // and they only come back when resolved from a short link, which is android only in testing
+          if (device.getPlatform() === 'android') {
+            link.utmParameters.utm_source.should.equal('github');
+            link.utmParameters.utm_medium.should.equal('web');
+            link.utmParameters.utm_campaign.should.equal('prs-welcome');
+          } else {
+            link.utmParameters.should.eql({});
+          }
+        } else {
+          this.skip();
+        }
+      });
+    });
+
+    describe('performDiagnostics()', function () {
+      it('should perform diagnostics without error', async function () {
+        const { getDynamicLinks, performDiagnostics } = dynamicLinksModular;
+        performDiagnostics(getDynamicLinks());
+      });
     });
   });
 });
