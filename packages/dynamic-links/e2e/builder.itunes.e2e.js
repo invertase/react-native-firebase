@@ -18,7 +18,7 @@
 const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.itunes', function () {
-  describle('v8 compatibility', function () {
+  describe('v8 compatibility', function () {
     it('throws if itunes is not an object', function () {
       try {
         firebase.dynamicLinks().buildLink({
@@ -78,7 +78,7 @@ describe('dynamicLinks() dynamicLinkParams.itunes', function () {
     });
   });
 
-  describle('modular', function () {
+  describe('modular', function () {
     it('throws if itunes is not an object', function () {
       const { getDynamicLinks, buildLink } = dynamicLinksModular;
       try {
