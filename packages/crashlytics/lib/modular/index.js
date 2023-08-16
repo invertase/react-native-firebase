@@ -4,10 +4,7 @@ import { firebase } from '..';
  * @param {import('@react-native-firebase/app').ReactNativeFirebase.Module} app
  * @returns {import('.').FirebaseCrashlytics}
  */
-export function getCrashlytics(app) {
-  if (app) {
-    return app.crashlytics();
-  }
+export function getCrashlytics() {
   return firebase.crashlytics();
 }
 
