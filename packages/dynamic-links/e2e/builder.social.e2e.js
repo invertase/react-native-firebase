@@ -18,61 +18,127 @@
 const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.social', function () {
-  it('throws if social is not an object', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        social: 123,
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.social' must be an object");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if social is not an object', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          social: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if social.descriptionText is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          social: {
+            descriptionText: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.descriptionText' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if social.imageUrl is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          social: {
+            imageUrl: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.imageUrl' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if social.title is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          social: {
+            title: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.title' must be a string");
+        return Promise.resolve();
+      }
+    });
   });
 
-  it('throws if social.descriptionText is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        social: {
-          descriptionText: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.social.descriptionText' must be a string");
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('throws if social is not an object', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          social: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social' must be an object");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if social.imageUrl is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        social: {
-          imageUrl: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.social.imageUrl' must be a string");
-      return Promise.resolve();
-    }
-  });
+    it('throws if social.descriptionText is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          social: {
+            descriptionText: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.descriptionText' must be a string");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if social.title is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        social: {
-          title: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.social.title' must be a string");
-      return Promise.resolve();
-    }
+    it('throws if social.imageUrl is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          social: {
+            imageUrl: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.imageUrl' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if social.title is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          social: {
+            title: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.social.title' must be a string");
+        return Promise.resolve();
+      }
+    });
   });
 });

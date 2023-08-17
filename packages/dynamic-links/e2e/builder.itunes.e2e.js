@@ -18,61 +18,127 @@
 const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.itunes', function () {
-  it('throws if itunes is not an object', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        itunes: 123,
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.itunes' must be an object");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if itunes is not an object', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          itunes: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if itunes.affiliateToken is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          itunes: {
+            affiliateToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.affiliateToken' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if itunes.campaignToken is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          itunes: {
+            campaignToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.campaignToken' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if itunes.providerToken is not a string', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          itunes: {
+            providerToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.providerToken' must be a string");
+        return Promise.resolve();
+      }
+    });
   });
 
-  it('throws if itunes.affiliateToken is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        itunes: {
-          affiliateToken: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.itunes.affiliateToken' must be a string");
-      return Promise.resolve();
-    }
-  });
+  describe('modular', function () {
+    it('throws if itunes is not an object', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          itunes: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes' must be an object");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if itunes.campaignToken is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        itunes: {
-          campaignToken: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.itunes.campaignToken' must be a string");
-      return Promise.resolve();
-    }
-  });
+    it('throws if itunes.affiliateToken is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          itunes: {
+            affiliateToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.affiliateToken' must be a string");
+        return Promise.resolve();
+      }
+    });
 
-  it('throws if itunes.providerToken is not a string', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        itunes: {
-          providerToken: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.itunes.providerToken' must be a string");
-      return Promise.resolve();
-    }
+    it('throws if itunes.campaignToken is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          itunes: {
+            campaignToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.campaignToken' must be a string");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if itunes.providerToken is not a string', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          itunes: {
+            providerToken: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.itunes.providerToken' must be a string");
+        return Promise.resolve();
+      }
+    });
   });
 });
