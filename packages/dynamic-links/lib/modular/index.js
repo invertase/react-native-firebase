@@ -17,7 +17,11 @@
 
 import { firebase } from '..';
 
-export const ShortLinkType = firebase.dynamicLinks.ShortLinkType;
+export const ShortLinkType = {
+  SHORT: 'SHORT',
+  UNGUESSABLE: 'UNGUESSABLE',
+  DEFAULT: 'DEFAULT',
+};
 
 /**
  * @param {import('@react-native-firebase/app').ReactNativeFirebase.FirebaseApp} app
