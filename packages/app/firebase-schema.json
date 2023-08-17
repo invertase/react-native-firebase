@@ -46,7 +46,7 @@
           "type": "string",
           "enum": [
             "error",
-            "warm",
+            "warn",
             "info",
             "debug"
           ]
