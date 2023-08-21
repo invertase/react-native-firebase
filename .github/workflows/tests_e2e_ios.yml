@@ -29,7 +29,7 @@ jobs:
     name: iOS
     runs-on: macos-13
     # TODO matrix across APIs, at least 11 and 15 (lowest to highest)
-    timeout-minutes: 80
+    timeout-minutes: 100
     env:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
@@ -179,7 +179,7 @@ jobs:
         run: nohup sh -c "sleep 30 && xcrun simctl spawn booted log stream --level debug --style compact > simulator.log 2>&1 &"
 
       - name: Detox Test
-        timeout-minutes: 30
+        timeout-minutes: 50
         run: yarn tests:ios:test-cover
 
       - name: Compress Simulator Log
