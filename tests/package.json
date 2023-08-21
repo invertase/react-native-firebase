@@ -62,7 +62,8 @@
         "build": "set -o pipefail && xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 14"
+          "type": "iPhone 14",
+          "os": "iOS 16.4"
         }
       },
       "ios.sim.release": {
@@ -70,7 +71,8 @@
         "build": "export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail | xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 14"
+          "type": "iPhone 14",
+          "os": "iOS 16.4"
         }
       },
       "android.emu.debug": {
