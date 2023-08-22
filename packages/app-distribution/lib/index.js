@@ -64,6 +64,8 @@ class FirebaseAppDistributionModule extends FirebaseModule {
   }
 }
 
+export * from './modular';
+
 // import { SDK_VERSION } from '@react-native-firebase/app-distribution';
 export const SDK_VERSION = version;
 
