@@ -74,6 +74,8 @@ class FirebaseFiamModule extends FirebaseModule {
   }
 }
 
+export * from './modular';
+
 // import { SDK_VERSION } from '@react-native-firebase/in-app-messaging';
 export const SDK_VERSION = version;
 
