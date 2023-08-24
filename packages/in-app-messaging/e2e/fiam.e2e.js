@@ -93,13 +93,6 @@ describe('inAppMessaging()', function () {
 
   describe('modular', function () {
     describe('setAutomaticDataCollectionEnabled()', function () {
-      const {
-        getInAppMessaging,
-        setAutomaticDataCollectionEnabled,
-        isAutomaticDataCollectionEnabled,
-      } = inAppMessagingModular;
-      const inAppMessaging = getInAppMessaging();
-
       // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
       afterEach(async function () {
@@ -107,17 +100,33 @@ describe('inAppMessaging()', function () {
       });
 
       it('true', async function () {
+        const {
+          getInAppMessaging,
+          setAutomaticDataCollectionEnabled,
+          isAutomaticDataCollectionEnabled,
+        } = inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+
         should.equal(isAutomaticDataCollectionEnabled(inAppMessaging), false);
         await setAutomaticDataCollectionEnabled(inAppMessaging, true);
         should.equal(isAutomaticDataCollectionEnabled(inAppMessaging), true);
       });
 
       it('false', async function () {
+        const {
+          getInAppMessaging,
+          setAutomaticDataCollectionEnabled,
+          isAutomaticDataCollectionEnabled,
+        } = inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+
         await setAutomaticDataCollectionEnabled(inAppMessaging, false);
         should.equal(isAutomaticDataCollectionEnabled(inAppMessaging), false);
       });
 
       it('errors if not boolean', async function () {
+        const { setAutomaticDataCollectionEnabled } = inAppMessagingModular;
+
         try {
           setAutomaticDataCollectionEnabled();
           return Promise.reject(new Error('Did not throw'));
@@ -129,11 +138,11 @@ describe('inAppMessaging()', function () {
     });
 
     xdescribe('setMessagesDisplaySuppressed()', function () {
-      const { getInAppMessaging, setMessagesDisplaySuppressed, isMessagesDisplaySuppressed } =
-        inAppMessagingModular;
-      const inAppMessaging = getInAppMessaging();
-
       it('false', async function () {
+        const { getInAppMessaging, setMessagesDisplaySuppressed, isMessagesDisplaySuppressed } =
+          inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+
         should.equal(isMessagesDisplaySuppressed(inAppMessaging), false);
         await setMessagesDisplaySuppressed(inAppMessaging, false);
         should.equal(isMessagesDisplaySuppressed(inAppMessaging), false);
@@ -141,6 +150,10 @@ describe('inAppMessaging()', function () {
       });
 
       it('true', async function () {
+        const { getInAppMessaging, setMessagesDisplaySuppressed, isMessagesDisplaySuppressed } =
+          inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+
         await device.launchApp();
         await setMessagesDisplaySuppressed(inAppMessaging, true);
         should.equal(isMessagesDisplaySuppressed(inAppMessaging), true);
@@ -151,6 +164,8 @@ describe('inAppMessaging()', function () {
       });
 
       it('errors if not boolean', async function () {
+        const { setMessagesDisplaySuppressed } = inAppMessagingModular;
+
         try {
           setMessagesDisplaySuppressed();
           return Promise.reject(new Error('Did not throw'));
@@ -162,10 +177,10 @@ describe('inAppMessaging()', function () {
     });
 
     xdescribe('triggerEvent()', function () {
-      const { getInAppMessaging, triggerEvent } = inAppMessagingModular;
-      const inAppMessaging = getInAppMessaging();
-
       it('no exceptions thrown', async function () {
+        const { getInAppMessaging, triggerEvent } = inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
+
         await device.launchApp();
         await triggerEvent(inAppMessaging, 'eventName');
       });
