@@ -96,6 +96,8 @@ describe('inAppMessaging()', function () {
       // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
       afterEach(async function () {
+        const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
+        const inAppMessaging = getInAppMessaging();
         await setAutomaticDataCollectionEnabled(inAppMessaging, false);
       });
 
