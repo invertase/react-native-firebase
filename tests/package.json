@@ -1,38 +1,39 @@
 {
   "name": "react-native-firebase-tests",
-  "version": "18.3.0",
+  "version": "18.3.1",
   "private": true,
   "scripts": {
     "build:clean": "rimraf dist && rimraf android/build && rimraf android/app/build && rimraf android/.gradle && rimraf ios/build",
     "prepare": "patch-package"
   },
   "dependencies": {
-    "@react-native-firebase/analytics": "18.3.0",
-    "@react-native-firebase/app": "18.3.0",
-    "@react-native-firebase/app-check": "18.3.0",
-    "@react-native-firebase/app-distribution": "18.3.0",
+    "@react-native-firebase/analytics": "18.3.1",
+    "@react-native-firebase/app": "18.3.1",
+    "@react-native-firebase/app-check": "18.3.1",
+    "@react-native-firebase/app-distribution": "18.3.1",
     "@react-native-firebase/app-types": "6.7.2",
-    "@react-native-firebase/auth": "18.3.0",
-    "@react-native-firebase/crashlytics": "18.3.0",
-    "@react-native-firebase/database": "18.3.0",
-    "@react-native-firebase/dynamic-links": "18.3.0",
-    "@react-native-firebase/firestore": "18.3.0",
-    "@react-native-firebase/functions": "18.3.0",
-    "@react-native-firebase/in-app-messaging": "18.3.0",
-    "@react-native-firebase/installations": "18.3.0",
-    "@react-native-firebase/messaging": "18.3.0",
-    "@react-native-firebase/ml": "18.3.0",
-    "@react-native-firebase/perf": "18.3.0",
-    "@react-native-firebase/remote-config": "18.3.0",
-    "@react-native-firebase/storage": "18.3.0",
+    "@react-native-firebase/auth": "18.3.1",
+    "@react-native-firebase/crashlytics": "18.3.1",
+    "@react-native-firebase/database": "18.3.1",
+    "@react-native-firebase/dynamic-links": "18.3.1",
+    "@react-native-firebase/firestore": "18.3.1",
+    "@react-native-firebase/functions": "18.3.1",
+    "@react-native-firebase/in-app-messaging": "18.3.1",
+    "@react-native-firebase/installations": "18.3.1",
+    "@react-native-firebase/messaging": "18.3.1",
+    "@react-native-firebase/ml": "18.3.1",
+    "@react-native-firebase/perf": "18.3.1",
+    "@react-native-firebase/remote-config": "18.3.1",
+    "@react-native-firebase/storage": "18.3.1",
     "postinstall-postinstall": "2.1.0",
     "react": "18.2.0",
-    "react-native": "0.72.3",
-    "react-native-device-info": "^10.6.0"
+    "react-native": "0.72.4",
+    "react-native-device-info": "^10.8.0"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.7",
     "@react-native-firebase/private-tests-helpers": "0.0.13",
+    "@react-native/metro-config": "^0.72.11",
     "a2a": "^0.2.1",
     "babel-plugin-istanbul": "^6.0.0",
     "detox": "^19.12.6",
@@ -42,7 +43,7 @@
     "jest-environment-node": "^29.5.0",
     "jet": "^0.8.2",
     "jsonwebtoken": "^9.0.0",
-    "metro-react-native-babel-preset": "0.76.7",
+    "metro-react-native-babel-preset": "0.76.8",
     "mocha": "^10.2.0",
     "node-fetch": "^2.6.11",
     "nyc": "^15.0.1",
@@ -62,7 +63,8 @@
         "build": "set -o pipefail && xcodebuild VALID_ARCHS=\"`uname -m`\"  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 14"
+          "type": "iPhone 14",
+          "os": "iOS 16.4"
         }
       },
       "ios.sim.release": {
@@ -70,7 +72,8 @@
         "build": "export RCT_NO_LAUNCH_PACKAGER=true && set -o pipefail | xcodebuild  CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ -workspace ios/testing.xcworkspace -scheme testing -configuration Release -sdk iphonesimulator -derivedDataPath ios/build | xcbeautify",
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 14"
+          "type": "iPhone 14",
+          "os": "iOS 16.4"
         }
       },
       "android.emu.debug": {

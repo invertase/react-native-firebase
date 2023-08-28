@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.3.1](https://github.com/invertase/react-native-firebase/compare/v18.3.0...v18.3.1) (2023-08-23)
+
+### Bug Fixes
+
+- **auth, android:** avoid crash on react-native < 0.63 ([3fee0d6](https://github.com/invertase/react-native-firebase/commit/3fee0d6da587f56911669307e35558f55107c88e))
+
 ## [18.3.0](https://github.com/invertase/react-native-firebase/compare/v18.2.0...v18.3.0) (2023-07-19)
 
 ### Features
