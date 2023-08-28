@@ -25,10 +25,10 @@ Currently, the native Firebase SDKs only provide functionality for creating seco
 - [Authentication](/auth/usage).
 - [Realtime Database](/database/usage).
 - [Cloud Firestore](/firestore/usage).
-- [Cloud Functions](/functions/usage)
+- [Cloud Functions](/functions/usage).
 - [Cloud Storage](/storage/usage).
 - [ML](/ml/usage).
-- [Installations](/installations/usage),
+- [Installations](/installations/usage).
 - [Remote Config](/remote-config/usage).
 
 ## Initializing secondary apps
