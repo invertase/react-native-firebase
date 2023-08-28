@@ -6,6 +6,9 @@ next: /in-app-messaging/usage
 previous: /database/presence-detection
 ---
 
+> [!WARNING]
+> Deprecated: Firebase Dynamic Links is deprecated and should not be adopted in projects that don't already use it. The service will shut down on August 25, 2025. See the [Dynamic Links Deprecation FAQ](https://firebase.google.com/support/dynamic-links-faq) for more information.
+
 # Installation
 
 This module requires that the `@react-native-firebase/app` module is already setup and installed. To install the "app" module, view the
