@@ -60,8 +60,8 @@ jobs:
           echo "xcode-version=$(xcodebuild -version|tail -1|cut -f3 -d' ')" >> $GITHUB_OUTPUT
           echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
-        name: Yarn Cache
+      - uses: actions/cache/restore@v3
+        name: Yarn Cache Restore
         id: yarn-cache
         with:
           path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
@@ -85,7 +85,7 @@ jobs:
       - name: Yarn Install
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
@@ -196,3 +196,10 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
+
+      - uses: actions/cache/save@v3
+        name: Yarn Cache Save
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        with:
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
