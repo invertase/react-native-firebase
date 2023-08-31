@@ -42,8 +42,8 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
-        name: Yarn Cache
+      - uses: actions/cache/restore@v3
+        name: Yarn Cache Restore
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -53,7 +53,7 @@ jobs:
       - name: Yarn Install
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
           command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
@@ -97,6 +97,13 @@ jobs:
         with:
           name: patches
           path: ~/template/patches/
+
+      - uses: actions/cache/save@v3
+        name: Yarn Cache Save
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       # create a comment on the PR and any related issues with a direct link to the archive,
       # a call for testers, and perhaps a paste-able set of commands to install them
