@@ -38,15 +38,15 @@ jobs:
         with:
           node-version: 18
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - name: Set workflow variables
+        id: workflow-variables
+        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache/restore@v3
         name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
 
@@ -102,7 +102,7 @@ jobs:
         name: Yarn Cache Save
         if: "${{ github.ref == 'refs/heads/main' }}"
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       # create a comment on the PR and any related issues with a direct link to the archive,
