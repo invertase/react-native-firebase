@@ -72,9 +72,11 @@ android {
     disable 'GradleCompatible'
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+  if (agpVersion < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
   }
   sourceSets {
     main {

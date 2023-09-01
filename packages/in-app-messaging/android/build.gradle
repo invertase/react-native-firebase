@@ -97,10 +97,14 @@ android {
     disable 'GradleCompatible'
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_11
-    targetCompatibility JavaVersion.VERSION_11
+
+  if (agpVersion < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
   }
+
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']
