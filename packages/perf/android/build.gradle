@@ -89,6 +89,11 @@ if (rootProject.ext && rootProject.ext.firebaseJson) {
 }
 
 android {
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+  if (agpVersion >= 7) {
+    namespace 'io.invertase.firebase.perf'
+  }
+
   defaultConfig {
     multiDexEnabled true
     manifestPlaceholders = [
