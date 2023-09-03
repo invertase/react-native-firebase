@@ -1726,6 +1726,7 @@ export namespace FirebaseAnalyticsTypes {
   export declare type CustomEventName<T> = T extends EventNameString ? never : T;
   /**
    * Type for standard Google Analytics event names. logEvent also accepts any custom string and interprets it as a custom event name.
+   * See https://firebase.google.com/docs/reference/js/analytics.md#eventnamestring
    */
   export declare type EventNameString =
     | 'add_payment_info'
