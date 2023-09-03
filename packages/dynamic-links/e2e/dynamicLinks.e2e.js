@@ -367,11 +367,8 @@ describe('dynamicLinks()', function () {
 
     describe('getInitialLink()', function () {
       it('should return the dynamic link instance that launched the app', async function () {
-        const { getDynamicLinks, getInitialLink } = dynamicLinksModular;
-        const shortLink = await getShortLink(
-          TEST_LINK3_TARGET,
-          firebase.dynamicLinks.ShortLinkType.SHORT,
-        );
+        const { ShortLinkType } = dynamicLinksModular;
+        const shortLink = await getShortLink(TEST_LINK3_TARGET, ShortLinkType.SHORT);
         if (device.getPlatform() === 'android') {
           await device.launchApp({ newInstance: true, url: shortLink });
         } else {
@@ -381,7 +378,13 @@ describe('dynamicLinks()', function () {
           // TODO: ios is not able to open short links on simulator?
           // await device.openURL({ url: shortLink });
         }
-        const link = await getInitialLink(getDynamicLinks());
+
+        // Since the app is relaunched and resumed after the initial import,
+        // the references to local variables are invalid. Therefore, we do another import here.
+        const { getDynamicLinks, getInitialLink } = dynamicLinksModular;
+
+        const dynamicLinks = getDynamicLinks();
+        const link = await getInitialLink(dynamicLinks);
 
         link.should.be.an.Object();
         link.url.should.equal(TEST_LINK3_TARGET);

@@ -24,13 +24,9 @@ export const ShortLinkType = {
 };
 
 /**
- * @param {import('@react-native-firebase/app').ReactNativeFirebase.FirebaseApp} app
  * @returns {import('.').DynamicLinks}
  */
-export function getDynamicLinks(app) {
-  if (app) {
-    return app.dynamicLinks();
-  }
+export function getDynamicLinks() {
   return firebase.dynamicLinks();
 }
 
