@@ -96,10 +96,13 @@ describe('inAppMessaging()', function () {
       // These depend on `tests/firebase.json` having `in_app_messaging_auto_collection_enabled` set to false the first time
       // The setting is persisted across restarts, reset to false after for local runs where prefs are sticky
       afterEach(async function () {
-        const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
-        const inAppMessaging = getInAppMessaging();
-        await setAutomaticDataCollectionEnabled(inAppMessaging, false);
+        await firebase.inAppMessaging().setAutomaticDataCollectionEnabled(false);
       });
+      // afterEach(async function () {
+      //   const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
+      //   const inAppMessaging = getInAppMessaging();
+      //   await setAutomaticDataCollectionEnabled(inAppMessaging, false);
+      // });
 
       it('true', async function () {
         const {
@@ -127,10 +130,10 @@ describe('inAppMessaging()', function () {
       });
 
       it('errors if not boolean', async function () {
-        const { setAutomaticDataCollectionEnabled } = inAppMessagingModular;
+        const { getInAppMessaging, setAutomaticDataCollectionEnabled } = inAppMessagingModular;
 
         try {
-          setAutomaticDataCollectionEnabled();
+          await setAutomaticDataCollectionEnabled(getInAppMessaging());
           return Promise.reject(new Error('Did not throw'));
         } catch (e) {
           e.message.should.containEql('must be a boolean');
