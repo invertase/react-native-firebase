@@ -638,7 +638,7 @@ export function isSupported() {
  * @returns {void}
  */
 // eslint-disable-next-line
-export function setConsent(analytics, consentSettings) {
+export function setConsent(consentSettings) {
   // Returns nothing until Web implemented.
 }
 
