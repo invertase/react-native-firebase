@@ -184,9 +184,9 @@ class FirebaseStorageModule extends FirebaseModule {
     if (!host || !isString(host) || !port || !isNumber(port)) {
       throw new Error('firebase.storage().useEmulator() takes a non-empty host and port');
     }
-    
+
     let _host = host;
-    
+
     const androidBypassEmulatorUrlRemap =
       typeof this.firebaseJson.android_bypass_emulator_url_remap === 'boolean' &&
       this.firebaseJson.android_bypass_emulator_url_remap;
