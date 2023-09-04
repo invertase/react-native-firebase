@@ -139,6 +139,8 @@ class FirebaseCrashlyticsModule extends FirebaseModule {
   }
 }
 
+export * from './modular';
+
 // import { SDK_VERSION } from '@react-native-firebase/crashlytics';
 export const SDK_VERSION = version;
 
