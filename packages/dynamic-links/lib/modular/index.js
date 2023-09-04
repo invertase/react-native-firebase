@@ -15,16 +15,18 @@
  *
  */
 
-import { firebase } from '..';
-
-export const ShortLinkType = {
-  SHORT: 'SHORT',
-  UNGUESSABLE: 'UNGUESSABLE',
-  DEFAULT: 'DEFAULT',
-};
+import { FirebaseDynamicLinksTypes, firebase } from '..';
 
 /**
- * @returns {import('.').DynamicLinks}
+ * @typedef {import("..").FirebaseApp} FirebaseApp
+ * @typedef {import("..").FirebaseDynamicLinksTypes} FirebaseDynamicLinksTypes
+ * @typedef {import("..").FirebaseDynamicLinksTypes.Module} FirebaseDynamicLinks
+ */
+
+export const ShortLinkType = FirebaseDynamicLinksTypes.ShortLinkType;
+
+/**
+ * @returns {FirebaseDynamicLinks}
  */
 export function getDynamicLinks() {
   return firebase.dynamicLinks();
@@ -32,8 +34,8 @@ export function getDynamicLinks() {
 
 /**
  *
- * @param {import('.').DynamicLinks} dynamicLinks
- * @param {import('..').FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
+ * @param {FirebaseDynamicLinks} dynamicLinks
+ * @param {FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
  * @returns {Promise<string>}
  */
 export function buildLink(dynamicLinks, dynamicLinkParams) {
@@ -42,9 +44,9 @@ export function buildLink(dynamicLinks, dynamicLinkParams) {
 
 /**
  *
- * @param {import('.').DynamicLinks} dynamicLinks
- * @param {import('..').FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
- * @param {import('..').FirebaseDynamicLinksTypes.ShortLinkType | undefined} shortLinkType
+ * @param {FirebaseDynamicLinks} dynamicLinks
+ * @param {FirebaseDynamicLinksTypes.DynamicLinkParameters} dynamicLinkParams
+ * @param {FirebaseDynamicLinksTypes.ShortLinkType | undefined} shortLinkType
  * @returns {Promise<string>}
  */
 export function buildShortLink(dynamicLinks, dynamicLinkParams, shortLinkType) {
@@ -52,16 +54,16 @@ export function buildShortLink(dynamicLinks, dynamicLinkParams, shortLinkType) {
 }
 
 /**
- * @param {import('.').DynamicLinks} dynamicLinks
- * @returns {Promise<import('..').FirebaseDynamicLinksTypes.DynamicLink | null>}
+ * @param {FirebaseDynamicLinks} dynamicLinks
+ * @returns {Promise<FirebaseDynamicLinksTypes.DynamicLink | null>}
  */
 export function getInitialLink(dynamicLinks) {
   return dynamicLinks.getInitialLink();
 }
 
 /**
- * @param {import('.').DynamicLinks} dynamicLinks
- * @param {(link: import('..').FirebaseDynamicLinksTypes.DynamicLink) => void} listener
+ * @param {FirebaseDynamicLinks} dynamicLinks
+ * @param {(link: FirebaseDynamicLinksTypes.DynamicLink) => void} listener
  * @returns {() => void}
  */
 export function onLink(dynamicLinks, listener) {
@@ -70,7 +72,7 @@ export function onLink(dynamicLinks, listener) {
 
 /**
  *
- * @param {import('.').DynamicLinks} dynamicLinks
+ * @param {FirebaseDynamicLinks} dynamicLinks
  * @returns {void}
  */
 export function performDiagnostics(dynamicLinks) {
@@ -79,9 +81,9 @@ export function performDiagnostics(dynamicLinks) {
 
 /**
  *
- * @param {import('.').DynamicLinks} dynmaicLinks
+ * @param {FirebaseDynamicLinks} dynmaicLinks
  * @param {string} link
- * @returns {Promise<import('..').FirebaseDynamicLinksTypes.DynamicLink>}
+ * @returns {Promise<FirebaseDynamicLinksTypes.DynamicLink>}
  */
 export function resolveLink(dynmaicLinks, link) {
   return dynmaicLinks.resolveLink(link);

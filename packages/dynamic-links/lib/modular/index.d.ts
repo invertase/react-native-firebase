@@ -13,7 +13,9 @@ export declare const ShortLinkType = FirebaseDynamicLinksTypes.ShortLinkType;
  * const dynamicLinks = getDynamicLinks();
  * ```
  */
-export declare function getDynamicLinks(app?: ReactNativeFirebase.FirebaseApp): DynamicLinks;
+export declare function getDynamicLinks(
+  app?: ReactNativeFirebase.FirebaseApp,
+): FirebaseDynamicLinks;
 
 /**
  * Builds a Dynamic Link from the provided DynamicLinkParameters instances.
@@ -32,7 +34,7 @@ export declare function getDynamicLinks(app?: ReactNativeFirebase.FirebaseApp): 
  * ```
  */
 export declare function buildLink(
-  dynamicLinks: DynamicLinks,
+  dynamicLinks: FirebaseDynamicLinks,
   dynamicLinkParams: FirebaseDynamicLinksTypes.DynamicLinkParameters,
 ): Promise<string>;
 /**
@@ -54,7 +56,7 @@ export declare function buildLink(
  * ```
  */
 export declare function buildShortLink(
-  dynamicLinks: DynamicLinks,
+  dynamicLinks: FirebaseDynamicLinks,
   dynamicLinkParams: FirebaseDynamicLinksTypes.DynamicLinkParameters,
   shortLinkType?: FirebaseDynamicLinksTypes.ShortLinkType,
 ): Promise<string>;
@@ -107,7 +109,7 @@ export declare function getInitialLink(): Promise<FirebaseDynamicLinksTypes.Dyna
  * ```
  */
 export declare function onLink(
-  dynamicLinks: DynamicLinks,
+  dynamicLinks: FirebaseDynamicLinks,
   listener: (link: FirebaseDynamicLinksTypes.DynamicLink) => void,
 ): () => void;
 
@@ -118,7 +120,7 @@ export declare function onLink(
  *
  * NOTE: iOS only
  */
-export declare function performDiagnostics(dynamicLinks: DynamicLinks): void;
+export declare function performDiagnostics(dynamicLinks: FirebaseDynamicLinks): void;
 
 /**
  * Resolve a given dynamic link (short or long) directly.
@@ -138,4 +140,7 @@ export declare function performDiagnostics(dynamicLinks: DynamicLinks): void;
  * Can throw error with code 'not-found' if the link does not resolve
  * Can throw error with code 'resolve-link-error' if there is a processing error
  */
-export declare function resolveLink(dynmaicLinks: DynamicLinks, link: string): Promise<DynamicLink>;
+export declare function resolveLink(
+  dynmaicLinks: FirebaseDynamicLinks,
+  link: string,
+): Promise<FirebaseDynamicLinksTypes.DynamicLink>;
