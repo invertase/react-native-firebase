@@ -1,14 +1,19 @@
 import { firebase } from '..';
 
 /**
- * @returns {import('.').FirebaseInAppMessaging}
+ * @typedef {import("..").FirebaseApp} FirebaseApp
+ * @typedef {import("..").FirebaseInAppMessagingTypes.Module} FirebaseInAppMessaging
+ */
+
+/**
+ * @returns {FirebaseInAppMessaging}
  */
 export function getInAppMessaging() {
   return firebase.inAppMessaging();
 }
 
 /**
- * @param {import('.').FirebaseInAppMessaging} inAppMessaging
+ * @param {FirebaseInAppMessaging} inAppMessaging
  * @returns {boolean}
  */
 export function isMessagesDisplaySuppressed(inAppMessaging) {
@@ -17,7 +22,7 @@ export function isMessagesDisplaySuppressed(inAppMessaging) {
 
 /**
  *
- * @param {import('.').FirebaseInAppMessaging} inAppMessaging
+ * @param {FirebaseInAppMessaging} inAppMessaging
  * @param {boolean} enabled
  * @returns {Promise<null>}
  */
@@ -26,7 +31,7 @@ export function setMessagesDisplaySuppressed(inAppMessaging, enabled) {
 }
 
 /**
- * @param {import('.').FirebaseInAppMessaging} inAppMessaging
+ * @param {FirebaseInAppMessaging} inAppMessaging
  * @returns {boolean}
  */
 export function isAutomaticDataCollectionEnabled(inAppMessaging) {
@@ -34,7 +39,7 @@ export function isAutomaticDataCollectionEnabled(inAppMessaging) {
 }
 
 /**
- * @param {import('.').FirebaseInAppMessaging} inAppMessaging
+ * @param {FirebaseInAppMessaging} inAppMessaging
  * @param {boolean} enabled
  * @returns {Promise<null>}
  */
@@ -43,7 +48,7 @@ export function setAutomaticDataCollectionEnabled(inAppMessaging, enabled) {
 }
 
 /**
- * @param {import('.').FirebaseInAppMessaging} inAppMessaging
+ * @param {FirebaseInAppMessaging} inAppMessaging
  * @param {string} eventId
  * @returns {Promise<null>}
  */
