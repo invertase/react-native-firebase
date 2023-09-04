@@ -1,9 +1,14 @@
 import { firebase } from '..';
 
 /**
+ * @typedef {import("..").FirebaseApp} FirebaseApp
+ * @typedef {import("..").FirebaseAnalyticsTypes.Module} FirebaseAnalytics
+ */
+
+/**
  * Returns a Analytics instance for the given app.
  * @param app - FirebaseApp. Optional.
- * @returns {import('..').FirebaseAnalyticsTypes.Module}
+ * @returns {FirebaseAnalytics}
  */
 export function getAnalytics(app) {
   if (app) {
@@ -17,7 +22,7 @@ export function getAnalytics(app) {
  * Returns a Analytics instance for the given app.
  * @param app - FirebaseApp.
  * @param options - `AnalyticsSettings`. Web only.
- * @returns {import('..').FirebaseAnalyticsTypes.Module}
+ * @returns {FirebaseAnalytics}
  */
 // eslint-disable-next-line
 export function initializeAnalytics(app, options) {
