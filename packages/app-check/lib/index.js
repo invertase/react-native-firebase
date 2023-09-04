@@ -40,6 +40,16 @@ const namespace = 'appCheck';
 const nativeModuleName = 'RNFBAppCheckModule';
 
 class FirebaseAppCheckModule extends FirebaseModule {
+  constructor(...args) {
+    super(...args);
+
+    this.emitter.addListener(this.eventNameForApp('appCheck_token_changed'), event => {
+      this.emitter.emit(this.eventNameForApp('onAppCheckTokenChanged'), event);
+    });
+
+    this._listenerCount = 0;
+  }
+
   getIsTokenRefreshEnabledDefault() {
     // no default to start
     isTokenAutoRefreshEnabled = undefined;
@@ -131,13 +141,43 @@ class FirebaseAppCheckModule extends FirebaseModule {
     }
   }
 
-  onTokenChanged() {
+  _parseListener(listenerOrObserver) {
+    return typeof listenerOrObserver === 'object'
+      ? listenerOrObserver.next.bind(listenerOrObserver)
+      : listenerOrObserver;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onTokenChanged(onNextOrObserver, onError, onCompletion) {
     // iOS does not provide any native listening feature
     if (isIOS) {
+      console.warn(
+        'onTokenChanged is not implemented on IOS, only for Android',
+      );
       return () => {};
     }
-    // TODO unimplemented on Android
-    return () => {};
+    const nextFn = this._parseListener(onNextOrObserver);
+    // let errorFn = function () { };
+    // if (onNextOrObserver.error != null) {
+    //   errorFn = onNextOrObserver.error.bind(onNextOrObserver);
+    // }
+    // else if (onError) {
+    //   errorFn = onError;
+    // }
+    const subscription = this.emitter.addListener(
+      this.eventNameForApp('onAppCheckTokenChanged'),
+      nextFn,
+    );
+    if(this._listenerCount === 0)
+      this.native.addAppCheckListener();
+    
+    this._listenerCount++;
+    return () => {
+      subscription.remove()
+      this._listenerCount--;
+      if (this._listenerCount === 0) 
+        this.native.removeAppCheckListener();
+    };
   }
 }
 
@@ -151,7 +191,7 @@ export default createModuleNamespace({
   version,
   namespace,
   nativeModuleName,
-  nativeEvents: false, // TODO implement ['appcheck-token-changed'],
+  nativeEvents: ['appCheck_token_changed'],
   hasMultiAppSupport: true,
   hasCustomUrlOrRegionSupport: false,
   ModuleClass: FirebaseAppCheckModule,

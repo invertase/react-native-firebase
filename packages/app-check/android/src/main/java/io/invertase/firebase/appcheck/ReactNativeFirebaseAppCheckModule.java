@@ -28,11 +28,19 @@ import io.invertase.firebase.common.ReactNativeFirebaseJSON;
 import io.invertase.firebase.common.ReactNativeFirebaseMeta;
 import io.invertase.firebase.common.ReactNativeFirebaseModule;
 import io.invertase.firebase.common.ReactNativeFirebasePreferences;
+import io.invertase.firebase.common.ReactNativeFirebaseEvent;
+import io.invertase.firebase.common.ReactNativeFirebaseEventEmitter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule {
   private static final String TAG = "AppCheck";
   private static final String LOGTAG = "RNFBAppCheck";
   private static final String KEY_APPCHECK_TOKEN_REFRESH_ENABLED = "app_check_token_auto_refresh";
+
+  private static HashMap<String, FirebaseAppCheck.AppCheckListener> mAppCheckListeners = new HashMap<>();
+
   ReactNativeFirebaseAppCheckProviderFactory providerFactory =
       new ReactNativeFirebaseAppCheckProviderFactory();
 
@@ -88,6 +96,24 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
     // Our default token refresh config comes from config files, set it
     FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
     firebaseAppCheck.setTokenAutoRefreshEnabled(isAppCheckTokenRefreshEnabled());
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    super.onCatalystInstanceDestroy();
+    Log.d(TAG, "instance-destroyed");
+
+    Iterator appCheckListenerIterator = mAppCheckListeners.entrySet().iterator();
+
+    while (appCheckListenerIterator.hasNext()) {
+      Map.Entry pair = (Map.Entry) appCheckListenerIterator.next();
+      String appName = (String) pair.getKey();
+      FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+      FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
+      FirebaseAppCheck.AppCheckListener mAppCheckListener = (FirebaseAppCheck.AppCheckListener) pair.getValue();
+      firebaseAppCheck.removeAppCheckListener(mAppCheckListener);
+      appCheckListenerIterator.remove();
+    }
   }
 
   @ReactMethod
@@ -176,5 +202,46 @@ public class ReactNativeFirebaseAppCheckModule extends ReactNativeFirebaseModule
                     promise, "token-error", task.getException().getMessage());
               }
             });
+  }
+
+  /** Add a new token change listener - if one doesn't exist already */
+  @ReactMethod
+  public void addAppCheckListener(final String appName) {
+    Log.d(TAG, "addAppCheckListener " + appName);
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
+
+    if (mAppCheckListeners.get(appName) == null) {
+      FirebaseAppCheck.AppCheckListener newAppCheckListener = appCheckToken -> {
+        WritableMap eventBody = Arguments.createMap();
+        eventBody.putString("appName", appName); // for js side distribution
+        eventBody.putString("token", appCheckToken.getToken());
+        eventBody.putDouble("expireTimeMillis", appCheckToken.getExpireTimeMillis());
+
+        ReactNativeFirebaseEventEmitter emitter = ReactNativeFirebaseEventEmitter.getSharedInstance();
+        ReactNativeFirebaseEvent event = new ReactNativeFirebaseEvent("appCheck_token_changed", eventBody, appName);
+        emitter.sendEvent(event);
+      };
+
+      firebaseAppCheck.addAppCheckListener(newAppCheckListener);
+      mAppCheckListeners.put(appName, newAppCheckListener);
+    }
+  }
+
+  /** Removes the current token change listener */
+  @ReactMethod
+  public void removeAppCheckListener(String appName) {
+    Log.d(TAG, "removeAppCheckListener " + appName);
+
+    FirebaseApp firebaseApp = FirebaseApp.getInstance(appName);
+    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance(firebaseApp);
+
+    FirebaseAppCheck.AppCheckListener mAppCheckListener = mAppCheckListeners.get(appName);
+
+    if (mAppCheckListener != null) {
+      firebaseAppCheck.removeAppCheckListener(mAppCheckListener);
+      mAppCheckListeners.remove(appName);
+    }
   }
 }
