@@ -180,7 +180,7 @@ export namespace FirebaseAppCheckTypes {
   /**
    * The result return from `onTokenChanged`
    */
-  export type AppCheckListenerResult = AppCheckToken & { readonly appName: String }
+  export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {

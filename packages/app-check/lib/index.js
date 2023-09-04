@@ -151,9 +151,8 @@ class FirebaseAppCheckModule extends FirebaseModule {
   onTokenChanged(onNextOrObserver, onError, onCompletion) {
     // iOS does not provide any native listening feature
     if (isIOS) {
-      console.warn(
-        'onTokenChanged is not implemented on IOS, only for Android',
-      );
+      // eslint-disable-next-line no-console
+      console.warn('onTokenChanged is not implemented on IOS, only for Android');
       return () => {};
     }
     const nextFn = this._parseListener(onNextOrObserver);
@@ -168,15 +167,13 @@ class FirebaseAppCheckModule extends FirebaseModule {
       this.eventNameForApp('onAppCheckTokenChanged'),
       nextFn,
     );
-    if(this._listenerCount === 0)
-      this.native.addAppCheckListener();
-    
+    if (this._listenerCount === 0) this.native.addAppCheckListener();
+
     this._listenerCount++;
     return () => {
-      subscription.remove()
+      subscription.remove();
       this._listenerCount--;
-      if (this._listenerCount === 0) 
-        this.native.removeAppCheckListener();
+      if (this._listenerCount === 0) this.native.removeAppCheckListener();
     };
   }
 }
