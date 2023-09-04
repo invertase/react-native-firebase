@@ -1,8 +1,14 @@
 import { firebase } from '..';
 
 /**
- * @param {import('@react-native-firebase/app').ReactNativeFirebase.FirebaseApp | undefined} app
- * @returns {import('.').AppDistribution}
+ * @typedef {import("..").FirebaseApp} FirebaseApp
+ * @typedef {import("..").FirebaseAppDistributionTypes.AppDistributionRelease} AppDistributionRelease
+ * @typedef {import("..").FirebaseAppDistributionTypes.Module} FirebaseAppDistribution
+ */
+
+/**
+ * @param {FirebaseApp | undefined} app
+ * @returns {FirebaseAppDistribution}
  */
 export function getAppDistribution(app) {
   if (app) {
@@ -12,7 +18,7 @@ export function getAppDistribution(app) {
 }
 
 /**
- * @param {import('.').AppDistribution} appDistribution
+ * @param {FirebaseAppDistribution} appDistribution
  * @returns {Promise<boolean>}
  */
 export function isTesterSignedIn(appDistribution) {
@@ -20,7 +26,7 @@ export function isTesterSignedIn(appDistribution) {
 }
 
 /**
- * @param {import('.').AppDistribution} appDistribution
+ * @param {FirebaseAppDistribution} appDistribution
  * @returns {Promise<void>}
  */
 export function signInTester(appDistribution) {
@@ -28,15 +34,15 @@ export function signInTester(appDistribution) {
 }
 
 /**
- * @param {import('.').AppDistribution} appDistribution
- * @returns {Promise<import('..').FirebaseAppDistributionTypes.AppDistributionRelease>}
+ * @param {FirebaseAppDistribution} appDistribution
+ * @returns {AppDistributionRelease>}
  */
 export function checkForUpdate(appDistribution) {
   return appDistribution.checkForUpdate();
 }
 
 /**
- * @param {import('.').AppDistribution} appDistribution
+ * @param {FirebaseAppDistribution} appDistribution
  * @returns {Promise<void>}
  */
 export function signOutTester(appDistribution) {
