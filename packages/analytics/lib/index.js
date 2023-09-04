@@ -85,7 +85,7 @@ export {
   logViewSearchResults,
   setDefaultEventParameters,
   initiateOnDeviceConversionMeasurementWithEmailAddress,
-} from '../modular/index';
+} from './modular/index';
 
 const ReservedEventNames = [
   'ad_activeview',
