@@ -28,7 +28,7 @@ jobs:
     name: Create patch-package Patches
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Future ideas:
       # - make into an action, parameterize directories to pack, and package names to install
