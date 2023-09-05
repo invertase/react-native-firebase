@@ -103,6 +103,8 @@ class FirebaseLinksModule extends FirebaseModule {
   }
 }
 
+export * from './modular';
+
 // import { SDK_VERSION } from '@react-native-firebase/dynamic-links';
 export const SDK_VERSION = version;
 

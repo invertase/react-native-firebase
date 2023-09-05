@@ -47,6 +47,7 @@ import DeviceInfo from 'react-native-device-info';
 import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
+import * as dynamicLinksModular from '@react-native-firebase/dynamic-links';
 
 jet.exposeContextProperty('NativeModules', NativeModules);
 jet.exposeContextProperty('NativeEventEmitter', NativeEventEmitter);
@@ -64,6 +65,7 @@ jet.exposeContextProperty('storageModular', storageModular);
 jet.exposeContextProperty('inAppMessagingModular', inAppMessagingModular);
 jet.exposeContextProperty('installationsModular', installationsModular);
 jet.exposeContextProperty('crashlyticsModular', crashlyticsModular);
+jet.exposeContextProperty('dynamicLinksModular', dynamicLinksModular);
 
 firebase.database().useEmulator('localhost', 9000);
 firebase.auth().useEmulator('http://localhost:9099');

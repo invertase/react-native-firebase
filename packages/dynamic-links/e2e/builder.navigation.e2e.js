@@ -18,33 +18,69 @@
 const { baseParams } = require('./dynamicLinks.e2e');
 
 describe('dynamicLinks() dynamicLinkParams.navigation', function () {
-  it('throws if navigation is not an object', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        navigation: 123,
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql("'dynamicLinksParams.navigation' must be an object");
-      return Promise.resolve();
-    }
+  describe('v8 compatibility', function () {
+    it('throws if navigation is not an object', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          navigation: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.navigation' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if navigation.forcedRedirectEnabled is not a boolean', function () {
+      try {
+        firebase.dynamicLinks().buildLink({
+          ...baseParams,
+          navigation: {
+            forcedRedirectEnabled: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean",
+        );
+        return Promise.resolve();
+      }
+    });
   });
 
-  it('throws if navigation.forcedRedirectEnabled is not a boolean', function () {
-    try {
-      firebase.dynamicLinks().buildLink({
-        ...baseParams,
-        navigation: {
-          forcedRedirectEnabled: 123,
-        },
-      });
-      return Promise.reject(new Error('Did not throw Error.'));
-    } catch (e) {
-      e.message.should.containEql(
-        "'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean",
-      );
-      return Promise.resolve();
-    }
+  describe('modular', function () {
+    it('throws if navigation is not an object', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          navigation: 123,
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql("'dynamicLinksParams.navigation' must be an object");
+        return Promise.resolve();
+      }
+    });
+
+    it('throws if navigation.forcedRedirectEnabled is not a boolean', function () {
+      const { getDynamicLinks, buildLink } = dynamicLinksModular;
+      try {
+        buildLink(getDynamicLinks(), {
+          ...baseParams,
+          navigation: {
+            forcedRedirectEnabled: 123,
+          },
+        });
+        return Promise.reject(new Error('Did not throw Error.'));
+      } catch (e) {
+        e.message.should.containEql(
+          "'dynamicLinksParams.navigation.forcedRedirectEnabled' must be a boolean",
+        );
+        return Promise.resolve();
+      }
+    });
   });
 });

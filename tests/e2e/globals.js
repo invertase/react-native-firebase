@@ -137,4 +137,10 @@ Object.defineProperty(global, 'crashlyticsModular', {
   },
 });
 
+Object.defineProperty(global, 'dynamicLinksModular', {
+  get() {
+    return jet.dynamicLinksModular;
+  },
+});
+
 global.isCI = !!process.env.CI;
