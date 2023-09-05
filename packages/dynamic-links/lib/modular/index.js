@@ -15,7 +15,7 @@
  *
  */
 
-import { FirebaseDynamicLinksTypes, firebase } from '..';
+import { firebase } from '..';
 
 /**
  * @typedef {import("..").FirebaseApp} FirebaseApp
@@ -23,7 +23,12 @@ import { FirebaseDynamicLinksTypes, firebase } from '..';
  * @typedef {import("..").FirebaseDynamicLinksTypes.Module} FirebaseDynamicLinks
  */
 
-export const ShortLinkType = FirebaseDynamicLinksTypes.ShortLinkType;
+// FIXME these are duplicated from the non-modular types and should be by reference
+export const ShortLinkType = {
+  SHORT: 'SHORT',
+  UNGUESSABLE: 'UNGUESSABLE',
+  DEFAULT: 'DEFAULT',
+};
 
 /**
  * @returns {FirebaseDynamicLinks}
