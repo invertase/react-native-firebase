@@ -107,6 +107,12 @@ Object.defineProperty(global, 'appCheckModular', {
   },
 });
 
+Object.defineProperty(global, 'appDistributionModular', {
+  get() {
+    return jet.appDistributionModular;
+  },
+});
+
 Object.defineProperty(global, 'storageModular', {
   get() {
     return jet.storageModular;
