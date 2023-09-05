@@ -113,6 +113,12 @@ Object.defineProperty(global, 'storageModular', {
   },
 });
 
+Object.defineProperty(global, 'inAppMessagingModular', {
+  get() {
+    return jet.inAppMessagingModular;
+  },
+});
+
 Object.defineProperty(global, 'installationsModular', {
   get() {
     return jet.installationsModular;

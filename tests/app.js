@@ -43,6 +43,7 @@ import jet from 'jet/platform/react-native';
 import React from 'react';
 import { AppRegistry, Button, NativeModules, Text, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import * as inAppMessagingModular from '@react-native-firebase/in-app-messaging';
 import * as installationsModular from '@react-native-firebase/installations';
 import * as crashlyticsModular from '@react-native-firebase/crashlytics';
 
@@ -58,6 +59,7 @@ jet.exposeContextProperty('perfModular', perfModular);
 jet.exposeContextProperty('appCheckModular', appCheckModular);
 jet.exposeContextProperty('messagingModular', messagingModular);
 jet.exposeContextProperty('storageModular', storageModular);
+jet.exposeContextProperty('inAppMessagingModular', inAppMessagingModular);
 jet.exposeContextProperty('installationsModular', installationsModular);
 jet.exposeContextProperty('crashlyticsModular', crashlyticsModular);
 
