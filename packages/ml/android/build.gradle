@@ -11,7 +11,7 @@ buildscript {
     }
 
     dependencies {
-      classpath("com.android.tools.build:gradle:7.0.4")
+      classpath("com.android.tools.build:gradle:8.1.1")
     }
   }
 }
@@ -60,6 +60,11 @@ project.ext {
 }
 
 android {
+  def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+  if (agpVersion >= 7) {
+    namespace 'io.invertase.firebase.ml'
+  }
+
   defaultConfig {
     multiDexEnabled true
   }
@@ -67,10 +72,14 @@ android {
     disable 'GradleCompatible'
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+
+  if (agpVersion < 8) {
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_11
+      targetCompatibility JavaVersion.VERSION_11
+    }
   }
+
   sourceSets {
     main {
       java.srcDirs = ['src/main/java', 'src/reactnative/java']

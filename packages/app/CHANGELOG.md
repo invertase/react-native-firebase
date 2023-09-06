@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.3.2](https://github.com/invertase/react-native-firebase/compare/v18.3.1...v18.3.2) (2023-09-02)
+
+### Bug Fixes
+
+- **app, sdks:** adopt firebase-android-sdk 32.2.3 ([129d6ef](https://github.com/invertase/react-native-firebase/commit/129d6ef1eb1b45be3390687a002bddfe87386fa3))
+
 ## [18.3.1](https://github.com/invertase/react-native-firebase/compare/v18.3.0...v18.3.1) (2023-08-23)
 
 ### Bug Fixes

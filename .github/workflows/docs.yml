@@ -24,20 +24,20 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        name: Yarn Cache
+      - name: Set workflow variables
+        id: workflow-variables
+        run: echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache/restore@v3
+        name: Yarn Cache Restore
         id: yarn-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
           key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-v1
       - name: Yarn Install
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 3
+          timeout_minutes: 15
           retry_wait_seconds: 30
           max_attempts: 3
           command: yarn --no-audit --prefer-offline
@@ -53,3 +53,9 @@ jobs:
       - name: Spell check
         run: |
           yarn lint:spellcheck
+      - uses: actions/cache/save@v3
+        name: Yarn Cache Save
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        with:
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}

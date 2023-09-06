@@ -77,7 +77,7 @@ export namespace FirebaseCrashlyticsTypes {
      * ```
      *
      */
-    isCrashlyticsCollectionEnabled: true;
+    isCrashlyticsCollectionEnabled: boolean;
     /**
      * Determines whether there are any unsent crash reports cached on the device. The callback only executes
      * if automatic data collection is disabled.

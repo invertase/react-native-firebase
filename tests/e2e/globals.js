@@ -107,15 +107,39 @@ Object.defineProperty(global, 'appCheckModular', {
   },
 });
 
+Object.defineProperty(global, 'appDistributionModular', {
+  get() {
+    return jet.appDistributionModular;
+  },
+});
+
 Object.defineProperty(global, 'storageModular', {
   get() {
     return jet.storageModular;
   },
 });
 
+Object.defineProperty(global, 'inAppMessagingModular', {
+  get() {
+    return jet.inAppMessagingModular;
+  },
+});
+
 Object.defineProperty(global, 'installationsModular', {
   get() {
     return jet.installationsModular;
+  },
+});
+
+Object.defineProperty(global, 'crashlyticsModular', {
+  get() {
+    return jet.crashlyticsModular;
+  },
+});
+
+Object.defineProperty(global, 'dynamicLinksModular', {
+  get() {
+    return jet.dynamicLinksModular;
   },
 });
 

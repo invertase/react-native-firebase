@@ -88,6 +88,18 @@ export namespace FirebaseAppCheckTypes {
     isTokenAutoRefreshEnabled?: boolean;
   }
 
+  export type NextFn<T> = (value: T) => void;
+  export type ErrorFn = (error: Error) => void;
+  export type CompleteFn = () => void;
+
+  export interface Observer<T> {
+    next: NextFn<T>;
+    error: ErrorFn;
+    complete: CompleteFn;
+  }
+
+  export type PartialObserver<T> = Partial<Observer<T>>;
+
   export interface ReactNativeFirebaseAppCheckProviderOptions {
     /**
      * debug token to use, if any. Defaults to undefined, pre-configure tokens in firebase web console if needed
@@ -165,6 +177,10 @@ export namespace FirebaseAppCheckTypes {
      */
     readonly expireTimeMillis: number;
   }
+  /**
+   * The result return from `onTokenChanged`
+   */
+  export type AppCheckListenerResult = AppCheckToken & { readonly appName: string };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {
@@ -258,12 +274,9 @@ export namespace FirebaseAppCheckTypes {
      *
      * @returns A function that unsubscribes this listener.
      */
-    // TODO there is a great deal of Observer / PartialObserver typing to carry-in
-    // onTokenChanged(observer: PartialObserver<AppCheckTokenResult>): () => void;
+    onTokenChanged(observer: PartialObserver<AppCheckListenerResult>): () => void;
 
     /**
-     * TODO implement token listener for android.
-     *
      * Registers a listener to changes in the token state. There can be more
      * than one listener registered at the same time for one or more
      * App Check instances. The listeners call back on the UI thread whenever
@@ -272,13 +285,19 @@ export namespace FirebaseAppCheckTypes {
      * Token listeners do not exist in the native SDK for iOS, no token change events will be emitted on that platform.
      * This is not yet implemented on Android, no token change events will be emitted until implemented.
      *
+     * NOTE: Although an `onError` callback can be provided, it will
+     * never be called, Android sdk code doesn't provide handling for onError function
+     *
+     * NOTE: Although an `onCompletion` callback can be provided, it will
+     * never be called because the token stream is never-ending.
+     *
      * @returns A function that unsubscribes this listener.
      */
-    // onTokenChanged(
-    //   onNext: (tokenResult: AppCheckTokenResult) => void,
-    //   onError?: (error: Error) => void,
-    //   onCompletion?: () => void,
-    // ): () => void;
+    onTokenChanged(
+      onNext: (tokenResult: AppCheckListenerResult) => void,
+      onError?: (error: Error) => void,
+      onCompletion?: () => void,
+    ): () => void;
   }
 }
 

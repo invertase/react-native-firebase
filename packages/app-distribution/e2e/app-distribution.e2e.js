@@ -16,49 +16,109 @@
  */
 
 describe('appDistribution()', function () {
-  describe('native module is loaded', function () {
-    it('checks native module load status', function () {
-      firebase.appDistribution().native;
+  describe('v8 compatibility', function () {
+    describe('native module is loaded', function () {
+      it('checks native module load status', function () {
+        firebase.appDistribution().native;
+      });
+    });
+
+    describe('isTesterSignedIn()', function () {
+      it('checks if a tester is signed in', async function () {
+        if (device.getPlatform() === 'ios') {
+          await firebase.appDistribution().isTesterSignedIn();
+        } else {
+          this.skip();
+        }
+      });
+    });
+    // Requires a valid google account logged in on device and associated with iOS testing app
+    xdescribe('signInTester()', function () {
+      it('signs a tester in', async function () {
+        if (device.getPlatform() === 'ios') {
+          await firebase.appDistribution().signInTester();
+        } else {
+          this.skip();
+        }
+      });
+    });
+    describe('signOutTester()', function () {
+      it('signs out a tester', async function () {
+        if (device.getPlatform() === 'ios') {
+          await firebase.appDistribution().signOutTester();
+        } else {
+          this.skip();
+        }
+      });
+    });
+    // Requires a valid google account logged in on device and associated with iOS testing app
+    // plus a new IPA file uploaded
+    xdescribe('checkForUpdate()', function () {
+      it('checks for an update', async function () {
+        if (device.getPlatform() === 'ios') {
+          await firebase.appDistribution().checkForUpdate();
+        } else {
+          this.skip();
+        }
+      });
     });
   });
 
-  describe('isTesterSignedIn()', function () {
-    it('checks if a tester is signed in', async function () {
-      if (device.getPlatform() === 'ios') {
-        await firebase.appDistribution().isTesterSignedIn();
-      } else {
-        this.skip();
-      }
+  describe('modular', function () {
+    describe('native module is loaded', function () {
+      it('checks native module load status', function () {
+        const { getAppDistribution } = appDistributionModular;
+        const appDistribution = getAppDistribution();
+        appDistribution.native;
+      });
     });
-  });
-  // Requires a valid google account logged in on device and associated with iOS testing app
-  xdescribe('signInTester()', function () {
-    it('signs a tester in', async function () {
-      if (device.getPlatform() === 'ios') {
-        await firebase.appDistribution().signInTester();
-      } else {
-        this.skip();
-      }
+
+    describe('isTesterSignedIn()', function () {
+      it('checks if a tester is signed in', async function () {
+        const { getAppDistribution, isTesterSignedIn } = appDistributionModular;
+        const appDistribution = getAppDistribution();
+        if (device.getPlatform() === 'ios') {
+          await isTesterSignedIn(appDistribution);
+        } else {
+          this.skip();
+        }
+      });
     });
-  });
-  describe('signOutTester()', function () {
-    it('signs out a tester', async function () {
-      if (device.getPlatform() === 'ios') {
-        await firebase.appDistribution().signOutTester();
-      } else {
-        this.skip();
-      }
+    // Requires a valid google account logged in on device and associated with iOS testing app
+    xdescribe('signInTester()', function () {
+      it('signs a tester in', async function () {
+        const { getAppDistribution, signInTester } = appDistributionModular;
+        const appDistribution = getAppDistribution();
+        if (device.getPlatform() === 'ios') {
+          await signInTester(appDistribution);
+        } else {
+          this.skip();
+        }
+      });
     });
-  });
-  // Requires a valid google account logged in on device and associated with iOS testing app
-  // plus a new IPA file uploaded
-  xdescribe('checkForUpdate()', function () {
-    it('checks for an update', async function () {
-      if (device.getPlatform() === 'ios') {
-        await firebase.appDistribution().checkForUpdate();
-      } else {
-        this.skip();
-      }
+    describe('signOutTester()', function () {
+      it('signs out a tester', async function () {
+        const { getAppDistribution, signOutTester } = appDistributionModular;
+        const appDistribution = getAppDistribution();
+        if (device.getPlatform() === 'ios') {
+          await signOutTester(appDistribution);
+        } else {
+          this.skip();
+        }
+      });
+    });
+    // Requires a valid google account logged in on device and associated with iOS testing app
+    // plus a new IPA file uploaded
+    xdescribe('checkForUpdate()', function () {
+      it('checks for an update', async function () {
+        const { getAppDistribution, checkForUpdate } = appDistributionModular;
+        const appDistribution = getAppDistribution();
+        if (device.getPlatform() === 'ios') {
+          await checkForUpdate(appDistribution);
+        } else {
+          this.skip();
+        }
+      });
     });
   });
 });

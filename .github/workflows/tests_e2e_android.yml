@@ -75,8 +75,8 @@ jobs:
           echo "yarn-cache-dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
           echo "tempdir=$TMPDIR" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
-        name: Yarn Cache
+      - uses: actions/cache/restore@v3
+        name: Yarn Cache Restore
         id: yarn-cache
         with:
           path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
@@ -86,7 +86,7 @@ jobs:
       - name: Yarn Install
         uses: nick-fields/retry@v2
         with:
-          timeout_minutes: 10
+          timeout_minutes: 15
           retry_wait_seconds: 60
           max_attempts: 3
           command: DETOX_DISABLE_POSTINSTALL=1 yarn --no-audit --prefer-offline
@@ -105,7 +105,7 @@ jobs:
         name: Gradle Cache
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-v1-${{ hashFiles('**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-v1-${{ hashFiles('yarn.lock', 'tests/android/build.gradle', 'tests/android/app/build.gradle') }}
           restore-keys: ${{ runner.os }}-gradle-v1
 
         # This appears to be 'Cache Size: ~1230 MB (1290026823 B)' based on watching action logs
@@ -236,6 +236,13 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           verbose: true
+
+      - uses: actions/cache/save@v3
+        name: Yarn Cache Save
+        if: "${{ github.ref == 'refs/heads/main' }}"
+        with:
+          path: ${{ steps.workflow-variables.outputs.yarn-cache-dir }}
+          key: ${{ runner.os }}-yarn-v1-${{ hashFiles('yarn.lock') }}
 
       - name: Compress Emulator Log
         if: always()

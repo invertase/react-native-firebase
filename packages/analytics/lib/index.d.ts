@@ -229,6 +229,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     value: number;
   }
+
   export interface GenerateLeadEventParameters {
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
@@ -344,6 +345,7 @@ export namespace FirebaseAnalyticsTypes {
      * Current class associated with the view the user is currently viewing.
      */
     screen_class?: string;
+
     /**
      * Custom event parameters.
      */
@@ -395,7 +397,7 @@ export namespace FirebaseAnalyticsTypes {
     value?: number;
     /**
      * Purchase currency in 3 letter [ISO_4217](https://en.wikipedia.org/wiki/ISO_4217#Active_codes) format. E.g. `USD`.
-    x */
+     x */
     currency?: string;
   }
 
@@ -454,6 +456,13 @@ export namespace FirebaseAnalyticsTypes {
      * The name of the list in which the item was presented to the user
      */
     item_list_name: string;
+  }
+
+  export interface SetCheckoutOptionEventParameters {
+    checkout_step?: EventParams['checkout_step'];
+    checkout_option?: EventParams['checkout_option'];
+
+    [key: string]: any;
   }
 
   export interface SelectPromotionEventParameters {
@@ -518,6 +527,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     value: number;
   }
+
   export interface UnlockAchievementEventParameters {
     /**
      * Game achievement ID (String).
@@ -617,6 +627,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     shipping_tier?: string;
   }
+
   /**
    * Unsupported in "Enhanced Ecommerce reports":
    * https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics.Event#public-static-final-string-view_search_results
@@ -630,12 +641,14 @@ export namespace FirebaseAnalyticsTypes {
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface Statics {}
+
   /**
    * Analytics instance initialization options. Web only.
    */
   export interface AnalyticsSettings {
     config?: GtagConfigParams | EventParams;
   }
+
   /**
    * Additional options that can be passed to Analytics method calls such as logEvent. Web only.
    */
@@ -645,6 +658,7 @@ export namespace FirebaseAnalyticsTypes {
      */
     global: boolean;
   }
+
   /**
    * A set of common Google Analytics config settings recognized by gtag.js. Web only.
    */
@@ -702,8 +716,10 @@ export namespace FirebaseAnalyticsTypes {
      * See {@link https://developers.google.com/analytics/devguides/collection/ga4/display-features | Disable advertising features }
      */
     allow_ad_personalization_signals?: boolean;
+
     [key: string]: unknown;
   }
+
   /**
    * Standard gtag.js event parameters. For more information, see the GA4 reference documentation. Web only.
    */
@@ -746,6 +762,7 @@ export namespace FirebaseAnalyticsTypes {
     page_title?: string;
     page_location?: string;
     page_path?: string;
+
     [key: string]: unknown;
   }
 
@@ -771,6 +788,7 @@ export namespace FirebaseAnalyticsTypes {
      * and other user protection.
      */
     security_storage?: ConsentStatusString;
+
     [key: string]: unknown;
   }
 
@@ -947,6 +965,7 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     resetAnalyticsData(): Promise<void>;
+
     /**
      * E-Commerce Purchase event. This event signifies that an item(s) was purchased by a user. Note: This is different from the in-app purchase event, which is reported
      * automatically for Google Play-based apps.
@@ -971,6 +990,7 @@ export namespace FirebaseAnalyticsTypes {
      * ```
      */
     logPurchase(params: PurchaseEventParameters): Promise<void>;
+
     /**
      * Sets or clears the screen name and class the user is currently viewing
      *
@@ -985,6 +1005,7 @@ export namespace FirebaseAnalyticsTypes {
      *
      */
     logScreenView(params: ScreenViewParameters): Promise<void>;
+
     /**
      * Add Payment Info event. This event signifies that a user has submitted their payment information to your app.
      *
@@ -1150,6 +1171,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.CampaignDetailsEventParameters}.
      */
     logCampaignDetails(params: CampaignDetailsEventParameters): Promise<void>;
+
     /**
      * View Promotion event. This event signifies that a promotion was shown to a user.
      *
@@ -1189,6 +1211,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.EarnVirtualCurrencyEventParameters}.
      */
     logEarnVirtualCurrency(params: EarnVirtualCurrencyEventParameters): Promise<void>;
+
     /**
      * Generate Lead event. Log this event when a lead has been generated in the app to understand
      * the efficacy of your install and re-engagement campaigns.
@@ -1319,6 +1342,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.PostScoreEventParameters}.
      */
     logPostScore(params: PostScoreEventParameters): Promise<void>;
+
     /**
      * Remove from cart event.
      *
@@ -1342,6 +1366,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.RemoveFromCartEventParameters}.
      */
     logRemoveFromCart(params: RemoveFromCartEventParameters): Promise<void>;
+
     /**
      * E-Commerce Refund event. This event signifies that a refund was issued.
      *
@@ -1384,6 +1409,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SearchEventParameters}.
      */
     logSearch(params: SearchEventParameters): Promise<void>;
+
     /**
      * Select Content event. This general purpose event signifies that a user has selected some
      * content of a certain type in an app. The content can be any object in your app. This event
@@ -1403,6 +1429,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SelectContentEventParameters}.
      */
     logSelectContent(params: SelectContentEventParameters): Promise<void>;
+
     /**
      * Select Item event. This event signifies that an item was selected by a user from a list.
      * Use the appropriate parameters to contextualize the event.
@@ -1428,6 +1455,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.SelectItemEventParameters}.
      */
     logSelectItem(params: SelectItemEventParameters): Promise<void>;
+
     /**
      * Set checkout option event.
      *
@@ -1601,6 +1629,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.ViewItemEventParameters}.
      */
     logViewItem(params: ViewItemEventParameters): Promise<void>;
+
     /**
      * E-commerce View Cart event. This event signifies that a user has viewed their cart. Use this to analyze your purchase funnel.
      *
@@ -1643,6 +1672,7 @@ export namespace FirebaseAnalyticsTypes {
      * @param params See {@link analytics.ViewItemListEventParameters}.
      */
     logViewItemList(params: ViewItemListEventParameters): Promise<void>;
+
     /**
      * View Search Results event. Log this event when the user has been presented with the results of a search.
      *
@@ -1689,6 +1719,43 @@ export namespace FirebaseAnalyticsTypes {
      */
     initiateOnDeviceConversionMeasurementWithEmailAddress(emailAddress: string): Promise<void>;
   }
+
+  /**
+   * Any custom event name string not in the standard list of recommended event names.
+   */
+  export declare type CustomEventName<T> = T extends EventNameString ? never : T;
+  /**
+   * Type for standard Google Analytics event names. logEvent also accepts any custom string and interprets it as a custom event name.
+   * See https://firebase.google.com/docs/reference/js/analytics.md#eventnamestring
+   */
+  export declare type EventNameString =
+    | 'add_payment_info'
+    | 'add_shipping_info'
+    | 'add_to_cart'
+    | 'add_to_wishlist'
+    | 'begin_checkout'
+    | 'checkout_progress'
+    | 'exception'
+    | 'generate_lead'
+    | 'login'
+    | 'page_view'
+    | 'purchase'
+    | 'refund'
+    | 'remove_from_cart'
+    | 'screen_view'
+    | 'search'
+    | 'select_content'
+    | 'select_item'
+    | 'select_promotion'
+    | 'set_checkout_option'
+    | 'share'
+    | 'sign_up'
+    | 'timing_complete'
+    | 'view_cart'
+    | 'view_item'
+    | 'view_item_list'
+    | 'view_promotion'
+    | 'view_search_results';
 }
 
 declare const defaultExport: ReactNativeFirebase.FirebaseModuleWithStatics<
@@ -1703,6 +1770,8 @@ export const firebase: ReactNativeFirebase.Module & {
   ): ReactNativeFirebase.FirebaseApp & { analytics(): FirebaseAnalyticsTypes.Module };
 };
 
+export * from './modular';
+
 export default defaultExport;
 
 /**
@@ -1712,6 +1781,7 @@ declare module '@react-native-firebase/app' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   namespace ReactNativeFirebase {
     import FirebaseModuleWithStatics = ReactNativeFirebase.FirebaseModuleWithStatics;
+
     interface Module {
       analytics: FirebaseModuleWithStatics<
         FirebaseAnalyticsTypes.Module,
