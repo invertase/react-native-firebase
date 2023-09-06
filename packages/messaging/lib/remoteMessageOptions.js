@@ -65,7 +65,13 @@ export default function remoteMessageOptions(messagingSenderId, remoteMessage) {
   } else if (!isObject(remoteMessage.data)) {
     throw new Error("'remoteMessage.data' expected an object value");
   } else {
-    out.data = remoteMessage.data;
+    // Serialize objects
+    out.data = {};
+    for (let key in remoteMessage.data) {
+      if (remoteMessage.data.hasOwnProperty(key)) {
+        out.data.key = JSON.stringify(remoteMessage.data[key]);
+      }
+    }
   }
 
   if (remoteMessage.collapseKey) {
