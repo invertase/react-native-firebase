@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
+
+### Features
+
+- **analytics:** Add types to modular package ([#7109](https://github.com/invertase/react-native-firebase/issues/7109)) ([b6f64bf](https://github.com/invertase/react-native-firebase/commit/b6f64bf8813ceedd220d3e16eec850e4cbc9d53b))
+- **app-check, android:** Implement app check token change listener ([#7309](https://github.com/invertase/react-native-firebase/issues/7309)) ([adebe40](https://github.com/invertase/react-native-firebase/commit/adebe40883adc539bf84134d407be677084a5b47))
+- **app-distribution:** Firebase V9 modular API ([#7307](https://github.com/invertase/react-native-firebase/issues/7307)) ([309fec4](https://github.com/invertase/react-native-firebase/commit/309fec4989b6736e171ebfc4d77df57e7c83a3a9))
+- **crashlytics:** Firbase web modular V9 API ([#7283](https://github.com/invertase/react-native-firebase/issues/7283)) ([57f7327](https://github.com/invertase/react-native-firebase/commit/57f7327da4b405dace6b040e8a942d5f107f3603))
+- **dynamic-links:** Firebase web V9 modular APIs ([#7296](https://github.com/invertase/react-native-firebase/issues/7296)) ([573a4ee](https://github.com/invertase/react-native-firebase/commit/573a4eee742c2c9b8e255c1a4b02a8e5ecea0eb2))
+- **in-app-messaging:** Firebase V9 modular APIs ([#7306](https://github.com/invertase/react-native-firebase/issues/7306)) ([0149480](https://github.com/invertase/react-native-firebase/commit/0149480df3ec267c8b317d9034ff2a297bf2ce23))
+
+### Bug Fixes
+
+- **storage, android:** honor android_bypass_emulator_url_remap flag ([#7326](https://github.com/invertase/react-native-firebase/issues/7326)) ([794e081](https://github.com/invertase/react-native-firebase/commit/794e081134ca23d94174b9d4acd9bca7c403e8ad))
+
 ## [18.3.2](https://github.com/invertase/react-native-firebase/compare/v18.3.1...v18.3.2) (2023-09-02)
 
 ### Bug Fixes

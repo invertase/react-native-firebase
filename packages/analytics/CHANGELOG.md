@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
+
+### Features
+
+- **analytics:** Add types to modular package ([#7109](https://github.com/invertase/react-native-firebase/issues/7109)) ([b6f64bf](https://github.com/invertase/react-native-firebase/commit/b6f64bf8813ceedd220d3e16eec850e4cbc9d53b))
+
 ## [18.3.2](https://github.com/invertase/react-native-firebase/compare/v18.3.1...v18.3.2) (2023-09-02)
 
 **Note:** Version bump only for package @react-native-firebase/analytics

@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [18.4.0](https://github.com/invertase/react-native-firebase/compare/v18.3.2...v18.4.0) (2023-09-11)
+
+### Features
+
+- **app-distribution:** Firebase V9 modular API ([#7307](https://github.com/invertase/react-native-firebase/issues/7307)) ([309fec4](https://github.com/invertase/react-native-firebase/commit/309fec4989b6736e171ebfc4d77df57e7c83a3a9))
+- **crashlytics:** Firbase web modular V9 API ([#7283](https://github.com/invertase/react-native-firebase/issues/7283)) ([57f7327](https://github.com/invertase/react-native-firebase/commit/57f7327da4b405dace6b040e8a942d5f107f3603))
+- **dynamic-links:** Firebase web V9 modular APIs ([#7296](https://github.com/invertase/react-native-firebase/issues/7296)) ([573a4ee](https://github.com/invertase/react-native-firebase/commit/573a4eee742c2c9b8e255c1a4b02a8e5ecea0eb2))
+- **in-app-messaging:** Firebase V9 modular APIs ([#7306](https://github.com/invertase/react-native-firebase/issues/7306)) ([0149480](https://github.com/invertase/react-native-firebase/commit/0149480df3ec267c8b317d9034ff2a297bf2ce23))
+
 ## [18.3.2](https://github.com/invertase/react-native-firebase/compare/v18.3.1...v18.3.2) (2023-09-02)
 
 ### Bug Fixes
