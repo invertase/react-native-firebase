@@ -216,7 +216,7 @@ The `app.json` for integration that included the optional crashlytics and perfor
 
 > Listing config plugins (the `"plugins"` array in the JSON above) is only required for React Native Firebase modules that involve native installation steps - e.g. modifying the Xcode project, `Podfile`, `build.gradle`, `AndroidManifest.xml` etc. React Native Firebase packages without native steps will work out of the box.  Not all packages have Expo config plugins provided yet. A React Native Firebase module has config plugin support if it contains an `app.plugin.js` file in its package directory.
 
-For iOS only, please use [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) to turn on `use_frameworks` by adding the following entry to their `plugins` array in `app.json`:
+For iOS only, since `firebase-ios-sdk` requires `use_frameworks` please configure [expo-build-properties](https://docs.expo.dev/versions/latest/sdk/build-properties/#pluginconfigtypeios) and add the following entry to their `plugins` array in `app.json`:
 
 ```json
 [
