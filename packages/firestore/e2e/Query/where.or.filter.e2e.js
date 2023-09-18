@@ -1106,7 +1106,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     });
   });
 
-  describe.only('modular', function () {
+  describe('modular', function () {
     it('throws if using nested or() queries', async function () {
       const { getFirestore, collection, where, or, and, query } = firestoreModular;
       const firestore = getFirestore();

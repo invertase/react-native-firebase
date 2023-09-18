@@ -20,6 +20,9 @@ const { getE2eEmulatorHost } = require('@react-native-firebase/app/e2e/helpers')
 const jsFirebase = require('firebase/compat/app');
 require('firebase/compat/firestore');
 
+const jsFirebaseModular = require('firebase/app');
+const jsFirestoreModular = require('firebase/firestore');
+
 const testNumbers = {
   zero: 0, // int
   negativeZero: -0, // double
@@ -262,7 +265,7 @@ describe('firestore()', function () {
       });
     });
 
-    describe('number type consistency', function () {
+    describe.only('number type consistency', function () {
       before(async function () {
         // FIXME:
         // This only throws an error in the suite since this is already initialized in the v8 tests above.
@@ -271,17 +274,24 @@ describe('firestore()', function () {
         // FirebaseError: Firestore has already been started and its settings can no longer be changed.
         // You can only modify settings before calling any other methods on a Firestore object.
         try {
-          jsFirebase.initializeApp(FirebaseHelpers.app.config());
-          jsFirebase.firestore().useEmulator(getE2eEmulatorHost(), 8080);
+          jsFirebaseModular.initializeApp(FirebaseHelpers.app.config());
+          jsFirestoreModular.connectFirestoreEmulator(
+            jsFirestoreModular.getFirestore(),
+            getE2eEmulatorHost(),
+            8080,
+          );
         } catch (e) {}
 
         // Put one example of each number in our collection using JS SDK
         await Promise.all(
           Object.entries(testNumbers).map(([testName, testValue]) => {
-            return jsFirebase
-              .firestore()
-              .doc(`${COLLECTION}/numberTestsJS/cases/${testName}`)
-              .set({ number: testValue });
+            return jsFirestoreModular.setDoc(
+              jsFirestoreModular.doc(
+                jsFirestoreModular.getFirestore(),
+                `${COLLECTION}/numberTestsJS/cases/${testName}`,
+              ),
+              { number: testValue },
+            );
           }),
         );
 
@@ -313,11 +323,14 @@ describe('firestore()', function () {
 
       it('types inserted by native may be queried by JS with filters', async function () {
         const testValues = Object.values(testNumbers);
-        const ref = jsFirebase
-          .firestore()
-          .collection(`${COLLECTION}/numberTestsNative/cases`)
-          .where('number', 'in', testValues);
-        typesSnap = await ref.get();
+        const ref = jsFirestoreModular.query(
+          jsFirestoreModular.collection(
+            jsFirestoreModular.getFirestore(),
+            `${COLLECTION}/numberTestsNative/cases`,
+          ),
+          jsFirestoreModular.where('number', 'in', testValues),
+        );
+        typesSnap = await jsFirestoreModular.getDocs(ref);
         should.deepEqual(typesSnap.docs.map(d => d.id).sort(), Object.keys(testNumbers).sort());
       });
     });
