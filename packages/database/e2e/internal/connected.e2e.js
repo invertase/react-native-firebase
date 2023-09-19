@@ -22,38 +22,87 @@ describe("database().ref('.info/connected')", function () {
   before(async function () {
     await firebase.database().goOnline();
   });
-  after(async function () {
-    await firebase.database().goOnline();
+
+  describe('v8 compatibility', function () {
+    after(async function () {
+      await firebase.database().goOnline();
+    });
+
+    xit('returns true when used with once', async function () {
+      const snapshot = await firebase.database().ref('.info/connected').once('value');
+      snapshot.val().should.equal(true);
+    });
+
+    xit('returns true when used with once with a previous call', async function () {
+      await firebase.database().ref(`${TEST_PATH}/foo`).once('value');
+      const snapshot = await firebase.database().ref('.info/connected').once('value');
+      snapshot.val().should.equal(true);
+    });
+
+    // FIXME on android this can work against the emulator
+    // on iOS it doesn't work at all ?
+    xit('subscribes to online state', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref('.info/connected');
+      const handler = $ => {
+        callback($.val());
+      };
+
+      ref.on('value', handler);
+      await firebase.database().goOffline();
+      await Utils.sleep(1000); // FIXME why is this sleep needed here? callback is called immediately
+      await firebase.database().goOnline();
+      ref.off('value', handler);
+
+      await Utils.spyToBeCalledTimesAsync(callback, 2);
+      callback.getCall(0).args[0].should.equal(false);
+      callback.getCall(1).args[0].should.equal(true);
+    });
   });
 
-  xit('returns true when used with once', async function () {
-    const snapshot = await firebase.database().ref('.info/connected').once('value');
-    snapshot.val().should.equal(true);
-  });
+  describe('modular', function () {
+    after(async function () {
+      const { getDatabase, goOnline } = databaseModular;
 
-  xit('returns true when used with once with a previous call', async function () {
-    await firebase.database().ref(`${TEST_PATH}/foo`).once('value');
-    const snapshot = await firebase.database().ref('.info/connected').once('value');
-    snapshot.val().should.equal(true);
-  });
+      await goOnline(getDatabase());
+    });
 
-  // FIXME on android this can work against the emulator
-  // on iOS it doesn't work at all ?
-  xit('subscribes to online state', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref('.info/connected');
-    const handler = $ => {
-      callback($.val());
-    };
+    xit('returns true when used with once', async function () {
+      const { getDatabase, ref, get } = databaseModular;
 
-    ref.on('value', handler);
-    await firebase.database().goOffline();
-    await Utils.sleep(1000); // FIXME why is this sleep needed here? callback is called immediately
-    await firebase.database().goOnline();
-    ref.off('value', handler);
+      const snapshot = await get(ref(getDatabase(), '.info/connected'), dbRef);
+      snapshot.val().should.equal(true);
+    });
 
-    await Utils.spyToBeCalledTimesAsync(callback, 2);
-    callback.getCall(0).args[0].should.equal(false);
-    callback.getCall(1).args[0].should.equal(true);
+    xit('returns true when used with once with a previous call', async function () {
+      const { getDatabase, ref, get } = databaseModular;
+
+      await get(ref(getDatabase(), `${TEST_PATH}/foo`));
+      const snapshot = await firebase.database().ref('.info/connected').once('value');
+      snapshot.val().should.equal(true);
+    });
+
+    // FIXME on android this can work against the emulator
+    // on iOS it doesn't work at all ?
+    xit('subscribes to online state', async function () {
+      const { getDatabase, ref, onValue, goOffline, goOnline, off } = databaseModular;
+      const db = getDatabase();
+
+      const callback = sinon.spy();
+      const dbRef = ref(db, '.info/connected');
+      const handler = $ => {
+        callback($.val());
+      };
+
+      onValue(dbRef, handler);
+      await goOffline(db);
+      await Utils.sleep(1000); // FIXME why is this sleep needed here? callback is called immediately
+      await goOnline(db);
+      off('value', handler);
+
+      await Utils.spyToBeCalledTimesAsync(callback, 2);
+      callback.getCall(0).args[0].should.equal(false);
+      callback.getCall(1).args[0].should.equal(true);
+    });
   });
 });

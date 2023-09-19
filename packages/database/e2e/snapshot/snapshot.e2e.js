@@ -27,228 +27,507 @@ describe('database()...snapshot', function () {
     await wipe(TEST_PATH);
   });
 
-  it('returns the snapshot key', async function () {
-    const snapshot = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
+  describe('v8 compatibility', function () {
+    it('returns the snapshot key', async function () {
+      const snapshot = await firebase
+        .database()
+        .ref(TEST_PATH)
+        .child('types/boolean')
+        .once('value');
 
-    snapshot.key.should.equal('boolean');
-  });
-
-  it('returns the snapshot reference', async function () {
-    const snapshot = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
-
-    snapshot.ref.key.should.equal('boolean');
-  });
-
-  it('returns the correct boolean for exists', async function () {
-    const snapshot1 = await firebase.database().ref(TEST_PATH).child('types/boolean').once('value');
-
-    const snapshot2 = await firebase.database().ref(TEST_PATH).child('types/nope').once('value');
-
-    snapshot1.exists().should.equal(true);
-    snapshot2.exists().should.equal(false);
-  });
-
-  it('exports a valid object', async function () {
-    const snapshot = await firebase.database().ref(TEST_PATH).child('types/string').once('value');
-
-    const exported = snapshot.exportVal();
-
-    exported.should.have.property('.value');
-    exported.should.have.property('.priority');
-    exported['.value'].should.equal('foobar');
-    should.equal(exported['.priority'], null);
-  });
-
-  it('exports a valid object with a object value', async function () {
-    const snapshot = await firebase.database().ref(TEST_PATH).child('types/object').once('value');
-
-    const exported = snapshot.exportVal();
-
-    exported.should.have.property('.value');
-    exported.should.have.property('.priority');
-    exported['.value'].should.eql(jet.contextify(CONTENT.TYPES.object));
-    should.equal(exported['.priority'], null);
-  });
-
-  it('forEach throws if action param is not a function', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
-
-    await ref.set({
-      a: 3,
-      b: 1,
-      c: 2,
+      snapshot.key.should.equal('boolean');
     });
 
-    const snapshot = await ref.orderByValue().once('value');
+    it('returns the snapshot reference', async function () {
+      const snapshot = await firebase
+        .database()
+        .ref(TEST_PATH)
+        .child('types/boolean')
+        .once('value');
 
-    try {
-      snapshot.forEach('foo');
-    } catch (error) {
-      error.message.should.containEql("'action' must be a function");
-    }
-  });
-
-  it('forEach returns an ordered list of snapshots', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
-
-    await ref.set({
-      a: 3,
-      b: 1,
-      c: 2,
+      snapshot.ref.key.should.equal('boolean');
     });
 
-    const snapshot = await ref.orderByValue().once('value');
-    const expected = ['b', 'c', 'a'];
+    it('returns the correct boolean for exists', async function () {
+      const snapshot1 = await firebase
+        .database()
+        .ref(TEST_PATH)
+        .child('types/boolean')
+        .once('value');
 
-    snapshot.forEach((childSnap, i) => {
-      childSnap.val().should.equal(i + 1);
-      childSnap.key.should.equal(expected[i]);
+      const snapshot2 = await firebase.database().ref(TEST_PATH).child('types/nope').once('value');
+
+      snapshot1.exists().should.equal(true);
+      snapshot2.exists().should.equal(false);
+    });
+
+    it('exports a valid object', async function () {
+      const snapshot = await firebase.database().ref(TEST_PATH).child('types/string').once('value');
+
+      const exported = snapshot.exportVal();
+
+      exported.should.have.property('.value');
+      exported.should.have.property('.priority');
+      exported['.value'].should.equal('foobar');
+      should.equal(exported['.priority'], null);
+    });
+
+    it('exports a valid object with a object value', async function () {
+      const snapshot = await firebase.database().ref(TEST_PATH).child('types/object').once('value');
+
+      const exported = snapshot.exportVal();
+
+      exported.should.have.property('.value');
+      exported.should.have.property('.priority');
+      exported['.value'].should.eql(jet.contextify(CONTENT.TYPES.object));
+      should.equal(exported['.priority'], null);
+    });
+
+    it('forEach throws if action param is not a function', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
+
+      await ref.set({
+        a: 3,
+        b: 1,
+        c: 2,
+      });
+
+      const snapshot = await ref.orderByValue().once('value');
+
+      try {
+        snapshot.forEach('foo');
+      } catch (error) {
+        error.message.should.containEql("'action' must be a function");
+      }
+    });
+
+    it('forEach returns an ordered list of snapshots', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('unorderedList');
+
+      await ref.set({
+        a: 3,
+        b: 1,
+        c: 2,
+      });
+
+      const snapshot = await ref.orderByValue().once('value');
+      const expected = ['b', 'c', 'a'];
+
+      snapshot.forEach((childSnap, i) => {
+        childSnap.val().should.equal(i + 1);
+        childSnap.key.should.equal(expected[i]);
+      });
+    });
+
+    it('forEach works with arrays', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('types');
+
+      const snapshot = await ref.once('value');
+
+      snapshot.child('array').forEach((childSnap, i) => {
+        callback();
+        childSnap.val().should.equal(i);
+        childSnap.key.should.equal(i.toString());
+      });
+
+      callback.should.be.callCount(snapshot.child('array').numChildren());
+    });
+
+    it('forEach works with objects and cancels when returning true', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('types/object').orderByKey();
+
+      const snapshot = await ref.once('value');
+
+      snapshot.forEach(childSnap => {
+        callback();
+        childSnap.key.should.equal('bar');
+        childSnap.val().should.equal('baz');
+        return true;
+      });
+
+      callback.should.be.calledOnce();
+    });
+
+    it('forEach works with arrays and cancels when returning true', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('types');
+
+      const snapshot = await ref.once('value');
+
+      snapshot.child('array').forEach(childSnap => {
+        callback();
+        childSnap.val().should.equal(0);
+        childSnap.key.should.equal('0');
+        return true;
+      });
+
+      callback.should.be.calledOnce();
+    });
+
+    it('forEach returns false when no child keys', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
+
+      const snapshot = await ref.once('value');
+
+      const bool = snapshot.forEach(() => {
+        callback();
+      });
+
+      bool.should.equal(false);
+      callback.should.be.callCount(0);
+    });
+
+    it('forEach cancels iteration when returning true', async function () {
+      const callback = sinon.spy();
+      const ref = firebase.database().ref(TEST_PATH).child('types/array');
+
+      const snapshot = await ref.orderByValue().once('value');
+
+      const cancelled = snapshot.forEach(childSnap => {
+        callback(childSnap.val());
+        return true;
+      });
+
+      cancelled.should.equal(true);
+      callback.should.be.callCount(1);
+      callback.getCall(0).args[0].should.equal(0);
+    });
+
+    it('getPriority returns the correct value', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('getPriority');
+
+      await ref.setWithPriority('foo', 'bar');
+      const snapshot = await ref.once('value');
+
+      snapshot.getPriority().should.equal('bar');
+    });
+
+    it('hasChild throws if path is not a string value', async function () {
+      const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
+
+      const snapshot = await ref.once('value');
+
+      try {
+        snapshot.hasChild({ foo: 'bar' });
+      } catch (error) {
+        error.message.should.containEql("'path' must be a string value");
+      }
+    });
+
+    it('hasChild returns the correct boolean value', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+
+      const snapshot1 = await ref.child('types/boolean').once('value');
+      const snapshot2 = await ref.child('types').once('value');
+
+      snapshot1.hasChild('foo').should.equal(false);
+      snapshot2.hasChild('boolean').should.equal(true);
+    });
+
+    it('hasChildren returns the correct boolean value', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+      const snapshot = await ref.child('types/object').once('value');
+      snapshot.hasChildren().should.equal(true);
+    });
+
+    it('numChildren returns the correct number value', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+
+      const snapshot1 = await ref.child('types/boolean').once('value');
+      const snapshot2 = await ref.child('types/array').once('value');
+      const snapshot3 = await ref.child('types/object').once('value');
+
+      snapshot1.numChildren().should.equal(0);
+      snapshot2.numChildren().should.equal(CONTENT.TYPES.array.length);
+      snapshot3.numChildren().should.equal(Object.keys(CONTENT.TYPES.object).length);
+    });
+
+    it('toJSON returns the value of the snapshot', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+
+      const snapshot1 = await ref.child('types/string').once('value');
+      const snapshot2 = await ref.child('types/object').once('value');
+
+      snapshot1.toJSON().should.equal('foobar');
+      snapshot2.toJSON().should.eql(jet.contextify(CONTENT.TYPES.object));
+    });
+
+    it('val returns the value of the snapshot', async function () {
+      const ref = firebase.database().ref(TEST_PATH);
+
+      const snapshot1 = await ref.child('types/string').once('value');
+      const snapshot2 = await ref.child('types/object').once('value');
+
+      snapshot1.val().should.equal('foobar');
+      snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
     });
   });
 
-  it('forEach works with arrays', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('types');
+  describe('modular', function () {
+    it('returns the snapshot key', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-    const snapshot = await ref.once('value');
+      const snapshot = await get(child(ref(getDatabase(), TEST_PATH), 'types/boolean'));
 
-    snapshot.child('array').forEach((childSnap, i) => {
-      callback();
-      childSnap.val().should.equal(i);
-      childSnap.key.should.equal(i.toString());
+      snapshot.key.should.equal('boolean');
     });
 
-    callback.should.be.callCount(snapshot.child('array').numChildren());
-  });
+    it('returns the snapshot reference', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('forEach works with objects and cancels when returning true', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('types/object').orderByKey();
+      const snapshot = await get(child(ref(getDatabase(), TEST_PATH), 'types/boolean'));
 
-    const snapshot = await ref.once('value');
-
-    snapshot.forEach(childSnap => {
-      callback();
-      childSnap.key.should.equal('bar');
-      childSnap.val().should.equal('baz');
-      return true;
+      snapshot.ref.key.should.equal('boolean');
     });
 
-    callback.should.be.calledOnce();
-  });
+    it('returns the correct boolean for exists', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('forEach works with arrays and cancels when returning true', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('types');
+      const snapshot1 = await get(child(ref(getDatabase(), TEST_PATH), 'types/boolean'));
 
-    const snapshot = await ref.once('value');
+      const snapshot2 = await get(child(ref(getDatabase(), TEST_PATH), 'types/nope'));
 
-    snapshot.child('array').forEach(childSnap => {
-      callback();
-      childSnap.val().should.equal(0);
-      childSnap.key.should.equal('0');
-      return true;
+      snapshot1.exists().should.equal(true);
+      snapshot2.exists().should.equal(false);
     });
 
-    callback.should.be.calledOnce();
-  });
+    it('exports a valid object', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('forEach returns false when no child keys', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
+      const snapshot = await get(child(ref(getDatabase(), TEST_PATH), 'types/string'));
 
-    const snapshot = await ref.once('value');
+      const exported = snapshot.exportVal();
 
-    const bool = snapshot.forEach(() => {
-      callback();
+      exported.should.have.property('.value');
+      exported.should.have.property('.priority');
+      exported['.value'].should.equal('foobar');
+      should.equal(exported['.priority'], null);
     });
 
-    bool.should.equal(false);
-    callback.should.be.callCount(0);
-  });
+    it('exports a valid object with a object value', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('forEach cancels iteration when returning true', async function () {
-    const callback = sinon.spy();
-    const ref = firebase.database().ref(TEST_PATH).child('types/array');
+      const snapshot = await get(child(ref(getDatabase(), TEST_PATH), 'types/object'));
 
-    const snapshot = await ref.orderByValue().once('value');
+      const exported = snapshot.exportVal();
 
-    const cancelled = snapshot.forEach(childSnap => {
-      callback(childSnap.val());
-      return true;
+      exported.should.have.property('.value');
+      exported.should.have.property('.priority');
+      exported['.value'].should.eql(jet.contextify(CONTENT.TYPES.object));
+      should.equal(exported['.priority'], null);
     });
 
-    cancelled.should.equal(true);
-    callback.should.be.callCount(1);
-    callback.getCall(0).args[0].should.equal(0);
-  });
+    it('forEach throws if action param is not a function', async function () {
+      const { getDatabase, ref, child, set, get, orderByValue, query } = databaseModular;
 
-  it('getPriority returns the correct value', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('getPriority');
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'unorderedList');
 
-    await ref.setWithPriority('foo', 'bar');
-    const snapshot = await ref.once('value');
+      await set(dbRef, {
+        a: 3,
+        b: 1,
+        c: 2,
+      });
 
-    snapshot.getPriority().should.equal('bar');
-  });
+      const snapshot = await get(query(dbRef, orderByValue()));
 
-  it('hasChild throws if path is not a string value', async function () {
-    const ref = firebase.database().ref(TEST_PATH).child('types/boolean');
+      try {
+        snapshot.forEach('foo');
+      } catch (error) {
+        error.message.should.containEql("'action' must be a function");
+      }
+    });
 
-    const snapshot = await ref.once('value');
+    it('forEach returns an ordered list of snapshots', async function () {
+      const { getDatabase, ref, child, set, get, orderByValue, query } = databaseModular;
 
-    try {
-      snapshot.hasChild({ foo: 'bar' });
-    } catch (error) {
-      error.message.should.containEql("'path' must be a string value");
-    }
-  });
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'unorderedList');
 
-  it('hasChild returns the correct boolean value', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
+      await set(dbRef, {
+        a: 3,
+        b: 1,
+        c: 2,
+      });
 
-    const snapshot1 = await ref.child('types/boolean').once('value');
-    const snapshot2 = await ref.child('types').once('value');
+      const snapshot = await get(query(dbRef, orderByValue()));
+      const expected = ['b', 'c', 'a'];
 
-    snapshot1.hasChild('foo').should.equal(false);
-    snapshot2.hasChild('boolean').should.equal(true);
-  });
+      snapshot.forEach((childSnap, i) => {
+        childSnap.val().should.equal(i + 1);
+        childSnap.key.should.equal(expected[i]);
+      });
+    });
 
-  it('hasChildren returns the correct boolean value', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
-    const snapshot = await ref.child('types/object').once('value');
-    snapshot.hasChildren().should.equal(true);
-  });
+    it('forEach works with arrays', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
 
-  it('numChildren returns the correct number value', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
+      const callback = sinon.spy();
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'types');
 
-    const snapshot1 = await ref.child('types/boolean').once('value');
-    const snapshot2 = await ref.child('types/array').once('value');
-    const snapshot3 = await ref.child('types/object').once('value');
+      const snapshot = await get(dbRef);
 
-    snapshot1.numChildren().should.equal(0);
-    snapshot2.numChildren().should.equal(CONTENT.TYPES.array.length);
-    snapshot3.numChildren().should.equal(Object.keys(CONTENT.TYPES.object).length);
-  });
+      snapshot.child('array').forEach((childSnap, i) => {
+        callback();
+        childSnap.val().should.equal(i);
+        childSnap.key.should.equal(i.toString());
+      });
 
-  it('toJSON returns the value of the snapshot', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
+      callback.should.be.callCount(snapshot.child('array').numChildren());
+    });
 
-    const snapshot1 = await ref.child('types/string').once('value');
-    const snapshot2 = await ref.child('types/object').once('value');
+    it('forEach works with objects and cancels when returning true', async function () {
+      const { getDatabase, ref, child, orderByKey, query, get } = databaseModular;
 
-    snapshot1.toJSON().should.equal('foobar');
-    snapshot2.toJSON().should.eql(jet.contextify(CONTENT.TYPES.object));
-  });
+      const callback = sinon.spy();
+      const dbRef = query(child(ref(getDatabase(), TEST_PATH), 'types/object'), orderByKey());
 
-  it('val returns the value of the snapshot', async function () {
-    const ref = firebase.database().ref(TEST_PATH);
+      const snapshot = await get(dbRef);
 
-    const snapshot1 = await ref.child('types/string').once('value');
-    const snapshot2 = await ref.child('types/object').once('value');
+      snapshot.forEach(childSnap => {
+        callback();
+        childSnap.key.should.equal('bar');
+        childSnap.val().should.equal('baz');
+        return true;
+      });
 
-    snapshot1.val().should.equal('foobar');
-    snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
+      callback.should.be.calledOnce();
+    });
+
+    it('forEach works with arrays and cancels when returning true', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const callback = sinon.spy();
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'types');
+
+      const snapshot = await get(dbRef);
+
+      snapshot.child('array').forEach(childSnap => {
+        callback();
+        childSnap.val().should.equal(0);
+        childSnap.key.should.equal('0');
+        return true;
+      });
+
+      callback.should.be.calledOnce();
+    });
+
+    it('forEach returns false when no child keys', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const callback = sinon.spy();
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'types/boolean');
+
+      const snapshot = await get(dbRef);
+
+      const bool = snapshot.forEach(() => {
+        callback();
+      });
+
+      bool.should.equal(false);
+      callback.should.be.callCount(0);
+    });
+
+    it('forEach cancels iteration when returning true', async function () {
+      const { getDatabase, ref, child, orderByValue, query, get } = databaseModular;
+
+      const callback = sinon.spy();
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'types/array');
+
+      const snapshot = await get(query(dbRef, orderByValue()));
+
+      const cancelled = snapshot.forEach(childSnap => {
+        callback(childSnap.val());
+        return true;
+      });
+
+      cancelled.should.equal(true);
+      callback.should.be.callCount(1);
+      callback.getCall(0).args[0].should.equal(0);
+    });
+
+    it('getPriority returns the correct value', async function () {
+      const { getDatabase, ref, child, setWithPriority, get } = databaseModular;
+
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'getPriority');
+
+      await setWithPriority(dbRef, 'foo', 'bar');
+      const snapshot = await get(dbRef);
+
+      snapshot.getPriority().should.equal('bar');
+    });
+
+    it('hasChild throws if path is not a string value', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = child(ref(getDatabase(), TEST_PATH), 'types/boolean');
+
+      const snapshot = await get(dbRef);
+
+      try {
+        snapshot.hasChild({ foo: 'bar' });
+      } catch (error) {
+        error.message.should.containEql("'path' must be a string value");
+      }
+    });
+
+    it('hasChild returns the correct boolean value', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+
+      const snapshot1 = await get(child(dbRef, 'types/boolean'));
+      const snapshot2 = await get(child(dbRef, 'types'));
+
+      snapshot1.hasChild('foo').should.equal(false);
+      snapshot2.hasChild('boolean').should.equal(true);
+    });
+
+    it('hasChildren returns the correct boolean value', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+      const snapshot = await get(child(dbRef, 'types/object'));
+      snapshot.hasChildren().should.equal(true);
+    });
+
+    it('numChildren returns the correct number value', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+
+      const snapshot1 = await get(child(dbRef, 'types/boolean'));
+      const snapshot2 = await get(child(dbRef, 'types/array'));
+      const snapshot3 = await get(child(dbRef, 'types/object'));
+
+      snapshot1.numChildren().should.equal(0);
+      snapshot2.numChildren().should.equal(CONTENT.TYPES.array.length);
+      snapshot3.numChildren().should.equal(Object.keys(CONTENT.TYPES.object).length);
+    });
+
+    it('toJSON returns the value of the snapshot', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+
+      const snapshot1 = await get(child(dbRef, 'types/string'));
+      const snapshot2 = await get(child(dbRef, 'types/object'));
+
+      snapshot1.toJSON().should.equal('foobar');
+      snapshot2.toJSON().should.eql(jet.contextify(CONTENT.TYPES.object));
+    });
+
+    it('val returns the value of the snapshot', async function () {
+      const { getDatabase, ref, child, get } = databaseModular;
+
+      const dbRef = ref(getDatabase(), TEST_PATH);
+
+      const snapshot1 = await get(child(dbRef, 'types/string'));
+      const snapshot2 = await get(child(dbRef, 'types/object'));
+
+      snapshot1.val().should.equal('foobar');
+      snapshot2.val().should.eql(jet.contextify(CONTENT.TYPES.object));
+    });
   });
 });

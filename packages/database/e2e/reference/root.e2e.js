@@ -16,8 +16,19 @@
  */
 
 describe('database().ref().root', function () {
-  it('returns a root reference', function () {
-    const ref = firebase.database().ref('foo/bar/baz');
-    should.equal(ref.root.key, null);
+  describe('v8 compatibility', function () {
+    it('returns a root reference', function () {
+      const ref = firebase.database().ref('foo/bar/baz');
+      should.equal(ref.root.key, null);
+    });
+  });
+
+  describe('modular', function () {
+    it('returns a root reference', function () {
+      const { getDatabase, ref } = databaseModular;
+
+      const dbRef = ref(getDatabase(), 'foo/bar/baz');
+      should.equal(dbRef.root.key, null);
+    });
   });
 });

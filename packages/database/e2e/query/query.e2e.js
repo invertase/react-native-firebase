@@ -15,16 +15,35 @@
  */
 
 describe('DatabaseQuery/DatabaseQueryModifiers', function () {
-  it('should not mutate previous queries (#2691)', async function () {
-    const queryBefore = firebase.database().ref();
-    queryBefore._modifiers._modifiers.length.should.equal(0);
+  describe('v8 compatibility', function () {
+    it('should not mutate previous queries (#2691)', async function () {
+      const queryBefore = firebase.database().ref();
+      queryBefore._modifiers._modifiers.length.should.equal(0);
 
-    const queryAfter = queryBefore.orderByChild('age');
-    queryBefore._modifiers._modifiers.length.should.equal(0);
-    queryAfter._modifiers._modifiers.length.should.equal(1);
+      const queryAfter = queryBefore.orderByChild('age');
+      queryBefore._modifiers._modifiers.length.should.equal(0);
+      queryAfter._modifiers._modifiers.length.should.equal(1);
 
-    const queryAfterAfter = queryAfter.equalTo(30);
-    queryAfter._modifiers._modifiers.length.should.equal(1);
-    queryAfterAfter._modifiers._modifiers.length.should.equal(3); // adds startAt endAt internally
+      const queryAfterAfter = queryAfter.equalTo(30);
+      queryAfter._modifiers._modifiers.length.should.equal(1);
+      queryAfterAfter._modifiers._modifiers.length.should.equal(3); // adds startAt endAt internally
+    });
+  });
+
+  describe('modular', function () {
+    it('should not mutate previous queries (#2691)', async function () {
+      const { getDatabase, ref, query, orderByChild, equalTo } = databaseModular;
+
+      const queryBefore = ref(getDatabase());
+      queryBefore._modifiers._modifiers.length.should.equal(0);
+
+      const queryAfter = query(queryBefore, orderByChild('age'));
+      queryBefore._modifiers._modifiers.length.should.equal(0);
+      queryAfter._modifiers._modifiers.length.should.equal(1);
+
+      const queryAfterAfter = query(queryAfter, equalTo(30));
+      queryAfter._modifiers._modifiers.length.should.equal(1);
+      queryAfterAfter._modifiers._modifiers.length.should.equal(3); // adds startAt endAt internally
+    });
   });
 });

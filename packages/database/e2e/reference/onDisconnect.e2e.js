@@ -18,8 +18,19 @@
 // See onDisconnect directory for specific tests
 
 describe('database().ref().onDisconnect()', function () {
-  it('returns a new DatabaseOnDisconnect instance', function () {
-    const instance = firebase.database().ref().onDisconnect();
-    instance.constructor.name.should.eql('DatabaseOnDisconnect');
+  describe('v8 compatibility', function () {
+    it('returns a new DatabaseOnDisconnect instance', function () {
+      const instance = firebase.database().ref().onDisconnect();
+      instance.constructor.name.should.eql('DatabaseOnDisconnect');
+    });
+  });
+
+  describe('modular', function () {
+    it('returns a new DatabaseOnDisconnect instance', function () {
+      const { getDatabase, ref, onDisconnect } = databaseModular;
+
+      const instance = onDisconnect(ref(getDatabase()));
+      instance.constructor.name.should.eql('DatabaseOnDisconnect');
+    });
   });
 });
