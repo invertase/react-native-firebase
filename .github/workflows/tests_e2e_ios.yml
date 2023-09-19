@@ -46,7 +46,7 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: 'latest-stable'
+          xcode-version: 'latest'
 
       - uses: actions/checkout@v4
         with:
