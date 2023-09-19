@@ -1607,7 +1607,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     it('returns with where "==" Filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
 
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar' };
       const expected2 = { foo: 'farm' };
@@ -1630,7 +1630,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where ">" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/greater-than`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/greater-than-modular`);
 
       const expected = { foo: 100 };
 
@@ -1644,6 +1644,8 @@ describe('firestore().collection().where(OR Filters)', function () {
         query(colRef, or(where('foo', '>', 2), where('foo', '==', 30))),
       );
 
+      console.error((await getDocs(colRef)).forEach(doc => console.log(doc.data())));
+
       snapshot.size.should.eql(2);
       snapshot.forEach(s => {
         s.data().should.eql(jet.contextify(expected));
@@ -1652,7 +1654,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "<" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/less-than`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/less-than-modular`);
 
       const expected = { foo: 2 };
 
@@ -1674,7 +1676,10 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where ">=" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/greater-than-or-equal`);
+      const colRef = collection(
+        getFirestore(),
+        `${COLLECTION}/filter/greater-than-or-equal-modular`,
+      );
 
       const expected = { foo: 100 };
 
@@ -1696,7 +1701,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "<=" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/less-than-or-equal`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/less-than-or-equal-modular`);
 
       const expected = { foo: 100 };
 
@@ -1720,7 +1725,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns "array-contains" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/array-contains`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/array-contains-modular`);
 
       const expected = { foo: 'bar', something: [1, 2, 3] };
 
@@ -1746,7 +1751,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns "array-contains-any" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/array-contains-any`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/array-contains-any-modular`);
 
       const expected = { foo: 'bar', something: [1, 2, 3] };
 
@@ -1775,7 +1780,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "not-in" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in-modular`);
       const expected = 'bar';
       const data = { foo: expected };
 
@@ -1798,7 +1803,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "in" filter', async function () {
       const { getFirestore, collection, where, or, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/in`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/in-modular`);
       const expected1 = 'bar';
       const expected2 = 'baz';
       const data1 = { foo: expected1 };
@@ -1827,7 +1832,7 @@ describe('firestore().collection().where(OR Filters)', function () {
     // OR queries with ANDs. Equals and: '==', '>', '>=', '<', '<=', '!='
     it('returns with where "==" && "==" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', bar: 'baz' };
       await Promise.all([
@@ -1854,7 +1859,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "!=" filter', async function () {
       const { getFirestore, collection, where, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', baz: 'baz' };
       const notExpected = { foo: 'bar', baz: 'something' };
@@ -1876,7 +1881,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & ">" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-not-equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-not-equals-modular`);
 
       const expected = { foo: 'bar', population: 200 };
       const notExpected = { foo: 'bar', population: 1 };
@@ -1904,7 +1909,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "<" filter', async function () {
       const { getFirestore, collection, where, or, and, query, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', population: 200 };
       const notExpected = { foo: 'bar', population: 1000 };
@@ -1928,7 +1933,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "<=" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', population: 200 };
       const notExpected = { foo: 'bar', population: 1000 };
@@ -1956,7 +1961,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & ">=" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', population: 200 };
       const notExpected = { foo: 'bar', population: 100 };
@@ -1986,7 +1991,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "array-contains" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const match = Date.now();
       await Promise.all([
@@ -2014,7 +2019,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "array-contains-any" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const match = Date.now();
       await Promise.all([
@@ -2043,7 +2048,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "not-in" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/not-in-modular`);
 
       await Promise.all([
         addDoc(colRef, { foo: 'bar', bar: 'baz' }),
@@ -2069,7 +2074,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('returns with where "==" & "in" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/in`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/in-modular`);
 
       await Promise.all([
         addDoc(colRef, { foo: 'bar', bar: 'baz' }),
@@ -2097,7 +2102,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('backwards compatible with existing where() "==" && "==" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const expected = { foo: 'bar', bar: 'baz', existing: 'where' };
       await Promise.all([
@@ -2125,7 +2130,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('backwards compatible with existing where() query, returns with where "==" & "array-contains" filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const match = Date.now();
       await Promise.all([
@@ -2154,7 +2159,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('backwards compatible whilst chaining Filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const match = Date.now();
       await Promise.all([
@@ -2194,7 +2199,7 @@ describe('firestore().collection().where(OR Filters)', function () {
 
     it('backwards compatible whilst chaining AND Filter', async function () {
       const { getFirestore, collection, where, or, and, query, addDoc, getDocs } = firestoreModular;
-      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals`);
+      const colRef = collection(getFirestore(), `${COLLECTION}/filter/equals-modular`);
 
       const match = Date.now();
       await Promise.all([
