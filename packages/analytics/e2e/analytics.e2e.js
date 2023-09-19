@@ -470,6 +470,28 @@ describe('analytics() modular', function () {
     });
 
     // Test this last so it does not stop delivery to DebugView
+    describe('on-device conversion measurement with phone', function () {
+      it('calls native API successfully', async function () {
+        await firebase
+          .analytics()
+          .initiateOnDeviceConversionMeasurementWithPhoneNumber('+14155551212');
+      });
+      it('handles mal-formatted phone number', async function () {
+        try {
+          await firebase
+            .analytics()
+            .initiateOnDeviceConversionMeasurementWithPhoneNumber('+notaphonenumber');
+          fail('Should have returned an error for malformatted phone number');
+        } catch (e) {
+          // coerce the error message to a string and verify
+          if (!(e + '').includes('expected a string value in E.164 format')) {
+            fail('Should have returned an error for malformatted phone number');
+          }
+        }
+      });
+    });
+
+    // Test this last so it does not stop delivery to DebugView
     describe('setAnalyticsCollectionEnabled()', function () {
       it('false', async function () {
         await firebase.analytics().setAnalyticsCollectionEnabled(false);
@@ -1005,6 +1027,31 @@ describe('analytics() modular', function () {
           getAnalytics(),
           'conversionTest@example.com',
         );
+      });
+    });
+
+    // Test this last so it does not stop delivery to DebugView
+    describe('on-device conversion measurement with phone', function () {
+      it('calls native API successfully', async function () {
+        const { getAnalytics, initiateOnDeviceConversionMeasurementWithPhoneNumber } =
+          analyticsModular;
+        await initiateOnDeviceConversionMeasurementWithPhoneNumber(getAnalytics(), '+14155551212');
+      });
+      it('handles mal-formatted phone number', async function () {
+        try {
+          const { getAnalytics, initiateOnDeviceConversionMeasurementWithPhoneNumber } =
+            analyticsModular;
+          await initiateOnDeviceConversionMeasurementWithPhoneNumber(
+            getAnalytics(),
+            '+notaphonenumber',
+          );
+          fail('Should have returned an error for malformatted phone number');
+        } catch (e) {
+          // coerce the error message to a string and verify
+          if (!(e + '').includes('expected a string value in E.164 format')) {
+            fail('Should have returned an error for malformatted phone number');
+          }
+        }
       });
     });
 

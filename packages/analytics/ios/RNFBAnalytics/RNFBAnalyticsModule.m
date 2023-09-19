@@ -164,6 +164,19 @@ RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithEmailAddress
   return resolve([NSNull null]);
 }
 
+RCT_EXPORT_METHOD(initiateOnDeviceConversionMeasurementWithPhoneNumber
+                  : (NSString *)phoneNumber resolver
+                  : (RCTPromiseResolveBlock)resolve rejecter
+                  : (RCTPromiseRejectBlock)reject) {
+  @try {
+    [FIRAnalytics initiateOnDeviceConversionMeasurementWithPhoneNumber:phoneNumber];
+  } @catch (NSException *exception) {
+    return [RNFBSharedUtils rejectPromiseWithExceptionDict:reject exception:exception];
+  }
+
+  return resolve([NSNull null]);
+}
+
 #pragma mark -
 #pragma mark Private methods
 

@@ -623,6 +623,18 @@ export function initiateOnDeviceConversionMeasurementWithEmailAddress(analytics,
 }
 
 /**
+ * start privacy-sensitive on-device conversion management.
+ * This is iOS-only.
+ * This is a no-op if you do not include '$RNFirebaseAnalyticsGoogleAppMeasurementOnDeviceConversion = true' in your Podfile
+ *
+ * @param analytics Analytics instance.
+ * @param phoneNumber phone number in E.164 format - that is a leading + sign, then up to 15 digits, no dashes or spaces.
+ */
+export function initiateOnDeviceConversionMeasurementWithPhoneNumber(analytics, phoneNumber) {
+  return analytics.initiateOnDeviceConversionMeasurementWithPhoneNumber(phoneNumber);
+}
+
+/**
  * Checks four different things.
  * 1. Checks if it's not a browser extension environment.
  * 2. Checks if cookies are enabled in current browser.

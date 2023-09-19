@@ -96,6 +96,16 @@ export function isNumber(value) {
 }
 
 /**
+ * Simple is phone number check for E.164 format
+ * @param value
+ * @return {boolean}
+ */
+export function isE164PhoneNumber(value) {
+  const PHONE_NUMBER = /^\+[1-9]\d{1,14}$/; // E.164
+  return PHONE_NUMBER.test(value);
+}
+
+/**
  * Simple finite check
  * @param value
  * @returns {boolean}
