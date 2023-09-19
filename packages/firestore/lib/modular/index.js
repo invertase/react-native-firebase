@@ -151,12 +151,8 @@ export function waitForPendingWrites(firestore) {
  * @param {string?} databaseId
  * @returns {Promise<Firestore>}
  */
-// FIXME: databaseId is not supported by compat API?
-// FIXME: as per web SDK, initializeFirestore would override existing firestore instance.
-//       Calling getFirestore() after initializeFirestore() would return this new instance.
-//       Need to figure out how to handle this using the compat API.
-export async function initializeFirestore(app, settings, databaseId) {
-  databaseId; // make eslint happy
+export async function initializeFirestore(app, settings /* databaseId */) {
+  // TODO(exaby73): implement 2nd database once it's supported
   const firestore = firebase.firestore(app);
   await firestore.settings(settings);
   return firestore;
